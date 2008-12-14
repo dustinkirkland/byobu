@@ -1,0 +1,9 @@
+bin/cpu-freq usr/share/screen-profiles/bin
+bin/reboot-required usr/share/screen-profiles/bin
+bin/release usr/share/screen-profiles/bin
+bin/updates-available usr/share/screen-profiles/bin
+profiles/debian.screenrc usr/share/screen-profiles/profiles
+profiles/fedora.screenrc usr/share/screen-profiles/profiles
+profiles/redhat.screenrc usr/share/screen-profiles/profiles
+profiles/ubuntu.screenrc usr/share/screen-profiles/profiles
+select-screen-profile usr/bin

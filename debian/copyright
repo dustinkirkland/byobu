@@ -1,0 +1,35 @@
+This package was debianized by Dustin Kirkland <dustin.kirkland@gmail.com>
+Sun, 14 Dec 2008 13:11:37 -0600
+
+It was downloaded from: http://launchpad.net/screen-profiles
+
+Upstream Authors: Dustin Kirkland <dustin.kirkland@gmail.com>
+
+Copyright:
+ Copyright (C) 2002-2008 Dustin Kirkland <dustin.kirkland@gmail.com>
+ All rights reserved.
+
+License:
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation version 3 of the License.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+ On Debian systems, the complete text of the GNU General Public
+ License, version 3, can be found in /usr/share/common-licenses/GPL-3.
+
+ The icons are licensed under the Creative Commons Attribution 2.5 license,
+ <http://creativecommons.org/licenses/by/2.5/>.  In accordance with CCA2.5,
+ the icons are available at <http://www.famfamfam.com/lab/icons/silk/>.
+
+The Ubuntu packaging:
+ Copyright (C) 2008 by Dustin Kirkland <dustin.kirkland@gmail.com>
+ released under the GPL-3.

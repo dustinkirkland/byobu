@@ -1,0 +1,45 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
+#
+# debian/rules makefile for musica
+
+# Uncomment this to turn on verbose mode.
+# export DH_VERBOSE=1
+
+PACKAGE=screen-profiles
+
+build:
+
+clean:
+	rm -rf debian/${PACKAGE} debian/files debian/${PACKAGE}.debhelper.log
+
+install:build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs -X.bzr
+	dh_install -X.bzr
+
+# Everything else is handled by dh_install
+
+# Build architecture-independent files here.
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_installdocs -X.bzr
+	dh_installman select-screen-profile.1
+	dh_installchangelogs README
+	dh_installdebconf
+	dh_compress
+	dh_fixperms
+	dh_link /etc/screenrc usr/share/${PACKAGE}/profiles/default.screenrc
+	dh_installdeb
+	dh_gencontrol
+	dh_builddeb
+
+binary: binary-indep
+.PHONY: build clean binary-indep binary install
+
+binary-arch:

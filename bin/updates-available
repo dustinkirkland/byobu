@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;.*$/\!/"

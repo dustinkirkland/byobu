@@ -1,0 +1,3 @@
+#!/bin/sh
+
+grep -m 1 "^cpu MHz" /proc/cpuinfo | sed "s/^.*: //" | sed "s/\..*$/ MHz/"

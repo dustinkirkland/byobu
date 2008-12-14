@@ -1,0 +1,47 @@
+#!/bin/sh
+
+PROFILE_DIR="/usr/share/screen-profiles/profiles"
+
+if [ -e "$HOME/.screenrc" ]; then
+	if [ ! -L "$HOME/.screenrc" ]; then
+		echo `gettext 'Error:'` $HOME/.screenrc `gettext 'exists, but is not a symlink'`
+		exit 1
+	fi
+fi
+
+echo
+echo "Select a screen profile: "
+i=0
+profiles=$(ls $PROFILE_DIR)
+for x in $profiles; do
+	i=$(expr $i + 1)
+	desc="          "
+	if [ $x = "ubuntu.screenrc" ]; then
+		desc="<---- ` gettext 'recommended'`"
+		simple=$i
+	fi
+	echo "  $i. $x\t\t$desc"
+done
+echo
+selected=x
+while /bin/true; do
+	if [ -z "$selected" -a ! -z "$simple" ]; then
+		selected="$simple"
+	elif ! test $selected -gt 0 2>/dev/null; then
+		read -p "`gettext 'Choose'` 1-$i [$simple]: " -r selected
+	elif ! test $selected -le $i 2>/dev/null; then
+		read -p "`gettext 'Choose'` 1-$i [$simple]: " -r selected
+	else
+		break
+	fi
+done
+
+i=0
+for x in $profiles; do
+	i=`expr $i + 1`
+	if [ $i -eq $selected ]; then
+		rm -f "$HOME/.screenrc" && ln -s "$PROFILE_DIR/$x" "$HOME/.screenrc"
+	fi
+done
+
+exit 0
