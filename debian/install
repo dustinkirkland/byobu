@@ -5,3 +5,4 @@ bin/updates-available usr/share/screen-profiles/bin
 profiles/debian.screenrc usr/share/screen-profiles/profiles
 profiles/ubuntu.screenrc usr/share/screen-profiles/profiles
 select-screen-profile usr/bin
+base-screenrc usr/share/screen-profiles

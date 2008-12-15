@@ -1,0 +1,5 @@
+# This is a base .screenrc file created by the screen-profiles package
+# The following line sources the currently selected profile
+source ~/.screenrc-profile
+
+# Add your personalisation of screen below this line

@@ -1,10 +1,11 @@
 #!/bin/sh
 
-PROFILE_DIR="/usr/share/screen-profiles/profiles"
+BASE_DIR="/usr/share/screen-profiles"
+PROFILE_DIR="$BASE_DIR/profiles"
 
-if [ -e "$HOME/.screenrc" ]; then
-	if [ ! -L "$HOME/.screenrc" ]; then
-		echo `gettext 'Error:'` $HOME/.screenrc `gettext 'exists, but is not a symlink'`
+if [ -e "$HOME/.screenrc-profile" ]; then
+	if [ ! -L "$HOME/.screenrc-profile" ]; then
+		echo `gettext 'Error:'` $HOME/.screenrc-profile `gettext 'exists, but is not a symlink'`
 		exit 1
 	fi
 fi
@@ -40,7 +41,16 @@ i=0
 for x in $profiles; do
 	i=`expr $i + 1`
 	if [ $i -eq $selected ]; then
-		rm -f "$HOME/.screenrc" && ln -s "$PROFILE_DIR/$x" "$HOME/.screenrc"
+        # avoid overriding a user's existing .screenrc
+        if [ ! -e "$HOME/.screenrc" ]; then
+            cp "$BASE_DIR/base-screenrc" "$HOME/.screenrc" && \
+            chown "$USER" "$HOME/.screenrc"
+        else
+            echo "You already have a ~/.screenrc file. Make sure that it contains"
+            echo "a line with 'source ~/.screenrc-profile' to make use of you new"
+            echo "profile."
+        fi
+		rm -f "$HOME/.screenrc-profile" && ln -s "$PROFILE_DIR/$x" "$HOME/.screenrc-profile"
 	fi
 done
 
