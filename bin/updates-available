@@ -3,9 +3,9 @@
 if [ -x /usr/lib/update-notifier/apt-check ]; then
 	/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;.*$/\!/"
 elif [ -x /usr/bin/apt-get ]; then
-	/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep ^Inst | wc -l
+	/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep ^Inst | wc -l | sed "s/$/\!/"
 elif [ -x /usr/bin/yum ]; then
-	/usr/bin/yum list updates | grep -c "updates"
+	/usr/bin/yum list updates | grep -c "updates" | sed "s/$/\!/"
 else
 	echo "?"
 fi
