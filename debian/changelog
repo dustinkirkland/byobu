@@ -1,8 +1,8 @@
 screen-profiles (1.0) jaunty; urgency=low
- [ Dustin Kirklan ]
+  [ Dustin Kirklan ]
   * Initial upload
 
- [ Nicolas Barcet ]
+  [ Nicolas Barcet ]
   * Allow local modification of .screenrc (LP: #308216)
   * Add some nice defaults to ubuntu.screenrc
   * Propose some additions in base-screenrc
