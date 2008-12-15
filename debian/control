@@ -10,6 +10,7 @@ Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/screen-profiles/main
 Package: screen-profiles
 Architecture: all
 Depends: debconf (>= 0.5) | debconf-2.0, screen
+Recommends: update-notifier-common
 Description: a set of useful profiles and a profile-switcher for GNU screen
  screen-profiles includes a set of profiles for the GNU screen window manager.
  These profiles are quite useful on server machines which are not running
