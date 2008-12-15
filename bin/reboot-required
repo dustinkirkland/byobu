@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ ! -x /usr/share/update-notifier/notify-reboot-required ]; then
+	echo "?"
+	exit 1
+fi
+
 if [ -e /var/run/reboot-required ]; then
 	echo "(@)"
 fi
