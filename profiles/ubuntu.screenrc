@@ -31,4 +31,13 @@ hardstatus alwayslastline
 caption always '%{= Wk}%{= Wk}%?%-Lw%?%{= yk}%n %t%{= Wk} %?%+Lw%?%?%= %{= Wk}'
 hardstatus string '%{= wk} %{+b r}\%{= y}o%{=b Y}/%{+b wk} %100` %{= Wk}|%= |%{+B bW}%102`%{= Wk}|%{+b rW}%101`%{= Wk}|%{+b gW}%103`%{= Wk}|%{= wb}%Y-%m-%d %c:%s%{k}'
 
+# Allow scrolling in xterm
+termcapinfo xterm ti@:te@
+
 # Keybindings
+# Map shift-tab to go to next window
+bindkey "\033[Z" next
+# Ctrl+PgUp and Ctrl+PgDn to change windows
+bindkey ^[[5;5~ prev
+bindkey ^[[6;5~ next
+

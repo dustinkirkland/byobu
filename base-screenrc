@@ -2,4 +2,22 @@
 # The following line sources the currently selected profile
 source ~/.screenrc-profile
 
-# Add your personalisation of screen below this line
+# Add your personalisation of screen below this line, some proposal are 
+# commented out
+
+# if activity is detected on an affected window switched into the background
+# you  will  receive the activity notification message in the status line
+# the window will also be marked with an ‘@’ in the window-status display
+#defmonitor on
+
+# When  any activity occurs in a background window that is being monitored
+# screen displays a notification in the message line
+#activity "activity -> %n%f %t" # window number , flags of the window , window title
+
+# Start screen
+#screen -t motd watch -n 30 cat /etc/motd
+#screen -t local 0
+
+#Escape as control-W
+#escape ^Ww
+
