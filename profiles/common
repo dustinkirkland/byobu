@@ -30,8 +30,9 @@ backtick 104 999999 999999 /usr/share/screen-profiles/bin/cpu-count
 
 hardstatus alwayslastline
 
-# Allow scrolling in xterm
+# Allow scrolling in xterm, 10000 lines
 termcapinfo xterm ti@:te@
+defscrollback 10000
 
 # Keybindings
 # Map shift-tab to go to next window

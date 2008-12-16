@@ -1,12 +1,13 @@
-screen-profiles (1.0-0ubuntu1) jaunty; urgency=low
+screen-profiles (1.0~ppa13) jaunty; urgency=low
   [ Dustin Kirkland ]
   * Initial upload
     - ubuntu, debian, redhat, fedora profiles
     - select-screen-profile utility
     - add dependency on gettext-base (LP: #308509)
+    - define 10,000 lines of scrollback
 
   [ Nicolas Barcet ]
   * Allow local modification of .screenrc (LP: #308216)
   * Add some nice defaults to ubuntu.screenrc
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Dec 2008 11:03:41 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Dec 2008 14:37:29 -0600
