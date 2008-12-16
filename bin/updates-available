@@ -1,11 +1,20 @@
 #!/bin/sh
 
+u=
 if [ -x /usr/lib/update-notifier/apt-check ]; then
-	/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;.*$/\!/"
+	u=`/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;.*$//"`
 elif [ -x /usr/bin/apt-get ]; then
-	/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep ^Inst | wc -l | sed "s/$/\!/"
+	u=`/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst`
 elif [ -x /usr/bin/yum ]; then
-	/usr/bin/yum list updates | grep -c "updates" | sed "s/$/\!/"
+	u=`/usr/bin/yum list updates | grep -c "updates"`
 else
 	echo "?"
+	exit 1
 fi
+
+if [ "$u" = "0" ]; then
+	echo ""
+else
+	echo "$u!"
+fi
+exit 0
