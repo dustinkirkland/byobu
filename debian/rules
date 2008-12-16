@@ -9,6 +9,11 @@
 # export DH_VERBOSE=1
 
 PACKAGE=screen-profiles
+VER=`head -n 1 ./changelog | sed 's/^.*(//' | sed 's/).*//' | sed 's/-.*//'`
+
+get-orig-source:
+	[ -d ../../${PACKAGE} ] && mv ../../${PACKAGE} ../../${PACKAGE}-${VER} || true
+	tar -C ../../ --exclude .bzr --exclude debian -zcvf ../../${PACKAGE}_${VER}.orig.tar.gz ${PACKAGE}-${VER}
 
 build:
 
