@@ -1,19 +1,22 @@
 #!/bin/sh -e
 
+# To generate localization information, run:
+#   xgettext -o - -L Shell select-screen-profile
+
 BASE_DIR="/usr/share/screen-profiles"
 PROFILE_DIR="$BASE_DIR/profiles"
 
 # Ensure that ~/.screenrc-profile is a symbolic link
 if [ -e "$HOME/.screenrc-profile" ]; then
 	if [ ! -L "$HOME/.screenrc-profile" ]; then
-		echo `gettext 'Error:'` $HOME/.screenrc-profile `gettext 'exists, but is not a symlink'`
+		echo `gettext 'Error:'` $HOME/.screenrc-profile `gettext ' file exists, but is not a symlink'`
 		exit 1
 	fi
 fi
 
 # Prompt the user to choose among the available profiles
 echo
-echo "Select a screen profile: "
+echo `gettext "Select a screen profile: "`
 i=0
 profiles=$(ls $PROFILE_DIR)
 for x in $profiles; do
@@ -31,9 +34,9 @@ while /bin/true; do
 	if [ -z "$selected" -a ! -z "$simple" ]; then
 		selected="$simple"
 	elif ! test $selected -gt 0 2>/dev/null; then
-		read -p "`gettext 'Choose'` 1-$i [$simple]: " -r selected
+		read -p "`gettext 'Choose: '` 1-$i [$simple]: " -r selected
 	elif ! test $selected -le $i 2>/dev/null; then
-		read -p "`gettext 'Choose'` 1-$i [$simple]: " -r selected
+		read -p "`gettext 'Choose: '` 1-$i [$simple]: " -r selected
 	else
 		break
 	fi

@@ -1,14 +1,15 @@
 screen-profiles (1.0) UNRELEASED; urgency=low
   [ Dustin Kirkland ]
-  * Initial upload
+  * Initial upload (LP: #308789)
     - ubuntu, debian, redhat, fedora profiles
     - select-screen-profile utility
-    - add dependency on gettext-base (LP: #308509)
+    - add dependency on gettext-base (LP: #308509), add translation framework
     - define 10,000 lines of scrollback
     - ctrl-a c opens new window and prompts for name
+    - don't display ominous red 0! when no updates available (LP: #308215)
 
   [ Nicolas Barcet ]
   * Allow local modification of .screenrc (LP: #308216)
   * Add some nice defaults to ubuntu.screenrc
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Dec 2008 15:31:47 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Dec 2008 17:42:52 -0600

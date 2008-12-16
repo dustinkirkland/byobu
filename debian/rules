@@ -15,6 +15,9 @@ get-orig-source:
 	[ -d ../../${PACKAGE} ] && mv ../../${PACKAGE} ../../${PACKAGE}-${VER} || true
 	tar -C ../../ --exclude .bzr --exclude debian -zcvf ../../${PACKAGE}_${VER}.orig.tar.gz ${PACKAGE}-${VER}
 
+prebuild:
+	cd po4a && po4a --no-backups po4a.conf
+
 build:
 
 clean:
@@ -45,6 +48,6 @@ binary-indep: build install
 	dh_builddeb
 
 binary: binary-indep
-.PHONY: build clean binary-indep binary install
+.PHONY: build clean binary-indep binary install prebuild
 
 binary-arch:
