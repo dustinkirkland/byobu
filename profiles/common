@@ -1,7 +1,7 @@
 ###############################################################################
-#    GNU Screen Profile for Debian
-#      This configuration profile is intended to roughly approximate a Fedora
-#      Desktop within 'screen'.
+#    GNU Screen common profile
+#      This configuration profile is intended to be a common header of useful
+#      functionality, included by other profiles.
 #
 #    Copyright (C) 2008  Dustin Kirkland <kirkland@canonical.com>
 #
@@ -19,7 +19,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
-source /usr/share/screen-profiles/profiles/common
+startup_message off
+msgwait 1
 
-caption always '%{= Wk}%{= Wk}%?%-Lw%?%{= yk}%n %t%{= Wk} %?%+Lw%?%?%= %{= Wk}'
-hardstatus string '%{= wk} %{+b Bw} f %{+b wk} %100` %{= Wk}|%= |%{+b gW}%103`%{= Wk}|%{= wb}%Y-%m-%d %c:%s%{k}'
+backtick 100 3600 3600 /usr/share/screen-profiles/bin/release
+backtick 101 3600 3600 /usr/share/screen-profiles/bin/updates-available
+backtick 102 10 10 /usr/share/screen-profiles/bin/reboot-required
+backtick 103 5 5 /usr/share/screen-profiles/bin/cpu-freq
+
+hardstatus alwayslastline
+
+# Allow scrolling in xterm
+termcapinfo xterm ti@:te@
+
+# Keybindings
+# Map shift-tab to go to next window
+bindkey "\033[Z" next
+# Ctrl+PgUp and Ctrl+PgDn to change windows
+bindkey ^[[5;5~ prev
+bindkey ^[[6;5~ next

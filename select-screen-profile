@@ -1,14 +1,17 @@
-#!/bin/sh
+#!/bin/sh -e
 
-PROFILE_DIR="/usr/share/screen-profiles/profiles"
+BASE_DIR="/usr/share/screen-profiles"
+PROFILE_DIR="$BASE_DIR/profiles"
 
-if [ -e "$HOME/.screenrc" ]; then
-	if [ ! -L "$HOME/.screenrc" ]; then
-		echo `gettext 'Error:'` $HOME/.screenrc `gettext 'exists, but is not a symlink'`
+# Ensure that ~/.screenrc-profile is a symbolic link
+if [ -e "$HOME/.screenrc-profile" ]; then
+	if [ ! -L "$HOME/.screenrc-profile" ]; then
+		echo `gettext 'Error:'` $HOME/.screenrc-profile `gettext 'exists, but is not a symlink'`
 		exit 1
 	fi
 fi
 
+# Prompt the user to choose among the available profiles
 echo
 echo "Select a screen profile: "
 i=0
@@ -40,7 +43,23 @@ i=0
 for x in $profiles; do
 	i=`expr $i + 1`
 	if [ $i -eq $selected ]; then
-		rm -f "$HOME/.screenrc" && ln -s "$PROFILE_DIR/$x" "$HOME/.screenrc"
+		if [ ! -e "$HOME/.screenrc" ]; then
+			# If the user doesn't have a .screenrc, seed one
+			echo "source ~/.screenrc-profile" > "$HOME/.screenrc"
+		else
+			# If the user does have a .screenrc, see if it has the
+			# source line
+			if ! grep -qs "source $HOME/.screenrc-profile" "$HOME/.screenrc"; then
+				# And if it's missing the source line, add it
+				# to the top
+				tmp=`mktemp "$HOME/.screenrc.XXXXXX"`
+				echo "source $HOME/.screenrc-profile" > "$tmp"
+				cat "$HOME/.screenrc" >> "$tmp"
+				mv -f "$tmp" "$HOME/.screenrc"
+			fi
+		fi
+		rm -f "$HOME/.screenrc-profile"
+		ln -s "$PROFILE_DIR/$x" "$HOME/.screenrc-profile"
 	fi
 done
 

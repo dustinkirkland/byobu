@@ -1,5 +1,12 @@
 screen-profiles (1.0) jaunty; urgency=low
-
+  [ Dustin Kirkland ]
   * Initial upload
+    - ubuntu, debian, redhat, fedora profiles
+    - select-screen-profile utility
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 14 Dec 2008 13:12:12 -0600
+
+  [ Nicolas Barcet ]
+  * Allow local modification of .screenrc (LP: #308216)
+  * Add some nice defaults to ubuntu.screenrc
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Dec 2008 23:02:09 -0600

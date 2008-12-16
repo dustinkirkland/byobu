@@ -19,14 +19,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
-startup_message off
-msgwait 1
-
-backtick 100 3600 3600 /usr/share/screen-profiles/bin/release
-backtick 103 5 5 /usr/share/screen-profiles/bin/cpu-freq
+source /usr/share/screen-profiles/profiles/common
 
 hardstatus alwayslastline
 caption always '%{= Wk}%{= Wk}%?%-Lw%?%{= yk}%n %t%{= Wk} %?%+Lw%?%?%= %{= Wk}'
 hardstatus string '%{= wk} %{+b RK} RH %{+b wk} %100` %{= Wk}|%= |%{+b gW}%103`%{= Wk}|%{= wb}%Y-%m-%d %c:%s%{k}'
-
-# Keybindings
