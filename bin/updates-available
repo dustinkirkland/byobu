@@ -2,7 +2,7 @@
 
 u=
 if [ -x /usr/lib/update-notifier/apt-check ]; then
-	u=`/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;.*$//"`
+	u=`/usr/lib/update-notifier/apt-check --human-readable 2>&1 | sed "s/;.*$//"`
 elif [ -x /usr/bin/apt-get ]; then
 	u=`/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst`
 elif [ -x /usr/bin/yum ]; then
