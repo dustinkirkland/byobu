@@ -22,4 +22,4 @@
 source /usr/share/screen-profiles/profiles/common
 
 caption always '%{= Wk}%{= Wk}%?%-Lw%?%{= yk}%n %t%{= Wk} %?%+Lw%?%?%= %{= Wk}'
-hardstatus string '%{= wk} %{+b Bw} f %{+b wk} %100` %{= Wk}|%= |%{+b gW}%103`%{= Wk}|%{= wb}%Y-%m-%d %c:%s%{k}'
+hardstatus string '%{= wk} %{+b Bw} f %{+b wk} %100` %{= Wk}|%= |%{+b gW}%103`%{= Wk}|%{= wk}%Y-%m-%d %c:%s'
