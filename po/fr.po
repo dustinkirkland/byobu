@@ -1,0 +1,33 @@
+# GNU Screen Profiles
+# Copyright (C) 2008 Dustin Kirkland
+# This file is distributed under the same license as the GNU Screen Profiles package.
+# Nicolas Barcet <nicolas.barcet@ubuntu.com>, 2008.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-12-17 23:42+0100\n"
+"PO-Revision-Date: 2008-12-17 23:42+0100\n"
+"Last-Translator: Nicolas Barcet <nicolas.barcet@ubuntu.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: select-screen-profile:9 select-screen-profile:16
+msgid "Error:"
+msgstr "Erreur:"
+
+#: select-screen-profile:9 select-screen-profile:16
+msgid "exists, but is not a symlink"
+msgstr "existe, mais n'est pas un lien symbolique"
+
+#: select-screen-profile:30
+msgid "recommended"
+msgstr "recommandé"
+
+#: select-screen-profile:41 select-screen-profile:43
+msgid "Choose"
+msgstr "Choisir"

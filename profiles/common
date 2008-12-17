@@ -34,13 +34,3 @@ hardstatus alwayslastline
 termcapinfo xterm ti@:te@
 defscrollback 10000
 
-# Keybindings
-# Map shift-tab to go to next window
-bindkey "\033[Z" next
-# Ctrl+PgUp and Ctrl+PgDn to change windows
-bindkey ^[[5;5~ prev
-bindkey ^[[6;5~ next
-# Prompt for window title on "ctrl-a c"
-register n "^a^c ^aA"
-bind c process n
-

@@ -10,5 +10,8 @@ screen-profiles (1.0) UNRELEASED; urgency=low
   [ Nicolas Barcet ]
   * Allow local modification of .screenrc (LP: #308216)
   * Add some nice defaults to ubuntu.screenrc
+  * Key binding framework basis
+  * Added some sensible key bindings
+  * First pot and translation to french
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Dec 2008 15:31:47 -0600
