@@ -34,3 +34,6 @@ hardstatus alwayslastline
 termcapinfo xterm ti@:te@
 defscrollback 10000
 
+# Default windows
+screen -t bash 1
+screen -t welcome 0 less /usr/share/doc/screen-profiles/help.txt
