@@ -1,4 +1,4 @@
-screen-profiles (1.1) UNRELEASED; urgency=low
+screen-profiles (1.1-0ubuntu1) jaunty; urgency=low
 
   [ Nicolas Barcet ]
   * Key binding framework basis
@@ -10,9 +10,9 @@ screen-profiles (1.1) UNRELEASED; urgency=low
   * removed po4a directory, in favor of Nick's po directory
   * changed 'less' to /usr/bin/sensible-pager, depend on debianutils
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Dec 2008 21:50:01 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Dec 2008 23:46:45 -0600
 
-screen-profiles (1.0) UNRELEASED; urgency=low
+screen-profiles (1.0-0ubuntu1) jaunty; urgency=low
 
   [ Dustin Kirkland ]
   * Initial upload (LP: #308789)
