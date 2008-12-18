@@ -12,10 +12,10 @@ if [ -e "$HOME/.screenrc-profile" ]; then
 fi
 # Ensure that ~/.screenrc-key is a symbolic link
 if [ -e "$HOME/.screenrc-key" ]; then
-    >---if [ ! -L "$HOME/.screenrc-key" ]; then
-    >--->---echo `gettext 'Error:'` $HOME/.screenrc-key `gettext 'exists, but is not a symlink'`
-    >--->---exit 1
-    >---fi
+    if [ ! -L "$HOME/.screenrc-key" ]; then
+        echo `gettext 'Error:'` $HOME/.screenrc-key `gettext 'exists, but is not a symlink'`
+        exit 1
+    fi
 fi
 
 # Prompt the user to choose among the available profiles
@@ -65,16 +65,16 @@ for x in $profiles; do
 				cat "$HOME/.screenrc" >> "$tmp"
 				mv -f "$tmp" "$HOME/.screenrc"
 			fi
->--->--->---# If the user does have a .screenrc, see if it has the second
->--->--->---# source line
->--->--->---if ! grep -qs "source $HOME/.screenrc-key" "$HOME/.screenrc"; then
->--->--->--->---# And if it's missing the source line, add it
->--->--->--->---# to the top
->--->--->--->---tmp=`mktemp "$HOME/.screenrc.XXXXXX"`
->--->--->--->---echo "source $HOME/.screenrc-key" > "$tmp"
->--->--->--->---cat "$HOME/.screenrc" >> "$tmp"
->--->--->--->---mv -f "$tmp" "$HOME/.screenrc"
->--->--->---fi
+            # If the user does have a .screenrc, see if it has the second
+            # source line
+            if ! grep -qs "source $HOME/.screenrc-key" "$HOME/.screenrc"; then
+                # And if it's missing the source line, add it
+                # to the top
+                tmp=`mktemp "$HOME/.screenrc.XXXXXX"`
+                echo "source $HOME/.screenrc-key" > "$tmp"
+                cat "$HOME/.screenrc" >> "$tmp"
+                mv -f "$tmp" "$HOME/.screenrc"
+            fi
 		fi
 		rm -f "$HOME/.screenrc-profile"
         rm -f "$HOME/.screenrc-key"
