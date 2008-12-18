@@ -11,6 +11,7 @@ Package: screen-profiles
 Architecture: all
 Depends: debconf (>= 0.5) | debconf-2.0, screen, gettext-base, debianutils
 Recommends: update-notifier-common
+Suggests: bc
 Description: a set of useful profiles and a profile-switcher for GNU screen
  screen-profiles includes a set of profiles for the GNU screen window manager.
  These profiles are quite useful on server machines which are not running

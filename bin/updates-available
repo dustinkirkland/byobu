@@ -1,20 +1,38 @@
 #!/bin/sh
 
+print_updates() {
+	u=$1
+	if [ "$u" = "0" ]; then
+		echo ""
+	else
+		echo "$u!"
+	fi
+	exit 0
+}
+
+cache=/var/run/updates-available
 u=
-if [ -x /usr/lib/update-notifier/apt-check ]; then
-	u=`/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;.*$//"`
-elif [ -x /usr/bin/apt-get ]; then
-	u=`/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst`
-elif [ -x /usr/bin/yum ]; then
-	u=`/usr/bin/yum list updates | grep -c "updates"`
-else
-	echo "?"
-	exit 1
+# If global updates-available cache is present, use it.  Available as of jaunty.
+if [ -r $cache ]; then
+	u=`grep -m 1 "^[0-9]" $cache | sed "s/\s.*$//"`
+	print_updates $u
 fi
 
-if [ "$u" = "0" ]; then
-	echo ""
-else
-	echo "$u!"
+# If apt-check binary exists, use it
+if [ -x /usr/lib/update-notifier/apt-check ]; then
+	u=`/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;.*$//"`
+	print_updates $u
 fi
-exit 0
+
+# If apt-get exists, use it
+if [ -x /usr/bin/apt-get ]; then
+	u=`/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst`
+fi
+
+# If yum exists, use it
+if [ -x /usr/bin/yum ]; then
+	u=`/usr/bin/yum list updates | grep -c "updates"`
+fi
+
+# If we're here, we have no idea
+print_updates "?"
