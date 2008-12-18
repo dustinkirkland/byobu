@@ -1,3 +1,8 @@
 #!/bin/sh
 
-grep -c "^processor.*:" /proc/cpuinfo
+count=`grep -c "^processor.*:" /proc/cpuinfo`
+if [ "$count" = "1" ]; then
+	echo
+else
+	echo "$count x "
+fi
