@@ -6,4 +6,5 @@ bin/updates-available usr/share/screen-profiles/bin
 profiles/common usr/share/screen-profiles/profiles
 profiles/debian.screenrc usr/share/screen-profiles/profiles
 profiles/ubuntu.screenrc usr/share/screen-profiles/profiles
+keybindings/common usr/share/screen-profiles/keybindings
 select-screen-profile usr/bin

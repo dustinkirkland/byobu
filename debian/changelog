@@ -1,4 +1,19 @@
+screen-profiles (1.1) UNRELEASED; urgency=low
+
+  [ Nicolas Barcet ]
+  * Key binding framework basis
+  * Added some sensible key bindings
+  * First pot and translation to french
+
+  [ Dustin Kirkland ]
+  * created keybindings directory, moved keybindings there
+  * removed po4a directory, in favor of Nick's po directory
+  * changed 'less' to /usr/bin/sensible-pager, depend on debianutils
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Dec 2008 21:50:01 -0600
+
 screen-profiles (1.0) UNRELEASED; urgency=low
+
   [ Dustin Kirkland ]
   * Initial upload (LP: #308789)
     - ubuntu, debian, redhat, fedora profiles
