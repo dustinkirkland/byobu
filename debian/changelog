@@ -4,6 +4,7 @@ screen-profiles (1.1-0ubuntu1) jaunty; urgency=low
   * Key binding framework basis
   * Added some sensible key bindings
   * First pot and translation to french
+  * First try at screen-profile-helper
 
   [ Dustin Kirkland ]
   * created keybindings directory, moved keybindings there
