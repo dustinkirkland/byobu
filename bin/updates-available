@@ -27,11 +27,13 @@ fi
 # If apt-get exists, use it
 if [ -x /usr/bin/apt-get ]; then
 	u=`/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst`
+	print_updates $u
 fi
 
 # If yum exists, use it
 if [ -x /usr/bin/yum ]; then
 	u=`/usr/bin/yum list updates | grep -c "updates"`
+	print_updates $u
 fi
 
 # If we're here, we have no idea
