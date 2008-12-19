@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import sys, os, os.path, time, string, dialog
+import sys, os, os.path, time, string, dialog, commands
 
 def ioctl_GWINSZ(fd):                  #### TABULATION FUNCTIONS
     try:                                ### Discover terminal width
@@ -52,8 +52,8 @@ def menu_demo(d, size):
             width=size[0],
             choices=[("1", "Display some basic help"),
                      ("2", "Change screen profile"),
-                     ("3", "Change key bindings"),
-                     ("4", "Launch screen by default")
+                     ("3", "Create a new window"),
+                     ("4", "Install screen by default at login")
                      ])
         if handle_exit_code(d, code):
             break
@@ -63,10 +63,23 @@ def help(d, size):
     d.textbox("/usr/share/doc/screen-profiles/help.txt", width=size[0], height=size[1])
 
 def profile(d):
-    d.msgbox("This has yet to be implemented")
+    list = []
+    for choice in commands.getoutput('select-screen-profile -l').splitlines():
+        if choice.startswith("ubuntu"):
+            el = (choice, "<-- recommended", 1)
+            list.append(el)
+        else:
+            el = (choice, "", 0)
+            list.append(el)
+    (code, tag) = d.radiolist("Which profile would you like to use?", width=65, choices=list)
+    if code == d.DIALOG_OK:
+        commands.getoutput('select-screen-profile --set %s' % tag)
+        d.msgbox("Please press F5 to apply profile")
 
-def key(d):
-    d.msgbox("This has yet to be implemented")
+def newwindow(d):
+    (code, answer) = d.inputbox("New window name?", init="bash")
+    if code == d.DIALOG_OK:
+        commands.getoutput('screen -t %s' % answer)
 
 def default(d):
     d.msgbox("This has yet to be implemented")
@@ -90,7 +103,7 @@ def main():
             elif tag == "2":
                 profile(d)
             elif tag == "3":
-                key(d)
+                newwindow(d)
             elif tag == "4":
                 default(d)
             

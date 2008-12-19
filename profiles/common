@@ -34,9 +34,5 @@ hardstatus alwayslastline
 termcapinfo xterm ti@:te@
 defscrollback 10000
 
-# Default windows
-screen -t bash 1
-screen -t welcome 0 python /usr/share/screen-profiles/screen-profiles-helper.py
-
 # Default keybindings
 source /usr/share/screen-profiles/keybindings/common

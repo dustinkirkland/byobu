@@ -6,6 +6,8 @@ screen-profiles (1.1-0ubuntu1) jaunty; urgency=low
   * First pot and translation to french
   * First try at screen-profile-helper
   * Allow select-screen-profile to not run interactively
+  * screen-profile-helper allows to create new windows
+  * screen-profile-helper allows to select profiles
 
   [ Dustin Kirkland ]
   * created keybindings directory, moved keybindings there
