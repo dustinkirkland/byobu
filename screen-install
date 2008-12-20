@@ -1,0 +1,35 @@
+#!/bin/bash
+
+LAUNCHER="$HOME/.screen-launcher"
+BASHRC="$HOME/.bashrc"
+
+# We have to make sure screen is called last
+pos=$(( $(grep -ns "source $LAUNCHER" "$BASHRC" | sed 's/:.*$//' | head -1) ))
+
+do=0
+if [ $pos -gt 0 ]; then
+    if [ $pos -lt $(( $(wc -l "$BASHRC" | sed "s/ .*$//") -2)) ]; then
+        # We have to reposition the line at the end
+        # First remove it
+        sed -ibak '/screen-launcher/d' "$BASHRC"
+        do=1
+    fi
+else
+    do=1
+fi
+
+# Add it at the end
+if [ $do -eq 1 ]; then
+    echo "source $LAUNCHER" >> "$BASHRC"
+fi
+
+# Ensure that ~/.screen-launcher is a symbolic link
+if [ -e "$HOME/.screen-launcher" ]; then
+    if [ ! -L "$HOME/.screen-launcher" ]; then
+        echo `gettext 'Error:'` $HOME/.screen-launcher `gettext ' file exists, but is not a symlink'`
+        exit 1
+    fi
+else
+    ln -s /usr/share/screen-profiles/screen-launcher "$HOME/.screen-launcher"
+fi
+

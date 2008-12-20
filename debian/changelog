@@ -8,6 +8,7 @@ screen-profiles (1.1-0ubuntu1) jaunty; urgency=low
   * Allow select-screen-profile to not run interactively
   * screen-profile-helper allows to create new windows
   * screen-profile-helper allows to select profiles
+  * screen-profile-helper allows to install screen by default
 
   [ Dustin Kirkland ]
   * created keybindings directory, moved keybindings there

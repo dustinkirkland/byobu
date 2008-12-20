@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Verify that we are correctly installed
+bash /usr/share/screen-profiles/screen-install
+
+if [ "$TERM" != "screen" ]; then
+    screen -xRR
+    logout
+fi
