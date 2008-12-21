@@ -1,6 +1,6 @@
-        ********************************************
-       **  Welcome to the screen powered terminal  **
-        ********************************************
+Welcome to GNU Screen Profiles
+------------------------------
+
 The main benefits of the screen program is that your session can have 
 multiple windows and keep context between multiple logins.  You will also
 notice the task bar at the bottom that informs you of various system 

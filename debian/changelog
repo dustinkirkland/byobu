@@ -9,6 +9,7 @@ screen-profiles (1.1-0ubuntu1) jaunty; urgency=low
   * screen-profile-helper allows to create new windows
   * screen-profile-helper allows to select profiles
   * screen-profile-helper allows to install screen by default
+  * Now uses python-newt instead of python-dialog
 
   [ Dustin Kirkland ]
   * created keybindings directory, moved keybindings there
