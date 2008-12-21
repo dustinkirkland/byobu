@@ -22,6 +22,12 @@
 import sys, os, os.path, time, string, commands
 from snack import *
 
+# Command presets for windows creation
+cmd=(   ("System activity", "top", "top"),
+        ("System log", "log", "watch -n 10 tail -n 5 /var/log/syslog /var/log/auth.log /var/log/dmesg"),
+        ("Disk and ram usage", "mem", 'watch -n 30 "df -h; echo ""; free -mt"'))
+        
+
 def ioctl_GWINSZ(fd):                  #### TABULATION FUNCTIONS
     try:                                ### Discover terminal width
         import fcntl, termios, struct, os
@@ -50,7 +56,7 @@ def menu(screen, size):
     li = Listbox(height = 4, width = 60, returnExit = 1)
     li.append("Help", 1)
     li.append("Change screen profile", 2)
-    li.append("Create new window", 3)
+    li.append("Create new window(s)", 3)
     li.append("Install screen by default at login", 4)
     bb = ButtonBar(screen, (("Ok", "ok"), ("Exit", "exit")), compact = 1)
     
@@ -106,7 +112,7 @@ def profile(screen, size):
     
     if bb.buttonPressed(g.runOnce()) != "cancel":
         commands.getoutput('select-screen-profile --set %s' % li.current())
-        button = messagebox(screen, 60, 2, "Message", "Press F5 to apply the new profile", \
+        button = messagebox(screen, 60, 2, "Message", "Press F5<CR> to apply the new profile", \
             buttons=(("Ok","ok"), ("Exit", "exit")) )
         if button == "exit":
             return 0
@@ -118,16 +124,38 @@ def newwindow(screen, size):
     titlel=Label("Title: ")
     command=Entry(20, text="/bin/bash", returnExit=1)
     commandl=Label("Command: ")
+    
+    rl=Label("Presets: ")
+    if len(cmd) > 10:
+        scroll=1
+        size=10
+    else:
+        scroll=0
+        size = len(cmd)
+        
+    r=CheckboxTree(size, scroll=scroll)
+    count=0
+    for cur in cmd:
+        r.append(cur[0], count)
+        count=count+1
+    
     bb = ButtonBar(screen, (("Create", "create"), ("Cancel", "cancel")), compact = 1)
-    g = GridForm(screen, "Create new window:", 2, 3, )
-    g.add(titlel, 0, 0, anchorLeft=1,padding=(0,1,0,1))
+    g = GridForm(screen, "Create new window(s):", 2, 4 )
+    g.add(titlel, 0, 0, anchorLeft=1,padding=(4,1,0,1))
     g.add(title, 1, 0, anchorLeft=1)
-    g.add(commandl, 0, 1, anchorLeft=1,padding=(0,0,0,1))
+    g.add(commandl, 0, 1, anchorLeft=1, anchorTop=1,padding=(4,0,0,1))
     g.add(command, 1, 1, anchorLeft=1)
-    g.add(bb, 0, 2, padding=(1,1,0,0))
+    g.add(rl, 0, 2, anchorLeft=1,padding=(4,0,0,1))
+    g.add(r, 1, 2)
+    g.add(bb, 1, 3, padding=(4,1,0,0))
     
     if bb.buttonPressed(g.runOnce()) != "cancel":
-        commands.getoutput('screen -t %s %s' % (title.value(), command.value()) )
+        sel=r.getSelection()
+        if sel:
+            for s in sel:
+                commands.getoutput('screen -t %s %s' % (cmd[s][1], cmd[s][2]) )
+        else:
+            commands.getoutput('screen -t %s %s' % (title.value(), command.value()) )
         
     return 100
 
