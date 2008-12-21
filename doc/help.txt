@@ -1,6 +1,5 @@
 Welcome to GNU Screen Profiles
 ------------------------------
-
 The main benefits of the screen program is that your session can have 
 multiple windows and keep context between multiple logins.  You will also
 notice the task bar at the bottom that informs you of various system 
@@ -19,6 +18,6 @@ C-pgdown        Goto next window     | F4      Create new window
 C-shift-del     Detach and logout    | F6      Close current window
 -------------------------------------------------------------------
 
-Note that these bindings have been tested for xterm type terminal such as
+Note that these bindings have been tested for xterm type terminals such as
 gnome-terminal, but may need some adjustments elsewhere.
 
