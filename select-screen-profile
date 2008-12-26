@@ -48,7 +48,7 @@ for x in $profiles; do
 	if [ $i -eq $selected ]; then
 		if [ ! -e "$HOME/.screenrc" ]; then
 			# If the user doesn't have a .screenrc, seed one
-			echo "source ~/.screenrc-profile" > "$HOME/.screenrc"
+			echo "source $HOME/.screenrc-profile" > "$HOME/.screenrc"
 		else
 			# If the user does have a .screenrc, see if it has the
 			# source line
