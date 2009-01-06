@@ -1,24 +1,23 @@
-        ********************************************
-       **  Welcome to the screen powered terminal  **
-        ********************************************
-The main benefits of the screen program is that your session can have 
-multiple windows and keep context between multiple logins.  You will also
-notice the task bar at the bottom that informs you of various system 
-status, update waiting to be applied and which window you are currently
-running on.
+           **********************************************
+           **  Welcome to the screen powered terminal  **
+           **********************************************
+Screen is a powerful program that allows your terminal session to have
+multiple windows and retain context between multiple logins. This
+version of screen is configured with a task bar at the bottom of the
+window that shows system status, pending updates, and which window you
+are currently viewing.
 
-A complete help on the screen program can be obtained using the 'man screen'
-command.  Note that our implementation remaps the escape prefix to ctrl-G 
-instead of the standard ctrl-A. 
+Common mappings* (where C- means ctrl):
+------------------------------------------------------------------------
+Shift-Tab/C-PgUp  Goto next window            | F1  Basic help (this)
+C-PgDown          Goto previous window        | F2  Advanced help
+C-Shift-Del       Detach screen               | F4  Create new window
+C-g Esc           Use scrollback (Esc exits)  | F6  Close current window
+------------------------------------------------------------------------
 
-Some usefull mappings (where C- means ctrl):
--------------------------------------------------------------------
-shift-tab       Goto next window     | F1      Basic help (this)
-C-pgup          Goto previous window | F2      Advanced help
-C-pgdown        Goto next window     | F4      Create new window
-C-shift-del     Detach and logout    | F6      Close current window
--------------------------------------------------------------------
+Use 'screen -r' to reattach to a detached screen. Complete help on
+screen can be obtained using the 'man screen' command. Please note that
+screen is configured to remap the escape prefix from ctrl-A to ctrl-G.
 
-Note that these bindings have been tested for xterm type terminal such as
-gnome-terminal, but may need some adjustments elsewhere.
-
+* These mappings are known to work with xterm compatible terminals (eg
+  gnome-terminal), but may need to be adjusted for your environment.
