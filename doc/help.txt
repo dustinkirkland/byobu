@@ -9,7 +9,7 @@ are currently viewing.
 
 Common mappings* (where C- means ctrl):
 ------------------------------------------------------------------------
-Shift-Tab/C-PgUp  Goto next window            | F1  Basic help (this)
+C-PgUp/Shift-Tab  Goto next window            | F1  Basic help (this)
 C-PgDown          Goto previous window        | F2  Advanced help
 C-Shift-Del       Detach screen               | F4  Create new window
 C-g Esc           Use scrollback (Esc exits)  | F6  Close current window
