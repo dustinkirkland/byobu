@@ -7,11 +7,7 @@ version of screen is configured with a task bar at the bottom of the
 window that shows system status, pending updates, and which window you
 are currently viewing.
 
-Complete help on screen can be obtained using the 'man screen' command.
-Please note that screen is configured to remap the escape prefix (usually
-ctrl-A) to ctrl-G.
-
-Common mappings (where C- means ctrl):
+Common mappings* (where C- means ctrl):
 ------------------------------------------------------------------------
 Shift-Tab/C-PgUp  Goto next window            | F1  Basic help (this)
 C-PgDown          Goto previous window        | F2  Advanced help
@@ -19,6 +15,9 @@ C-Shift-Del       Detach screen               | F4  Create new window
 C-g Esc           Use scrollback (Esc exits)  | F6  Close current window
 ------------------------------------------------------------------------
 
-These mappings are known to work with xterm compatible terminals (eg
-gnome-terminal), but may need to be adjusted for your environment.
+Use 'screen -r' to reattach to a detached screen. Complete help on
+screen can be obtained using the 'man screen' command. Please note that
+screen is configured to remap the escape prefix from ctrl-A to ctrl-G.
 
+* These mappings are known to work with xterm compatible terminals (eg
+  gnome-terminal), but may need to be adjusted for your environment.
