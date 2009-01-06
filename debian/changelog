@@ -6,7 +6,10 @@ screen-profiles (1.2) UNRELEASED; urgency=low
   [ Dustin Kirkland ]
   * bin/updates-available: add missing print statements
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 06 Jan 2009 15:24:09 -0600
+  [Nicolas Valcárcel]
+  * Spanish translations
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 06 Jan 2009 15:32:06 -0600
 
 screen-profiles (1.1-0ubuntu1) jaunty; urgency=low
 
