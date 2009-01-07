@@ -19,30 +19,33 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
-# This file defines Key bindings
+# This file defines the common key bindings
+#
+# For a keybinding to live in the "common" area, it must be verified to
+# work in at least:
+#  * gnome-terminal
+#  * console tty
+#
 # bindkey commands should be followed by a comment that will be used in the
 # help file (one day).  The command should be formated as:
 #   <keys> | explanation
 
+# Changed the default escape from ctrl-a to ctrl-g, so as not to conflict
+# with emacs' ctrl-a
 escape ^Gg
-
-# Maps for next and previous windows
-bindkey "\033[Z" next # Shift-tab | Next window
-bindkey ^[[6;5~ prev  # C-pgup | Previous window
-bindkey ^[[5;5~ next  # C-pgdn | Pext window
-
-# Maps to create and remove windows
-register n "^g^c ^gA"
-bindkey -k k4 process n # F4 | Create new window
-bindkey -k k6 kill      # F6 | Close window
-
-# Maps for help
-bindkey -k k1 screen -t help 0 screen-profiles-helper # F1 | Basic help (this)
-bindkey -k k2 help # F2 | Advanced help
-
-# Reload
-register r "^g:source $HOME/.screenrc-profile"
-bindkey -k k5 process r
+			# F1 -> 'help' in gnome-terminal
+register n "^g^c ^gA"	# Goes with the F2 definition
+bindkey -k k2 process n	# F2 | Create new window (and name it)
+bindkey -k k3 prev	# F3 | Previous Window
+bindkey -k k4 next	# F4 | Next Window
+bindkey -k k5 kill	# F5 | Close window
+			# F6
+			# F7
+bindkey -k k8 help	# F8 | Advanced help/keybindings
+bindkey -k k9 screen -t help 0 screen-profiles-helper # F9 | Welcome screen
+			# F10 -> 'toolbar' in gnome-terminal
+			# F11 -> 'fullscreen' in gnome-terminal
+			# F12
 
 # power detach
 register x "^g^d D"
