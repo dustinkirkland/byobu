@@ -1,10 +1,12 @@
-screen-profiles (1.2) UNRELEASED; urgency=low
+screen-profiles (1.2-0ubuntu1) jaunty; urgency=low
 
   [ Jamie Strandboge ]
   * update help.txt
 
   [ Dustin Kirkland ]
   * bin/updates-available: add missing print statements
+  * keybindings/common: rework the common keybindings to use the F-keys
+    to ensure that they work in both gnome-terminal and the tty console
 
   [Nicolas Valcárcel]
   * Spanish translations
@@ -18,7 +20,7 @@ screen-profiles (1.2) UNRELEASED; urgency=low
   * Now uses python-newt instead of python-dialog
   * Add framework for useful windows creation
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 06 Jan 2009 17:47:00 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 06 Jan 2009 19:39:53 -0600
 
 screen-profiles (1.1-0ubuntu1) jaunty; urgency=low
 
