@@ -1,4 +1,10 @@
-screen-profiles (1.3) UNRELEASED; urgency=low
+screen-profiles (1.4) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jan 2009 15:44:11 -0600
+
+screen-profiles (1.3-0ubuntu1) jaunty; urgency=low
 
   [ Dustin Kirkland ]
   * doc/help.txt: Updated to reflect new F-key mappings
@@ -7,7 +13,7 @@ screen-profiles (1.3) UNRELEASED; urgency=low
   * bin/cpu-count: remove whitespace
   * bin/release: get rid of "(development branch)" string
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jan 2009 12:39:57 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jan 2009 15:43:35 -0600
 
 screen-profiles (1.2-0ubuntu1) jaunty; urgency=low
 
