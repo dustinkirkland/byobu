@@ -1,69 +1,160 @@
 #!/bin/sh -e
+#
+#    GNU screen-profiles
+#    Copyright (C) 2008 Canonical Ltd.
+#
+#    Authors: Dustin Kirklan <dustin.kirkland@ubuntu.com>
+#             Nick Barcet <nick.barcet@ubuntu.com>
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 
 # To generate localization information, run:
 #   xgettext -o - -L Shell select-screen-profile
 
+usage () {
+    cat <<EOT
+usage: select-screen-profiles [(-l|--list)][(-h|--help)][(-s|--set) PROFILE]
+    -l,--list           list avaivalable profiles
+    -s,--set PROFILE    set profile
+    -h,--help           this help
+
+    Without any parameters, runs interactively.
+EOT
+}
+
+# Initialize variables
 BASE_DIR="/usr/share/screen-profiles"
 PROFILE_DIR="$BASE_DIR/profiles"
+profile=""
+selected=-1
 
-# Ensure that ~/.screenrc-profile is a symbolic link
-if [ -e "$HOME/.screenrc-profile" ]; then
-	if [ ! -L "$HOME/.screenrc-profile" ]; then
-		echo `gettext 'Error:'` $HOME/.screenrc-profile `gettext ' file exists, but is not a symlink'`
-		exit 1
-	fi
-fi
-
-# Prompt the user to choose among the available profiles
-echo
-echo `gettext "Select a screen profile: "`
-i=0
-profiles=$(ls $PROFILE_DIR)
-for x in $profiles; do
-	i=$(expr $i + 1)
-	desc="          "
-	if [ $x = "ubuntu.screenrc" ]; then
-		desc="<---- ` gettext 'recommended'`"
-		simple=$i
-	fi
-	echo "  $i. $x\t\t$desc"
-done
-echo
-selected=x
-while /bin/true; do
-	if [ -z "$selected" -a ! -z "$simple" ]; then
-		selected="$simple"
-	elif ! test $selected -gt 0 2>/dev/null; then
-		read -p "`gettext 'Choose: '` 1-$i [$simple]: " -r selected
-	elif ! test $selected -le $i 2>/dev/null; then
-		read -p "`gettext 'Choose: '` 1-$i [$simple]: " -r selected
-	else
-		break
-	fi
-done
-
-i=0
-for x in $profiles; do
-	i=`expr $i + 1`
-	if [ $i -eq $selected ]; then
-		if [ ! -e "$HOME/.screenrc" ]; then
-			# If the user doesn't have a .screenrc, seed one
-			echo "source $HOME/.screenrc-profile" > "$HOME/.screenrc"
-		else
-			# If the user does have a .screenrc, see if it has the
-			# source line
-			if ! grep -qs "source $HOME/.screenrc-profile" "$HOME/.screenrc"; then
-				# And if it's missing the source line, add it
-				# to the top
-				tmp=`mktemp "$HOME/.screenrc.XXXXXX"`
-				echo "source $HOME/.screenrc-profile" > "$tmp"
-				cat "$HOME/.screenrc" >> "$tmp"
-				mv -f "$tmp" "$HOME/.screenrc"
-			fi
+assert_symlink() {
+	if [ -e "$1" ]; then
+		if [ ! -L "$HOME/.screenrc-profile" ]; then
+			echo `gettext 'Error:'` $1 `gettext ' file exists, but is not a symlink'`
+			exit 1
 		fi
-		rm -f "$HOME/.screenrc-profile"
-		ln -s "$PROFILE_DIR/$x" "$HOME/.screenrc-profile"
 	fi
-done
+}
+
+# If these files exist, they must be a symlink
+assert_symlink "$HOME/.screenrc-profile"
+
+listprofiles() {
+	# Display list of profiles, one per line
+	for x in $(ls $PROFILE_DIR); do
+		echo "$x"
+	done
+}
+
+prompt() {
+	# Prompt the user to choose among the available profiles
+	echo
+	echo `gettext "Select a screen profile: "`
+	i=0
+	profiles=$(listprofiles)
+	for x in $profiles; do
+		i=$(expr $i + 1)
+		desc="          "
+		if [ $x = "ubuntu.screenrc" ]; then
+			desc="<---- ` gettext 'recommended'`"
+			simple=$i
+		fi
+		echo "  $i. $x\t\t$desc"
+	done
+	echo
+	selected=x
+	while /bin/true; do
+		if [ -z "$selected" -a ! -z "$simple" ]; then
+			selected="$simple"
+		elif ! test $selected -gt 0 2>/dev/null; then
+			read -p "`gettext 'Choose: '` 1-$i [$simple]: " -r selected
+		elif ! test $selected -le $i 2>/dev/null; then
+			read -p "`gettext 'Choose: '` 1-$i [$simple]: " -r selected
+		else
+			break
+		fi
+	done
+	SELECTED="$selected"
+}
+
+setprofile() {
+	# Apply a profile by name or index
+	selected="$SELECTED"
+	i=0
+	found=0
+	profiles=$(listprofiles)
+	for x in $profiles; do
+		i=`expr $i + 1`
+		if [ "$i" = "$selected" -o "$x" = "$selected" ]; then
+			if [ ! -e "$HOME/.screenrc" ]; then
+				# If the user doesn't have a .screenrc, seed one
+				echo "source $HOME/.screenrc-profile" > "$HOME/.screenrc"
+			else
+				# If the user does have a .screenrc, see if it has the
+				# sources lines
+				if ! grep -qs "source $HOME/.screenrc-profile" "$HOME/.screenrc"; then
+					# And if it's missing the source line, add it
+					# to the top
+					tmp=`mktemp "$HOME/.screenrc.XXXXXX"`
+					echo "source $HOME/.screenrc-profile" > "$tmp"
+					cat "$HOME/.screenrc" >> "$tmp"
+					mv -f "$tmp" "$HOME/.screenrc"
+				fi
+			fi
+			rm -f "$HOME/.screenrc-profile"
+			ln -s "$PROFILE_DIR/$x" "$HOME/.screenrc-profile"
+			found=1
+			break
+		fi
+	done
+	if [ $found -eq 0 ]; then
+		echo "Invalid profile"
+	fi
+}
+
+if [ $# -eq 0 ]; then
+	prompt
+	setprofile
+else
+	TEMP=`getopt -o lhs: --long list,help,set: -- "$@"`
+	eval set -- "$TEMP"
+	while true; do
+		case "$1" in
+			-s|--set)
+				profile="$2"
+				setprofile
+				shift 2
+				break
+			;;
+			-l|--list)
+				listprofiles
+				shift
+				break
+			;;
+			*)
+				usage()
+				exit 1
+			;;
+			--)
+				shift
+				break
+			;;
+		esac
+	done
+fi
 
 exit 0

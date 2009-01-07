@@ -1,13 +1,10 @@
-           **********************************************
-           **  Welcome to the screen powered terminal  **
-           **********************************************
 Screen is a powerful program that allows your terminal session to have
 multiple windows and retain context between multiple logins. This
 version of screen is configured with a task bar at the bottom of the
 window that shows system status, pending updates, and which window you
 are currently viewing.
 
-Common mappings* (where C- means ctrl):
+Common mappings (where C- means ctrl):
 ------------------------------------------------------------------------
 C-PgUp/Shift-Tab  Goto next window            | F1  Basic help (this)
 C-PgDown          Goto previous window        | F2  Advanced help
@@ -18,6 +15,3 @@ C-g Esc           Use scrollback (Esc exits)  | F6  Close current window
 Use 'screen -r' to reattach to a detached screen. Complete help on
 screen can be obtained using the 'man screen' command. Please note that
 screen is configured to remap the escape prefix from ctrl-A to ctrl-G.
-
-* These mappings are known to work with xterm compatible terminals (eg
-  gnome-terminal), but may need to be adjusted for your environment.

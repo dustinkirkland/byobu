@@ -1,0 +1,198 @@
+#! /usr/bin/env python
+#
+#    GNU screen-profiles-helper
+#    Copyright (C) 2008 Canonical Ltd.
+#
+#    Authors: Nick Barcet <nick.barcet@ubuntu.com>
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+import sys, os, os.path, time, string, commands
+from snack import *
+
+# Command presets for windows creation
+cmd=(   ("System activity", "top", "top"),
+        ("System log", "log", "watch -n 10 tail -n 5 /var/log/syslog /var/log/auth.log /var/log/dmesg"),
+        ("Disk and ram usage", "mem", 'watch -n 30 "df -h; echo ""; free -mt"'))
+
+
+def ioctl_GWINSZ(fd):                  #### TABULATION FUNCTIONS
+    try:                                ### Discover terminal width
+        import fcntl, termios, struct, os
+        cr = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234'))
+    except:
+        return None
+    return cr
+
+def terminal_size():                    ### decide on *some* terminal size
+    cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)  # try open fds
+    if not cr:                                                  # ...then ctty
+        try:
+            fd = os.open(os.ctermid(), os.O_RDONLY)
+            cr = ioctl_GWINSZ(fd)
+            os.close(fd)
+        except:
+            pass
+    if not cr:                            # env vars or finally defaults
+        try:
+            cr = (env['LINES'], env['COLUMNS'])
+        except:
+            cr = (25, 80)
+    return int(cr[1]-5), int(cr[0]-5)         # reverse rows, cols
+
+def menu(screen, size):
+    li = Listbox(height = 4, width = 60, returnExit = 1)
+    li.append("Help", 1)
+    li.append("Change screen profile", 2)
+    li.append("Create new window(s)", 3)
+    li.append("Install screen by default at login", 4)
+    bb = ButtonBar(screen, (("Ok", "ok"), ("Exit", "exit")), compact = 1)
+
+    g = GridForm(screen, "GNU Screen Profiles Menu", 1, 2)
+    g.add(li, 0, 0, padding=(4,2,4,2))
+    g.add(bb, 0, 1, padding=(1,1,0,0))
+
+    if bb.buttonPressed(g.runOnce()) == "exit":
+        return 0
+    else:
+        return li.current()
+
+def messagebox(screen, width, height, title, text, \
+    scroll=0, \
+    buttons=(("Ok", "ok"),("Cancel", "cancel")) ):
+
+    t = Textbox(width, height, text, scroll=scroll )
+    bb = ButtonBar(screen, buttons, compact = 1)
+    g = GridForm(screen, title, 1, 2)
+    g.add(t, 0, 0, padding=(0,0,0,0))
+    g.add(bb, 0, 1, padding=(1,1,0,0))
+
+    return bb.buttonPressed(g.runOnce())
+
+def help(screen, size):
+    f=file('/usr/share/doc/screen-profiles/help.txt')
+    text=f.read()
+    f.close()
+
+    button = messagebox(screen, 76, 19, "GNU Screen Profiles Help", text, \
+        scroll=1, buttons=(("Menu", "menu"), ("Exit", "exit")) )
+
+    if button == "exit":
+        return 0
+    else:
+        return 100
+
+def profile(screen, size):
+    li = Listbox(height = 6, width = 60, returnExit = 1)
+
+    for choice in commands.getoutput('select-screen-profile -l').splitlines():
+        if choice.startswith("ubuntu"):
+            li.append(choice+" <-- recommended", choice)
+            li.setCurrent(choice)
+        else:
+            li.append(choice, choice)
+
+    bb = ButtonBar(screen, (("Apply", "apply"), ("Cancel", "cancel")), compact = 1)
+
+    g = GridForm(screen, "Which profile would you like to use?", 1, 2)
+    g.add(li, 0, 0, padding=(4,2,4,2))
+    g.add(bb, 0, 1, padding=(1,1,0,0))
+
+    if bb.buttonPressed(g.runOnce()) != "cancel":
+        commands.getoutput('select-screen-profile --set %s' % li.current())
+        button = messagebox(screen, 60, 2, "Message", "Press F5<CR> to apply the new profile", \
+            buttons=(("Ok","ok"), ("Exit", "exit")) )
+        if button == "exit":
+            return 0
+
+    return 100
+
+def newwindow(screen, size):
+    title=Entry(8, text="bash", returnExit=1)
+    titlel=Label("Title: ")
+    command=Entry(20, text="/bin/bash", returnExit=1)
+    commandl=Label("Command: ")
+
+    rl=Label("Presets: ")
+    if len(cmd) > 10:
+        scroll=1
+        size=10
+    else:
+        scroll=0
+        size = len(cmd)
+
+    r=CheckboxTree(size, scroll=scroll)
+    count=0
+    for cur in cmd:
+        r.append(cur[0], count)
+        count=count+1
+
+    bb = ButtonBar(screen, (("Create", "create"), ("Cancel", "cancel")), compact = 1)
+    g = GridForm(screen, "Create new window(s):", 2, 4 )
+    g.add(titlel, 0, 0, anchorLeft=1,padding=(4,1,0,1))
+    g.add(title, 1, 0, anchorLeft=1)
+    g.add(commandl, 0, 1, anchorLeft=1, anchorTop=1,padding=(4,0,0,1))
+    g.add(command, 1, 1, anchorLeft=1)
+    g.add(rl, 0, 2, anchorLeft=1,padding=(4,0,0,1))
+    g.add(r, 1, 2)
+    g.add(bb, 1, 3, padding=(4,1,0,0))
+
+    if bb.buttonPressed(g.runOnce()) != "cancel":
+        sel=r.getSelection()
+        if sel:
+            for s in sel:
+                commands.getoutput('screen -t %s %s' % (cmd[s][1], cmd[s][2]) )
+        else:
+            commands.getoutput('screen -t %s %s' % (title.value(), command.value()) )
+
+    return 100
+
+def install(screen, size):
+    out = commands.getoutput("bash /usr/share/screen-profiles/screen-install")
+    if out == "":
+        out = "Screen will be launched automatically next time you login."
+
+    button = messagebox(screen, 60, 2, "Message", out, \
+        buttons=(("Ok","ok"), ("Exit", "exit")) )
+    if button == "exit":
+        return 0
+
+    return 100
+
+def main():
+    """This is the main loop of our screen helper.
+    """
+    size = terminal_size()
+    screen = SnackScreen()
+    screen.drawRootText(1,0,"== GNU Screen Profiles Helper ==")
+    screen.pushHelpLine("<Tab>/<Alt-Tab> between elements | <Return> Validates")
+    tag = help(screen, size)
+
+    while tag > 0 :
+        tag = menu(screen, size)
+        if tag == 1:
+            tag = help(screen, size)
+        elif tag == 2:
+            tag = profile(screen, size)
+        elif tag == 3:
+            tag = newwindow(screen, size)
+        elif tag == 4:
+            tag = install(screen, size)
+
+    screen.finish()
+    sys.exit(0)
+
+
+if __name__ == "__main__": main()

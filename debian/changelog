@@ -9,7 +9,16 @@ screen-profiles (1.2) UNRELEASED; urgency=low
   [Nicolas Valcárcel]
   * Spanish translations
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 06 Jan 2009 15:32:06 -0600
+  [ Nicolas Barcet ]
+  * First try at screen-profile-helper
+  * Allow select-screen-profile to not run interactively
+  * screen-profile-helper allows to create new windows
+  * screen-profile-helper allows to select profiles
+  * screen-profile-helper allows to install screen by default
+  * Now uses python-newt instead of python-dialog
+  * Add framework for useful windows creation
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 06 Jan 2009 17:47:00 -0600
 
 screen-profiles (1.1-0ubuntu1) jaunty; urgency=low
 

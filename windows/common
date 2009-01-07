@@ -1,0 +1,3 @@
+# Default windows
+#screen -t welcome 0 screen-profiles-helper
+screen -t shell 1
