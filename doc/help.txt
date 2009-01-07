@@ -6,7 +6,7 @@ you are currently viewing.
 
 Key mappings:
 F2    Create new window      |  F6    Detach from session
-F3    Go to prev window      |  F7    --
+F3    Go to prev window      |  F7    Scrollback/copy mode
 F4    Go to next window      |  F8    Advanced help
 F5    Close this window      |  F9    Basic help (this)
 

@@ -1,8 +1,12 @@
 screen-profiles (1.4) UNRELEASED; urgency=low
 
-  * 
+  [ Dustin Kirkland ]
+  * profiles/*: Fix tab mangling, LP: #309882; print cpu count in black;
+    remove darker background color of the Ubuntu logo, name, and clock
+  * keybindings/common: use F7 for scrollback mode
+  * doc/help.txt: updated F7 documentation
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jan 2009 15:44:11 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jan 2009 17:39:52 -0600
 
 screen-profiles (1.3-0ubuntu1) jaunty; urgency=low
 
