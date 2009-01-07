@@ -20,6 +20,7 @@
 ###############################################################################
 
 startup_message off
+vbell off
 msgwait 1
 
 backtick 100 3600 3600 /usr/share/screen-profiles/bin/release
