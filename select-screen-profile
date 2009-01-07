@@ -43,7 +43,7 @@ selected=-1
 
 assert_symlink() {
 	if [ -e "$1" ]; then
-		if [ ! -L "$HOME/.screenrc-profile" ]; then
+		if [ ! -L "$1" ]; then
 			echo `gettext 'Error:'` $1 `gettext ' file exists, but is not a symlink'`
 			exit 1
 		fi

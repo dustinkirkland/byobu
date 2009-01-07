@@ -39,7 +39,7 @@ bindkey -k k2 process n	# F2 | Create new window (and name it)
 bindkey -k k3 prev	# F3 | Previous Window
 bindkey -k k4 next	# F4 | Next Window
 bindkey -k k5 kill	# F5 | Close window
-			# F6
+bindkey -k k6 detach	# F6 | Detach from this session
 			# F7
 bindkey -k k8 help	# F8 | Advanced help/keybindings
 bindkey -k k9 screen -t help 0 screen-profiles-helper # F9 | Welcome screen

@@ -1,8 +1,13 @@
 screen-profiles (1.3) UNRELEASED; urgency=low
 
-  * 
+  [ Dustin Kirkland ]
+  * doc/help.txt: Updated to reflect new F-key mappings
+  * keybindings/common: Map F6 to detach session
+  * select-screen-profile: Test link against arg
+  * bin/cpu-count: remove whitespace
+  * bin/release: get rid of "(development branch)" string
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 06 Jan 2009 19:46:35 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jan 2009 12:39:57 -0600
 
 screen-profiles (1.2-0ubuntu1) jaunty; urgency=low
 

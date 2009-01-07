@@ -1,3 +1,3 @@
 #!/bin/sh
 
-/usr/bin/lsb_release -d -s
+/usr/bin/lsb_release -d -s | sed 's/\s*(.*)$//'
