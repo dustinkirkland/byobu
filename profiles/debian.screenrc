@@ -21,5 +21,4 @@
 
 source /usr/share/screen-profiles/profiles/common
 
-caption always '%{= Wk}%{= Wk}%?%-Lw%?%{= yk}%n %t%{= Wk} %?%+Lw%?%?%= %{= Wk}'
 hardstatus string '%{= wk} %{+b Wr} @ %{+b wk} %100` %{= Wk}|%= |%{+B bW}%102`%{= Wk}|%{+b rW}%101`%{= Wk}|%{+b gW}%103`%{= Wk}|%{= wk}%Y-%m-%d %c:%s'

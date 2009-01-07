@@ -31,6 +31,9 @@ backtick 104 999999 999999 /usr/share/screen-profiles/bin/cpu-count
 
 hardstatus alwayslastline
 
+# Window tabs, second to last line
+caption always "%{kW}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{kW}%?%+Lw%?"
+
 # Allow scrolling in xterm, 10000 lines
 termcapinfo xterm ti@:te@
 defscrollback 10000

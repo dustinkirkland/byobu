@@ -21,6 +21,4 @@
 
 source /usr/share/screen-profiles/profiles/common
 
-caption always "%{kW}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{kW}%?%+Lw%?"
-
 hardstatus string '%{Wk} %{= Wk}%{+b r}\%{= Wy}o%{=b WY}/%{+b Wk} %100` %{= Wk}|%= |%{+B bW}%102`%{= Wk}|%{+b rW}%101`%{= Wk}|%{k}%104`%{+b gW}%103`%{= Wk}|%{= Wk}%Y-%m-%d %c:%s'
