@@ -141,7 +141,7 @@ def profile(screen, size):
 
     if bb.buttonPressed(g.runOnce()) != "cancel":
         commands.getoutput('select-screen-profile --set %s' % li.current())
-        button = messagebox(screen, 60, 2, "Message", "Press F5<CR> to apply the new profile", \
+        button = messagebox(screen, 60, 2, "Message", "Restart screen to apply the new profile", \
             buttons=(("Ok","ok"), ("Exit", "exit")) )
         if button == "exit":
             return 0
