@@ -21,4 +21,8 @@
 
 source /usr/share/screen-profiles/profiles/common
 
-hardstatus string '%{Wk} %{= Wk}%{+b r}\%{= Wy}o%{=b WY}/%{+b Wk} %100` %{= Wk}|%= |%{+B bW}%102`%{= Wk}|%{+b rW}%101`%{= Wk}|%{k}%104`%{+b gW}%103`%{= Wk}|%{= Wk}%Y-%m-%d %c:%s'
+hardstatus string '%{+b Wr}\%{= Wy}o%{=b WY}/%{=b Wk} %100` %{= Wk}|%= |%{=B bW}%102`%{= Wk}|%{=b rW}%101`%{= Wk}|%{= Yk}%106`%{= Wk}|%{= Wk}%104`%{=b gW}%103`%{= Wk} %{=b gW}%105`%{= Wk}|%Y-%m-%d %c:%s'
+
+# NOTE: There's a strange limit of only being able to change colors 16 times
+# in this 'hardstatus string'.  Probably need to increase the size of some
+# data structure in the screen code itself.

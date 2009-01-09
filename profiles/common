@@ -27,7 +27,9 @@ backtick 100 3600 3600 /usr/share/screen-profiles/bin/release
 backtick 101 3600 3600 /usr/share/screen-profiles/bin/updates-available
 backtick 102 10 10 /usr/share/screen-profiles/bin/reboot-required
 backtick 103 5 5 /usr/share/screen-profiles/bin/cpu-freq
-backtick 104 999999 999999 /usr/share/screen-profiles/bin/cpu-count
+backtick 104 3600 3600 /usr/share/screen-profiles/bin/cpu-count
+backtick 105 3600 3600 /usr/share/screen-profiles/bin/mem-available
+backtick 106 5 5 /usr/share/screen-profiles/bin/load-average
 
 hardstatus alwayslastline
 

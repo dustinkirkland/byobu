@@ -4,5 +4,5 @@ count=`grep -c "^processor.*:" /proc/cpuinfo`
 if [ "$count" = "1" ]; then
 	echo
 else
-	echo $count"x "
+	echo $count"x"
 fi
