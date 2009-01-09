@@ -37,7 +37,7 @@ hardstatus alwayslastline
 caption always "%{kW}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{kW}%?%+Lw%?"
 
 # Allow scrolling in xterm, 10000 lines
-termcapinfo xterm ti@:te@
+termcapinfo xterm* ti@:te@
 defscrollback 10000
 
 # Default keybindings

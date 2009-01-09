@@ -5,8 +5,9 @@ screen-profiles (1.5) UNRELEASED; urgency=low
   * bin/load-average: added a load average script
   * debian/install, profiles/common, profiles/ubuntu.screenrc:
     updated with mem and load status scripts
+  * profiles/common: fix scrollback, LP: #309393
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Jan 2009 14:42:08 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Jan 2009 15:05:11 -0600
 
 screen-profiles (1.4-0ubuntu1) jaunty; urgency=low
 
