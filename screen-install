@@ -4,6 +4,7 @@
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Nick Barcet <nick.barcet@ubuntu.com>
+#             Dustin Kirkland <kirkland@canonical.com>
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -20,36 +21,25 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-LAUNCHER="$HOME/.screen-launcher"
+LAUNCHER="/usr/bin/screen-launcher"
 BASHRC="$HOME/.bashrc"
 
 # We have to make sure screen is called last
-pos=$(( $(grep -ns "source $LAUNCHER" "$BASHRC" | sed 's/:.*$//' | head -1) ))
+pos=$(( $(grep -ns "$LAUNCHER" "$BASHRC" | sed 's/:.*$//' | head -1) ))
 
 do=0
 if [ $pos -gt 0 ]; then
-    if [ $pos -lt $(( $(wc -l "$BASHRC" | sed "s/ .*$//") -2)) ]; then
-        # We have to reposition the line at the end
-        # First remove it
-        sed -ibak '/screen-launcher/d' "$BASHRC"
-        do=1
-    fi
+	if [ $pos -lt $(( $(wc -l "$BASHRC" | sed "s/ .*$//") -2)) ]; then
+		# We have to reposition the line at the end
+		# First remove it
+		sed -ibak '/screen-launcher/d' "$BASHRC"
+		do=1
+	fi
 else
-    do=1
+	do=1
 fi
 
 # Add it at the end
 if [ $do -eq 1 ]; then
-    echo "source $LAUNCHER" >> "$BASHRC"
+	echo "$LAUNCHER" >> "$BASHRC"
 fi
-
-# Ensure that ~/.screen-launcher is a symbolic link
-if [ -e "$HOME/.screen-launcher" ]; then
-    if [ ! -L "$HOME/.screen-launcher" ]; then
-        echo `gettext 'Error:'` $HOME/.screen-launcher `gettext ' file exists, but is not a symlink'`
-        exit 1
-    fi
-else
-    ln -s /usr/share/screen-profiles/screen-launcher "$HOME/.screen-launcher"
-fi
-
