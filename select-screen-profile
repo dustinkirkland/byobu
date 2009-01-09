@@ -27,7 +27,7 @@
 usage () {
     cat <<EOT
 usage: select-screen-profiles [(-l|--list)][(-h|--help)][(-s|--set) PROFILE]
-    -l,--list           list avaivalable profiles
+    -l,--list           list available profiles
     -s,--set PROFILE    set profile
     -h,--help           this help
 
@@ -56,6 +56,10 @@ assert_symlink "$HOME/.screenrc-profile"
 listprofiles() {
 	# Display list of profiles, one per line
 	for x in $(ls $PROFILE_DIR); do
+		if [ $x = "common" ]; then
+			# Skip the common profile, no value there
+			continue
+		fi
 		echo "$x"
 	done
 }
@@ -69,7 +73,7 @@ prompt() {
 	for x in $profiles; do
 		i=$(expr $i + 1)
 		desc="          "
-		if [ $x = "ubuntu.screenrc" ]; then
+		if [ $x = "ubuntu" ]; then
 			desc="<---- ` gettext 'recommended'`"
 			simple=$i
 		fi
@@ -93,7 +97,11 @@ prompt() {
 
 setprofile() {
 	# Apply a profile by name or index
-	selected="$SELECTED"
+	if [ -n "$1" ]; then
+		selected="$1"
+	else
+		selected="$SELECTED"
+	fi
 	i=0
 	found=0
 	profiles=$(listprofiles)
@@ -124,6 +132,9 @@ setprofile() {
 	if [ $found -eq 0 ]; then
 		echo "Invalid profile"
 	fi
+	if [ ! -e "$HOME/.screenrc-windows" ]; then
+		cp "$BASE_DIR/windows/common" "$HOME/.screenrc-windows"
+	fi
 }
 
 if [ $# -eq 0 ]; then
@@ -135,8 +146,7 @@ else
 	while true; do
 		case "$1" in
 			-s|--set)
-				profile="$2"
-				setprofile
+				setprofile "$2"
 				shift 2
 				break
 			;;

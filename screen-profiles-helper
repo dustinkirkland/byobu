@@ -20,6 +20,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import sys, os, os.path, time, string, commands
+from ConfigParser import SafeConfigParser
 from snack import *
 
 # Command presets for windows creation
@@ -53,11 +54,12 @@ def terminal_size():                    ### decide on *some* terminal size
     return int(cr[1]-5), int(cr[0]-5)         # reverse rows, cols
 
 def menu(screen, size):
-    li = Listbox(height = 4, width = 60, returnExit = 1)
+    li = Listbox(height = 5, width = 60, returnExit = 1)
     li.append("Help", 1)
     li.append("Change screen profile", 2)
     li.append("Create new window(s)", 3)
-    li.append("Install screen by default at login", 4)
+    li.append("Manage default windows", 4)
+    li.append("Install screen by default at login", 5)
     bb = ButtonBar(screen, (("Ok", "ok"), ("Exit", "exit")), compact = 1)
 
     g = GridForm(screen, "GNU Screen Profiles Menu", 1, 2)
@@ -81,13 +83,40 @@ def messagebox(screen, width, height, title, text, \
 
     return bb.buttonPressed(g.runOnce())
 
-def help(screen, size):
+def help(screen, size, intro=0, config=None):
     f=file('/usr/share/doc/screen-profiles/help.txt')
     text=f.read()
     f.close()
 
-    button = messagebox(screen, 76, 19, "GNU Screen Profiles Help", text, \
-        scroll=1, buttons=(("Menu", "menu"), ("Exit", "exit")) )
+    t = Textbox(74, 19, text, scroll=1)
+    bb = ButtonBar(screen, (("Menu", "menu"), ("Exit", "exit")), compact = 1)
+    
+    if intro == 1:
+        formlen=3
+        cb=Checkbox("Display this help on startup", isOn=1)
+    else:
+        formlen=2
+    
+    g = GridForm(screen, "GNU Screen Profiles Help", 1, formlen)
+    g.add(t, 0, 0, padding=(0,0,0,0))
+    if intro == 1:
+        g.add(cb, 0, 1, padding=(1,0,0,0))
+        g.add(bb, 0, 2, padding=(1,1,0,0))
+    else:
+        g.add(bb, 0, 1, padding=(1,1,0,0))
+
+    button = bb.buttonPressed(g.runOnce())
+    
+    if intro == 1 and not cb.value():
+        #Check box value has change, write config file
+        if not config.has_section('Defaults'):
+            config.add_section('Defaults')
+        config.set('Defaults','help','off')
+        configfile=open(os.getenv("HOME")+'/.screen-profiles-helper', 'wb')
+        try:
+            config.write(configfile)
+        finally:
+            configfile.close()
 
     if button == "exit":
         return 0
@@ -118,7 +147,7 @@ def profile(screen, size):
             return 0
 
     return 100
-
+    
 def newwindow(screen, size):
     title=Entry(8, text="bash", returnExit=1)
     titlel=Label("Title: ")
@@ -138,27 +167,116 @@ def newwindow(screen, size):
     for cur in cmd:
         r.append(cur[0], count)
         count=count+1
+        
+    cb=Checkbox("Add to default windows")
 
     bb = ButtonBar(screen, (("Create", "create"), ("Cancel", "cancel")), compact = 1)
-    g = GridForm(screen, "Create new window(s):", 2, 4 )
+    g = GridForm(screen, "Create new window(s):", 2, 5 )
     g.add(titlel, 0, 0, anchorLeft=1,padding=(4,1,0,1))
     g.add(title, 1, 0, anchorLeft=1)
     g.add(commandl, 0, 1, anchorLeft=1, anchorTop=1,padding=(4,0,0,1))
     g.add(command, 1, 1, anchorLeft=1)
     g.add(rl, 0, 2, anchorLeft=1,padding=(4,0,0,1))
     g.add(r, 1, 2)
-    g.add(bb, 1, 3, padding=(4,1,0,0))
+    g.add(cb, 1, 3, padding=(4,1,0,1))
+    g.add(bb, 1, 4, padding=(4,1,0,0))
 
     if bb.buttonPressed(g.runOnce()) != "cancel":
         sel=r.getSelection()
         if sel:
             for s in sel:
-                commands.getoutput('screen -t %s %s' % (cmd[s][1], cmd[s][2]) )
+                win='screen -t %s %s' % (cmd[s][1], cmd[s][2])
+                commands.getoutput(win)
+                if cb.value():
+                    appendwindow(win)
         else:
-            commands.getoutput('screen -t %s %s' % (title.value(), command.value()) )
+            win='screen -t %s %s' % (title.value(), command.value())
+            commands.getoutput(win)
+            if cb.value():
+                appendwindow(win)
 
     return 100
+    
+def appendwindow(win):
+    f=open(os.getenv("HOME")+'/.screenrc-windows', 'a')
+    try:
+        f.write(win+"\n")
+        
+    except IOError:
+        return None
 
+    finally:
+        f.close()
+        
+def readwindows():
+    f=open(os.getenv("HOME")+'/.screenrc-windows', 'r')
+    try:
+        li=[]
+        for line in f.readlines():
+            if line.startswith("# "):
+               # this is a comment
+               window=[-1, line]    
+            elif line.startswith("#"):
+               # this is an inactive window
+               window=[0, line.lstrip("#")]
+            else:
+               window=[1, line]
+            li.append(window)
+
+        return li
+
+    except IOError:
+        return None
+
+    finally:
+        f.close()
+        
+def writewindows(winlist):
+    f=open(os.getenv("HOME")+'/.screenrc-windows', 'w')
+    try:
+        for win in winlist:
+            if win[0] == -1:
+                f.write(win[1])
+            elif win[0] == 0:
+                f.write("#"+win[1])
+            else:
+                f.write(win[1])
+
+    except IOError:
+        return None
+
+    finally:
+        f.close()
+        
+def defaultwindows(screen, size):
+    winlist=readwindows()
+    
+    rl=Label("Windows:")
+    r=CheckboxTree(10, scroll=1)
+    count=0
+    for win in winlist:
+       if win[0] != -1:
+            r.append(win[1],count,selected=win[0])
+       count=count+1
+    
+    bb = ButtonBar(screen, (("Save", "save"), ("Cancel", "cancel")), compact = 1)
+    
+    g = GridForm(screen, "Select window(s) to create by default:", 2, 4 )
+    g.add(rl, 0, 0, anchorLeft=1, anchorTop=1, padding=(4,0,0,1))
+    g.add(r, 1, 0)
+    g.add(bb, 1, 1, padding=(4,1,0,0))
+    
+    if bb.buttonPressed(g.runOnce()) != "cancel":
+        count=0
+        for win in winlist:
+            if win[0] != -1:
+                win[0] = r.getEntryValue(count)[1]
+            count=count+1
+            
+        writewindows(winlist)
+        
+    return 100
+    
 def install(screen, size):
     out = commands.getoutput("bash /usr/share/screen-profiles/screen-install")
     if out == "":
@@ -176,9 +294,20 @@ def main():
     """
     size = terminal_size()
     screen = SnackScreen()
-    screen.drawRootText(1,0,"== GNU Screen Profiles Helper ==")
+    screen.drawRootText(1,0,"GNU Screen Profiles Helper")
     screen.pushHelpLine("<Tab>/<Alt-Tab> between elements | <Return> Validates")
-    tag = help(screen, size)
+
+    config = SafeConfigParser()
+    config.read(os.getenv("HOME")+'/.screen-profiles-helper')
+    if config.has_option('Defaults', 'help'):
+        showhelp=config.get('Defaults', 'help')
+    else:
+        showhelp="on"
+
+    if showhelp == "on":
+        tag = help(screen, size, intro=1, config=config)
+    else:
+        tag = 100
 
     while tag > 0 :
         tag = menu(screen, size)
@@ -189,6 +318,8 @@ def main():
         elif tag == 3:
             tag = newwindow(screen, size)
         elif tag == 4:
+            tag = defaultwindows(screen, size)
+        elif tag == 5:
             tag = install(screen, size)
 
     screen.finish()

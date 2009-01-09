@@ -6,11 +6,11 @@ bin/reboot-required usr/share/screen-profiles/bin
 bin/release usr/share/screen-profiles/bin
 bin/updates-available usr/share/screen-profiles/bin
 profiles/common usr/share/screen-profiles/profiles
-profiles/debian.screenrc usr/share/screen-profiles/profiles
-profiles/ubuntu.screenrc usr/share/screen-profiles/profiles
+profiles/debian usr/share/screen-profiles/profiles
+profiles/ubuntu usr/share/screen-profiles/profiles
 keybindings/common usr/share/screen-profiles/keybindings
 windows/common usr/share/screen-profiles/windows
 select-screen-profile usr/bin
 screen-profiles-helper usr/bin
 screen-install usr/share/screen-profiles/
-screen-launcher usr/share/screen-profiles/
+screen-launcher usr/bin/

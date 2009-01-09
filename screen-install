@@ -21,25 +21,29 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-LAUNCHER="/usr/bin/screen-launcher"
-BASHRC="$HOME/.bashrc"
+install_screen_launcher() {
+	dest=$1
+	launcher="/usr/bin/screen-launcher"
+	# We have to make sure screen is called last
+	pos=$(( $(grep -ns "$launcher" "$dest" | sed 's/:.*$//' | head -1) ))
 
-# We have to make sure screen is called last
-pos=$(( $(grep -ns "$LAUNCHER" "$BASHRC" | sed 's/:.*$//' | head -1) ))
-
-do=0
-if [ $pos -gt 0 ]; then
-	if [ $pos -lt $(( $(wc -l "$BASHRC" | sed "s/ .*$//") -2)) ]; then
-		# We have to reposition the line at the end
-		# First remove it
-		sed -ibak '/screen-launcher/d' "$BASHRC"
+	do=0
+	if [ $pos -gt 0 ]; then
+		if [ $pos -lt $(( $(wc -l "$dest" | sed "s/ .*$//") -2)) ]; then
+			# We have to reposition the line at the end
+			# First remove it
+			sed -ibak '/screen-launcher/d' "$dest"
+			do=1
+		fi
+	else
 		do=1
 	fi
-else
-	do=1
-fi
+	# Add it at the end
+	if [ $do -eq 1 ]; then
+		echo "$launcher" >> "$dest"
+	fi
+}
 
-# Add it at the end
-if [ $do -eq 1 ]; then
-	echo "$LAUNCHER" >> "$BASHRC"
-fi
+install_screen_launcher "$HOME/.bashrc"
+install_screen_launcher "$HOME/.bash_profile"
+

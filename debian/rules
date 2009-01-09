@@ -42,7 +42,7 @@ binary-indep: build install
 	dh_installdebconf
 	dh_compress
 	dh_fixperms
-	dh_link /etc/screenrc usr/share/${PACKAGE}/profiles/default.screenrc
+	dh_link /etc/screenrc usr/share/${PACKAGE}/profiles/plain
 	dh_installdeb
 	dh_gencontrol
 	dh_builddeb

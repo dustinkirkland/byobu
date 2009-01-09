@@ -6,8 +6,20 @@ screen-profiles (1.5) UNRELEASED; urgency=low
   * debian/install, profiles/common, profiles/ubuntu.screenrc:
     updated with mem and load status scripts
   * profiles/common: fix scrollback, LP: #309393
+  * profiles/*.screenrc: renamed to drop the ".screenrc" bit as this was
+    unnecessary;  this will break early users, they will need to re-run
+    select-screen-profile to fix
+  * screen-launcher, screen-install, debian/install: install screen-launcher
+    to /usr/bin, drop the symlinking to ~/.screen-launcher, just install by
+    adding /usr/bin/screen-launcher to ~/.bashrc; install screen-launcher
+    to both bashrc and bash_profile
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Jan 2009 15:05:11 -0600
+  [Nicolas Barcet]
+  * Allow selecting which windows are opened by default in
+    screen-profiles-helper
+  * Allow help message not to be displayed when starting
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Jan 2009 17:40:00 -0600
 
 screen-profiles (1.4-0ubuntu1) jaunty; urgency=low
 
