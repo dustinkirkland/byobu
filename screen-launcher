@@ -20,10 +20,6 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-# Verify that we are correctly installed
-/bin/bash /usr/share/screen-profiles/screen-install
-
 if [ "$TERM" != "screen" ]; then
-    screen -xRR
-    logout
+	screen -xRR
 fi
