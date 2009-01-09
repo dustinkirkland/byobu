@@ -1,4 +1,10 @@
-screen-profiles (1.5) UNRELEASED; urgency=low
+screen-profiles (1.6) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Jan 2009 17:45:13 -0600
+
+screen-profiles (1.5-0ubuntu1) jaunty; urgency=low
 
   [ Dustin Kirkland ]
   * bin/mem-available: added a memory count script
@@ -19,7 +25,7 @@ screen-profiles (1.5) UNRELEASED; urgency=low
     screen-profiles-helper
   * Allow help message not to be displayed when starting
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Jan 2009 17:40:00 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Jan 2009 17:45:03 -0600
 
 screen-profiles (1.4-0ubuntu1) jaunty; urgency=low
 
