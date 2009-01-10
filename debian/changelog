@@ -1,9 +1,10 @@
 screen-profiles (1.6) UNRELEASED; urgency=low
 
+  * debian/install: no need to install the debian profile in ubuntu
   * debian/rules: clean up comments
   * profiles/ubuntu: zero-fill the hour component of the timestamp
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Jan 2009 00:55:32 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Jan 2009 09:03:53 -0600
 
 screen-profiles (1.5-0ubuntu1) jaunty; urgency=low
 
