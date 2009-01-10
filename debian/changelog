@@ -1,10 +1,13 @@
 screen-profiles (1.6) UNRELEASED; urgency=low
 
+  [ Dustin Kirkland ]
   * debian/install: no need to install the debian profile in ubuntu
   * debian/rules: clean up comments
   * profiles/ubuntu: zero-fill the hour component of the timestamp
+  * bin/updates-available: add some rudimentary caching mechanism for updates,
+    will make screen launch *much* faster on <= Ubuntu 8.10
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Jan 2009 09:03:53 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Jan 2009 12:56:02 -0600
 
 screen-profiles (1.5-0ubuntu1) jaunty; urgency=low
 

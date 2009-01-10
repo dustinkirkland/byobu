@@ -11,22 +11,38 @@ print_updates() {
 }
 
 cache=/var/run/updates-available
+mycache=/var/tmp/updates-available-$USER
 u=
-# If global updates-available cache is present, use it.  Available as of jaunty.
+# If global updates-available cache is present, use it.
+# Only available in Jaunty+.
 if [ -r $cache ]; then
 	u=`grep -m 1 "^[0-9]" $cache | sed "s/\s.*$//"`
 	print_updates $u
 fi
 
+# If the user's updates-available cache is present, and less than an hour old,
+# use it.  (The "hour" part should be configurable)
+if [ -r $mycache -a -O $mycache ]; then
+	now=`date +%s`
+	timestamp=`stat -c "%Y" $mycache`
+	diff=`expr $now - $timestamp`
+	if [ $diff -lt 3600 ]; then
+		u=`grep -m 1 "^[0-9]" $mycache | sed "s/\s.*$//"`
+		print_updates $u
+	fi
+fi
+
 # If apt-check binary exists, use it
 if [ -x /usr/lib/update-notifier/apt-check ]; then
 	u=`/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;.*$//"`
+	echo "$u" > $mycache
 	print_updates $u
 fi
 
 # If apt-get exists, use it
 if [ -x /usr/bin/apt-get ]; then
 	u=`/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst`
+	echo "$u" > $mycache
 	print_updates $u
 fi
 
