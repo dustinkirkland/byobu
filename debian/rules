@@ -1,9 +1,5 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# GNU copyright 1997 to 1999 by Joey Hess.
-#
-# debian/rules makefile for musica
 
 # Uncomment this to turn on verbose mode.
 # export DH_VERBOSE=1
