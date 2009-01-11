@@ -53,13 +53,19 @@ def terminal_size():                    ### decide on *some* terminal size
             cr = (25, 80)
     return int(cr[1]-5), int(cr[0]-5)         # reverse rows, cols
 
-def menu(screen, size):
+def menu(screen, size, isInstalled):
+    if isInstalled:
+        installtext="Remove screen by default at login"
+    else:
+        installtext="Install screen by default at login"
+
+
     li = Listbox(height = 5, width = 60, returnExit = 1)
     li.append("Help", 1)
     li.append("Change screen profile", 2)
     li.append("Create new window(s)", 3)
     li.append("Manage default windows", 4)
-    li.append("Install screen by default at login", 5)
+    li.append(installtext, 5)
     bb = ButtonBar(screen, (("Ok", "ok"), ("Exit", "exit")), compact = 1)
 
     g = GridForm(screen, "GNU Screen Profiles Menu", 1, 2)
@@ -83,7 +89,7 @@ def messagebox(screen, width, height, title, text, \
 
     return bb.buttonPressed(g.runOnce())
 
-def help(screen, size, intro=0, config=None):
+def help(screen, size, config):
     f=file('/usr/share/doc/screen-profiles/help.txt')
     text=f.read()
     f.close()
@@ -91,27 +97,31 @@ def help(screen, size, intro=0, config=None):
     t = Textbox(74, 19, text, scroll=1)
     bb = ButtonBar(screen, (("Menu", "menu"), ("Exit", "exit")), compact = 1)
     
-    if intro == 1:
-        formlen=3
-        cb=Checkbox("Display this help on startup", isOn=1)
+    if (config.get('Defaults', 'help') == "on"):
+        cbOn = 1
     else:
-        formlen=2
+        cbOn = 0
+
+    cb=Checkbox("Display this help on startup", isOn=cbOn)
     
-    g = GridForm(screen, "GNU Screen Profiles Help", 1, formlen)
+    g = GridForm(screen, "GNU Screen Profiles Help", 1, 3)
     g.add(t, 0, 0, padding=(0,0,0,0))
-    if intro == 1:
-        g.add(cb, 0, 1, padding=(1,0,0,0))
-        g.add(bb, 0, 2, padding=(1,1,0,0))
-    else:
-        g.add(bb, 0, 1, padding=(1,1,0,0))
+    g.add(cb, 0, 1, padding=(1,0,0,0))
+    g.add(bb, 0, 2, padding=(1,1,0,0))
 
     button = bb.buttonPressed(g.runOnce())
     
-    if intro == 1 and not cb.value():
+    if cb.value() != cbOn:
         #Check box value has change, write config file
         if not config.has_section('Defaults'):
             config.add_section('Defaults')
-        config.set('Defaults','help','off')
+
+        if cb.value() == 1:
+            value = "on"
+        else:
+            value = "off"
+
+        config.set('Defaults','help',value)
         configfile=open(os.getenv("HOME")+'/.screen-profiles-helper', 'wb')
         try:
             config.write(configfile)
@@ -277,17 +287,30 @@ def defaultwindows(screen, size):
         
     return 100
     
-def install(screen, size):
-    out = commands.getoutput("bash /usr/share/screen-profiles/screen-install")
-    if out == "":
-        out = "Screen will be launched automatically next time you login."
+def install(screen, size, isInstalled):
+    if not isInstalled:
+        out = commands.getoutput("bash /usr/share/screen-profiles/screen-install")
+        if out == "":
+            out = "Screen will be launched automatically next time you login."
 
-    button = messagebox(screen, 60, 2, "Message", out, \
+        button = messagebox(screen, 60, 2, "Message", out, \
         buttons=(("Ok","ok"), ("Exit", "exit")) )
-    if button == "exit":
-        return 0
+        if button == "exit":
+            return 0
 
-    return 100
+        return 100
+    else:
+        out = commands.getoutput("bash /usr/share/screen-profiles/screen-remove")
+        if out == "":
+            out = "Screen will not be used next time you login."
+
+        button = messagebox(screen, 60, 2, "Message", out, \
+        buttons=(("Ok","ok"), ("Exit", "exit")) )
+        if button == "exit":
+            return 0
+
+        return 101
+
 
 def main():
     """This is the main loop of our screen helper.
@@ -304,15 +327,17 @@ def main():
     else:
         showhelp="on"
 
-    if showhelp == "on":
-        tag = help(screen, size, intro=1, config=config)
+    isInstalled = (commands.getoutput('grep screen-launcher '+(os.getenv("HOME")+'/.bashrc')) != "")
+
+    if showhelp == "on" :
+        tag = help(screen, size, config)
     else:
         tag = 100
 
     while tag > 0 :
-        tag = menu(screen, size)
+        tag = menu(screen, size, isInstalled)
         if tag == 1:
-            tag = help(screen, size)
+            tag = help(screen, size, config)
         elif tag == 2:
             tag = profile(screen, size)
         elif tag == 3:
@@ -320,7 +345,8 @@ def main():
         elif tag == 4:
             tag = defaultwindows(screen, size)
         elif tag == 5:
-            tag = install(screen, size)
+            tag = install(screen, size, isInstalled)
+            isInstalled=(tag == 100)
 
     screen.finish()
     sys.exit(0)

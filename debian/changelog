@@ -6,6 +6,9 @@ screen-profiles (1.6) UNRELEASED; urgency=low
   * profiles/ubuntu: zero-fill the hour component of the timestamp
   * bin/updates-available: add some rudimentary caching mechanism for updates,
     will make screen launch *much* faster on <= Ubuntu 8.10
+  [ Nicolas Barcet ]
+  * Add toggles to fix bugs LP: #315884 and LP: #315885 for help screen and
+    install of screen by defaults
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Jan 2009 12:56:02 -0600
 
