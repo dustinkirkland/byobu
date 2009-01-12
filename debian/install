@@ -11,5 +11,6 @@ keybindings/common usr/share/screen-profiles/keybindings
 windows/common usr/share/screen-profiles/windows
 select-screen-profile usr/bin
 screen-profiles-helper usr/bin
-screen-install usr/share/screen-profiles/
+screen-launcher-install usr/share/screen-profiles/
+screen-launcher-uninstall usr/share/screen-profiles/
 screen-launcher usr/bin/
