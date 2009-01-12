@@ -1,8 +1,9 @@
 screen-profiles (1.8) UNRELEASED; urgency=low
 
-  * 
+  [ Dustin Kirkland ]
+  * profiles/common: source the system default /etc/screenrc
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 12 Jan 2009 00:53:45 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 12 Jan 2009 01:09:14 -0600
 
 screen-profiles (1.7-0ubuntu1) jaunty; urgency=low
 
