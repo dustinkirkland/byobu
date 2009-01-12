@@ -19,10 +19,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
+# Let's start with the Debian packaged default;
+# it has some sane defaults, and fix some bugs
+source /etc/screenrc
+
+# Now, let's override with our customiazations
 startup_message off
 vbell off
 msgwait 1
 
+# Define status commands
 backtick 100 3600 3600 /usr/share/screen-profiles/bin/release
 backtick 101 3600 3600 /usr/share/screen-profiles/bin/updates-available
 backtick 102 10 10 /usr/share/screen-profiles/bin/reboot-required
