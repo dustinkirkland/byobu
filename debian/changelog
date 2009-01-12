@@ -1,8 +1,20 @@
-screen-profiles (1.7) UNRELEASED; urgency=low
+screen-profiles (1.8) UNRELEASED; urgency=low
 
   * 
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 12 Jan 2009 00:47:42 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 12 Jan 2009 00:53:45 -0600
+
+screen-profiles (1.7-0ubuntu1) jaunty; urgency=low
+
+  [ Dustin Kirkland ]
+  * screen-install, screen-remove: renamed to screen-launcher-install,
+    screen-launcher-uninstall
+
+  [ Nicolas Barcet ]
+  * Add toggles to fix bugs LP: #315884 and LP: #315885 for help screen and
+    install of screen by defaults
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 12 Jan 2009 00:53:20 -0600
 
 screen-profiles (1.6-0ubuntu1) jaunty; urgency=low
 
@@ -14,10 +26,6 @@ screen-profiles (1.6-0ubuntu1) jaunty; urgency=low
     will make screen launch *much* faster on <= Ubuntu 8.10
   * screen-install, screen-remove: renamed to screen-launcher-install,
     screen-launcher-uninstall
-
-  [ Nicolas Barcet ]
-  * Add toggles to fix bugs LP: #315884 and LP: #315885 for help screen and
-    install of screen by defaults
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 12 Jan 2009 00:47:19 -0600
 
