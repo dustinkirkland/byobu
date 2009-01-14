@@ -23,6 +23,10 @@ import sys, os, os.path, time, string, commands, gettext
 from ConfigParser import SafeConfigParser
 from snack import *
 
+gettext.bindtextdomain('screen-profiles-helper', '/usr/share/screen-profiles/po')
+gettext.textdomain('screen-profiles-helper')
+_ = gettext.gettext
+
 # Command presets for windows creation
 cmd=(   ("System activity", "top", "top"),
         ("System log", "log", "watch -n 10 tail -n 5 /var/log/syslog /var/log/auth.log /var/log/dmesg"),
@@ -318,9 +322,6 @@ def install(screen, size, isInstalled):
 def main():
     """This is the main loop of our screen helper.
     """
-    gettext.bindtextdomain('screen-profiles-helper', '/usr/share/screen-profiles/po')
-    gettext.textdomain('screen-profiles-helper')
-    _ = gettext.gettext
 
     size = terminal_size()
     screen = SnackScreen()
