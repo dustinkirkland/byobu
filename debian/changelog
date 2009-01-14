@@ -1,6 +1,7 @@
 screen-profiles (1.9) UNRELEASED; urgency=low
 
-  * 
+  [Nicolas Barcet]
+  * use gettext in screen-profiles-helper (LP: #317245)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 12 Jan 2009 09:11:30 -0600
 
