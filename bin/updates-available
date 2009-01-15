@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# expire the cache in X seconds; 1 hour by default
+EXPIRATION=3600
+
 print_updates() {
 	u=$1
 	if [ "$u" = "0" ]; then
@@ -26,7 +29,7 @@ if [ -r $mycache -a -O $mycache ]; then
 	now=`date +%s`
 	timestamp=`stat -c "%Y" $mycache`
 	diff=`expr $now - $timestamp`
-	if [ $diff -lt 3600 ]; then
+	if [ $diff -lt $EXPIRATION ]; then
 		u=`grep -m 1 "^[0-9]" $mycache | sed "s/\s.*$//"`
 		print_updates $u
 	fi
