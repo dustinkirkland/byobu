@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 mem=`grep -m 1 "^MemTotal:" /proc/meminfo | sed 's/ kB$//' | sed 's/^.* //'`
 if [ $mem -gt 1000000 -a -x /usr/bin/bc ]; then

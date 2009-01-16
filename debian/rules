@@ -5,11 +5,12 @@
 # export DH_VERBOSE=1
 
 PACKAGE=screen-profiles
-VER=`head -n 1 ./changelog | sed 's/^.*(//' | sed 's/).*//' | sed 's/-.*//'`
+VER=`head -n 1 debian/changelog | sed 's/^.*(//' | sed 's/).*//' | sed 's/-.*//'`
 
 get-orig-source:
-	[ -d ../../${PACKAGE} ] && mv ../../${PACKAGE} ../../${PACKAGE}-${VER} || true
-	tar -C ../../ --exclude .bzr --exclude debian -zcvf ../../${PACKAGE}_${VER}.orig.tar.gz ${PACKAGE}-${VER}
+	dh_testdir
+	-[ -d ../${PACKAGE} ] && mv ../${PACKAGE} ../${PACKAGE}-${VER}
+	tar -C ../ --exclude .bzr --exclude debian -zcvf ../${PACKAGE}_${VER}.orig.tar.gz ${PACKAGE}-${VER}
 
 prebuild:
 	cd po4a && po4a --no-backups po4a.conf
@@ -17,13 +18,12 @@ prebuild:
 build:
 
 clean:
-	rm -rf debian/${PACKAGE} debian/files debian/${PACKAGE}.debhelper.log
+	dh_clean debian/${PACKAGE} debian/files debian/${PACKAGE}.debhelper.log
 
 install:build
 	dh_testdir
 	dh_testroot
 	dh_clean -k
-	dh_installdirs -X.bzr
 	dh_install -X.bzr
 
 # Everything else is handled by dh_install
@@ -33,7 +33,7 @@ binary-indep: build install
 	dh_testdir
 	dh_testroot
 	dh_installdocs -X.bzr
-	dh_installman select-screen-profile.1
+	dh_installman screen-launcher.1 screen-profiles-helper.1 select-screen-profile.1
 	dh_installchangelogs README
 	dh_installdebconf
 	dh_compress
@@ -41,9 +41,10 @@ binary-indep: build install
 	dh_link /etc/screenrc usr/share/${PACKAGE}/profiles/plain
 	dh_installdeb
 	dh_gencontrol
+	dh_md5sums
 	dh_builddeb
 
 binary: binary-indep
-.PHONY: build clean binary-indep binary install prebuild
+.PHONY: build clean binary-indep binary install prebuild get-orig-source
 
 binary-arch:

@@ -73,11 +73,11 @@ prompt() {
 	for x in $profiles; do
 		i=$(expr $i + 1)
 		desc="          "
-		if [ $x = "ubuntu" ]; then
+		if [ "$x" = "ubuntu" ]; then
 			desc="<---- ` gettext 'recommended'`"
 			simple=$i
 		fi
-		echo "  $i. $x\t\t$desc"
+		echo " $i. $x \t\t$desc"
 	done
 	echo
 	selected=x

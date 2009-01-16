@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh -e
 #
 #    GNU screen-profiles-helper
 #    Copyright (C) 2008 Canonical Ltd.
@@ -26,7 +26,6 @@ install_screen_launcher() {
 	launcher="/usr/bin/screen-launcher"
 	# We have to make sure screen is called last
 	pos=$(( $(grep -ns "$launcher" "$dest" | sed 's/:.*$//' | head -1) ))
-
 	do=0
 	if [ $pos -gt 0 ]; then
 		if [ $pos -lt $(( $(wc -l "$dest" | sed "s/ .*$//") -2)) ]; then
@@ -46,4 +45,3 @@ install_screen_launcher() {
 
 install_screen_launcher "$HOME/.bashrc"
 install_screen_launcher "$HOME/.bash_profile"
-

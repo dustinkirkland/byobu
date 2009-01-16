@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 #
 #    GNU screen-profiles-helper
 #    Copyright (C) 2008 Canonical Ltd.

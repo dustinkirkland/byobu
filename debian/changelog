@@ -6,13 +6,28 @@ screen-profiles (1.9) UNRELEASED; urgency=low
   [ Dustin Kirkland ]
   * keybindings/common: fix leading whitespace on new window creation
     LP: #317558
+  * keybindings/common, doc/help.txt: change the default escape sequence
+    back to ctrl-a
   * profiles/common, bin/updates-available: the updates-available script now
     caches its value, expiring that value every 60 minutes; so subsequent
     checks are much cheaper;  we can allow the screen status script to run
     more frequently now, since most will be cache checks; we'll really benefit
     from this in Jaunty
+  * debian/control: remove buildeps on gettext, po4a, which are only called
+    in the prebuild; depend on ${misc:Depends} with debhelper >= 5
+  * debian/rules: use dh_testdir in get-orig-source, dh_clean to clean up
+    build; run as 'debian/rules get-orig-source'; removing dh_installdirs as
+    its not needed; add dh_md5sums
+  * debian/dirs: not needed, removing
+  * debian/copyright: updated to use canonical.com address, attribute
+    Canonical copyright, and mention Nick as co-author
+  * select-screen-profile.1: fixed typo
+  * bin/*, *: use -e for shell scripts
+  * bin/updates-available: cache updates available count in the user's
+    homedir, rather than world-writable /var/tmp (race conditions exist)
+  * screen-launcher.1, screen-profiles-helper.1: new manpages
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 15 Jan 2009 14:53:16 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Jan 2009 16:29:47 -0600
 
 screen-profiles (1.8-0ubuntu1) jaunty; urgency=low
 

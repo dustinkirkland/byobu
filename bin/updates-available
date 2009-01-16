@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # expire the cache in X seconds; 1 hour by default
 EXPIRATION=3600
@@ -14,7 +14,7 @@ print_updates() {
 }
 
 cache=/var/run/updates-available
-mycache=/var/tmp/updates-available-$USER
+mycache=$HOME/.screenrc-updates-available
 u=
 # If global updates-available cache is present, use it.
 # Only available in Jaunty+.

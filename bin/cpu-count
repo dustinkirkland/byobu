@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 count=`grep -c "^processor.*:" /proc/cpuinfo`
 if [ "$count" = "1" ]; then

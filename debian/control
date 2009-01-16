@@ -3,13 +3,13 @@ Section: misc
 Priority: optional
 Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 Standards-Version: 3.8.0
-Build-Depends: debhelper (>= 6.0), gettext, po4a
+Build-Depends: debhelper (>= 5)
 Homepage: http://launchpad.net/screen-profiles
 Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/screen-profiles/main
 
 Package: screen-profiles
 Architecture: all
-Depends: debconf (>= 0.5) | debconf-2.0, screen, gettext-base, python, python-newt
+Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, screen, gettext-base, python, python-newt
 Recommends: update-notifier-common
 Suggests: bc
 Description: a set of useful profiles and a profile-switcher for GNU screen

@@ -12,5 +12,3 @@ F5    Close this window      |  F9    Basic help (this)
 
 Commands:
 'screen -r'  - reattach      | 'man screen' - complete help
-
-Note that the escape key has been changed from <ctrl-a> to <ctrl-g>.

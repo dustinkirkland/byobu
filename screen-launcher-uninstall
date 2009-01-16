@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh -e
 #
 #    GNU screen-profiles-helper
 #    Copyright (C) 2008 Canonical Ltd.
@@ -28,4 +28,3 @@ remove_screen_launcher() {
 
 remove_screen_launcher "$HOME/.bashrc"
 remove_screen_launcher "$HOME/.bash_profile"
-
