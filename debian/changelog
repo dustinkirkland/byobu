@@ -1,8 +1,9 @@
-screen-profiles (1.11) UNRELEASED; urgency=low
+screen-profiles (1.11-0ubuntu1) jaunty; urgency=low
 
-  * 
+  * profiles/ubuntu: change cpu/memory colors to match those of the gnome
+    panel system monitor colors for cpu/memory
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 19 Jan 2009 22:45:34 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 19 Jan 2009 23:03:17 -0600
 
 screen-profiles (1.10-0ubuntu1) jaunty; urgency=low
 
