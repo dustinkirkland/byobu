@@ -18,7 +18,7 @@ prebuild:
 build:
 
 clean:
-	dh_clean debian/${PACKAGE} debian/files debian/${PACKAGE}.debhelper.log
+	dh_clean
 
 install:build
 	dh_testdir
@@ -30,19 +30,19 @@ install:build
 
 # Build architecture-independent files here.
 binary-indep: build install
-	dh_testdir
-	dh_testroot
-	dh_installdocs -X.bzr
-	dh_installman screen-launcher.1 screen-profiles-helper.1 select-screen-profile.1
-	dh_installchangelogs README
-	dh_installdebconf
-	dh_compress
-	dh_fixperms
-	dh_link /etc/screenrc usr/share/${PACKAGE}/profiles/plain
-	dh_installdeb
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
+	dh_testdir -i
+	dh_testroot -i
+	dh_installdocs -X.bzr -i
+	dh_installman -i screen-launcher.1 screen-profiles-helper.1 select-screen-profile.1
+	dh_installchangelogs -i README
+	dh_installdebconf -i
+	dh_compress -i
+	dh_fixperms -i
+	dh_link -i /etc/screenrc usr/share/${PACKAGE}/profiles/plain
+	dh_installdeb -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
 
 binary: binary-indep
 .PHONY: build clean binary-indep binary install prebuild get-orig-source

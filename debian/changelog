@@ -1,8 +1,14 @@
 screen-profiles (1.10) UNRELEASED; urgency=low
 
-  * 
+  * debian/control: debhelper 6; add explanation to the description as to why
+    the Suggests are useful; add Enhances note
+  * debian/rules: use -i in the binary-indep section, remove unneeded dh_clean
+    arguments
+  * profiles/ubuntu: remove the |-separators
+  * bin/updates-available: allow for faster startup by skipping the apt-check
+    on initial run
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Jan 2009 16:45:39 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 19 Jan 2009 21:43:48 -0600
 
 screen-profiles (1.9-0ubuntu1) jaunty; urgency=low
 
