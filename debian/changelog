@@ -1,4 +1,10 @@
-screen-profiles (1.10) UNRELEASED; urgency=low
+screen-profiles (1.11) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 19 Jan 2009 22:45:34 -0600
+
+screen-profiles (1.10-0ubuntu1) jaunty; urgency=low
 
   * debian/control: debhelper 6; add explanation to the description as to why
     the Suggests are useful; add Enhances note
@@ -8,7 +14,7 @@ screen-profiles (1.10) UNRELEASED; urgency=low
   * bin/updates-available: allow for faster startup by skipping the apt-check
     on initial run
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 19 Jan 2009 21:43:48 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 19 Jan 2009 22:45:25 -0600
 
 screen-profiles (1.9-0ubuntu1) jaunty; urgency=low
 
