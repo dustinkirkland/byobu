@@ -33,12 +33,17 @@ if [ -r $mycache -a -O $mycache ]; then
 		u=`grep -m 1 "^[0-9]" $mycache | sed "s/\s.*$//"`
 		print_updates $u
 	fi
+else
+	# Otherwise, let's quickly clear the cache, and then recreate it with
+	# a really old timestamp (so that it get's updated on next run)
+	rm -f $mycache
+	touch -t 197001010000 $mycache
+	exit 0
 fi
 
 # If apt-check binary exists, use it
 if [ -x /usr/lib/update-notifier/apt-check ]; then
-	u=`/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;.*$//"`
-	echo "$u" > $mycache
+	u=`/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;.*$//" | tee $mycache`
 	print_updates $u
 fi
 
