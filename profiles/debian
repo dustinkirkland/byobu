@@ -21,4 +21,4 @@
 
 source /usr/share/screen-profiles/profiles/common
 
-hardstatus string '%{= wk} %{+b Wr} @ %{+b wk} %100` %{= Wk}|%= |%{+B bW}%102`%{= Wk}|%{+b rW}%101`%{= Wk}|%{+b gW}%103`%{= Wk}|%{= wk}%Y-%m-%d %c:%s'
+hardstatus string '%{= wk} %{+b Wr} @ %{+b wk} %100` %{= Wk} %= %{=b bW}%102`%{= Wk} %{=b rW}%101`%{= Wk} %{= Yk}%106`%{= Wk} %{= Wk}%104`%{=b cW}%103`%{= Wk} %{=b gW}%105`%{= Wk} %Y-%m-%d %0c:%s'
