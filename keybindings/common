@@ -45,6 +45,3 @@ bindkey -k k9 screen -t help 0 screen-profiles-helper # F9 | Welcome screen
 			# F11 | 'fullscreen' in gnome-terminal
 			# F12 |
 
-# power detach
-register x "^a^d D"
-bindkey ^[[3;6~ process x # C-shift-del | Detach and logout

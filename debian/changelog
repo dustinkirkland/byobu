@@ -11,9 +11,10 @@ screen-profiles (1.12) UNRELEASED; urgency=low
   [ Dustin Kirkland and Nicolas Barcet]
   * screen-profiles-helper: add HOME, SHARE, DOC global variables and use
     them where possible; add functionality to change the escape key
-    sequence
+    sequence; dynamically populate current escape sequence in the help.txt
+    display
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 20 Jan 2009 23:41:20 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Jan 2009 01:09:16 -0600
 
 screen-profiles (1.11-0ubuntu1) jaunty; urgency=low
 
