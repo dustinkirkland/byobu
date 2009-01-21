@@ -49,6 +49,10 @@ defscrollback 10000
 # Default keybindings
 source /usr/share/screen-profiles/keybindings/common
 
+# Additional, user-defined/overriding keybindings should be placed
+# in each user's ~/.screenrc-keybindings
+source ~/.screenrc-keybindings
+
 # Default windows
 # Windows list should be placed in each user's ~/.screenrc-windows,
 # to be configurable

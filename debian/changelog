@@ -1,8 +1,10 @@
 screen-profiles (1.12) UNRELEASED; urgency=low
 
-  * 
+  [ Dustin Kirkland ]
+  * profiles/common, select-screen-profile: add support for sourcing
+    individual user's ~/.screenrc-keybindings file
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 20 Jan 2009 15:43:47 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 20 Jan 2009 15:51:27 -0600
 
 screen-profiles (1.11-0ubuntu1) jaunty; urgency=low
 
