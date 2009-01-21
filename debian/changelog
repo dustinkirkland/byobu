@@ -1,4 +1,10 @@
-screen-profiles (1.12) UNRELEASED; urgency=low
+screen-profiles (1.13) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Jan 2009 01:42:57 -0600
+
+screen-profiles (1.12-0ubuntu1) jaunty; urgency=low
 
   [ Dustin Kirkland ]
   * profiles/common, select-screen-profile: add support for sourcing
@@ -12,9 +18,9 @@ screen-profiles (1.12) UNRELEASED; urgency=low
   * screen-profiles-helper: add HOME, SHARE, DOC global variables and use
     them where possible; add functionality to change the escape key
     sequence; dynamically populate current escape sequence in the help.txt
-    display
+    display, LP: #317675
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Jan 2009 01:09:16 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Jan 2009 01:39:31 -0600
 
 screen-profiles (1.11-0ubuntu1) jaunty; urgency=low
 
