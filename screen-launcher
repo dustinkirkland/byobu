@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-#    GNU screen-profiles-helper
+#    screen-launcher
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Nick Barcet <nick.barcet@ubuntu.com>
@@ -20,6 +20,12 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# Sanitize the local user's setup
+for i in ".screenrc-keybindings" ".screenrc-windows"; do
+	if [ ! -e "$HOME/$i" ]; then
+		touch "$HOME/$i"
+	fi
+done
 
 if [ "$TERM" != "screen" ]; then
 	screen -xRR
