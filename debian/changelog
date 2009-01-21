@@ -3,12 +3,16 @@ screen-profiles (1.12) UNRELEASED; urgency=low
   [ Dustin Kirkland ]
   * profiles/common, select-screen-profile: add support for sourcing
     individual user's ~/.screenrc-keybindings file
+  * screen-launcher: sanitize user environment by touching sourced files,
+    in case they don't exist
+  * Updated several scripts license header to point to the GPLv3, which
+    is the license this package uses (not GPLv2)
 
   [ Dustin Kirkland and Nicolas Barcet]
   * screen-profiles-helper: add HOME, SHARE, DOC global variables and use
     them where possible
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 20 Jan 2009 21:55:43 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 20 Jan 2009 23:06:36 -0600
 
 screen-profiles (1.11-0ubuntu1) jaunty; urgency=low
 
