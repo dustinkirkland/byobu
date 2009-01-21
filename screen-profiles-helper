@@ -102,6 +102,8 @@ def help(screen, size, config):
     text=f.read()
     f.close()
 
+    text=text.replace("<esckey>", getesckey(), 1)
+
     t = Textbox(74, 19, text, scroll=1)
     bb = ButtonBar(screen, ((_("Menu"), "menu"), (_("Exit"), "exit")), compact = 1)
 
@@ -322,6 +324,17 @@ def install(screen, size, isInstalled):
 
         return 101
 
+def appendtofile(p, s):
+    f = open(p, 'a')
+    try:
+        f.write(s)
+    except IOError:
+        return
+    finally:
+        f.close()
+    return
+
+
 def getesckey():
     path=HOME+'/.screenrc-keybindings'
     if not os.path.exists(path):
@@ -334,19 +347,21 @@ def getesckey():
 def setesckey(key):
     path = HOME+'/.screenrc-keybindings'
     if key != "":
-        val = key[0].upper()+key[0].lower()
-        if os.path.exists(path):
+        u = key[0].upper()
+        l = key[0].lower()
+        if not os.path.exists(path):
+            appendtofile(path, "escape ^"+u+l+"\nregister n ^"+l+"^c^"+l+"A\n")
+        else:
             out = commands.getoutput("grep ^escape "+path)
-            if out != "":
-                out = commands.getoutput("sed -i -e 's/^escape \^.*/escape ^"+val+"/' "+path)
-                return
-        f = open(path, 'a')
-        try:
-            f.write("escape ^"+val+"\n")
-        except IOError:
-            return
-        finally:
-            f.close()
+            if out == "":
+               appendtofile(path, "escape ^"+u+l+"\n")
+            else:
+                out = commands.getoutput("sed -i -e 's/^escape \^.*/escape ^"+u+l+"/' "+path)
+            out = commands.getoutput("grep \"^register n \" "+path)
+            if out == "":
+                appendtofile(path, "register n ^"+l+"^c^"+l+"A\n")
+            else:
+                out = commands.getoutput("sed -i -e 's/^register n .*/register n ^"+l+"^c^"+l+"A/' "+path)
 
 def chgesc(screen, size):
     esc=Entry(2, text=getesckey(), returnExit=1)
