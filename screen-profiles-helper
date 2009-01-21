@@ -23,7 +23,11 @@ import sys, os, os.path, time, string, commands, gettext
 from ConfigParser import SafeConfigParser
 from snack import *
 
-gettext.bindtextdomain('screen-profiles-helper', '/usr/share/screen-profiles/po')
+HOME=os.getenv("HOME")
+SHARE='/usr/share/screen-profiles'
+DOC='/usr/share/doc/screen-profiles'
+
+gettext.bindtextdomain('screen-profiles-helper', SHARE+'/po')
 gettext.textdomain('screen-profiles-helper')
 _ = gettext.gettext
 
@@ -94,7 +98,7 @@ def messagebox(screen, width, height, title, text, \
     return bb.buttonPressed(g.runOnce())
 
 def help(screen, size, config):
-    f=file('/usr/share/doc/screen-profiles/help.txt')
+    f=file(DOC+'/help.txt')
     text=f.read()
     f.close()
 
@@ -129,7 +133,7 @@ def help(screen, size, config):
             value = "off"
 
         config.set('Defaults','help',value)
-        configfile=open(os.getenv("HOME")+'/.screen-profiles-helper', 'wb')
+        configfile=open(HOME+'/.screen-profiles-helper', 'wb')
         try:
             config.write(configfile)
         finally:
@@ -215,7 +219,7 @@ def newwindow(screen, size):
     return 100
     
 def appendwindow(win):
-    f=open(os.getenv("HOME")+'/.screenrc-windows', 'a')
+    f=open(HOME+'/.screenrc-windows', 'a')
     try:
         f.write(win+"\n")
         
@@ -226,7 +230,7 @@ def appendwindow(win):
         f.close()
         
 def readwindows():
-    f=open(os.getenv("HOME")+'/.screenrc-windows', 'r')
+    f=open(HOME+'/.screenrc-windows', 'r')
     try:
         li=[]
         for line in f.readlines():
@@ -249,7 +253,7 @@ def readwindows():
         f.close()
         
 def writewindows(winlist):
-    f=open(os.getenv("HOME")+'/.screenrc-windows', 'w')
+    f=open(HOME+'/.screenrc-windows', 'w')
     try:
         for win in winlist:
             if win[0] == -1:
@@ -330,7 +334,7 @@ def main():
 
     config = SafeConfigParser()
     try:
-        config.read(os.getenv("HOME")+'/.screen-profiles-helper')
+        config.read(HOME+'/.screen-profiles-helper')
         if config.has_option('Defaults', 'help'):
             showhelp=config.get('Defaults', 'help')
         else:
@@ -338,7 +342,7 @@ def main():
     except:
         showhelp="on"
 
-    isInstalled = (commands.getoutput('grep screen-launcher '+(os.getenv("HOME")+'/.bashrc')) != "")
+    isInstalled = (commands.getoutput('grep screen-launcher '+(HOME+'/.bashrc')) != "")
 
     if showhelp == "on" :
         tag = help(screen, size, config)

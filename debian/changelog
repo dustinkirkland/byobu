@@ -4,7 +4,11 @@ screen-profiles (1.12) UNRELEASED; urgency=low
   * profiles/common, select-screen-profile: add support for sourcing
     individual user's ~/.screenrc-keybindings file
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 20 Jan 2009 15:51:27 -0600
+  [ Dustin Kirkland and Nicolas Barcet]
+  * screen-profiles-helper: add HOME, SHARE, DOC global variables and use
+    them where possible
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 20 Jan 2009 21:55:43 -0600
 
 screen-profiles (1.11-0ubuntu1) jaunty; urgency=low
 
