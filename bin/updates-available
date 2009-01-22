@@ -5,10 +5,10 @@ EXPIRATION=3600
 
 print_updates() {
 	u=$1
-	if [ "$u" = "0" ]; then
-		echo ""
-	else
-		echo "$u!"
+	if [ -n "$u" ]; then
+		if [ "$u" -gt 0 ]; then
+			echo "$u!"
+		fi
 	fi
 	exit 0
 }
