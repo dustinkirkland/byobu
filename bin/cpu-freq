@@ -1,8 +1,8 @@
 #!/bin/sh -e
 
 mhz=`grep -m 1 "^cpu MHz" /proc/cpuinfo | sed "s/^.*: //" | sed "s/\..*$//"`
-if [ $mhz -gt 1000 -a -x /usr/bin/bc ]; then
-	ghz=$(echo "scale=1; $mhz/1000" | bc)
+if [ $mhz -ge 1000 ]; then
+	ghz=$(echo "$mhz" | awk '{ printf "%.1f", $1 / 1000 }')
 	echo "$ghz""GHz"
 else
 	echo "$mhz""MHz"

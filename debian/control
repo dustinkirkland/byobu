@@ -11,7 +11,6 @@ Package: screen-profiles
 Architecture: all
 Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, screen, gettext-base, python, python-newt
 Recommends: update-notifier-common
-Suggests: bc
 Enhances: screen
 Description: a set of useful profiles and a profile-switcher for GNU screen
  screen-profiles includes a set of profiles for the GNU screen window manager.
@@ -22,7 +21,5 @@ Description: a set of useful profiles and a profile-switcher for GNU screen
  updates-available), etc.  The profile-switcher allows users to quickly switch
  their .screenrc to any of the available profiles.
  .
- bc provides more advanced calculations of memory and cpu-speed in the
- status panel.  update-notifier-common provides a more efficient and standard
- mechanism for calculating the number of updates available in the status
- panel.
+ update-notifier-common provides a more efficient and standard mechanism for
+ calculating the number of updates available in the status panel.

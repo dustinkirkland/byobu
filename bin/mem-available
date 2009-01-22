@@ -1,11 +1,11 @@
 #!/bin/sh -e
 
 mem=`free | grep -m 1 "^Mem:" | awk '{print $2}'`
-if [ $mem -gt 1000000 -a -x /usr/bin/bc ]; then
-	mem=$(echo "scale=1; $mem/1000000" | bc)
+if [ $mem -ge 1048576 ]; then
+	mem=$(echo "$mem" | awk '{ printf "%.1f", $1 / 1048576 }')
 	echo "$mem""GB"
-elif [ $mem -gt 1000 -a -x /usr/bin/bc ]; then
-	mem=$(echo "scale=0; $mem/1000" | bc)
+elif [ $mem -ge 1024 ]; then
+	mem=$(echo "$mem" | awk '{ printf "%.0f", $1 / 1024 }')
 	echo "$mem""MB"
 else
 	echo "$mem""KB"

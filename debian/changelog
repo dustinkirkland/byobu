@@ -5,8 +5,9 @@ screen-profiles (1.13) UNRELEASED; urgency=low
     information
   * doc/help.txt: updated help page
   * keybindings/common: F12 -> lockscreen
+  * debian/control, bin/*: remove dependencing on bc by using awk
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Jan 2009 00:30:14 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Jan 2009 00:31:23 -0500
 
 screen-profiles (1.12-0ubuntu1) jaunty; urgency=low
 
