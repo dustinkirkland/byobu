@@ -2,6 +2,7 @@ bin/cpu-count usr/share/screen-profiles/bin
 bin/cpu-freq usr/share/screen-profiles/bin
 bin/load-average usr/share/screen-profiles/bin
 bin/mem-available usr/share/screen-profiles/bin
+bin/mem-used usr/share/screen-profiles/bin
 bin/reboot-required usr/share/screen-profiles/bin
 bin/release usr/share/screen-profiles/bin
 bin/updates-available usr/share/screen-profiles/bin

@@ -1,11 +1,11 @@
 #!/bin/sh -e
 
-mem=`grep -m 1 "^MemTotal:" /proc/meminfo | sed 's/ kB$//' | sed 's/^.* //'`
+mem=`free | grep -m 1 "^Mem:" | awk '{print $2}'`
 if [ $mem -gt 1000000 -a -x /usr/bin/bc ]; then
 	mem=$(echo "scale=1; $mem/1000000" | bc)
 	echo "$mem""GB"
 elif [ $mem -gt 1000 -a -x /usr/bin/bc ]; then
-	mem=$(echo "scale=1; $mem/1000" | bc)
+	mem=$(echo "scale=0; $mem/1000" | bc)
 	echo "$mem""MB"
 else
 	echo "$mem""KB"

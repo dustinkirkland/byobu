@@ -1,8 +1,10 @@
 screen-profiles (1.13) UNRELEASED; urgency=low
 
-  * 
+  * bin/updates-available: fix bug when no updates are available
+  * bin/mem-used, profiles/common, profiles/ubuntu: add memory usage
+    information
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Jan 2009 01:42:57 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Jan 2009 00:08:15 -0500
 
 screen-profiles (1.12-0ubuntu1) jaunty; urgency=low
 

@@ -1,0 +1,4 @@
+#!/bin/sh -e
+
+mem=`free | grep -m 1 "^Mem:" | awk '{printf "%.0f", 100 * $3 / $2}'`
+echo $mem"%"
