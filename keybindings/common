@@ -43,5 +43,5 @@ bindkey -k k8 help	# F8  | Advanced help/keybindings
 bindkey -k k9 screen -t help 0 screen-profiles-helper # F9 | Welcome screen
 			# F10 | 'toolbar' in gnome-terminal
 			# F11 | 'fullscreen' in gnome-terminal
-			# F12 |
+bindkey -k F2 lockscreen # F12 | Lock this terminal
 

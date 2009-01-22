@@ -1,15 +1,15 @@
 Screen is a powerful program that allows your terminal session to use
 multiple windows and retain context among multiple logins.
 This version of screen is configured with a task bar at the bottom of
-the window that shows system status, pending updates, and which window
-you are currently viewing.
+the window that shows system status, pending updates, and tabs for
+open windows.
 
 Key mappings:
 F2    Create new window      |  F6    Detach from session
 F3    Go to prev window      |  F7    Scrollback/copy mode
-F4    Go to next window      |  F8    Advanced help
-F5    Close this window      |  F9    Basic help (this)
-
+F4    Go to next window      |  F8    View keybindings
+F5    Close this window      |  F9    Configure screen-profiles
+                             |  F12   Lock this terminal
 Commands:
 'screen -r'  - reattach      | 'man screen' - complete help
 

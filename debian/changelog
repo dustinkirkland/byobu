@@ -3,8 +3,10 @@ screen-profiles (1.13) UNRELEASED; urgency=low
   * bin/updates-available: fix bug when no updates are available
   * bin/mem-used, profiles/common, profiles/ubuntu: add memory usage
     information
+  * doc/help.txt: updated help page
+  * keybindings/common: F12 -> lockscreen
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Jan 2009 00:08:15 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Jan 2009 00:30:14 -0500
 
 screen-profiles (1.12-0ubuntu1) jaunty; urgency=low
 
