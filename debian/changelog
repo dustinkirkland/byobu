@@ -1,8 +1,14 @@
-screen-profiles (1.14) UNRELEASED; urgency=low
+screen-profiles (1.15) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Jan 2009 23:06:20 -0600
+
+screen-profiles (1.14-0ubuntu1) jaunty; urgency=low
 
   * bin/mem-used: fix calculation to account for buffers and cache
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Jan 2009 12:20:27 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Jan 2009 23:03:39 -0600
 
 screen-profiles (1.13-0ubuntu1) jaunty; urgency=low
 
