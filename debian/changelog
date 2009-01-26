@@ -1,8 +1,8 @@
 screen-profiles (1.15) UNRELEASED; urgency=low
 
-  * 
+  * profiles/ubuntu: Ubuntu pseudo-logo looks better on dark black
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Jan 2009 23:06:20 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 26 Jan 2009 14:36:19 -0600
 
 screen-profiles (1.14-0ubuntu1) jaunty; urgency=low
 
