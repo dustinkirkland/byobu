@@ -10,6 +10,11 @@ VER=`head -n 1 debian/changelog | sed 's/^.*(//' | sed 's/).*//' | sed 's/-.*//'
 get-orig-source:
 	dh_testdir
 	-[ -d ../${PACKAGE} ] && mv ../${PACKAGE} ../${PACKAGE}-${VER}
+	# auto-generate ubuntu-dark profile
+	cp -f profiles/ubuntu profiles/ubuntu-dark
+	grep "^caption " profiles/common >> profiles/ubuntu-dark
+	sed -i "s/ Wk/ Kw/g" profiles/ubuntu-dark
+	sed -i "s/kW/wK/g" profiles/ubuntu-dark
 	tar -C ../ --exclude .bzr --exclude debian -zcvf ../${PACKAGE}_${VER}.orig.tar.gz ${PACKAGE}-${VER}
 
 prebuild:
