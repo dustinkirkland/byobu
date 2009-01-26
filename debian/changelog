@@ -1,9 +1,18 @@
-screen-profiles (1.15) UNRELEASED; urgency=low
+screen-profiles (1.16) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 26 Jan 2009 15:24:52 -0600
+
+screen-profiles (1.15-0ubuntu1) jaunty; urgency=low
 
   * profiles/ubuntu: Ubuntu pseudo-logo looks better on dark black
   * select-screen-profile: append -light to default Ubuntu profile
+  * debian/rules, debian/install: automatically generate and install an
+    ubuntu-dark themed profile, thanks to Tyler Willingham for the
+    inspiration
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 26 Jan 2009 14:59:27 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 26 Jan 2009 15:22:44 -0600
 
 screen-profiles (1.14-0ubuntu1) jaunty; urgency=low
 
