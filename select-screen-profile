@@ -72,10 +72,10 @@ prompt() {
 		i=$(expr $i + 1)
 		desc="          "
 		if [ "$x" = "ubuntu" ]; then
-			desc="<---- ` gettext 'recommended'`"
+			desc="-light\t<---- ` gettext 'recommended'`"
 			simple=$i
 		fi
-		echo " $i. $x \t\t$desc"
+		echo " $i. $x$desc"
 	done
 	echo
 	selected=x
