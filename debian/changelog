@@ -1,10 +1,17 @@
-screen-profiles (1.16) UNRELEASED; urgency=low
+screen-profiles (1.17) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 27 Jan 2009 15:04:12 -0500
+
+screen-profiles (1.16-0ubuntu1) jaunty; urgency=low
 
   * select-screen-profile: limit erroneous attempts to 5; make the "plain"
     profile default; remove the "recommended" pointer
   * screen-profiles-helper: drop the "recommended" pointer
+  * doc/help.txt: make the help text more readable
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 27 Jan 2009 14:12:44 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 27 Jan 2009 14:42:27 -0500
 
 screen-profiles (1.15-0ubuntu1) jaunty; urgency=low
 
