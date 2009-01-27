@@ -150,7 +150,10 @@ def profile(screen, size):
     li = Listbox(height = 6, width = 60, returnExit = 1)
 
     for choice in commands.getoutput('select-screen-profile -l').splitlines():
-        li.append(choice, choice)
+        if choice == "ubuntu":
+            li.append(choice+("-light"), choice)
+        else:
+            li.append(choice, choice)
 
     bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel")), compact = 1)
 
