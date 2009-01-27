@@ -1,8 +1,10 @@
-screen-profiles (1.17) UNRELEASED; urgency=low
+screen-profiles (1.17-0ubuntu1) jaunty; urgency=low
 
-  * 
+  * screen: wrapper script for calling select-screen-profile on a per-user,
+    first-run basis
+  * preinst, postrm: maintainer scripts to dpkg-divert screen to screen.real
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 27 Jan 2009 15:04:12 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 27 Jan 2009 15:47:46 -0500
 
 screen-profiles (1.16-0ubuntu1) jaunty; urgency=low
 

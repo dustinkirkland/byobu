@@ -11,6 +11,7 @@ profiles/ubuntu usr/share/screen-profiles/profiles
 profiles/ubuntu-dark usr/share/screen-profiles/profiles
 keybindings/common usr/share/screen-profiles/keybindings
 windows/common usr/share/screen-profiles/windows
+screen usr/bin
 select-screen-profile usr/bin
 screen-profiles-helper usr/bin
 screen-launcher-install usr/share/screen-profiles/
