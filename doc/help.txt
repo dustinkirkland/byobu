@@ -5,10 +5,10 @@ the window that shows system status, pending updates, and tabs for
 open windows.
 
 Key mappings:
-F2    Create new window      |  F6    Detach from session
-F3    Go to prev window      |  F7    Scrollback/copy mode
-F4    Go to next window      |  F8    View keybindings
-F5    Close this window      |  F9    Configure screen-profiles
+F2    Create a new window    |  F6    Detach from the session
+F3    Go to the prev window  |  F7    Enter scrollback mode
+F4    Go to the next window  |  F8    View all keybindings
+F5    Close current window   |  F9    Configure screen-profiles
                              |  F12   Lock this terminal
 Commands:
 'screen -r'  - reattach      | 'man screen' - complete help
