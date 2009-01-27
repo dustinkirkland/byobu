@@ -1,8 +1,9 @@
 screen-profiles (1.16) UNRELEASED; urgency=low
 
-  * 
+  * select-screen-profile: limit erroneous attempts to 5; make the "plain"
+    profile default; remove the "recommended" pointer
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 26 Jan 2009 15:24:52 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 27 Jan 2009 12:36:44 -0500
 
 screen-profiles (1.15-0ubuntu1) jaunty; urgency=low
 

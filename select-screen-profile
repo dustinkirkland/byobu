@@ -72,14 +72,20 @@ prompt() {
 		i=$(expr $i + 1)
 		desc="          "
 		if [ "$x" = "ubuntu" ]; then
-			desc="-light\t<---- ` gettext 'recommended'`"
+			desc="-light\t"
+		elif [ "$x" = "plain" ]; then
 			simple=$i
 		fi
 		echo " $i. $x$desc"
 	done
 	echo
 	selected=x
+	count=1
 	while /bin/true; do
+		if [ $count -gt 5 ]; then
+			exit 1
+		fi
+		count=`expr $count + 1`
 		if [ -z "$selected" -a ! -z "$simple" ]; then
 			selected="$simple"
 		elif ! test $selected -gt 0 2>/dev/null; then
