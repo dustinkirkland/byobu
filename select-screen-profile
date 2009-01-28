@@ -54,8 +54,11 @@ assert_symlink "$HOME/.screenrc-profile"
 listprofiles() {
 	# Display list of profiles, one per line
 	for x in $(ls $PROFILE_DIR); do
-		if [ $x = "common" ]; then
+		if [ $x = "common" -o $x = "misc" ]; then
 			# Skip the common profile, no value there
+			continue
+		fi
+		if [ $x = "ubuntu" -a -r "$PROFILE_DIR/ubuntu-light" ]; then
 			continue
 		fi
 		echo "$x"

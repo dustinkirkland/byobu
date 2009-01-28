@@ -10,11 +10,8 @@ VER=`head -n 1 debian/changelog | sed 's/^.*(//' | sed 's/).*//' | sed 's/-.*//'
 get-orig-source:
 	dh_testdir
 	-[ -d ../${PACKAGE} ] && mv ../${PACKAGE} ../${PACKAGE}-${VER}
-	# auto-generate ubuntu-dark profile
-	cp -f profiles/ubuntu profiles/ubuntu-dark
-	grep "^caption " profiles/common >> profiles/ubuntu-dark
-	sed -i "s/ Wk/ Kw/g" profiles/ubuntu-dark
-	sed -i "s/kW/wK/g" profiles/ubuntu-dark
+	# auto-generate the logo'd light/dark profiles
+	./profiles/generate-profiles
 	tar -C ../ --exclude .bzr --exclude debian -zcvf ../${PACKAGE}_${VER}.orig.tar.gz ${PACKAGE}-${VER}
 
 prebuild:
@@ -44,6 +41,7 @@ binary-indep: build install
 	dh_compress -i
 	dh_fixperms -i
 	dh_link -i /etc/screenrc usr/share/${PACKAGE}/profiles/plain
+	dh_link -i /usr/share/${PACKAGE}/profiles/ubuntu-light usr/share/${PACKAGE}/profiles/ubuntu
 	dh_installdeb -i
 	dh_gencontrol -i
 	dh_md5sums -i

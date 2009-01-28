@@ -7,8 +7,14 @@ bin/reboot-required usr/share/screen-profiles/bin
 bin/release usr/share/screen-profiles/bin
 bin/updates-available usr/share/screen-profiles/bin
 profiles/common usr/share/screen-profiles/profiles
-profiles/ubuntu usr/share/screen-profiles/profiles
+profiles/ubuntu-light usr/share/screen-profiles/profiles
 profiles/ubuntu-dark usr/share/screen-profiles/profiles
+profiles/debian-light usr/share/screen-profiles/profiles/misc
+profiles/debian-dark usr/share/screen-profiles/profiles/misc
+profiles/fedora-light usr/share/screen-profiles/profiles/misc
+profiles/fedora-dark usr/share/screen-profiles/profiles/misc
+profiles/redhat-light usr/share/screen-profiles/profiles/misc
+profiles/redhat-dark usr/share/screen-profiles/profiles/misc
 keybindings/common usr/share/screen-profiles/keybindings
 windows/common usr/share/screen-profiles/windows
 screen usr/bin
