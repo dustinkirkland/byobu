@@ -139,12 +139,6 @@ setprofile() {
 	if [ $found -eq 0 ]; then
 		echo "Invalid profile"
 	fi
-	if [ ! -e "$HOME/.screenrc-windows" ]; then
-		cp "$BASE_DIR/windows/common" "$HOME/.screenrc-windows"
-	fi
-	if [ ! -e "$HOME/.screenrc-keybindings" ]; then
-		touch "$HOME/.screenrc-keybindings"
-	fi
 }
 
 if [ $# -eq 0 ]; then

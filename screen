@@ -18,7 +18,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-if [ ! -r "$HOME/.screenrc-profile" ]; then
-	/usr/bin/select-screen-profile
-fi
+# Ensure that the user has selected a screen profile
+[ -r "$HOME/.screenrc-profile" ] || /usr/bin/select-screen-profile
+
+# Ensure that their keybindings are seeded
+[ -s "$HOME/.screenrc-keybindings" ] || echo "source /usr/share/screen-profiles/keybindings/common" > "$HOME/.screenrc-keybindings"
+
+# Ensure that their default windows are seeded
+[ -r "$HOME/.screenrc-windows" ] || cp "/usr/share/screen-profiles/windows/common" "$HOME/.screenrc-windows"
+
+# Now let's execute screen!
 exec /usr/bin/screen.real "$@"
