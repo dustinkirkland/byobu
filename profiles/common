@@ -47,11 +47,8 @@ caption always "%{kW}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{kW}%?%+Lw%?"
 termcapinfo xterm* ti@:te@
 defscrollback 10000
 
-# Default keybindings
-source /usr/share/screen-profiles/keybindings/common
-
-# Additional, user-defined/overriding keybindings should be placed
-# in each user's ~/.screenrc-keybindings
+# The selected keybinding set, plus any additional user-defined/overriding
+# keybindings should be placed in each user's ~/.screenrc-keybindings
 source ~/.screenrc-keybindings
 
 # Default windows

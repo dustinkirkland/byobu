@@ -9,7 +9,6 @@ for i in $(ls profiles/logos); do
 	sed -i "s/__LOGO__/$logo/" profiles/$i-light
 	echo "Generating profile: $i-dark"
 	cp profiles/$i-light profiles/$i-dark
-	grep "^caption " profiles/common >> profiles/$i-dark
 	sed -i "s/ Wk/ Kw/g" profiles/$i-dark
 	sed -i "s/kW/wK/g" profiles/$i-dark
 done

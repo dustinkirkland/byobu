@@ -68,13 +68,14 @@ def menu(screen, size, isInstalled):
         installtext=_("Install screen by default at login")
 
 
-    li = Listbox(height = 6, width = 60, returnExit = 1)
+    li = Listbox(height = 7, width = 60, returnExit = 1)
     li.append(_("Help"), 1)
     li.append(_("Change screen profile"), 2)
-    li.append(_("Change escape sequence"), 3)
-    li.append(_("Create new window(s)"), 4)
-    li.append(_("Manage default windows"), 5)
-    li.append(installtext, 6)
+    li.append(_("Change keybinding set"), 3)
+    li.append(_("Change escape sequence"), 4)
+    li.append(_("Create new window(s)"), 5)
+    li.append(_("Manage default windows"), 6)
+    li.append(installtext, 7)
     bb = ButtonBar(screen, ((_("Ok"), "ok"), (_("Exit"), "exit")), compact = 1)
 
     g = GridForm(screen, _("Screen Profiles Menu"), 1, 2)
@@ -170,7 +171,26 @@ def profile(screen, size):
             return 0
 
     return 100
-    
+
+def keybindings(screen, size):
+    li = Listbox(height = 6, width = 60, returnExit = 1)
+    for choice in commands.getoutput('ls '+SHARE+'/keybindings').splitlines():
+        li.append(choice, choice)
+    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel")), compact = 1)
+    g = GridForm(screen, _("Which set of keybindings would you like to use?"), 1, 2)
+    g.add(li, 0, 0, padding=(4,2,4,2))
+    g.add(bb, 0, 1, padding=(1,1,0,0))
+    if bb.buttonPressed(g.runOnce()) != "cancel":
+        switch_keybindings(li.current())
+        button = messagebox(screen, 60, 2, _("Message"), _("Restart screen to apply the new keybindings"), \
+            buttons=((_("Ok"),"ok"), (_("Exit"), "exit")) )
+        if button == "exit":
+            return 0
+    return 100
+
+def switch_keybindings(set):
+    commands.getoutput("sed -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+HOME+"/.screenrc-keybindings")
+
 def newwindow(screen, size):
     title=Entry(8, text="bash", returnExit=1)
     titlel=Label(_("Title: "))
@@ -190,7 +210,7 @@ def newwindow(screen, size):
     for cur in cmd:
         r.append(cur[0], count)
         count=count+1
-        
+
     cb=Checkbox(_("Add to default windows"))
 
     bb = ButtonBar(screen, ((_("Create"), "create"), (_("Cancel"), "cancel")), compact = 1)
@@ -219,18 +239,18 @@ def newwindow(screen, size):
                 appendwindow(win)
 
     return 100
-    
+
 def appendwindow(win):
     f=open(HOME+'/.screenrc-windows', 'a')
     try:
         f.write(win+"\n")
-        
+
     except IOError:
         return None
 
     finally:
         f.close()
-        
+
 def readwindows():
     f=open(HOME+'/.screenrc-windows', 'r')
     try:
@@ -238,7 +258,7 @@ def readwindows():
         for line in f.readlines():
             if line.startswith("# "):
                # this is a comment
-               window=[-1, line]    
+               window=[-1, line]
             elif line.startswith("#"):
                # this is an inactive window
                window=[0, line.lstrip("#")]
@@ -253,7 +273,7 @@ def readwindows():
 
     finally:
         f.close()
-        
+
 def writewindows(winlist):
     f=open(HOME+'/.screenrc-windows', 'w')
     try:
@@ -270,10 +290,10 @@ def writewindows(winlist):
 
     finally:
         f.close()
-        
+
 def defaultwindows(screen, size):
     winlist=readwindows()
-    
+
     rl=Label(_("Windows:"))
     r=CheckboxTree(10, scroll=1)
     count=0
@@ -281,25 +301,25 @@ def defaultwindows(screen, size):
        if win[0] != -1:
             r.append(win[1],count,selected=win[0])
        count=count+1
-    
+
     bb = ButtonBar(screen, ((_("Save"), "save"), (_("Cancel"), "cancel")), compact = 1)
-    
+
     g = GridForm(screen, _("Select window(s) to create by default:"), 2, 4 )
     g.add(rl, 0, 0, anchorLeft=1, anchorTop=1, padding=(4,0,0,1))
     g.add(r, 1, 0)
     g.add(bb, 1, 1, padding=(4,1,0,0))
-    
+
     if bb.buttonPressed(g.runOnce()) != "cancel":
         count=0
         for win in winlist:
             if win[0] != -1:
                 win[0] = r.getEntryValue(count)[1]
             count=count+1
-            
+
         writewindows(winlist)
-        
+
     return 100
-    
+
 def install(screen, size, isInstalled):
     if not isInstalled:
         out = commands.getoutput("bash /usr/share/screen-profiles/screen-launcher-install")
@@ -430,13 +450,15 @@ def main():
             tag = help(screen, size, config)
         elif tag == 2:
             tag = profile(screen, size)
-	elif tag == 3:
+        elif tag == 3:
+            tag = keybindings(screen, size)
+	elif tag == 4:
             tag = chgesc(screen, size)
-        elif tag == 4:
-            tag = newwindow(screen, size)
         elif tag == 5:
-            tag = defaultwindows(screen, size)
+            tag = newwindow(screen, size)
         elif tag == 6:
+            tag = defaultwindows(screen, size)
+        elif tag == 7:
             tag = install(screen, size, isInstalled)
             isInstalled=(tag == 100)
 

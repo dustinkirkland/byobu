@@ -16,6 +16,7 @@ profiles/fedora-dark usr/share/screen-profiles/profiles/misc
 profiles/redhat-light usr/share/screen-profiles/profiles/misc
 profiles/redhat-dark usr/share/screen-profiles/profiles/misc
 keybindings/common usr/share/screen-profiles/keybindings
+keybindings/none usr/share/screen-profiles/keybindings
 windows/common usr/share/screen-profiles/windows
 screen usr/bin
 select-screen-profile usr/bin
