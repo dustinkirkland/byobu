@@ -40,9 +40,6 @@ backtick 107 10 10 /usr/share/screen-profiles/bin/mem-used
 
 hardstatus alwayslastline
 
-# Window tabs, second to last line
-caption always "%{kW}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{kW}%?%+Lw%?"
-
 # Allow scrolling in xterm, 10000 lines
 termcapinfo xterm* ti@:te@
 defscrollback 10000
