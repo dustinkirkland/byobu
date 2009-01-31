@@ -160,7 +160,7 @@ else
 				break
 			;;
 			*)
-				usage()
+				usage
 				exit 1
 			;;
 			--)
