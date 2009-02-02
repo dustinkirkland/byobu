@@ -437,7 +437,7 @@ def main():
     except:
         showhelp="on"
 
-    isInstalled = (commands.getoutput('grep screen-launcher '+(HOME+'/.bashrc')) != "")
+    isInstalled = (commands.getoutput('grep screen-launcher '+(HOME+'/.profile')) != "")
 
     if showhelp == "on" :
         tag = help(screen, size, config)
