@@ -27,5 +27,11 @@
 # Ensure that their default windows are seeded
 [ -r "$HOME/.screenrc-windows" ] || cp "/usr/share/screen-profiles/windows/common" "$HOME/.screenrc-windows"
 
+# Ensure that the user's .screenrc at least exists
+[ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
+
+# Prevent recursion; .screenrc should no longer source .screenrc-profile
+sed -i '/^source .*\.screenrc-profile$/d' $HOME/.screenrc
+
 # Now let's execute screen!
-exec /usr/bin/screen.real "$@"
+exec /usr/bin/screen.real -c "$HOME/.screenrc-profile" "$@"
