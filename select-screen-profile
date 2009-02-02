@@ -115,21 +115,6 @@ setprofile() {
 	for x in $profiles; do
 		i=`expr $i + 1`
 		if [ "$i" = "$selected" -o "$x" = "$selected" ]; then
-			if [ ! -e "$HOME/.screenrc" ]; then
-				# If the user doesn't have a .screenrc, seed one
-				echo "source $HOME/.screenrc-profile" > "$HOME/.screenrc"
-			else
-				# If the user does have a .screenrc, see if it has the
-				# sources lines
-				if ! grep -qs "source $HOME/.screenrc-profile" "$HOME/.screenrc"; then
-					# And if it's missing the source line, add it
-					# to the top
-					tmp=`mktemp "$HOME/.screenrc.XXXXXX"`
-					echo "source $HOME/.screenrc-profile" > "$tmp"
-					cat "$HOME/.screenrc" >> "$tmp"
-					mv -f "$tmp" "$HOME/.screenrc"
-				fi
-			fi
 			rm -f "$HOME/.screenrc-profile"
 			ln -s "$PROFILE_DIR/$x" "$HOME/.screenrc-profile"
 			found=1
