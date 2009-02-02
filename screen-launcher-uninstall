@@ -21,8 +21,11 @@
 
 remove_screen_launcher() {
 	dest=$1
-	sed -ibak '/^\/usr\/bin\/screen-launcher$/d' "$dest"
+	if [ -w "$dest" ]; then
+		sed -i '/\/usr\/bin\/screen-launcher$/d' "$dest"
+	fi
 }
 
-remove_screen_launcher "$HOME/.bashrc"
-remove_screen_launcher "$HOME/.bash_profile"
+for i in ".profile" ".bashrc" ".bash_profile"; do
+	remove_screen_launcher "$HOME/$i"
+done

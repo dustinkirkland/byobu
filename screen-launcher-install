@@ -22,6 +22,7 @@
 install_screen_launcher() {
 	dest=$1
 	launcher="/usr/bin/screen-launcher"
+	launcher_line="[ -x $launcher ] && $launcher"
 	# We have to make sure screen is called last
 	pos=$(( $(grep -ns "$launcher" "$dest" | sed 's/:.*$//' | head -1) ))
 	do=0
@@ -29,7 +30,7 @@ install_screen_launcher() {
 		if [ $pos -lt $(( $(wc -l "$dest" | sed "s/ .*$//") -2)) ]; then
 			# We have to reposition the line at the end
 			# First remove it
-			sed -ibak '/screen-launcher/d' "$dest"
+			sed -i '/\/usr\/bin\/screen-launcher$/d' "$dest"
 			do=1
 		fi
 	else
@@ -37,9 +38,17 @@ install_screen_launcher() {
 	fi
 	# Add it at the end
 	if [ $do -eq 1 ]; then
-		echo "$launcher" >> "$dest"
+		echo "$launcher_line" >> "$dest"
 	fi
 }
 
-install_screen_launcher "$HOME/.bashrc"
-install_screen_launcher "$HOME/.bash_profile"
+# Install in ~/.profile unconditionally
+install_screen_launcher "$HOME/.profile"
+
+# Now, install in any shell-specific profiles, if they exist
+# This list may grow to support other shells
+for i in ".bash_profile" ".bash_login"; do
+	if [ -w "$HOME/$i" ]; then
+		install_screen_launcher "$HOME/$i"
+	fi
+done
