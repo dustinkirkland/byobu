@@ -1,4 +1,10 @@
-screen-profiles (1.19) UNRELEASED; urgency=low
+screen-profiles (1.20) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Feb 2009 11:37:01 +0100
+
+screen-profiles (1.19-0ubuntu1) jaunty; urgency=low
 
   * screen: wrapper script should add a -c arg, and specify your chosen
     profile, and ensure that .screenrc at least exists, prevent recursion
@@ -16,7 +22,7 @@ screen-profiles (1.19) UNRELEASED; urgency=low
   * select-screen-profile: don't mess with the user's ~/.screenrc file here;
     only set up the ~/.screenrc-profile symlink
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Feb 2009 15:51:51 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Feb 2009 10:24:28 +0100
 
 screen-profiles (1.18-0ubuntu1) jaunty; urgency=low
 
