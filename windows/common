@@ -1,4 +1,4 @@
 # Default windows
 screen -t shell 3
-screen -t MOTD 2 watch -n 60 cat /etc/motd
+screen -t MOTD 2 watch -n 300 cat /etc/motd
 screen -t welcome 1 screen-profiles-helper
