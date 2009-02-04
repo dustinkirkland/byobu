@@ -37,7 +37,7 @@ backtick 104 3600 3600 /usr/share/screen-profiles/bin/cpu-count
 backtick 105 3600 3600 /usr/share/screen-profiles/bin/mem-available
 backtick 106 5 5 /usr/share/screen-profiles/bin/load-average
 backtick 107 10 10 /usr/share/screen-profiles/bin/mem-used
-backtick 108 1800 1800 /usr/share/screen-profiles/bin/ec2-cost
+backtick 108 600 600 /usr/share/screen-profiles/bin/ec2-cost
 
 hardstatus alwayslastline
 
