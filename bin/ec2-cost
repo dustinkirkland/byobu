@@ -1,0 +1,64 @@
+#!/bin/sh
+#
+#    ec2-cost: approximate EC2 cost (USD) of the current instance
+#
+#    Copyright (C) 2008 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+# Instance Cost Basis
+#			US		Europe
+# Small  (1cpu, 32bit)	$0.10/h		$0.11/h
+# Medium (2cpu, 32bit)	$0.20/h		$0.22/h
+# Large  (4cpu, 64bit)	$0.40/h		$0.44/h
+# XLarge (8cpu, 64bit)	$0.80/h		$0.88/h
+
+# Count CPUs
+cpu_count=`grep -c "^processor.*:" /proc/cpuinfo`
+[ -z "$cpu_count" ] && cpu_count=1
+# Apply the going rate
+CPU_RATE=`echo "$cpu_count" | awk '{printf "%f", 0.10*$1}'`
+# BUG: Some logic needed here to add 10% cost for Europe instances?
+
+# Data Transfer Cost Basis
+# Incoming	$0.10/GB
+# Outgoing	$0.17/GB
+# (This gets more complex if you use >1TB/mo)
+RX_RATE="0.10"
+TX_RATE="0.17"
+
+# Perhaps should auto detect this?
+IF=`route | grep "^default" | awk '{print $8}'`
+
+# Calculate bandwidth cost
+tx_gb=`/sbin/ifconfig "$IF" | grep "TX bytes:" | sed "s/^.*TX bytes://" | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }'`
+rx_gb=`/sbin/ifconfig "$IF" | grep "RX bytes:" | sed "s/^.*RX bytes://" | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }'`
+network_cost=`echo "$tx_gb" "$TX_RATE" "$rx_gb" "$RX_RATE" | awk '{printf "%f %f", $1*$2, $3*$4}' | awk '{printf "%f", $1 + $2}'`
+
+# Calculate uptime cost
+# BUG: This will only calculate uptime since boot!
+#      Some additional input will be required to account for reboots!!!
+hours=`awk '{printf "%f", 1 + $1 / 60 / 60 }' /proc/uptime | sed 's/\..*$//' `
+uptime_cost=`echo "$hours" | awk "{printf \"%f\", "$CPU_RATE" * $hours}"`
+total_cost=`echo "$network_cost" "$uptime_cost" | awk '{printf "~\$%.2f", $1 + $2}'`
+
+#echo $tx_gb
+#echo $rx_gb
+#echo $network_cost
+#echo $hours
+#echo $uptime_cost
+
+echo $total_cost
