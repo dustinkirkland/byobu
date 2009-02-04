@@ -49,6 +49,7 @@ if [ -r $mycache -a -O $mycache ]; then
 	diff=`expr $now - $timestamp`
 	if [ $diff -lt $EXPIRATION ]; then
 		u=`grep -m 1 "^[0-9]" $mycache | sed "s/\s.*$//"`
+		echo $u > $mycache
 		print_updates $u
 	fi
 else
@@ -62,6 +63,7 @@ fi
 # If apt-check binary exists, use it
 if [ -x /usr/lib/update-notifier/apt-check ]; then
 	u=`/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;.*$//" | tee $mycache`
+	echo $u > $mycache
 	print_updates $u
 fi
 
@@ -75,6 +77,7 @@ fi
 # If yum exists, use it
 if [ -x /usr/bin/yum ]; then
 	u=`/usr/bin/yum list updates | grep -c "updates"`
+	echo "$u" > $mycache
 	print_updates $u
 fi
 
