@@ -23,23 +23,8 @@ install_screen_launcher() {
 	dest=$1
 	launcher="/usr/bin/screen-launcher"
 	launcher_line="[ -x $launcher ] && $launcher"
-	# We have to make sure screen is called last
-	pos=$(( $(grep -ns "$launcher" "$dest" | sed 's/:.*$//' | head -1) ))
-	do=0
-	if [ $pos -gt 0 ]; then
-		if [ $pos -lt $(( $(wc -l "$dest" | sed "s/ .*$//") -2)) ]; then
-			# We have to reposition the line at the end
-			# First remove it
-			sed -i '/\/usr\/bin\/screen-launcher$/d' "$dest"
-			do=1
-		fi
-	else
-		do=1
-	fi
 	# Add it at the end
-	if [ $do -eq 1 ]; then
-		echo "$launcher_line" >> "$dest"
-	fi
+	echo "$launcher_line" >> "$dest"
 }
 
 # Sanitize the environment
