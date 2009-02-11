@@ -18,6 +18,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-if [ -e /var/run/reboot-required ]; then
-	echo "(@)"
-fi
+[ -e /var/run/reboot-required ] && echo "(@)"
