@@ -1,8 +1,7 @@
-GNU Screen is a powerful program that allows your terminal session to
-use multiple windows, and retain context among multiple logins.
+Screen is a powerful program that allows your terminal session to use
+multiple windows and retain context among multiple logins.
 
-This version of screen is configured with a task bar at the bottom of
-the window that shows: open windows, the current-OS, reboot-required,
+A task bar at the bottom shows: open windows, OS-version, reboot-req,
 updates-available, system-load, cpu-info, memory-info, and date/time.
 
 F2    Create a new window    |  F6    Detach from the session
@@ -10,7 +9,5 @@ F3    Go to the prev window  |  F7    Enter scrollback mode
 F4    Go to the next window  |  F8    View all keybindings
 F5    Close current window   |  F9    Configure screen-profiles
                              |  F12   Lock this terminal
-
-'screen -r'  - reattach      | 'man screen' - complete help
-
-The escape key is currently set to <ctrl-<esckey>>
+'screen -r'  - reattach      |
+'man screen' - complete help |  <ctrl-<esckey>> Escape sequence
