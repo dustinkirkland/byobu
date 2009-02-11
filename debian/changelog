@@ -1,4 +1,10 @@
-screen-profiles (1.21) UNRELEASED; urgency=low
+screen-profiles (1.22) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Feb 2009 08:58:42 -0600
+
+screen-profiles (1.21-0ubuntu1) jaunty; urgency=low
 
   * motd+shell, motd+shell.1: trivial script to print the motd then launch
     a shell; manpage accordingly, fixes for LP: #328066
@@ -8,7 +14,7 @@ screen-profiles (1.21) UNRELEASED; urgency=low
   * doc/help.txt, screen-profiles: try hard to get the help text to fit
     on a tty console screen
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Feb 2009 08:42:59 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Feb 2009 08:58:24 -0600
 
 screen-profiles (1.20-0ubuntu1) jaunty; urgency=low
 
