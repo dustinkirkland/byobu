@@ -1,13 +1,14 @@
 screen-profiles (1.21) UNRELEASED; urgency=low
 
-  Fixes for LP: #328066
   * motd+shell, motd+shell.1: trivial script to print the motd then launch
-    a shell; manpage accordingly
+    a shell; manpage accordingly, fixes for LP: #328066
   * windows/common: use motd+shell for shell window, drop motd window
   * debian/install: install motd+shell
   * debian/rules: install motd+shell.1 manpage
+  * doc/help.txt, screen-profiles: try hard to get the help text to fit
+    on a tty console screen
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Feb 2009 08:36:09 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Feb 2009 08:42:59 -0600
 
 screen-profiles (1.20-0ubuntu1) jaunty; urgency=low
 
