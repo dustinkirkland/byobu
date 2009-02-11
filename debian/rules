@@ -14,8 +14,12 @@ get-orig-source:
 	./profiles/generate-profiles
 	tar -C ../ --exclude .bzr --exclude debian -zcvf ../${PACKAGE}_${VER}.orig.tar.gz ${PACKAGE}-${VER}
 
+get-po:
+	xgettext -o po/screen-profiles.pot -L Python -d screen-profiles screen-profiles
+	xgettext -j -o po/screen-profiles.pot -L Shell -d screen-profiles select-screen-profile
+
+
 prebuild:
-	cd po4a && po4a --no-backups po4a.conf
 
 build:
 
@@ -35,7 +39,7 @@ binary-indep: build install
 	dh_testdir -i
 	dh_testroot -i
 	dh_installdocs -X.bzr -i
-	dh_installman -i screen-launcher.1 screen-profiles-helper.1 select-screen-profile.1
+	dh_installman -i screen-launcher.1 screen-profiles.1 select-screen-profile.1
 	dh_installchangelogs -i README
 	dh_installdebconf -i
 	dh_compress -i

@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-#    screen-profiles-helper
+#    screen-profiles
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Nick Barcet <nick.barcet@ubuntu.com>
@@ -18,6 +18,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# If you change any strings, please generate localization information with:
+#       ./debian/rules get-po
+
+
 import sys, os, os.path, time, string, commands, gettext
 from ConfigParser import SafeConfigParser
 from snack import *
@@ -27,8 +31,8 @@ SHARE='/usr/share/screen-profiles'
 DOC='/usr/share/doc/screen-profiles'
 DEF_ESC="A"
 
-gettext.bindtextdomain('screen-profiles-helper', SHARE+'/po')
-gettext.textdomain('screen-profiles-helper')
+gettext.bindtextdomain('screen-profiles', SHARE+'/po')
+gettext.textdomain('screen-profiles')
 _ = gettext.gettext
 
 # Command presets for windows creation
@@ -76,9 +80,9 @@ def menu(screen, size, isInstalled):
     li.append(_("Create new window(s)"), 5)
     li.append(_("Manage default windows"), 6)
     li.append(installtext, 7)
-    bb = ButtonBar(screen, ((_("Ok"), "ok"), (_("Exit"), "exit")), compact = 1)
+    bb = ButtonBar(screen, ((_("Okay"), "okay"), (_("Exit"), "exit")), compact = 1)
 
-    g = GridForm(screen, _("Screen Profiles Menu"), 1, 2)
+    g = GridForm(screen, _(" Screen Profiles Configuration"), 1, 2)
     g.add(li, 0, 0, padding=(4,2,4,2))
     g.add(bb, 0, 1, padding=(1,1,0,0))
 
@@ -89,7 +93,7 @@ def menu(screen, size, isInstalled):
 
 def messagebox(screen, width, height, title, text, \
     scroll=0, \
-    buttons=((_("Ok"), "ok"),(_("Cancel"), "cancel")) ):
+    buttons=((_("Okay"), "okay"),(_("Cancel"), "cancel")) ):
 
     t = Textbox(width, height, text, scroll=scroll )
     bb = ButtonBar(screen, buttons, compact = 1)
@@ -106,47 +110,18 @@ def help(screen, size, config):
 
     text=text.replace("<esckey>", getesckey(), 1)
 
-    t = Textbox(74, 19, text, scroll=1)
-    bb = ButtonBar(screen, ((_("Menu"), "menu"), (_("Exit"), "exit")), compact = 1)
-
-    try:
-        if (config.get('Defaults', 'help') == "on"):
-            cbOn = 1
-        else:
-            cbOn = 0
-    except:
-        cbOn = 1
-
-    cb=Checkbox(_("Display this help on startup"), isOn=cbOn)
-
+    t = Textbox(70, 16, text, scroll=1)
+    bb = ButtonBar(screen, ((_("Back"), )), compact = 1)
     g = GridForm(screen, _("Screen Profiles Help"), 1, 3)
     g.add(t, 0, 0, padding=(0,0,0,0))
-    g.add(cb, 0, 1, padding=(1,0,0,0))
     g.add(bb, 0, 2, padding=(1,1,0,0))
 
     button = bb.buttonPressed(g.runOnce())
 
-    if cb.value() != cbOn:
-        #Check box value has change, write config file
-        if not config.has_section('Defaults'):
-            config.add_section('Defaults')
-
-        if cb.value() == 1:
-            value = "on"
-        else:
-            value = "off"
-
-        config.set('Defaults','help',value)
-        configfile=open(HOME+'/.screen-profiles-helper', 'wb')
-        try:
-            config.write(configfile)
-        finally:
-            configfile.close()
-
-    if button == "exit":
-        return 0
-    else:
+    if button != "Back":
         return 100
+    else:
+        return 0
 
 def profile(screen, size):
     li = Listbox(height = 6, width = 60, returnExit = 1)
@@ -166,7 +141,7 @@ def profile(screen, size):
     if bb.buttonPressed(g.runOnce()) != "cancel":
         commands.getoutput('select-screen-profile --set %s' % li.current())
         button = messagebox(screen, 60, 2, _("Message"), _("Restart screen to apply the new profile"), \
-            buttons=((_("Ok"),"ok"), (_("Exit"), "exit")) )
+            buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
         if button == "exit":
             return 0
 
@@ -183,7 +158,7 @@ def keybindings(screen, size):
     if bb.buttonPressed(g.runOnce()) != "cancel":
         switch_keybindings(li.current())
         button = messagebox(screen, 60, 2, _("Message"), _("Restart screen to apply the new keybindings"), \
-            buttons=((_("Ok"),"ok"), (_("Exit"), "exit")) )
+            buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
         if button == "exit":
             return 0
     return 100
@@ -327,7 +302,7 @@ def install(screen, size, isInstalled):
             out = _("Screen will be launched automatically next time you login.")
 
         button = messagebox(screen, 60, 2, "Message", out, \
-        buttons=((_("Ok"),"ok"), (_("Exit"), "exit")) )
+        buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
         if button == "exit":
             return 0
 
@@ -338,7 +313,7 @@ def install(screen, size, isInstalled):
             out = _("Screen will not be used next time you login.")
 
         button = messagebox(screen, 60, 2, _("Message"), out, \
-        buttons=((_("Ok"),"ok"), (_("Exit"), "exit")) )
+        buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
         if button == "exit":
             return 0
 
@@ -413,36 +388,25 @@ def chgesc(screen, size):
         setesckey(esc.value())
         button = messagebox(screen, 60, 2, _("Message"), \
             _("Restart screen to enact your changes."), \
-            buttons=((_("Ok"),"ok"), (_("Exit"), "exit")) )
+            buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
         if button == "exit":
             return 0
     return 100
 
 def main():
-    """This is the main loop of our screen helper.
+    """This is the main loop of our screen-profiles utility
     """
 
     size = terminal_size()
     screen = SnackScreen()
-    screen.drawRootText(1,0,_('Screen Profiles Helper'))
+    screen.drawRootText(1,0,_(' Screen Profiles Configuration'))
     screen.pushHelpLine(_('<Tab>/<Alt-Tab> between elements | <Return> Validates'))
 
     config = SafeConfigParser()
-    try:
-        config.read(HOME+'/.screen-profiles-helper')
-        if config.has_option('Defaults', 'help'):
-            showhelp=config.get('Defaults', 'help')
-        else:
-            showhelp="on"
-    except:
-        showhelp="on"
 
     isInstalled = (commands.getoutput('grep screen-launcher '+(HOME+'/.profile')) != "")
 
-    if showhelp == "on" :
-        tag = help(screen, size, config)
-    else:
-        tag = 100
+    tag = 100
 
     while tag > 0 :
         tag = menu(screen, size, isInstalled)

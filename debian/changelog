@@ -1,4 +1,4 @@
-screen-profiles (1.20) UNRELEASED; urgency=low
+screen-profiles (1.20-0ubuntu1) jaunty; urgency=low
 
   * profiles/logos/*: remove unneeded trailing formatting
   * screen-launcher-install: no longer need the pruning code, since we just
@@ -8,8 +8,20 @@ screen-profiles (1.20) UNRELEASED; urgency=low
     estimating ec2 cost
   * bin/updates-available: write out local cache of updates available; add !
     only if there are security updates
+  * debian/rules: drop po4a rule, no longer valid
+  * screen-profiles-helper renamed to screen-profiles; updated all references
+    LP: #315886
+  * select-screen-profile, screen-profiles: update translation handling
+    and inline documentation
+  * bin/reboot-required: simplified
+  * bin/cpu-freq: simplified, made more efficient
+  * bin/cpu-count: simplified
+  * bin/ec2-cost: exit immediately if not running in EC2
+  * profiles/common: run cpu-freq, mem-used, and reboot-required every 2
+    seconds (as these are cheap and dynamic)
+  * profiles/skel: add ec2-cost to status bar
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 05 Feb 2009 00:27:16 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 09 Feb 2009 15:07:29 -0600
 
 screen-profiles (1.19-0ubuntu1) jaunty; urgency=low
 

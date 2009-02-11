@@ -40,7 +40,7 @@ bindkey -k k5 kill	# F5  | Close window
 bindkey -k k6 detach	# F6  | Detach from this session
 bindkey -k k7 copy	# F7  | Enter copy/scrollback mode
 bindkey -k k8 help	# F8  | Advanced help/keybindings
-bindkey -k k9 screen -t help 0 screen-profiles-helper # F9 | Welcome screen
+bindkey -k k9 screen -t help 0 screen-profiles # F9 | Configuration
 			# F10 | 'toolbar' in gnome-terminal
 			# F11 | 'fullscreen' in gnome-terminal
 bindkey -k F2 lockscreen # F12 | Lock this terminal
