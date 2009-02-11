@@ -18,10 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-mhz=`grep -m 1 "^cpu MHz" /proc/cpuinfo | sed "s/^.*: //" | sed "s/\..*$//"`
+mhz=`grep -m 1 "^cpu MHz" /proc/cpuinfo | awk -F"[:.]" '{print $2}'`
 if [ $mhz -ge 1000 ]; then
-	ghz=$(echo "$mhz" | awk '{ printf "%.1f", $1 / 1000 }')
-	echo "$ghz""GHz"
+	ghz=$(echo $mhz | awk '{ printf "%.1f", $1 / 1000 }')
+	echo $ghz"GHz"
 else
-	echo "$mhz""MHz"
+	echo $mhz"MHz"
 fi
