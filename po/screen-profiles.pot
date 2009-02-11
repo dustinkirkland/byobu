@@ -1,14 +1,14 @@
-# GNU Screen Profiles
-# Copyright (C) 2008 Dustin Kirkland
-# This file is distributed under the same license as the GNU Screen Profiles package.
-# Nicolas Barcet <nicolas.barcet@ubuntu.com>, 2008.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-12-17 23:42+0100\n"
+"POT-Creation-Date: 2009-02-09 15:07-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,18 +16,167 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: select-screen-profile.sh:9 select-screen-profile.sh:16
+#: screen-profiles:70
+msgid "Remove screen by default at login"
+msgstr ""
+
+#: screen-profiles:72
+msgid "Install screen by default at login"
+msgstr ""
+
+#: screen-profiles:76
+msgid "Help"
+msgstr ""
+
+#: screen-profiles:77
+msgid "Change screen profile"
+msgstr ""
+
+#: screen-profiles:78
+msgid "Change keybinding set"
+msgstr ""
+
+#: screen-profiles:79
+msgid "Change escape sequence"
+msgstr ""
+
+#: screen-profiles:80
+msgid "Create new window(s)"
+msgstr ""
+
+#: screen-profiles:81
+msgid "Manage default windows"
+msgstr ""
+
+#: screen-profiles:83 screen-profiles:96 screen-profiles:144
+#: screen-profiles:161 screen-profiles:305 screen-profiles:316
+#: screen-profiles:391
+msgid "Okay"
+msgstr ""
+
+#: screen-profiles:83 screen-profiles:144 screen-profiles:161
+#: screen-profiles:305 screen-profiles:316 screen-profiles:391
+msgid "Exit"
+msgstr ""
+
+#: screen-profiles:85 screen-profiles:402
+msgid " Screen Profiles Configuration"
+msgstr ""
+
+#: screen-profiles:96 screen-profiles:135 screen-profiles:154
+#: screen-profiles:191 screen-profiles:280 screen-profiles:364
+msgid "Cancel"
+msgstr ""
+
+#: screen-profiles:114
+msgid "Back"
+msgstr ""
+
+#: screen-profiles:115
+msgid "Screen Profiles Help"
+msgstr ""
+
+#: screen-profiles:135 screen-profiles:154
+msgid "Apply"
+msgstr ""
+
+#: screen-profiles:137
+msgid "Which profile would you like to use?"
+msgstr ""
+
+#: screen-profiles:143 screen-profiles:160 screen-profiles:315
+#: screen-profiles:389
+msgid "Message"
+msgstr ""
+
+#: screen-profiles:143
+msgid "Restart screen to apply the new profile"
+msgstr ""
+
+#: screen-profiles:155
+msgid "Which set of keybindings would you like to use?"
+msgstr ""
+
+#: screen-profiles:160
+msgid "Restart screen to apply the new keybindings"
+msgstr ""
+
+#: screen-profiles:171
+msgid "Title: "
+msgstr ""
+
+#: screen-profiles:173
+msgid "Command: "
+msgstr ""
+
+#: screen-profiles:175
+msgid "Presets: "
+msgstr ""
+
+#: screen-profiles:189
+msgid "Add to default windows"
+msgstr ""
+
+#: screen-profiles:191
+msgid "Create"
+msgstr ""
+
+#: screen-profiles:192
+msgid "Create new window(s):"
+msgstr ""
+
+#: screen-profiles:272
+msgid "Windows:"
+msgstr ""
+
+#: screen-profiles:280 screen-profiles:364
+msgid "Save"
+msgstr ""
+
+#: screen-profiles:282
+msgid "Select window(s) to create by default:"
+msgstr ""
+
+#: screen-profiles:302
+msgid "Screen will be launched automatically next time you login."
+msgstr ""
+
+#: screen-profiles:313
+msgid "Screen will not be used next time you login."
+msgstr ""
+
+#: screen-profiles:363
+msgid "Escape key: ctrl-"
+msgstr ""
+
+#: screen-profiles:365
+msgid "Change escape sequence:"
+msgstr ""
+
+#: screen-profiles:390
+msgid "Restart screen to enact your changes."
+msgstr ""
+
+#: screen-profiles:403
+msgid "<Tab>/<Alt-Tab> between elements | <Return> Validates"
+msgstr ""
+
+#: select-screen-profile:48
 msgid "Error:"
 msgstr ""
 
-#: select-screen-profile.sh:9 select-screen-profile.sh:16
-msgid "exists, but is not a symlink"
+#: select-screen-profile:48
+msgid " file exists, but is not a symlink"
 msgstr ""
 
-#: select-screen-profile.sh:30
-msgid "recommended"
+#: select-screen-profile:74
+msgid "Select a screen profile: "
 msgstr ""
 
-#: select-screen-profile.sh:41 select-screen-profile.sh:43
-msgid "Choose"
+#: select-screen-profile:98 select-screen-profile:100
+msgid "Choose: "
+msgstr ""
+
+#: select-screen-profile:125
+msgid "Run \"screen\" to activate"
 msgstr ""
