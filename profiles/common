@@ -23,7 +23,7 @@
 # it has some sane defaults, and fix some bugs
 source /etc/screenrc
 
-# Now, let's override with our customiazations
+# Now, let's override with our customizations
 startup_message off
 vbell off
 msgwait 1
@@ -31,12 +31,12 @@ msgwait 1
 # Define status commands
 backtick 100 3600 3600 /usr/share/screen-profiles/bin/release
 backtick 101 60 60 /usr/share/screen-profiles/bin/updates-available
-backtick 102 5 5 /usr/share/screen-profiles/bin/reboot-required
-backtick 103 5 5 /usr/share/screen-profiles/bin/cpu-freq
+backtick 102 2 2 /usr/share/screen-profiles/bin/reboot-required
+backtick 103 2 2 /usr/share/screen-profiles/bin/cpu-freq
 backtick 104 3600 3600 /usr/share/screen-profiles/bin/cpu-count
 backtick 105 3600 3600 /usr/share/screen-profiles/bin/mem-available
 backtick 106 5 5 /usr/share/screen-profiles/bin/load-average
-backtick 107 10 10 /usr/share/screen-profiles/bin/mem-used
+backtick 107 2 2 /usr/share/screen-profiles/bin/mem-used
 backtick 108 600 600 /usr/share/screen-profiles/bin/ec2-cost
 
 hardstatus alwayslastline
