@@ -19,8 +19,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-# To generate localization information, run:
-#   xgettext -o - -L Shell select-screen-profile
+# If you change any strings, please generate localization information with:
+#	./debian/rules get-po
+
+
+TEXTDOMAIN="screen-profiles"
 
 usage () {
     cat <<EOT
@@ -118,6 +121,9 @@ setprofile() {
 			rm -f "$HOME/.screenrc-profile"
 			ln -s "$PROFILE_DIR/$x" "$HOME/.screenrc-profile"
 			found=1
+			echo
+			echo `gettext 'Run "screen" to activate'`
+			echo
 			break
 		fi
 	done
