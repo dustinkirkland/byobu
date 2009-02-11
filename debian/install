@@ -22,6 +22,7 @@ windows/common usr/share/screen-profiles/windows
 screen usr/bin
 select-screen-profile usr/bin
 screen-profiles usr/bin
-screen-launcher-install usr/share/screen-profiles/
-screen-launcher-uninstall usr/share/screen-profiles/
-screen-launcher usr/bin/
+screen-launcher-install usr/share/screen-profiles
+screen-launcher-uninstall usr/share/screen-profiles
+motd+shell usr/bin
+screen-launcher usr/bin
