@@ -1,11 +1,18 @@
-screen-profiles (1.22) UNRELEASED; urgency=low
+screen-profiles (1.23) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Feb 2009 22:34:36 -0600
+
+screen-profiles (1.22-0ubuntu1) jaunty; urgency=low
 
   * profiles/plain: rather than symlinking to /etc/screenrc, source it, and
-    then source ~/.screenrc, LP: #328312
+    then source ~/.screenrc to ensure that the user's local customizations
+    are loaded, LP: #328312
   * debian/install: install plain profile
   * debian/rules: drop the symlink to /etc/screenrc
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Feb 2009 21:08:34 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Feb 2009 22:22:03 -0600
 
 screen-profiles (1.21-0ubuntu1) jaunty; urgency=low
 

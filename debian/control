@@ -2,6 +2,7 @@ Source: screen-profiles
 Section: misc
 Priority: optional
 Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
+XSBC-Original-Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 Standards-Version: 3.8.0
 Build-Depends: debhelper (>= 6)
 Homepage: http://launchpad.net/screen-profiles
