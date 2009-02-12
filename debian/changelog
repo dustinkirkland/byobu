@@ -1,6 +1,7 @@
-screen-profiles (1.23) UNRELEASED; urgency=low
+screen-profiles (1.23-0ubuntu1) jaunty; urgency=low
 
-  * 
+  * profiles/common, profiles/plain: remove double-sourcing of /etc/screenrc,
+    LP: #328365
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Feb 2009 22:34:36 -0600
 

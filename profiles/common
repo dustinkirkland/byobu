@@ -19,10 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
-# Let's start with the Debian packaged default;
-# it has some sane defaults, and fix some bugs
-source /etc/screenrc
-
 # Now, let's override with our customizations
 startup_message off
 vbell off
