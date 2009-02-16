@@ -1,9 +1,15 @@
+screen-profiles (1.24-0ubuntu1) jaunty; urgency=low
+
+  * screen-profiles: remove the scroll bar on the help page, LP: #330276
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 16 Feb 2009 16:34:32 -0600
+
 screen-profiles (1.23-0ubuntu1) jaunty; urgency=low
 
   * profiles/common, profiles/plain: remove double-sourcing of /etc/screenrc,
     LP: #328365
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Feb 2009 22:34:36 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Feb 2009 23:26:46 -0600
 
 screen-profiles (1.22-0ubuntu1) jaunty; urgency=low
 
