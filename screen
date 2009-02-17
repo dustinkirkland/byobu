@@ -17,8 +17,15 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# If ~/.screenrc exists but ~/.screenrc-profile does not, this shows that the
+# user has an existing custom screen configuration, and thus we will not
+# bother them with a select-screen-profile prompt
+if [ -r "$HOME/.screenrc" -a ! -e "$HOME/.screenrc-profile" ]; then
+	exec /usr/bin/screen.real -c "$HOME/.screenrc" "$@"
+	exit $?
+fi
 
-# Ensure that the user has selected a screen profile
+# Otherwise, let's ensure that the user has selected a screen profile
 [ -r "$HOME/.screenrc-profile" ] || /usr/bin/select-screen-profile
 
 # Ensure that their keybindings are seeded
