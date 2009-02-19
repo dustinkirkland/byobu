@@ -34,6 +34,8 @@ backtick 105 3600 3600 /usr/share/screen-profiles/bin/mem-available
 backtick 106 2 2 /usr/share/screen-profiles/bin/load-average
 backtick 107 2 2 /usr/share/screen-profiles/bin/mem-used
 backtick 108 600 600 /usr/share/screen-profiles/bin/ec2-cost
+backtick 109 3600 3600 /usr/share/screen-profiles/bin/hostname
+backtick 110 3600 3600 /usr/share/screen-profiles/bin/whoami
 
 hardstatus alwayslastline
 

@@ -1,12 +1,14 @@
 bin/cpu-count usr/share/screen-profiles/bin
 bin/cpu-freq usr/share/screen-profiles/bin
 bin/ec2-cost usr/share/screen-profiles/bin
+bin/hostname usr/share/screen-profiles/bin
 bin/load-average usr/share/screen-profiles/bin
 bin/mem-available usr/share/screen-profiles/bin
 bin/mem-used usr/share/screen-profiles/bin
 bin/reboot-required usr/share/screen-profiles/bin
 bin/release usr/share/screen-profiles/bin
 bin/updates-available usr/share/screen-profiles/bin
+bin/whoami usr/share/screen-profiles/bin
 profiles/common usr/share/screen-profiles/profiles
 profiles/plain usr/share/screen-profiles/profiles
 profiles/ubuntu-light usr/share/screen-profiles/profiles

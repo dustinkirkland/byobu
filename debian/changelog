@@ -1,8 +1,12 @@
-screen-profiles (1.26) UNRELEASED; urgency=low
+screen-profiles (1.26-0ubuntu1) jaunty; urgency=low
 
-  * 
+  Fixes for LP: #331648
+  * bin/whoami: report user logged in
+  * bin/hostname: report hostname
+  * profiles/common, debian/install: add whoami, hostname
+  * profiles/profile.skel: append user@host to the far right of window bar
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 19 Feb 2009 10:35:09 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 19 Feb 2009 10:52:18 -0600
 
 screen-profiles (1.25-0ubuntu1) jaunty; urgency=low
 
