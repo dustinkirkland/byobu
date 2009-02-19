@@ -1,9 +1,15 @@
-screen-profiles (1.25) UNRELEASED; urgency=low
+screen-profiles (1.26) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 19 Feb 2009 10:35:09 -0600
+
+screen-profiles (1.25-0ubuntu1) jaunty; urgency=low
 
   * screen: don't prompt with select-screen-profile, if ~/.screenrc exists
     and ~/.screenrc-profile does not, LP: #330322
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 16 Feb 2009 20:38:44 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 16 Feb 2009 20:41:24 -0600
 
 screen-profiles (1.24-0ubuntu1) jaunty; urgency=low
 
