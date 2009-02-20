@@ -1,3 +1,9 @@
+screen-profiles (1.27) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 19 Feb 2009 19:25:50 -0600
+
 screen-profiles (1.26-0ubuntu1) jaunty; urgency=low
 
   Fixes for LP: #331648
@@ -6,7 +12,7 @@ screen-profiles (1.26-0ubuntu1) jaunty; urgency=low
   * profiles/common, debian/install: add whoami, hostname
   * profiles/profile.skel: append user@host to the far right of window bar
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 19 Feb 2009 10:52:18 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 19 Feb 2009 10:55:04 -0600
 
 screen-profiles (1.25-0ubuntu1) jaunty; urgency=low
 
