@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-23 11:05-0600\n"
+"POT-Creation-Date: 2009-02-23 11:22-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -169,6 +169,12 @@ msgstr ""
 msgid "Choose: "
 msgstr ""
 
-#: select-screen-profile:125
+#: select-screen-profile:126
+msgid ""
+"Close the current screen by typing \"exit\", and restart \"screen\" to "
+"activate."
+msgstr ""
+
+#: select-screen-profile:128
 msgid "Run \"screen\" to activate"
 msgstr ""

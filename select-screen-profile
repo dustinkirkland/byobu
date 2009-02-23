@@ -122,7 +122,11 @@ setprofile() {
 			ln -s "$PROFILE_DIR/$x" "$HOME/.screenrc-profile"
 			found=1
 			echo
-			echo `gettext 'Run "screen" to activate'`
+			if [ "$TERM" = "screen" ]; then
+				echo `gettext 'Close the current screen by typing "exit", and restart "screen" to activate.'`
+			else
+				echo `gettext 'Run "screen" to activate'`
+			fi
 			echo
 			break
 		fi
