@@ -1,4 +1,4 @@
-screen-profiles (1.27) UNRELEASED; urgency=low
+screen-profiles (1.27-0ubuntu1) jaunty; urgency=low
 
   * Fix for LP: #333189:
     - keybindings/common: add profile reload shortcut, "ctrl-a ~"
@@ -7,8 +7,11 @@ screen-profiles (1.27) UNRELEASED; urgency=low
   * Fix for LP: #333180
     - screen-profiles: add toggle for auto launch of welcome
     - po/*: updated for the new messages
+  * Fix for LP: #332890
+    - bin/updates-available: prefer /var/run/updates-available over
+      ~/.screenrc-updates-available, if touched more recently
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 Feb 2009 14:25:02 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 Feb 2009 14:44:05 -0600
 
 screen-profiles (1.26-0ubuntu1) jaunty; urgency=low
 
