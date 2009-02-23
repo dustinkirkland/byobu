@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-23 11:22-0600\n"
+"POT-Creation-Date: 2009-02-23 14:26-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,140 +16,157 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: screen-profiles:70
+#: screen-profiles:71
 msgid "Remove screen by default at login"
 msgstr ""
 
-#: screen-profiles:72
+#: screen-profiles:73
 msgid "Install screen by default at login"
 msgstr ""
 
-#: screen-profiles:76
-msgid "Help"
+#: screen-profiles:75
+msgid "Launch Screen Profiles Configuration on startup"
 msgstr ""
 
 #: screen-profiles:77
-msgid "Change screen profile"
-msgstr ""
-
-#: screen-profiles:78
-msgid "Change keybinding set"
-msgstr ""
-
-#: screen-profiles:79
-msgid "Change escape sequence"
-msgstr ""
-
-#: screen-profiles:80
-msgid "Create new window(s)"
+msgid "Do not launch Screen Profiles Configuration on startup"
 msgstr ""
 
 #: screen-profiles:81
+msgid "Help"
+msgstr ""
+
+#: screen-profiles:82
+msgid "Change screen profile"
+msgstr ""
+
+#: screen-profiles:83
+msgid "Change keybinding set"
+msgstr ""
+
+#: screen-profiles:84
+msgid "Change escape sequence"
+msgstr ""
+
+#: screen-profiles:85
+msgid "Create new window(s)"
+msgstr ""
+
+#: screen-profiles:86
 msgid "Manage default windows"
 msgstr ""
 
-#: screen-profiles:83 screen-profiles:96 screen-profiles:144
-#: screen-profiles:161 screen-profiles:305 screen-profiles:316
-#: screen-profiles:391
+#: screen-profiles:89 screen-profiles:102 screen-profiles:150
+#: screen-profiles:167 screen-profiles:322 screen-profiles:340
+#: screen-profiles:351 screen-profiles:426
 msgid "Okay"
 msgstr ""
 
-#: screen-profiles:83 screen-profiles:144 screen-profiles:161
-#: screen-profiles:305 screen-profiles:316 screen-profiles:391
+#: screen-profiles:89 screen-profiles:150 screen-profiles:167
+#: screen-profiles:322 screen-profiles:340 screen-profiles:351
+#: screen-profiles:426
 msgid "Exit"
 msgstr ""
 
-#: screen-profiles:85 screen-profiles:402
+#: screen-profiles:91 screen-profiles:437
 msgid " Screen Profiles Configuration"
 msgstr ""
 
-#: screen-profiles:96 screen-profiles:135 screen-profiles:154
-#: screen-profiles:191 screen-profiles:280 screen-profiles:364
+#: screen-profiles:102 screen-profiles:141 screen-profiles:160
+#: screen-profiles:197 screen-profiles:286 screen-profiles:399
 msgid "Cancel"
 msgstr ""
 
-#: screen-profiles:114
+#: screen-profiles:120
 msgid "Back"
 msgstr ""
 
-#: screen-profiles:115
+#: screen-profiles:121
 msgid "Screen Profiles Help"
 msgstr ""
 
-#: screen-profiles:135 screen-profiles:154
+#: screen-profiles:141 screen-profiles:160
 msgid "Apply"
 msgstr ""
 
-#: screen-profiles:137
+#: screen-profiles:143
 msgid "Which profile would you like to use?"
 msgstr ""
 
-#: screen-profiles:143 screen-profiles:160 screen-profiles:315
-#: screen-profiles:389
+#: screen-profiles:149 screen-profiles:166 screen-profiles:350
+#: screen-profiles:424
 msgid "Message"
 msgstr ""
 
-#: screen-profiles:143 screen-profiles:160 screen-profiles:390
+#: screen-profiles:149 screen-profiles:166 screen-profiles:425
 msgid "Use '<ctrl-a> ~ <enter>' to enable your changes."
 msgstr ""
 
-#: screen-profiles:155
+#: screen-profiles:161
 msgid "Which set of keybindings would you like to use?"
 msgstr ""
 
-#: screen-profiles:171
+#: screen-profiles:177
 msgid "Title: "
 msgstr ""
 
-#: screen-profiles:173
+#: screen-profiles:179
 msgid "Command: "
 msgstr ""
 
-#: screen-profiles:175
+#: screen-profiles:181
 msgid "Presets: "
 msgstr ""
 
-#: screen-profiles:189
+#: screen-profiles:195
 msgid "Add to default windows"
 msgstr ""
 
-#: screen-profiles:191
+#: screen-profiles:197
 msgid "Create"
 msgstr ""
 
-#: screen-profiles:192
+#: screen-profiles:198
 msgid "Create new window(s):"
 msgstr ""
 
-#: screen-profiles:272
+#: screen-profiles:278
 msgid "Windows:"
 msgstr ""
 
-#: screen-profiles:280 screen-profiles:364
+#: screen-profiles:286 screen-profiles:399
 msgid "Save"
 msgstr ""
 
-#: screen-profiles:282
+#: screen-profiles:288
 msgid "Select window(s) to create by default:"
 msgstr ""
 
-#: screen-profiles:302
+#: screen-profiles:315
+msgid "Screen Profiles Configuration will be launched automatically."
+msgstr ""
+
+#: screen-profiles:319
+msgid "Screen Profiles Configuration will be not launched automatically."
+msgstr ""
+
+#: screen-profiles:337
 msgid "Screen will be launched automatically next time you login."
 msgstr ""
 
-#: screen-profiles:313
+#: screen-profiles:348
 msgid "Screen will not be used next time you login."
 msgstr ""
 
-#: screen-profiles:363
+#: screen-profiles:398
 msgid "Escape key: ctrl-"
 msgstr ""
 
-#: screen-profiles:365
+#: screen-profiles:400
 msgid "Change escape sequence:"
 msgstr ""
 
-#: screen-profiles:403
+#: screen-profiles:438
 msgid "<Tab>/<Alt-Tab> between elements | <Return> Validates"
 msgstr ""
 
