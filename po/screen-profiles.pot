@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-02-09 15:07-0600\n"
+"POT-Creation-Date: 2009-02-23 11:05-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,16 +89,12 @@ msgstr ""
 msgid "Message"
 msgstr ""
 
-#: screen-profiles:143
-msgid "Restart screen to apply the new profile"
+#: screen-profiles:143 screen-profiles:160 screen-profiles:390
+msgid "Use '<ctrl-a> ~ <enter>' to enable your changes."
 msgstr ""
 
 #: screen-profiles:155
 msgid "Which set of keybindings would you like to use?"
-msgstr ""
-
-#: screen-profiles:160
-msgid "Restart screen to apply the new keybindings"
 msgstr ""
 
 #: screen-profiles:171
@@ -151,10 +147,6 @@ msgstr ""
 
 #: screen-profiles:365
 msgid "Change escape sequence:"
-msgstr ""
-
-#: screen-profiles:390
-msgid "Restart screen to enact your changes."
 msgstr ""
 
 #: screen-profiles:403

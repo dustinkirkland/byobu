@@ -70,14 +70,14 @@ fi
 # If apt-check binary exists, use it
 if [ -x /usr/lib/update-notifier/apt-check ]; then
 	u=`/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;/ /"`
-	echo $u > $mycache
+	echo "$u" > $mycache
 	print_updates $u
 fi
 
 # If apt-get exists, use it
 if [ -x /usr/bin/apt-get ]; then
 	u=`/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst`
-	echo $u > $mycache
+	echo "$u" > $mycache
 	print_updates $u
 fi
 

@@ -1,8 +1,11 @@
 screen-profiles (1.27) UNRELEASED; urgency=low
 
-  * 
+  Fix for LP: #333189:
+  * keybindings/common: add profile reload shortcut, "ctrl-a ~"
+  * screen-profiles: updated messages to point to ^a ~
+  * po/*: updated for the new message
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 19 Feb 2009 19:25:50 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 Feb 2009 10:04:43 -0600
 
 screen-profiles (1.26-0ubuntu1) jaunty; urgency=low
 

@@ -45,3 +45,6 @@ bindkey -k k9 screen -t help 0 screen-profiles # F9 | Configuration
 			# F11 | 'fullscreen' in gnome-terminal
 bindkey -k F2 lockscreen # F12 | Lock this terminal
 
+# Hot-reload profile
+register r "^a:source ~/.screenrc-profile"
+bind ~ process r

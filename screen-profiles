@@ -140,7 +140,7 @@ def profile(screen, size):
 
     if bb.buttonPressed(g.runOnce()) != "cancel":
         commands.getoutput('select-screen-profile --set %s' % li.current())
-        button = messagebox(screen, 60, 2, _("Message"), _("Restart screen to apply the new profile"), \
+        button = messagebox(screen, 60, 2, _("Message"), _("Use '<ctrl-a> ~ <enter>' to enable your changes."), \
             buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
         if button == "exit":
             return 0
@@ -157,7 +157,7 @@ def keybindings(screen, size):
     g.add(bb, 0, 1, padding=(1,1,0,0))
     if bb.buttonPressed(g.runOnce()) != "cancel":
         switch_keybindings(li.current())
-        button = messagebox(screen, 60, 2, _("Message"), _("Restart screen to apply the new keybindings"), \
+        button = messagebox(screen, 60, 2, _("Message"), _("Use '<ctrl-a> ~ <enter>' to enable your changes."), \
             buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
         if button == "exit":
             return 0
@@ -387,7 +387,7 @@ def chgesc(screen, size):
     if bb.buttonPressed(which) != "cancel":
         setesckey(esc.value())
         button = messagebox(screen, 60, 2, _("Message"), \
-            _("Restart screen to enact your changes."), \
+            _("Use '<ctrl-a> ~ <enter>' to enable your changes."), \
             buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
         if button == "exit":
             return 0
