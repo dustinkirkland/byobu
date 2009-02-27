@@ -38,7 +38,7 @@ if [ -r "$HOME/.screenrc" -a ! -e "$HOME/.screen-profiles/profile" ]; then
 	exit $?
 fi
 
-# Next, let's ensure that the user has selected a screen profile
+# Ensure that the user has selected a screen profile
 [ -r "$HOME/.screen-profiles/profile" ] || /usr/bin/select-screen-profile
 
 # Ensure that their keybindings are seeded
