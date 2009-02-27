@@ -11,4 +11,16 @@ for i in $(ls profiles/logos); do
 	cp profiles/$i-light profiles/$i-dark
 	sed -i "s/ Wk/ Kw/g" profiles/$i-dark
 	sed -i "s/kW/wK/g" profiles/$i-dark
+	for j in "B-light_blue" "b-dark_blue" "C-light_cyan" "c-dark_cyan" "G-light_green" "g-dark_green" "M-light_purple" "m-dark_purple" "R-light_red" "r-dark_red" "Y-light_yellow" "y-dark_yellow" "k-black"; do
+		x=$(echo "$j" | awk -F"-" '{print $1}')
+		desc=$(echo "$j" | awk -F"-" '{print $2}')
+		y="w"
+		if echo "$desc" | grep -qs "light"; then
+			y="k"
+		fi
+		echo "Generating profile: $i-$desc"
+		cp profiles/$i-light profiles/$i-$desc
+		sed -i "s/ Wk/ $x$y/g" profiles/$i-$desc
+		sed -i "s/kW/$y$x/g" profiles/$i-$desc
+	done
 done
