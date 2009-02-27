@@ -20,7 +20,7 @@
 
 # Exit immediately if this is not an Amazon EC2 instance, and we're not
 # in debug mode
-$(hostname | grep -qs "\.amazonaws\.com$") || [ -r "/tmp/ec2-cost-debug" ]
+$(hostname | grep -qs "^domU.*compute.*internal$") || [ -r "$HOME/.screenrc-ec2-cost" ]
 [ "$?" = "0" ] || exit 0
 
 # Instance Cost Basis

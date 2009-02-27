@@ -1,8 +1,15 @@
-screen-profiles (1.28) UNRELEASED; urgency=low
+screen-profiles (1.29) UNRELEASED; urgency=low
 
   * 
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 Feb 2009 14:59:42 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 26 Feb 2009 22:50:28 -0600
+
+screen-profiles (1.28-0ubuntu1) jaunty; urgency=low
+
+  * bin/ec2-cost: update the hostname regex to work with the latest Ubuntu
+    ec2 beta, LP: #335274
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 26 Feb 2009 22:50:12 -0600
 
 screen-profiles (1.27-0ubuntu1) jaunty; urgency=low
 
