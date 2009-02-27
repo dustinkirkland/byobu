@@ -123,6 +123,7 @@ setprofile() {
 			found=1
 			echo
 			if [ "$TERM" = "screen" ]; then
+				echo `gettext 'Hit <F5><enter> to reload the current profile, or...'`
 				echo `gettext 'Close the current screen by typing "exit", and restart "screen" to activate.'`
 			else
 				echo `gettext 'Run "screen" to activate'`
