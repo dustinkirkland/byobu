@@ -2,6 +2,8 @@
 # This script should be run during in the './debian/rules get-orig-source'
 # step.
 
+rm -f profiles/debian-* profiles/fedora-* profiles/redhat-* profiles/ubuntu-*
+
 for i in $(ls profiles/logos); do
 	echo "Generating profile: $i-light"
 	cat profiles/profile.skel > profiles/$i-light
