@@ -60,4 +60,7 @@ sed -i 's/screen-profiles-helper/screen-profiles/' $HOME/.screen-profiles/window
 ##########################################################################
 
 # Now let's execute screen!
-exec /usr/bin/screen.real -c "$HOME/.screen-profiles/profile" "$@"
+/usr/bin/screen.real -c "$HOME/.screen-profiles/profile" "$@"
+rc=$?
+clear
+exit $rc
