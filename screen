@@ -26,7 +26,7 @@
 # See LP: #335275
 # Collapse ~/.screenrc-* into ~/.screen-profiles/*
 for i in ec2-cost keybindings profile updates-available windows; do
-	mv -f "$HOME/.screenrc-$i" "$HOME/.screen-profiles/" 2>/dev/null
+	mv -f "$HOME/.screenrc-$i" "$HOME/.screen-profiles/$i" 2>/dev/null
 done
 ##########################################################################
 
@@ -60,4 +60,4 @@ sed -i 's/screen-profiles-helper/screen-profiles/' $HOME/.screen-profiles/window
 ##########################################################################
 
 # Now let's execute screen!
-exec /usr/bin/screen.real -c "$HOME/.screenrc-profile" "$@"
+exec /usr/bin/screen.real -c "$HOME/.screen-profiles/profile" "$@"
