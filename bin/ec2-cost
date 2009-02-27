@@ -58,7 +58,7 @@ RX_RATE="0.10"
 TX_RATE="0.17"
 
 # Perhaps should auto detect this?
-IF=`route | grep "^default" | awk '{print $8}'`
+IF=`route -n | grep "^default" | awk '{print $8}'`
 
 # Calculate bandwidth cost
 tx_gb=`/sbin/ifconfig "$IF" | grep "TX bytes:" | sed "s/^.*TX bytes://" | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }'`
