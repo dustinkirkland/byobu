@@ -1,4 +1,10 @@
-screen-profiles (1.29) UNRELEASED; urgency=low
+screen-profiles (1.30) UNRELEASED; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 27 Feb 2009 16:20:57 -0600
+
+screen-profiles (1.29-0ubuntu1) jaunty; urgency=low
 
   * bin/ec2-cost: add --force, and --detail mode for stand-alone runs; test for
     existence of /etc/ec2-version for Amazon instance (LP: #335274), allow
@@ -14,8 +20,11 @@ screen-profiles (1.29) UNRELEASED; urgency=low
   * bin/ec2-cost: speed up route with -n
   * screen-profiles.1: Add a note about PuTTY's odd key mapping for F1-F4,
     LP: #317550
+  * keybindings/common, doc/help.txt: Change F5 from kill window to hot-reload
+    profile (killing a window is easy enough, with 'exit' command)
+  * profiles/*: provide other colored profiles
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 27 Feb 2009 14:38:29 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 27 Feb 2009 16:20:41 -0600
 
 screen-profiles (1.28-0ubuntu1) jaunty; urgency=low
 
