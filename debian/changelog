@@ -9,8 +9,10 @@ screen-profiles (1.29) UNRELEASED; urgency=low
   * screen: added a hack to move ~/.screenrc-* into ~/.screen-profiles/*;
     this hack should be removed after Jaunty GA (only affects upgrading
     Alpha users)
+  * screen-launcher: drop santizer code; no longer necessary; handled by the
+    screen wrapper, and screen patched to ignore missing sourced files.
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 27 Feb 2009 09:54:38 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 27 Feb 2009 10:40:14 -0600
 
 screen-profiles (1.28-0ubuntu1) jaunty; urgency=low
 
