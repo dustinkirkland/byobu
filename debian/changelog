@@ -8,11 +8,14 @@ screen-profiles (1.29) UNRELEASED; urgency=low
     to collapse ~/.screenrc-* into ~/.screen-profiles/*, LP: #335275
   * screen: added a hack to move ~/.screenrc-* into ~/.screen-profiles/*;
     this hack should be removed after Jaunty GA (only affects upgrading
-    Alpha users)
+    Alpha users), clear after screen exit (cleans up misleading status bar)
   * screen-launcher: drop santizer code; no longer necessary; handled by the
     screen wrapper, and screen patched to ignore missing sourced files.
+  * bin/ec2-cost: speed up route with -n
+  * screen-profiles.1: Add a note about PuTTY's odd key mapping for F1-F4,
+    LP: #317550
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 27 Feb 2009 10:40:14 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 27 Feb 2009 14:38:29 -0600
 
 screen-profiles (1.28-0ubuntu1) jaunty; urgency=low
 
