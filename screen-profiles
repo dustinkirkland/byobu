@@ -170,7 +170,7 @@ def keybindings(screen, size):
     return 100
 
 def switch_keybindings(set):
-    commands.getoutput("sed -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+HOME+"/.screenrc-keybindings")
+    commands.getoutput("sed -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+HOME+"/.screen-profiles/keybindings")
 
 def newwindow(screen, size):
     title=Entry(8, text="bash", returnExit=1)
@@ -222,7 +222,7 @@ def newwindow(screen, size):
     return 100
 
 def appendwindow(win):
-    f=open(HOME+'/.screenrc-windows', 'a')
+    f=open(HOME+'/.screen-profiles/windows', 'a')
     try:
         f.write(win+"\n")
 
@@ -233,7 +233,7 @@ def appendwindow(win):
         f.close()
 
 def readwindows():
-    f=open(HOME+'/.screenrc-windows', 'r')
+    f=open(HOME+'/.screen-profiles/windows', 'r')
     try:
         li=[]
         for line in f.readlines():
@@ -256,7 +256,7 @@ def readwindows():
         f.close()
 
 def writewindows(winlist):
-    f=open(HOME+'/.screenrc-windows', 'w')
+    f=open(HOME+'/.screen-profiles/windows', 'w')
     try:
         for win in winlist:
             if win[0] == -1:
@@ -302,7 +302,7 @@ def defaultwindows(screen, size):
     return 100
 
 def welcomeOn():
-    path=HOME+'/.screenrc-windows'
+    path=HOME+'/.screen-profiles/windows'
     line = commands.getoutput("grep '^"+WELCOME+"' "+path)
     if line == "":
         return 1
@@ -325,10 +325,10 @@ def togglewelcome(screen, size, welcome):
     return rc
 
 def togglewelcomeon():
-    commands.getoutput("sed -i -e 's/^#"+WELCOME+"/"+WELCOME+"/' "+HOME+'/.screenrc-windows')
+    commands.getoutput("sed -i -e 's/^#"+WELCOME+"/"+WELCOME+"/' "+HOME+'/.screen-profiles/windows')
 
 def togglewelcomeoff():
-    commands.getoutput("sed -i -e 's/^"+WELCOME+"/#"+WELCOME+"/' "+HOME+'/.screenrc-windows')
+    commands.getoutput("sed -i -e 's/^"+WELCOME+"/#"+WELCOME+"/' "+HOME+'/.screen-profiles/windows')
 
 def install(screen, size, isInstalled):
     if not isInstalled:
@@ -366,7 +366,7 @@ def appendtofile(p, s):
 
 
 def getesckey():
-    path=HOME+'/.screenrc-keybindings'
+    path=HOME+'/.screen-profiles/keybindings'
     if not os.path.exists(path):
         return DEF_ESC
     line = commands.getoutput("grep ^escape "+path)
@@ -375,7 +375,7 @@ def getesckey():
     return line[line.find('^')+1]
 
 def setesckey(key):
-    path = HOME+'/.screenrc-keybindings'
+    path = HOME+'/.screen-profiles/keybindings'
     if key != "":
         u = key[0].upper()
         l = key[0].lower()

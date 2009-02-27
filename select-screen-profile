@@ -52,7 +52,7 @@ assert_symlink() {
 }
 
 # If these files exist, they must be a symlink
-assert_symlink "$HOME/.screenrc-profile"
+assert_symlink "$HOME/.screen-profiles/profile"
 
 listprofiles() {
 	# Display list of profiles, one per line
@@ -118,8 +118,8 @@ setprofile() {
 	for x in $profiles; do
 		i=`expr $i + 1`
 		if [ "$i" = "$selected" -o "$x" = "$selected" ]; then
-			rm -f "$HOME/.screenrc-profile"
-			ln -s "$PROFILE_DIR/$x" "$HOME/.screenrc-profile"
+			rm -f "$HOME/.screen-profiles/profile"
+			ln -s "$PROFILE_DIR/$x" "$HOME/.screen-profiles/profile"
 			found=1
 			echo
 			if [ "$TERM" = "screen" ]; then

@@ -39,7 +39,7 @@ print_updates() {
 }
 
 cache=/var/run/updates-available
-mycache=$HOME/.screenrc-updates-available
+mycache=$HOME/.screen-profiles/updates-available
 now=`date +%s`
 cache_timestamp=`stat -c "%Y" $cache 2>/dev/null || echo 0`
 mycache_timestamp=`stat -c "%Y" $mycache 2>/dev/null || echo 0`

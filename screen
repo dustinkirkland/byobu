@@ -17,32 +17,46 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# If ~/.screenrc exists but ~/.screenrc-profile does not, this shows that the
-# user has an existing custom screen configuration, and thus we will not
-# bother them with a select-screen-profile prompt
-if [ -r "$HOME/.screenrc" -a ! -e "$HOME/.screenrc-profile" ]; then
+# Create the screen-profiles directory, if it doesn't already exist
+[ -d "$HOME/.screen-profiles" ] || mkdir -p "$HOME/.screen-profiles"
+
+##########################################################################
+# The following hack should be removed after Jaunty goes GA
+# (should only affect upgrading Alpha users)
+# See LP: #335275
+# Collapse ~/.screenrc-* into ~/.screen-profiles/*
+for i in ec2-cost keybindings profile updates-available windows; do
+	mv -f "$HOME/.screenrc-$i" "$HOME/.screen-profiles/" 2>/dev/null
+done
+##########################################################################
+
+# If ~/.screenrc exists but ~/.screen-profiles/profile does not,
+# this shows that the user has an existing custom screen configuration,
+# and thus we will not bother them with a select-screen-profile prompt.
+if [ -r "$HOME/.screenrc" -a ! -e "$HOME/.screen-profiles/profile" ]; then
 	exec /usr/bin/screen.real -c "$HOME/.screenrc" "$@"
 	exit $?
 fi
 
-# Otherwise, let's ensure that the user has selected a screen profile
-[ -r "$HOME/.screenrc-profile" ] || /usr/bin/select-screen-profile
+# Next, let's ensure that the user has selected a screen profile
+[ -r "$HOME/.screen-profiles/profile" ] || /usr/bin/select-screen-profile
 
 # Ensure that their keybindings are seeded
-[ -s "$HOME/.screenrc-keybindings" ] || echo "source /usr/share/screen-profiles/keybindings/common" > "$HOME/.screenrc-keybindings"
+[ -s "$HOME/.screen-profiles/keybindings" ] || echo "source /usr/share/screen-profiles/keybindings/common" > "$HOME/.screen-profiles/keybindings"
 
 # Ensure that their default windows are seeded
-[ -r "$HOME/.screenrc-windows" ] || cp "/usr/share/screen-profiles/windows/common" "$HOME/.screenrc-windows"
+[ -r "$HOME/.screen-profiles/windows" ] || cp "/usr/share/screen-profiles/windows/common" "$HOME/.screen-profiles/windows"
 
 # Ensure that the user's .screenrc at least exists
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
 
 ##########################################################################
-# The following hacks should be removed when Jaunty goes Beta
+# The following hacks should be removed when Jaunty goes GA
+# (should only affect upgrading Alpha users)
 # Prevent recursion; .screenrc should no longer source .screenrc-profile
-sed -i '/^source .*\.screenrc-profile$/d' $HOME/.screenrc
+sed -i '/^source .*\.screen.*-.*profile$/d' $HOME/.screenrc
 # .screenrc-windows should no longer reference screen-profiles-helper
-sed -i 's/screen-profiles-helper/screen-profiles/' $HOME/.screenrc-windows
+sed -i 's/screen-profiles-helper/screen-profiles/' $HOME/.screen-profiles/windows
 ##########################################################################
 
 # Now let's execute screen!

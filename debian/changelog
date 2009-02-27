@@ -1,8 +1,16 @@
 screen-profiles (1.29) UNRELEASED; urgency=low
 
-  * 
+  * bin/ec2-cost: add --force, and --detail mode for stand-alone runs; test for
+    existence of /etc/ec2-version for Amazon instance (LP: #335274), allow
+    local use to turn ec2-cost on
+  * bin/updates-available, keybindings/common, profiles/common, screen,
+    screen-profiles, select-screen-profile, select-screen-profile.1: updated
+    to collapse ~/.screenrc-* into ~/.screen-profiles/*, LP: #335275
+  * screen: added a hack to move ~/.screenrc-* into ~/.screen-profiles/*;
+    this hack should be removed after Jaunty GA (only affects upgrading
+    Alpha users)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 26 Feb 2009 22:50:28 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 27 Feb 2009 09:54:38 -0600
 
 screen-profiles (1.28-0ubuntu1) jaunty; urgency=low
 
