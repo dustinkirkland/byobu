@@ -18,12 +18,25 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Exit immediately if this is not an Amazon EC2 instance, and we're not
-# in debug mode
-$(hostname | grep -qs "^domU.*compute.*internal$") || [ -r "$HOME/.screenrc-ec2-cost" ]
+FORCE=0
+DETAIL=0
+for arg in $@; do
+	case "$arg" in
+		-f|--force)
+			FORCE=1
+		;;
+		-d|--detail)
+			DETAIL=1
+		;;
+	esac
+done
+
+# Exit immediately if this is not an Amazon EC2 instance, we're not
+# manually turned on, and we're not in force mode
+[ -r "/etc/ec2-version" -o -r "$HOME/.screen-profiles/ec2-cost" -o "$FORCE" = "1" ]
 [ "$?" = "0" ] || exit 0
 
-# Instance Cost Basis
+# Approximate Instance Cost Basis
 #			US		Europe
 # Small  (1cpu, 32bit)	$0.10/h		$0.11/h
 # Medium (2cpu, 32bit)	$0.20/h		$0.22/h
@@ -59,10 +72,22 @@ hours=`awk '{printf "%f", 1 + $1 / 60 / 60 }' /proc/uptime | sed 's/\..*$//' `
 uptime_cost=`echo "$hours" | awk "{printf \"%f\", "$CPU_RATE" * $hours}"`
 total_cost=`echo "$network_cost" "$uptime_cost" | awk '{printf "~\$%.2f", $1 + $2}'`
 
-#echo $tx_gb
-#echo $rx_gb
-#echo $network_cost
-#echo $hours
-#echo $uptime_cost
+if [ "$DETAIL" = "1" ]; then
+	echo
+	echo "================================================"
+	echo "Estimated cost in Amazon's EC2 since last reboot"
+	echo "================================================"
+	echo "  Network sent:  $tx_gb GB   @ \$$RX_RATE/GB"
+	echo "  Network recv:  $rx_gb GB   @ \$$TX_RATE/GB"
+	echo "  Network cost:  $network_cost"
+	echo "------------------------------------------------"
+	echo "  Uptime:        $hours hr  @ \$$CPU_RATE/hr"
+	echo "  Uptime cost:   \$$uptime_cost"
+	echo "------------------------------------------------"
+	echo "Total cost:      $total_cost"
+	echo "================================================"
+	echo
+	exit 0
+fi
 
 echo $total_cost
