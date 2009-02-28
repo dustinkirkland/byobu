@@ -56,7 +56,14 @@ assert_symlink "$HOME/.screen-profiles/profile"
 
 listprofiles() {
 	# Display list of profiles, one per line
-	for x in $(ls $PROFILE_DIR); do
+	# Start with basic profiles
+	basename $(ls $PROFILE_DIR/plain 2>/dev/null) 2>/dev/null
+	basename $(ls $PROFILE_DIR/*-light 2>/dev/null) 2>/dev/null
+	basename $(ls $PROFILE_DIR/*-dark 2>/dev/null) 2>/dev/null
+	basename $(ls $PROFILE_DIR/*-black 2>/dev/null) 2>/dev/null
+	# Now, list advanced profiles
+	for x in $(ls $PROFILE_DIR/*-*_*); do
+		x=$(basename "$x")
 		if [ $x = "common" -o $x = "misc" ]; then
 			# Skip the common profile, no value there
 			continue
@@ -82,6 +89,7 @@ prompt() {
 		elif [ "$x" = "plain" ]; then
 			simple=$i
 		fi
+		[ $i -lt 10 ] && i=" $i"
 		echo " $i. $x$desc"
 	done
 	echo
@@ -89,15 +97,16 @@ prompt() {
 	count=1
 	while /bin/true; do
 		if [ $count -gt 5 ]; then
+			echo `gettext "ERROR: Invalid selection"`
 			exit 1
 		fi
 		count=`expr $count + 1`
 		if [ -z "$selected" -a ! -z "$simple" ]; then
 			selected="$simple"
 		elif ! test $selected -gt 0 2>/dev/null; then
-			read -p "`gettext 'Choose: '` 1-$i [$simple]: " -r selected
+			read -p "`gettext 'Choose'` 1-$i [$simple]: " -r selected
 		elif ! test $selected -le $i 2>/dev/null; then
-			read -p "`gettext 'Choose: '` 1-$i [$simple]: " -r selected
+			read -p "`gettext 'Choose'` 1-$i [$simple]: " -r selected
 		else
 			break
 		fi
@@ -123,8 +132,7 @@ setprofile() {
 			found=1
 			echo
 			if [ "$TERM" = "screen" ]; then
-				echo `gettext 'Hit <F5><enter> to reload the current profile, or...'`
-				echo `gettext 'Close the current screen by typing "exit", and restart "screen" to activate.'`
+				echo `gettext 'If you are using the default set of keybindings, press\n<F5><enter> to activate these changes.\n\nOtherwise, exit this screen session and start a new one.'`
 			else
 				echo `gettext 'Run "screen" to activate'`
 			fi
