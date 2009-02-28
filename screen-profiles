@@ -31,6 +31,7 @@ SHARE='/usr/share/screen-profiles'
 DOC='/usr/share/doc/screen-profiles'
 DEF_ESC="A"
 WELCOME = "screen -t welcome 1 screen-profiles"
+RELOAD = "If you are using the default set of keybindings, press\n<F5><enter> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
 
 gettext.bindtextdomain('screen-profiles', SHARE+'/po')
 gettext.textdomain('screen-profiles')
@@ -117,20 +118,17 @@ def help(screen, size, config):
     text=text.replace("<esckey>", getesckey(), 1)
 
     t = Textbox(70, 14, text, scroll=0)
-    bb = ButtonBar(screen, ((_("Back"), )), compact = 1)
+    bb = ButtonBar(screen, ((_("Menu"), )), compact = 1)
     g = GridForm(screen, _("Screen Profiles Help"), 1, 3)
     g.add(t, 0, 0, padding=(0,0,0,0))
     g.add(bb, 0, 2, padding=(1,1,0,0))
 
     button = bb.buttonPressed(g.runOnce())
 
-    if button != "Back":
-        return 100
-    else:
-        return 0
+    return 100
 
 def profile(screen, size):
-    li = Listbox(height = 6, width = 60, returnExit = 1)
+    li = Listbox(height = 8, width = 60, scroll = 1, returnExit = 1)
 
     for choice in commands.getoutput('select-screen-profile -l').splitlines():
         if choice == "ubuntu":
@@ -146,11 +144,8 @@ def profile(screen, size):
 
     if bb.buttonPressed(g.runOnce()) != "cancel":
         commands.getoutput('select-screen-profile --set %s' % li.current())
-        button = messagebox(screen, 60, 2, _("Message"), _("Use '<ctrl-a> ~ <enter>' to enable your changes."), \
-            buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
-        if button == "exit":
-            return 0
-
+        button = messagebox(screen, 60, 4, _("Message"), _(RELOAD), \
+            buttons=((_("Menu"), )))
     return 100
 
 def keybindings(screen, size):
@@ -163,10 +158,8 @@ def keybindings(screen, size):
     g.add(bb, 0, 1, padding=(1,1,0,0))
     if bb.buttonPressed(g.runOnce()) != "cancel":
         switch_keybindings(li.current())
-        button = messagebox(screen, 60, 2, _("Message"), _("Use '<ctrl-a> ~ <enter>' to enable your changes."), \
-            buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
-        if button == "exit":
-            return 0
+        button = messagebox(screen, 60, 4, _("Message"), _(RELOAD), \
+            buttons=((_("Menu"), )))
     return 100
 
 def switch_keybindings(set):
@@ -319,9 +312,7 @@ def togglewelcome(screen, size, welcome):
         out = _("Screen Profiles Configuration will be not launched automatically.")
         rc = 100
     button = messagebox(screen, 70, 2, "Message", out, \
-    buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
-    if button == "exit":
-        return 0
+    buttons=((_("Menu"), )))
     return rc
 
 def togglewelcomeon():
@@ -337,10 +328,7 @@ def install(screen, size, isInstalled):
             out = _("Screen will be launched automatically next time you login.")
 
         button = messagebox(screen, 60, 2, "Message", out, \
-        buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
-        if button == "exit":
-            return 0
-
+        buttons=((_("Menu"), )))
         return 100
     else:
         out = commands.getoutput("bash /usr/share/screen-profiles/screen-launcher-uninstall")
@@ -348,10 +336,7 @@ def install(screen, size, isInstalled):
             out = _("Screen will not be used next time you login.")
 
         button = messagebox(screen, 60, 2, _("Message"), out, \
-        buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
-        if button == "exit":
-            return 0
-
+        buttons=((_("Menu"), )))
         return 101
 
 def appendtofile(p, s):
@@ -421,9 +406,9 @@ def chgesc(screen, size):
     screen.popWindow()
     if bb.buttonPressed(which) != "cancel":
         setesckey(esc.value())
-        button = messagebox(screen, 60, 2, _("Message"), \
-            _("Use '<ctrl-a> ~ <enter>' to enable your changes."), \
-            buttons=((_("Okay"),"okay"), (_("Exit"), "exit")) )
+        button = messagebox(screen, 60, 4, _("Message"), \
+            _(RELOAD), \
+            buttons=((_("Menu"), )))
         if button == "exit":
             return 0
     return 100
