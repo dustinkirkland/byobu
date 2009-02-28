@@ -87,7 +87,7 @@ def menu(screen, size, isInstalled, welcome):
     li.append(_("Manage default windows"), 6)
     li.append(installtext, 7)
     li.append(welcometext, 8)
-    bb = ButtonBar(screen, ((_("Okay"), "okay"), (_("Exit"), "exit")), compact = 1)
+    bb = ButtonBar(screen, ((_("Exit"), )), compact = 1)
 
     g = GridForm(screen, _(" Screen Profiles Configuration"), 1, 2)
     g.add(li, 0, 0, padding=(4,2,4,2))
@@ -187,7 +187,8 @@ def newwindow(screen, size):
 
     cb=Checkbox(_("Add to default windows"))
 
-    bb = ButtonBar(screen, ((_("Create"), "create"), (_("Cancel"), "cancel")), compact = 1)
+    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel")), compact = 1)
+
     g = GridForm(screen, _("Create new window(s):"), 2, 5 )
     g.add(titlel, 0, 0, anchorLeft=1,padding=(4,1,0,1))
     g.add(title, 1, 0, anchorLeft=1)
@@ -276,7 +277,7 @@ def defaultwindows(screen, size):
             r.append(win[1],count,selected=win[0])
        count=count+1
 
-    bb = ButtonBar(screen, ((_("Save"), "save"), (_("Cancel"), "cancel")), compact = 1)
+    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel")), compact = 1)
 
     g = GridForm(screen, _("Select window(s) to create by default:"), 2, 4 )
     g.add(rl, 0, 0, anchorLeft=1, anchorTop=1, padding=(4,0,0,1))
@@ -381,7 +382,8 @@ def setesckey(key):
 def chgesc(screen, size):
     esc=Entry(2, text=getesckey(), returnExit=1)
     escl=Label(_("Escape key: ctrl-"))
-    bb = ButtonBar(screen, ((_("Save"), "save"), (_("Cancel"), "cancel")), compact = 1)
+    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel")), compact = 1)
+
     g = GridForm(screen, _("Change escape sequence:"), 2, 4 )
     g.add(escl, 0, 0, anchorLeft=1, padding=(1,0,0,1))
     g.add(esc, 1, 0, anchorLeft=1)
