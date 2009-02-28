@@ -1,8 +1,22 @@
-screen-profiles (1.30) UNRELEASED; urgency=low
+screen-profiles (1.31) UNRELEASED; urgency=low
 
   * 
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 27 Feb 2009 16:20:57 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 Feb 2009 12:20:49 -0600
+
+screen-profiles (1.30-ubuntu1) jaunty; urgency=low
+
+  * screen-profiles: note <F5> profile refresh key, LP: #335922; use single
+    <Back> button instead of 2 <Okay> <Exit> buttons when there's only really
+    one path, LP: #335923; standardize all buttons to the same words
+  * screen: revert "clear" changes
+  * select-screen-profile: align profile options properly, LP: #335943;
+    order profile options better, LP: #335944; match "F5" text to that in
+    screen-profiles
+  * doc/help.txt: improve help text
+  * po/*: text updated
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 Feb 2009 12:19:04 -0600
 
 screen-profiles (1.29-0ubuntu1) jaunty; urgency=low
 
