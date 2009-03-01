@@ -1,9 +1,15 @@
-screen-profiles (1.31) UNRELEASED; urgency=low
+screen-profiles (1.32) unreleased; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 01 Mar 2009 12:53:31 -0600
+
+screen-profiles (1.31-0ubuntu1) jaunty; urgency=low
 
   * keybindings/common, profiles/common, profiles/plain,
     profiles/profile.skel: replace ~ with $HOME, LP: #336208
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 01 Mar 2009 10:11:42 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 01 Mar 2009 10:26:13 -0600
 
 screen-profiles (1.30-ubuntu1) jaunty; urgency=low
 
