@@ -30,7 +30,7 @@ install_screen_launcher() {
 # Sanitize the environment
 /usr/share/screen-profiles/screen-launcher-uninstall || true
 
-# Install in ~/.profile unconditionally
+# Install in $HOME/.profile unconditionally
 install_screen_launcher "$HOME/.profile"
 
 # Now, install in any shell-specific profiles, if they exist

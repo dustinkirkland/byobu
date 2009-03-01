@@ -24,13 +24,13 @@
 # The following hack should be removed after Jaunty goes GA
 # (should only affect upgrading Alpha users)
 # See LP: #335275
-# Collapse ~/.screenrc-* into ~/.screen-profiles/*
+# Collapse $HOME/.screenrc-* into $HOME/.screen-profiles/*
 for i in ec2-cost keybindings profile updates-available windows; do
 	mv -f "$HOME/.screenrc-$i" "$HOME/.screen-profiles/$i" 2>/dev/null
 done
 ##########################################################################
 
-# If ~/.screenrc exists but ~/.screen-profiles/profile does not,
+# If $HOME/.screenrc exists but $HOME/.screen-profiles/profile does not,
 # this shows that the user has an existing custom screen configuration,
 # and thus we will not bother them with a select-screen-profile prompt.
 if [ -r "$HOME/.screenrc" -a ! -e "$HOME/.screen-profiles/profile" ]; then

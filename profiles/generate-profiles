@@ -2,7 +2,10 @@
 # This script should be run during in the './debian/rules get-orig-source'
 # step.
 
-rm -f profiles/debian-* profiles/fedora-* profiles/redhat-* profiles/ubuntu-*
+rm -vf profiles/debian-* profiles/fedora-* profiles/redhat-* profiles/ubuntu-*
+if [ "$1" = "--clean" ]; then
+	exit 0
+fi
 
 for i in $(ls profiles/logos); do
 	echo "Generating profile: $i-light"
