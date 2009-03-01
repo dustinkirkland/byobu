@@ -31,5 +31,5 @@ hardstatus string '__LOGO__%{=b Wk} %100` %{= Wk} %= %{=b bW}%102`%{= Wk} %{=b r
 # in this 'hardstatus string'.
 # See: https://bugs.launchpad.net/bugs/315871 (fixed in Jaunty)
 
-# Allow local overrides in ~/.screenrc
-source ~/.screenrc
+# Allow local overrides in $HOME/.screenrc
+source $HOME/.screenrc

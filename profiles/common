@@ -44,10 +44,10 @@ termcapinfo xterm* ti@:te@
 defscrollback 10000
 
 # The selected keybinding set, plus any additional user-defined/overriding
-# keybindings should be placed in each user's ~/.screen-profiles/keybindings
-source ~/.screen-profiles/keybindings
+# keybindings should be placed in each user's $HOME/.screen-profiles/keybindings
+source $HOME/.screen-profiles/keybindings
 
 # Default windows
-# Windows list should be placed in each user's ~/.screen-profiles/windows,
+# Windows list should be placed in each user's $HOME/.screen-profiles/windows,
 # to be configurable
-source ~/.screen-profiles/windows
+source $HOME/.screen-profiles/windows
