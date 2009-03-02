@@ -1,8 +1,9 @@
-screen-profiles (1.32) unreleased; urgency=low
+screen-profiles (1.32-0ubuntu1) jaunty; urgency=low
 
-  * 
+  * bin/ec2-cost: since route -n is being used, must grep for 0.0.0.0,
+    LP: #336955
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 01 Mar 2009 12:53:31 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Mar 2009 16:28:57 -0600
 
 screen-profiles (1.31-0ubuntu1) jaunty; urgency=low
 
