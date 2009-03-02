@@ -25,17 +25,17 @@ vbell off
 msgwait 1
 
 # Define status commands
-backtick 100 3600 3600 /usr/share/screen-profiles/bin/release
-backtick 101 60 60 /usr/share/screen-profiles/bin/updates-available
-backtick 102 2 2 /usr/share/screen-profiles/bin/reboot-required
-backtick 103 2 2 /usr/share/screen-profiles/bin/cpu-freq
-backtick 104 3600 3600 /usr/share/screen-profiles/bin/cpu-count
-backtick 105 3600 3600 /usr/share/screen-profiles/bin/mem-available
-backtick 106 2 2 /usr/share/screen-profiles/bin/load-average
-backtick 107 2 2 /usr/share/screen-profiles/bin/mem-used
-backtick 108 600 600 /usr/share/screen-profiles/bin/ec2-cost
-backtick 109 3600 3600 /usr/share/screen-profiles/bin/hostname
-backtick 110 3600 3600 /usr/share/screen-profiles/bin/whoami
+backtick 100 3600 3600 /var/lib/screen-profiles/release
+backtick 101 60 60 /var/lib/screen-profiles/updates-available
+backtick 102 2 2 /var/lib/screen-profiles/reboot-required
+backtick 103 2 2 /var/lib/screen-profiles/cpu-freq
+backtick 104 3600 3600 /var/lib/screen-profiles/cpu-count
+backtick 105 3600 3600 /var/lib/screen-profiles/mem-available
+backtick 106 2 2 /var/lib/screen-profiles/load-average
+backtick 107 2 2 /var/lib/screen-profiles/mem-used
+backtick 108 600 600 /var/lib/screen-profiles/ec2-cost
+backtick 109 3600 3600 /var/lib/screen-profiles/hostname
+backtick 110 3600 3600 /var/lib/screen-profiles/whoami
 
 hardstatus alwayslastline
 

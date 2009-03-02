@@ -2,8 +2,13 @@ screen-profiles (1.32-0ubuntu1) jaunty; urgency=low
 
   * bin/ec2-cost: since route -n is being used, must grep for 0.0.0.0,
     LP: #336955
+  * debian/postinst, debian/prerm: add/remove symlink for bin scripts to
+    /var/lib/screen-profiles (should be removed before Jaunty GA)
+  * profiles/common, debian/install: install helper scripts into
+    /var/lib/screen-profiles rather than /usr/share/screen-profiles/bin,
+    LP: #336961
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Mar 2009 16:28:57 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Mar 2009 17:27:13 -0600
 
 screen-profiles (1.31-0ubuntu1) jaunty; urgency=low
 
