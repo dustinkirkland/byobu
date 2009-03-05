@@ -1,8 +1,9 @@
 screen-profiles (1.33) unreleased; urgency=low
 
-  * 
+  * debian/control: build-depend on gettext-base, in case the builder needs to
+    run get-po
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Mar 2009 17:46:51 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 05 Mar 2009 09:22:29 -0600
 
 screen-profiles (1.32-0ubuntu1) jaunty; urgency=low
 
