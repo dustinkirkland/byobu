@@ -26,7 +26,7 @@ msgwait 1
 
 # Define status commands
 backtick 100 3600 3600 /var/lib/screen-profiles/release
-backtick 101 60 60 /var/lib/screen-profiles/updates-available
+backtick 101 10 10 /var/lib/screen-profiles/updates-available
 backtick 102 2 2 /var/lib/screen-profiles/reboot-required
 backtick 103 2 2 /var/lib/screen-profiles/cpu-freq
 backtick 104 3600 3600 /var/lib/screen-profiles/cpu-count
