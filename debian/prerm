@@ -3,7 +3,6 @@
 if [ "$1" = "remove" ]; then
 	# This is a hack that should be removed just before Jaunty goes GA.
 	[ -L /usr/share/screen-profiles/bin ] && rm -f /usr/share/screen-profiles/bin
-	[ -L /usr/share/screen-profiles/bin/screen-profiles ] && rm -f /usr/share/screen-profiles/bin/screen-profiles
 fi
 
 #DEBHELPER#

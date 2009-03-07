@@ -6,7 +6,6 @@ if [ "$1" = "configure" ]; then
 	# user is upgrading from within an existing screen session depending on the old
 	# paths, we're going to break their status bar.
 	[ -d /usr/share/screen-profiles/bin ] || ln -sf /var/lib/screen-profiles /usr/share/screen-profiles/bin
-	[ -L /usr/share/screen-profiles/bin/screen-profiles ] && rm -f /usr/share/screen-profiles/bin/screen-profiles
 fi
 
 #DEBHELPER#
