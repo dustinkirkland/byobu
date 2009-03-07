@@ -1,3 +1,9 @@
+screen-profiles (1.35) unreleased; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 07 Mar 2009 08:52:25 -0600
+
 screen-profiles (1.34-0ubuntu1) jaunty; urgency=low
 
   Fixes for LP: #339186
@@ -7,7 +13,7 @@ screen-profiles (1.34-0ubuntu1) jaunty; urgency=low
     tooltip
   * profiles/profile.skel: add Menu:F9 tool tip to far right of window bar
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 07 Mar 2009 08:49:22 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 07 Mar 2009 08:51:16 -0600
 
 screen-profiles (1.33-0ubuntu1) jaunty; urgency=low
 
