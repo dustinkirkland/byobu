@@ -1,11 +1,19 @@
-screen-profiles (1.33) unreleased; urgency=low
+screen-profiles (1.34) unreleased; urgency=low
 
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 07 Mar 2009 01:12:29 -0600
+
+screen-profiles (1.33-0ubuntu1) jaunty; urgency=low
+
+  * screen-launcher: add little bash hack to ensure that PROMPT_COMMAND gets
+    displayed and gnome-title is updated, LP: #338722
   * debian/control: build-depend on gettext-base, in case the builder needs to
     run get-po
-  * screen-launcher: add little bash hack to ensure that PROMPT_COMMAND gets
-    displayed and gnome-title is updated, LP: #xxxxxx
+  * bin/ec2-cost: trivial interface detection fix, nice the apt checks
+  * bin/hostname: improve performance
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 06 Mar 2009 20:04:14 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 07 Mar 2009 01:11:20 -0600
 
 screen-profiles (1.32-0ubuntu1) jaunty; urgency=low
 
