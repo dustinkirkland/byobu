@@ -18,7 +18,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+[ "$TERM" = "screen" ] && exit 0
+
+# Ensure that the PROMPT_COMMAND gets printed, such that gnome-terminal
+# and friends can pick it up before going into screen
+[ -x /bin/bash ] && /bin/true | /bin/bash -i -s
+
 # Launch screen
-if [ "$TERM" != "screen" ]; then
-	screen -xRR
-fi
+exec screen -xRR
