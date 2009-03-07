@@ -1,3 +1,2 @@
 # Default windows
-screen -t shell 2 motd+shell
-screen -t welcome 1 screen-profiles
+screen -t shell 0 motd+shell

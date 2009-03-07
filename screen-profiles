@@ -30,7 +30,6 @@ HOME=os.getenv("HOME")
 SHARE='/usr/share/screen-profiles'
 DOC='/usr/share/doc/screen-profiles'
 DEF_ESC="A"
-WELCOME = "screen -t welcome 1 screen-profiles"
 RELOAD = "If you are using the default set of keybindings, press\n<F5><enter> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
 
 gettext.bindtextdomain('screen-profiles', SHARE+'/po')
@@ -67,18 +66,14 @@ def terminal_size():                    ### decide on *some* terminal size
             cr = (25, 80)
     return int(cr[1]-5), int(cr[0]-5)         # reverse rows, cols
 
-def menu(screen, size, isInstalled, welcome):
+def menu(screen, size, isInstalled):
     if isInstalled:
         installtext=_("Remove screen by default at login")
     else:
         installtext=_("Install screen by default at login")
-    if welcome:
-        welcometext=_("Launch Screen Profiles Configuration on startup")
-    else:
-        welcometext=_("Do not launch Screen Profiles Configuration on startup")
 
 
-    li = Listbox(height = 8, width = 60, returnExit = 1)
+    li = Listbox(height = 7, width = 60, returnExit = 1)
     li.append(_("Help"), 1)
     li.append(_("Change screen profile"), 2)
     li.append(_("Change keybinding set"), 3)
@@ -86,10 +81,9 @@ def menu(screen, size, isInstalled, welcome):
     li.append(_("Create new window(s)"), 5)
     li.append(_("Manage default windows"), 6)
     li.append(installtext, 7)
-    li.append(welcometext, 8)
     bb = ButtonBar(screen, ((_("Exit"), )), compact = 1)
 
-    g = GridForm(screen, _(" Screen Profiles Configuration"), 1, 2)
+    g = GridForm(screen, _(" Screen Profiles Configuration Menu"), 1, 2)
     g.add(li, 0, 0, padding=(4,2,4,2))
     g.add(bb, 0, 1, padding=(1,1,0,0))
 
@@ -295,33 +289,6 @@ def defaultwindows(screen, size):
 
     return 100
 
-def welcomeOn():
-    path=HOME+'/.screen-profiles/windows'
-    line = commands.getoutput("grep '^"+WELCOME+"' "+path)
-    if line == "":
-        return 1
-    else:
-        return 0
-
-def togglewelcome(screen, size, welcome):
-    if welcome:
-        togglewelcomeon()
-        out = _("Screen Profiles Configuration will be launched automatically.")
-        rc = 101
-    else:
-        togglewelcomeoff()
-        out = _("Screen Profiles Configuration will be not launched automatically.")
-        rc = 100
-    button = messagebox(screen, 70, 2, "Message", out, \
-    buttons=((_("Menu"), )))
-    return rc
-
-def togglewelcomeon():
-    commands.getoutput("sed -i -e 's/^#"+WELCOME+"/"+WELCOME+"/' "+HOME+'/.screen-profiles/windows')
-
-def togglewelcomeoff():
-    commands.getoutput("sed -i -e 's/^"+WELCOME+"/#"+WELCOME+"/' "+HOME+'/.screen-profiles/windows')
-
 def install(screen, size, isInstalled):
     if not isInstalled:
         out = commands.getoutput("bash /usr/share/screen-profiles/screen-launcher-install")
@@ -421,18 +388,17 @@ def main():
 
     size = terminal_size()
     screen = SnackScreen()
-    screen.drawRootText(1,0,_(' Screen Profiles Configuration'))
+    screen.drawRootText(1,0,_(' Screen Profiles Configuration Menu'))
     screen.pushHelpLine(_('<Tab>/<Alt-Tab> between elements | <Return> Validates'))
 
     config = SafeConfigParser()
 
     isInstalled = (commands.getoutput('grep screen-launcher '+(HOME+'/.profile')) != "")
-    welcome = welcomeOn()
 
     tag = 100
 
     while tag > 0 :
-        tag = menu(screen, size, isInstalled, welcome)
+        tag = menu(screen, size, isInstalled)
         if tag == 1:
             tag = help(screen, size, config)
         elif tag == 2:
@@ -448,9 +414,6 @@ def main():
         elif tag == 7:
             tag = install(screen, size, isInstalled)
             isInstalled=(tag == 100)
-        elif tag == 8:
-            tag = togglewelcome(screen, size, welcome)
-            welcome=(tag == 100)
 
     screen.finish()
     sys.exit(0)

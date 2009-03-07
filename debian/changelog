@@ -1,8 +1,13 @@
-screen-profiles (1.34) unreleased; urgency=low
+screen-profiles (1.34-0ubuntu1) jaunty; urgency=low
 
-  * 
+  Fixes for LP: #339186
+  * screen-profiles: remove welcome screen toggle support; collapsed into a
+    tooltip on the status line
+  * windows/common: remove screen-profiles default window; now launched from
+    tooltip
+  * profiles/profile.skel: add Menu:F9 tool tip to far right of window bar
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 07 Mar 2009 01:12:29 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 07 Mar 2009 08:49:22 -0600
 
 screen-profiles (1.33-0ubuntu1) jaunty; urgency=low
 
