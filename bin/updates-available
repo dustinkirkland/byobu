@@ -70,6 +70,11 @@ else
 	exit 0
 fi
 
+# If we make it to this point, we actually have to do hard computational
+# work to calculate updates.  Let's try to be "nice" about it:
+renice 10 $$ >/dev/null &2>1 || true
+ionice -c3 -p $$ >/dev/null &2>1 || true
+
 # If apt-check binary exists, use it
 if [ -x /usr/lib/update-notifier/apt-check ]; then
 	u=`/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;/ /"`
