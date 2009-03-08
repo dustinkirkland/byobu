@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    hostname - report a host's name
+#    whoami - report current logged in user
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
