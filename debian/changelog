@@ -1,6 +1,7 @@
 screen-profiles (1.34) unreleased; urgency=low
 
-  * 
+  [ Adrien Cunin ]
+  * Fixed Vcs-Bzr url
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 07 Mar 2009 01:12:29 -0600
 
