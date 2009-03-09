@@ -18,7 +18,7 @@ msgstr ""
 
 #: select-screen-profile:9 select-screen-profile:16
 msgid "Error:"
-msgstr "Erreur:"
+msgstr "Erreur :"
 
 #: select-screen-profile:9 select-screen-profile:16
 msgid "exists, but is not a symlink"

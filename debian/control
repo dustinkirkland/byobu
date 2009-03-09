@@ -6,7 +6,7 @@ XSBC-Original-Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 Standards-Version: 3.8.0
 Build-Depends: debhelper (>= 6), gettext-base
 Homepage: http://launchpad.net/screen-profiles
-Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/screen-profiles/main
+Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/screen-profiles/trunk
 
 Package: screen-profiles
 Architecture: all

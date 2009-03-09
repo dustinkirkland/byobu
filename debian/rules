@@ -40,7 +40,7 @@ binary-indep: build install
 	dh_testroot -i
 	dh_installdocs -X.bzr -i
 	dh_installman -i screen-launcher.1 screen-profiles.1 select-screen-profile.1 motd+shell.1
-	dh_installchangelogs -i README
+	dh_installchangelogs -i
 	dh_installdebconf -i
 	dh_compress -i
 	dh_fixperms -i

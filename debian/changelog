@@ -1,8 +1,15 @@
 screen-profiles (1.35) unreleased; urgency=low
 
-  * bin/ec2-cost: fix &2>1 typo
+  [ Adrien Cunin ]
+  * Fixed Vcs-Bzr url
+  * Don't install README as changelog, it's already installed as doc
+  * Fixed bin/whoami's header which had bin/hostname's one
+  * Minor fix in the french translation
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 08 Mar 2009 23:32:56 -0500
+  [ Dustin Kirkland ]
+  * bin/ec2-cost: fix &2>1 typo, LP: #339774
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 08 Mar 2009 23:36:11 -0500
 
 screen-profiles (1.34-0ubuntu1) jaunty; urgency=low
 
