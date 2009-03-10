@@ -1,8 +1,16 @@
-screen-profiles (1.36) unreleased; urgency=low
+screen-profiles (1.37) unreleased; urgency=low
 
   * 
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 08 Mar 2009 23:41:50 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Mar 2009 16:45:09 -0500
+
+screen-profiles (1.36-0ubuntu1) jaunty; urgency=low
+
+  * profiles/profile.skel: Menu:<F9> white text on dark background
+  * profiles/logos/debian: red on white for the Debian logo
+  * bin/release: improve printing of release information
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Mar 2009 16:44:54 -0500
 
 screen-profiles (1.35-0ubuntu1) jaunty; urgency=low
 
