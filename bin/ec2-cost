@@ -79,7 +79,7 @@ if [ "$DETAIL" = "1" ]; then
 	echo "================================================"
 	echo "  Network sent:  $tx_gb GB   @ \$$RX_RATE/GB"
 	echo "  Network recv:  $rx_gb GB   @ \$$TX_RATE/GB"
-	echo "  Network cost:  $network_cost"
+	echo "  Network cost:  \$$network_cost"
 	echo "------------------------------------------------"
 	echo "  Uptime:        $hours hr  @ \$$CPU_RATE/hr"
 	echo "  Uptime cost:   \$$uptime_cost"
