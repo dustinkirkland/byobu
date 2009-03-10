@@ -22,7 +22,7 @@
 source /usr/share/screen-profiles/profiles/common
 
 # Window tabs, second to last line
-caption always "%{kW}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{kW}%?%+Lw%? %= %{=b Wk}Menu:<F9>"
+caption always "%{kW}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{kW}%?%+Lw%? %= %{=b kW}Menu:<F9>"
 
 # Status string, last line
 hardstatus string '__LOGO__%{=b Wk} %100` %{= Wk} %= %{=b bW}%102`%{= Wk} %{=b rW}%101`%{= Wk} %{= Wg}%108`%{= Wk} %{= Yk}%106`%{= Wk} %{= Wk}%104`%{=b cW}%103`%{= Wk} %{=b gW}%105`,%107`%{= Wk} %Y-%m-%d %0c:%s'
