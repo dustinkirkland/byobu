@@ -16,7 +16,7 @@ get-orig-source:
 
 get-po:
 	xgettext -o po/screen-profiles.pot -L Python -d screen-profiles screen-profiles
-	xgettext -j -o po/screen-profiles.pot -L Shell -d screen-profiles select-screen-profile
+	xgettext -j -o po/screen-profiles.pot -L Shell -d screen-profiles select-screen-profile bin/menu
 
 
 prebuild:

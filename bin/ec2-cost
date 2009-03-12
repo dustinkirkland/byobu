@@ -20,6 +20,12 @@
 
 FORCE=0
 DETAIL=0
+
+# Default is "off"
+p=`basename $0`
+grep -qs "^$p=1$" "$HOME/.screen-profiles/status" && FORCE=1
+grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && FORCE=0
+
 for arg in $@; do
 	case "$arg" in
 		-f|--force)

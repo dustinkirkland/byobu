@@ -1,14 +1,4 @@
-bin/cpu-count var/lib/screen-profiles
-bin/cpu-freq var/lib/screen-profiles
-bin/ec2-cost var/lib/screen-profiles
-bin/hostname var/lib/screen-profiles
-bin/load-average var/lib/screen-profiles
-bin/mem-available var/lib/screen-profiles
-bin/mem-used var/lib/screen-profiles
-bin/reboot-required var/lib/screen-profiles
-bin/release var/lib/screen-profiles
-bin/updates-available var/lib/screen-profiles
-bin/whoami var/lib/screen-profiles
+bin/* var/lib/screen-profiles
 profiles/common usr/share/screen-profiles/profiles
 profiles/plain usr/share/screen-profiles/profiles
 profiles/ubuntu-* usr/share/screen-profiles/profiles
