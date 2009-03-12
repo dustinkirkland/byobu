@@ -1,10 +1,16 @@
-screen-profiles (1.37) unreleased; urgency=low
+screen-profiles (1.38) unreleased; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 12 Mar 2009 02:34:22 -0500
+
+screen-profiles (1.37-0ubuntu1) jaunty; urgency=low
 
   * bin/menu: make internationalizable menu prompt
   * debian/rules: get-po from menu
   * bin/*: test if enabled/disabled before executing, LP: #341557
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 12 Mar 2009 02:08:32 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 12 Mar 2009 02:33:59 -0500
 
 screen-profiles (1.36-0ubuntu1) jaunty; urgency=low
 
