@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Default is on
-p=`basename $0`
+p="release"
 grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
 
 echo $(/usr/bin/lsb_release -s -i) $(/usr/bin/lsb_release -s -r)

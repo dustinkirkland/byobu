@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Default is "off"
-p=`basename $0`
+p="whoami"
 grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
 
 whoami

@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    mem-used: grab the current memory used
+#    menu: display the menu text
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -17,8 +17,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Default is on
-p="mem-used"
+# Default is "on"
+p="menu"
 grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
 
-free | awk '/buffers\/cache:/ {printf ",%.0f%%\n", 100*$3/($3 + $4)}'
+echo `gettext "Menu:<F9>"`

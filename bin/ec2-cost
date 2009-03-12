@@ -22,7 +22,7 @@ FORCE=0
 DETAIL=0
 
 # Default is "off"
-p=`basename $0`
+p="ec2-cost"
 grep -qs "^$p=1$" "$HOME/.screen-profiles/status" && FORCE=1
 grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && FORCE=0
 
