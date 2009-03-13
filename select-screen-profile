@@ -62,7 +62,7 @@ listprofiles() {
 	basename $(ls $PROFILE_DIR/*-dark 2>/dev/null) 2>/dev/null
 	basename $(ls $PROFILE_DIR/*-black 2>/dev/null) 2>/dev/null
 	# Now, list advanced profiles
-	for x in $(ls $PROFILE_DIR/*-*_*); do
+	for x in $(ls $PROFILE_DIR/*-*_* 2>/dev/null); do
 		x=$(basename "$x")
 		if [ $x = "common" -o $x = "misc" ]; then
 			# Skip the common profile, no value there
