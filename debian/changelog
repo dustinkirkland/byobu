@@ -1,8 +1,18 @@
-screen-profiles (1.38) unreleased; urgency=low
+screen-profiles (1.39) unreleased; urgency=low
 
   * 
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 12 Mar 2009 02:34:22 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 Mar 2009 00:20:36 -0500
+
+screen-profiles (1.38-0ubuntu1) jaunty; urgency=low
+
+  * screen-profiles: add support for toggling on/off each status item
+  * bin/arch: new status notifier, default is 'off'
+  * bin/*: speed these up by dropping the 'basename' shell call
+  * profiles/common: change the refresh on status items that don't change
+    to once-a-day; add arch
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 Mar 2009 00:18:59 -0500
 
 screen-profiles (1.37-0ubuntu1) jaunty; urgency=low
 
