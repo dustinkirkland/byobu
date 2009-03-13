@@ -73,14 +73,15 @@ def menu(screen, size, isInstalled):
         installtext=_("Install screen by default at login")
 
 
-    li = Listbox(height = 7, width = 60, returnExit = 1)
+    li = Listbox(height = 8, width = 60, returnExit = 1)
     li.append(_("Help"), 1)
     li.append(_("Change screen profile"), 2)
-    li.append(_("Change keybinding set"), 3)
-    li.append(_("Change escape sequence"), 4)
-    li.append(_("Create new window(s)"), 5)
-    li.append(_("Manage default windows"), 6)
-    li.append(installtext, 7)
+    li.append(_("Toggle status notifications"), 3)
+    li.append(_("Change keybinding set"), 4)
+    li.append(_("Change escape sequence"), 5)
+    li.append(_("Create new window(s)"), 6)
+    li.append(_("Manage default windows"), 7)
+    li.append(installtext, 8)
     bb = ButtonBar(screen, ((_("Exit"), )), compact = 1)
 
     g = GridForm(screen, _(" Screen Profiles Configuration Menu"), 1, 2)
@@ -243,6 +244,78 @@ def readwindows():
     finally:
         f.close()
 
+def readstatus():
+    status={}
+    status["arch"]=0
+    status["cpu-count"]=1
+    status["cpu-freq"]=1
+    status["ec2-cost"]=0
+    status["hostname"]=0
+    status["load-average"]=1
+    status["mem-available"]=1
+    status["mem-used"]=1
+    status["menu"]=1
+    status["reboot-required"]=1
+    status["release"]=1
+    status["updates-available"]=1
+    status["whoami"]=0
+    if os.path.exists(HOME+'/.screen-profiles/status'):
+        f=open(HOME+'/.screen-profiles/status', 'r')
+        for line in f.readlines():
+           try:
+               line = line.rstrip()
+               (key, val) = line.split("=", 2)
+               if status.has_key(key) and (val == "1" or val == "0"):
+                   status[key] = val
+           except:
+               continue
+        f.close()
+    li=[]
+    keys = status.keys()
+    keys.sort()
+    for i in keys:
+        window=[int(status[i]), i]
+        li.append(window)
+    return li
+
+def writestatus(items):
+    f=open(HOME+'/.screen-profiles/status', 'w')
+    try:
+        for i in items:
+            if i[0] == 1:
+                f.write(i[1]+"=1\n")
+            elif i[0] == 0:
+                f.write(i[1]+"=0\n")
+    except IOError:
+        return None
+    finally:
+        f.close()
+
+def togglestatus(screen, size):
+    itemlist=readstatus()
+    rl=Label(_(""))
+    r=CheckboxTree(12, scroll=1)
+    count=0
+    for item in itemlist:
+       if item[0] != -1:
+            r.append(item[1],count,selected=item[0])
+       count=count+1
+    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel")), compact = 1)
+    g = GridForm(screen, _("Toggle status notifications:"), 2, 4 )
+    g.add(rl, 0, 0, anchorLeft=1, anchorTop=1, padding=(4,0,0,1))
+    g.add(r, 1, 0)
+    g.add(bb, 1, 1, padding=(4,1,0,0))
+    if bb.buttonPressed(g.runOnce()) != "cancel":
+        count=0
+        for item in itemlist:
+            if item[0] != -1:
+                item[0] = r.getEntryValue(count)[1]
+            count=count+1
+        writestatus(itemlist)
+        button = messagebox(screen, 60, 4, _("Message"), _(RELOAD), \
+            buttons=((_("Menu"), )))
+    return 100
+
 def writewindows(winlist):
     f=open(HOME+'/.screen-profiles/windows', 'w')
     try:
@@ -253,10 +326,8 @@ def writewindows(winlist):
                 f.write("#"+win[1])
             else:
                 f.write(win[1])
-
     except IOError:
         return None
-
     finally:
         f.close()
 
@@ -404,14 +475,16 @@ def main():
         elif tag == 2:
             tag = profile(screen, size)
         elif tag == 3:
+            tag = togglestatus(screen, size)
+        elif tag == 4:
             tag = keybindings(screen, size)
-	elif tag == 4:
+	elif tag == 5:
             tag = chgesc(screen, size)
-        elif tag == 5:
-            tag = newwindow(screen, size)
         elif tag == 6:
-            tag = defaultwindows(screen, size)
+            tag = newwindow(screen, size)
         elif tag == 7:
+            tag = defaultwindows(screen, size)
+        elif tag == 8:
             tag = install(screen, size, isInstalled)
             isInstalled=(tag == 100)
 
