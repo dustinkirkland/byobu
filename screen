@@ -33,13 +33,25 @@ done
 # If $HOME/.screenrc exists but $HOME/.screen-profiles/profile does not,
 # this shows that the user has an existing custom screen configuration,
 # and thus we will not bother them with a select-screen-profile prompt.
-if [ -r "$HOME/.screenrc" -a ! -e "$HOME/.screen-profiles/profile" ]; then
+if [ -r "$HOME/.screenrc" -a ! -e "$HOME/.screen-profiles/profile" -a ! -h "$HOME/.screen-profiles/profile" ]; then
 	exec /usr/bin/screen.real -c "$HOME/.screenrc" "$@"
 	exit $?
 fi
 
 # Ensure that the user has selected a screen profile
-[ -r "$HOME/.screen-profiles/profile" ] || /usr/bin/select-screen-profile
+[ -h "$HOME/.screen-profiles/profile" ] || /usr/bin/select-screen-profile
+if [ ! -r "$HOME/.screen-profiles/profile" ]; then
+	echo
+	echo "Your selected profile is not accessible."
+	echo
+	echo "Either select a different profile:"
+	echo " $ select-screen-profile"
+	echo
+	echo "Or install the extras package:"
+	echo " $ sudo apt-get install screen-profiles-extras"
+	echo
+	exit 1
+fi
 
 # Ensure that their keybindings are seeded
 [ -s "$HOME/.screen-profiles/keybindings" ] || echo "source /usr/share/screen-profiles/keybindings/common" > "$HOME/.screen-profiles/keybindings"

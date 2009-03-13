@@ -1,8 +1,13 @@
-screen-profiles (1.39) unreleased; urgency=low
+screen-profiles (1.39-0ubuntu1) jaunty; urgency=low
 
-  * 
+  * debian/screen-profiles-extras.install: new package, providing the
+    additional, color profiles, LP: #342244
+  * debian/control: suggest screen-profiles-extra, and create the package
+  * screen: recommend the screen-profiles-extras package, if the user's
+    chosen profile isn't readable
+  * select-screen-profile: silence stderr on ls
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 Mar 2009 00:20:36 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 Mar 2009 12:36:59 -0500
 
 screen-profiles (1.38-0ubuntu1) jaunty; urgency=low
 

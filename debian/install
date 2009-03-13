@@ -1,10 +1,9 @@
 bin/* var/lib/screen-profiles
 profiles/common usr/share/screen-profiles/profiles
 profiles/plain usr/share/screen-profiles/profiles
-profiles/ubuntu-* usr/share/screen-profiles/profiles
-profiles/debian-* usr/share/screen-profiles/profiles/misc
-profiles/fedora-* usr/share/screen-profiles/profiles/misc
-profiles/redhat-* usr/share/screen-profiles/profiles/misc
+profiles/ubuntu-black usr/share/screen-profiles/profiles
+profiles/ubuntu-dark usr/share/screen-profiles/profiles
+profiles/ubuntu-light usr/share/screen-profiles/profiles
 keybindings/common usr/share/screen-profiles/keybindings
 keybindings/none usr/share/screen-profiles/keybindings
 windows/common usr/share/screen-profiles/windows
