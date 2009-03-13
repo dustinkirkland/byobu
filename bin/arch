@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    cpu-count: count cpu's on a systems
+#    arch: print the machine architecture
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -17,9 +17,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Default is "on"
-p="cpu-count"
-grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
+# Default is "off"
+p="arch"
+grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
 
-count=`grep -c "^processor.*:" /proc/cpuinfo`
-[ "$count" = "1" ] || echo $count"x"
+uname -m
