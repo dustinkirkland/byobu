@@ -1,3 +1,9 @@
+screen-profiles (1.40) unreleased; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 Mar 2009 12:55:21 -0500
+
 screen-profiles (1.39-0ubuntu1) jaunty; urgency=low
 
   * debian/screen-profiles-extras.install: new package, providing the
@@ -7,7 +13,7 @@ screen-profiles (1.39-0ubuntu1) jaunty; urgency=low
     chosen profile isn't readable
   * select-screen-profile: silence stderr on ls
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 Mar 2009 12:36:59 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 Mar 2009 12:53:09 -0500
 
 screen-profiles (1.38-0ubuntu1) jaunty; urgency=low
 
