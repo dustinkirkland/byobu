@@ -12,6 +12,7 @@ Package: screen-profiles
 Architecture: all
 Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, screen, gettext-base, python, python-newt
 Recommends: update-notifier-common
+Suggests: screen-profiles-extras
 Enhances: screen
 Description: a set of useful profiles and a profile-switcher for GNU screen
  screen-profiles includes a set of profiles for the GNU screen window manager.
