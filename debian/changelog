@@ -1,8 +1,8 @@
 screen-profiles (1.40) unreleased; urgency=low
 
-  * 
+  * profiles/logos/suse: added a simple SuSE green on white logo
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 Mar 2009 12:55:21 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 17 Mar 2009 13:26:14 -0500
 
 screen-profiles (1.39-0ubuntu1) jaunty; urgency=low
 
