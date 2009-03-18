@@ -1,10 +1,16 @@
+screen-profiles (1.41) unreleased; urgency=low
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 18 Mar 2009 14:18:18 -0500
+
 screen-profiles (1.40-0ubuntu1) jaunty; urgency=low
 
   * bin/updates-available: cache /var/run/updates-available locally, to
     persist across reboots, LP: #344993
   * profiles/logos/suse: added a simple SuSE green on white logo
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 18 Mar 2009 14:11:56 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 18 Mar 2009 14:17:30 -0500
 
 screen-profiles (1.39-0ubuntu1) jaunty; urgency=low
 
