@@ -49,11 +49,12 @@ mycache_timestamp=`stat -c "%Y" $mycache 2>/dev/null || echo 0`
 diff=`expr $now - $cache_timestamp`
 u=
 # If global updates-available cache is present, and newer than mycache, and
-# within expiration, use it.
+# within expiration, use it, and cache it (to preserve across reboots).
 # Only available in Jaunty+.
 if [ -r $cache -a $cache_timestamp -gt $mycache_timestamp -a $diff -lt $EXPIRATION ]; then
 	u=`grep -m 1 "^[0-9]" $cache | sed "s/\s.*$//"`
 	s=`grep -m 2 "^[0-9]" $cache | tail -n 1 | sed "s/\s.*$//"`
+	cp -a "$cache" "$mycache"
 	print_updates $u $s
 fi
 
