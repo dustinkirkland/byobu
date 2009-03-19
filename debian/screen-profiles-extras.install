@@ -1,0 +1,4 @@
+profiles/ubuntu-*_* usr/share/screen-profiles/profiles
+profiles/debian-* usr/share/screen-profiles/profiles/misc
+profiles/fedora-* usr/share/screen-profiles/profiles/misc
+profiles/redhat-* usr/share/screen-profiles/profiles/misc
