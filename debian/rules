@@ -10,8 +10,6 @@ VER=`head -n 1 debian/changelog | sed 's/^.*(//' | sed 's/).*//' | sed 's/-.*//'
 get-orig-source:
 	dh_testdir
 	-[ -d ../${PACKAGE} ] && mv ../${PACKAGE} ../${PACKAGE}-${VER}
-	# auto-generate the logo'd light/dark profiles
-	./profiles/generate-profiles
 	tar -C ../ --exclude .bzr --exclude debian -zcvf ../${PACKAGE}_${VER}.orig.tar.gz ${PACKAGE}-${VER}
 
 get-po:
@@ -22,9 +20,12 @@ get-po:
 prebuild:
 
 build:
+	# auto-generate the logo'd light/dark profiles
+	./profiles/generate-profiles
 
 clean:
 	dh_clean
+	./profiles/generate-profiles --clean
 
 install:build
 	dh_testdir
