@@ -1,12 +1,16 @@
 screen-profiles (1.41) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * profiles/logos/gentoo: added a gentoo logo
   * profiles/logos/mandriva: added a mandriva logo
   * profiles/generate-profiles: reorganize cleaning and echo's
   * debian/rules: generate profiles as part of the build, rather than
     get-orig-source
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 20 Mar 2009 17:30:42 -0500
+  [ James Wilcox ]
+  * bin/updates-available: support SUSE's zypper
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 25 Mar 2009 14:14:49 -0500
 
 screen-profiles (1.40-0ubuntu1) jaunty; urgency=low
 

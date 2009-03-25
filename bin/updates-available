@@ -93,6 +93,13 @@ if [ -x /usr/bin/apt-get ]; then
 	print_updates $u
 fi
 
+# If zypper exists, use it
+if [ -x /usr/bin/zypper ]; then
+  u=`/usr/bin/zypper --no-refresh lu --best-effort | grep 'v |' | wc -l`
+  echo "$u" > $mycache
+  print_updates $u
+fi
+
 # If yum exists, use it
 if [ -x /usr/bin/yum ]; then
 	u=`/usr/bin/yum list updates | grep -c "updates"`
