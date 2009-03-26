@@ -6,11 +6,12 @@ screen-profiles (1.41) unreleased; urgency=low
   * profiles/generate-profiles: reorganize cleaning and echo's
   * debian/rules: generate profiles as part of the build, rather than
     get-orig-source
+  * bin/release: determine release from /etc/issue if lsb-release not found
 
   [ James Wilcox ]
   * bin/updates-available: support SUSE's zypper
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 25 Mar 2009 14:14:49 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 26 Mar 2009 10:41:23 -0500
 
 screen-profiles (1.40-0ubuntu1) jaunty; urgency=low
 

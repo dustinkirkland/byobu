@@ -3,7 +3,9 @@
 #      This configuration profile is intended to be a common header of useful
 #      functionality, included by other profiles.
 #
-#    Copyright (C) 2008  Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by

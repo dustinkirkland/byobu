@@ -1,7 +1,6 @@
 #!/bin/sh
 #
 #    ec2-cost: approximate EC2 cost (USD) of the current instance
-#
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>

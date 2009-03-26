@@ -21,4 +21,10 @@
 p="release"
 grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
 
-echo $(/usr/bin/lsb_release -s -i) $(/usr/bin/lsb_release -s -r)
+if [ -x "/usr/bin/lsb_release" ]; then
+	echo $(/usr/bin/lsb_release -s -i) $(/usr/bin/lsb_release -s -r)
+elif [ -r "/etc/issue" ]; then
+	head -n1 /etc/issue | awk '{print $1}'
+else
+	echo "Unknown"
+fi
