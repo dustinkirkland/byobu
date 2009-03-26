@@ -11,7 +11,7 @@ Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/screen-profiles/trunk
 Package: screen-profiles
 Architecture: all
 Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, screen, gettext-base, python, python-newt
-Recommends: update-notifier-common
+Recommends: update-notifier-common, lsb-release
 Suggests: screen-profiles-extras
 Enhances: screen
 Description: a set of useful profiles and a profile-switcher for GNU screen
