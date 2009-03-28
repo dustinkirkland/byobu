@@ -30,17 +30,17 @@
 #   # <key> | explanation
 
 # F-keys seem to work well in both gnome-terminal and tty consoles
-			# F1  | 'help' in gnome-terminal
-register n "^a^c^aA"	# Goes with the F2 definition
-bindkey -k k2 process n	# F2  | Create new window (and name it)
-bindkey -k k3 prev	# F3  | Previous Window
-bindkey -k k4 next	# F4  | Next Window
-register r "^a:source $HOME/.screen-profiles/profile" # Goes with F5 definition
-bindkey -k k5 process r	# F5  | Reload profile
-bindkey -k k6 detach	# F6  | Detach from this session
-bindkey -k k7 copy	# F7  | Enter copy/scrollback mode
-bindkey -k k8 help	# F8  | Advanced help/keybindings
-bindkey -k k9 screen -t help 0 screen-profiles # F9 | Configuration
-			# F10 | 'toolbar' in gnome-terminal
-			# F11 | 'fullscreen' in gnome-terminal
-bindkey -k F2 lockscreen # F12 | Lock this terminal
+							# F1  | 'help' in gnome-terminal
+register n "^a^c^aA"					#     | Goes with the F2 definition
+bindkey -k k2 process n					# F2  | Create new window (and name it)
+bindkey -k k3 prev					# F3  | Previous Window
+bindkey -k k4 next					# F4  | Next Window
+register r "^a:source $HOME/.screen-profiles/profile"	#     | Goes with F5 definition
+bindkey -k k5 process r					# F5  | Reload profile
+bindkey -k k6 detach					# F6  | Detach from this session
+bindkey -k k7 copy					# F7  | Enter copy/scrollback mode
+bindkey -k k8 help					# F8  | Advanced help/keybindings
+bindkey -k k9 screen -t help 0 screen-profiles		# F9  | Configuration
+							# F10 | 'toolbar' in gnome-terminal
+							# F11 | 'fullscreen' in gnome-terminal
+bindkey -k F2 lockscreen				# F12 | Lock this terminal
