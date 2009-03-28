@@ -8,7 +8,7 @@ screen-profiles (1.41) unreleased; urgency=low
     get-orig-source
   * bin/release: determine release from /etc/issue if lsb-release not found;
     don't use fully qualified path for lsb_release as it seems this has moved
-    around (see Dapper)
+    around (see Dapper); for Ubuntu use -d, but use -r -i for other os's
   * licenses updated to GPLv3 (dropped "or later" clause)
   * screen-profiles-export: new script, for exporting a profile to systems
     where screen-profiles are not installed
@@ -19,7 +19,7 @@ screen-profiles (1.41) unreleased; urgency=low
   [ James Wilcox ]
   * bin/updates-available: support SUSE's zypper
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 Mar 2009 12:05:56 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 Mar 2009 12:23:27 -0500
 
 screen-profiles (1.40-0ubuntu1) jaunty; urgency=low
 

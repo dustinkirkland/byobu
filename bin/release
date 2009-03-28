@@ -22,8 +22,17 @@ p="release"
 grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
 
 if which lsb_release >/dev/null; then
-	echo $(lsb_release -s -i) $(lsb_release -s -r)
+	# If lsb_release is available, use it
+	if lsb_release -s -d | grep -qs "^Ubuntu .*\..*\..*$"; then
+		# Use the -d if an Ubuntu LTS
+		lsb_release -s -d
+	else
+		# But for other distros the description
+		# is too long, so build from -i and -r
+		echo $(lsb_release -s -i) $(lsb_release -s -r)
+	fi
 elif [ -r "/etc/issue" ]; then
+	# Otherwise, grab part of /etc/issue
 	head -n1 /etc/issue | awk '{print $1}'
 else
 	echo "Unknown"
