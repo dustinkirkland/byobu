@@ -27,7 +27,7 @@ trap "rm -rf "$TMPDIR" 2>/dev/null || true" EXIT HUP INT QUIT TERM
 usage() {
 	echo
 	echo "Usage:"
-	echo " $0 [-d DISTRO] [-c COLOR] -f TARGET.tar.gz"
+	echo " $0 [-d DISTRO -c COLOR] -f TARGET.tar.gz"
 	echo
 	echo "DISTRO and COLOR are obtained interactively if unspecified."
 	echo "TARGET.tar.gz is required"
