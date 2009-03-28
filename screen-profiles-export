@@ -17,17 +17,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-# Inputs needed:
-#   target tarball (-f)
-#     .tar
-#     .tar.bz2
-#     .tar.gz
-#   selected profile
-#     choose distro (-d)
-#     choose light/dark (-i)
-#     choose color (-c)
-
 PROG="screen-profiles"
 SHARE="/usr/share/$PROG"
 TMPDIR=`mktemp -d screen-profiles.XXXXXXXX` || error "Could not create a temporary directory"
@@ -177,9 +166,8 @@ while [ $# -gt 1 ]; do
 done
 
 [ -z "$file" ] && usage
-[ -e "$file" -o -e "$file.tar.gz" ] && error "File exists, please remove before running [$file]"
-file=`echo "$file" | sed "s:\.tar.*$::"`
-file="$file".tar.gz
+echo "$file" | grep -qs "\.tar\.gz$" || error "Target file must be a '.tar.gz' archive"
+[ -e "$file" ] && error "File exists, please remove before running [$file]"
 
 # Grab list of available distros and colors
 distros=`find $SHARE/profiles/ -type f | xargs -i basename {} | sed "s/-.*$//" | sort -u | grep -v "common" | grep -v "plain"`

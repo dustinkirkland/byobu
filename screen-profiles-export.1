@@ -1,0 +1,31 @@
+.TH screen\-launcher 1 "28 Mar 2009" screen-profiles-export "screen-profiles"
+.SH NAME
+screen\-profiles\-export \- create a screen-profiles archive for export
+
+.SH SYNOPSIS
+.BI "screen\-profiles\-export [\-d DISTRO \-c COLOR] \-f TARGET.tar.gz"
+
+.SH OPTIONS
+.TP
+.B \-d DISTRO -c COLOR
+Optional parameters specifying the desired distro/color theme.  If omitted, the program will interactively prompt for both of these values.
+.TP
+.B \-f TARGET.tar.gz
+Required parameter for the target file to contain the output archive.
+
+.SH DESCRIPTION
+\fBscreen\-profiles\-export\fP is a program that creates a monolithic .screenrc profile, and copies the status notification scripts into an archive file.  This archive can then be extracted on a target system where \fBscreen\-profiles\fP is not installed (perhaps because the program is not packaged for that distribution, or perhaps because the administrator has not installed the package).
+
+.SH "SEE ALSO"
+.PD 0
+.TP
+\fBscreen\fP(1), \fBscreen\-profiles\fP(1)
+
+.TP
+\fIhttp://launchpad.net/screen-profiles\fP
+.PD
+
+.SH AUTHOR
+This manpage was written by Dustin Kirkland <kirkland@canonical.com> for Ubuntu systems (but may be used by others).  Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 3 published by the Free Software Foundation.
+
+On Debian systems, the complete text of the GNU General Public License can be found in /usr/share/common-licenses/GPL.
