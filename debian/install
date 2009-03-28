@@ -14,3 +14,4 @@ screen-launcher-install usr/share/screen-profiles
 screen-launcher-uninstall usr/share/screen-profiles
 motd+shell usr/bin
 screen-launcher usr/bin
+screen-profiles-export usr/bin
