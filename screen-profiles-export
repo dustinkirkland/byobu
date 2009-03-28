@@ -229,5 +229,5 @@ echo "Success!"
 echo
 echo `gettext "Profile"` ": [$distro-$color]"
 echo `gettext "Archive"` ": [$file]"
-echo `gettext "Extract this archive in your home directory on the target system."`
+echo `gettext "Extract this archive in your home directory on the target system, and run 'screen'."`
 echo
