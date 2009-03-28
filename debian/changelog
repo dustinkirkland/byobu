@@ -9,11 +9,12 @@ screen-profiles (1.41) unreleased; urgency=low
   * bin/release: determine release from /etc/issue if lsb-release not found;
     don't use fully qualified path for lsb_release as it seems this has moved
     around (see Dapper)
+  * licenses updated to GPLv3 (dropped "or later" clause)
 
   [ James Wilcox ]
   * bin/updates-available: support SUSE's zypper
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 26 Mar 2009 14:46:18 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 Mar 2009 09:55:36 -0500
 
 screen-profiles (1.40-0ubuntu1) jaunty; urgency=low
 
