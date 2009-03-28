@@ -28,9 +28,12 @@ caption always "%{kW}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{kW}%?%+Lw%? %= %{=b Wk}%110`
 # Status string, last line
 hardstatus string '__LOGO__%{=b Wk} %100` %{= Wk}%112` %= %{=b bW}%102`%{= Wk} %{=b rW}%101`%{= Wk} %{= Wg}%108`%{= Wk} %{= Yk}%106`%{= Wk} %{= Wk}%104`%{=b cW}%103`%{= Wk} %{=b gW}%105`%107`%{= Wk} %Y-%m-%d %0c:%s'
 
-# NOTE: There is an arbitrary limit of being able to change colors 16 times
-# in this 'hardstatus string'.
-# See: https://bugs.launchpad.net/bugs/315871 (fixed in Jaunty)
+# NOTE: Older version of screen have an arbitrary limit of only being able
+# to change colors 16 times in this 'hardstatus string'.
+# Ubuntu (fixed in Jaunty):
+#  * https://bugs.launchpad.net/bugs/315871
+# Upstream:
+#  * http://savannah.gnu.org/bugs/?22146
 
 # Allow local overrides in $HOME/.screenrc
 source $HOME/.screenrc
