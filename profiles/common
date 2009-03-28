@@ -46,11 +46,5 @@ hardstatus alwayslastline
 termcapinfo xterm* ti@:te@
 defscrollback 10000
 
-# The selected keybinding set, plus any additional user-defined/overriding
-# keybindings should be placed in each user's $HOME/.screen-profiles/keybindings
 source $HOME/.screen-profiles/keybindings
-
-# Default windows
-# Windows list should be placed in each user's $HOME/.screen-profiles/windows,
-# to be configurable
 source $HOME/.screen-profiles/windows
