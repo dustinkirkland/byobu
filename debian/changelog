@@ -1,4 +1,10 @@
-screen-profiles (1.41) unreleased; urgency=low
+screen-profiles (1.42) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 Mar 2009 13:32:36 -0500
+
+screen-profiles (1.41-0ubuntu1) jaunty; urgency=low
 
   [ Dustin Kirkland ]
   * profiles/logos/gentoo: added a gentoo logo
@@ -19,7 +25,7 @@ screen-profiles (1.41) unreleased; urgency=low
   [ James Wilcox ]
   * bin/updates-available: support SUSE's zypper
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 Mar 2009 12:23:27 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 Mar 2009 13:31:39 -0500
 
 screen-profiles (1.40-0ubuntu1) jaunty; urgency=low
 
