@@ -212,6 +212,7 @@ cp -a /var/lib/$PROG/* "$TMPDIR/.$PROG/bin"
 # Generate the monolithic profile
 header > "$PROFILE"
 sources >> "$PROFILE"
+status_config > "$STATUS"
 
 # Some gardening
 # Drop additional "source" calls
