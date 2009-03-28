@@ -21,11 +21,11 @@ prebuild:
 
 build:
 	# auto-generate the logo'd light/dark profiles
-	./profiles/generate-profiles
+	./profiles/generate
 
 clean:
 	dh_clean
-	./profiles/generate-profiles --clean
+	./profiles/generate --clean
 
 install:build
 	dh_testdir

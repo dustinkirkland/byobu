@@ -14,11 +14,12 @@ screen-profiles (1.41) unreleased; urgency=low
     where screen-profiles are not installed
   * screen-profiles-export.1: manpage for new script
   * debian/install: install screen-profiles-export
+  * profiles/generate-profiles renamed to profiles/generate
 
   [ James Wilcox ]
   * bin/updates-available: support SUSE's zypper
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 Mar 2009 11:59:22 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 Mar 2009 12:05:56 -0500
 
 screen-profiles (1.40-0ubuntu1) jaunty; urgency=low
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-#    generate-profiles: dynamically generate all profiles
+#    generate: dynamically generate all profiles
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
