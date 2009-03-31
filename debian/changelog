@@ -1,7 +1,6 @@
 screen-profiles (1.42) unreleased; urgency=low
 
   [ Dustin Kirkland ]
-  * added logo for Arch linux
   * bin/cpu-freq: fix cpu freq for powerpc hardware, LP: #352286;
     use 2 decimals for GHz (bring this down to 1 decimal when cpus hit 10GHz)
   * debian/postinst, debian/prerm, screen: remove some maintainer hacks
@@ -10,6 +9,10 @@ screen-profiles (1.42) unreleased; urgency=low
   * profiles/common: added 'altscreen on', which cleans the screen for
     programs that support this, such as vi and emacs, LP: #349677
   * bin/logo, profiles/common, profiles/generate: dynamically print logo
+    LP: #352632
+  * screen-profiles-export, screen-profiles-export.1: drop distro selection,
+    no longer needed
+  * added logo for Arch linux
 
   [ Adi Roiban ]
   * debian/install, debian/rules, po/POTFILES.python, po/POTFILES.sh,
@@ -17,7 +20,7 @@ screen-profiles (1.42) unreleased; urgency=low
     in the screen-profiles build and install
 
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 Mar 2009 16:52:12 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 Mar 2009 17:31:10 -0500
 
 screen-profiles (1.41-0ubuntu1) jaunty; urgency=low
 
