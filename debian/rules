@@ -13,6 +13,13 @@ get-orig-source:
 	-[ -d ../${PACKAGE} ] && mv ../${PACKAGE} ../${PACKAGE}-${VER}
 	tar -C ../ --exclude .bzr --exclude debian -zcvf ../${PACKAGE}_${VER}.orig.tar.gz ${PACKAGE}-${VER}
 
+install-po: update-pot
+	for po in po/*.po ; do \
+	lang=$${po#po/}; lang=$${lang%.po}; \
+	mkdir -p po/locale/$${lang}/LC_MESSAGES/; \
+	msgfmt $${po} -o po/locale/$${lang}/LC_MESSAGES/${TEXTDOMAIN}.mo ; \
+	done
+
 update-pot:
 	rm -f po/${TEXTDOMAIN}.pot
 	grep -v "#" po/POTFILES.sh | while read po ; do \
@@ -20,6 +27,9 @@ update-pot:
 	done
 	grep -v "#" po/POTFILES.python | while read po ; do \
 	xgettext -o po/${TEXTDOMAIN}.pot -L Python $${po} ; \
+	done
+	for po in po/*.po ; do \
+	msgmerge $${po} po/${TEXTDOMAIN}.pot -o $${po} ; \
 	done
 
 prebuild:
@@ -32,7 +42,7 @@ clean:
 	dh_clean
 	./profiles/generate --clean
 
-install: build update-pot
+install: build install-po
 	dh_testdir
 	dh_testroot
 	dh_clean -k

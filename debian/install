@@ -1,4 +1,5 @@
 bin/* var/lib/screen-profiles
+po/locale/* usr/share/locale
 profiles/common usr/share/screen-profiles/profiles
 profiles/plain usr/share/screen-profiles/profiles
 profiles/ubuntu-black usr/share/screen-profiles/profiles
