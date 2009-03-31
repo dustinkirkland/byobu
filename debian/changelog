@@ -1,5 +1,6 @@
 screen-profiles (1.42) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * added logo for Arch linux
   * bin/cpu-freq: fix cpu freq for powerpc hardware, LP: #352286;
     use 2 decimals for GHz (bring this down to 1 decimal when cpus hit 10GHz)
@@ -7,7 +8,13 @@ screen-profiles (1.42) unreleased; urgency=low
     that should be cleaned up before Jaunty GA, LP: #352291
   * po/*: screen-profiles-export translation template
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 Mar 2009 06:05:06 -0500
+  [ Adi Roiban ]
+  * debian/install, debian/rules, po/POTFILES.python, po/POTFILES.sh,
+    po/es.po, po/fr.po, po/screen-profiles.pot: LP: #347521, i18n support
+    in the screen-profiles build and install
+
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 Mar 2009 15:44:17 -0500
 
 screen-profiles (1.41-0ubuntu1) jaunty; urgency=low
 

@@ -12,10 +12,24 @@ get-orig-source:
 	-[ -d ../${PACKAGE} ] && mv ../${PACKAGE} ../${PACKAGE}-${VER}
 	tar -C ../ --exclude .bzr --exclude debian -zcvf ../${PACKAGE}_${VER}.orig.tar.gz ${PACKAGE}-${VER}
 
-get-po:
-	xgettext -o po/screen-profiles.pot -L Python -d screen-profiles screen-profiles
-	xgettext -j -o po/screen-profiles.pot -L Shell -d screen-profiles select-screen-profile screen-profiles-export bin/menu
+install-po: update-pot
+	for po in po/*.po ; do \
+		lang=$${po#po/}; lang=$${lang%.po}; \
+		mkdir -p po/locale/$${lang}/LC_MESSAGES/; \
+		msgfmt $${po} -o po/locale/$${lang}/LC_MESSAGES/${PACKAGE}.mo ; \
+	done
 
+update-pot:
+	rm -f po/${PACKAGE}.pot
+	grep -v "^#" po/POTFILES.sh | while read po ; do \
+		xgettext -o po/${PACKAGE}.pot -L Shell $${po} ; \
+	done
+	grep -v "^#" po/POTFILES.python | while read po ; do \
+		xgettext -o po/${PACKAGE}.pot -L Python $${po} ; \
+	done
+	for po in po/*.po ; do \
+		msgmerge $${po} po/${PACKAGE}.pot -o $${po} ; \
+	done
 
 prebuild:
 
@@ -26,8 +40,12 @@ build:
 clean:
 	dh_clean
 	./profiles/generate --clean
+	for po in po/*.po ; do \
+		lang=$${po#po/}; lang=$${lang%.po}; \
+		rm -f po/locale/$${lang}/LC_MESSAGES/${PACKAGE}.mo ; \
+	done
 
-install: build
+install: build install-po
 	dh_testdir
 	dh_testroot
 	dh_clean -k

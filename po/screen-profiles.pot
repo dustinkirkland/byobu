@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#: screen-profiles:296
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-31 06:32-0500\n"
+"POT-Creation-Date: 2009-03-31 15:39-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -148,61 +149,4 @@ msgstr ""
 
 #: screen-profiles:463
 msgid "<Tab>/<Alt-Tab> between elements | <Return> Validates"
-msgstr ""
-
-#: select-screen-profile:48
-msgid "Error:"
-msgstr ""
-
-#: select-screen-profile:48
-msgid " file exists, but is not a symlink"
-msgstr ""
-
-#: select-screen-profile:81
-msgid "Select a screen profile: "
-msgstr ""
-
-#: select-screen-profile:100 screen-profiles-export:56
-#: screen-profiles-export:180
-msgid "ERROR: Invalid selection"
-msgstr ""
-
-#: select-screen-profile:107 select-screen-profile:109
-#: screen-profiles-export:61 screen-profiles-export:63
-msgid "Choose"
-msgstr ""
-
-#: select-screen-profile:135
-msgid ""
-"If you are using the default set of keybindings, press\\n<F5><enter> to "
-"activate these changes.\\n\\nOtherwise, exit this screen session and start a "
-"new one."
-msgstr ""
-
-#: select-screen-profile:137
-msgid "Run \"screen\" to activate"
-msgstr ""
-
-#: screen-profiles-export:194
-msgid "Select a distro: "
-msgstr ""
-
-#: screen-profiles-export:198
-msgid "Select a color: "
-msgstr ""
-
-#: screen-profiles-export:231
-msgid "Profile"
-msgstr ""
-
-#: screen-profiles-export:232
-msgid "Archive"
-msgstr ""
-
-#: screen-profiles-export:233
-msgid "Extract the archive in your home directory on the target system."
-msgstr ""
-
-#: bin/menu:24
-msgid "Menu:<F9>"
 msgstr ""

@@ -3,12 +3,13 @@
 # This file is distributed under the same license as the GNU Screen Profiles package.
 # Nicolas Barcet <nicolas.barcet@ubuntu.com>, 2008.
 #
+#: screen-profiles:296
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-12-17 23:42+0100\n"
+"POT-Creation-Date: 2009-03-31 15:39-0500\n"
 "PO-Revision-Date: 2008-12-17 23:42+0100\n"
 "Last-Translator: Nicolas Barcet <nicolas.barcet@ubuntu.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,18 +17,148 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: select-screen-profile:9 select-screen-profile:16
-msgid "Error:"
-msgstr "Erreur :"
+#: screen-profiles:71
+msgid "Remove screen by default at login"
+msgstr ""
 
-#: select-screen-profile:9 select-screen-profile:16
-msgid "exists, but is not a symlink"
-msgstr "existe, mais n'est pas un lien symbolique"
+#: screen-profiles:73
+msgid "Install screen by default at login"
+msgstr ""
 
-#: select-screen-profile:30
-msgid "recommended"
-msgstr "recommandé"
+#: screen-profiles:77
+msgid "Help"
+msgstr ""
 
-#: select-screen-profile:41 select-screen-profile:43
-msgid "Choose"
-msgstr "Choisir"
+#: screen-profiles:78
+msgid "Change screen profile"
+msgstr ""
+
+#: screen-profiles:79
+msgid "Toggle status notifications"
+msgstr ""
+
+#: screen-profiles:80
+msgid "Change keybinding set"
+msgstr ""
+
+#: screen-profiles:81
+msgid "Change escape sequence"
+msgstr ""
+
+#: screen-profiles:82
+msgid "Create new window(s)"
+msgstr ""
+
+#: screen-profiles:83
+msgid "Manage default windows"
+msgstr ""
+
+#: screen-profiles:85
+msgid "Exit"
+msgstr ""
+
+#: screen-profiles:87 screen-profiles:462
+msgid " Screen Profiles Configuration Menu"
+msgstr ""
+
+#: screen-profiles:98
+msgid "Okay"
+msgstr ""
+
+#: screen-profiles:98 screen-profiles:134 screen-profiles:150
+#: screen-profiles:185 screen-profiles:303 screen-profiles:345
+#: screen-profiles:423
+msgid "Cancel"
+msgstr ""
+
+#: screen-profiles:116 screen-profiles:143 screen-profiles:157
+#: screen-profiles:316 screen-profiles:370 screen-profiles:378
+#: screen-profiles:451
+msgid "Menu"
+msgstr ""
+
+#: screen-profiles:117
+msgid "Screen Profiles Help"
+msgstr ""
+
+#: screen-profiles:134 screen-profiles:150 screen-profiles:185
+#: screen-profiles:303 screen-profiles:345 screen-profiles:423
+msgid "Apply"
+msgstr ""
+
+#: screen-profiles:136
+msgid "Which profile would you like to use?"
+msgstr ""
+
+#: screen-profiles:142 screen-profiles:156 screen-profiles:315
+#: screen-profiles:377 screen-profiles:449
+msgid "Message"
+msgstr ""
+
+#: screen-profiles:151
+msgid "Which set of keybindings would you like to use?"
+msgstr ""
+
+#: screen-profiles:165
+msgid "Title: "
+msgstr ""
+
+#: screen-profiles:167
+msgid "Command: "
+msgstr ""
+
+#: screen-profiles:169
+msgid "Presets: "
+msgstr ""
+
+#: screen-profiles:183
+msgid "Add to default windows"
+msgstr ""
+
+#: screen-profiles:187
+msgid "Create new window(s):"
+msgstr ""
+
+#: screen-profiles:304
+msgid "Toggle status notifications:"
+msgstr ""
+
+#: screen-profiles:337
+msgid "Windows:"
+msgstr ""
+
+#: screen-profiles:347
+msgid "Select window(s) to create by default:"
+msgstr ""
+
+#: screen-profiles:367
+msgid "Screen will be launched automatically next time you login."
+msgstr ""
+
+#: screen-profiles:375
+msgid "Screen will not be used next time you login."
+msgstr ""
+
+#: screen-profiles:422
+msgid "Escape key: ctrl-"
+msgstr ""
+
+#: screen-profiles:425
+msgid "Change escape sequence:"
+msgstr ""
+
+#: screen-profiles:463
+msgid "<Tab>/<Alt-Tab> between elements | <Return> Validates"
+msgstr ""
+
+#~ msgid "Error:"
+#~ msgstr "Erreur :"
+
+#~ msgid "exists, but is not a symlink"
+#~ msgstr "existe, mais n'est pas un lien symbolique"
+
+#~ msgid "recommended"
+#~ msgstr "recommandé"
+
+#~ msgid "Choose"
+#~ msgstr "Choisir"
