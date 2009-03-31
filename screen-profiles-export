@@ -20,6 +20,8 @@
 PROG="screen-profiles"
 SHARE="/usr/share/$PROG"
 TMPDIR=`mktemp -d screen-profiles.XXXXXXXX` || error "Could not create a temporary directory"
+# Grab list of available colors
+colors=`find $SHARE/profiles/ -type f | sed "s/^.*\///" | sed "s/^.*-//" | sort -u | egrep -v "common|plain"`
 
 # Make sure we clean up $TMPDIR if we exit for any reason
 trap "rm -rf "$TMPDIR" 2>/dev/null || true" EXIT HUP INT QUIT TERM
@@ -27,10 +29,14 @@ trap "rm -rf "$TMPDIR" 2>/dev/null || true" EXIT HUP INT QUIT TERM
 usage() {
 	echo
 	echo "Usage:"
-	echo " $0 [-d DISTRO -c COLOR] -f TARGET.tar.gz"
+	echo " $0 [-c COLOR] -f TARGET.tar.gz"
 	echo
-	echo "DISTRO and COLOR are obtained interactively if unspecified."
 	echo "TARGET.tar.gz is required"
+	echo
+	echo "COLOR is obtained interactively if unspecified; or one of:"
+	for c in $colors; do
+		echo " * $c"
+	done
 	echo
 	exit 1
 }
@@ -85,6 +91,7 @@ cpu-count=1
 cpu-freq=1
 ec2-cost=0
 hostname=1
+logo=1
 load-average=1
 mem-available=1
 mem-used=1
@@ -142,15 +149,10 @@ sources() {
 
 
 # Handle command line parameters
-distro=
 color=
 file=
 while [ $# -gt 1 ]; do
 	case "$1" in
-		-d)
-			distro="$2"
-			shift 2
-		;;
 		-c)
 			color="$2"
 			shift 2
@@ -165,16 +167,15 @@ while [ $# -gt 1 ]; do
 	esac
 done
 
+[ $# -eq 1 ] && file="$1"
+
 [ -z "$file" ] && usage
 echo "$file" | grep -qs "\.tar\.gz$" || error "Target file must be a '.tar.gz' archive"
 [ -e "$file" ] && error "File exists, please remove before running [$file]"
 
-# Grab list of available distros and colors
-distros=`find $SHARE/profiles/ -type f | xargs -i basename {} | sed "s/-.*$//" | sort -u | grep -v "common" | grep -v "plain"`
-colors=`find $SHARE/profiles/ -type f | sed "s/^.*\///" | sed "s/^.*-//" | sort -u | egrep -v "common|plain"`
-
 # Obtain selections
 count=1
+distro="ubuntu"
 while /bin/true; do
 	if [ $count -gt 5 ]; then
 		echo `gettext "ERROR: Invalid selection"`
@@ -190,10 +191,6 @@ while /bin/true; do
 			break
 		fi
 	fi
-	echo
-	echo `gettext "Select a distro: "`
-	choose $distros
-	distro=$SELECTED
 	echo
 	echo `gettext "Select a color: "`
 	choose $colors
@@ -228,7 +225,8 @@ tar -zcf "$file" -C "$TMPDIR" . || error "Could not create archive"
 echo
 echo "Success!"
 echo
-echo `gettext "Profile"` ": [$distro-$color]"
-echo `gettext "Archive"` ": [$file]"
+echo "  "`gettext "Profile"` ": [$distro-$color]"
+echo "  "`gettext "Archive"` ": [$file]"
+echo
 echo `gettext "Extract the archive in your home directory on the target system."`
 echo
