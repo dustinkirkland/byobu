@@ -45,8 +45,7 @@ hardstatus alwayslastline
 # Turns off alternate screen switching in xterms,
 # so that text in screen will go into the xterm's scrollback buffer:
 termcapinfo xterm* ti@:te@
-# Or, alternatively, we can turn altscreen on, LP: #349677
-# altscreen on
+altscreen on
 
 # Log 10000 lines
 defscrollback 10000
