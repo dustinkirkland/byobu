@@ -42,9 +42,13 @@ backtick 112 86400 86400 /var/lib/screen-profiles/arch
 
 hardstatus alwayslastline
 
-# Allow scrolling in xterm, 10000 lines
-# Note: This seems to break 'altscreen yes', LP: #349677
+# Turns off alternate screen switching in xterms,
+# so that text in screen will go into the xterm's scrollback buffer:
 termcapinfo xterm* ti@:te@
+# Or, alternatively, we can turn altscreen on, LP: #349677
+# altscreen on
+
+# Log 10000 lines
 defscrollback 10000
 
 source $HOME/.screen-profiles/keybindings
