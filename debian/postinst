@@ -1,11 +1,3 @@
 #!/bin/sh -e
 
-if [ "$1" = "configure" ]; then
-	# This is a hack that should be removed just before Jaunty goes GA.
-	# We have moved these helper scripts from /usr/share to /var/lib, but if the
-	# user is upgrading from within an existing screen session depending on the old
-	# paths, we're going to break their status bar.
-	[ -d /usr/share/screen-profiles/bin ] || ln -sf /var/lib/screen-profiles /usr/share/screen-profiles/bin
-fi
-
 #DEBHELPER#

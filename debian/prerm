@@ -1,8 +1,3 @@
 #!/bin/sh -e
 
-if [ "$1" = "remove" ]; then
-	# This is a hack that should be removed just before Jaunty goes GA.
-	[ -L /usr/share/screen-profiles/bin ] && rm -f /usr/share/screen-profiles/bin
-fi
-
 #DEBHELPER#

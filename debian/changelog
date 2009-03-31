@@ -1,9 +1,12 @@
 screen-profiles (1.42) unreleased; urgency=low
 
   * added logo for Arch linux
-  * bin/cpu-freq: fix cpu freq for powerpc hardware, use 2 decimals for GHz
+  * bin/cpu-freq: fix cpu freq for powerpc hardware, LP: #352286;
+    use 2 decimals for GHz (bring this down to 1 decimal when cpus hit 10GHz)
+  * debian/postinst, debian/prerm, screen: remove some maintainer hacks
+    that should be cleaned up before Jaunty GA, LP: #352291
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 Mar 2009 05:23:13 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 Mar 2009 06:00:10 -0500
 
 screen-profiles (1.41-0ubuntu1) jaunty; urgency=low
 

@@ -20,16 +20,6 @@
 # Create the screen-profiles directory, if it doesn't already exist
 [ -d "$HOME/.screen-profiles" ] || mkdir -p "$HOME/.screen-profiles"
 
-##########################################################################
-# The following hack should be removed after Jaunty goes GA
-# (should only affect upgrading Alpha users)
-# See LP: #335275
-# Collapse $HOME/.screenrc-* into $HOME/.screen-profiles/*
-for i in ec2-cost keybindings profile updates-available windows; do
-	mv -f "$HOME/.screenrc-$i" "$HOME/.screen-profiles/$i" 2>/dev/null
-done
-##########################################################################
-
 # If $HOME/.screenrc exists but $HOME/.screen-profiles/profile does not,
 # this shows that the user has an existing custom screen configuration,
 # and thus we will not bother them with a select-screen-profile prompt.
@@ -61,15 +51,6 @@ fi
 
 # Ensure that the user's .screenrc at least exists
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
-
-##########################################################################
-# The following hacks should be removed when Jaunty goes GA
-# (should only affect upgrading Alpha users)
-# Prevent recursion; .screenrc should no longer source .screenrc-profile
-sed -i '/^source .*\.screen.*-.*profile$/d' $HOME/.screenrc
-# .screenrc-windows should no longer reference screen-profiles-helper
-sed -i 's/screen-profiles-helper/screen-profiles/' $HOME/.screen-profiles/windows
-##########################################################################
 
 # Now let's execute screen!
 exec /usr/bin/screen.real -c "$HOME/.screen-profiles/profile" "$@"
