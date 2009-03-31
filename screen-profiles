@@ -252,6 +252,7 @@ def readstatus():
     status["ec2-cost"]=0
     status["hostname"]=0
     status["load-average"]=1
+    status["logo"]=1
     status["mem-available"]=1
     status["mem-used"]=1
     status["menu"]=1

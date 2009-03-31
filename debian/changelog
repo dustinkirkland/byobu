@@ -9,6 +9,7 @@ screen-profiles (1.42) unreleased; urgency=low
   * po/*: screen-profiles-export translation template
   * profiles/common: added 'altscreen on', which cleans the screen for
     programs that support this, such as vi and emacs, LP: #349677
+  * bin/logo, profiles/common: dynamically print logo
 
   [ Adi Roiban ]
   * debian/install, debian/rules, po/POTFILES.python, po/POTFILES.sh,
@@ -16,7 +17,7 @@ screen-profiles (1.42) unreleased; urgency=low
     in the screen-profiles build and install
 
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 Mar 2009 15:54:30 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 Mar 2009 16:40:00 -0500
 
 screen-profiles (1.41-0ubuntu1) jaunty; urgency=low
 

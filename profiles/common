@@ -26,6 +26,7 @@ vbell off
 msgwait 1
 
 # Define status commands
+backtick 99  86400 86400 /var/lib/screen-profiles/logo
 backtick 100 3600 3600 /var/lib/screen-profiles/release
 backtick 101 10 10 /var/lib/screen-profiles/updates-available
 backtick 102 2 2 /var/lib/screen-profiles/reboot-required

@@ -1,0 +1,61 @@
+#!/bin/sh -e
+#
+#    logo: determine which logo to use
+#    Copyright (C) 2008 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Default is on
+p="logo"
+grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
+
+if [ -r "$HOME/.screen-profiles/distro" ]; then
+	# Allow manual override
+	distro=`cat "$HOME/.screen-profiles/distro"`
+elif which lsb_release >/dev/null; then
+	# If lsb_release is available, use it
+	distro=`lsb_release -s -a 2>/dev/null`
+elif [ -r "/etc/issue" ]; then
+	# Otherwise, grab part of /etc/issue
+	distro=`cat /etc/issue`
+else
+	# No idea!
+	distro="Unknown"
+fi
+
+if echo "$distro" | grep -qsi "ubuntu"; then
+	printf "\005{=b kr}\\\\\005{= ky}o\005{=b kY}/"
+elif echo "$distro" | grep -qsi "arch"; then
+	printf "\005{=b wb} A "
+elif echo "$distro" | grep -qsi "centos"; then
+	printf "\005{= gw}*\005{= mw}*\005{= yw}*\005{= bw}*%{=b Wk}"
+elif echo "$distro" | grep -qsi "debian"; then
+	printf "\005{= wr} @ "
+elif echo "$distro" | grep -qsi "fedora"; then
+	printf "\005{=b bw} f "
+elif echo "$distro" | grep -qsi "gentoo"; then
+	printf "\005{=b cw} > "
+elif echo "$distro" | grep -qsi "mandriva"; then
+	printf "\005{=b kc} (\005{=b ky}* "
+elif echo "$distro" | grep -qsi "redhat"; then
+	printf "\005{=b rk} RH "
+elif echo "$distro" | grep -qsi "slackware"; then
+	printf "\005{=u Bk},S "
+elif echo "$distro" | grep -qsi "suse"; then
+	printf "\005{= Wg}SuSE"
+else
+	printf " ? "
+fi
+exit 0
