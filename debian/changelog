@@ -5,8 +5,9 @@ screen-profiles (1.42) unreleased; urgency=low
     use 2 decimals for GHz (bring this down to 1 decimal when cpus hit 10GHz)
   * debian/postinst, debian/prerm, screen: remove some maintainer hacks
     that should be cleaned up before Jaunty GA, LP: #352291
+  * po/*: screen-profiles-export translation template
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 Mar 2009 06:00:10 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 Mar 2009 06:05:06 -0500
 
 screen-profiles (1.41-0ubuntu1) jaunty; urgency=low
 
