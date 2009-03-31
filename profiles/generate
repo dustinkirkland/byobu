@@ -19,7 +19,9 @@
 # This script should be run during in the './debian/rules get-orig-source'
 # step.
 
-for i in $(ls profiles/logos); do
+DISTROS="ubuntu"
+
+for i in $DISTROS; do
 	rm -f profiles/$i*
 	if [ "$1" = "--clean" ]; then
 		echo "Removing profiles for: $i"
@@ -27,8 +29,6 @@ for i in $(ls profiles/logos); do
 	fi
 	echo "Generating profiles for: $i"
 	cat profiles/profile.skel > profiles/$i-light
-	logo="`cat profiles/logos/$i`"
-	sed -i "s/__LOGO__/$logo/" profiles/$i-light
 	cp profiles/$i-light profiles/$i-dark
 	sed -i "s/ Wk/ Kw/g" profiles/$i-dark
 	sed -i "s/kW/wK/g" profiles/$i-dark
