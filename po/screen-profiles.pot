@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-31 06:04-0500\n"
+"POT-Creation-Date: 2009-03-31 06:32-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -200,9 +200,7 @@ msgid "Archive"
 msgstr ""
 
 #: screen-profiles-export:233
-msgid ""
-"Extract this archive in your home directory on the target system, and run "
-"'screen'."
+msgid "Extract the archive in your home directory on the target system."
 msgstr ""
 
 #: bin/menu:24
