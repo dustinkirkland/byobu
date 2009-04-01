@@ -54,7 +54,7 @@ for bat in $BATS; do
    
    rem=$(search "$statefile" "remaining capacity: *\(.*\) m[AW]h")
    if [ "$rem" -lt "$low" ]; then
-      alert="\005{=b .r}! "
+      alert="\005{=b .r}/!\ "
    elif [ "$rem" -lt "$warn" ]; then
       alert="\005{= .y}/!\ "
    else
