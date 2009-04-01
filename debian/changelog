@@ -1,8 +1,9 @@
 screen-profiles (1.43) unreleased; urgency=low
 
   * UNRELEASED
+  * bin/logo: allow users to define their own logo
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 Mar 2009 17:36:38 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Apr 2009 11:23:13 -0500
 
 screen-profiles (1.42-0ubuntu1) jaunty; urgency=low
 

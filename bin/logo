@@ -21,8 +21,11 @@
 p="logo"
 grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
 
-if [ -r "$HOME/.screen-profiles/distro" ]; then
-	# Allow manual override
+if [ -r "$HOME/.screen-profiles/logo" ]; then
+	# Allow users to define their own logo
+	cat "$HOME/.screen-profiles/logo"
+elif [ -r "$HOME/.screen-profiles/distro" ]; then
+	# Allow manual override of distro
 	distro=`cat "$HOME/.screen-profiles/distro"`
 elif which lsb_release >/dev/null; then
 	# If lsb_release is available, use it
