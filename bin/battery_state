@@ -68,14 +68,8 @@ for bat in $BATS; do
       charging)
          sign="+"
          ;;
-      discharging)
-         sign="-"
-         ;;
-      charged)
-         sign="="
-         ;;
       *)
-         sign=" $state"
+         sign=""
          ;; 
    esac
 
