@@ -54,12 +54,13 @@ for bat in $BATS; do
    
    rem=$(search "$statefile" "remaining capacity: *\(.*\) m[AW]h")
    if [ "$rem" -lt "$low" ]; then
-      alert="\005{=b .r}"
+      color="\005{= r.}"
    elif [ "$rem" -lt "$warn" ]; then
-      alert="\005{= .y}"
+      color="\005{= y.}"
    else
-      alert=""
+      color="\005{= g.}"
    fi
+
 
    percent=$(echo "100*$rem/$full" | bc)
    state=$(search "$statefile" "charging state: *\(.*\)")
@@ -68,12 +69,18 @@ for bat in $BATS; do
       charging)
          sign="+"
          ;;
+      discharging)
+         sign="-"
+         ;;
+      charged)
+         sign="="
+         ;;
       *)
-         sign=""
+         sign="$state"
          ;; 
    esac
 
-   echo "${alert}${percent}%${sign}"
+   echo "${color}|${sign}|\005{-}${percent}%"
 done
 
 
