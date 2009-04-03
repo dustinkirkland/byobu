@@ -85,20 +85,10 @@ choose() {
 status_config() {
 	# Generate the status configuration
 	# Disable the menu, since screen-profiles configurator is not available
+	# Enable user@host in its place
 	echo "
-arch=0
-cpu-count=1
-cpu-freq=1
-ec2-cost=0
-hostname=1
-logo=1
-load-average=1
-mem-available=1
-mem-used=1
 menu=0
-reboot-required=1
-release=1
-updates-available=1
+hostname=1
 whoami=1"
 }
 
