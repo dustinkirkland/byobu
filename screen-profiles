@@ -257,6 +257,7 @@ def readstatus():
     status["mem-available"]=1
     status["mem-used"]=1
     status["menu"]=1
+    status["processes"]=0
     status["reboot-required"]=1
     status["release"]=1
     status["updates-available"]=1

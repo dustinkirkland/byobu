@@ -95,4 +95,4 @@ if [ "$DETAIL" = "1" ]; then
 	exit 0
 fi
 
-printf "\005{= Wg}%s\005{-} " $total_cost
+printf "\005{= wg}%s\005{-} " $total_cost

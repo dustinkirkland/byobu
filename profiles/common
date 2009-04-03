@@ -41,8 +41,9 @@ backtick 110 86400 86400 /var/lib/screen-profiles/whoami
 backtick 111 86400 86400 /var/lib/screen-profiles/menu
 backtick 112 86400 86400 /var/lib/screen-profiles/arch
 backtick 113 30 30 /var/lib/screen-profiles/battery
-backtick 114 2 2 /var/lib/screen-profiles/users
+backtick 114 10 10 /var/lib/screen-profiles/users
 backtick 115 60 60 /var/lib/screen-profiles/uptime
+backtick 116 2 2 /var/lib/screen-profiles/processes
 
 hardstatus alwayslastline
 

@@ -2,6 +2,7 @@ screen-profiles (1.43) unreleased; urgency=low
 
   [ Dustin Kirkland ]
   * bin/logo: allow users to define their own logo
+  * bin/processes: displace a count of the running processes
   * bin/*, profiles/profile.skel: make all status scripts handle their
     own colors and trailing whitespace;  this should help alleviate the
     16-color-change limitation on un-patched screens;  it also simplifies
@@ -12,7 +13,7 @@ screen-profiles (1.43) unreleased; urgency=low
     added new status items for battery state, number of users, and system
     uptime
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 03 Apr 2009 12:06:45 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 03 Apr 2009 12:23:14 -0500
 
 screen-profiles (1.42-0ubuntu1) jaunty; urgency=low
 
