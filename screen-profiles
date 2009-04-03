@@ -247,6 +247,7 @@ def readwindows():
 def readstatus():
     status={}
     status["arch"]=0
+    status["battery"]=0
     status["cpu-count"]=1
     status["cpu-freq"]=1
     status["ec2-cost"]=0
@@ -259,6 +260,8 @@ def readstatus():
     status["reboot-required"]=1
     status["release"]=1
     status["updates-available"]=1
+    status["users"]=0
+    status["uptime"]=0
     status["whoami"]=0
     if os.path.exists(HOME+'/.screen-profiles/status'):
         f=open(HOME+'/.screen-profiles/status', 'r')

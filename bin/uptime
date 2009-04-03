@@ -1,0 +1,36 @@
+#!/bin/sh -e
+#
+#  uptime: condensed uptime of the machine
+#  Copyright (C) 2009 Raphaël Pinson.
+#  Copyright (C) 2009 Canonical Ltd.
+#
+#  Authors: Raphaël Pinson <raphink@ubuntu.com>
+#           Dustin Kirkland <kirkland@canonical.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, version 3 of the License.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+# Default is "off"
+p="uptime"
+grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
+
+u=$(sed "s/\..*$//" /proc/uptime)
+if [ "$u" -gt 86400 ]; then
+	printf "%dd" `echo "$u" | awk '{printf "%.0f", $1 / 86400 }'`
+elif [ "$u" -gt 3600 ]; then
+	printf "%dh" `echo "$u" | awk '{printf "%.0f", $1 / 3600 }'`
+elif [ "$u" -gt 60 ]; then
+	printf "%dm" `echo "$u" | awk '{printf "%.0f", $1 / 60 }'`
+else
+	printf "%ds" "$u"
+fi

@@ -1,0 +1,87 @@
+#!/bin/sh -e
+#
+#  battery: print the state of the battery
+#  Copyright (C) 2009 Raphaël Pinson.
+#
+#  Authors: Raphaël Pinson <raphink@ubuntu.com>
+#           Dustin Kirkland <kirkland@canonical.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, version 3 of the License.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+# Default is "off"
+p="battery"
+grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
+
+search () {
+   local str expr
+   str="$1"
+   expr="$2"
+
+   echo "$str" | sed -n "s/${expr}/\1/p"
+}
+
+
+BATS=$(ls /proc/acpi/battery)
+NB=$(echo "$BATS" | wc -l)
+
+for bat in $BATS; do
+   if [ "$NB" -gt 1 ]; then
+      echo -n "$bat: "
+   fi
+
+   # read files once
+   infofile=$(cat "/proc/acpi/battery/$bat/info")
+   statefile=$(cat "/proc/acpi/battery/$bat/state")
+
+   present=$(search "$infofile" "present: *\(.*\)")
+
+   if [ "x${present}" = "xno" ]; then
+      echo "n/a"
+      break
+   fi
+
+   full=$(search "$infofile" "last full capacity: *\(.*\) m[AW]h")
+   warn=$(search "$infofile" "design capacity warning: \(.*\) m[AW]h")
+   low=$(search "$infofile" "design capacity low: \(.*\) m[AW]h")
+
+   rem=$(search "$statefile" "remaining capacity: *\(.*\) m[AW]h")
+   if [ "$rem" -lt "$low" ]; then
+      color="{= rk}"
+   elif [ "$rem" -lt "$warn" ]; then
+      color="{= yk}"
+   else
+      color="{= Gk}"
+   fi
+
+
+   percent=$(echo "100*$rem/$full" | bc)
+   state=$(search "$statefile" "charging state: *\(.*\)")
+
+   case $state in
+      charging)
+         sign="+"
+         ;;
+      discharging)
+         sign="-"
+         ;;
+      charged)
+         sign="="
+         ;;
+      *)
+         sign="$state"
+         ;;
+   esac
+
+   printf "\005%s|%s|%d%%\005{-} " "$color" "$sign" "$percent"
+done

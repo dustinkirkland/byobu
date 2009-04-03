@@ -3,7 +3,12 @@ screen-profiles (1.43) unreleased; urgency=low
   * UNRELEASED
   * bin/logo: allow users to define their own logo
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Apr 2009 11:23:13 -0500
+  [ Raphaël Pinson and Dustin Kirkland ]
+  * bin/battery, bin/users, bin/uptime, profiles/common, screen-profiles:
+    added new status items for battery state, number of users, and system
+    uptime
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 03 Apr 2009 10:45:36 -0500
 
 screen-profiles (1.42-0ubuntu1) jaunty; urgency=low
 
