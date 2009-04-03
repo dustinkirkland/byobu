@@ -26,11 +26,11 @@ grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
 
 u=$(sed "s/\..*$//" /proc/uptime)
 if [ "$u" -gt 86400 ]; then
-	printf "%dd" `echo "$u" | awk '{printf "%.0f", $1 / 86400 }'`
+	printf "%dd " `echo "$u" | awk '{printf "%.0f", $1 / 86400 }'`
 elif [ "$u" -gt 3600 ]; then
-	printf "%dh" `echo "$u" | awk '{printf "%.0f", $1 / 3600 }'`
+	printf "%dh " `echo "$u" | awk '{printf "%.0f", $1 / 3600 }'`
 elif [ "$u" -gt 60 ]; then
-	printf "%dm" `echo "$u" | awk '{printf "%.0f", $1 / 60 }'`
+	printf "%dm " `echo "$u" | awk '{printf "%.0f", $1 / 60 }'`
 else
-	printf "%ds" "$u"
+	printf "%ds " "$u"
 fi

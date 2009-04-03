@@ -29,13 +29,13 @@ print_updates() {
 	s=$2
 	if [ -n "$u" ]; then
 		if [ "$u" -gt 0 ]; then
-			echo -n "$u"
+			printf "\005{=b rW}%d" "$u"
 			if [ -n "$s" ]; then
 				if [ "$s" -gt 0 ]; then
-					echo -n "!"
+					printf "!"
 				fi
 			fi
-			echo
+			printf "\005{-} "
 		fi
 	fi
 	exit 0

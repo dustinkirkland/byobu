@@ -21,4 +21,4 @@
 p="menu"
 grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
 
-echo `gettext "Menu:<F9>"`
+printf " \005{= kw}%s" `gettext "Menu:<F9>"`

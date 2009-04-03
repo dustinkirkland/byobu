@@ -20,5 +20,7 @@
 # Default is "off"
 p="hostname"
 grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
+at=
+grep -qs "^whoami=1$" "$HOME/.screen-profiles/status" && at="@"
 
-echo "@"`hostname -s`
+printf "\005{=b }%s%s\005{-}" "$at" $(hostname -s)

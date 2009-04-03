@@ -20,14 +20,16 @@
 # Default is on
 p="mem-available"
 grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
+comma=
+whitespace=
+grep -qs "^mem-used=1$" "$HOME/.screen-profiles/status" && comma="," || whitespace=" "
 
 mem=`free | grep -m 1 "^Mem:" | awk '{print $2}'`
 if [ $mem -ge 1048576 ]; then
-	mem=$(echo "$mem" | awk '{ printf "%.1f", $1 / 1048576 }')
-	echo "$mem""GB"
+	mem=$(echo "$mem" | awk '{ printf "%.1fGB", $1 / 1048576 }')
 elif [ $mem -ge 1024 ]; then
-	mem=$(echo "$mem" | awk '{ printf "%.0f", $1 / 1024 }')
-	echo "$mem""MB"
+	mem=$(echo "$mem" | awk '{ printf "%.0fMB", $1 / 1024 }')
 else
-	echo "$mem""KB"
+	mem="$mem""KB"
 fi
+printf "\005{=b gW}%s\005{-}%s" "$mem$comma" "$whitespace"

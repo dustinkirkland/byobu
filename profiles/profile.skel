@@ -23,10 +23,10 @@
 source /usr/share/screen-profiles/profiles/common
 
 # Window tabs, second to last line
-caption always "%{kW}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{kW}%?%+Lw%? %= %{=b Wk}%110`%109` %{= kw}%111`"
+caption always "%{kW}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{kW}%?%+Lw%? %= %{= Wk}%110`%109`%111`"
 
 # Status string, last line
-hardstatus string '%99`%{=b Wk} %100` %{= Wk}%112` %= %113`%{=b Wk}%114`%{=b Wk}%115`%{=b Wk} %{=b bW}%102`%{= Wk} %{=b rW}%101`%{= Wk} %{= Wg}%108`%{= Wk} %{= Yk}%106`%{= Wk} %{= Wk}%104`%{=b cW}%103`%{= Wk} %{=b gW}%105`%107`%{= Wk} %Y-%m-%d %0c:%s'
+hardstatus string '%{= Wk}%99`%{= Wk} %100`%112`%= %115`%114`%108`%113`%102`%101`%106`%104`%103`%105`%107`%Y-%m-%d %0c:%s'
 
 # NOTE: Older version of screen have an arbitrary limit of only being able
 # to change colors 16 times in this 'hardstatus string'.

@@ -29,11 +29,11 @@ if which lsb_release >/dev/null; then
 	else
 		# But for other distros the description
 		# is too long, so build from -i and -r
-		echo $(lsb_release -s -i) $(lsb_release -s -r)
+		printf "\005{=b }%s %s\005{-} " $(lsb_release -s -i) $(lsb_release -s -r)
 	fi
 elif [ -r "/etc/issue" ]; then
 	# Otherwise, grab part of /etc/issue
-	head -n1 /etc/issue | awk '{print $1}'
+	printf "\005{=b ..}%s\005{-} " $(head -n1 /etc/issue | awk '{print $1}')
 else
 	echo "Unknown"
 fi

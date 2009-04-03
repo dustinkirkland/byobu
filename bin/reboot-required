@@ -21,4 +21,4 @@
 p="reboot-required"
 grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
 
-[ -e /var/run/reboot-required ] && echo "(@)"
+[ -e /var/run/reboot-required ] && printf "\005{=b bW}(@)\005{-} "

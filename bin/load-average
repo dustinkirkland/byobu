@@ -21,4 +21,4 @@
 p="load-average"
 grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
 
-cat /proc/loadavg | cut -d " " -f -1
+printf "\005{= Yk}%s\005{-} " $(cat /proc/loadavg | cut -d " " -f -1)
