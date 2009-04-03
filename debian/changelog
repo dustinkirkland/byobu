@@ -6,14 +6,17 @@ screen-profiles (1.43) unreleased; urgency=low
   * bin/*, profiles/profile.skel: make all status scripts handle their
     own colors and trailing whitespace;  this should help alleviate the
     16-color-change limitation on un-patched screens;  it also simplifies
-    the hardstatus string significantly
+    the hardstatus string significantly; reserve bold text for status
+    items that require an action (reboot, updates)
+  * profiles/profile.skel: move reboot-required and updates-available to
+    the early part of the status string, since these require action
 
   [ Raphaël Pinson and Dustin Kirkland ]
   * bin/battery, bin/users, bin/uptime, profiles/common, screen-profiles:
     added new status items for battery state, number of users, and system
     uptime
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 03 Apr 2009 12:23:14 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 03 Apr 2009 12:42:53 -0500
 
 screen-profiles (1.42-0ubuntu1) jaunty; urgency=low
 

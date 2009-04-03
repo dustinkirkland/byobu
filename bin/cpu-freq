@@ -25,7 +25,7 @@ mhz=`grep -m 1 "^cpu MHz" /proc/cpuinfo | awk -F"[:.]" '{print $2}'` || mhz=`gre
 
 if [ $mhz -ge 1000 ]; then
 	ghz=$(echo $mhz | awk '{ printf "%.2f", $1 / 1000 }')
-	printf "\005{=b cW}%sGHz\005{-} " $ghz
+	printf "\005{= cW}%sGHz\005{-} " $ghz
 else
-	printf "\005{=b cW}%sMHz\005{-} " $mhz
+	printf "\005{= cW}%sMHz\005{-} " $mhz
 fi

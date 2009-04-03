@@ -21,4 +21,4 @@
 p="whoami"
 grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
 
-printf "\005{=b }%s\005{-}" $(whoami)
+printf "\005{= }%s\005{-}" $(whoami)

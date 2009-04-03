@@ -23,4 +23,4 @@ grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
 at=
 grep -qs "^whoami=1$" "$HOME/.screen-profiles/status" && at="@"
 
-printf "\005{=b }%s%s\005{-}" "$at" $(hostname -s)
+printf "\005{= }%s%s\005{-}" "$at" $(hostname -s)

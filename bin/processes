@@ -21,4 +21,4 @@
 p="processes"
 grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
 
-printf "\005{=b }%s&\005{-} " $(ps -e | wc -l)
+printf "\005{= yk}%s&\005{-} " $(ps -e | wc -l)

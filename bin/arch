@@ -21,4 +21,4 @@
 p="arch"
 grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
 
-uname -m
+printf "%s " $(uname -m)
