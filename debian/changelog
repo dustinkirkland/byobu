@@ -10,13 +10,16 @@ screen-profiles (1.43) unreleased; urgency=low
     items that require an action (reboot, updates)
   * profiles/profile.skel: move reboot-required and updates-available to
     the early part of the status string, since these require action
+  * screen-profiles-status: new, central script for all status actions;
+    allows us to centralize some things, like enable/disable checking
+    and process nice-ness
 
   [ Raphaël Pinson and Dustin Kirkland ]
   * bin/battery, bin/users, bin/uptime, profiles/common, screen-profiles:
     added new status items for battery state, number of users, and system
     uptime
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 03 Apr 2009 12:42:53 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 03 Apr 2009 13:07:57 -0700
 
 screen-profiles (1.42-0ubuntu1) jaunty; urgency=low
 

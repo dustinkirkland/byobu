@@ -1,0 +1,44 @@
+#!/bin/sh -e
+#
+#    select-screen-profile
+#    Copyright (C) 2008 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#             Nick Barcet <nick.barcet@ubuntu.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Let's try to be really "nice" about gathering status:
+renice 10 $$ >/dev/null 2>&1 || true
+ionice -c3 -p $$ >/dev/null 2>&1 || true
+
+DIR="/var/lib/screen-profiles"
+P="$1"
+
+case "$P" in
+	# default = on, user must override to turn off
+	cpu-count|cpu-freq|load-average|logo|mem-available|mem-used|menu|reboot-required|release|updates-available)
+		grep -qs "^$P=0$" "$HOME/.screen-profiles/status" && exit 0
+	;;
+	# default = off, user must override to turn on
+	arch|battery|ec2-cost|hostname|processes|uptime|users|whoami)
+		grep -qs "^$P=1$" "$HOME/.screen-profiles/status" || exit 0
+	;;
+	*)
+		exit 1
+	;;
+esac
+
+if [ -f "$DIR"/"$P" -a -x "$DIR"/"$P" ]; then
+	exec "$DIR"/"$P"
+fi
