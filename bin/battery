@@ -65,7 +65,7 @@ for bat in $BATS; do
    fi
 
 
-   percent=$(echo "1+100*$rem/$full" | bc)
+   percent=$( echo "$rem" "$full" | awk '{printf "%.0f",  100*$1/$2}')
    state=$(search "$statefile" "charging state: *\(.*\)")
 
    case $state in
