@@ -44,6 +44,8 @@ backtick 113 30 30 /var/lib/screen-profiles/battery
 backtick 114 10 10 /var/lib/screen-profiles/users
 backtick 115 60 60 /var/lib/screen-profiles/uptime
 backtick 116 2 2 /var/lib/screen-profiles/processes
+backtick 117 2 2 /var/lib/screen-profiles/network-up
+backtick 118 2 2 /var/lib/screen-profiles/network-down
 
 hardstatus alwayslastline
 

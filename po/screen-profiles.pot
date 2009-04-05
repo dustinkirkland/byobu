@@ -3,13 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#: screen-profiles:301
+#: screen-profiles:303
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-03 12:41-0500\n"
+"POT-Creation-Date: 2009-04-04 11:09-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,7 +57,7 @@ msgstr ""
 msgid "Exit"
 msgstr ""
 
-#: screen-profiles:87 screen-profiles:467
+#: screen-profiles:87 screen-profiles:469
 msgid " Screen Profiles Configuration Menu"
 msgstr ""
 
@@ -66,14 +66,14 @@ msgid "Okay"
 msgstr ""
 
 #: screen-profiles:98 screen-profiles:134 screen-profiles:150
-#: screen-profiles:185 screen-profiles:308 screen-profiles:350
-#: screen-profiles:428
+#: screen-profiles:185 screen-profiles:310 screen-profiles:352
+#: screen-profiles:430
 msgid "Cancel"
 msgstr ""
 
 #: screen-profiles:116 screen-profiles:143 screen-profiles:157
-#: screen-profiles:321 screen-profiles:375 screen-profiles:383
-#: screen-profiles:456
+#: screen-profiles:323 screen-profiles:377 screen-profiles:385
+#: screen-profiles:458
 msgid "Menu"
 msgstr ""
 
@@ -82,7 +82,7 @@ msgid "Screen Profiles Help"
 msgstr ""
 
 #: screen-profiles:134 screen-profiles:150 screen-profiles:185
-#: screen-profiles:308 screen-profiles:350 screen-profiles:428
+#: screen-profiles:310 screen-profiles:352 screen-profiles:430
 msgid "Apply"
 msgstr ""
 
@@ -90,8 +90,8 @@ msgstr ""
 msgid "Which profile would you like to use?"
 msgstr ""
 
-#: screen-profiles:142 screen-profiles:156 screen-profiles:320
-#: screen-profiles:382 screen-profiles:454
+#: screen-profiles:142 screen-profiles:156 screen-profiles:322
+#: screen-profiles:384 screen-profiles:456
 msgid "Message"
 msgstr ""
 
@@ -119,34 +119,34 @@ msgstr ""
 msgid "Create new window(s):"
 msgstr ""
 
-#: screen-profiles:309
+#: screen-profiles:311
 msgid "Toggle status notifications:"
 msgstr ""
 
-#: screen-profiles:342
+#: screen-profiles:344
 msgid "Windows:"
 msgstr ""
 
-#: screen-profiles:352
+#: screen-profiles:354
 msgid "Select window(s) to create by default:"
 msgstr ""
 
-#: screen-profiles:372
+#: screen-profiles:374
 msgid "Screen will be launched automatically next time you login."
 msgstr ""
 
-#: screen-profiles:380
+#: screen-profiles:382
 msgid "Screen will not be used next time you login."
 msgstr ""
 
-#: screen-profiles:427
+#: screen-profiles:429
 msgid "Escape key: ctrl-"
 msgstr ""
 
-#: screen-profiles:430
+#: screen-profiles:432
 msgid "Change escape sequence:"
 msgstr ""
 
-#: screen-profiles:468
+#: screen-profiles:470
 msgid "<Tab>/<Alt-Tab> between elements | <Return> Validates"
 msgstr ""

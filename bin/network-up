@@ -1,0 +1,46 @@
+#!/bin/sh -e
+#
+#    network-up: calculate the network transmit rate
+#    Copyright (C) 2008 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Default is "off"
+p="network-up"
+grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
+
+cache="$HOME/.screen-profiles/$p"
+
+interface=`route -n | tail -n 1 | sed "s/^.* //"`
+unit="KB/s"
+
+t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
+t2=`date +%s`
+
+if [ $t2 -le $t1 ]; then
+	printf "v0 $unit"
+	exit 0
+fi
+
+x1=`cat "$cache"` 2>/dev/null || tx1=0
+x2=`ifconfig "$interface" | grep "TX bytes" | sed "s/^.*TX bytes://" | sed "s/ .*$//"`
+
+echo "$x2" > "$cache"
+rate=`echo "$t1" "$t2" "$x1" "$x2" | awk '{printf "%.0f", ($4 - $3) / ($2 - $1) / 1024 }'`
+if [ "$rate" -gt 1024 ]; then
+	rate=`echo "$rate" | awk '{printf "%.1f", $1/1024}'`
+	unit="MB/s"
+fi
+printf "\005{= mw}^$rate $unit\005{-} "
