@@ -43,4 +43,4 @@ if [ "$rate" -gt 1024 ]; then
 	rate=`echo "$rate" | awk '{printf "%.1f", $1/1024}'`
 	unit="MB/s"
 fi
-printf "\005{= mw}^$rate $unit\005{-} "
+printf "^\005{=b mw}$rate\005{-}\005{= mw}$unit\005{-} "
