@@ -24,4 +24,4 @@
 p="users"
 grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
 
-printf "\005{=b }%d#\005{-} " `who | wc -l`
+printf "\005{= r}%d#\005{-} " `who | wc -l`
