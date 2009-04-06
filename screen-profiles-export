@@ -124,9 +124,9 @@ header() {
 }
 
 sources() {
-	# insert the common profile, replace the /var/lib exe path
+	# insert the common profile, replace the status exe path
 	echo
-	cat $SHARE/profiles/common | sed "s:/var/lib/$PROG/:\$HOME/.$PROG/bin/:"
+	cat $SHARE/profiles/common | sed "s:$PROG-status:\$HOME/.$PROG/$PROG-status:"
 	hr
 	echo
 	cat $SHARE/keybindings/common
@@ -161,7 +161,15 @@ done
 
 [ -z "$file" ] && usage
 echo "$file" | grep -qs "\.tar\.gz$" || error "Target file must be a '.tar.gz' archive"
-[ -e "$file" ] && error "File exists, please remove before running [$file]"
+if [ -e "$file" ]; then
+	echo `gettext "File exists"` " [$file]"
+	read -p "`gettext 'Remove file? [y/N] '`" -r remove
+	if [ "$remove" = "Y" -o "$remove" = "y" ]; then
+		rm -f "$file"
+	else
+		exit 1
+	fi
+fi
 
 # Obtain selections
 count=1
@@ -195,6 +203,7 @@ mkdir -p "$TMPDIR/.$PROG/bin"
 
 # Copy status scripts
 cp -a /var/lib/$PROG/* "$TMPDIR/.$PROG/bin"
+cp -a /usr/bin/$PROG-status "$TMPDIR/.$PROG"
 
 # Generate the monolithic profile
 header > "$PROFILE"

@@ -21,7 +21,14 @@
 renice 10 $$ >/dev/null 2>&1 || true
 ionice -c3 -p $$ >/dev/null 2>&1 || true
 
-DIR="/var/lib/screen-profiles"
+if [ -d "/var/lib/screen-profiles" ]; then
+	DIR="/var/lib/screen-profiles"
+elif [ -d "$HOME/.screen-profiles/bin" ]; then
+	DIR="$HOME/.screen-profiles/bin"
+else
+	exit 1
+fi
+
 P="$1"
 
 case "$P" in
@@ -30,7 +37,7 @@ case "$P" in
 		grep -qs "^$P=0$" "$HOME/.screen-profiles/status" && exit 0
 	;;
 	# default = off, user must override to turn on
-	arch|battery|ec2-cost|hostname|network-down|network-up|processes|uptime|users|whoami)
+	arch|battery|ec2-cost|hostname|network-down|network-up|processes|uptime|users|whoami|wifi-quality)
 		grep -qs "^$P=1$" "$HOME/.screen-profiles/status" || exit 0
 	;;
 	*)

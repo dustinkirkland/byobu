@@ -1,0 +1,25 @@
+#!/bin/sh -e
+#
+#    wifi-quality: display wifi signal quality
+#    Copyright (C) 2008 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Default is "off"
+p="wifi-quality"
+grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
+
+interface=`route -n | tail -n 1 | sed "s/^.* //"`
+iwconfig "$interface" 2>/dev/null | grep "Link Quality=" | sed "s/^.*Link Quality=//" | sed "s/ .*$//g" | awk '{printf "\005{=b Ck}%.0f\005{-}\005{= Ck}%%)))\005{-} ", $1}' || exit 0

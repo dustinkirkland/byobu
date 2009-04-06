@@ -4,6 +4,7 @@ screen-profiles (1.43) unreleased; urgency=low
   * bin/logo: allow users to define their own logo
   * bin/processes: displace a count of the running processes
   * bin/network-down, bin/network-up: added network transmit status
+  * bin/wifi-quality: show wireless signal quality
   * bin/*, profiles/profile.skel: make all status scripts handle their
     own colors and trailing whitespace;  this should help alleviate the
     16-color-change limitation on un-patched screens;  it also simplifies
@@ -20,7 +21,7 @@ screen-profiles (1.43) unreleased; urgency=low
     added new status items for battery state, number of users, and system
     uptime
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 04 Apr 2009 22:44:27 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 06 Apr 2009 13:52:30 -0700
 
 screen-profiles (1.42-0ubuntu1) jaunty; urgency=low
 
