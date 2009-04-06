@@ -24,7 +24,7 @@ grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
 cache="$HOME/.screen-profiles/$p"
 
 interface=`route -n | tail -n 1 | sed "s/^.* //"`
-unit="KB/s"
+unit="kB/s"
 
 t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
 t2=`date +%s`
