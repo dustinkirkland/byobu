@@ -83,5 +83,5 @@ for bat in $BATS; do
          ;;
    esac
 
-   printf "\005%s|%s|%d%%\005{-} " "$color" "$sign" "$percent"
+   printf "\005%s%d%%|%s|\005{-} " "$color" "$percent" "$sign"
 done
