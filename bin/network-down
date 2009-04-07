@@ -17,11 +17,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Default is "off"
-p="network-down"
-grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
-
-cache="$HOME/.screen-profiles/$p"
+cache="$HOME/.screen-profiles/network-down"
 interface=`route -n | tail -n 1 | sed "s/^.* //"`
 unit="kB/s"
 

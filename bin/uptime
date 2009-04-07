@@ -20,10 +20,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# Default is "off"
-p="uptime"
-grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
-
 u=$(sed "s/\..*$//" /proc/uptime)
 printf "\005{= b}"
 if [ "$u" -gt 86400 ]; then

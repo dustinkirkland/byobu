@@ -19,10 +19,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# Default is "off"
-p="battery"
-grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
-
 search () {
    local str expr
    str="$1"

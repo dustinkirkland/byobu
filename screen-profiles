@@ -257,15 +257,16 @@ def readstatus():
     status["mem-available"]=1
     status["mem-used"]=1
     status["menu"]=1
-    status["network-up"]=0
     status["network-down"]=0
+    status["network-up"]=0
     status["processes"]=0
     status["reboot-required"]=1
     status["release"]=1
-    status["updates-available"]=1
     status["users"]=0
+    status["updates-available"]=1
     status["uptime"]=0
     status["whoami"]=0
+    status["wifi-quality"]=0
     if os.path.exists(HOME+'/.screen-profiles/status'):
         f=open(HOME+'/.screen-profiles/status', 'r')
         for line in f.readlines():

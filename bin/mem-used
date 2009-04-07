@@ -17,8 +17,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Default is on
-p="mem-used"
-grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
-
 free | awk '/buffers\/cache:/ {printf "\005{=b gW}%.0f\005{-}\005{= gW}%%\005{-} ", 100*$3/($3 + $4)}'

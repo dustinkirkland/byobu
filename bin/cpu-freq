@@ -17,10 +17,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Default is "on"
-p="cpu-freq"
-grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
-
 mhz=`grep -m 1 "^cpu MHz" /proc/cpuinfo | awk -F"[:.]" '{print $2}'` || mhz=`grep -m 1 "^clock" /proc/cpuinfo | awk -F"[:.]" '{print $2}'`
 
 if [ $mhz -ge 1000 ]; then

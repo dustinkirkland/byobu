@@ -17,8 +17,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Default is "on"
-p="load-average"
-grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
-
 printf "\005{= Yk}%s\005{-} " $(cat /proc/loadavg | cut -d " " -f -1)

@@ -17,8 +17,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Default is on
-p="reboot-required"
-grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
-
 [ -e /var/run/reboot-required ] && printf "\005{=b bW}(@)\005{-} "

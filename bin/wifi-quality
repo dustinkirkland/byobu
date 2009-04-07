@@ -17,10 +17,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Default is "off"
-p="wifi-quality"
-grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
-
 interface=`route -n | tail -n 1 | sed "s/^.* //"`
 bitrate=`iwconfig "$interface" 2>/dev/null | grep "Bit Rate=" | sed "s/^.*Bit Rate=//" | sed "s/ .*$//g"`
 [ -z "$bitrate" ] && bitrate="0"

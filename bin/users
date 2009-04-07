@@ -20,8 +20,4 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# Default is "off"
-p="users"
-grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
-
 printf "\005{= r}%d#\005{-} " `who | wc -l`
