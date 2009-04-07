@@ -20,4 +20,4 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-printf "\005{= r}%d#\005{-} " `who | wc -l`
+printf "\005{= wr}%d#\005{-} " `who | wc -l`
