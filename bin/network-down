@@ -29,17 +29,15 @@ t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
 t2=`date +%s`
 
 if [ $t2 -le $t1 ]; then
-	printf "v0 $unit"
-	exit 0
-fi
-
-x1=`cat "$cache"` 2>/dev/null || tx1=0
-x2=`ifconfig "$interface" | grep "RX bytes" | sed "s/^.*RX bytes://" | sed "s/ .*$//"`
-
-echo "$x2" > "$cache"
-rate=`echo "$t1" "$t2" "$x1" "$x2" | awk '{printf "%.0f", ($4 - $3) / ($2 - $1) / 1024 }'`
-if [ "$rate" -gt 1024 ]; then
-	rate=`echo "$rate" | awk '{printf "%.1f", $1/1024}'`
-	unit="MB/s"
+	rate=0
+else
+	x1=`cat "$cache"` 2>/dev/null || tx1=0
+	x2=`ifconfig "$interface" | grep "RX bytes" | sed "s/^.*RX bytes://" | sed "s/ .*$//"`
+	echo "$x2" > "$cache"
+	rate=`echo "$t1" "$t2" "$x1" "$x2" | awk '{printf "%.0f", ($4 - $3) / ($2 - $1) / 1024 }'`
+	if [ "$rate" -gt 1024 ]; then
+		rate=`echo "$rate" | awk '{printf "%.1f", $1/1024}'`
+		unit="MB/s"
+	fi
 fi
 printf "v\005{=b mw}$rate\005{-}\005{= mw}$unit\005{-} "
