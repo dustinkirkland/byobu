@@ -21,7 +21,7 @@ screen-profiles (1.43) unreleased; urgency=low
     added new status items for battery state, number of users, and system
     uptime
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 06 Apr 2009 13:52:30 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 06 Apr 2009 13:55:41 -0700
 
 screen-profiles (1.42-0ubuntu1) jaunty; urgency=low
 

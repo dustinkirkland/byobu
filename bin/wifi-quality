@@ -22,4 +22,6 @@ p="wifi-quality"
 grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
 
 interface=`route -n | tail -n 1 | sed "s/^.* //"`
-iwconfig "$interface" 2>/dev/null | grep "Link Quality=" | sed "s/^.*Link Quality=//" | sed "s/ .*$//g" | awk '{printf "\005{=b Ck}%.0f\005{-}\005{= Ck}%%)))\005{-} ", $1}' || exit 0
+bitrate=`iwconfig "$interface" 2>/dev/null | grep "Bit Rate=" | sed "s/^.*Bit Rate=//" | sed "s/ .*$//g"`
+quality=`iwconfig "$interface" 2>/dev/null | grep "Link Quality=" | sed "s/^.*Link Quality=//" | sed "s/ .*$//g"`
+echo "$bitrate" "$quality" | awk '{printf "\005{= Ck}%sMb/s,\005{-}\005{=b Ck}%.0f\005{-}\005{= Ck}%%)))\005{-} ", $1, $2}'
