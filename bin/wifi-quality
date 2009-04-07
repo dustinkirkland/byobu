@@ -23,5 +23,6 @@ grep -qs "^$p=1$" "$HOME/.screen-profiles/status" || exit 0
 
 interface=`route -n | tail -n 1 | sed "s/^.* //"`
 bitrate=`iwconfig "$interface" 2>/dev/null | grep "Bit Rate=" | sed "s/^.*Bit Rate=//" | sed "s/ .*$//g"`
+[ -z "$bitrate" ] && bitrate="0"
 quality=`iwconfig "$interface" 2>/dev/null | grep "Link Quality=" | sed "s/^.*Link Quality=//" | sed "s/ .*$//g"`
-echo "$bitrate" "$quality" | awk '{printf "\005{= Ck}%sMb/s,\005{-}\005{=b Ck}%.0f\005{-}\005{= Ck}%%)))\005{-} ", $1, $2}'
+echo "$bitrate" "$quality" | awk '{printf "\005{= Ck}%sMb/s,\005{-}\005{=b Ck}%.0f\005{-}\005{= Ck}%%\005{-} ", $1, $2}'
