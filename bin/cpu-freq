@@ -24,10 +24,10 @@ grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && exit 0
 mhz=`grep -m 1 "^cpu MHz" /proc/cpuinfo | awk -F"[:.]" '{print $2}'` || mhz=`grep -m 1 "^clock" /proc/cpuinfo | awk -F"[:.]" '{print $2}'`
 
 if [ $mhz -ge 1000 ]; then
-	speed=$(echo $mhz | awk '{ printf "%.2f", $1 / 1000 }')
+	speed=$(echo $mhz | awk '{ printf "%.1f", $1 / 1000 }')
 	unit="GHz"
 else
 	speed="$mhz"
 	unit="MHz"
 fi
-printf "\005{=b cW}%s\005{-}\005{= cW}$unit\005{-} " $mhz
+printf "\005{=b cW}%s\005{-}\005{= cW}$unit\005{-} " $speed

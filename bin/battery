@@ -57,11 +57,11 @@ for bat in $BATS; do
 
    rem=$(search "$statefile" "remaining capacity: *\(.*\) m[AW]h")
    if [ "$rem" -lt "$low" ]; then
-      color="{= rk}"
+      cap_color="{= rk}"
    elif [ "$rem" -lt "$warn" ]; then
-      color="{= yk}"
+      cap_color="{= yk}"
    else
-      color="{= Gk}"
+      cap_color="{= Gk}"
    fi
 
 
@@ -83,5 +83,5 @@ for bat in $BATS; do
          ;;
    esac
 
-   printf "\005%s%d%%|%s|\005{-} " "$color" "$percent" "$sign"
+   printf "\005%s%d%%|%s|\005{-} " "$cap_color" "$percent" "$sign"
 done
