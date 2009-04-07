@@ -17,7 +17,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+
 
 search () {
    local str expr
@@ -57,13 +57,27 @@ for bat in $BATS; do
    elif [ "$rem" -lt "$warn" ]; then
       cap_color="{= yk}"
    else
-      cap_color="{= Gk}"
+      cap_color="{= gk}"
    fi
 
 
    percent=$( echo "$rem" "$full" | awk '{printf "%.0f",  100*$1/$2}')
-   state=$(search "$statefile" "charging state: *\(.*\)")
+   if [ "$percent" -lt 17 ]; then
+	per_color="{= rk}"
+   elif [ "$percent" -lt 33 ]; then
+	per_color="{= Rk}"
+   elif [ "$percent" -lt 50 ]; then
+	per_color="{= yk}"
+   elif [ "$percent" -lt 67 ]; then
+	per_color="{= Yk}"
+   elif [ "$percent" -lt 83 ]; then
+	per_color="{= Gk}"
+   else
+	per_color="{= gk}"
+   fi
 
+
+   state=$(search "$statefile" "charging state: *\(.*\)")
    case $state in
       charging)
          sign="+"
@@ -79,5 +93,5 @@ for bat in $BATS; do
          ;;
    esac
 
-   printf "\005%s%d%%|%s|\005{-} " "$cap_color" "$percent" "$sign"
+   printf "\005%s%d%%\005{-}\005%s|%s|\005{-} " "$per_color" "$percent" "$cap_color" "$sign"
 done
