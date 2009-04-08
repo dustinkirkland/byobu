@@ -1,4 +1,10 @@
-screen-profiles (1.43) unreleased; urgency=low
+screen-profiles (1.44) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 08 Apr 2009 13:21:39 -0700
+
+screen-profiles (1.43-0ubuntu1) jaunty; urgency=low
 
   [ Dustin Kirkland ]
   New status notifiers, LP: #357911
