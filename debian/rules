@@ -9,8 +9,7 @@ VER=`head -n 1 debian/changelog | sed 's/^.*(//' | sed 's/).*//' | sed 's/-.*//'
 
 get-orig-source:
 	dh_testdir
-	bzr branch . ${PACKAGE}-${VER}
-	tar --exclude .bzr -zcvf ${PACKAGE}_${VER}.orig.tar.gz ${PACKAGE}-${VER}
+	bzr export ../${PACKAGE}_${VER}.orig.tar.gz
 
 install-po: update-pot
 	for po in po/*.po ; do \
