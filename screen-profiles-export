@@ -86,10 +86,16 @@ status_config() {
 	# Generate the status configuration
 	# Disable the menu, since screen-profiles configurator is not available
 	# Enable user@host in its place
-	echo "
-menu=0
-hostname=1
-whoami=1"
+	for i in $(ls /var/lib/screen-profiles/); do
+		case "$i" in
+			cpu-count|cpu-freq|hostname|load-average|logo|mem-available|mem-used|reboot-required|release|updates-available|whoami)
+				echo "$i=1"
+			;;
+			*)
+				echo "$i=0"
+			;;
+		esac
+	done
 }
 
 hr() {
