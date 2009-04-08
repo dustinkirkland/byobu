@@ -18,6 +18,7 @@ bzr bd -S
 sed -i "s/~ppa3) jaunty;/) jaunty;/" debian/changelog
 bzr bd -S
 curver=`head -n1 debian/changelog | sed "s/^.*(1.//" | sed "s/-.*$//"`
+bzr tag --delete 1.$curver || true
 bzr tag 1.$curver
 ver=`expr $curver + 1`
 dch -v "1.$ver" "UNRELEASED"
