@@ -1,4 +1,10 @@
-screen-profiles (1.44) unreleased; urgency=low
+screen-profiles (1.45) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 08 Apr 2009 15:07:16 -0700
+
+screen-profiles (1.44-0ubuntu1) jaunty; urgency=low
 
   * bin/updates-available: print one ! for updates, two !! for security
     updates available (should have a unit for each item)
