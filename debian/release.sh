@@ -18,6 +18,7 @@ bzr bd -S
 sed -i "s/~ppa3) jaunty;/) jaunty;/" debian/changelog
 bzr bd -S
 curver=`head -n1 debian/changelog | sed "s/^.*(1.//" | sed "s/-.*$//"`
+bzr tag 1.$curver
 ver=`expr $curver + 1`
 dch -v "1.$ver" "UNRELEASED"
 sed -i "s/1.$ver) jaunty;/1.$ver) unreleased;/" debian/changelog
@@ -32,7 +33,6 @@ echo "  dput screen-profiles-ppa ../*ppa*changes"
 echo
 echo "To commit and push:"
 echo "  bzr diff"
-echo "  bzr tag 1.$curver"
 echo "  bzr commit && bzr push"
 echo
 echo
