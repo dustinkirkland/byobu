@@ -49,7 +49,7 @@ elif echo "$distro" | grep -qsi "gentoo"; then
 elif echo "$distro" | grep -qsi "mandriva"; then
 	printf "\005{=b kc} (\005{=b ky}* "
 elif echo "$distro" | grep -qsi "redhat"; then
-	printf "\005{=b rk} RH "
+	printf "\005{= Rk} RH "
 elif echo "$distro" | grep -qsi "slackware"; then
 	printf "\005{=u Bk},S "
 elif echo "$distro" | grep -qsi "suse"; then
