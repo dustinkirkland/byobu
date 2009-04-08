@@ -26,4 +26,4 @@ else
 	speed="$mhz"
 	unit="MHz"
 fi
-printf "\005{=b cW}%s\005{-}\005{= cW}$unit\005{-} " $speed
+printf "\005{= cW}%s$unit\005{-} " $speed

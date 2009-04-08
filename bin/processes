@@ -17,4 +17,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-printf "\005{=b yk}%s\005{-}\005{= yk}&\005{-} " $(ps -e | wc -l)
+printf "\005{= yk}%s&\005{-} " $(ps -e | wc -l)
