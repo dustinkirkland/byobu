@@ -75,33 +75,23 @@ fi
 renice 10 $$ >/dev/null 2>&1 || true
 ionice -c3 -p $$ >/dev/null 2>&1 || true
 
-# If apt-check binary exists, use it
+# These are very computationally intensive processes.
+# Background this work, have it write to the cache files,
+# and let the next cache check pick up the results.
+
 if [ -x /usr/lib/update-notifier/apt-check ]; then
-	u=`/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;/ /"`
-	echo "$u" > $mycache
-	print_updates $u
+	# If apt-check binary exists, use it
+	/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;/ /" > $mycache &
+elif [ -x /usr/bin/apt-get ]; then
+	# If apt-get exists, use it
+	/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
+elif [ -x /usr/bin/zypper ]; then
+	# If zypper exists, use it
+	/usr/bin/zypper --no-refresh lu --best-effort | grep 'v |' | wc -l > $mycache &
+elif [ -x /usr/bin/yum ]; then
+	# If yum exists, use it
+	/usr/bin/yum list updates | grep -c "updates" > $mycache &
+else
+	# If we're here, we have no idea
+	print_updates "?"
 fi
-
-# If apt-get exists, use it
-if [ -x /usr/bin/apt-get ]; then
-	u=`/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst`
-	echo "$u" > $mycache
-	print_updates $u
-fi
-
-# If zypper exists, use it
-if [ -x /usr/bin/zypper ]; then
-  u=`/usr/bin/zypper --no-refresh lu --best-effort | grep 'v |' | wc -l`
-  echo "$u" > $mycache
-  print_updates $u
-fi
-
-# If yum exists, use it
-if [ -x /usr/bin/yum ]; then
-	u=`/usr/bin/yum list updates | grep -c "updates"`
-	echo "$u" > $mycache
-	print_updates $u
-fi
-
-# If we're here, we have no idea
-print_updates "?"

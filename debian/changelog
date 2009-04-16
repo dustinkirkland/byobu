@@ -8,11 +8,14 @@ screen-profiles (1.45) unreleased; urgency=low
     out nice and ionice calls;  this *really* slows down startup
   * bin/*: route and ifconfig are in /sbin, fully qualify
   * bin/release: eliminate one expensive lsb_release call
+  * bin/updates-available: background updates checking processes,
+    let them write to cache, and let the next cache check pick up the
+    changes
 
   [ Jon Bernard <bernardj@gmail.com> ]
   * debian/control: fix typo in screen-profiles-extras description
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 12:55:35 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 13:03:19 -0500
 
 screen-profiles (1.44-0ubuntu1) jaunty; urgency=low
 
