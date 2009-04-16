@@ -1,8 +1,9 @@
 screen-profiles (1.45) unreleased; urgency=low
 
   * bin/cpu-freq: fix for powerpc
+  * bin/uptime: don't print seconds, since we don't update often enough
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 09 Apr 2009 11:05:35 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 10:15:10 -0500
 
 screen-profiles (1.44-0ubuntu1) jaunty; urgency=low
 
