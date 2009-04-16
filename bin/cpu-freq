@@ -19,11 +19,7 @@
 
 mhz=`egrep -i -m 1 "^cpu MHz|^clock|^bogomips" /proc/cpuinfo | awk -F"[:.]" '{print $2}'`
 
-if [ $mhz -ge 1000 ]; then
-	speed=$(echo $mhz | awk '{ printf "%.1f", $1 / 1000 }')
-	unit="GHz"
-else
-	speed="$mhz"
-	unit="MHz"
-fi
+speed=$(echo $mhz | awk '{ printf "%.1f", $1 / 1000 }')
+unit="GHz"
+
 printf "\005{= cW}%s$unit\005{-} " $speed
