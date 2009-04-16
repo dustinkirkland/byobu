@@ -13,6 +13,9 @@ screen-profiles (1.45) unreleased; urgency=low
     - bin/updates-available: background updates checking processes,
       let them write to cache, and let the next cache check pick up the
       changes
+  * debian/control: add a versioned dependency on python-newt, as
+    screen-profiles appears to crash on gutsy systems (but is okay on
+    hardy systems), LP: #346603
 
   [ Jon Bernard <bernardj@gmail.com> ]
   * debian/control: fix typo in screen-profiles-extras description
@@ -20,7 +23,7 @@ screen-profiles (1.45) unreleased; urgency=low
   [ Steven Danna <ssd7@pitt.edu> ]
   * bin/battery: hide percentage when battery is in charged state
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 13:26:41 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 13:40:00 -0500
 
 screen-profiles (1.44-0ubuntu1) jaunty; urgency=low
 
