@@ -1,7 +1,11 @@
 screen-profiles (1.45) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * bin/cpu-freq: fix for powerpc
   * bin/uptime: don't print seconds, since we don't update often enough
+
+  [ Jon Bernard <bernardj@gmail.com> ]
+  * debian/control: fix typo in screen-profiles-extras description
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 10:15:10 -0500
 

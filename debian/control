@@ -30,7 +30,6 @@ Package: screen-profiles-extras
 Architecture: all
 Depends: ${misc:Depends}, screen-profiles
 Description: additional colored profiles for the screen-profiles package
- The screen-profiles package profiles package contains a basic set of
- light and dark profiles.  The screen-profiles-extras package provides
- additional profiles of various different colors, plus profiles for other
- distributions.
+ The screen-profiles package contains a basic set of light and dark profiles.
+ The screen-profiles-extras package provides additional profiles of various
+ different light and dark colors.
