@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cache="$HOME/.screen-profiles/network-down"
-interface=`route -n | tail -n 1 | sed "s/^.* //"`
+interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
 unit="kB/s"
 
 t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
@@ -28,7 +28,7 @@ if [ $t2 -le $t1 ]; then
 	rate=0
 else
 	x1=`cat "$cache"` 2>/dev/null || tx1=0
-	x2=`ifconfig "$interface" | grep "RX bytes" | sed "s/^.*RX bytes://" | sed "s/ .*$//"`
+	x2=`/sbin/ifconfig "$interface" | grep "RX bytes" | sed "s/^.*RX bytes://" | sed "s/ .*$//"`
 	echo "$x2" > "$cache"
 	rate=`echo "$t1" "$t2" "$x1" "$x2" | awk '{printf "%.0f", ($4 - $3) / ($2 - $1) / 1024 }'`
 	if [ "$rate" -gt 1024 ]; then

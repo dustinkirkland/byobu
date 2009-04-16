@@ -63,7 +63,7 @@ RX_RATE="0.10"
 TX_RATE="0.17"
 
 # Auto detect network interface
-IF=`route -n | grep "0\.0\.0\.0" | tail -n1 | awk '{print $8}'`
+IF=`/sbin/route -n | grep "0\.0\.0\.0" | tail -n1 | awk '{print $8}'`
 
 # Calculate bandwidth cost
 tx_gb=`/sbin/ifconfig "$IF" | grep "TX bytes:" | sed "s/^.*TX bytes://" | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }'`
