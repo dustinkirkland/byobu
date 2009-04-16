@@ -1,8 +1,12 @@
 screen-profiles (1.45) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * bin/cpu-freq: fix for powerpc
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 09 Apr 2009 11:05:35 -0700
+  [ Jon Bernard ]
+  * debian/control: fix typo in screen-profiles-extras description
+
+ -- Jon Bernard <bernardj@gmail.com>  Thu, 16 Apr 2009 11:08:29 -0400
 
 screen-profiles (1.44-0ubuntu1) jaunty; urgency=low
 
