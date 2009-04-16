@@ -1,4 +1,10 @@
-screen-profiles (1.45) unreleased; urgency=low
+screen-profiles (1.46) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 17:46:37 -0500
+
+screen-profiles (1.45-0ubuntu1) jaunty; urgency=low
 
   [ Dustin Kirkland ]
   * bin/cpu-freq: fix for powerpc LP: #352286, fix for arm LP: #362157,
