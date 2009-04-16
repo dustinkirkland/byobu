@@ -1,13 +1,15 @@
 screen-profiles (1.45) unreleased; urgency=low
 
   [ Dustin Kirkland ]
-  * bin/cpu-freq: fix for powerpc
+  * bin/cpu-freq: fix for powerpc, fix for arm
   * bin/uptime: don't print seconds, since we don't update often enough
+  * screen-profiles-status: use home bin scripts, if available first,
+    then fallback to system-wide, allows for local overrides
 
   [ Jon Bernard <bernardj@gmail.com> ]
   * debian/control: fix typo in screen-profiles-extras description
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 10:15:10 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 12:27:13 -0500
 
 screen-profiles (1.44-0ubuntu1) jaunty; urgency=low
 

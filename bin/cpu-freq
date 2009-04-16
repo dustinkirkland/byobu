@@ -17,7 +17,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-mhz=`egrep -m 1 "^cpu MHz|^clock" /proc/cpuinfo | awk -F"[:.]" '{print $2}'`
+mhz=`egrep -i -m 1 "^cpu MHz|^clock|^bogomips" /proc/cpuinfo | awk -F"[:.]" '{print $2}'`
 
 if [ $mhz -ge 1000 ]; then
 	speed=$(echo $mhz | awk '{ printf "%.1f", $1 / 1000 }')

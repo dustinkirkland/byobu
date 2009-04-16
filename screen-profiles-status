@@ -21,10 +21,10 @@
 renice 10 $$ >/dev/null 2>&1 || true
 ionice -c3 -p $$ >/dev/null 2>&1 || true
 
-if [ -d "/var/lib/screen-profiles" ]; then
-	DIR="/var/lib/screen-profiles"
-elif [ -d "$HOME/.screen-profiles/bin" ]; then
+if [ -d "$HOME/.screen-profiles/bin" ]; then
 	DIR="$HOME/.screen-profiles/bin"
+elif [ -d "/var/lib/screen-profiles" ]; then
+	DIR="/var/lib/screen-profiles"
 else
 	exit 1
 fi
