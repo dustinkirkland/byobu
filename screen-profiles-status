@@ -17,9 +17,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Let's try to be really "nice" about gathering status:
-renice 10 $$ >/dev/null 2>&1 || true
-ionice -c3 -p $$ >/dev/null 2>&1 || true
+###########################################################
+# We should be really "nice" about gathering status:
+#renice 10 $$ >/dev/null 2>&1 || true
+#ionice -c3 -p $$ >/dev/null 2>&1 || true
+# However, this *really* slows down startup.
+# We need a good way of only doing this for updates,
+# but not at screen startup.
+###########################################################
 
 if [ -d "$HOME/.screen-profiles/bin" ]; then
 	DIR="$HOME/.screen-profiles/bin"
