@@ -75,6 +75,7 @@ for bat in $BATS; do
    else
 	per_color="{= gk}"
    fi
+   percent="$percent%"
 
 
    state=$(search "$statefile" "charging state: *\(.*\)")
@@ -87,11 +88,12 @@ for bat in $BATS; do
          ;;
       charged)
          sign="="
+         percent=
          ;;
       *)
          sign="$state"
          ;;
    esac
 
-   printf "\005%s%d%%\005{-}\005%s|%s|\005{-} " "$per_color" "$percent" "$cap_color" "$sign"
+   printf "\005%s%s\005{-}\005%s|%s|\005{-} " "$per_color" "$percent" "$cap_color" "$sign"
 done
