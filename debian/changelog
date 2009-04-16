@@ -6,11 +6,12 @@ screen-profiles (1.45) unreleased; urgency=low
   * screen-profiles-status: use home bin scripts, if available first,
     then fallback to system-wide, allows for local overrides
   * bin/*: route and ifconfig are in /sbin, fully qualify
+  * bin/release: eliminate one expensive lsb_release call
 
   [ Jon Bernard <bernardj@gmail.com> ]
   * debian/control: fix typo in screen-profiles-extras description
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 12:37:21 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 12:42:52 -0500
 
 screen-profiles (1.44-0ubuntu1) jaunty; urgency=low
 

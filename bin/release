@@ -19,9 +19,9 @@
 
 if which lsb_release >/dev/null; then
 	# If lsb_release is available, use it
-	if lsb_release -s -d | grep -qs "^Ubuntu .*\..*\..*$"; then
+	r=$(lsb_release -s -d)
+	if echo "$r" | grep -qs "^Ubuntu .*\..*\..*$"; then
 		# Use the -d if an Ubuntu LTS
-		r=$(lsb_release -s -d)
 		printf "\005{=b }%s\005{-} " "$r"
 	else
 		# But for other distros the description
