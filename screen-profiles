@@ -250,6 +250,7 @@ def readstatus():
     status["battery"]=0
     status["cpu-count"]=1
     status["cpu-freq"]=1
+    status["date"]=1
     status["ec2-cost"]=0
     status["hostname"]=0
     status["load-average"]=1
@@ -262,6 +263,7 @@ def readstatus():
     status["processes"]=0
     status["reboot-required"]=1
     status["release"]=1
+    status["time"]=1
     status["users"]=0
     status["updates-available"]=1
     status["uptime"]=0

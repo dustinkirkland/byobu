@@ -88,7 +88,7 @@ status_config() {
 	# Enable user@host in its place
 	for i in $(ls /var/lib/screen-profiles/); do
 		case "$i" in
-			cpu-count|cpu-freq|hostname|load-average|logo|mem-available|mem-used|reboot-required|release|updates-available|whoami)
+			cpu-count|cpu-freq|date|hostname|load-average|logo|mem-available|mem-used|reboot-required|release|time|updates-available|whoami)
 				echo "$i=1"
 			;;
 			*)

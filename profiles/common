@@ -47,6 +47,8 @@ backtick 116 2 2 screen-profiles-status processes
 backtick 117 2 2 screen-profiles-status network-up
 backtick 118 2 2 screen-profiles-status network-down
 backtick 119 2 2 screen-profiles-status wifi-quality
+backtick 120 86400 86400 screen-profiles-status date
+backtick 121 86400 86400 screen-profiles-status time
 
 hardstatus alwayslastline
 

@@ -38,7 +38,7 @@ P="$1"
 
 case "$P" in
 	# default = on, user must override to turn off
-	cpu-count|cpu-freq|load-average|logo|mem-available|mem-used|menu|reboot-required|release|updates-available)
+	cpu-count|cpu-freq|date|load-average|logo|mem-available|mem-used|menu|reboot-required|release|time|updates-available)
 		grep -qs "^$P=0$" "$HOME/.screen-profiles/status" && exit 0
 	;;
 	# default = off, user must override to turn on

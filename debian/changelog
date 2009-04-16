@@ -1,8 +1,10 @@
 screen-profiles (1.46) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/date, bin/time, screen-profiles-status, screen-profiles-export,
+    screen-profiles: allow for configuring on/off the date and time
+    status, LP: #359050
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 17:46:37 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 18:07:12 -0500
 
 screen-profiles (1.45-0ubuntu1) jaunty; urgency=low
 
