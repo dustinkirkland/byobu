@@ -1,8 +1,9 @@
 screen-profiles (1.47) unreleased; urgency=low
 
-  * UNRELEASED
+  * screen-profiles-status: stop grepping after one match, subtle perf
+    improvement
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 17 Apr 2009 15:47:15 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 17 Apr 2009 16:33:53 -0500
 
 screen-profiles (1.46-0ubuntu1) jaunty; urgency=low
 
