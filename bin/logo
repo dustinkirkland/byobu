@@ -17,48 +17,58 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+print_logo() {
+	distro="$1"
+	if echo "$distro" | grep -qsi "ubuntu"; then
+		printf "\005{=b kr}\\\\\005{= ky}o\005{=b kY}/"
+	elif echo "$distro" | grep -qsi "arch"; then
+		printf "\005{=b wb} A "
+	elif echo "$distro" | grep -qsi "centos"; then
+		printf "\005{= gw}*\005{= mw}*\005{= yw}*\005{= bw}*%{=b Wk}"
+	elif echo "$distro" | grep -qsi "debian"; then
+		printf "\005{= wr} @ "
+	elif echo "$distro" | grep -qsi "fedora"; then
+		printf "\005{=b bw} f "
+	elif echo "$distro" | grep -qsi "foresight"; then
+		printf "\005{=b Wg}<@>"
+	elif echo "$distro" | grep -qsi "gentoo"; then
+		printf "\005{=b cw} > "
+	elif echo "$distro" | grep -qsi "mandriva"; then
+		printf "\005{=b kc} (\005{=b ky}* "
+	elif echo "$distro" | grep -qsi "redhat"; then
+		printf "\005{= Rk} RH "
+	elif echo "$distro" | grep -qsi "slackware"; then
+		printf "\005{=u Bk},S "
+	elif echo "$distro" | grep -qsi "suse"; then
+		printf "\005{= Wg}SuSE"
+	elif echo "$distro" | grep -qsi "xandros"; then
+		printf "\005{= Wr} X "
+	else
+		false
+	fi
+}
+
 if [ -r "$HOME/.screen-profiles/logo" ]; then
 	# Allow users to define their own logo
-	cat "$HOME/.screen-profiles/logo"
-elif [ -r "$HOME/.screen-profiles/distro" ]; then
-	# Allow manual override of distro
-	distro=`cat "$HOME/.screen-profiles/distro"`
-elif which lsb_release >/dev/null; then
-	# If lsb_release is available, use it
-	distro=`lsb_release -s -a 2>/dev/null`
-elif [ -r "/etc/issue" ]; then
-	# Otherwise, grab part of /etc/issue
-	distro=`cat /etc/issue`
-else
-	# No idea!
-	distro="Unknown"
+	cat "$HOME/.screen-profiles/logo" && exit 0 || true
 fi
 
-if echo "$distro" | grep -qsi "ubuntu"; then
-	printf "\005{=b kr}\\\\\005{= ky}o\005{=b kY}/"
-elif echo "$distro" | grep -qsi "arch"; then
-	printf "\005{=b wb} A "
-elif echo "$distro" | grep -qsi "centos"; then
-	printf "\005{= gw}*\005{= mw}*\005{= yw}*\005{= bw}*%{=b Wk}"
-elif echo "$distro" | grep -qsi "debian"; then
-	printf "\005{= wr} @ "
-elif echo "$distro" | grep -qsi "fedora"; then
-	printf "\005{=b bw} f "
-elif echo "$distro" | grep -qsi "foresight"; then
-	printf "\005{=b Wg}<@>"
-elif echo "$distro" | grep -qsi "gentoo"; then
-	printf "\005{=b cw} > "
-elif echo "$distro" | grep -qsi "mandriva"; then
-	printf "\005{=b kc} (\005{=b ky}* "
-elif echo "$distro" | grep -qsi "redhat"; then
-	printf "\005{= Rk} RH "
-elif echo "$distro" | grep -qsi "slackware"; then
-	printf "\005{=u Bk},S "
-elif echo "$distro" | grep -qsi "suse"; then
-	printf "\005{= Wg}SuSE"
-elif echo "$distro" | grep -qsi "xandros"; then
-	printf "\005{= Wr} X "
-else
-	printf " ? "
+if [ -r "$HOME/.screen-profiles/distro" ]; then
+	# Allow manual override of distro
+	distro=`cat "$HOME/.screen-profiles/distro"`
+	print_logo "$distro" && exit 0 || true
 fi
-exit 0
+
+if [ -r "/etc/issue" ]; then
+	# Otherwise, check /etc/issue
+	distro=`cat /etc/issue`
+	print_logo "$distro" && exit 0 || true
+fi
+
+# This can be a very expensive operation, do it only
+# if all other methods fail
+distro=`lsb_release -s -a 2>/dev/null`
+print_logo "$distro" && exit 0 || true
+
+# No idea!
+printf " ? "
