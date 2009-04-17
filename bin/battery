@@ -67,9 +67,9 @@ for bat in $BATS; do
    elif [ "$percent" -lt 33 ]; then
 	per_color="{= Rk}"
    elif [ "$percent" -lt 50 ]; then
-	per_color="{= yk}"
-   elif [ "$percent" -lt 67 ]; then
 	per_color="{= Yk}"
+   elif [ "$percent" -lt 67 ]; then
+	per_color="{= yk}"
    elif [ "$percent" -lt 83 ]; then
 	per_color="{= Gk}"
    else
