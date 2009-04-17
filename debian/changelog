@@ -3,8 +3,9 @@ screen-profiles (1.46) unreleased; urgency=low
   * bin/date, bin/time, screen-profiles-status, screen-profiles-export,
     screen-profiles: allow for configuring on/off the date and time
     status, LP: #359050
+  * bin/logo: added logos for foresight and xandros
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Apr 2009 18:07:12 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 17 Apr 2009 09:25:21 -0500
 
 screen-profiles (1.45-0ubuntu1) jaunty; urgency=low
 
