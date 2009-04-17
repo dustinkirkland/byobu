@@ -4,8 +4,9 @@ screen-profiles (1.46) unreleased; urgency=low
     screen-profiles: allow for configuring on/off the date and time
     status, LP: #359050
   * bin/logo: added logos for foresight and xandros
+  * bin/batter: use the more intense yellow for lower battery percentage
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 17 Apr 2009 09:25:21 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 17 Apr 2009 10:26:40 -0500
 
 screen-profiles (1.45-0ubuntu1) jaunty; urgency=low
 
