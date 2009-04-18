@@ -1,11 +1,18 @@
-screen-profiles (1.47) unreleased; urgency=low
+screen-profiles (1.48) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 18 Apr 2009 16:13:00 -0500
+
+screen-profiles (1.47-0ubuntu1) jaunty; urgency=low
 
   * screen-profiles-status: stop grepping after one match, subtle perf
     improvement
   * bin/logo: lsb_release is really expensive, try /etc/issue first,
     and fall back to lsb_release if that fails
+  * bin/date, bin/time: last release installed 644 for some reason?
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 17 Apr 2009 18:11:12 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 18 Apr 2009 16:10:35 -0500
 
 screen-profiles (1.46-0ubuntu1) jaunty; urgency=low
 
