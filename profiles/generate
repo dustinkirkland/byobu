@@ -19,28 +19,24 @@
 # This script should be run during in the './debian/rules get-orig-source'
 # step.
 
-DISTROS="ubuntu"
-
-for i in $DISTROS; do
-	rm -f profiles/$i*
-	if [ "$1" = "--clean" ]; then
-		echo "Removing profiles for: $i"
-		continue
+rm -f profiles/light profiles/dark profiles/black profiles/*_*
+if [ "$1" = "--clean" ]; then
+	echo "Removing generated profiles"
+	exit 0
+fi
+echo "Generating profiles"
+cat profiles/profile.skel > profiles/light
+cp profiles/light profiles/dark
+sed -i "s/ Wk/ Kw/g" profiles/dark
+sed -i "s/kW/wK/g" profiles/dark
+for j in "B-light_blue" "b-dark_blue" "C-light_cyan" "c-dark_cyan" "G-light_green" "g-dark_green" "M-light_purple" "m-dark_purple" "R-light_red" "r-dark_red" "Y-light_yellow" "y-dark_yellow" "k-black"; do
+	x=$(echo "$j" | awk -F"-" '{print $1}')
+	desc=$(echo "$j" | awk -F"-" '{print $2}')
+	y="w"
+	if echo "$desc" | grep -qs "light"; then
+		y="k"
 	fi
-	echo "Generating profiles for: $i"
-	cat profiles/profile.skel > profiles/$i-light
-	cp profiles/$i-light profiles/$i-dark
-	sed -i "s/ Wk/ Kw/g" profiles/$i-dark
-	sed -i "s/kW/wK/g" profiles/$i-dark
-	for j in "B-light_blue" "b-dark_blue" "C-light_cyan" "c-dark_cyan" "G-light_green" "g-dark_green" "M-light_purple" "m-dark_purple" "R-light_red" "r-dark_red" "Y-light_yellow" "y-dark_yellow" "k-black"; do
-		x=$(echo "$j" | awk -F"-" '{print $1}')
-		desc=$(echo "$j" | awk -F"-" '{print $2}')
-		y="w"
-		if echo "$desc" | grep -qs "light"; then
-			y="k"
-		fi
-		cp profiles/$i-light profiles/$i-$desc
-		sed -i "s/ Wk/ $x$y/g" profiles/$i-$desc
-		sed -i "s/kW/$y$x/g" profiles/$i-$desc
-	done
+	cp profiles/light profiles/$desc
+	sed -i "s/ Wk/ $x$y/g" profiles/$desc
+	sed -i "s/kW/$y$x/g" profiles/$desc
 done

@@ -62,7 +62,6 @@ binary-indep: build install
 	dh_installdebconf -i
 	dh_compress -i
 	dh_fixperms -i
-	dh_link -i /usr/share/${PACKAGE}/profiles/ubuntu-light usr/share/${PACKAGE}/profiles/ubuntu
 	dh_installdeb -i
 	dh_gencontrol -i
 	dh_md5sums -i

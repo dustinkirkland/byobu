@@ -1,8 +1,16 @@
 screen-profiles (1.48) unreleased; urgency=low
 
-  * UNRELEASED
+  Drop the distro name in generated profiles
+  * debian/install: fix installation of profiles
+  * debian/rules: don't create the ubuntu profile symlink
+  * debian/screen-profiles-extras.install: no longer need to install
+    the distro-specific profiles
+  * profiles/generate: generate profiles which do not have ubuntu-
+    prepended
+  * select-screen-profile: remove the ubuntu specific profile handling
+  * screen: fix broken symlinks to ubuntu-* profiles
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 18 Apr 2009 16:13:00 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 14:40:16 -0500
 
 screen-profiles (1.47-0ubuntu1) jaunty; urgency=low
 

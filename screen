@@ -29,8 +29,26 @@ if [ -r "$HOME/.screenrc" -a ! -e "$HOME/.screen-profiles/profile" -a ! -h "$HOM
 fi
 
 # Ensure that the user has selected a screen profile
-[ -h "$HOME/.screen-profiles/profile" ] || /usr/bin/select-screen-profile
-if [ ! -r "$HOME/.screen-profiles/profile" ]; then
+profile="$HOME/.screen-profiles/profile"
+[ -h "$profile" ] || /usr/bin/select-screen-profile
+
+# Previously, profiles were prepended with ubuntu-.
+# This is no longer the case, for cross-distro compatibility.
+# Try to fix broken symlinks for upgrading users, or prompt to reselect.
+if [ -h "$profile" -a ! -r "$profile" ]; then
+	if stat "$profile" | head -n1 | grep -qs ".*->.*ubuntu\-.*"; then
+		newsrc=$(stat "$profile" | head -n1 | sed "s/.*\`//" | sed "s/'.*//" | sed "s/ubuntu-//")
+		if [ -r "$newsrc" ]; then
+			ln -sf "$newsrc" "$profile"
+		else
+			/usr/bin/select-screen-profile
+		fi
+	else
+		/usr/bin/select-screen-profile
+	fi
+fi
+
+if [ ! -r "$profile" ]; then
 	echo
 	echo "Your selected profile is not accessible."
 	echo

@@ -1,3 +1,1 @@
-profiles/ubuntu-*_* usr/share/screen-profiles/profiles
-profiles/*-* usr/share/screen-profiles/profiles/misc
-
+profiles/*_* usr/share/screen-profiles/profiles
