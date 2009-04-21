@@ -1,4 +1,10 @@
-screen-profiles (1.48) unreleased; urgency=low
+screen-profiles (1.49) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 16:46:46 -0500
+
+screen-profiles (1.48-0ubuntu1) jaunty; urgency=low
 
   Drop the distro name in generated profiles
   * debian/install: fix installation of profiles
