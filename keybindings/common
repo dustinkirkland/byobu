@@ -31,8 +31,8 @@
 
 # F-keys seem to work well in both gnome-terminal and tty consoles
 							# F1  | 'help' in gnome-terminal
-register n "^a^c^aA"					#     | Goes with the F2 definition
-bindkey -k k2 process n					# F2  | Create new window (and name it)
+register n "^a^c"					#     | Goes with the F2 definition
+bindkey -k k2 process n					# F2  | Create new window
 bindkey -k k3 prev					# F3  | Previous Window
 bindkey -k k4 next					# F4  | Next Window
 register r "^a:source $HOME/.screen-profiles/profile"	#     | Goes with F5 definition
