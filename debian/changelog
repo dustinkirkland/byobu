@@ -13,8 +13,12 @@ screen-profiles (1.48) unreleased; urgency=low
   * screen: default to the light profile, if unspecified; this should be
     acceptable now that the F9:Menu prompt is always shown, and from there,
     any user can easily change their profile
+  * keybindings/common: don't force users to name a window on F2 window
+    creation
+  * debian/postrm: remove the || true on the diversion removal, per Debian
+    ITP; I suppose we want to know if the diversion removal failed
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 14:49:21 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 15:08:22 -0500
 
 screen-profiles (1.47-0ubuntu1) jaunty; urgency=low
 
