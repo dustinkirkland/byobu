@@ -266,7 +266,7 @@ def readstatus():
     status["time"]=1
     status["users"]=0
     status["updates-available"]=1
-    status["uptime"]=0
+    status["uptime"]=1
     status["whoami"]=0
     status["wifi-quality"]=0
     if os.path.exists(HOME+'/.screen-profiles/status'):

@@ -38,11 +38,11 @@ P="$1"
 
 case "$P" in
 	# default = on, user must override to turn off
-	cpu-count|cpu-freq|date|load-average|logo|mem-available|mem-used|menu|reboot-required|release|time|updates-available)
+	cpu-count|cpu-freq|date|load-average|logo|mem-available|mem-used|menu|reboot-required|release|time|updates-available|uptime)
 		grep -qs -m1 "^$P=0$" "$HOME/.screen-profiles/status" && exit 0
 	;;
 	# default = off, user must override to turn on
-	arch|battery|ec2-cost|hostname|network-down|network-up|processes|uptime|users|whoami|wifi-quality)
+	arch|battery|ec2-cost|hostname|network-down|network-up|processes|users|whoami|wifi-quality)
 		grep -qs -m1 "^$P=1$" "$HOME/.screen-profiles/status" || exit 0
 	;;
 	*)

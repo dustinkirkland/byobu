@@ -17,8 +17,10 @@ screen-profiles (1.48) unreleased; urgency=low
     creation
   * debian/postrm: remove the || true on the diversion removal, per Debian
     ITP; I suppose we want to know if the diversion removal failed
+  * screen-profiles, screen-profiles-status: default uptime status to 'on',
+    generally useful, and pretty compact
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 15:08:22 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 15:11:29 -0500
 
 screen-profiles (1.47-0ubuntu1) jaunty; urgency=low
 
