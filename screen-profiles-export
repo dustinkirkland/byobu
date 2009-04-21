@@ -19,19 +19,20 @@
 
 PROG="screen-profiles"
 SHARE="/usr/share/$PROG"
-TMPDIR=`mktemp -d screen-profiles.XXXXXXXX` || error "Could not create a temporary directory"
+DIR=`mktemp -t -d screen-profiles.XXXXXXXX` || error "Could not create a temporary directory"
 # Grab list of available colors
 colors=`find $SHARE/profiles/ -type f | sed "s/^.*\///" | sed "s/^.*-//" | sort -u | egrep -v "common|plain"`
 
-# Make sure we clean up $TMPDIR if we exit for any reason
-trap "rm -rf "$TMPDIR" 2>/dev/null || true" EXIT HUP INT QUIT TERM
+# Make sure we clean up $DIR if we exit for any reason
+trap "rm -rf "$DIR" 2>/dev/null || true" EXIT HUP INT QUIT TERM
 
 usage() {
 	echo
 	echo "Usage:"
 	echo " $0 [-c COLOR] -f TARGET.tar.gz"
 	echo
-	echo "TARGET.tar.gz is required"
+	echo "If TARGET.tar.gz is unspecified, a randomly generated"
+	echo "filename will be used."
 	echo
 	echo "COLOR is obtained interactively if unspecified; or one of:"
 	for c in $colors; do
@@ -43,6 +44,7 @@ usage() {
 
 error() {
 	echo "ERROR: $1" 1>&2
+	[ "$generated" = "1" -a -f "$file" ] && rm -f "$file"
 	exit 1
 }
 
@@ -59,8 +61,7 @@ choose() {
 	count=1
 	while /bin/true; do
 		if [ $count -gt 5 ]; then
-			echo `gettext "ERROR: Invalid selection"`
-			exit 1
+			error "Invalid selection"
 		fi
 		count=`expr $count + 1`
 		if ! test $selected -gt 0 2>/dev/null; then
@@ -165,32 +166,44 @@ done
 
 [ $# -eq 1 ] && file="$1"
 
-[ -z "$file" ] && usage
-echo "$file" | grep -qs "\.tar\.gz$" || error "Target file must be a '.tar.gz' archive"
-if [ -e "$file" ]; then
-	echo `gettext "File exists"` " [$file]"
-	read -p "`gettext 'Remove file? [y/N] '`" -r remove
-	if [ "$remove" = "Y" -o "$remove" = "y" ]; then
-		rm -f "$file"
-	else
-		exit 1
+if [ -z "$file" ]; then
+	# Generate a temp archive filename
+	while true; do
+		file=`mktemp -t screen-profiles.XXXXXX` || error "Could not generate random filename"
+		if [ ! -e "$file.tar.gz" ]; then
+			mv -i "$file" "$file.tar.gz"
+			file="$file.tar.gz"
+			generated=1
+			break
+		else
+			rm -f "$file"
+		fi
+	done
+else
+	echo "$file" | grep -qs "\.tar\.gz$" || error "Target file must be a '.tar.gz' archive"
+	if [ -e "$file" ]; then
+		echo `gettext "File exists"` " [$file]"
+		read -p "`gettext 'Remove file? [y/N] '`" -r remove
+		if [ "$remove" = "Y" -o "$remove" = "y" ]; then
+			rm -f "$file"
+		else
+			exit 1
+		fi
 	fi
 fi
 
 # Obtain selections
 count=1
-distro="ubuntu"
 while /bin/true; do
 	if [ $count -gt 5 ]; then
-		echo `gettext "ERROR: Invalid selection"`
-		exit 1
+		error "Invalid selection"
 	fi
-	SOURCE="$SHARE"/profiles/"$distro"-"$color"
+	SOURCE="$SHARE"/profiles/"$color"
 	if [ -f "$SOURCE" ]; then
 		break
 	else
 		# Try in the misc directory too
-		SOURCE="$SHARE"/profiles/misc/"$distro"-"$color"
+		SOURCE="$SHARE"/profiles/misc/"$color"
 		if [ -f "$SOURCE" ]; then
 			break
 		fi
@@ -203,13 +216,13 @@ while /bin/true; do
 done
 
 # Create workspace
-PROFILE="$TMPDIR/.screenrc"
-STATUS="$TMPDIR/.$PROG/status"
-mkdir -p "$TMPDIR/.$PROG/bin"
+PROFILE="$DIR/.screenrc"
+STATUS="$DIR/.$PROG/status"
+mkdir -p "$DIR/.$PROG/bin"
 
 # Copy status scripts
-cp -a /var/lib/$PROG/* "$TMPDIR/.$PROG/bin"
-cp -a /usr/bin/$PROG-status "$TMPDIR/.$PROG"
+cp -a /var/lib/$PROG/* "$DIR/.$PROG/bin"
+cp -a /usr/bin/$PROG-status "$DIR/.$PROG"
 
 # Generate the monolithic profile
 header > "$PROFILE"
@@ -225,12 +238,12 @@ sed -i "s:.$PROG/profile\":\.screenrc\":" "$PROFILE"
 sed -i "s:^bindkey -k k9 screen -t help:#bindkey -k k9 screen -t help:" "$PROFILE"
 
 # tar up the results
-tar -zcf "$file" -C "$TMPDIR" . || error "Could not create archive"
+tar -zcf "$file" -C "$DIR" . || error "Could not create archive"
 
 echo
 echo "Success!"
 echo
-echo "  "`gettext "Profile"` ": [$distro-$color]"
+echo "  "`gettext "Profile"` ": [$color]"
 echo "  "`gettext "Archive"` ": [$file]"
 echo
 echo `gettext "Extract the archive in your home directory on the target system."`

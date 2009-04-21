@@ -11,7 +11,7 @@ screen\-profiles\-export \- create a screen-profiles archive for export
 Optional parameter specifying the desired color scheme.  If omitted, the program will interactively prompt for this value.
 .TP
 .B \-f TARGET.tar.gz
-Required parameter for the target file to contain the output archive.
+If TARGET.tar.gz is unspecified, a randomly generated filename will be used.
 
 .SH DESCRIPTION
 \fBscreen\-profiles\-export\fP is a program that creates a monolithic .screenrc profile, and copies the status notification scripts into an archive file.  This archive can then be extracted on a target system where \fBscreen\-profiles\fP is not installed (perhaps because the program is not packaged for that distribution, or perhaps because the administrator has not installed the package).
