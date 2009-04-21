@@ -10,7 +10,11 @@ screen-profiles (1.48) unreleased; urgency=low
   * select-screen-profile: remove the ubuntu specific profile handling
   * screen: fix broken symlinks to ubuntu-* profiles
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 14:40:16 -0500
+  * screen: default to the light profile, if unspecified; this should be
+    acceptable now that the F9:Menu prompt is always shown, and from there,
+    any user can easily change their profile
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 14:49:21 -0500
 
 screen-profiles (1.47-0ubuntu1) jaunty; urgency=low
 

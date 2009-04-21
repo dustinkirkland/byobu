@@ -22,15 +22,17 @@
 
 # If $HOME/.screenrc exists but $HOME/.screen-profiles/profile does not,
 # this shows that the user has an existing custom screen configuration,
-# and thus we will not bother them with a select-screen-profile prompt.
+# and thus we will not force screen-profiles on them.
 if [ -r "$HOME/.screenrc" -a ! -e "$HOME/.screen-profiles/profile" -a ! -h "$HOME/.screen-profiles/profile" ]; then
 	exec /usr/bin/screen.real -c "$HOME/.screenrc" "$@"
 	exit $?
 fi
 
+DEFAULT_PROFILE="light"
+
 # Ensure that the user has selected a screen profile
 profile="$HOME/.screen-profiles/profile"
-[ -h "$profile" ] || /usr/bin/select-screen-profile
+[ -h "$profile" ] || /usr/bin/select-screen-profile -s "$DEFAULT_PROFILE"
 
 # Previously, profiles were prepended with ubuntu-.
 # This is no longer the case, for cross-distro compatibility.
@@ -41,10 +43,10 @@ if [ -h "$profile" -a ! -r "$profile" ]; then
 		if [ -r "$newsrc" ]; then
 			ln -sf "$newsrc" "$profile"
 		else
-			/usr/bin/select-screen-profile
+			/usr/bin/select-screen-profile -s "$DEFAULT_PROFILE"
 		fi
 	else
-		/usr/bin/select-screen-profile
+		/usr/bin/select-screen-profile -s "$DEFAULT_PROFILE"
 	fi
 fi
 
