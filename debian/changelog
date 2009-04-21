@@ -1,4 +1,4 @@
-screen-profiles (1.48-0ubuntu1) jaunty; urgency=low
+screen-profiles (1.48) unreleased; urgency=low
 
   Drop the distro name in generated profiles
   * debian/install: fix installation of profiles
@@ -14,7 +14,9 @@ screen-profiles (1.48-0ubuntu1) jaunty; urgency=low
 
   * screen: default to the light profile, if unspecified; this should be
     acceptable now that the F9:Menu prompt is always shown, and from there,
-    any user can easily change their profile
+    any user can easily change their profile; just touch the windows config
+    file since F5 reloads reopens all windows; launch with motd+shell if
+    no args to screen are specified
   * keybindings/common: don't force users to name a window on F2 window
     creation
   * debian/postrm: remove the || true on the diversion removal, per Debian
@@ -26,7 +28,7 @@ screen-profiles (1.48-0ubuntu1) jaunty; urgency=low
   * screen-profiles-status.1, debian/rules: manpage added
   * screen-profiles-export: randomly generate tarball name, if unspecified
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 16:14:37 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 16:45:35 -0500
 
 screen-profiles (1.47-0ubuntu1) jaunty; urgency=low
 

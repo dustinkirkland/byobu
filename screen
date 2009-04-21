@@ -67,10 +67,14 @@ fi
 [ -s "$HOME/.screen-profiles/keybindings" ] || echo "source /usr/share/screen-profiles/keybindings/common" > "$HOME/.screen-profiles/keybindings"
 
 # Ensure that their default windows are seeded
-[ -r "$HOME/.screen-profiles/windows" ] || cp "/usr/share/screen-profiles/windows/common" "$HOME/.screen-profiles/windows"
+[ -r "$HOME/.screen-profiles/windows" ] || touch "$HOME/.screen-profiles/windows"
 
 # Ensure that the user's .screenrc at least exists
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
 
 # Now let's execute screen!
-exec /usr/bin/screen.real -c "$HOME/.screen-profiles/profile" "$@"
+if [ -z "$@" ]; then
+	exec /usr/bin/screen.real -c "$HOME/.screen-profiles/profile" -t shell /usr/bin/motd+shell
+else
+	exec /usr/bin/screen.real -c "$HOME/.screen-profiles/profile" "$@"
+fi
