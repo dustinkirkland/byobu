@@ -19,7 +19,11 @@
 
 comma=
 whitespace=
-grep -qs "^mem-used=1$" "$HOME/.screen-profiles/status" && comma="," || whitespace=" "
+if [ -r "$HOME/.screen-profiles/status" ]; then
+	grep -qs "^mem-used=1$" "$HOME/.screen-profiles/status" && comma="," || whitespace=" "
+else
+	comma=","
+fi
 
 mem=`free | grep -m 1 "^Mem:" | awk '{print $2}'`
 if [ $mem -ge 1048576 ]; then

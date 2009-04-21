@@ -19,8 +19,11 @@ screen-profiles (1.48) unreleased; urgency=low
     ITP; I suppose we want to know if the diversion removal failed
   * screen-profiles, screen-profiles-status: default uptime status to 'on',
     generally useful, and pretty compact
+  * bin/mem-available: fix subtle bug where whitespace is printed if in a
+    totally default (no status file) configuration
+  * screen-profiles-status.1, debian/rules: manpage added
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 15:11:29 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 15:35:34 -0500
 
 screen-profiles (1.47-0ubuntu1) jaunty; urgency=low
 
