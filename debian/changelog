@@ -1,4 +1,4 @@
-screen-profiles (1.48) unreleased; urgency=low
+screen-profiles (1.48-0ubuntu1) jaunty; urgency=low
 
   Drop the distro name in generated profiles
   * debian/install: fix installation of profiles
@@ -9,6 +9,8 @@ screen-profiles (1.48) unreleased; urgency=low
     prepended
   * select-screen-profile: remove the ubuntu specific profile handling
   * screen: fix broken symlinks to ubuntu-* profiles
+  * screen-profiles: drop special ubuntu handling
+  * screen-profiles-export: drop ubuntu prepending
 
   * screen: default to the light profile, if unspecified; this should be
     acceptable now that the F9:Menu prompt is always shown, and from there,
@@ -22,8 +24,9 @@ screen-profiles (1.48) unreleased; urgency=low
   * bin/mem-available: fix subtle bug where whitespace is printed if in a
     totally default (no status file) configuration
   * screen-profiles-status.1, debian/rules: manpage added
+  * screen-profiles-export: randomly generate tarball name, if unspecified
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 15:35:34 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Apr 2009 16:14:37 -0500
 
 screen-profiles (1.47-0ubuntu1) jaunty; urgency=low
 
