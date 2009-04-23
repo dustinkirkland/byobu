@@ -30,7 +30,7 @@ HOME=os.getenv("HOME")
 SHARE='/usr/share/screen-profiles'
 DOC='/usr/share/doc/screen-profiles'
 DEF_ESC="A"
-RELOAD = "If you are using the default set of keybindings, press\n<F5><enter> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
+RELOAD = "If you are using the default set of keybindings, press\n<F5> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
 
 gettext.bindtextdomain('screen-profiles', SHARE+'/po')
 gettext.textdomain('screen-profiles')

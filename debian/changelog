@@ -1,8 +1,8 @@
 screen-profiles (1.50) unreleased; urgency=low
 
-  * UNRELEASED
+  * keybindings/common: add a carriage return to the F5-refresh keybinding
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 Apr 2009 22:02:05 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 23 Apr 2009 16:13:18 -0500
 
 screen-profiles (1.49-0ubuntu1) jaunty; urgency=low
 

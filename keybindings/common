@@ -35,7 +35,7 @@ register n "^a^c"					#     | Goes with the F2 definition
 bindkey -k k2 process n					# F2  | Create new window
 bindkey -k k3 prev					# F3  | Previous Window
 bindkey -k k4 next					# F4  | Next Window
-register r "^a:source $HOME/.screen-profiles/profile"	#     | Goes with F5 definition
+register r "^a:source $HOME/.screen-profiles/profile^M"	#     | Goes with F5 definition
 bindkey -k k5 process r					# F5  | Reload profile
 bindkey -k k6 detach					# F6  | Detach from this session
 bindkey -k k7 copy					# F7  | Enter copy/scrollback mode
