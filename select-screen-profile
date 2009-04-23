@@ -57,7 +57,7 @@ assert_symlink "$HOME/.screen-profiles/profile"
 listprofiles() {
 	# Display list of profiles, one per line
 	# Start with basic profiles
-	basename $(ls $PROFILE_DIR/plain 2>/dev/null) 2>/dev/null
+	basename $(ls $PROFILE_DIR/NONE 2>/dev/null) 2>/dev/null
 	basename $(ls $PROFILE_DIR/light 2>/dev/null) 2>/dev/null
 	basename $(ls $PROFILE_DIR/dark 2>/dev/null) 2>/dev/null
 	basename $(ls $PROFILE_DIR/black 2>/dev/null) 2>/dev/null
@@ -81,7 +81,7 @@ prompt() {
 	for x in $profiles; do
 		i=$(expr $i + 1)
 		desc="          "
-		if [ "$x" = "plain" ]; then
+		if [ "$x" = "light" ]; then
 			simple=$i
 		fi
 		[ $i -lt 10 ] && i=" $i"

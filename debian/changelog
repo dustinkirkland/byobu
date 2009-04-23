@@ -4,8 +4,13 @@ screen-profiles (1.50) unreleased; urgency=low
     carriage return to the F5-refresh keybinding
   * keybindings/common, doc/help.txt: change F8 from advanced help to
     window re-titling (over time, this is far more useful than adv help)
+  * profiles/plain: renamed to NONE to more clearly convey the fact that
+    if you choose this profile, you are not, in fact, using a supplied
+    screen-profile; correct broken symlinks in the 'screen' script
+  * select-screen-profile: set the default, recommended, simple profile
+    to 'light'
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 23 Apr 2009 16:20:15 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 23 Apr 2009 16:59:59 -0500
 
 screen-profiles (1.49-0ubuntu1) jaunty; urgency=low
 

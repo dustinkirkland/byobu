@@ -1,7 +1,7 @@
 bin/* var/lib/screen-profiles
 po/locale/* usr/share/locale
 profiles/common usr/share/screen-profiles/profiles
-profiles/plain usr/share/screen-profiles/profiles
+profiles/NONE usr/share/screen-profiles/profiles
 profiles/black usr/share/screen-profiles/profiles
 profiles/dark usr/share/screen-profiles/profiles
 profiles/light usr/share/screen-profiles/profiles

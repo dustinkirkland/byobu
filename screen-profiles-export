@@ -21,7 +21,7 @@ PROG="screen-profiles"
 SHARE="/usr/share/$PROG"
 DIR=`mktemp -t -d screen-profiles.XXXXXXXX` || error "Could not create a temporary directory"
 # Grab list of available colors
-colors=`find $SHARE/profiles/ -type f | sed "s/^.*\///" | sed "s/^.*-//" | sort -u | egrep -v "common|plain"`
+colors=`find $SHARE/profiles/ -type f | sed "s/^.*\///" | sed "s/^.*-//" | sort -u | egrep -v "common|plain|NONE"`
 
 # Make sure we clean up $DIR if we exit for any reason
 trap "rm -rf "$DIR" 2>/dev/null || true" EXIT HUP INT QUIT TERM

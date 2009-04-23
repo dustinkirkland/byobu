@@ -45,6 +45,8 @@ if [ -h "$profile" -a ! -r "$profile" ]; then
 		else
 			/usr/bin/select-screen-profile -s "$DEFAULT_PROFILE"
 		fi
+	elif stat "$profile" | head -n1 | grep -qs ".*->.*plain'$"; then
+		ln -sf "/usr/share/screen-profiles/profiles/NONE" "$profile"
 	else
 		/usr/bin/select-screen-profile -s "$DEFAULT_PROFILE"
 	fi
