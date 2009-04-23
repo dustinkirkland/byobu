@@ -1,4 +1,10 @@
-screen-profiles (1.49) unreleased; urgency=low
+screen-profiles (1.50) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 Apr 2009 22:02:05 -0500
+
+screen-profiles (1.49-0ubuntu1) jaunty; urgency=low
 
   * motd+shell: should use exec to run shell, LP: #365115
 
