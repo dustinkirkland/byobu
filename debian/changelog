@@ -1,4 +1,10 @@
-screen-profiles (1.50) unreleased; urgency=low
+screen-profiles (1.51) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 23 Apr 2009 17:10:47 -0500
+
+screen-profiles (1.50-0ubuntu1) jaunty; urgency=low
 
   * keybindings/common, screen-profiles, select-screen-profile: add a
     carriage return to the F5-refresh keybinding
