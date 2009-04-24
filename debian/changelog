@@ -1,8 +1,8 @@
 screen-profiles (1.51) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/cpu-freq: only print cpu-freq if available
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 23 Apr 2009 17:10:47 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 24 Apr 2009 09:22:16 -0500
 
 screen-profiles (1.50-0ubuntu1) jaunty; urgency=low
 
