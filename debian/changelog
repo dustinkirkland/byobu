@@ -1,8 +1,9 @@
 screen-profiles (1.51) unreleased; urgency=low
 
   * bin/cpu-freq: only print cpu-freq if available
+  * bin/hostname: hostname -s fails sometimes, it seems
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 24 Apr 2009 09:22:16 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 25 Apr 2009 10:27:22 -0500
 
 screen-profiles (1.50-0ubuntu1) jaunty; urgency=low
 
