@@ -20,11 +20,14 @@
 # Create the screen-profiles directory, if it doesn't already exist
 [ -d "$HOME/.screen-profiles" ] || mkdir -p "$HOME/.screen-profiles"
 
-# If $HOME/.screenrc exists but $HOME/.screen-profiles/profile does not,
+# Use $SCREENRC if non-empty, and readable; otherwise, use the one in $HOME
+[ -n "$SCREENRC" -a -r "$SCREENRC" ] || SCREENRC="$HOME/.screenrc"
+
+# If $SCREENRC exists but $HOME/.screen-profiles/profile does not,
 # this shows that the user has an existing custom screen configuration,
 # and thus we will not force screen-profiles on them.
-if [ -r "$HOME/.screenrc" -a ! -e "$HOME/.screen-profiles/profile" -a ! -h "$HOME/.screen-profiles/profile" ]; then
-	exec /usr/bin/screen.real -c "$HOME/.screenrc" "$@"
+if [ -r "$SCREENRC" -a ! -e "$HOME/.screen-profiles/profile" -a ! -h "$HOME/.screen-profiles/profile" ]; then
+	exec /usr/bin/screen.real -c "$SCREENRC" "$@"
 	exit $?
 fi
 
@@ -71,8 +74,8 @@ fi
 # Ensure that their default windows are seeded
 [ -r "$HOME/.screen-profiles/windows" ] || touch "$HOME/.screen-profiles/windows"
 
-# Ensure that the user's .screenrc at least exists
-[ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
+# Ensure that the user's $SCREENRC at least exists
+[ -r "$SCREENRC" ] || touch "$SCREENRC"
 
 # Now let's execute screen!
 if [ -z "$@" ]; then

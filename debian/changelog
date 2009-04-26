@@ -2,8 +2,9 @@ screen-profiles (1.51) unreleased; urgency=low
 
   * bin/cpu-freq: only print cpu-freq if available
   * bin/hostname: hostname -s fails sometimes, it seems
+  * screen: respect $SCREENRC environment variable, LP: #367250
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 25 Apr 2009 10:27:22 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 26 Apr 2009 12:07:41 -0500
 
 screen-profiles (1.50-0ubuntu1) jaunty; urgency=low
 
