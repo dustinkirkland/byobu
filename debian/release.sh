@@ -15,14 +15,14 @@ sed -i "s/ppa1) hardy;/ppa2) intrepid;/" debian/changelog
 bzr bd -S
 sed -i "s/ppa2) intrepid;/ppa3) jaunty;/" debian/changelog
 bzr bd -S
-sed -i "s/~ppa3) jaunty;/) jaunty;/" debian/changelog
+sed -i "s/~ppa3) jaunty;/) karmic;/" debian/changelog
 bzr bd -S
 curver=`head -n1 debian/changelog | sed "s/^.*(1.//" | sed "s/-.*$//"`
 bzr tag --delete 1.$curver || true
 bzr tag 1.$curver
 ver=`expr $curver + 1`
 dch -v "1.$ver" "UNRELEASED"
-sed -i "s/1.$ver) jaunty;/1.$ver) unreleased;/" debian/changelog
+sed -i "s/1.$ver) karmic;/1.$ver) unreleased;/" debian/changelog
 
 gpg --armor --sign --detach-sig ../screen-profiles_*.orig.tar.gz
 
