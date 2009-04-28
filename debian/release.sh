@@ -24,6 +24,8 @@ ver=`expr $curver + 1`
 dch -v "1.$ver" "UNRELEASED"
 sed -i "s/1.$ver) jaunty;/1.$ver) unreleased;/" debian/changelog
 
+gpg --armor --sign --detach-sig ../screen-profiles_*.orig.tar.gz
+
 echo
 echo
 echo "To test:"
@@ -35,5 +37,8 @@ echo
 echo "To commit and push:"
 echo "  bzr diff"
 echo "  bzr commit && bzr push"
+echo
+echo "Publish tarball at:"
+echo "  https://launchpad.net/screen-profiles/trunk/+addrelease"
 echo
 echo
