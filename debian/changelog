@@ -1,4 +1,10 @@
-screen-profiles (1.51) unreleased; urgency=low
+screen-profiles (1.52) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Apr 2009 21:57:24 -0500
+
+screen-profiles (1.51-0ubuntu1) jaunty; urgency=low
 
   * bin/cpu-freq: only print cpu-freq if available
   * bin/hostname: hostname -s fails sometimes, it seems
@@ -13,7 +19,7 @@ screen-profiles (1.51) unreleased; urgency=low
   * screen-profiles-status-detail: wrapper using sensible-pager
   * screen-profiles-status-detail.1: documentation added
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Apr 2009 21:19:03 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Apr 2009 21:55:38 -0500
 
 screen-profiles (1.50-0ubuntu1) jaunty; urgency=low
 
