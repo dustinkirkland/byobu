@@ -32,7 +32,7 @@ print_logo() {
 		$MARKUP && printf "\005{=b wb}$logo" || printf "$logo"
 	elif echo "$distro" | grep -qsi "centos"; then
 		logo="****"
-		$MARKUP && printf "\005{= gw}*\005{= mw}*\005{= yw}*\005{= bw}*%{=b Wk}" || printf "$logo"
+		$MARKUP && printf "\005{= gw}*\005{= mw}*\005{= yw}*\005{= bw}*\005{=b Wk}" || printf "$logo"
 	elif echo "$distro" | grep -qsi "debian"; then
 		logo=" @ "
 		$MARKUP && printf "\005{= wr}$logo" || printf "$logo"
