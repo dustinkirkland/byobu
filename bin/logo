@@ -17,32 +17,49 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+if [ "$1" = "--detail" ]; then
+	MARKUP="false"
+else
+	MARKUP="true"
+fi
+
 print_logo() {
 	distro="$1"
 	if echo "$distro" | grep -qsi "ubuntu"; then
-		printf "\005{=b kr}\\\\\005{= ky}o\005{=b kY}/"
+		$MARKUP && printf "\005{=b kr}\\\\\005{= ky}o\005{=b kY}/" || printf "\\o/"
 	elif echo "$distro" | grep -qsi "arch"; then
-		printf "\005{=b wb} A "
+		logo=" A "
+		$MARKUP && printf "\005{=b wb}$logo" || printf "$logo"
 	elif echo "$distro" | grep -qsi "centos"; then
-		printf "\005{= gw}*\005{= mw}*\005{= yw}*\005{= bw}*%{=b Wk}"
+		logo="****"
+		$MARKUP && printf "\005{= gw}*\005{= mw}*\005{= yw}*\005{= bw}*%{=b Wk}" || printf "$logo"
 	elif echo "$distro" | grep -qsi "debian"; then
-		printf "\005{= wr} @ "
+		logo=" @ "
+		$MARKUP && printf "\005{= wr}$logo" || printf "$logo"
 	elif echo "$distro" | grep -qsi "fedora"; then
-		printf "\005{=b bw} f "
+		logo=" f "
+		$MARKUP && printf "\005{=b bw}$logo" || printf "$logo"
 	elif echo "$distro" | grep -qsi "foresight"; then
-		printf "\005{=b Wg}<@>"
+		logo="<@>"
+		$MARKUP && printf "\005{=b Wg}$logo" || printf "$logo"
 	elif echo "$distro" | grep -qsi "gentoo"; then
-		printf "\005{=b cw} > "
+		logo=" > "
+		$MARKUP && printf "\005{=b cw}$logo" || printf "$logo"
 	elif echo "$distro" | grep -qsi "mandriva"; then
-		printf "\005{=b kc} (\005{=b ky}* "
+		logo=" (* "
+		$MARKUP && printf "\005{=b kc} (\005{=b ky}* " || printf "$logo"
 	elif echo "$distro" | grep -qsi "redhat"; then
-		printf "\005{= Rk} RH "
+		logo=" RH "
+		$MARKUP && printf "\005{= Rk}$logo" || printf "$logo"
 	elif echo "$distro" | grep -qsi "slackware"; then
-		printf "\005{=u Bk},S "
+		logo=",S "
+		$MARKUP && printf "\005{=u Bk}$logo" || printf "$logo"
 	elif echo "$distro" | grep -qsi "suse"; then
-		printf "\005{= Wg}SuSE"
+		logo="SuSE"
+		$MARKUP && printf "\005{= Wg}$logo" || printf "$logo"
 	elif echo "$distro" | grep -qsi "xandros"; then
-		printf "\005{= Wr} X "
+		logo=" X "
+		$MARKUP && printf "\005{= Wr}$logo" || printf "$logo"
 	else
 		false
 	fi

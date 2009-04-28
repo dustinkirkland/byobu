@@ -12,6 +12,7 @@ screen usr/bin
 select-screen-profile usr/bin
 screen-profiles usr/bin
 screen-profiles-status usr/bin
+screen-profiles-status-detail usr/bin
 screen-launcher-install usr/share/screen-profiles
 screen-launcher-uninstall usr/share/screen-profiles
 motd+shell usr/bin

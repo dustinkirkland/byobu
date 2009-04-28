@@ -19,3 +19,7 @@
 
 count=`grep -c "^processor.*:" /proc/cpuinfo`
 [ "$count" = "1" ] || echo $count"x"
+if [ "$1" = "--detail" ]; then
+	echo
+	exit 0
+fi

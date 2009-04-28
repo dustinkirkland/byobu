@@ -31,6 +31,14 @@ search () {
 BATS=$(ls /proc/acpi/battery)
 NB=$(echo "$BATS" | wc -l)
 
+if [ "$1" = "--detail" ]; then
+	for bat in $BATS; do
+		cat "/proc/acpi/battery/$bat/info"
+		cat "/proc/acpi/battery/$bat/state"
+	done
+	exit 0
+fi
+
 for bat in $BATS; do
    if [ "$NB" -gt 1 ]; then
       echo -n "$bat: "

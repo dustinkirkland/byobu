@@ -20,4 +20,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+if [ "$1" = "--detail" ]; then
+	who
+	exit 0
+fi
+
 printf "\005{= wr}%d#\005{-} " `who | wc -l`

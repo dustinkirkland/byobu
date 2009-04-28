@@ -22,6 +22,11 @@ cache="$HOME/.screen-profiles/network-up"
 interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
 unit="kB/s"
 
+if [ "$1" = "--detail" ]; then
+	ifconfig "$interface"
+	exit 0
+fi
+
 t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
 t2=`date +%s`
 

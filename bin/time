@@ -17,4 +17,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+if [ "$1" = "--detail" ]; then
+	date
+	exit 0
+fi
+
 printf "\0050c:\005s"

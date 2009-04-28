@@ -45,6 +45,18 @@ case "$P" in
 	arch|battery|ec2-cost|hostname|network-down|network-up|processes|users|whoami|wifi-quality)
 		grep -qs -m1 "^$P=1$" "$HOME/.screen-profiles/status" || exit 0
 	;;
+	--detail)
+		for i in `ls "$DIR"`; do
+			[ "$i" = "menu" ] && continue
+			echo
+			echo " ______________________________________________________________________"
+			echo "/ * $i:"
+			out=`"$DIR"/$i --detail`
+			echo "$out" | sed "s/^/|     /g"
+			echo "\\______________________________________________________________________"
+		done
+		exit 0
+	;;
 	*)
 		exit 1
 	;;

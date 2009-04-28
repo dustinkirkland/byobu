@@ -20,6 +20,11 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+if [ "$1" = "--detail" ]; then
+	uptime
+	exit 0
+fi
+
 u=$(sed "s/\..*$//" /proc/uptime)
 printf "\005{= wb}"
 if [ "$u" -gt 86400 ]; then

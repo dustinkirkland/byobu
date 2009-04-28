@@ -78,7 +78,6 @@ uptime_cost=`echo "$hours" | awk "{printf \"%f\", "$CPU_RATE" * $hours}"`
 total_cost=`echo "$network_cost" "$uptime_cost" | awk '{printf "~\$%.2f", $1 + $2}'`
 
 if [ "$DETAIL" = "1" ]; then
-	echo
 	echo "================================================"
 	echo "Estimated cost in Amazon's EC2 since last reboot"
 	echo "================================================"
@@ -91,7 +90,6 @@ if [ "$DETAIL" = "1" ]; then
 	echo "------------------------------------------------"
 	echo "Total cost:      $total_cost"
 	echo "================================================"
-	echo
 	exit 0
 fi
 
