@@ -19,7 +19,7 @@
 
 if [ "$1" = "--detail" ]; then
 	if [ -x "/usr/bin/apt-get" ]; then
-		/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep ^Inst
+		/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep ^Inst | sed "s/^Inst //"
 	fi
 	exit 0
 fi

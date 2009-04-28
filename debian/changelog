@@ -1,8 +1,8 @@
 screen-profiles (1.52) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/updates-available: drop leading "Inst" in detailed report
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Apr 2009 21:57:24 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Apr 2009 08:26:25 -0500
 
 screen-profiles (1.51-0ubuntu1) jaunty; urgency=low
 
