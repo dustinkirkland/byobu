@@ -42,7 +42,7 @@ case "$P" in
 		grep -qs -m1 "^$P=0$" "$HOME/.screen-profiles/status" && exit 0
 	;;
 	# default = off, user must override to turn on
-	arch|battery|ec2-cost|hostname|network-down|network-up|processes|users|whoami|wifi-quality)
+	arch|battery|ec2-cost|hostname|ip-address|network-down|network-up|processes|users|whoami|wifi-quality)
 		grep -qs -m1 "^$P=1$" "$HOME/.screen-profiles/status" || exit 0
 	;;
 	--detail)

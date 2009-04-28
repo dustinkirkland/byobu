@@ -3,6 +3,7 @@ screen-profiles (1.51) unreleased; urgency=low
   * bin/cpu-freq: only print cpu-freq if available
   * bin/hostname: hostname -s fails sometimes, it seems
   * screen: respect $SCREENRC environment variable, LP: #367250
+  * bin/ip-address: add an ip-address status script
 
   Detailed status
   * bin/*: add special actions if --detail is specified; basically,
@@ -12,7 +13,7 @@ screen-profiles (1.51) unreleased; urgency=low
   * screen-profiles-status-detail: wrapper using sensible-pager
   * screen-profiles-status-detail.1: documentation added
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Apr 2009 21:10:40 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Apr 2009 21:19:03 -0500
 
 screen-profiles (1.50-0ubuntu1) jaunty; urgency=low
 

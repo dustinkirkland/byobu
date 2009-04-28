@@ -250,6 +250,7 @@ def readstatus():
     status["date"]=1
     status["ec2-cost"]=0
     status["hostname"]=0
+    status["ip-address"]=0
     status["load-average"]=1
     status["logo"]=1
     status["mem-available"]=1
