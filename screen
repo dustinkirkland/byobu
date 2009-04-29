@@ -84,7 +84,8 @@ if [ "$#" = "0" ]; then
 	temp=$(mktemp screen-profiles-XXXXXXXX)
 	trap "rm -f $temp 2>/dev/null || true" EXIT HUP INT QUIT TERM
 	cat "$HOME/.screen-profiles/profile" "$HOME/.screen-profiles/windows" > "$temp"
-	exec /usr/bin/screen.real -c "$temp" /usr/bin/motd+shell
+	[ -n "$SHELL" -a -x "$SHELL" ] || SHELL="/bin/sh"
+	exec /usr/bin/screen.real -c "$temp" $SHELL /usr/bin/motd+shell
 else
 	exec /usr/bin/screen.real -c "$HOME/.screen-profiles/profile" "$@"
 fi
