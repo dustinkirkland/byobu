@@ -18,4 +18,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 [ -r /etc/motd ] && cat /etc/motd
+[ -n "$1" -a -w "$1" ] && rm -f "$1" 2>/dev/null
 [ -n "$SHELL" -a -x "$SHELL" ] && exec "$SHELL" || exec /bin/sh

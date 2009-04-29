@@ -2,8 +2,9 @@ screen-profiles (1.53) unreleased; urgency=low
 
   * screen: some users gripe about the default launched window being
     called "motd+shell", LP: #369397
+  * motd+shell, screen: clean up temp file
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 15:59:51 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 16:11:29 -0500
 
 screen-profiles (1.52-0ubuntu1) karmic; urgency=low
 

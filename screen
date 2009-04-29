@@ -81,11 +81,10 @@ fi
 if [ "$#" = "0" ]; then
 	# Create a temporary config file *with* the default windows
 	# but if we refresh, we'll just source the profile, without
-	temp=$(mktemp screen-profiles-XXXXXXXX)
-	trap "rm -f $temp 2>/dev/null || true" EXIT HUP INT QUIT TERM
+	temp=$(mktemp -t screen-profiles-XXXXXXXX)
 	cat "$HOME/.screen-profiles/profile" "$HOME/.screen-profiles/windows" > "$temp"
 	[ -n "$SHELL" -a -x "$SHELL" ] || SHELL="/bin/sh"
-	exec /usr/bin/screen.real -c "$temp" $SHELL /usr/bin/motd+shell
+	exec /usr/bin/screen.real -c "$temp" $SHELL /usr/bin/motd+shell "$temp"
 else
 	exec /usr/bin/screen.real -c "$HOME/.screen-profiles/profile" "$@"
 fi
