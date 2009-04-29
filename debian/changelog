@@ -1,4 +1,10 @@
-screen-profiles (1.52) unreleased; urgency=low
+screen-profiles (1.53) jaunty; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 02:33:57 -0500
+
+screen-profiles (1.52-0ubuntu1) karmic; urgency=low
 
   * bin/updates-available: drop leading "Inst" in detailed report
   * bin/logo: add logo for altlinux
