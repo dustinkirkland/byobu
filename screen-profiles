@@ -411,19 +411,14 @@ def setesckey(key):
     if key != "":
         u = key[0].upper()
         l = key[0].lower()
-        if not os.path.exists(path):
-            appendtofile(path, "escape ^"+u+l+"\nregister n ^"+l+"^c^"+l+"A\n")
-        else:
-            out = commands.getoutput("grep ^escape "+path)
-            if out == "":
-               appendtofile(path, "escape ^"+u+l+"\n")
-            else:
-                out = commands.getoutput("sed -i -e 's/^escape \^.*/escape ^"+u+l+"/' "+path)
-            out = commands.getoutput("grep \"^register n \" "+path)
-            if out == "":
-                appendtofile(path, "register n ^"+l+"^c^"+l+"A\n")
-            else:
-                out = commands.getoutput("sed -i -e 's/^register n .*/register n ^"+l+"^c^"+l+"A/' "+path)
+        if os.path.exists(path):
+            out = commands.getoutput("sed -i -e 's/^escape.*$//' "+path)
+            appendtofile(path, "escape ^"+u+l+"\n")
+            out = commands.getoutput("sed -i -e 's/^register.*$//' "+path)
+            out = commands.getoutput("grep ^register "+SHARE+"/keybindings/common")
+            appendtofile(path, out+"\n")
+            out = commands.getoutput("sed -i -e 's/\"\^a/\"\^"+l+"/' "+path)
+            out = commands.getoutput("sed -i -e '/^$/d' "+path)
 
 def chgesc(screen, size):
     esc=Entry(2, text=getesckey(), returnExit=1)

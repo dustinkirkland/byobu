@@ -9,8 +9,10 @@ screen-profiles (1.52) unreleased; urgency=low
   * profiles/common, screen: create a temp file to use on screen launch,
     consisting of the profile plus the windows, but don't source default
     windows otherwise as this breaks F5-refresh, LP: #368786
+  * screen-profiles: ensure that all registered keybindings get updated
+    if the user changes their escape sequence, LP: #368937
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 01:14:27 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 02:10:39 -0500
 
 screen-profiles (1.51-0ubuntu1) karmic; urgency=low
 
