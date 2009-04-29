@@ -5,8 +5,9 @@ screen-profiles (1.52) unreleased; urgency=low
   * screen: drop the -t title, causes hangs if user defines shelltitle,
     LP: #368925
   * profiles/profile.skel: swap the position of ip-address and menu
+  * screen-profiles.1: document all notifications, LP: #369040
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 00:16:19 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 00:36:48 -0500
 
 screen-profiles (1.51-0ubuntu1) karmic; urgency=low
 
