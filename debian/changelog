@@ -5,8 +5,9 @@ screen-profiles (1.53) unreleased; urgency=low
   * motd+shell, screen: clean up temp file
   * bin/users, screen-profiles.1: when counting users, count remote ssh
     sessions
+  * bin/ec2-cost: update location of ec2_version file
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 18:49:47 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 18:51:17 -0500
 
 screen-profiles (1.52-0ubuntu1) karmic; urgency=low
 

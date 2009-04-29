@@ -38,7 +38,7 @@ done
 
 # Exit immediately if this is not an Amazon EC2 instance, we're not
 # manually turned on, and we're not in force mode
-[ -r "/etc/ec2-version" -o -r "$HOME/.screen-profiles/ec2-cost" -o "$FORCE" = "1" ]
+[ -r "/etc/ec2_version" -o -r "$HOME/.screen-profiles/ec2-cost" -o "$FORCE" = "1" ]
 [ "$?" = "0" ] || exit 0
 
 # Approximate Instance Cost Basis
