@@ -51,6 +51,7 @@ assert_symlink() {
 	fi
 }
 
+mkdir -p "$HOME/.screen-profiles"
 # If these files exist, they must be a symlink
 assert_symlink "$HOME/.screen-profiles/profile"
 
