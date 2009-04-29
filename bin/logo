@@ -27,6 +27,9 @@ print_logo() {
 	distro="$1"
 	if echo "$distro" | grep -qsi "ubuntu"; then
 		$MARKUP && printf "\005{=b kr}\\\\\005{= ky}o\005{=b kY}/" || printf "\\o/"
+	elif echo "$distro" | grep -qsi "altlinux"; then
+		logo="alt"
+		$MARKUP && printf "\005{= Yk}$logo" || printf "$logo"
 	elif echo "$distro" | grep -qsi "arch"; then
 		logo=" A "
 		$MARKUP && printf "\005{=b wb}$logo" || printf "$logo"

@@ -1,10 +1,11 @@
 screen-profiles (1.52) unreleased; urgency=low
 
   * bin/updates-available: drop leading "Inst" in detailed report
+  * bin/logo: add logo for altlinux
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Apr 2009 08:26:25 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Apr 2009 19:20:54 -0500
 
-screen-profiles (1.51-0ubuntu1) jaunty; urgency=low
+screen-profiles (1.51-0ubuntu1) karmic; urgency=low
 
   * bin/cpu-freq: only print cpu-freq if available
   * bin/hostname: hostname -s fails sometimes, it seems
