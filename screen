@@ -79,7 +79,7 @@ fi
 
 # Now let's execute screen!
 if [ "$#" = "0" ]; then
-	exec /usr/bin/screen.real -c "$HOME/.screen-profiles/profile" -t shell /usr/bin/motd+shell
+	exec /usr/bin/screen.real -c "$HOME/.screen-profiles/profile" /usr/bin/motd+shell
 else
 	exec /usr/bin/screen.real -c "$HOME/.screen-profiles/profile" "$@"
 fi

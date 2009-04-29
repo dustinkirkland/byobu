@@ -2,8 +2,10 @@ screen-profiles (1.52) unreleased; urgency=low
 
   * bin/updates-available: drop leading "Inst" in detailed report
   * bin/logo: add logo for altlinux
+  * screen: drop the -t title, causes hangs if user defines shelltitle,
+    LP: #368925
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Apr 2009 19:20:54 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Apr 2009 20:21:02 -0500
 
 screen-profiles (1.51-0ubuntu1) karmic; urgency=low
 
