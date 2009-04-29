@@ -39,7 +39,7 @@ register r "^a:source $HOME/.screen-profiles/profile^M"	#     | Goes with F5 def
 bindkey -k k5 process r					# F5  | Reload profile
 bindkey -k k6 detach					# F6  | Detach from this session
 bindkey -k k7 copy					# F7  | Enter copy/scrollback mode
-register t "^aA^aa^k"					#     | Goes with the F8 definition
+register t "^aA^aa^k^h"					#     | Goes with the F8 definition
 bindkey -k k8 process t 				# F8  | Re-title a window
 bindkey -k k9 screen -t help 0 screen-profiles		# F9  | Configuration
 							# F10 | 'toolbar' in gnome-terminal
