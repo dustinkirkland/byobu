@@ -26,6 +26,6 @@ remove_screen_launcher() {
 	fi
 }
 
-for i in ".profile" ".bashrc" ".bash_profile"; do
+for i in ".profile" ".bashrc" ".bash_profile" ".zprofile"; do
 	remove_screen_launcher "$HOME/$i"
 done

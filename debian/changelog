@@ -11,8 +11,10 @@ screen-profiles (1.52) unreleased; urgency=low
     windows otherwise as this breaks F5-refresh, LP: #368786
   * screen-profiles: ensure that all registered keybindings get updated
     if the user changes their escape sequence, LP: #368937
+  * screen-launcher-install, screen-launcher-uninstall: support
+    screen-by-default installation for zsh users, LP: #368960
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 02:10:39 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 02:28:48 -0500
 
 screen-profiles (1.51-0ubuntu1) karmic; urgency=low
 

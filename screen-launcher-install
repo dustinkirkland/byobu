@@ -33,6 +33,11 @@ install_screen_launcher() {
 # Install in $HOME/.profile unconditionally
 install_screen_launcher "$HOME/.profile"
 
+# Install in zprofile if default shell is zsh
+if grep -qs "^$USER:.*zsh$" /etc/passwd; then
+	install_screen_launcher "$HOME/.zprofile"
+fi
+
 # Now, install in any shell-specific profiles, if they exist
 # This list may grow to support other shells
 for i in ".bash_profile" ".bash_login"; do
