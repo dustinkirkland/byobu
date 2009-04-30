@@ -6,8 +6,11 @@ screen-profiles (1.53) unreleased; urgency=low
   * bin/users, screen-profiles.1: when counting users, count remote ssh
     sessions
   * bin/ec2-cost: update location of ec2_version file
+  * debian/install, screen-profiles-export, screen-profiles-status,
+    screen-profiles-status.1: move status gathering scripts from /var/lib
+    to /usr/lib, LP: #369368
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 18:51:17 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 18:57:27 -0500
 
 screen-profiles (1.52-0ubuntu1) karmic; urgency=low
 

@@ -87,7 +87,7 @@ status_config() {
 	# Generate the status configuration
 	# Disable the menu, since screen-profiles configurator is not available
 	# Enable user@host in its place
-	for i in $(ls /var/lib/screen-profiles/); do
+	for i in $(ls /usr/lib/screen-profiles/); do
 		case "$i" in
 			cpu-count|cpu-freq|date|hostname|load-average|logo|mem-available|mem-used|reboot-required|release|time|updates-available|whoami)
 				echo "$i=1"
@@ -221,7 +221,7 @@ STATUS="$DIR/.$PROG/status"
 mkdir -p "$DIR/.$PROG/bin"
 
 # Copy status scripts
-cp -a /var/lib/$PROG/* "$DIR/.$PROG/bin"
+cp -a /usr/lib/$PROG/* "$DIR/.$PROG/bin"
 cp -a /usr/bin/$PROG-status "$DIR/.$PROG"
 
 # Generate the monolithic profile
