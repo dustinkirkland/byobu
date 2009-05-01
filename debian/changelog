@@ -1,8 +1,10 @@
-screen-profiles (1.54) jaunty; urgency=low
+screen-profiles (1.54) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/ip-address: don't color the whitespace
+  * screen-profiles-status: ensure that all detail scripts get a chance
+    to run
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Apr 2009 19:04:29 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 30 Apr 2009 22:47:05 -0500
 
 screen-profiles (1.53-0ubuntu1) karmic; urgency=low
 

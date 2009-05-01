@@ -26,4 +26,4 @@ space=
 grep -qs "^hostname=1$" "$HOME/.screen-profiles/status" && space=" "
 grep -qs "^whoami=1$" "$HOME/.screen-profiles/status" && space=" "
 
-printf "\005{=b }%s%s\005{-}" "$space" $(hostname -i 2>/dev/null)
+printf "%s\005{=b }%s\005{-}" "$space" $(hostname -i 2>/dev/null)
