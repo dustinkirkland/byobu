@@ -1,13 +1,20 @@
 screen-profiles (1.54) unreleased; urgency=low
 
   * bin/ip-address: don't color the whitespace
+  * bin/cpu-count: don't echo blank line in detailed status
+  * bin/updates-available: print "None" in detailed status, if no updates
+    are available
   * screen-profiles-status: ensure that all detail scripts get a chance
     to run
   * debian/copyright: there have *never* been icons in screen-profiles;
     remove the CC2.5 license statement, as this was erroneously copied over
     from another package for the initial packaging
+  * screen-profiles-status: color code and format the detailed status output
+  * screen-profiles-status-detail: use less -R to render ansi escaped
+    color formatting correctly; seed the search pattern with the header
+    for each section
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 01 May 2009 15:48:32 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 02 May 2009 14:25:28 -0500
 
 screen-profiles (1.53-0ubuntu1) karmic; urgency=low
 

@@ -35,6 +35,10 @@ else
 fi
 
 P="$1"
+B='\033[34;1m'
+W='\033[47m'
+X='\033[0m'
+HR="                                                                               "
 
 case "$P" in
 	# default = on, user must override to turn off
@@ -46,14 +50,16 @@ case "$P" in
 		grep -qs -m1 "^$P=1$" "$HOME/.screen-profiles/status" || exit 0
 	;;
 	--detail)
+		printf "\033[1m"
+		[ -x "/usr/bin/dpkg-query" ] && /usr/bin/dpkg-query --show screen-profiles | awk '{print "# screen-profiles (" $2 ") detailed status:"}'
+		printf "$X\n"
 		for i in `ls "$DIR"`; do
 			[ "$i" = "menu" ] && continue
-			echo
-			echo " ______________________________________________________________________"
-			echo "/ * $i:"
-			out=`"$DIR"/$i --detail` || true
-			echo "$out" | sed "s/^/|     /g"
-			echo "\\______________________________________________________________________"
+			printf "\n$W%s$X\n" "$HR"
+			printf "$W $X $B# %s:$X\n" "$i"
+			out=`"$DIR"/$i --detail | sed 's/^/\\\033[47m \\\033[0m    /g'` || true
+			printf "$out\n"
+			printf "$W%s$X\n\n" "$HR"
 		done
 		exit 0
 	;;
