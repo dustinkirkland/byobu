@@ -17,16 +17,5 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pager=
-for i in "sensible-pager" "less" "more"; do
-	if which "$i" >/dev/null 2>&1; then
-		pager="$i"
-		break
-	fi
-done
 
-if [ -n "$pager" ]; then
-	screen-profiles-status --detail | $pager
-else
-	screen-profiles-status --detail
-fi
+screen-profiles-status --detail | less -R -p "#.*:$"
