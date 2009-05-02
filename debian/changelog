@@ -1,4 +1,10 @@
-screen-profiles (1.54) unreleased; urgency=low
+screen-profiles (1.55) jaunty; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 02 May 2009 14:30:00 -0500
+
+screen-profiles (1.54-0ubuntu1) karmic; urgency=low
 
   * bin/ip-address: don't color the whitespace
   * bin/cpu-count: don't echo blank line in detailed status
@@ -14,7 +20,7 @@ screen-profiles (1.54) unreleased; urgency=low
     color formatting correctly; seed the search pattern with the header
     for each section
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 02 May 2009 14:25:28 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 02 May 2009 14:29:06 -0500
 
 screen-profiles (1.53-0ubuntu1) karmic; urgency=low
 

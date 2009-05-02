@@ -35,7 +35,7 @@ echo "To upload PPA packages:"
 echo "  dput screen-profiles-ppa ../*ppa*changes"
 echo
 echo "To commit and push:"
-echo "  bzr diff"
+echo "  bzr cdiff"
 echo "  bzr commit && bzr push"
 echo
 echo "Publish tarball at:"
