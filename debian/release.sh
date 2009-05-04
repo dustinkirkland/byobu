@@ -36,7 +36,7 @@ echo "  dput screen-profiles-ppa ../*ppa*changes"
 echo
 echo "To commit and push:"
 echo "  bzr cdiff"
-echo "  bzr commit && bzr push"
+echo "  bzr commit -m "releasing $curver, opening $ver" && bzr push"
 echo
 echo "Publish tarball at:"
 echo "  https://launchpad.net/screen-profiles/trunk/+addrelease"

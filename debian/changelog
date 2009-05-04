@@ -1,8 +1,8 @@
 screen-profiles (1.55) jaunty; urgency=low
 
-  * UNRELEASED
+  * bin/users: make the --detail output match the status output
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 02 May 2009 14:30:00 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 04 May 2009 10:14:48 -0500
 
 screen-profiles (1.54-0ubuntu1) karmic; urgency=low
 
