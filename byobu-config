@@ -85,7 +85,7 @@ def menu(screen, size, isInstalled):
     li.append(installtext, 8)
     bb = ButtonBar(screen, ((_("Exit"), )), compact = 1)
 
-    g = GridForm(screen, _(" Screen Profiles Configuration Menu"), 1, 2)
+    g = GridForm(screen, _(" Byobu Configuration Menu"), 1, 2)
     g.add(li, 0, 0, padding=(4,2,4,2))
     g.add(bb, 0, 1, padding=(1,1,0,0))
 
@@ -115,7 +115,7 @@ def help(screen, size, config):
 
     t = Textbox(70, 14, text, scroll=0)
     bb = ButtonBar(screen, ((_("Menu"), )), compact = 1)
-    g = GridForm(screen, _("Screen Profiles Help"), 1, 3)
+    g = GridForm(screen, _("Byobu Help"), 1, 3)
     g.add(t, 0, 0, padding=(0,0,0,0))
     g.add(bb, 0, 2, padding=(1,1,0,0))
 
@@ -463,7 +463,7 @@ def main():
 
     size = terminal_size()
     screen = SnackScreen()
-    screen.drawRootText(1,0,_(' Screen Profiles Configuration Menu'))
+    screen.drawRootText(1,0,_(' Byobu Configuration Menu'))
     screen.pushHelpLine(_('<Tab>/<Alt-Tab> between elements | <Return> Validates'))
 
     config = SafeConfigParser()

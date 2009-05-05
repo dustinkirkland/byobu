@@ -1,8 +1,8 @@
 ###############################################################################
-#    Screen Profile
+#    NONE
 #      This configuration profile is the most basic, plain profile,
 #      (the default one that ships with screen).
-#      To clarify that this *disables* screen profiles, let's call this profile
+#      To clarify that this *disables* byobu, let's call this profile
 #      "NONE".
 #
 #    Copyright (C) 2008 Canonical Ltd.

@@ -20,7 +20,7 @@
 OLDPKG="screen-profiles"
 PKG="byobu"
 
-# Upgrad old config dir to the new name
+# Upgrade old config dir to the new name
 [ -d "$HOME/.$OLDKPG" -a ! -e "$HOME/.$PKG" ] && mv -f "$HOME/.$OLDPKG" "$HOME/.$PKG"
 
 # Create the .$PKG directory, if it doesn't already exist
@@ -76,6 +76,7 @@ fi
 
 # Ensure that their keybindings are seeded
 [ -s "$HOME/.$PKG/keybindings" ] || echo "source /usr/share/$PKG/keybindings/common" > "$HOME/.$PKG/keybindings"
+sed -i "s/$OLDPKG/$PKG/g" "$HOME/.$PKG/keybindings"
 
 # Ensure that their default windows are seeded
 [ -r "$HOME/.$PKG/windows" ] || touch "$HOME/.$PKG/windows"
