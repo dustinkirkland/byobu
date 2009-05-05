@@ -1,6 +1,6 @@
-# GNU Screen Profiles
+# Byobu
 # Copyright (C) 2008 Dustin Kirkland
-# This file is distributed under the same license as the GNU Screen Profiles package.
+# This file is distributed under the same license as the Byobu package.
 # Nicolas Barcet <nicolas.barcet@ubuntu.com>, 2008.
 #
 #: byobu-config:306
@@ -58,7 +58,7 @@ msgid "Exit"
 msgstr ""
 
 #: byobu-config:87 byobu-config:472
-msgid " Screen Profiles Configuration Menu"
+msgid " Byobu Configuration Menu"
 msgstr ""
 
 #: byobu-config:98
@@ -78,7 +78,7 @@ msgid "Menu"
 msgstr ""
 
 #: byobu-config:117
-msgid "Screen Profiles Help"
+msgid "Byobu Help"
 msgstr ""
 
 #: byobu-config:134 byobu-config:150 byobu-config:185

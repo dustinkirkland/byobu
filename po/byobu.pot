@@ -58,7 +58,7 @@ msgid "Exit"
 msgstr ""
 
 #: byobu-config:87 byobu-config:472
-msgid " Screen Profiles Configuration Menu"
+msgid " Byobu Configuration Menu"
 msgstr ""
 
 #: byobu-config:98
@@ -78,7 +78,7 @@ msgid "Menu"
 msgstr ""
 
 #: byobu-config:117
-msgid "Screen Profiles Help"
+msgid "Byobu Help"
 msgstr ""
 
 #: byobu-config:134 byobu-config:150 byobu-config:185
