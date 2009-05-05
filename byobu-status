@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    screen-profiles-status
+#    byobu-status
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -26,7 +26,7 @@
 # but not at screen startup.
 ###########################################################
 
-PKG="screen-profiles"
+PKG="byobu"
 
 if [ -d "$HOME/.$PKG/bin" ]; then
 	DIR="$HOME/.$PKG/bin"

@@ -4,7 +4,7 @@
 # Uncomment this to turn on verbose mode.
 # export DH_VERBOSE=1
 
-PKG=screen-profiles
+PKG=byobu
 VER=`head -n 1 debian/changelog | sed 's/^.*(//' | sed 's/).*//' | sed 's/-.*//'`
 
 get-orig-source:
@@ -49,6 +49,7 @@ install: build install-po
 	dh_testroot
 	dh_clean -k
 	dh_install -X.bzr
+	dh_link usr/bin/byobu usr/bin/screen
 
 # Everything else is handled by dh_install
 
@@ -57,7 +58,7 @@ binary-indep: build install
 	dh_testdir -i
 	dh_testroot -i
 	dh_installdocs -X.bzr -i
-	dh_installman -i screen-launcher.1 screen-profiles.1 select-screen-profile.1 motd+shell.1 screen-profiles-export.1 screen-profiles-status.1 screen-profiles-status-detail.1
+	dh_installman -i screen-launcher.1 byobu-config.1 select-screen-profile.1 motd+shell.1 byobu-export.1 byobu-status.1 byobu-status-detail.1
 	dh_installchangelogs -i
 	dh_installdebconf -i
 	dh_compress -i

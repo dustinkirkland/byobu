@@ -35,14 +35,14 @@ register n "^a^c"					#     | Goes with the F2 definition
 bindkey -k k2 process n					# F2  | Create new window
 bindkey -k k3 prev					# F3  | Previous Window
 bindkey -k k4 next					# F4  | Next Window
-register r "^a:source $HOME/.screen-profiles/profile^M"	#     | Goes with F5 definition
+register r "^a:source $HOME/.byobu/profile^M"		#     | Goes with F5 definition
 bindkey -k k5 process r					# F5  | Reload profile
 bindkey -k k6 detach					# F6  | Detach from this session
 bindkey -k k7 copy					# F7  | Enter copy/scrollback mode
 register t "^aA^aa^k^h"					#     | Goes with the F8 definition
 bindkey -k k8 process t 				# F8  | Re-title a window
-bindkey -k k9 screen -t help 0 screen-profiles		# F9  | Configuration
+bindkey -k k9 screen -t help 0 byobu-config		# F9  | Configuration
 							# F10 | 'toolbar' in gnome-terminal
 							# F11 | 'fullscreen' in gnome-terminal
 bindkey -k F2 lockscreen				# F12 | Lock this terminal
-bind $ screen -t status 0 screen-profiles-status-detail # ctrl-a $ | show detailed status
+bind $ screen -t status 0 byobu-status-detail 		# ctrl-a $ | show detailed status

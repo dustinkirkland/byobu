@@ -20,7 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
-source /usr/share/screen-profiles/profiles/common
+source /usr/share/byobu/profiles/common
 
 # Window tabs, second to last line
 caption always "%{kW}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{kW}%?%+Lw%? %= %{= Wk}%110`%109`%122`%111`"

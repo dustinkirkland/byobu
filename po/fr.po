@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the GNU Screen Profiles package.
 # Nicolas Barcet <nicolas.barcet@ubuntu.com>, 2008.
 #
-#: screen-profiles:306
+#: byobu-config:306
 #, fuzzy
 msgid ""
 msgstr ""
@@ -17,137 +17,137 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: screen-profiles:71
+#: byobu-config:71
 msgid "Remove screen by default at login"
 msgstr ""
 
-#: screen-profiles:73
+#: byobu-config:73
 msgid "Install screen by default at login"
 msgstr ""
 
-#: screen-profiles:77
+#: byobu-config:77
 msgid "Help"
 msgstr ""
 
-#: screen-profiles:78
+#: byobu-config:78
 msgid "Change screen profile"
 msgstr ""
 
-#: screen-profiles:79
+#: byobu-config:79
 msgid "Toggle status notifications"
 msgstr ""
 
-#: screen-profiles:80
+#: byobu-config:80
 msgid "Change keybinding set"
 msgstr ""
 
-#: screen-profiles:81
+#: byobu-config:81
 msgid "Change escape sequence"
 msgstr ""
 
-#: screen-profiles:82
+#: byobu-config:82
 msgid "Create new window(s)"
 msgstr ""
 
-#: screen-profiles:83
+#: byobu-config:83
 msgid "Manage default windows"
 msgstr ""
 
-#: screen-profiles:85
+#: byobu-config:85
 msgid "Exit"
 msgstr ""
 
-#: screen-profiles:87 screen-profiles:472
+#: byobu-config:87 byobu-config:472
 msgid " Screen Profiles Configuration Menu"
 msgstr ""
 
-#: screen-profiles:98
+#: byobu-config:98
 msgid "Okay"
 msgstr ""
 
-#: screen-profiles:98 screen-profiles:134 screen-profiles:150
-#: screen-profiles:185 screen-profiles:313 screen-profiles:355
-#: screen-profiles:433
+#: byobu-config:98 byobu-config:134 byobu-config:150
+#: byobu-config:185 byobu-config:313 byobu-config:355
+#: byobu-config:433
 msgid "Cancel"
 msgstr ""
 
-#: screen-profiles:116 screen-profiles:143 screen-profiles:157
-#: screen-profiles:326 screen-profiles:380 screen-profiles:388
-#: screen-profiles:461
+#: byobu-config:116 byobu-config:143 byobu-config:157
+#: byobu-config:326 byobu-config:380 byobu-config:388
+#: byobu-config:461
 msgid "Menu"
 msgstr ""
 
-#: screen-profiles:117
+#: byobu-config:117
 msgid "Screen Profiles Help"
 msgstr ""
 
-#: screen-profiles:134 screen-profiles:150 screen-profiles:185
-#: screen-profiles:313 screen-profiles:355 screen-profiles:433
+#: byobu-config:134 byobu-config:150 byobu-config:185
+#: byobu-config:313 byobu-config:355 byobu-config:433
 msgid "Apply"
 msgstr ""
 
-#: screen-profiles:136
+#: byobu-config:136
 msgid "Which profile would you like to use?"
 msgstr ""
 
-#: screen-profiles:142 screen-profiles:156 screen-profiles:325
-#: screen-profiles:387 screen-profiles:459
+#: byobu-config:142 byobu-config:156 byobu-config:325
+#: byobu-config:387 byobu-config:459
 msgid "Message"
 msgstr ""
 
-#: screen-profiles:151
+#: byobu-config:151
 msgid "Which set of keybindings would you like to use?"
 msgstr ""
 
-#: screen-profiles:165
+#: byobu-config:165
 msgid "Title: "
 msgstr ""
 
-#: screen-profiles:167
+#: byobu-config:167
 msgid "Command: "
 msgstr ""
 
-#: screen-profiles:169
+#: byobu-config:169
 msgid "Presets: "
 msgstr ""
 
-#: screen-profiles:183
+#: byobu-config:183
 msgid "Add to default windows"
 msgstr ""
 
-#: screen-profiles:187
+#: byobu-config:187
 msgid "Create new window(s):"
 msgstr ""
 
-#: screen-profiles:314
+#: byobu-config:314
 msgid "Toggle status notifications:"
 msgstr ""
 
-#: screen-profiles:347
+#: byobu-config:347
 msgid "Windows:"
 msgstr ""
 
-#: screen-profiles:357
+#: byobu-config:357
 msgid "Select window(s) to create by default:"
 msgstr ""
 
-#: screen-profiles:377
+#: byobu-config:377
 msgid "Screen will be launched automatically next time you login."
 msgstr ""
 
-#: screen-profiles:385
+#: byobu-config:385
 msgid "Screen will not be used next time you login."
 msgstr ""
 
-#: screen-profiles:432
+#: byobu-config:432
 msgid "Escape key: ctrl-"
 msgstr ""
 
-#: screen-profiles:435
+#: byobu-config:435
 msgid "Change escape sequence:"
 msgstr ""
 
-#: screen-profiles:473
+#: byobu-config:473
 msgid "<Tab>/<Alt-Tab> between elements | <Return> Validates"
 msgstr ""
 

@@ -17,7 +17,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="screen-profiles"
+PKG="byobu"
 SHARE="/usr/share/$PKG"
 DIR=`mktemp -t -d $PKG.XXXXXXXX` || error "Could not create a temporary directory"
 # Grab list of available colors

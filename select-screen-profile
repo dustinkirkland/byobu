@@ -22,7 +22,7 @@
 # If you change any strings, please generate localization information with:
 #	./debian/rules get-po
 
-PKG="screen-profiles"
+PKG="byobu"
 
 TEXTDOMAIN="$PKG"
 

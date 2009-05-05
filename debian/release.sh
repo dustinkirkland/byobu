@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-PKG="screen-profiles"
+PKG="byobu"
 
 error() {
 	echo "ERROR: $@"

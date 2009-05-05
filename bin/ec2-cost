@@ -19,7 +19,7 @@
 
 FORCE=0
 DETAIL=0
-PKG="screen-profiles"
+PKG="byobu"
 
 # Default is "off"
 p="ec2-cost"

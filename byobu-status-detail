@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#    screen-profiles-status-detail
+#    byobu-status-detail
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -18,4 +18,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-screen-profiles-status --detail | less -R -p "#.*:$"
+byobu-status --detail | less -R -p "#.*:$"

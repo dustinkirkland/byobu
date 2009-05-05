@@ -1,5 +1,6 @@
-screen-profiles (1.55) jaunty; urgency=low
+byobu (2.0) karmic; urgency=low
 
+  Renaming project screen-profiles to byobu
   * bin/users: make the --detail output match the status output
   * bin/ec2-cost, bin/hostname, bin/ip-address, bin/logo,
     bin/mem-available, bin/network-down, bin/network-up,
@@ -9,7 +10,7 @@ screen-profiles (1.55) jaunty; urgency=low
     select-screen-profile: abstract the package name (currently,
     screen-profiles) to a variable
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 05 May 2009 13:04:06 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 05 May 2009 14:05:23 -0500
 
 screen-profiles (1.54-0ubuntu1) karmic; urgency=low
 

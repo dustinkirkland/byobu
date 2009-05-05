@@ -7,7 +7,7 @@ updates-available, system-load, cpu-info, memory-info, and date/time.
 F2    Create a new window    |  F6    Detach from the session
 F3    Go to the prev window  |  F7    Enter scrollback mode
 F4    Go to the next window  |  F8    Re-title a window
-F5    Reload profile         |  F9    Configure screen-profiles
+F5    Reload profile         |  F9    Configuration
                              |  F12   Lock this terminal
 'screen -r'  - reattach      |
 'man screen' - complete help |  <ctrl-<esckey>> Escape sequence

@@ -26,30 +26,30 @@ vbell off
 msgwait 1
 
 # Define status commands
-backtick 99  86400 86400 screen-profiles-status logo
-backtick 100 3600 3600 screen-profiles-status release
-backtick 101 10 10 screen-profiles-status updates-available
-backtick 102 2 2 screen-profiles-status reboot-required
-backtick 103 2 2 screen-profiles-status cpu-freq
-backtick 104 86400 86400 screen-profiles-status cpu-count
-backtick 105 86400 86400 screen-profiles-status mem-available
-backtick 106 2 2 screen-profiles-status load-average
-backtick 107 2 2 screen-profiles-status mem-used
-backtick 108 600 600 screen-profiles-status ec2-cost
-backtick 109 3600 3600 screen-profiles-status hostname
-backtick 110 86400 86400 screen-profiles-status whoami
-backtick 111 86400 86400 screen-profiles-status menu
-backtick 112 86400 86400 screen-profiles-status arch
-backtick 113 30 30 screen-profiles-status battery
-backtick 114 10 10 screen-profiles-status users
-backtick 115 60 60 screen-profiles-status uptime
-backtick 116 2 2 screen-profiles-status processes
-backtick 117 2 2 screen-profiles-status network-up
-backtick 118 2 2 screen-profiles-status network-down
-backtick 119 2 2 screen-profiles-status wifi-quality
-backtick 120 86400 86400 screen-profiles-status date
-backtick 121 86400 86400 screen-profiles-status time
-backtick 122 3600 3600 screen-profiles-status ip-address
+backtick 99  86400 86400 byobu-status logo
+backtick 100 3600 3600 byobu-status release
+backtick 101 10 10 byobu-status updates-available
+backtick 102 2 2 byobu-status reboot-required
+backtick 103 2 2 byobu-status cpu-freq
+backtick 104 86400 86400 byobu-status cpu-count
+backtick 105 86400 86400 byobu-status mem-available
+backtick 106 2 2 byobu-status load-average
+backtick 107 2 2 byobu-status mem-used
+backtick 108 600 600 byobu-status ec2-cost
+backtick 109 3600 3600 byobu-status hostname
+backtick 110 86400 86400 byobu-status whoami
+backtick 111 86400 86400 byobu-status menu
+backtick 112 86400 86400 byobu-status arch
+backtick 113 30 30 byobu-status battery
+backtick 114 10 10 byobu-status users
+backtick 115 60 60 byobu-status uptime
+backtick 116 2 2 byobu-status processes
+backtick 117 2 2 byobu-status network-up
+backtick 118 2 2 byobu-status network-down
+backtick 119 2 2 byobu-status wifi-quality
+backtick 120 86400 86400 byobu-status date
+backtick 121 86400 86400 byobu-status time
+backtick 122 3600 3600 byobu-status ip-address
 
 hardstatus alwayslastline
 
@@ -61,4 +61,4 @@ altscreen on
 # Log 10000 lines
 defscrollback 10000
 
-source $HOME/.screen-profiles/keybindings
+source $HOME/.byobu/keybindings

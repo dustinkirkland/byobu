@@ -1,20 +1,20 @@
-Source: screen-profiles
+Source: byobu
 Section: misc
 Priority: optional
 Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 Standards-Version: 3.8.0
 Build-Depends: debhelper (>= 6), gettext-base
-Homepage: http://launchpad.net/screen-profiles
-Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/screen-profiles/trunk
+Homepage: http://launchpad.net/byobu
+Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/byobu/trunk
 
-Package: screen-profiles
+Package: byobu
 Architecture: all
 Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, screen, gettext-base, python, python-newt (>= 0.52.2-11)
 Recommends: update-notifier-common, lsb-release
-Suggests: screen-profiles-extras
+Suggests: byobu-extras
 Enhances: screen
 Description: a set of useful profiles and a profile-switcher for GNU screen
- screen-profiles includes a set of profiles for the GNU screen window manager.
+ byobu includes a set of profiles for the GNU screen window manager.
  These profiles are quite useful on server machines which are not running
  a graphical desktop.  The 'screen' command provides a number of advanced
  features are not necessarily exposed in the default profile.  These profiles
@@ -25,10 +25,22 @@ Description: a set of useful profiles and a profile-switcher for GNU screen
  update-notifier-common provides a more efficient and standard mechanism for
  calculating the number of updates available in the status panel.
 
+Package: byobu-extras
+Architecture: all
+Depends: ${misc:Depends}, byobu
+Description: additional colored profiles for the byobu package
+ The byobu contains a basic set of light and dark profiles.
+ The byobu-extras package provides additional profiles of various
+ different light and dark colors.
+
+Package: screen-profiles
+Architecture: all
+Depends: ${misc:Depends}, byobu
+Description: package has been renamed to byobu
+ The screen-profiles package has been renamed to 'byobu'.
+
 Package: screen-profiles-extras
 Architecture: all
-Depends: ${misc:Depends}, screen-profiles
-Description: additional colored profiles for the screen-profiles package
- The screen-profiles package contains a basic set of light and dark profiles.
- The screen-profiles-extras package provides additional profiles of various
- different light and dark colors.
+Depends: ${misc:Depends}, byobu-extras
+Description: package has been renamed to byobu-extras
+ The screen-profiles-extras package has been renamed to 'byobu-extras'.

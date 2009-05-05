@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-PKG="screen-profiles"
+PKG="byobu"
 
 if [ "install" = "$1" ] || [ "upgrade" = "$1" ]; then
 	dpkg-divert --package "$PKG" --divert /usr/bin/screen.real --rename /usr/bin/screen

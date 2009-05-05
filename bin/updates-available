@@ -29,7 +29,7 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-PKG="screen-profiles"
+PKG="byobu"
 
 # expire the cache in X seconds; 1 hour by default
 EXPIRATION=3600

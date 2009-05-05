@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-PKG="screen-profiles"
+PKG="byobu"
 
 if [ "$1" = "remove" ]; then
 	dpkg-divert --package "$PKG" --rename --remove /usr/bin/screen
