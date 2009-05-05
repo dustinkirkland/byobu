@@ -1,7 +1,9 @@
 #!/bin/sh -e
 
+PKG="screen-profiles"
+
 if [ "install" = "$1" ] || [ "upgrade" = "$1" ]; then
-	dpkg-divert --package screen-profiles --divert /usr/bin/screen.real --rename /usr/bin/screen
+	dpkg-divert --package "$PKG" --divert /usr/bin/screen.real --rename /usr/bin/screen
 fi
 
 #DEBHELPER#

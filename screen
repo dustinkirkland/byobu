@@ -17,16 +17,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Create the screen-profiles directory, if it doesn't already exist
-[ -d "$HOME/.screen-profiles" ] || mkdir -p "$HOME/.screen-profiles"
+PKG="screen-profiles"
+
+# Create the .$PKG directory, if it doesn't already exist
+[ -d "$HOME/.$PKG" ] || mkdir -p "$HOME/.$PKG"
 
 # Use $SCREENRC if non-empty, and readable; otherwise, use the one in $HOME
 [ -n "$SCREENRC" -a -r "$SCREENRC" ] || SCREENRC="$HOME/.screenrc"
 
-# If $SCREENRC exists but $HOME/.screen-profiles/profile does not,
+# If $SCREENRC exists but $HOME/.$PKG/profile does not,
 # this shows that the user has an existing custom screen configuration,
-# and thus we will not force screen-profiles on them.
-if [ -r "$SCREENRC" -a ! -e "$HOME/.screen-profiles/profile" -a ! -h "$HOME/.screen-profiles/profile" ]; then
+# and thus we will not force $PKG on them.
+if [ -r "$SCREENRC" -a ! -e "$HOME/.$PKG/profile" -a ! -h "$HOME/.$PKG/profile" ]; then
 	exec /usr/bin/screen.real -c "$SCREENRC" "$@"
 	exit $?
 fi
@@ -34,7 +36,7 @@ fi
 DEFAULT_PROFILE="light"
 
 # Ensure that the user has selected a screen profile
-profile="$HOME/.screen-profiles/profile"
+profile="$HOME/.$PKG/profile"
 [ -h "$profile" ] || /usr/bin/select-screen-profile -s "$DEFAULT_PROFILE"
 
 # Previously, profiles were prepended with ubuntu-.
@@ -49,7 +51,7 @@ if [ -h "$profile" -a ! -r "$profile" ]; then
 			/usr/bin/select-screen-profile -s "$DEFAULT_PROFILE"
 		fi
 	elif stat "$profile" | head -n1 | grep -qs ".*->.*plain'$"; then
-		ln -sf "/usr/share/screen-profiles/profiles/NONE" "$profile"
+		ln -sf "/usr/share/$PKG/profiles/NONE" "$profile"
 	else
 		/usr/bin/select-screen-profile -s "$DEFAULT_PROFILE"
 	fi
@@ -63,16 +65,16 @@ if [ ! -r "$profile" ]; then
 	echo " $ select-screen-profile"
 	echo
 	echo "Or install the extras package:"
-	echo " $ sudo apt-get install screen-profiles-extras"
+	echo " $ sudo apt-get install $PKG-extras"
 	echo
 	exit 1
 fi
 
 # Ensure that their keybindings are seeded
-[ -s "$HOME/.screen-profiles/keybindings" ] || echo "source /usr/share/screen-profiles/keybindings/common" > "$HOME/.screen-profiles/keybindings"
+[ -s "$HOME/.$PKG/keybindings" ] || echo "source /usr/share/$PKG/keybindings/common" > "$HOME/.$PKG/keybindings"
 
 # Ensure that their default windows are seeded
-[ -r "$HOME/.screen-profiles/windows" ] || touch "$HOME/.screen-profiles/windows"
+[ -r "$HOME/.$PKG/windows" ] || touch "$HOME/.$PKG/windows"
 
 # Ensure that the user's $SCREENRC at least exists
 [ -r "$SCREENRC" ] || touch "$SCREENRC"
@@ -81,10 +83,10 @@ fi
 if [ "$#" = "0" ]; then
 	# Create a temporary config file *with* the default windows
 	# but if we refresh, we'll just source the profile, without
-	temp=$(mktemp -t screen-profiles-XXXXXXXX)
-	cat "$HOME/.screen-profiles/profile" "$HOME/.screen-profiles/windows" > "$temp"
+	temp=$(mktemp -t $PKG-XXXXXXXX)
+	cat "$HOME/.$PKG/profile" "$HOME/.$PKG/windows" > "$temp"
 	[ -n "$SHELL" -a -x "$SHELL" ] || SHELL="/bin/sh"
 	exec /usr/bin/screen.real -c "$temp" $SHELL /usr/bin/motd+shell "$temp"
 else
-	exec /usr/bin/screen.real -c "$HOME/.screen-profiles/profile" "$@"
+	exec /usr/bin/screen.real -c "$HOME/.$PKG/profile" "$@"
 fi

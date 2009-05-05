@@ -1,7 +1,9 @@
 #!/bin/sh -e
 
+PKG="screen-profiles"
+
 if [ "$1" = "remove" ]; then
-	dpkg-divert --package screen-profiles --rename --remove /usr/bin/screen
+	dpkg-divert --package "$PKG" --rename --remove /usr/bin/screen
 fi
 
 #DEBHELPER#

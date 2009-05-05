@@ -17,6 +17,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="screen-profiles"
+
 if [ "$1" = "--detail" ]; then
 	MARKUP="false"
 else
@@ -68,14 +70,14 @@ print_logo() {
 	fi
 }
 
-if [ -r "$HOME/.screen-profiles/logo" ]; then
+if [ -r "$HOME/.$PKG/logo" ]; then
 	# Allow users to define their own logo
-	cat "$HOME/.screen-profiles/logo" && exit 0 || true
+	cat "$HOME/.$PKG/logo" && exit 0 || true
 fi
 
-if [ -r "$HOME/.screen-profiles/distro" ]; then
+if [ -r "$HOME/.$PKG/distro" ]; then
 	# Allow manual override of distro
-	distro=`cat "$HOME/.screen-profiles/distro"`
+	distro=`cat "$HOME/.$PKG/distro"`
 	print_logo "$distro" && exit 0 || true
 fi
 

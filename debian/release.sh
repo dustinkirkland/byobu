@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+PKG="screen-profiles"
+
 error() {
 	echo "ERROR: $@"
 	exit 1
@@ -24,7 +26,7 @@ ver=`expr $curver + 1`
 dch -v "1.$ver" "UNRELEASED"
 sed -i "s/1.$ver) karmic;/1.$ver) unreleased;/" debian/changelog
 
-gpg --armor --sign --detach-sig ../screen-profiles_*.orig.tar.gz
+gpg --armor --sign --detach-sig ../"$PKG"_*.orig.tar.gz
 
 echo
 echo
@@ -32,13 +34,13 @@ echo "To test:"
 echo "  sudo dpkg -i ../*.deb"
 echo
 echo "To upload PPA packages:"
-echo "  dput screen-profiles-ppa ../*ppa*changes"
+echo "  dput $PKG-ppa ../*ppa*changes"
 echo
 echo "To commit and push:"
 echo "  bzr cdiff"
 echo "  bzr commit -m "releasing $curver, opening $ver" && bzr push"
 echo
 echo "Publish tarball at:"
-echo "  https://launchpad.net/screen-profiles/trunk/+addrelease"
+echo "  https://launchpad.net/$PKG/trunk/+addrelease"
 echo
 echo

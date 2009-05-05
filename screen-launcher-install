@@ -18,6 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="screen-profiles"
 
 install_screen_launcher() {
 	dest=$1
@@ -28,7 +29,7 @@ install_screen_launcher() {
 }
 
 # Sanitize the environment
-/usr/share/screen-profiles/screen-launcher-uninstall || true
+/usr/share/$PKG/screen-launcher-uninstall || true
 
 # Install in $HOME/.profile unconditionally
 install_screen_launcher "$HOME/.profile"

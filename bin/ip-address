@@ -17,13 +17,15 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="screen-profiles"
+
 if [ "$1" = "--detail" ]; then
 	hostname -i
 	exit 0
 fi
 
 space=
-grep -qs "^hostname=1$" "$HOME/.screen-profiles/status" && space=" "
-grep -qs "^whoami=1$" "$HOME/.screen-profiles/status" && space=" "
+grep -qs "^hostname=1$" "$HOME/.$PKG/status" && space=" "
+grep -qs "^whoami=1$" "$HOME/.$PKG/status" && space=" "
 
 printf "%s\005{=b }%s\005{-}" "$space" $(hostname -i 2>/dev/null)

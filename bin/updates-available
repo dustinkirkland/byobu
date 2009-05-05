@@ -29,6 +29,8 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
+PKG="screen-profiles"
+
 # expire the cache in X seconds; 1 hour by default
 EXPIRATION=3600
 
@@ -50,7 +52,7 @@ print_updates() {
 }
 
 cache=/var/run/updates-available
-mycache=$HOME/.screen-profiles/updates-available
+mycache=$HOME/.$PKG/updates-available
 now=`date +%s`
 cache_timestamp=`stat -c "%Y" $cache 2>/dev/null || echo 0`
 mycache_timestamp=`stat -c "%Y" $mycache 2>/dev/null || echo 0`

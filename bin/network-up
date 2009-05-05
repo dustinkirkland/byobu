@@ -17,7 +17,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-cache="$HOME/.screen-profiles/network-up"
+PKG="screen-profiles"
+
+cache="$HOME/.$PKG/network-up"
 
 interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
 unit="kB/s"

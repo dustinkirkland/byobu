@@ -26,10 +26,12 @@
 # but not at screen startup.
 ###########################################################
 
-if [ -d "$HOME/.screen-profiles/bin" ]; then
-	DIR="$HOME/.screen-profiles/bin"
-elif [ -d "/usr/lib/screen-profiles" ]; then
-	DIR="/usr/lib/screen-profiles"
+PKG="screen-profiles"
+
+if [ -d "$HOME/.$PKG/bin" ]; then
+	DIR="$HOME/.$PKG/bin"
+elif [ -d "/usr/lib/$PKG" ]; then
+	DIR="/usr/lib/$PKG"
 else
 	exit 1
 fi
@@ -43,15 +45,15 @@ HR="                                                                            
 case "$P" in
 	# default = on, user must override to turn off
 	cpu-count|cpu-freq|date|load-average|logo|mem-available|mem-used|menu|reboot-required|release|time|updates-available|uptime)
-		grep -qs -m1 "^$P=0$" "$HOME/.screen-profiles/status" && exit 0
+		grep -qs -m1 "^$P=0$" "$HOME/.$PKG/status" && exit 0
 	;;
 	# default = off, user must override to turn on
 	arch|battery|ec2-cost|hostname|ip-address|network-down|network-up|processes|users|whoami|wifi-quality)
-		grep -qs -m1 "^$P=1$" "$HOME/.screen-profiles/status" || exit 0
+		grep -qs -m1 "^$P=1$" "$HOME/.$PKG/status" || exit 0
 	;;
 	--detail)
 		printf "\033[1m"
-		[ -x "/usr/bin/dpkg-query" ] && /usr/bin/dpkg-query --show screen-profiles | awk '{print "# screen-profiles (" $2 ") detailed status:"}'
+		[ -x "/usr/bin/dpkg-query" ] && /usr/bin/dpkg-query --show $PKG | awk '{print "# $PKG (" $2 ") detailed status:"}'
 		printf "$X\n"
 		for i in `ls "$DIR"`; do
 			[ "$i" = "menu" ] && continue

@@ -19,11 +19,12 @@
 
 FORCE=0
 DETAIL=0
+PKG="screen-profiles"
 
 # Default is "off"
 p="ec2-cost"
-grep -qs "^$p=1$" "$HOME/.screen-profiles/status" && FORCE=1
-grep -qs "^$p=0$" "$HOME/.screen-profiles/status" && FORCE=0
+grep -qs "^$p=1$" "$HOME/.$PKG/status" && FORCE=1
+grep -qs "^$p=0$" "$HOME/.$PKG/status" && FORCE=0
 
 for arg in $@; do
 	case "$arg" in
@@ -38,7 +39,7 @@ done
 
 # Exit immediately if this is not an Amazon EC2 instance, we're not
 # manually turned on, and we're not in force mode
-[ -r "/etc/ec2_version" -o -r "$HOME/.screen-profiles/ec2-cost" -o "$FORCE" = "1" ]
+[ -r "/etc/ec2_version" -o -r "$HOME/.$PKG/ec2-cost" -o "$FORCE" = "1" ]
 [ "$?" = "0" ] || exit 0
 
 # Approximate Instance Cost Basis

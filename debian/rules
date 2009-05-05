@@ -4,30 +4,30 @@
 # Uncomment this to turn on verbose mode.
 # export DH_VERBOSE=1
 
-PACKAGE=screen-profiles
+PKG=screen-profiles
 VER=`head -n 1 debian/changelog | sed 's/^.*(//' | sed 's/).*//' | sed 's/-.*//'`
 
 get-orig-source:
 	dh_testdir
-	bzr export ../${PACKAGE}_${VER}.orig.tar.gz
+	bzr export ../${PKG}_${VER}.orig.tar.gz
 
 install-po: update-pot
 	for po in po/*.po ; do \
 		lang=$${po#po/}; lang=$${lang%.po}; \
 		mkdir -p po/locale/$${lang}/LC_MESSAGES/; \
-		msgfmt $${po} -o po/locale/$${lang}/LC_MESSAGES/${PACKAGE}.mo ; \
+		msgfmt $${po} -o po/locale/$${lang}/LC_MESSAGES/${PKG}.mo ; \
 	done
 
 update-pot:
-	rm -f po/${PACKAGE}.pot
+	rm -f po/${PKG}.pot
 	grep -v "^#" po/POTFILES.sh | while read po ; do \
-		xgettext -o po/${PACKAGE}.pot -L Shell $${po} ; \
+		xgettext -o po/${PKG}.pot -L Shell $${po} ; \
 	done
 	grep -v "^#" po/POTFILES.python | while read po ; do \
-		xgettext -o po/${PACKAGE}.pot -L Python $${po} ; \
+		xgettext -o po/${PKG}.pot -L Python $${po} ; \
 	done
 	for po in po/*.po ; do \
-		msgmerge $${po} po/${PACKAGE}.pot -o $${po} ; \
+		msgmerge $${po} po/${PKG}.pot -o $${po} ; \
 	done
 
 prebuild:
@@ -41,7 +41,7 @@ clean:
 	./profiles/generate --clean
 	for po in po/*.po ; do \
 		lang=$${po#po/}; lang=$${lang%.po}; \
-		rm -f po/locale/$${lang}/LC_MESSAGES/${PACKAGE}.mo ; \
+		rm -f po/locale/$${lang}/LC_MESSAGES/${PKG}.mo ; \
 	done
 
 install: build install-po

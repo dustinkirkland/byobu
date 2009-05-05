@@ -27,13 +27,14 @@ from ConfigParser import SafeConfigParser
 from snack import *
 
 HOME=os.getenv("HOME")
-SHARE='/usr/share/screen-profiles'
-DOC='/usr/share/doc/screen-profiles'
+PKG="screen-profiles"
+SHARE='/usr/share/'+PKG
+DOC='/usr/share/doc/'+PKG
 DEF_ESC="A"
 RELOAD = "If you are using the default set of keybindings, press\n<F5> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
 
-gettext.bindtextdomain('screen-profiles', SHARE+'/po')
-gettext.textdomain('screen-profiles')
+gettext.bindtextdomain(PKG, SHARE+'/po')
+gettext.textdomain(PKG)
 _ = gettext.gettext
 
 # Command presets for windows creation
@@ -155,7 +156,7 @@ def keybindings(screen, size):
     return 100
 
 def switch_keybindings(set):
-    commands.getoutput("sed -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+HOME+"/.screen-profiles/keybindings")
+    commands.getoutput("sed -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+HOME+"/."+PKG+"/keybindings")
 
 def newwindow(screen, size):
     title=Entry(8, text="bash", returnExit=1)
@@ -208,7 +209,7 @@ def newwindow(screen, size):
     return 100
 
 def appendwindow(win):
-    f=open(HOME+'/.screen-profiles/windows', 'a')
+    f=open(HOME+'/.'+PKG+'/windows', 'a')
     try:
         f.write(win+"\n")
 
@@ -219,7 +220,7 @@ def appendwindow(win):
         f.close()
 
 def readwindows():
-    f=open(HOME+'/.screen-profiles/windows', 'r')
+    f=open(HOME+'/.'+PKG+'/windows', 'r')
     try:
         li=[]
         for line in f.readlines():
@@ -267,8 +268,8 @@ def readstatus():
     status["uptime"]=1
     status["whoami"]=0
     status["wifi-quality"]=0
-    if os.path.exists(HOME+'/.screen-profiles/status'):
-        f=open(HOME+'/.screen-profiles/status', 'r')
+    if os.path.exists(HOME+'/.'+PKG+'/status'):
+        f=open(HOME+'/.'+PKG+'/status', 'r')
         for line in f.readlines():
            try:
                line = line.rstrip()
@@ -287,7 +288,7 @@ def readstatus():
     return li
 
 def writestatus(items):
-    f=open(HOME+'/.screen-profiles/status', 'w')
+    f=open(HOME+'/.'+PKG+'/status', 'w')
     try:
         for i in items:
             if i[0] == 1:
@@ -325,7 +326,7 @@ def togglestatus(screen, size):
     return 100
 
 def writewindows(winlist):
-    f=open(HOME+'/.screen-profiles/windows', 'w')
+    f=open(HOME+'/.'+PKG+'/windows', 'w')
     try:
         for win in winlist:
             if win[0] == -1:
@@ -370,7 +371,7 @@ def defaultwindows(screen, size):
 
 def install(screen, size, isInstalled):
     if not isInstalled:
-        out = commands.getoutput("bash /usr/share/screen-profiles/screen-launcher-install")
+        out = commands.getoutput("bash /usr/share/"+PKG+"/screen-launcher-install")
         if out == "":
             out = _("Screen will be launched automatically next time you login.")
 
@@ -378,7 +379,7 @@ def install(screen, size, isInstalled):
         buttons=((_("Menu"), )))
         return 100
     else:
-        out = commands.getoutput("bash /usr/share/screen-profiles/screen-launcher-uninstall")
+        out = commands.getoutput("bash /usr/share/"+PKG+"/screen-launcher-uninstall")
         if out == "":
             out = _("Screen will not be used next time you login.")
 
@@ -398,7 +399,7 @@ def appendtofile(p, s):
 
 
 def getesckey():
-    path=HOME+'/.screen-profiles/keybindings'
+    path=HOME+'/.'+PKG+'/keybindings'
     if not os.path.exists(path):
         return DEF_ESC
     line = commands.getoutput("grep ^escape "+path)
@@ -407,7 +408,7 @@ def getesckey():
     return line[line.find('^')+1]
 
 def setesckey(key):
-    path = HOME+'/.screen-profiles/keybindings'
+    path = HOME+'/.'+PKG+'/keybindings'
     if key != "":
         u = key[0].upper()
         l = key[0].lower()
@@ -457,7 +458,7 @@ def chgesc(screen, size):
     return 100
 
 def main():
-    """This is the main loop of our screen-profiles utility
+    """This is the main loop of our utility
     """
 
     size = terminal_size()
