@@ -2,7 +2,7 @@
 
 PKG="byobu"
 
-if [ "install" = "$1" ] || [ "upgrade" = "$1" ]; then
+if [ "$1" = install -o "$1" = upgrade ]; then
 	dpkg-divert --package "$PKG" --divert /usr/bin/screen.real --rename /usr/bin/screen
 fi
 

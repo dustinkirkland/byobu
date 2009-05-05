@@ -9,6 +9,7 @@ keybindings/common usr/share/byobu/keybindings
 keybindings/none usr/share/byobu/keybindings
 windows/common usr/share/byobu/windows
 select-screen-profile usr/bin
+byobu usr/bin
 byobu-config usr/bin
 byobu-status usr/bin
 byobu-status-detail usr/bin
@@ -17,3 +18,4 @@ screen-launcher-uninstall usr/share/byobu
 motd+shell usr/bin
 screen-launcher usr/bin
 byobu-export usr/bin
+debian/lintian/byobu usr/share/lintian/overrides

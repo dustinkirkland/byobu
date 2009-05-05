@@ -1,0 +1,2 @@
+byobu: binary-without-manpage
+# The manpages are, of course, part of the original screen package.
