@@ -19,12 +19,12 @@ sed -i "s/ppa2) intrepid;/ppa3) jaunty;/" debian/changelog
 bzr bd -S
 sed -i "s/~ppa3) jaunty;/) karmic;/" debian/changelog
 bzr bd -S
-curver=`head -n1 debian/changelog | sed "s/^.*(1.//" | sed "s/-.*$//"`
-bzr tag --delete 1.$curver || true
-bzr tag 1.$curver
+curver=`head -n1 debian/changelog | sed "s/^.*(2.//" | sed "s/-.*$//"`
+bzr tag --delete 2.$curver || true
+bzr tag 2.$curver
 ver=`expr $curver + 1`
-dch -v "1.$ver" "UNRELEASED"
-sed -i "s/1.$ver) karmic;/1.$ver) unreleased;/" debian/changelog
+dch -v "2.$ver" "UNRELEASED"
+sed -i "s/2.$ver) karmic;/2.$ver) unreleased;/" debian/changelog
 
 gpg --armor --sign --detach-sig ../"$PKG"_*.orig.tar.gz
 
@@ -38,7 +38,7 @@ echo "  dput $PKG-ppa ../*ppa*changes"
 echo
 echo "To commit and push:"
 echo "  bzr cdiff"
-echo "  bzr commit -m "releasing $curver, opening $ver" && bzr push"
+echo "  bzr commit -m "releasing 2.$curver, opening 2.$ver" && bzr push"
 echo
 echo "Publish tarball at:"
 echo "  https://launchpad.net/$PKG/trunk/+addrelease"
