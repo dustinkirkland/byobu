@@ -1,8 +1,8 @@
 byobu (2.1) jaunty; urgency=low
 
-  * UNRELEASED
+  * byobu-export: touch an empty .byobu/profile, silence error message
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 05 May 2009 23:05:20 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 06 May 2009 15:33:47 -0500
 
 byobu (2.0-0ubuntu1) karmic; urgency=low
 

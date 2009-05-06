@@ -219,6 +219,7 @@ done
 PROFILE="$DIR/.screenrc"
 STATUS="$DIR/.$PKG/status"
 mkdir -p "$DIR/.$PKG/bin"
+touch "$DIR/.$PKG/profile"
 
 # Copy status scripts
 cp -a /usr/lib/$PKG/* "$DIR/.$PKG/bin"
