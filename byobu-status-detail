@@ -17,5 +17,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-byobu-status --detail | less -R -p "#.*:$"
+if vim --version | grep -qs +folding 2>&1; then
+	byobu-status --detail | vim -c "set foldmethod=indent" -c "set foldminlines=0" -R -
+elif which sensible-pager >/dev/null 2>&1; then
+	byobu-status --detail | sensible-pager
+else
+	byobu-status --detail | less
+fi
