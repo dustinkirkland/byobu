@@ -2,9 +2,10 @@ byobu (2.2) jaunty; urgency=low
 
   * bin/cpu-count: print cpu model names for --detail
   * byobu-status: print the short description (matching the status
-    in the lower bar) first, then the description in parens
+    in the lower bar) first, then the description in parens in the
+    first line of the indented/folded text
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 May 2009 13:27:41 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 May 2009 15:56:34 -0500
 
 byobu (2.1-0ubuntu1) karmic; urgency=low
 

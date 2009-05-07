@@ -77,7 +77,7 @@ case "$P" in
 			[ "$i" = "menu" ] && continue
 			short=`"$DIR"/$i --short | sed 's/^\s*//' | sed 's/\s*$//' | sed 's/.{[^}]*}//g'` || true
 			detail=`"$DIR"/$i --detail | sed '/^$/d' | sed 's/^/\t/g'` || true
-			printf "%-15s (%s)\n" "$short" "$i"
+			printf "%s\n\t(%s)\n" "$short" "$i"
 			[ -n "$detail" ] && printf "%s\n" "$detail"
 		done
 		exit 0
