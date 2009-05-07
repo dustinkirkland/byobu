@@ -1,8 +1,29 @@
-byobu (2.1) jaunty; urgency=low
+byobu (2.1) unreleased; urgency=low
 
   * byobu-export: touch an empty .byobu/profile, silence error message
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 06 May 2009 15:33:47 -0500
+  Tranform byobu-status --detail to use vim's folding feature
+  * byobu-status: output text compatible with vim's folding feature
+  * byobu-status-detail: use vim's folding status feature to allow
+    for collapsing/expanding each status item; fall back on
+    sensible-pager if +folding is not available; and fall back on less
+    if sensible-pager is not available
+  * bin/cpu-count: nothing to print on --detail
+  * bin/date: add --short which actually prints the current date
+  * bin/ec2-cost: handle on/off configuration like *all* other status
+    scripts, no need for FORCE
+  * bin/ip-address: --detail shows all inet addr's in ifconfig
+  * bin/logo: --detail should be empty
+  * bin/network-down, bin/network-up: trim leading and trailing whitespace
+  * bin/reboot-required: add a --short option, which prints Yes or No
+  * bin/time: add --short which actually prints the current time
+    rather than the screen escape sequence
+  * bin/updates-available: add a --short option, which only displays the
+    number of updates available; show more info on --detail about upgrades
+  * bin/users: grep out the grep statement in the ps
+  * bin/whoami: print /etc/passwd info on --detail
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 06 May 2009 21:01:56 -0500
 
 byobu (2.0-0ubuntu1) karmic; urgency=low
 

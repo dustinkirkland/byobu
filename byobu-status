@@ -37,10 +37,6 @@ else
 fi
 
 P="$1"
-B='\033[34;1m'
-W='\033[47m'
-X='\033[0m'
-HR="                                                                               "
 
 case "$P" in
 	# default = on, user must override to turn off
@@ -52,16 +48,19 @@ case "$P" in
 		grep -qs -m1 "^$P=1$" "$HOME/.$PKG/status" || exit 0
 	;;
 	--detail)
-		printf "\033[1m"
-		[ -x "/usr/bin/dpkg-query" ] && /usr/bin/dpkg-query --show $PKG | awk '{print "# $PKG (" $2 ") detailed status:"}'
-		printf "$X\n"
+		if [ -x "/usr/bin/dpkg-query" ]; then
+			/usr/bin/dpkg-query --show $PKG | awk '{print $1 "-" $2 " detailed status:"}'
+		else
+			printf "$PKG detailed status:"
+		fi
+		printf "\n"
 		for i in `ls "$DIR"`; do
 			[ "$i" = "menu" ] && continue
-			printf "\n$W%s$X\n" "$HR"
-			printf "$W $X $B# %s:$X\n" "$i"
-			out=`"$DIR"/$i --detail | sed 's/^/\\\033[47m \\\033[0m    /g'` || true
-			printf "$out\n"
-			printf "$W%s$X\n\n" "$HR"
+			short=`"$DIR"/$i --short | sed 's/ $//' | sed 's/.{[^}]*}//g' | sed 's/^/\t/g'` || true
+			detail=`"$DIR"/$i --detail | sed '/^$/d' | sed 's/^/\t/g'` || true
+			printf "%-20s - %s\n" "$i" "$short"
+			[ -n "$short" ] && printf "%s\n" "$short"
+			[ -n "$detail" ] && printf "%s\n" "$detail"
 		done
 		exit 0
 	;;
