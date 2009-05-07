@@ -4,6 +4,10 @@ byobu (2.1) unreleased; urgency=low
   * byobu-status, debian/rules: migrate existing screen-profiles config
     dir smoothly by linking the old screen-profiles-status script to the
     new byobu-status, and add a migrate function to that script
+  * bin/disk-available, bin/disk-used, byobu-config, byobu-config.1,
+   byobu-status, profiles/common, profiles/profile.skel: add a new
+   pair of status notifications for disk space available and used;
+   default to / directory, allow user override in config dir
 
   Tranform byobu-status --detail to use vim's folding feature
   * byobu-status: output text compatible with vim's folding feature
@@ -26,7 +30,7 @@ byobu (2.1) unreleased; urgency=low
   * bin/users: grep out the grep statement in the ps
   * bin/whoami: print /etc/passwd info on --detail
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 May 2009 00:25:39 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 May 2009 00:54:43 -0500
 
 byobu (2.0-0ubuntu1) karmic; urgency=low
 

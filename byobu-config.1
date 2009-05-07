@@ -21,6 +21,10 @@ The menu provided by the \fBbyobu\fP should be self-explanatory.
 
 \fBdate\fP \- the system date in YYYY-MM-DD formate; displayed in the lower on the far right in the default text color on the default background
 
+\fBdisk-available\fP \- disk space available on / directory; displayed in the lower bar on the far right in white text on a light purple background; override the default directory by specifying an alternate mount point in \fI$HOME/.byobu/disk\fP
+
+\fBmem-used\fP \- disk space used on / directory as a percentage of the total space available on /; displayed in the lower bar on the far right in white text on a light purple background with a trailing '%' sign; override the default directory by specifying an alternate mount point in \fI$HOME/.byobu/disk\fP
+
 \fBec2-cost\fP \- an estimation of the cost of the current boot of the system in terms of the Amazon EC2 billing model; displayed in the lower bar toward the right in green text on a grey background; there is a leading '~' to indicate that this is an estimation, and the monetary units are US Dollars '$'
 
 \fBhostname\fP \- the hostname of the system; displayed in the upper bar on the far right in bold black text on a grey background; there is a leading '@' symbol if the username status is also enabled
