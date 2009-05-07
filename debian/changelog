@@ -1,4 +1,10 @@
-byobu (2.2) jaunty; urgency=low
+byobu (2.3) jaunty; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 May 2009 16:43:22 -0500
+
+byobu (2.2-0ubuntu1) karmic; urgency=low
 
   * bin/cpu-count: print cpu model names for --detail
   * byobu-status: print the short description (matching the status
