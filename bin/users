@@ -21,7 +21,7 @@
 #
 
 if [ "$1" = "--detail" ]; then
-	ps -ef | grep "sshd;.*@"
+	ps -ef | grep "sshd;.*@" | grep -v grep
 	exit 0
 fi
 
