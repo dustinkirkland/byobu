@@ -20,6 +20,9 @@
 if [ "$1" = "--detail" ]; then
 	date
 	exit 0
+elif [ "$1" = "--short" ]; then
+        date +%Y-%m-%d
+        exit 0
 fi
 
 printf "\0050c:\005s"
