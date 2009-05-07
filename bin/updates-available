@@ -17,13 +17,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$1" = "--detail" ]; then
+if [ "$1" = "--detail" -o "$1" = "--short" ]; then
 	if [ -x "/usr/bin/apt-get" ]; then
-		out=`/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep ^Inst | sed "s/^Inst //"`
-		if [ -z "$out" ]; then
-			printf "None"
+		detail=`/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade`
+		if [ "$1" = "--detail" ]; then
+			printf "$detail"
 		else
-			printf "$out"
+			short=`printf "$detail" | grep ^Inst | wc -l`
+			printf "$short"
 		fi
 	fi
 	exit 0
