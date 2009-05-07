@@ -24,7 +24,7 @@ interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
 unit="kB/s"
 
 if [ "$1" = "--detail" ]; then
-	ifconfig "$interface"
+	ifconfig "$interface" | sed 's/^\s*//' | sed 's/\s*$//'
 	exit 0
 fi
 
