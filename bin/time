@@ -21,7 +21,7 @@ if [ "$1" = "--detail" ]; then
 	date
 	exit 0
 elif [ "$1" = "--short" ]; then
-        date +%Y-%m-%d
+        date +%H:%M:%S
         exit 0
 fi
 
