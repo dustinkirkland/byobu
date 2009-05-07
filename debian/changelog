@@ -17,7 +17,7 @@ byobu (2.1) unreleased; urgency=low
     scripts, no need for FORCE
   * bin/ip-address: --detail shows all inet addr's in ifconfig
   * bin/logo: --detail should be empty
-  * bin/network-down, bin/network-up: trim leading and trailing whitespace
+  * bin/network-down, bin/network-up: trim trailing whitespace
   * bin/reboot-required: add a --short option, which prints Yes or No
   * bin/time: add --short which actually prints the current time
     rather than the screen escape sequence
@@ -26,7 +26,7 @@ byobu (2.1) unreleased; urgency=low
   * bin/users: grep out the grep statement in the ps
   * bin/whoami: print /etc/passwd info on --detail
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 May 2009 00:11:51 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 May 2009 00:25:39 -0500
 
 byobu (2.0-0ubuntu1) karmic; urgency=low
 
