@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 if [ "$1" = "--detail" ]; then
-	whoami
+	grep "^$USER:" /etc/passwd
 	exit 0
 fi
 
