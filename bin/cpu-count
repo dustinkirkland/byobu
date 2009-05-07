@@ -17,8 +17,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-count=`grep -c "^processor.*:" /proc/cpuinfo`
-[ "$count" = "1" ] || printf "%sx" "$count"
 if [ "$1" = "--detail" ]; then
 	exit 0
 fi
+count=`grep -c "^processor.*:" /proc/cpuinfo`
+[ "$count" = "1" ] || printf "%sx" "$count"
