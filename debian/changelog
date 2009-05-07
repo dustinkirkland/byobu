@@ -1,6 +1,9 @@
 byobu (2.1) unreleased; urgency=low
 
   * byobu-export: touch an empty .byobu/profile, silence error message
+  * byobu-status, debian/rules: migrate existing screen-profiles config
+    dir smoothly by linking the old screen-profiles-status script to the
+    new byobu-status, and add a migrate function to that script
 
   Tranform byobu-status --detail to use vim's folding feature
   * byobu-status: output text compatible with vim's folding feature
@@ -23,7 +26,7 @@ byobu (2.1) unreleased; urgency=low
   * bin/users: grep out the grep statement in the ps
   * bin/whoami: print /etc/passwd info on --detail
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 06 May 2009 21:01:56 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 May 2009 00:11:51 -0500
 
 byobu (2.0-0ubuntu1) karmic; urgency=low
 

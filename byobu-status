@@ -28,6 +28,25 @@
 
 PKG="byobu"
 
+migrate() {
+	OLDPKG="screen-profiles"
+        # Rename the config dir
+        mv "$HOME/.$OLDPKG" "$HOME/.$PKG"
+        ln -s "$HOME/.$PKG" "$HOME/.$OLDPKG"
+        # Replace all instances of the old package name with the new
+        find "$HOME/.$PKG" -type f | xargs sed -i "s/$OLDPKG/$PKG/g"
+        # Fix the chosen profile symlink
+        if [ -h "$HOME/.$PKG/profile" ]; then
+                # Determine the chosen profile color
+                profile=`stat "$HOME/.$PKG/profile" | head -n1 | sed "s:^.*[/-]::" | sed "s:'$::"`
+                # Try to set that color, if it exists, otherwise default to light
+                select-screen-profile -s "$profile" || select-screen-profile -s "light"
+        fi
+}
+
+# If the old config dir exists, but the new one doesn't, provide a migration mechanism
+[ -d "$HOME/.$OLDPKG" -a ! -d "$HOME/.$PKG" ] && migrate
+
 if [ -d "$HOME/.$PKG/bin" ]; then
 	DIR="$HOME/.$PKG/bin"
 elif [ -d "/usr/lib/$PKG" ]; then
