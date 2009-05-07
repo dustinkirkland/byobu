@@ -38,7 +38,7 @@ echo "  dput $PKG-ppa ../*ppa*changes"
 echo
 echo "To commit and push:"
 echo "  bzr cdiff"
-echo "  bzr commit -m "releasing 2.$curver, opening 2.$ver" && bzr push"
+echo "  bzr commit -m 'releasing 2.$curver, opening 2.$ver' && bzr push"
 echo
 echo "Publish tarball at:"
 echo "  https://launchpad.net/$PKG/trunk/+addrelease"

@@ -1,4 +1,10 @@
-byobu (2.1) unreleased; urgency=low
+byobu (2.2) jaunty; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 May 2009 02:19:18 -0500
+
+byobu (2.1-0ubuntu1) karmic; urgency=low
 
   * byobu-export: touch an empty .byobu/profile, silence error message
   * byobu-status, debian/rules: migrate existing screen-profiles config
