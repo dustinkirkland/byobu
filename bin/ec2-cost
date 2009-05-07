@@ -17,30 +17,16 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FORCE=0
 DETAIL=0
 PKG="byobu"
 
-# Default is "off"
-p="ec2-cost"
-grep -qs "^$p=1$" "$HOME/.$PKG/status" && FORCE=1
-grep -qs "^$p=0$" "$HOME/.$PKG/status" && FORCE=0
-
 for arg in $@; do
 	case "$arg" in
-		-f|--force)
-			FORCE=1
-		;;
 		-d|--detail)
 			DETAIL=1
 		;;
 	esac
 done
-
-# Exit immediately if this is not an Amazon EC2 instance, we're not
-# manually turned on, and we're not in force mode
-[ -r "/etc/ec2_version" -o -r "$HOME/.$PKG/ec2-cost" -o "$FORCE" = "1" ]
-[ "$?" = "0" ] || exit 0
 
 # Approximate Instance Cost Basis
 #			US		Europe
