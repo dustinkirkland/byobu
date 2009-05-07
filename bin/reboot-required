@@ -17,9 +17,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+flag="/var/run/reboot-required"
 if [ "$1" = "--detail" ]; then
-	[ -e /var/run/reboot-required ] && printf "Yes" || printf "No"
+	ls -alF "$flag" 2>&1
+	exit 0
+elif [ "$1" = "--short" ]; then
+	[ -e "$flag" ] && printf "Yes" || printf "No"
 	exit 0
 fi
 
-[ -e /var/run/reboot-required ] && printf "\005{=b bW}(@)\005{-} "
+[ -e "$flag" ] && printf "\005{=b bW}(@)\005{-} "
