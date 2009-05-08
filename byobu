@@ -33,7 +33,7 @@ PKG="byobu"
 # this shows that the user has an existing custom screen configuration,
 # and thus we will not force $PKG on them.
 if [ -r "$SCREENRC" -a ! -e "$HOME/.$PKG/profile" -a ! -h "$HOME/.$PKG/profile" ]; then
-	exec /usr/bin/screen.real -c "$SCREENRC" "$@"
+	exec /usr/bin/screen -c "$SCREENRC" "$@"
 	exit $?
 fi
 
@@ -91,7 +91,7 @@ if [ "$#" = "0" ]; then
 	temp=$(mktemp -t $PKG-XXXXXXXX)
 	cat "$HOME/.$PKG/profile" "$HOME/.$PKG/windows" > "$temp"
 	[ -n "$SHELL" -a -x "$SHELL" ] || SHELL="/bin/sh"
-	exec /usr/bin/screen.real -c "$temp" $SHELL /usr/bin/motd+shell "$temp"
+	exec /usr/bin/screen -c "$temp" $SHELL /usr/bin/motd+shell "$temp"
 else
-	exec /usr/bin/screen.real -c "$HOME/.$PKG/profile" "$@"
+	exec /usr/bin/screen -c "$HOME/.$PKG/profile" "$@"
 fi
