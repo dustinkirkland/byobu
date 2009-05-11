@@ -1,8 +1,11 @@
-byobu (2.3) jaunty; urgency=low
+byobu (2.3) unreleased; urgency=low
 
-  * UNRELEASED
+  * byobu-status-detail: foldcolumn=2, print bars on the left side
+    that should make the folding output easier to read
+  * byobu-status: print some navigation hints at the top of the detailed
+    status output
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 May 2009 16:43:22 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 May 2009 10:49:30 -0500
 
 byobu (2.2-0ubuntu1) karmic; urgency=low
 
