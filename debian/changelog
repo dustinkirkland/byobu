@@ -1,8 +1,14 @@
 byobu (2.4) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Dustin Kirkland ]
+  * byobu: support Debian/Ubuntu's diversion of screen to screen.real,
+    as well as RH, which does not divert the real screen binary
+  * debian/release.sh: handle version incrementing in the rpm specfile
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 May 2009 20:04:02 -0500
+  [ David Duffey ]
+  * rpm/byobu.spec: initial specfile for RH packaging
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 May 2009 21:32:00 -0500
 
 byobu (2.3-0ubuntu1) karmic; urgency=low
 

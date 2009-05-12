@@ -20,6 +20,17 @@
 OLDPKG="screen-profiles"
 PKG="byobu"
 
+# Support Debian/Ubuntu's diversion for /usr/bin/screen, but also
+# Red Hat and others who do not divert
+if [ -x "/usr/bin/screen.real" ]; then
+	SCREEN_REAL="/usr/bin/screen.real"
+elif [ -x "/usr/bin/screen" -a "$0" != "/usr/bin/screen" ]; then
+	SCREEN_REAL="/usr/bin/screen"
+else
+	echo "ERROR: Cannot determine your actual screen binary" 1>&2
+	exit 1
+fi
+
 # Upgrade old config dir to the new name
 [ -d "$HOME/.$OLDKPG" -a ! -e "$HOME/.$PKG" ] && mv -f "$HOME/.$OLDPKG" "$HOME/.$PKG"
 
@@ -33,7 +44,7 @@ PKG="byobu"
 # this shows that the user has an existing custom screen configuration,
 # and thus we will not force $PKG on them.
 if [ -r "$SCREENRC" -a ! -e "$HOME/.$PKG/profile" -a ! -h "$HOME/.$PKG/profile" ]; then
-	exec /usr/bin/screen.real -c "$SCREENRC" "$@"
+	exec $SCREEN_REAL -c "$SCREENRC" "$@"
 	exit $?
 fi
 
@@ -91,7 +102,7 @@ if [ "$#" = "0" ]; then
 	temp=$(mktemp -t $PKG-XXXXXXXX)
 	cat "$HOME/.$PKG/profile" "$HOME/.$PKG/windows" > "$temp"
 	[ -n "$SHELL" -a -x "$SHELL" ] || SHELL="/bin/sh"
-	exec /usr/bin/screen.real -c "$temp" $SHELL /usr/bin/motd+shell "$temp"
+	exec $SCREEN_REAL -c "$temp" $SHELL /usr/bin/motd+shell "$temp"
 else
-	exec /usr/bin/screen.real -c "$HOME/.$PKG/profile" "$@"
+	exec $SCREEN_REAL -c "$HOME/.$PKG/profile" "$@"
 fi
