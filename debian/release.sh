@@ -24,7 +24,7 @@ bzr tag --delete 2.$curver || true
 bzr tag 2.$curver
 ver=`expr $curver + 1`
 dch -v "2.$ver" "UNRELEASED"
-sed -i "s/2.$ver) karmic;/2.$ver) unreleased;/" debian/changelog
+sed -i "s/2.$ver) .*;/2.$ver) unreleased;/" debian/changelog
 
 gpg --armor --sign --detach-sig ../"$PKG"_*.orig.tar.gz
 
