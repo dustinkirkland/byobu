@@ -105,7 +105,8 @@ elif [ -x /usr/bin/zypper ]; then
 	/usr/bin/zypper --no-refresh lu --best-effort | grep 'v |' | wc -l > $mycache &
 elif [ -x /usr/bin/yum ]; then
 	# If yum exists, use it
-	/usr/bin/yum list updates | grep -c "updates" > $mycache &
+	# TODO: We need a better way of counting updates available from a RH expert
+	/usr/bin/yum list updates | egrep -v "Updated Packages|Loaded plugins" | wc -l > $mycache &
 else
 	# If we're here, we have no idea
 	print_updates "?"
