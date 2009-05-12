@@ -1,4 +1,10 @@
-byobu (2.3) unreleased; urgency=low
+byobu (2.4) jaunty; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 May 2009 20:04:02 -0500
+
+byobu (2.3-0ubuntu1) karmic; urgency=low
 
   * byobu-status-detail: foldcolumn=2, print bars on the left side
     that should make the folding output easier to read
