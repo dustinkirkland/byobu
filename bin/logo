@@ -90,8 +90,10 @@ fi
 
 # This can be a very expensive operation, do it only
 # if all other methods fail
-distro=`lsb_release -s -a 2>/dev/null`
-print_logo "$distro" && exit 0 || true
+if which lsb_release >/dev/null 2>&1; then
+	distro=`lsb_release -s -a 2>/dev/null`
+	print_logo "$distro" && exit 0 || true
+fi
 
 # No idea!
 printf " ? "
