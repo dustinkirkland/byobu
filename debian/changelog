@@ -13,12 +13,17 @@ byobu (2.4) unreleased; urgency=low
   * bin/ip-address: hostname -i doesn't always work, use ifconfig
     instead, LP: #376080
   * byobu-export: tar files with owner/group as root/root, LP: #371025
+  * byobu, debian/install, motd+shell, profiles/byoburc: launch screen
+    with a simple config file that includes the chosen profile plus
+    the chosen windows; but on refresh, only reload the chosen profile;
+    revert previous hack that did this by creating a temporary config
+    file and broke on hardy, LP: #375309
   * debian/control: suggest vim, for better handling of status details
 
   [ David Duffey ]
   * rpm/byobu.spec: initial specfile for RH packaging
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 May 2009 00:55:35 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 May 2009 13:03:53 -0500
 
 byobu (2.3-0ubuntu1) karmic; urgency=low
 

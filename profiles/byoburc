@@ -1,7 +1,8 @@
-#!/bin/sh
+###############################################################################
+#    Load both the profile, and the default windows, used at startup but not
+#    profile refresh
 #
-#    motd+shell
-#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2009 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
 #
@@ -16,6 +17,7 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###############################################################################
 
-[ -r /etc/motd ] && cat /etc/motd
-[ -n "$SHELL" -a -x "$SHELL" ] && exec "$SHELL" || exec /bin/sh
+source $HOME/.byobu/profile
+source $HOME/.byobu/windows

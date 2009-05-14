@@ -97,12 +97,8 @@ sed -i "s/$OLDPKG/$PKG/g" "$HOME/.$PKG/keybindings"
 
 # Now let's execute screen!
 if [ "$#" = "0" ]; then
-	# Create a temporary config file *with* the default windows
-	# but if we refresh, we'll just source the profile, without
-	temp=$(mktemp -t $PKG-XXXXXXXX)
-	cat "$HOME/.$PKG/profile" "$HOME/.$PKG/windows" > "$temp"
 	[ -n "$SHELL" -a -x "$SHELL" ] || SHELL="/bin/sh"
-	exec $SCREEN_REAL -c "$temp" $SHELL /usr/bin/motd+shell "$temp"
+	exec $SCREEN_REAL -c "/usr/share/$PKG/profiles/byoburc" $SHELL /usr/bin/motd+shell
 else
 	exec $SCREEN_REAL -c "$HOME/.$PKG/profile" "$@"
 fi

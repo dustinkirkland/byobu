@@ -1,5 +1,6 @@
 bin/* usr/lib/byobu
 po/locale/* usr/share/locale
+profiles/byoburc usr/share/byobu/profiles
 profiles/common usr/share/byobu/profiles
 profiles/NONE usr/share/byobu/profiles
 profiles/black usr/share/byobu/profiles
