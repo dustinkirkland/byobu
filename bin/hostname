@@ -27,4 +27,4 @@ fi
 at=
 grep -qs "^whoami=1$" "$HOME/.$PKG/status" && at="@"
 
-printf "\005{=b }%s%s\005{-}" "$at" $(hostname -s 2>/dev/null || hostname)
+printf "\005{+b W}%s%s\005{-}" "$at" $(hostname -s 2>/dev/null || hostname)

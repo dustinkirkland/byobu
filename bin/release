@@ -26,13 +26,13 @@ if which lsb_release >/dev/null 2>&1; then
 	r=$(lsb_release -s -d)
 	if echo "$r" | grep -qs "^Ubuntu .*\..*\..*$"; then
 		# Use the -d if an Ubuntu LTS
-		printf "\005{=b }%s\005{-} " "$r"
+		printf "\005{+b }%s\005{-} " "$r"
 	else
 		# But for other distros the description
 		# is too long, so build from -i and -r
 		i=$(lsb_release -s -i)
 		r=$(lsb_release -s -r)
-		printf "\005{=b }%s %s\005{-} " "$i" "$r"
+		printf "\005{+b }%s %s\005{-} " "$i" "$r"
 	fi
 elif [ -r "/etc/issue" ]; then
 	if [ "$1" = "--detail" ]; then
@@ -40,7 +40,7 @@ elif [ -r "/etc/issue" ]; then
 		exit 0
 	fi
 	# Otherwise, grab part of /etc/issue, ideally the distro and version
-	printf "\005{=b }%s\005{-} " $(head -n1 /etc/issue | sed "s/ [^0-9]* / /" | awk '{print $1 " " $2}')
+	printf "\005{+b }%s\005{-} " $(head -n1 /etc/issue | sed "s/ [^0-9]* / /" | awk '{print $1 " " $2}')
 else
 	echo "Unknown"
 fi
