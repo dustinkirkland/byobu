@@ -18,12 +18,14 @@ byobu (2.4) unreleased; urgency=low
     the chosen windows; but on refresh, only reload the chosen profile;
     revert previous hack that did this by creating a temporary config
     file and broke on hardy, LP: #375309
+  * screen-launcher: don't use the -x argument if launching a new screen,
+    as this fails to launch default windows, LP: #375768
   * debian/control: suggest vim, for better handling of status details
 
   [ David Duffey ]
   * rpm/byobu.spec: initial specfile for RH packaging
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 May 2009 13:03:53 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 May 2009 13:22:17 -0500
 
 byobu (2.3-0ubuntu1) karmic; urgency=low
 

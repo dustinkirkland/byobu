@@ -25,5 +25,10 @@
 # and friends can pick it up before going into screen
 [ -x /bin/bash ] && /bin/true | /bin/bash -i -s
 
-# Launch screen
-exec screen -xRR
+arg="-xRR"
+out=`screen -ls 2>/dev/null`
+if echo "$out" | grep -qsi "^No Sockets found in "; then
+	# Start new session
+	arg=""
+fi
+exec screen "$arg"
