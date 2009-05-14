@@ -12,12 +12,13 @@ byobu (2.4) unreleased; urgency=low
     colors look bad on the light* profiles
   * bin/ip-address: hostname -i doesn't always work, use ifconfig
     instead, LP: #376080
+  * byobu-export: tar files with owner/group as root/root, LP: #371025
   * debian/control: suggest vim, for better handling of status details
 
   [ David Duffey ]
   * rpm/byobu.spec: initial specfile for RH packaging
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 13 May 2009 23:08:39 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 May 2009 00:55:35 -0500
 
 byobu (2.3-0ubuntu1) karmic; urgency=low
 

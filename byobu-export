@@ -239,7 +239,7 @@ sed -i "s:.$PKG/profile\":\.screenrc\":" "$PROFILE"
 sed -i "s:^bindkey -k k9 screen -t help:#bindkey -k k9 screen -t help:" "$PROFILE"
 
 # tar up the results
-tar -zcf "$file" -C "$DIR" . || error "Could not create archive"
+tar --owner=root --group=root -zcf "$file" -C "$DIR" . || error "Could not create archive"
 
 echo
 echo "Success!"
