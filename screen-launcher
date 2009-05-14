@@ -26,7 +26,7 @@
 [ -x /bin/bash ] && /bin/true | /bin/bash -i -s
 
 arg="-xRR"
-out=`screen -ls 2>/dev/null`
+out=`screen -ls 2>/dev/null` || true
 if echo "$out" | grep -qsi "^No Sockets found in "; then
 	# Start new session
 	arg=""
