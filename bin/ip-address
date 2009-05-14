@@ -28,4 +28,7 @@ space=
 grep -qs "^hostname=1$" "$HOME/.$PKG/status" && space=" "
 grep -qs "^whoami=1$" "$HOME/.$PKG/status" && space=" "
 
-printf "%s\005{+b }%s\005{-}" "$space" $(hostname -i 2>/dev/null)
+interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
+ipaddr=`/sbin/ifconfig "$interface" | grep "inet addr:" | sed "s/^.*inet addr://" | sed "s/ .*$//"`
+
+printf "%s\005{+b }%s\005{-}" "$space" "$ipaddr"

@@ -8,12 +8,16 @@ byobu (2.4) unreleased; urgency=low
   * bin/release: try to grab both distro and version from /etc/issue
     if that's what we're forced to use
   * bin/updates-available: improve counting of yum updates available
+  * bin/ip-address,whoami,release,hostname: use +b rather than =b,
+    colors look bad on the light* profiles
+  * bin/ip-address: hostname -i doesn't always work, use ifconfig
+    instead, LP: #376080
   * debian/control: suggest vim, for better handling of status details
 
   [ David Duffey ]
   * rpm/byobu.spec: initial specfile for RH packaging
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 May 2009 22:43:51 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 13 May 2009 23:08:39 -0500
 
 byobu (2.3-0ubuntu1) karmic; urgency=low
 
