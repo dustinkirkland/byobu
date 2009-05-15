@@ -22,7 +22,7 @@
 #       ./debian/rules get-po
 
 
-import sys, os, os.path, time, string, commands, gettext
+import sys, os, os.path, time, string, commands, gettext, glob
 from ConfigParser import SafeConfigParser
 from snack import *
 
@@ -107,9 +107,10 @@ def messagebox(screen, width, height, title, text, \
     return bb.buttonPressed(g.runOnce())
 
 def help(screen, size, config):
-    f=file(DOC+'/help.txt')
-    text=f.read()
-    f.close()
+    for fn in glob.glob(DOC+'*/help.txt'):
+        f=file(fn)
+        text=f.read()
+        f.close()
 
     text=text.replace("<esckey>", getesckey(), 1)
 
