@@ -32,5 +32,5 @@ fi
 # Default to /, but let users override
 [ -r "$HOME/.$PKG/disk" ] && MP=`cat "$HOME/.$PKG/disk"` || MP="/"
 
-df -h "$MP" | tail -n 1 | awk '{print "\005{= MW}" $5 "\005{-}"}'
-printf "%s" "$whitespace"
+used=`df -h "$MP" | tail -n 1 | sed "s/%.*$/%/" | sed "s/^.* //"`
+printf "\005{= MW}%s%s" "$used" "$whitespace"

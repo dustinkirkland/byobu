@@ -4,6 +4,8 @@ byobu (2.4) unreleased; urgency=low
   * byobu: support Debian/Ubuntu's diversion of screen to screen.real,
     as well as RH, which does not divert the real screen binary
   * debian/release.sh: handle version incrementing in the rpm specfile
+  * bin/disk-used: fix situations where df output wraps to the next
+    line
   * bin/logo: check that lsb_release is available before using it
   * bin/release: try to grab both distro and version from /etc/issue
     if that's what we're forced to use
@@ -25,7 +27,7 @@ byobu (2.4) unreleased; urgency=low
   [ David Duffey ]
   * rpm/byobu.spec: initial specfile for RH packaging
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 May 2009 13:22:17 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 15 May 2009 17:16:44 +0100
 
 byobu (2.3-0ubuntu1) karmic; urgency=low
 
