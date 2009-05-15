@@ -60,6 +60,7 @@ mkdir -p ${RPM_BUILD_ROOT}/usr/share/byobu/windows
 mkdir -p ${RPM_BUILD_ROOT}/usr/bin
 cp -ar bin/* ${RPM_BUILD_ROOT}/usr/lib/byobu
 cp -ar po/locale/* ${RPM_BUILD_ROOT}/usr/share/locale
+cp -ar profiles/byoburc ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
 cp -ar profiles/common ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
 cp -ar profiles/NONE ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
 cp -ar profiles/black ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
@@ -127,6 +128,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/locale/fr/LC_MESSAGES/byobu.mo
 /usr/share/byobu/keybindings/common
 /usr/share/byobu/keybindings/none
+/usr/share/byobu/profiles/byoburc
 /usr/share/byobu/profiles/NONE
 /usr/share/byobu/profiles/black
 /usr/share/byobu/profiles/common
