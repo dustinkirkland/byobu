@@ -19,7 +19,7 @@
 
 PKG="byobu"
 
-cache="$HOME/.$PKG/network-down"
+cache="/var/run/screen/S-$USER/$PKG.network-down"
 interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
 unit="kB/s"
 

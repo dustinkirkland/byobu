@@ -14,6 +14,8 @@ byobu (2.4) unreleased; urgency=low
     colors look bad on the light* profiles
   * bin/ip-address: hostname -i doesn't always work, use ifconfig
     instead, LP: #376080
+  * bin/network-down,network-up,updates-available: use /var/run/screen
+    for status cache files, to keep from waking up the disk
   * byobu-export: tar files with owner/group as root/root, LP: #371025
   * byobu, debian/install, motd+shell, profiles/byoburc: launch screen
     with a simple config file that includes the chosen profile plus
@@ -27,7 +29,7 @@ byobu (2.4) unreleased; urgency=low
   [ David Duffey ]
   * rpm/byobu.spec: initial specfile for RH packaging
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 15 May 2009 17:16:44 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 16 May 2009 20:19:38 +0100
 
 byobu (2.3-0ubuntu1) karmic; urgency=low
 

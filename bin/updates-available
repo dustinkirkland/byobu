@@ -52,8 +52,8 @@ print_updates() {
 	exit 0
 }
 
-cache=/var/run/updates-available
-mycache=$HOME/.$PKG/updates-available
+cache="/var/run/updates-available"
+mycache="/var/run/screen/S-$USER/$PKG.updates-available"
 now=`date +%s`
 cache_timestamp=`stat -c "%Y" $cache 2>/dev/null || echo 0`
 mycache_timestamp=`stat -c "%Y" $mycache 2>/dev/null || echo 0`
