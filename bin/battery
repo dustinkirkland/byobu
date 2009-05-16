@@ -59,18 +59,12 @@ for bat in $BATS; do
    rem=$(search "$statefile" "remaining capacity: *\(.*\) m[AW]h")
 
    percent=$( echo "$rem" "$full" | awk '{printf "%.0f",  100*$1/$2}')
-   if [ "$percent" -lt 17 ]; then
-	per_color="{= rw}"
-   elif [ "$percent" -lt 33 ]; then
-	per_color="{= Rw}"
-   elif [ "$percent" -lt 50 ]; then
-	per_color="{= Yk}"
+   if [ "$percent" -lt 33 ]; then
+	per_color="{= Rk}"
    elif [ "$percent" -lt 67 ]; then
-	per_color="{= yk}"
-   elif [ "$percent" -lt 83 ]; then
-	per_color="{= Gw}"
+	per_color="{= Yk}"
    else
-	per_color="{= gw}"
+	per_color="{= Gk}"
    fi
    percent="$percent%"
 

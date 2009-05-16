@@ -16,7 +16,9 @@ byobu (2.4) unreleased; urgency=low
     instead, LP: #376080
   * bin/network-down,network-up,updates-available: use /var/run/screen
     for status cache files, to keep from waking up the disk
-  * bin/battery: color the entire battery the same way
+  * bin/battery: color the entire battery the same way, only use 3 tones,
+    Green/Yellow/Red (6 was too confusing), always use black text on
+    capital G/Y/R background
   * byobu-export: tar files with owner/group as root/root, LP: #371025
   * byobu, debian/install, motd+shell, profiles/byoburc: launch screen
     with a simple config file that includes the chosen profile plus
@@ -33,7 +35,7 @@ byobu (2.4) unreleased; urgency=low
   [ Dustin Kirkland ]
   * -
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 16 May 2009 20:35:23 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 16 May 2009 21:06:53 +0100
 
 byobu (2.3-0ubuntu1) karmic; urgency=low
 
