@@ -74,7 +74,7 @@ fi
 if [ -r $mycache -a -O $mycache ]; then
 	diff=`expr $now - $mycache_timestamp`
 	if [ $diff -lt $EXPIRATION ]; then
-		print_updates `cat $mycache`
+		print_updates `cat $mycache | grep "^[0-9]" | sed "s/ .*$//"`
 	fi
 else
 	# Otherwise, let's quickly clear the cache, and then recreate it with
