@@ -38,9 +38,6 @@ byobu (2.4-0ubuntu1) karmic; urgency=low
   [ David Duffey ]
   * rpm/byobu.spec: initial specfile for RH packaging
 
-  [ Dustin Kirkland ]
-  * -
-
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 16 May 2009 21:06:53 +0100
 
 byobu (2.3-0ubuntu1) karmic; urgency=low
