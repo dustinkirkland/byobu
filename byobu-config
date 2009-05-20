@@ -265,6 +265,8 @@ def readstatus():
     status["processes"]=0
     status["reboot-required"]=1
     status["release"]=1
+    status["temp-c"]=0
+    status["temp-f"]=0
     status["time"]=1
     status["users"]=0
     status["updates-available"]=1

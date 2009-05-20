@@ -63,7 +63,7 @@ case "$P" in
 		grep -qs -m1 "^$P=0$" "$HOME/.$PKG/status" && exit 0
 	;;
 	# default = off, user must override to turn on
-	arch|battery|disk-available|disk-used|ec2-cost|hostname|ip-address|network-down|network-up|processes|users|whoami|wifi-quality)
+	arch|battery|disk-available|disk-used|ec2-cost|hostname|ip-address|network-down|network-up|processes|users|temp-c|temp-f|whoami|wifi-quality)
 		grep -qs -m1 "^$P=1$" "$HOME/.$PKG/status" || exit 0
 	;;
 	--detail)

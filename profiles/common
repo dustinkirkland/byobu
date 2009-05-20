@@ -52,6 +52,8 @@ backtick 121 86400 86400 byobu-status time
 backtick 122 3600 3600 byobu-status ip-address
 backtick 123 86400 86400 byobu-status disk-available
 backtick 124 2 2 byobu-status disk-used
+backtick 125 30 30 byobu-status temp-c
+backtick 126 30 30 byobu-status temp-f
 
 hardstatus alwayslastline
 

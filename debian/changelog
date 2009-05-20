@@ -1,8 +1,10 @@
 byobu (2.5) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/temp-c, bin/temp-f, byobu-config, byobu-config.1, byobu-status,
+    profiles/common, profiles/profile.skel, rpm/byobu.spec: added a
+    cpu temperature indicator
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 May 2009 19:24:24 +0200
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 20 May 2009 12:08:35 +0200
 
 byobu (2.4-0ubuntu1) karmic; urgency=low
 
