@@ -220,6 +220,8 @@ PROFILE="$DIR/.screenrc"
 STATUS="$DIR/.$PKG/status"
 mkdir -p "$DIR/.$PKG/bin"
 touch "$DIR/.$PKG/profile"
+[ -x /usr/bin/dpkg-query ] && /usr/bin/dpkg-query --show --showformat '${Package} ${Version}\n' $PKG > "$DIR/.$PKG/version"
+echo "http://launchpad.net/$PKG" >> "$DIR/.$PKG/version"
 
 # Copy status scripts
 cp -a /usr/lib/$PKG/* "$DIR/.$PKG/bin"

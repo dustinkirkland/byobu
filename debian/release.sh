@@ -30,7 +30,7 @@ sed -i "s%^Source0:.*$%Source0:        http://code.launchpad.net/$PKG/trunk/2.$v
 
 gpg --armor --sign --detach-sig ../"$PKG"_*.orig.tar.gz
 
-$PKG-export /tmp/$PKG-export.tar.gz
+$PKG-export -c light -f /tmp/$PKG-export.tar.gz
 puc /tmp/$PKG-export.tar.gz
 
 echo
