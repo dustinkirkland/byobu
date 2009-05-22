@@ -26,9 +26,12 @@ ver=`expr $curver + 1`
 dch -v "2.$ver" "UNRELEASED"
 sed -i "s/2.$ver) .*;/2.$ver) unreleased;/" debian/changelog
 sed -i "s/^Version:.*$/Version:        2.$ver/" rpm/$PKG.spec
-sed -i "s%^Source0:.*$%Source0:        http://code.launchpad.net/byobu/trunk/2.$ver/+download/byobu_2.$ver.orig.tar.gz%" rpm/$PKG.spec
+sed -i "s%^Source0:.*$%Source0:        http://code.launchpad.net/$PKG/trunk/2.$ver/+download/byobu_2.$ver.orig.tar.gz%" rpm/$PKG.spec
 
 gpg --armor --sign --detach-sig ../"$PKG"_*.orig.tar.gz
+
+$PKG-export /tmp/$PKG-export.tar.gz
+puc /tmp/$PKG-export.tar.gz
 
 echo
 echo
