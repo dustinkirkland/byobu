@@ -5,10 +5,12 @@ It was downloaded from: http://launchpad.net/byobu
 
 Upstream Authors:
  Dustin Kirkland <kirkland@canonical.com>
+ Dustin Kirkland <dustin.kirkland@gmail.com>
  Nick Barcet <nick.barcet@ubuntu.com>
 
 Copyright:
  Copyright (C) 2008-2009 Canonical Ltd.
+ Copyright (C) 2009 Dustin Kirkland
 
  All rights reserved.
 
@@ -31,4 +33,5 @@ License:
 
 The Ubuntu packaging:
  Copyright (C) 2008-2009 Canonical Ltd.
+ Copyright (C) 2009 Dustin Kirkland
  released under the GPL-3.
