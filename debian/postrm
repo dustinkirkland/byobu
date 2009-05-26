@@ -2,7 +2,7 @@
 
 PKG="byobu"
 
-if [ "$1" = "remove" ]; then
+if [ -x "/usr/bin/screen.real" ]; then
 	dpkg-divert --package "$PKG" --rename --remove /usr/bin/screen
 fi
 

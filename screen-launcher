@@ -27,8 +27,8 @@
 
 out=`screen -ls 2>/dev/null` || true
 if echo "$out" | grep -qsi "^No Sockets found in "; then
-	# Start new session
-	exec screen
+	# Start new byobu session
+	exec byobu
 else
 	# Re-attach to an existing session
 	exec screen -xRR

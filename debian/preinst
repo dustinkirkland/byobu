@@ -2,8 +2,10 @@
 
 PKG="byobu"
 
-if [ "$1" = install -o "$1" = upgrade ]; then
-	dpkg-divert --package "$PKG" --divert /usr/bin/screen.real --rename /usr/bin/screen
+if [ -x "/usr/bin/screen.real" ]; then
+	# Byobu used to divert the real /usr/bin/screen, but we don't
+	# do this anymore; clean up old diversion if upgrading
+        dpkg-divert --package "$PKG" --rename --remove /usr/bin/screen
 fi
 
 #DEBHELPER#

@@ -1,8 +1,11 @@
 byobu (2.6) unreleased; urgency=low
 
-  * UNRELEASED
+  * byobu, debian/postrm, debian/preinst, debian/rules, screen-launcher:
+    remove the dpkg diversion on /usr/bin/screen as this has proven
+    to be controversial; users will need to call "byobu" to launch
+    a byobu-style screen session
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 26 May 2009 12:00:27 +0200
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 26 May 2009 16:47:40 +0200
 
 byobu (2.5-0ubuntu1) karmic; urgency=low
 

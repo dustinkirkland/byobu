@@ -19,17 +19,7 @@
 
 OLDPKG="screen-profiles"
 PKG="byobu"
-
-# Support Debian/Ubuntu's diversion for /usr/bin/screen, but also
-# Red Hat and others who do not divert
-if [ -x "/usr/bin/screen.real" ]; then
-	SCREEN_REAL="/usr/bin/screen.real"
-elif [ -x "/usr/bin/screen" -a "$0" != "/usr/bin/screen" ]; then
-	SCREEN_REAL="/usr/bin/screen"
-else
-	echo "ERROR: Cannot determine your actual screen binary" 1>&2
-	exit 1
-fi
+SCREEN_REAL="/usr/bin/screen"
 
 # Upgrade old config dir to the new name
 [ -d "$HOME/.$OLDKPG" -a ! -e "$HOME/.$PKG" ] && mv -f "$HOME/.$OLDPKG" "$HOME/.$PKG"
