@@ -5,9 +5,10 @@ PKG="byobu"
 if [ -x "/usr/bin/screen.real" ]; then
 	# Byobu used to divert the real /usr/bin/screen, but we don't
 	# do this anymore; clean up old diversion if upgrading
-	if ls -alF /usr/bin/screen | grep -qs "/usr/bin/screen -> byobu"; then
-		rm -f /usr/bin/screen
-	fi
+	#if ls -alF /usr/bin/screen | grep -qs "/usr/bin/screen -> byobu"; then
+	#	rm -f /usr/bin/screen
+	#	mv /usr/bin/screen.real /usr/bin/screen
+	#fi
         dpkg-divert --package "$PKG" --rename --remove /usr/bin/screen
 fi
 
