@@ -4,8 +4,9 @@ byobu (2.6) unreleased; urgency=low
     remove the dpkg diversion on /usr/bin/screen as this has proven
     to be controversial; users will need to call "byobu" to launch
     a byobu-style screen session
+  * bin/network-*: set rate=0 when rate is negative (ie, on startup)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 26 May 2009 16:47:40 +0200
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 26 May 2009 21:52:53 +0200
 
 byobu (2.5-0ubuntu1) karmic; urgency=low
 

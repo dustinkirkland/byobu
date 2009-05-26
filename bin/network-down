@@ -38,7 +38,9 @@ else
 	x2=`/sbin/ifconfig "$interface" | grep "RX bytes" | sed "s/^.*RX bytes://" | sed "s/ .*$//"`
 	echo "$x2" > "$cache"
 	rate=`echo "$t1" "$t2" "$x1" "$x2" | awk '{printf "%.0f", ($4 - $3) / ($2 - $1) / 1024 }'`
-	if [ "$rate" -gt 1024 ]; then
+	if [ "$rate" -lt 0 ]; then
+		rate=0
+	elif [ "$rate" -gt 1024 ]; then
 		rate=`echo "$rate" | awk '{printf "%.1f", $1/1024}'`
 		unit="MB/s"
 	fi
