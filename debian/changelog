@@ -1,4 +1,10 @@
-byobu (2.5) unreleased; urgency=low
+byobu (2.6) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 26 May 2009 12:00:27 +0200
+
+byobu (2.5-0ubuntu1) karmic; urgency=low
 
   * bin/temp-c, bin/temp-f, byobu-config, byobu-config.1, byobu-status,
     profiles/common, profiles/profile.skel, rpm/byobu.spec: added a
