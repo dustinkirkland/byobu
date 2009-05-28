@@ -3,7 +3,7 @@ byobu (2.6) unreleased; urgency=low
   * byobu, debian/postrm, debian/preinst, debian/rules, screen-launcher:
     remove the dpkg diversion on /usr/bin/screen as this has proven
     to be controversial; users will need to call "byobu" to launch
-    a byobu-style screen session
+    a byobu-style screen session; LP: #330322
   * bin/network-*: set rate=0 when rate is negative (ie, on startup)
   * bin/temp-*: better support for temperature zones, LP: #380885
 
