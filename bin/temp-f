@@ -23,7 +23,8 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-if [ -r "$DIR/THM0/temperature" ]; then
-	t=$(sed "s/^[^0-9]\+//" "$DIR"/THM0/temperature | sed "s/\s.*$//" | awk '{printf "%.0f", $1 *9/5 + 32}')
+for i in `ls "$DIR/THM"*"/temperature"`; do
+	t=$(sed "s/^[^0-9]\+//" "$i" | sed "s/\s.*$//" | awk '{printf "%.0f", $1 *9/5 + 32}')
 	printf "\005{= kY}%sF\005{-} " "$t"
-fi
+        break
+done

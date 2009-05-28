@@ -5,8 +5,9 @@ byobu (2.6) unreleased; urgency=low
     to be controversial; users will need to call "byobu" to launch
     a byobu-style screen session
   * bin/network-*: set rate=0 when rate is negative (ie, on startup)
+  * bin/temp-*: better support for temperature zones, LP: #380885
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 26 May 2009 21:52:53 +0200
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 28 May 2009 10:40:24 +0200
 
 byobu (2.5-0ubuntu1) karmic; urgency=low
 
