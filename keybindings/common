@@ -46,3 +46,5 @@ bindkey -k k9 screen -t help 0 byobu-config		# F9  | Configuration
 							# F11 | 'fullscreen' in gnome-terminal
 bindkey -k F2 lockscreen				# F12 | Lock this terminal
 bind $ screen -t status 0 byobu-status-detail 		# ctrl-a $ | show detailed status
+bind @ screen -t help 0 byobu-config			# ctrl-a @ | Configuration
+bind R process r					# ctrl-a R | Reload profile

@@ -11,8 +11,9 @@ byobu (2.6) unreleased; urgency=low
     selection at this time, LP: #330322
   * screen-launcher-install: handle non-interactive shells correctly,
     LP: #380761
+  * keybindings/common: add keybindings, @=config, R=reload, LP: #380944
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 01 Jun 2009 08:59:15 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 01 Jun 2009 09:09:01 -0500
 
 byobu (2.5-0ubuntu1) karmic; urgency=low
 
