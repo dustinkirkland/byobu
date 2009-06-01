@@ -9,9 +9,10 @@ byobu (2.6) unreleased; urgency=low
   * byobu: If the user is running byobu with some arguments, but has
     not selected their profile yet, don't bother them with profile
     selection at this time, LP: #330322
+  * screen-launcher-install: handle non-interactive shells correctly,
+    LP: #380761
 
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 01 Jun 2009 08:22:57 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 01 Jun 2009 08:59:15 -0500
 
 byobu (2.5-0ubuntu1) karmic; urgency=low
 
