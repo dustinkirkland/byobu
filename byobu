@@ -38,6 +38,13 @@ if [ -r "$SCREENRC" -a ! -e "$HOME/.$PKG/profile" -a ! -h "$HOME/.$PKG/profile" 
 	exit $?
 fi
 
+# If the user is running byobu with some arguments, but has not selected
+# their profile yet, don't bother them with profile selection at this time
+if [ $# -gt 0 -a ! -h "$HOME/.$PKG/profile" ]; then
+	exec $SCREEN_REAL "$@"
+	exit $?
+fi
+
 DEFAULT_PROFILE="light"
 
 # Ensure that the user has selected a screen profile
