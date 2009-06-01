@@ -12,8 +12,9 @@ byobu (2.6) unreleased; urgency=low
   * screen-launcher-install: handle non-interactive shells correctly,
     LP: #380761
   * keybindings/common: add keybindings, @=config, R=reload, LP: #380944
+  * po/ru.po: added russian translation, thanks Slava, LP: #380977
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 01 Jun 2009 09:09:01 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 01 Jun 2009 09:11:22 -0500
 
 byobu (2.5-0ubuntu1) karmic; urgency=low
 
