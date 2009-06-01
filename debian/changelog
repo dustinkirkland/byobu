@@ -1,4 +1,10 @@
-byobu (2.6) unreleased; urgency=low
+byobu (2.7) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 01 Jun 2009 09:17:28 -0500
+
+byobu (2.6-0ubuntu1) karmic; urgency=low
 
   * byobu, debian/postrm, debian/preinst, debian/rules, screen-launcher:
     remove the dpkg diversion on /usr/bin/screen as this has proven
