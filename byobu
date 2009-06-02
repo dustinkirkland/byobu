@@ -22,7 +22,7 @@ PKG="byobu"
 SCREEN_REAL="/usr/bin/screen"
 
 # Upgrade old config dir to the new name
-[ -d "$HOME/.$OLDKPG" -a ! -e "$HOME/.$PKG" ] && mv -f "$HOME/.$OLDPKG" "$HOME/.$PKG"
+[ -d "$HOME/.$OLDPKG" -a ! -e "$HOME/.$PKG" ] && mv -f "$HOME/.$OLDPKG" "$HOME/.$PKG"
 
 # Create the .$PKG directory, if it doesn't already exist
 [ -d "$HOME/.$PKG" ] || mkdir -p "$HOME/.$PKG"
