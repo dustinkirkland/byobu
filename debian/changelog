@@ -1,4 +1,10 @@
-byobu (2.8) unreleased; urgency=low
+byobu (2.9) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 01 Jun 2009 23:28:57 -0500
+
+byobu (2.8-0ubuntu1) karmic; urgency=low
 
   * profiles/byoburc, profiles/profile.skel: move the .screenrc sourcing
     to the byoburc file
