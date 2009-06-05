@@ -1,8 +1,9 @@
 byobu (2.9) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/wifi-quality, bin/network-up, bin/network-down: must use /sbin
+    in iwconfig and ifconfig paths
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 01 Jun 2009 23:28:57 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 05 Jun 2009 09:26:03 -0500
 
 byobu (2.8-0ubuntu1) karmic; urgency=low
 

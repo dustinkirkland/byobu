@@ -20,11 +20,11 @@
 interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
 
 if [ "$1" = "--detail" ]; then
-	iwconfig 2>/dev/null
+	/sbin/iwconfig 2>/dev/null
 	exit 0
 fi
 
-bitrate=`iwconfig "$interface" 2>/dev/null | grep "Bit Rate." | sed "s/^.*Bit Rate.//" | sed "s/ .*$//g"`
+bitrate=`/sbin/iwconfig "$interface" 2>/dev/null | grep "Bit Rate." | sed "s/^.*Bit Rate.//" | sed "s/ .*$//g"`
 [ -z "$bitrate" ] && bitrate="0"
-quality=`iwconfig "$interface" 2>/dev/null | grep "Link Quality=" | sed "s/^.*Link Quality=//" | sed "s/ .*$//g"`
+quality=`/sbin/iwconfig "$interface" 2>/dev/null | grep "Link Quality=" | sed "s/^.*Link Quality=//" | sed "s/ .*$//g"`
 echo "$bitrate" "$quality" | awk '{printf "\005{=b Ck}%s\005{-}\005{= Ck}Mb/s,\005{-}\005{=b Ck}%.0f\005{-}\005{= Ck}%%\005{-} ", $1, $2}'
