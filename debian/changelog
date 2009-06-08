@@ -11,8 +11,10 @@ byobu (2.9) unreleased; urgency=low
   * bin/disk-*: use the POSIX output format
   * bin/ec2-cost: performance improvement, cache ifconfig output
   * bin/logo: use a case-statement instead of nasty if/then/else stack
+  * profiles/NONE: don't source ~/.screenrc, causes a nasty recursion,
+    LP: #382642
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 08 Jun 2009 17:42:50 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 08 Jun 2009 17:46:24 -0500
 
 byobu (2.8-0ubuntu1) karmic; urgency=low
 
