@@ -27,48 +27,63 @@ else
 fi
 
 print_logo() {
-	distro="$1"
-	if echo "$distro" | grep -qsi "ubuntu"; then
-		$MARKUP && printf "\005{=b kr}\\\\\005{= ky}o\005{=b kY}/" || printf "\\o/"
-	elif echo "$distro" | grep -qsi "altlinux"; then
-		logo="alt"
-		$MARKUP && printf "\005{= Yk}$logo" || printf "$logo"
-	elif echo "$distro" | grep -qsi "arch"; then
-		logo=" A "
-		$MARKUP && printf "\005{=b wb}$logo" || printf "$logo"
-	elif echo "$distro" | grep -qsi "centos"; then
-		logo="****"
-		$MARKUP && printf "\005{= gw}*\005{= mw}*\005{= yw}*\005{= bw}*\005{=b Wk}" || printf "$logo"
-	elif echo "$distro" | grep -qsi "debian"; then
-		logo=" @ "
-		$MARKUP && printf "\005{= wr}$logo" || printf "$logo"
-	elif echo "$distro" | grep -qsi "fedora"; then
-		logo=" f "
-		$MARKUP && printf "\005{=b bw}$logo" || printf "$logo"
-	elif echo "$distro" | grep -qsi "foresight"; then
-		logo="<@>"
-		$MARKUP && printf "\005{=b Wg}$logo" || printf "$logo"
-	elif echo "$distro" | grep -qsi "gentoo"; then
-		logo=" > "
-		$MARKUP && printf "\005{=b cw}$logo" || printf "$logo"
-	elif echo "$distro" | grep -qsi "mandriva"; then
-		logo=" (* "
-		$MARKUP && printf "\005{=b kc} (\005{=b ky}* " || printf "$logo"
-	elif echo "$distro" | grep -qsi "redhat"; then
-		logo=" RH "
-		$MARKUP && printf "\005{= Rk}$logo" || printf "$logo"
-	elif echo "$distro" | grep -qsi "slackware"; then
-		logo=",S "
-		$MARKUP && printf "\005{=u Bk}$logo" || printf "$logo"
-	elif echo "$distro" | grep -qsi "suse"; then
-		logo="SuSE"
-		$MARKUP && printf "\005{= Wg}$logo" || printf "$logo"
-	elif echo "$distro" | grep -qsi "xandros"; then
-		logo=" X "
-		$MARKUP && printf "\005{= Wr}$logo" || printf "$logo"
-	else
-		false
-	fi
+	distro=`echo "$1" | tr '[:upper:]' '[:lower:]'`
+	case "$distro" in
+		*ubuntu*)
+			$MARKUP && printf "\005{=b kr}\\\\\005{= ky}o\005{=b kY}/" || printf "\\o/"
+		;;
+		*altlinux*)
+			logo="alt"
+			$MARKUP && printf "\005{= Yk}$logo" || printf "$logo"
+		;;
+	 	*arch*)
+			logo=" A "
+			$MARKUP && printf "\005{=b wb}$logo" || printf "$logo"
+		;;
+		*centos*)
+			logo="****"
+			$MARKUP && printf "\005{= gw}*\005{= mw}*\005{= yw}*\005{= bw}*\005{=b Wk}" || printf "$logo"
+		;;
+		*debian*)
+			logo=" @ "
+			$MARKUP && printf "\005{= wr}$logo" || printf "$logo"
+		;;
+		*fedora*)
+			logo=" f "
+			$MARKUP && printf "\005{=b bw}$logo" || printf "$logo"
+		;;
+		*foresight*)
+			logo="<@>"
+			$MARKUP && printf "\005{=b Wg}$logo" || printf "$logo"
+		;;
+		*gentoo*)
+			logo=" > "
+			$MARKUP && printf "\005{=b cw}$logo" || printf "$logo"
+		;;
+		*mandriva*)
+			logo=" (* "
+			$MARKUP && printf "\005{=b kc} (\005{=b ky}* " || printf "$logo"
+		;;
+		*redhat*)
+			logo=" RH "
+			$MARKUP && printf "\005{= Rk}$logo" || printf "$logo"
+		;;
+		*slackware*)
+			logo=",S "
+			$MARKUP && printf "\005{=u Bk}$logo" || printf "$logo"
+		;;
+		*suse*)
+			logo="SuSE"
+			$MARKUP && printf "\005{= Wg}$logo" || printf "$logo"
+		;;
+		*xandros*)
+			logo=" X "
+			$MARKUP && printf "\005{= Wr}$logo" || printf "$logo"
+		;;
+		*)
+			false
+		;;
+	esac
 }
 
 if [ -r "$HOME/.$PKG/logo" ]; then
