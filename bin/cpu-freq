@@ -22,9 +22,6 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-mhz=`egrep -i -m 1 "^cpu MHz|^clock|^bogomips" /proc/cpuinfo | awk -F"[:.]" '{print $2}'`
+speed=`egrep -i -m 1 "^cpu MHz|^clock|^bogomips" /proc/cpuinfo | awk -F"[:.]" '{ printf "%.1f", $2 / 1000 }'`
 
-speed=$(echo $mhz | awk '{ printf "%.1f", $1 / 1000 }')
-unit="GHz"
-
-[ -n "$speed" ] && printf "\005{= cW}%s$unit\005{-} " $speed
+[ -n "$speed" ] && printf "\005{= cW}%sGHz\005{-} " $speed

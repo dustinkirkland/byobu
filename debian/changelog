@@ -5,8 +5,9 @@ byobu (2.9) unreleased; urgency=low
   * bin/wifi-quality, bin/network-up, bin/network-down: must use /sbin
     in iwconfig and ifconfig paths
   * bin/cpu-count: performance improvement, use getconf
+  * bin/cpu-freq: performance improvement, simplify pipes
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 08 Jun 2009 11:27:52 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 08 Jun 2009 11:38:05 -0500
 
 byobu (2.8-0ubuntu1) karmic; urgency=low
 
