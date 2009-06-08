@@ -20,7 +20,7 @@
 PKG="byobu"
 
 if [ "$1" = "--detail" ]; then
-	df -h
+	df -h -P
 	exit 0
 fi
 
@@ -35,5 +35,5 @@ fi
 # Default to /, but let users override
 [ -r "$HOME/.$PKG/disk" ] && MP=`cat "$HOME/.$PKG/disk"` || MP="/"
 
-d=`df -h "$MP" | tail -n 1 | awk '{print $2}'`
+d=`df -h -P "$MP" | tail -n 1 | awk '{print $2}'`
 printf "\005{= MW}%sB%s\005{-}%s" "$d" "$comma" "$whitespace"

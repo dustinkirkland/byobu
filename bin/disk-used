@@ -20,7 +20,7 @@
 PKG="byobu"
 
 if [ "$1" = "--detail" ]; then
-	df -h
+	df -h -P
 	exit 0
 fi
 
@@ -32,5 +32,5 @@ fi
 # Default to /, but let users override
 [ -r "$HOME/.$PKG/disk" ] && MP=`cat "$HOME/.$PKG/disk"` || MP="/"
 
-used=`df -h "$MP" | tail -n 1 | sed "s/%.*$/%/" | sed "s/^.* //"`
+used=`df -h -P "$MP" | tail -n 1 | sed "s/%.*$/%/" | sed "s/^.* //"`
 printf "\005{= MW}%s\005{-}%s" "$used" "$whitespace"
