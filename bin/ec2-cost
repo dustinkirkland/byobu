@@ -52,9 +52,11 @@ TX_RATE="0.17"
 # Auto detect network interface
 IF=`/sbin/route -n | grep "0\.0\.0\.0" | tail -n1 | awk '{print $8}'`
 
+ifconfig_out=`/sbin/ifconfig "$IF"`
+
 # Calculate bandwidth cost
-tx_gb=`/sbin/ifconfig "$IF" | grep "TX bytes:" | sed "s/^.*TX bytes://" | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }'`
-rx_gb=`/sbin/ifconfig "$IF" | grep "RX bytes:" | sed "s/^.*RX bytes://" | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }'`
+tx_gb=`echo "$ifconfig_out" | grep "TX bytes:" | sed "s/^.*TX bytes://" | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }'`
+rx_gb=`echo "$ifconfig_out" | grep "RX bytes:" | sed "s/^.*RX bytes://" | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }'`
 network_cost=`echo "$tx_gb" "$TX_RATE" "$rx_gb" "$RX_RATE" | awk '{printf "%f %f", $1*$2, $3*$4}' | awk '{printf "%f", $1 + $2}'`
 
 # Calculate uptime cost
