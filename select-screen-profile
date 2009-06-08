@@ -131,7 +131,7 @@ setprofile() {
 			if [ "$TERM" = "screen" ]; then
 				echo `gettext 'If you are using the default set of keybindings, press\n<F5> to activate these changes.\n\nOtherwise, exit this screen session and start a new one.'`
 			else
-				echo `gettext 'Run "screen" to activate'`
+				echo `gettext 'Run "byobu" to activate'`
 			fi
 			echo
 			break
