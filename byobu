@@ -88,6 +88,13 @@ sed -i "s/$OLDPKG/$PKG/g" "$HOME/.$PKG/keybindings"
 
 # Ensure that their default windows are seeded
 [ -r "$HOME/.$PKG/windows" ] || touch "$HOME/.$PKG/windows"
+if grep -qs "^[^#]" "$HOME/.$PKG/windows"; then
+	# User has some default windows, so don't launch motd+shell
+	DEFAULT_WINDOW=
+else
+	# User has no default windows, so launch motd+shell
+	DEFAULT_WINDOW="$SHELL /usr/bin/motd+shell"
+fi
 
 # Ensure that the user's $SCREENRC at least exists
 [ -r "$SCREENRC" ] || touch "$SCREENRC"
@@ -95,7 +102,7 @@ sed -i "s/$OLDPKG/$PKG/g" "$HOME/.$PKG/keybindings"
 # Now let's execute screen!
 if [ "$#" = "0" ]; then
 	[ -n "$SHELL" -a -x "$SHELL" ] || SHELL="/bin/sh"
-	exec $SCREEN_REAL -c "/usr/share/$PKG/profiles/byoburc" $SHELL /usr/bin/motd+shell
+	exec $SCREEN_REAL -c "/usr/share/$PKG/profiles/byoburc" $DEFAULT_WINDOW
 else
 	exec $SCREEN_REAL -c "$HOME/.$PKG/profile" "$@"
 fi
