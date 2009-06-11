@@ -5,6 +5,67 @@ byobu \- wrapper script for seeding a user's byobu configuration and launching s
 .SH DESCRIPTION
 \fBbyobu\fP is a simple script that sanitizes a user's ~/.byobu directory, and launches screen in the byobu configuration.
 
+.SH STATUS NOTIFICATIONS
+
+\fBbyobu\fP supports a number of unique and interesting status notifications across the lowest two lines in the screen.  Each status notification item is independently configurable, enabled and disabled by the configuration utilty.  The guide below helps identify each status item (in alphabetical order):
+
+\fBarch\fP \- system architecture; displayed on the lower bar toward the left, in the default text color on the default background color
+
+\fBbattery\fP \- battery information; display on the lower bar toward the right; |\-| indicates discharging, |+| indicates charging, |=| indicates fully charged;  when charging or discharging, the current battery capacity as a percentage is displayed;  the colours green, yellow, and red are used to give further indication of the battery's charge state
+
+\fBcpu-count\fP \- the number of cpu's or cores on the system; displayed in the lower bar toward the right in the default text color on the default background, followed by a trailing 'x'
+
+\fBcpu-freq\fP \- the current frequency of the cpu in GHz; displayed in the lower bar toward the right in white text on a light blue background
+
+\fBdate\fP \- the system date in YYYY-MM-DD formate; displayed in the lower on the far right in the default text color on the default background
+
+\fBdisk-available\fP \- disk space available on / directory; displayed in the lower bar on the far right in white text on a light purple background; override the default directory by specifying an alternate mount point in \fI$HOME/.byobu/disk\fP
+
+\fBmem-used\fP \- disk space used on / directory as a percentage of the total space available on /; displayed in the lower bar on the far right in white text on a light purple background with a trailing '%' sign; override the default directory by specifying an alternate mount point in \fI$HOME/.byobu/disk\fP
+
+\fBec2-cost\fP \- an estimation of the cost of the current boot of the system in terms of the Amazon EC2 billing model; displayed in the lower bar toward the right in green text on a grey background; there is a leading '~' to indicate that this is an estimation, and the monetary units are US Dollars '$'
+
+\fBhostname\fP \- the hostname of the system; displayed in the upper bar on the far right in bold black text on a grey background; there is a leading '@' symbol if the username status is also enabled
+
+\fBip-address\fP \- the ip address of the system in dotted decimal form; displayed in the upper bar on the far right in bold black text on a grey background
+
+\fBload-average\fP \- the system load average over the last 1 minute; displayed in the lower bar toward the right in black text on a yellow background
+
+\fBlogo\fP \- an approximation of the current operating system's logo; displayed in the lower bar on the far left; you may customize this logo by setting a chosen logo in \fI$HOME/.byobu/logo\fP, or you may manually choose your operating system by setting this in \fI$HOME/.byobu/distro\fP
+
+\fBmem-available\fP \- total memory available in the system; displayed in the lower bar toward the right in white text on a green background
+
+\fBmem-used\fP \- total memory used in the system as a percentage of the total memory available; displayed in the lower bar toward the right in white text on a green background with a trailing '%' sign
+
+\fBmenu\fP \- a simple indicator directing new users to use the F9 keybinding to access the byobu menu
+
+\fBnetwork-down\fP \- instaneous download bandwidth in kB/s over the last 2 seconds; displayed in the lower bar toward the right in white text on a purple background with a leading 'v' sign indicating 'down'
+
+\fBnetwork-up\fP \- instantaneous upload bandwidth in kB/s over the last 2 seconds; displayed in the lower bar toward the right in white text on a purple background with a leading '^' sign indicating 'up'
+
+\fBprocesses\fP \- total number of processes running on the system; displayed in the lower bar in black text on a dark yellow background with a trailing '&' indicating 'background processes'
+
+\fBreboot-required\fP \- symbol present if a reboot is required following a system update; displayed in the lower bar white text on a blue background by the symbol '(@)' which visually looks like a 'cycle your machine' logo
+
+\fBrelease\fP \- distribution and version information about the release running on the current system as reported by \fBlsb_release(1)\fP or \fI/etc/issue\fP; displayed in the lower bar in bold black text toward the left on a grey background
+
+\fBtemp\-c\fP, \fBtemp\-f\fP \- the cpu temperature in celsius or farenheit; displayed in the lower bar toward the right in yellow text on a black background
+
+\fBtime\fP \- the system time in HH:MM:SS format; displayed in the lower bar on the far right in the default text and default background colors
+
+\fBupdates-available\fP \- the number of updates available on the system; displayed in the lower bar toward the right in white text on a red background with a trailing '!' sign; if any updates are marked 'security updates', then there will be a total of two trailing exclamation points, '!!'
+
+\fBuptime\fP \- the total system uptime since last boot; displayed in the lower bar toward the right in blue text on a grey background
+
+\fBusers\fP \- the number of users logged into the system via sshd; displayed in the lower bar toward the right in red text on a grey background with a trailing '#' sign
+
+\fBwhoami\fP \- the name of the user who owns the screen session; displayed in the upper bar toward the far right in bold black text on a grey background
+
+\fBwifi-quality\fP \- the connection rate and signal quality of the wifi connection; displayed in the lower bar toward the right in black text on a cyan background; the connection rate is in 'Mb/s' and the signal quality is as a percentage with a trailing '%' 
+
+\fBwindows\fP \- each open window in the screen session appears is displayed in the upper bar toward the far right in blue text on a grey background
+
+
 .TP
 \fIhttp://launchpad.net/byobu\fP
 .PD
