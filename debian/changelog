@@ -1,5 +1,6 @@
 byobu (2.10) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * byobu: don't create an extra shell, if the user has some default
     windows specified
   * bin/updates-available, byobu, byobu-export, byobu-status,
@@ -7,7 +8,11 @@ byobu (2.10) unreleased; urgency=low
     install without root privileges and want to run from a location other
     than /usr/bin, LP: #385762
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Jun 2009 20:46:16 -0500
+  [ Ciemon Dunville ]
+  * byobu.1, byobu-config.1: manpages refactored, to move the status
+    descriptions to the main byobu manpage
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Jun 2009 15:51:59 -0500
 
 byobu (2.9-0ubuntu1) karmic; urgency=low
 
