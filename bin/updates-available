@@ -18,8 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 if [ "$1" = "--detail" -o "$1" = "--short" ]; then
-	if [ -x "/usr/bin/apt-get" ]; then
-		detail=`/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade`
+	if which apt-get >/dev/null; then
+		detail=`apt-get -s -o Debug::NoLocking=true upgrade`
 		if [ "$1" = "--detail" ]; then
 			printf "$detail"
 		else
@@ -97,16 +97,16 @@ ionice -c3 -p $$ >/dev/null 2>&1 || true
 if [ -x /usr/lib/update-notifier/apt-check ]; then
 	# If apt-check binary exists, use it
 	/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;/ /" > $mycache &
-elif [ -x /usr/bin/apt-get ]; then
+elif which apt-get 2>/dev/null; then
 	# If apt-get exists, use it
-	/usr/bin/apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
-elif [ -x /usr/bin/zypper ]; then
+	apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
+elif which zypper; then
 	# If zypper exists, use it
-	/usr/bin/zypper --no-refresh lu --best-effort | grep 'v |' | wc -l > $mycache &
-elif [ -x /usr/bin/yum ]; then
+	zypper --no-refresh lu --best-effort | grep 'v |' | wc -l > $mycache &
+elif which yum; then
 	# If yum exists, use it
 	# TODO: We need a better way of counting updates available from a RH expert
-	/usr/bin/yum list updates | egrep -v "Updated Packages|Loaded plugins" | wc -l > $mycache &
+	yum list updates | egrep -v "Updated Packages|Loaded plugins" | wc -l > $mycache &
 else
 	# If we're here, we have no idea
 	print_updates "?"

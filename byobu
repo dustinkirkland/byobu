@@ -19,7 +19,7 @@
 
 OLDPKG="screen-profiles"
 PKG="byobu"
-SCREEN_REAL="/usr/bin/screen"
+SCREEN_REAL="screen"
 
 # Upgrade old config dir to the new name
 [ -d "$HOME/.$OLDPKG" -a ! -e "$HOME/.$PKG" ] && mv -f "$HOME/.$OLDPKG" "$HOME/.$PKG"
@@ -49,7 +49,7 @@ DEFAULT_PROFILE="light"
 
 # Ensure that the user has selected a screen profile
 profile="$HOME/.$PKG/profile"
-[ -h "$profile" ] || /usr/bin/select-screen-profile -s "$DEFAULT_PROFILE"
+[ -h "$profile" ] || select-screen-profile -s "$DEFAULT_PROFILE"
 
 # Previously, profiles were prepended with ubuntu-.
 # This is no longer the case, for cross-distro compatibility.
@@ -60,12 +60,12 @@ if [ -h "$profile" -a ! -r "$profile" ]; then
 		if [ -r "$newsrc" ]; then
 			ln -sf "$newsrc" "$profile"
 		else
-			/usr/bin/select-screen-profile -s "$DEFAULT_PROFILE"
+			select-screen-profile -s "$DEFAULT_PROFILE"
 		fi
 	elif stat "$profile" | head -n1 | grep -qs ".*->.*plain'$"; then
 		ln -sf "/usr/share/$PKG/profiles/NONE" "$profile"
 	else
-		/usr/bin/select-screen-profile -s "$DEFAULT_PROFILE"
+		select-screen-profile -s "$DEFAULT_PROFILE"
 	fi
 fi
 
@@ -93,7 +93,7 @@ if grep -qs "^[^#]" "$HOME/.$PKG/windows"; then
 	DEFAULT_WINDOW=
 else
 	# User has no default windows, so launch motd+shell
-	DEFAULT_WINDOW="$SHELL /usr/bin/motd+shell"
+	DEFAULT_WINDOW="$SHELL motd+shell"
 fi
 
 # Ensure that the user's $SCREENRC at least exists

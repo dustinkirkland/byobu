@@ -2,8 +2,12 @@ byobu (2.10) unreleased; urgency=low
 
   * byobu: don't create an extra shell, if the user has some default
     windows specified
+  * bin/updates-available, byobu, byobu-export, byobu-status,
+    screen-launcher-install: remove hardcoded /usr/bin paths; some users
+    install without root privileges and want to run from a location other
+    than /usr/bin, LP: #385762
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Jun 2009 14:18:23 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Jun 2009 20:46:16 -0500
 
 byobu (2.9-0ubuntu1) karmic; urgency=low
 

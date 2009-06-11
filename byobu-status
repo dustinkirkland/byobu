@@ -68,8 +68,8 @@ case "$P" in
 	;;
 	--detail)
 		VER=
-		if [ -x "/usr/bin/dpkg-query" ]; then
-			VER=`/usr/bin/dpkg-query --show $PKG | awk '{print "-" $2 }'`
+		if which dpkg-query >/dev/null; then
+			VER=`dpkg-query --show $PKG | awk '{print "-" $2 }'`
 		fi
 		printf "$PKG$VER Detailed Status Navigation\n  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
 		for i in `ls "$DIR"`; do
