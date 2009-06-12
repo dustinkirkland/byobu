@@ -1,8 +1,11 @@
 byobu (2.11) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/install, keybindings/common.disable, profiles/common: add support
+    for enabling/disabling the byobu keybindings, with ctrl-a-( and
+    ctrl-a-), LP: #386363
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Jun 2009 23:30:01 -0500
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 12 Jun 2009 11:13:47 -0500
 
 byobu (2.10-0ubuntu1) karmic; urgency=low
 
