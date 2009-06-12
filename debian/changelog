@@ -1,4 +1,10 @@
-byobu (2.10) unreleased; urgency=low
+byobu (2.11) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Jun 2009 23:30:01 -0500
+
+byobu (2.10-0ubuntu1) karmic; urgency=low
 
   [ Dustin Kirkland ]
   * byobu: don't create an extra shell, if the user has some default
@@ -7,13 +13,13 @@ byobu (2.10) unreleased; urgency=low
     screen-launcher-install: remove hardcoded /usr/bin paths; some users
     install without root privileges and want to run from a location other
     than /usr/bin, LP: #385762
-  * README: mention the staticly exported byobu tarball, LP: #385762
+  * README: mention the statically exported byobu tarball, LP: #385762
 
   [ Ciemon Dunville ]
   * byobu.1, byobu-config.1: manpages refactored, to move the status
     descriptions to the main byobu manpage
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Jun 2009 23:16:42 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Jun 2009 23:29:10 -0500
 
 byobu (2.9-0ubuntu1) karmic; urgency=low
 
