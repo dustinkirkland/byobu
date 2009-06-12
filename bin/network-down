@@ -20,8 +20,14 @@
 PKG="byobu"
 
 cache="/var/run/screen/S-$USER/$PKG.network-down"
-interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
 unit="kB/s"
+
+# Allow interface overrides in configuration directory
+if [ -r "$HOME/.$PKG/network-interface" ]; then
+	interface=`cat "$HOME/.$PKG/network-interface"`
+else
+	interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
+fi
 
 if [ "$1" = "--detail" ]; then
 	/sbin/ifconfig "$interface" | sed 's/\s*$//'

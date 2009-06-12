@@ -5,8 +5,10 @@ byobu (2.11) unreleased; urgency=low
     ctrl-a-), LP: #386363
   * screen-launcher-install, screen-launcher-uninstall: use
     .hushlogin to prevent double-printing of motd
+  * bin/network-*: allow monitored network interface overrides in
+    ~/.byobu/network-interface, LP: #386364
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 12 Jun 2009 12:02:10 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 12 Jun 2009 12:06:40 -0500
 
 byobu (2.10-0ubuntu1) karmic; urgency=low
 
