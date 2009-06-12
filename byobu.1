@@ -65,6 +65,43 @@ byobu \- wrapper script for seeding a user's byobu configuration and launching s
 
 \fBwindows\fP \- each open window in the screen session appears is displayed in the upper bar toward the far right in blue text on a grey background
 
+.SH KEYBINDINGS
+
+byobu keybindings can be user defined in /usr/share/byobu/keybindings/ (or within .screenrc if byobu-export was used). The common key bindings are:
+
+\fBF1\fP \- 'Help' in gnome-terminal
+
+\fBF2\fP \- Create a new window
+
+\fBF3\fP \- Move to previous window
+
+\fBF4\fP \- Move to next window
+
+\fBF5\fP \- Reload profile
+
+\fBF6\fP \- Detach from this session
+
+\fBF7\fP \- Enter copy/scrollback mode
+
+\fBF8\fP \- Re-title a window
+
+\fBF9\fP \- Configuration Menu
+
+\fBF10\fP \- 'toolbar' in gnome-terminal
+
+\fBF11\fP \- 'fullscreen' in gnome-terminal
+
+\fBF12\fP \-  Lock this terminal
+
+\fBCtrl-a $\fP \- show detailed status
+
+\fBCtrl-a R\fP \- Reload profile
+
+\fBCtrl-a (\fP \- Turn key bindings on
+
+\fBCtrl-a )\fP \- Turn key bindings off
+
+\fBCtrl-a k\fP \- Kill the current window
 
 .TP
 \fIhttp://launchpad.net/byobu\fP
@@ -74,6 +111,9 @@ byobu \- wrapper script for seeding a user's byobu configuration and launching s
 .PD 0
 .TP
 \fBscreen\fP(1), \fBbyobu-config\fP, \fBbyobu-export\fP, \fBbyobu-status\fP, \fBbyobu-status-detail\fB
+.TP
+\fIhttp://launchpad.net/byobu\fP
+.PD
 
 .SH AUTHOR
 This manpage and the utility was written by Dustin Kirkland <kirkland@canonical.com> for Ubuntu systems (but may be used by others).  Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 3 published by the Free Software Foundation.
