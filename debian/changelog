@@ -1,5 +1,6 @@
 byobu (2.11) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * debian/install, keybindings/common.disable: add support for
     enabling/disabling the byobu keybindings, with ctrl-a-( and
     ctrl-a-), LP: #386363
@@ -8,7 +9,10 @@ byobu (2.11) unreleased; urgency=low
   * bin/network-*, byobu.1: allow monitored network interface overrides in
     ~/.byobu/network-interface, update manpage accordingly, LP: #386364
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 12 Jun 2009 12:18:38 -0500
+  [ Ciemon Dunville ]
+  * byobu.1: Simply added a SEE ALSO to byobu.1
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 12 Jun 2009 12:36:51 -0500
 
 byobu (2.10-0ubuntu1) karmic; urgency=low
 
