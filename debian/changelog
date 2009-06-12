@@ -3,9 +3,10 @@ byobu (2.11) unreleased; urgency=low
   * debian/install, keybindings/common.disable: add support for
     enabling/disabling the byobu keybindings, with ctrl-a-( and
     ctrl-a-), LP: #386363
+  * screen-launcher-install, screen-launcher-uninstall: use
+    .hushlogin to prevent double-printing of motd
 
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 12 Jun 2009 11:40:45 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 12 Jun 2009 12:02:10 -0500
 
 byobu (2.10-0ubuntu1) karmic; urgency=low
 

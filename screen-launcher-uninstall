@@ -24,6 +24,8 @@ remove_screen_launcher() {
 	if [ -w "$dest" ]; then
 		sed -i '/\/usr\/bin\/screen-launcher$/d' "$dest"
 	fi
+	# the install disabled motd printing; re-enable
+	rm "$HOME"/.hushlogin 2>/dev/null || true
 }
 
 for i in ".profile" ".bashrc" ".bash_profile" ".zprofile"; do
