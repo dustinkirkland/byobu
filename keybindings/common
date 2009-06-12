@@ -48,3 +48,10 @@ bindkey -k F2 lockscreen				# F12 | Lock this terminal
 bind $ screen -t status 0 byobu-status-detail 		# ctrl-a $ | show detailed status
 bind @ screen -t help 0 byobu-config			# ctrl-a @ | Configuration
 bind R process r					# ctrl-a R | Reload profile
+
+# toggle common keybindings off
+register d "^a:source /usr/share/byobu/keybindings/common.disable^M"
+bind ) process d
+# toggle common keybindings on
+register e "^a:source /usr/share/byobu/keybindings/common^M"
+bind ( process e

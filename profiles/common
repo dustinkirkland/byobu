@@ -65,11 +65,4 @@ altscreen on
 # Log 10000 lines
 defscrollback 10000
 
-# ctrl-a-( enables common keybindings
-register e "^a:source /usr/share/byobu/keybindings/common^M"
-bind ( process e
-# ctrl-a-) disables common keybindings
-register d "^a:source /usr/share/byobu/keybindings/common.disable^M"
-bind ) process d
-
 source $HOME/.byobu/keybindings
