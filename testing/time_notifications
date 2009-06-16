@@ -1,0 +1,15 @@
+#!/bin/bash
+
+RUNS=10
+
+loop() {
+	for j in $(seq 1 $RUNS); do
+		./bin/$1 >/dev/null
+	done
+}
+
+TIMEFORMAT="%R"
+for i in $(ls bin); do
+	echo -n "$i "
+	time loop $i
+done
