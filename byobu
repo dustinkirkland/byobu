@@ -93,7 +93,7 @@ if grep -qs "^[^#]" "$HOME/.$PKG/windows"; then
 	DEFAULT_WINDOW=
 else
 	# User has no default windows, so launch motd+shell
-	DEFAULT_WINDOW="$SHELL motd+shell"
+	DEFAULT_WINDOW="$SHELL -c motd+shell"
 fi
 
 # Ensure that the user's $SCREENRC at least exists

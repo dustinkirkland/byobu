@@ -10,11 +10,12 @@ byobu (2.11) unreleased; urgency=low
     ~/.byobu/network-interface, update manpage accordingly, LP: #386364
   * byobu-export, select-screen-profile: fix bashisms
     on the read command, Debian Bug (closes: #530989)
+  * byobu: use -c for motd+shell, LP: #387201
 
   [ Ciemon Dunville ]
   * byobu.1: Simply added a SEE ALSO to byobu.1
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jun 2009 21:23:31 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jun 2009 22:28:12 -0500
 
 byobu (2.10-0ubuntu1) karmic; urgency=low
 
