@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    network-down: calculate the network receive rate
+#    network_down: calculate the network receive rate
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -19,7 +19,7 @@
 
 PKG="byobu"
 
-cache="/var/run/screen/S-$USER/$PKG.network-down"
+cache="/var/run/screen/S-$USER/$PKG.network_down"
 unit="kB/s"
 
 # Allow interface overrides in configuration directory

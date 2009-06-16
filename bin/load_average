@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    disk-available: print the current disk space available
+#    load_average: grab the current load average
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -17,23 +17,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-
 if [ "$1" = "--detail" ]; then
-	df -h -P
+	cat /proc/loadavg
 	exit 0
 fi
 
-comma=
-whitespace=
-if [ -r "$HOME/.$PKG/status" ]; then
-	grep -qs "^disk-used=1$" "$HOME/.$PKG/status" && comma="," || whitespace=" "
-else
-	comma=","
-fi
-
-# Default to /, but let users override
-[ -r "$HOME/.$PKG/disk" ] && MP=`cat "$HOME/.$PKG/disk"` || MP="/"
-
-d=`df -h -P "$MP" | tail -n 1 | awk '{print $2}'`
-printf "\005{= MW}%sB%s\005{-}%s" "$d" "$comma" "$whitespace"
+printf "\005{= Yk}%s\005{-} " $(cat /proc/loadavg | cut -d " " -f -1)

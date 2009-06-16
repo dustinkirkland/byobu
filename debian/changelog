@@ -1,8 +1,16 @@
 byobu (2.12) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/cpu_count, bin/cpu_freq, bin/disk_available, bin/disk_used,
+    bin/ec2_cost, bin/ip_address, bin/load_average, bin/mem_available,
+    bin/mem_used, bin/network_down, bin/network_up, bin/reboot_required,
+    bin/temp_c, bin/temp_f, bin/updates_available, bin/wifi_quality,
+    byobu-config, byobu-export, byobu-status, byobu.1, debian/control,
+    doc/help.txt, profiles/common, rpm/byobu.spec: massive changeset, moving
+    all status scripts from *-* to *_*; this allows us to source the
+    ~/.byobu/status file, rather than grepping through it for configuration
+    information, yielding significant performance improvements, LP: #386546
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jun 2009 22:49:37 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 14:44:43 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 

@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    wifi-quality: display wifi signal quality
+#    disk_available: print the current disk space available
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -17,14 +17,23 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
+PKG="byobu"
 
 if [ "$1" = "--detail" ]; then
-	/sbin/iwconfig 2>/dev/null
+	df -h -P
 	exit 0
 fi
 
-bitrate=`/sbin/iwconfig "$interface" 2>/dev/null | grep "Bit Rate." | sed "s/^.*Bit Rate.//" | sed "s/ .*$//g"`
-[ -z "$bitrate" ] && bitrate="0"
-quality=`/sbin/iwconfig "$interface" 2>/dev/null | grep "Link Quality=" | sed "s/^.*Link Quality=//" | sed "s/ .*$//g"`
-echo "$bitrate" "$quality" | awk '{printf "\005{=b Ck}%s\005{-}\005{= Ck}Mb/s,\005{-}\005{=b Ck}%.0f\005{-}\005{= Ck}%%\005{-} ", $1, $2}'
+comma=
+whitespace=
+if [ -r "$HOME/.$PKG/status" ]; then
+	grep -qs "^disk_used=1$" "$HOME/.$PKG/status" && comma="," || whitespace=" "
+else
+	comma=","
+fi
+
+# Default to /, but let users override
+[ -r "$HOME/.$PKG/disk" ] && MP=`cat "$HOME/.$PKG/disk"` || MP="/"
+
+d=`df -h -P "$MP" | tail -n 1 | awk '{print $2}'`
+printf "\005{= MW}%sB%s\005{-}%s" "$d" "$comma" "$whitespace"

@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    reboot-required: determine if a reboot is required
+#    wifi_quality: display wifi signal quality
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -17,13 +17,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-flag="/var/run/reboot-required"
+interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
+
 if [ "$1" = "--detail" ]; then
-	ls -alF "$flag" 2>&1
-	exit 0
-elif [ "$1" = "--short" ]; then
-	[ -e "$flag" ] && printf "Yes" || printf "No"
+	/sbin/iwconfig 2>/dev/null
 	exit 0
 fi
 
-[ -e "$flag" ] && printf "\005{=b bW}(@)\005{-} "
+bitrate=`/sbin/iwconfig "$interface" 2>/dev/null | grep "Bit Rate." | sed "s/^.*Bit Rate.//" | sed "s/ .*$//g"`
+[ -z "$bitrate" ] && bitrate="0"
+quality=`/sbin/iwconfig "$interface" 2>/dev/null | grep "Link Quality=" | sed "s/^.*Link Quality=//" | sed "s/ .*$//g"`
+echo "$bitrate" "$quality" | awk '{printf "\005{=b Ck}%s\005{-}\005{= Ck}Mb/s,\005{-}\005{=b Ck}%.0f\005{-}\005{= Ck}%%\005{-} ", $1, $2}'

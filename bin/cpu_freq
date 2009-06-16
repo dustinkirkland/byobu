@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    mem-available: grab the current memory available
+#    cpu_freq: calculate current cpu frequency
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -17,30 +17,15 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-
 if [ "$1" = "--detail" ]; then
-	free
+	cat /proc/cpuinfo
 	exit 0
 fi
 
-comma=
-whitespace=
-if [ -r "$HOME/.$PKG/status" ]; then
-	grep -qs "^mem-used=1$" "$HOME/.$PKG/status" && comma="," || whitespace=" "
+if [ -r "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq" ]; then
+	speed=`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | awk '{ printf "%.1f", $1 / 1000000 }'`
 else
-	comma=","
+	speed=`egrep -i -m 1 "^cpu MHz|^clock|^bogomips" /proc/cpuinfo | awk -F"[:.]" '{ printf "%.1f", $2 / 1000 }'`
 fi
 
-mem=`free | grep -m 1 "^Mem:" | awk '{print $2}'`
-if [ $mem -ge 1048576 ]; then
-	mem=$(echo "$mem" | awk '{ printf "%.1f", $1 / 1048576 }')
-	unit="GB"
-elif [ $mem -ge 1024 ]; then
-	mem=$(echo "$mem" | awk '{ printf "%.0f", $1 / 1024 }')
-	unit="MB"
-else
-	mem="$mem"
-	unit="KB"
-fi
-printf "\005{= gW}%s$unit$comma\005{-}%s" "$mem" "$whitespace"
+[ -n "$speed" ] && printf "\005{= cW}%sGHz\005{-} " $speed

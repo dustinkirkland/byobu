@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    mem-used: grab the current memory used
+#    mem_available: grab the current memory available
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -17,9 +17,30 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="byobu"
+
 if [ "$1" = "--detail" ]; then
-	cat /proc/meminfo
+	free
 	exit 0
 fi
 
-free | awk '/buffers\/cache:/ {printf "\005{= gW}%.0f%%\005{-} ", 100*$3/($3 + $4)}'
+comma=
+whitespace=
+if [ -r "$HOME/.$PKG/status" ]; then
+	grep -qs "^mem_used=1$" "$HOME/.$PKG/status" && comma="," || whitespace=" "
+else
+	comma=","
+fi
+
+mem=`free | grep -m 1 "^Mem:" | awk '{print $2}'`
+if [ $mem -ge 1048576 ]; then
+	mem=$(echo "$mem" | awk '{ printf "%.1f", $1 / 1048576 }')
+	unit="GB"
+elif [ $mem -ge 1024 ]; then
+	mem=$(echo "$mem" | awk '{ printf "%.0f", $1 / 1024 }')
+	unit="MB"
+else
+	mem="$mem"
+	unit="KB"
+fi
+printf "\005{= gW}%s$unit$comma\005{-}%s" "$mem" "$whitespace"

@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    cpu-count: count cpu's on a systems
+#    cpu_count: count cpu's on a systems
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>

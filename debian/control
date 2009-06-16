@@ -21,8 +21,8 @@ Description: a set of useful profiles and a profile-switcher for GNU screen
  These profiles are quite useful on server machines which are not running
  a graphical desktop.  The 'screen' command provides a number of advanced
  features are not necessarily exposed in the default profile.  These profiles
- provide features such as status bars, clocks, notifiers (reboot-required,
- updates-available), etc.  The profile-switcher allows users to quickly switch
+ provide features such as status bars, clocks, notifiers (reboot required,
+ updates available), etc.  The profile-switcher allows users to quickly switch
  their .screenrc to any of the available profiles.
  .
  update-notifier-common provides a more efficient and standard mechanism for

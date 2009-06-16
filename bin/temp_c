@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#  temp-c: cpu temperature in celsius
+#  temp_c: cpu temperature in celsius
 #  Copyright (C) 2008 Canonical Ltd.
 #
 #  Authors: Dustin Kirkland <kirkland@canonical.com>

@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    ip-address - report a host's ip-address
+#    mem_used: grab the current memory used
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -17,18 +17,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-
 if [ "$1" = "--detail" ]; then
-	/sbin/ifconfig | grep "inet addr" | sed 's/^\s*//' | sed 's/\s*$//'
+	cat /proc/meminfo
 	exit 0
 fi
 
-space=
-grep -qs "^hostname=1$" "$HOME/.$PKG/status" && space=" "
-grep -qs "^whoami=1$" "$HOME/.$PKG/status" && space=" "
-
-interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
-ipaddr=`/sbin/ifconfig "$interface" | grep "inet addr:" | sed "s/^.*inet addr://" | sed "s/ .*$//"`
-
-printf "%s\005{+b }%s\005{-}" "$space" "$ipaddr"
+free | awk '/buffers\/cache:/ {printf "\005{= gW}%.0f%%\005{-} ", 100*$3/($3 + $4)}'

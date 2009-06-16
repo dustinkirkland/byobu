@@ -91,7 +91,7 @@ status_config() {
 	# Enable user@host in its place
 	for i in $(ls /usr/lib/$PKG/); do
 		case "$i" in
-			cpu-count|cpu-freq|date|hostname|load-average|logo|mem-available|mem-used|reboot-required|release|time|updates-available|whoami)
+			cpu_count|cpu_freq|date|hostname|load_average|logo|mem_available|mem_used|reboot_required|release|time|updates_available|whoami)
 				echo "$i=1"
 			;;
 			*)

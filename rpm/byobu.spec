@@ -27,8 +27,8 @@ byobu includes a set of profiles for the GNU screen window manager.
 These profiles are quite useful on server machines which are not running
 a graphical desktop.  The 'screen' command provides a number of advanced
 features are not necessarily exposed in the default profile.  These profiles
-provide features such as status bars, clocks, notifiers (reboot-required,
-updates-available), etc.  The profile-switcher allows users to quickly switch
+provide features such as status bars, clocks, notifiers (reboot required,
+updates available), etc.  The profile-switcher allows users to quickly switch
 their .screenrc to any of the available profiles.
 
 update-notifier-common provides a more efficient and standard mechanism for
@@ -98,34 +98,32 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/select-screen-profile
 /usr/lib/byobu/arch
 /usr/lib/byobu/battery
-/usr/lib/byobu/cpu-count
-/usr/lib/byobu/cpu-freq
+/usr/lib/byobu/cpu_count
+/usr/lib/byobu/cpu_freq
 /usr/lib/byobu/date
-/usr/lib/byobu/disk-available
-/usr/lib/byobu/disk-used
-/usr/lib/byobu/ec2-cost
+/usr/lib/byobu/disk_available
+/usr/lib/byobu/disk_used
+/usr/lib/byobu/ec2_cost
 /usr/lib/byobu/hostname
-/usr/lib/byobu/ip-address
-/usr/lib/byobu/load-average
+/usr/lib/byobu/ip_address
+/usr/lib/byobu/load_average
 /usr/lib/byobu/logo
-/usr/lib/byobu/mem-available
-/usr/lib/byobu/mem-used
+/usr/lib/byobu/mem_available
+/usr/lib/byobu/mem_used
 /usr/lib/byobu/menu
-/usr/lib/byobu/network-down
-/usr/lib/byobu/network-up
+/usr/lib/byobu/network_down
+/usr/lib/byobu/network_up
 /usr/lib/byobu/processes
-/usr/lib/byobu/reboot-required
+/usr/lib/byobu/reboot_required
 /usr/lib/byobu/release
-/usr/lib/byobu/temp-c
-/usr/lib/byobu/temp-f
+/usr/lib/byobu/temp_c
+/usr/lib/byobu/temp_f
 /usr/lib/byobu/time
-/usr/lib/byobu/updates-available
+/usr/lib/byobu/updates_available
 /usr/lib/byobu/uptime
 /usr/lib/byobu/users
 /usr/lib/byobu/whoami
-/usr/lib/byobu/wifi-quality
-/usr/lib/byobu/disk-available
-/usr/lib/byobu/disk-used
+/usr/lib/byobu/wifi_quality
 /usr/share/locale/es/LC_MESSAGES/byobu.mo
 /usr/share/locale/fr/LC_MESSAGES/byobu.mo
 /usr/share/byobu/keybindings/common

@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    disk-used: print the current disk usage
+#    reboot_required: determine if a reboot is required
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -17,20 +17,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-
+flag="/var/run/reboot-required"
 if [ "$1" = "--detail" ]; then
-	df -h -P
+	ls -alF "$flag" 2>&1
+	exit 0
+elif [ "$1" = "--short" ]; then
+	[ -e "$flag" ] && printf "Yes" || printf "No"
 	exit 0
 fi
 
-whitespace=
-if [ -r "$HOME/.$PKG/status" ]; then
-	grep -qs "^date=1$" "$HOME/.$PKG/status" && whitespace=" "
-fi
-
-# Default to /, but let users override
-[ -r "$HOME/.$PKG/disk" ] && MP=`cat "$HOME/.$PKG/disk"` || MP="/"
-
-used=`df -h -P "$MP" | tail -n 1 | sed "s/%.*$/%/" | sed "s/^.* //"`
-printf "\005{= MW}%s\005{-}%s" "$used" "$whitespace"
+[ -e "$flag" ] && printf "\005{=b bW}(@)\005{-} "

@@ -47,6 +47,7 @@ migrate() {
 # If the old config dir exists, but the new one doesn't, provide a migration mechanism
 [ -d "$HOME/.$OLDPKG" -a ! -d "$HOME/.$PKG" ] && migrate
 
+# Allow for local status scripts
 if [ -d "$HOME/.$PKG/bin" ]; then
 	DIR="$HOME/.$PKG/bin"
 elif [ -d "/usr/lib/$PKG" ]; then
@@ -55,16 +56,25 @@ else
 	exit 1
 fi
 
+# Source status file
+if [ -r "$HOME/.$PKG/status" ]; then
+	if ! . "$HOME/.$PKG/status" ; then
+		# If sourcing fails, try replacing - with _
+		sed -i "s/-/_/g" "$HOME/.$PKG/status"
+	fi
+fi
+
 P="$1"
+eval x=\$$P
 
 case "$P" in
 	# default = on, user must override to turn off
-	cpu-count|cpu-freq|date|load-average|logo|mem-available|mem-used|menu|reboot-required|release|time|updates-available|uptime)
-		grep -qs -m1 "^$P=0$" "$HOME/.$PKG/status" && exit 0
+	cpu_count|cpu_freq|date|load_average|logo|mem_available|mem_used|menu|reboot_required|release|time|updates_available|uptime)
+		[ "$x" = "0" ] && exit 0
 	;;
 	# default = off, user must override to turn on
-	arch|battery|disk-available|disk-used|ec2-cost|hostname|ip-address|network-down|network-up|processes|users|temp-c|temp-f|whoami|wifi-quality)
-		grep -qs -m1 "^$P=1$" "$HOME/.$PKG/status" || exit 0
+	arch|battery|disk_available|disk_used|ec2_cost|hostname|ip_address|network_down|network_up|processes|users|temp_c|temp_f|whoami|wifi_quality)
+		[ "$x" = "1" ] || exit 0
 	;;
 	--detail)
 		VER=

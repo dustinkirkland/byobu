@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    network-up: calculate the network transmit rate
+#    network_up: calculate the network transmit rate
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -19,7 +19,7 @@
 
 PKG="byobu"
 
-cache="/var/run/screen/S-$USER/$PKG.network-up"
+cache="/var/run/screen/S-$USER/$PKG.network_up"
 unit="kB/s"
 
 # Allow interface overrides in configuration directory

@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    updates-available: calculate and cache the number of updates available
+#    updates_available: calculate and cache the number of updates available
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
