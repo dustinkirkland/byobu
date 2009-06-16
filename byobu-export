@@ -65,9 +65,11 @@ choose() {
 		fi
 		count=`expr $count + 1`
 		if ! test $selected -gt 0 2>/dev/null; then
-			read -p "`gettext 'Choose'` [1 -$i]: " -r selected
+			echo -n "`gettext 'Choose'` [1 -$i]: "
+			selected=`head -n1`
 		elif ! test $selected -le $i 2>/dev/null; then
-			read -p "`gettext 'Choose'` [1 -$i]: " -r selected
+			echo -n "`gettext 'Choose'` [1 -$i]: "
+			selected=`head -n1`
 		else
 			break
 		fi
@@ -183,7 +185,8 @@ else
 	echo "$file" | grep -qs "\.tar\.gz$" || error "Target file must be a '.tar.gz' archive"
 	if [ -e "$file" ]; then
 		echo `gettext "File exists"` " [$file]"
-		read -p "`gettext 'Remove file? [y/N] '`" -r remove
+		echo -n "`gettext 'Remove file? [y/N] '`"
+		remove=`head -n1`
 		if [ "$remove" = "Y" -o "$remove" = "y" ]; then
 			rm -f "$file"
 		else

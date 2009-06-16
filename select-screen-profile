@@ -101,9 +101,11 @@ prompt() {
 		if [ -z "$selected" -a ! -z "$simple" ]; then
 			selected="$simple"
 		elif ! test $selected -gt 0 2>/dev/null; then
-			read -p "`gettext 'Choose'` 1-$i [$simple]: " -r selected
+			echo -n "`gettext 'Choose'` 1-$i [$simple]: "
+			selected=`head -n1`
 		elif ! test $selected -le $i 2>/dev/null; then
-			read -p "`gettext 'Choose'` 1-$i [$simple]: " -r selected
+			echo -n "`gettext 'Choose'` 1-$i [$simple]: "
+			selected=`head -n1`
 		else
 			break
 		fi
