@@ -8,13 +8,13 @@ byobu (2.11) unreleased; urgency=low
     .hushlogin to prevent double-printing of motd
   * bin/network-*, byobu.1: allow monitored network interface overrides in
     ~/.byobu/network-interface, update manpage accordingly, LP: #386364
-  * bin/cpu-freq, byobu-export, select-screen-profile: fix bashisms
+  * byobu-export, select-screen-profile: fix bashisms
     on the read command, Debian Bug (closes: #530989)
 
   [ Ciemon Dunville ]
   * byobu.1: Simply added a SEE ALSO to byobu.1
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jun 2009 21:21:42 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jun 2009 21:23:31 -0500
 
 byobu (2.10-0ubuntu1) karmic; urgency=low
 
