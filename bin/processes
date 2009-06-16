@@ -22,4 +22,4 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-printf "\005{= yk}%s&\005{-} " $(ps -e | wc -l)
+printf "\005{= yk}%s&\005{-} " $(ls -d /proc/[0-9]* | wc -l)

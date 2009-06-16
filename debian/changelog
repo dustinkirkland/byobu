@@ -13,9 +13,9 @@ byobu (2.12) unreleased; urgency=low
     run every 30 seconds, and wifi_quality to run every 10 seconds
   * bin/wifi_quality: significant performance improvements, remove unneeded
     route call, cache iwconfig output so that it's only called once
+  * bin/processes: improve performance by listing /proc (doubles the speed)
 
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 15:35:30 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 16:10:36 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 
