@@ -21,8 +21,9 @@ byobu (2.12) unreleased; urgency=low
   * bin/disk_available, bin/disk_used, bin/hostname, bin/ip_address,
     bin/mem_available, byobu-status: drop grepping of status config file,
     source it instead, should improve performance
+  * bin/reboot-required: don't exit 1 when a reboot is not required
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 17:20:46 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 17:41:35 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 

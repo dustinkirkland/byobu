@@ -26,4 +26,4 @@ elif [ "$1" = "--short" ]; then
 	exit 0
 fi
 
-[ -e "$flag" ] && printf "\005{=b bW}(@)\005{-} "
+[ -e "$flag" ] && printf "\005{=b bW}(@)\005{-} " || exit 0
