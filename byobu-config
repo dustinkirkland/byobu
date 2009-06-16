@@ -260,8 +260,7 @@ def readstatus():
     status["mem_available"]=1
     status["mem_used"]=1
     status["menu"]=1
-    status["network_down"]=0
-    status["network_up"]=0
+    status["network"]=0
     status["processes"]=0
     status["reboot_required"]=1
     status["release"]=1

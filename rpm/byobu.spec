@@ -111,8 +111,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/lib/byobu/mem_available
 /usr/lib/byobu/mem_used
 /usr/lib/byobu/menu
-/usr/lib/byobu/network_down
-/usr/lib/byobu/network_up
+/usr/lib/byobu/network
 /usr/lib/byobu/processes
 /usr/lib/byobu/reboot_required
 /usr/lib/byobu/release
