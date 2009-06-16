@@ -13,9 +13,10 @@ byobu (2.11) unreleased; urgency=low
   * byobu: use -c for motd+shell, LP: #387201
 
   [ Ciemon Dunville ]
-  * byobu.1: Simply added a SEE ALSO to byobu.1
+  * byobu.1: Simply added a SEE ALSO to byobu.1; added section on the
+    keybindings
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jun 2009 22:28:12 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jun 2009 22:43:23 -0500
 
 byobu (2.10-0ubuntu1) karmic; urgency=low
 
