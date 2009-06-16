@@ -1,0 +1,61 @@
+#!/bin/sh -e
+#
+#    network: calculate the network up/down rates
+#    Copyright (C) 2008 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+PKG="byobu"
+
+# Allow interface overrides in configuration directory
+if [ -r "$HOME/.$PKG/network" ]; then
+	interface=`cat "$HOME/.$PKG/network"`
+else
+	interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
+fi
+
+if [ "$1" = "--detail" ]; then
+	/sbin/ifconfig "$interface" | sed 's/\s*$//'
+	exit 0
+fi
+
+unit="kB/s"
+t2=`date +%s`
+ifconfig=`/sbin/ifconfig "$interface" | grep "RX bytes" | sed "s/.*:\(.*\) (.*:\(.*\) (.*/\1\n\2/"`
+for i in up down; do
+	cache="/var/run/screen/S-$USER/$PKG.network_$i"
+	t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
+	if [ $t2 -le $t1 ]; then
+		rate=0
+	else
+		x1=`cat "$cache"` 2>/dev/null || tx1=0
+		if [ "$i" = "up" ]; then
+			x2=`echo "$ifconfig" | tail -n1`
+			symbol="^"
+		else
+			x2=`echo "$ifconfig" | head -n1`
+			symbol="v"
+		fi
+		echo "$x2" > "$cache"
+		rate=`echo "$t1" "$t2" "$x1" "$x2" | awk '{printf "%.0f", ($4 - $3) / ($2 - $1) / 1024 }'`
+		if [ "$rate" -lt 0 ]; then
+			rate=0
+		elif [ "$rate" -gt 1024 ]; then
+			rate=`echo "$rate" | awk '{printf "%.1f", $1/1024}'`
+			unit="MB/s"
+		fi
+	fi
+	printf "$symbol\005{=b mw}$rate\005{-}\005{= mw}$unit\005{-} "
+done
