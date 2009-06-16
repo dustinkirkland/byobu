@@ -24,13 +24,8 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-comma=
-whitespace=
-if [ -r "$HOME/.$PKG/status" ]; then
-	grep -qs "^disk_used=1$" "$HOME/.$PKG/status" && comma="," || whitespace=" "
-else
-	comma=","
-fi
+. "$HOME/.$PKG/status" 2>/dev/null || true
+[ "$disk_used" = "1" ] && comma="," || whitespace=" "
 
 # Default to /, but let users override
 [ -r "$HOME/.$PKG/disk" ] && MP=`cat "$HOME/.$PKG/disk"` || MP="/"

@@ -24,7 +24,7 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-at=
-grep -qs "^whoami=1$" "$HOME/.$PKG/status" && at="@"
+. "$HOME/.$PKG/status" 2>/dev/null || true
+[ "$whoami" = "1" ] && at="@"
 
 printf "\005{+b }%s%s\005{-}" "$at" $(hostname -s 2>/dev/null || hostname)

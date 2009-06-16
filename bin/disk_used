@@ -24,13 +24,11 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-whitespace=
-if [ -r "$HOME/.$PKG/status" ]; then
-	grep -qs "^date=1$" "$HOME/.$PKG/status" && whitespace=" "
-fi
+. "$HOME/.$PKG/status" 2>/dev/null || true
+[ "$date" = "1" ] && trailer=" "
 
 # Default to /, but let users override
 [ -r "$HOME/.$PKG/disk" ] && MP=`cat "$HOME/.$PKG/disk"` || MP="/"
 
 used=`df -h -P "$MP" | tail -n 1 | sed "s/%.*$/%/" | sed "s/^.* //"`
-printf "\005{= MW}%s\005{-}%s" "$used" "$whitespace"
+printf "\005{= MW}%s\005{-}%s" "$used" "$trailer"

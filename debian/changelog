@@ -18,8 +18,11 @@ byobu (2.12) unreleased; urgency=low
     byobu-status, byobu.1, rpm/byobu.spec: merge network_down and
     network_up to a single status script; too much duplication of code,
     causes performance problems
+  * bin/disk_available, bin/disk_used, bin/hostname, bin/ip_address,
+    bin/mem_available, byobu-status: drop grepping of status config file,
+    source it instead, should improve performance
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 16:40:12 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 17:20:46 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 

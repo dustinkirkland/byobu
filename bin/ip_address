@@ -24,9 +24,9 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-space=
-grep -qs "^hostname=1$" "$HOME/.$PKG/status" && space=" "
-grep -qs "^whoami=1$" "$HOME/.$PKG/status" && space=" "
+. "$HOME/.$PKG/status" 2>/dev/null || true
+[ "$hostname" = "1" ] && space=" "
+[ "$whoami" = "1" ] && space=" "
 
 interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
 ipaddr=`/sbin/ifconfig "$interface" | grep "inet addr:" | sed "s/^.*inet addr://" | sed "s/ .*$//"`

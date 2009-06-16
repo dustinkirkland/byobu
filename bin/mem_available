@@ -24,13 +24,8 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-comma=
-whitespace=
-if [ -r "$HOME/.$PKG/status" ]; then
-	grep -qs "^mem_used=1$" "$HOME/.$PKG/status" && comma="," || whitespace=" "
-else
-	comma=","
-fi
+. "$HOME/.$PKG/status" 2>/dev/null || true
+[ "$mem_used" = "1" ] && comma="," || whitespace=" "
 
 mem=`free | grep -m 1 "^Mem:" | awk '{print $2}'`
 if [ $mem -ge 1048576 ]; then
@@ -43,4 +38,4 @@ else
 	mem="$mem"
 	unit="KB"
 fi
-printf "\005{= gW}%s$unit$comma\005{-}%s" "$mem" "$whitespace"
+printf "\005{= gW}%s$unit%s\005{-}%s" "$mem" "$comma" "$whitespace"
