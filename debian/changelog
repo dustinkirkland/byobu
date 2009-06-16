@@ -14,8 +14,11 @@ byobu (2.12) unreleased; urgency=low
   * bin/wifi_quality: significant performance improvements, remove unneeded
     route call, cache iwconfig output so that it's only called once
   * bin/processes: improve performance by listing /proc (doubles the speed)
+  * bin/network, profiles/common, profiles/profile.skel: merge network_down
+    and network_up to a single status script; too much duplication of code,
+    causes performance problems
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 16:10:36 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 16:35:01 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 
