@@ -1,9 +1,10 @@
 ###############################################################################
-#    GNU Screen common keybindings
-#      This configuration profile is intended to be a common header of useful
-#      keybindings, included by other profiles.
+#    Byobu f-key keybindings
+#      This configuration profile is intended to provide a useful
+#      keybindings using the keyboard's f-keys
 #
 #    Copyright (C) 2008  Nick Barcet <nick.barcet@canonical.com>
+#                        Dustin Kirkland <kirkland@canonical.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,21 +19,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
-# This file defines the common key bindings
-#
-# For a keybinding to live in the "common" area, it must be verified to
-# work in at least:
-#  * gnome-terminal
-#  * console tty
-#
-# bindkey commands should be followed by a comment that will be used in the
-# help file (one day).  The command should be formated as:
-#   # <key> | explanation
-
 # F-keys seem to work well in both gnome-terminal and tty consoles
 							# F1  | 'help' in gnome-terminal
-register n "^a^c"					#     | Goes with the F2 definition
-bindkey -k k2 process n					# F2  | Create new window
+bindkey -k k2 screen					# F2  | Create new window
 bindkey -k k3 prev					# F3  | Previous Window
 bindkey -k k4 next					# F4  | Next Window
 register r "^a:source $HOME/.byobu/profile^M"		#     | Goes with F5 definition
@@ -49,9 +38,6 @@ bind $ screen -t status 0 byobu-status-detail 		# ctrl-a $ | show detailed statu
 bind @ screen -t help 0 byobu-config			# ctrl-a @ | Configuration
 bind R process r					# ctrl-a R | Reload profile
 
-# toggle common keybindings off
-register d "^a:source /usr/share/byobu/keybindings/common.disable^M"
-bind ) process d
-# toggle common keybindings on
-register e "^a:source /usr/share/byobu/keybindings/common^M"
-bind ( process e
+# toggle f-key keybindings off
+register d "^a:source /usr/share/byobu/keybindings/screen-escape-keys^M"
+bind ! process d

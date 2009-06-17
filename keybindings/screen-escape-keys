@@ -1,0 +1,52 @@
+###############################################################################
+#    Disable Byobu's f-key keybindings, define a set using screen's escape
+#    sequence.
+#
+#    Copyright (C) 2009  Dustin Kirkland <kirkland@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###############################################################################
+
+# This file disables the f-key bindings, but retains the
+# keybindings that use screen's built-in escape sequence
+
+# Disable the f-key bindings
+bindkey -k k2
+bindkey -k k3
+bindkey -k k4
+bindkey -k k5
+bindkey -k k6
+bindkey -k k7
+bindkey -k k8
+bindkey -k k9
+bindkey -k F2
+
+# Use the following sequences for byobu functionality
+# SEQUENCE      ACTION                          F-Key equivalent
+# ctrl-a-c      Create a new window             F2
+# ctrl-a-p      Previous window                 F3
+# ctrl-a-n      Next window                     F4
+# ctrl-a-R      Reload profile                  F5
+register r "^a:source $HOME/.byobu/profile^M"
+bind R process r
+# ctrl-a-d      Detach from this session        F6
+# ctrl-a-[      Enter copy/scrollback mode      F7
+# ctrl-a-A      Re-title a window               F8
+# ctrl-a-@      Configuration                   F9
+bind @ screen -t help 0 byobu-config
+# ctrl-a-x      Lock this terminal              F12
+# ctrl-a-$      Show detailed status
+bind $ screen -t status 0 byobu-status-detail
+# ctrl-a-!	Toggle f-key keybindings on
+register e "^a:source /usr/share/byobu/keybindings/f-keys^M"
+bind ! process e

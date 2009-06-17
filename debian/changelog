@@ -40,7 +40,13 @@ byobu (2.12) unreleased; urgency=low
 
   * byobu-config: have ESC be a hotkey for 'cancel', LP: #373473
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jun 2009 11:07:18 -0500
+  * byobu-config, debian/rules, keybindings/common.disable,
+    keybindings/f-keys, keybindings/screen-escape-keys: massive fix for
+    byobu keybindings; use ctrl-a-! to toggle on/off byobu's f-keys;
+    also support a new keyset, screen-escape-keys which profiles ctrl-a
+    keybindings for common byobu functions, LP: #380944
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jun 2009 14:17:15 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 

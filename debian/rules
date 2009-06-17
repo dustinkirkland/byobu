@@ -49,6 +49,7 @@ install: build install-po
 	dh_testroot
 	dh_clean -k
 	dh_link usr/bin/byobu-status usr/bin/screen-profiles-status
+	dh_link usr/share/byobu/keybindings/f-keys usr/share/byobu/keybindings/common
 	dh_install -X.bzr
 
 # Everything else is handled by dh_install

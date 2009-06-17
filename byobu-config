@@ -148,7 +148,9 @@ def profile(screen, size):
 def keybindings(screen, size):
     li = Listbox(height = 6, width = 60, returnExit = 1)
     for choice in commands.getoutput('ls '+SHARE+'/keybindings').splitlines():
-        li.append(choice, choice)
+        if choice != "common" and choice != "none":
+            li.append(choice, choice)
+    li.append("none", "none")
     bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
     g = GridForm(screen, _("Which set of keybindings would you like to use?"), 1, 2)
     g.add(li, 0, 0, padding=(4,2,4,2))
