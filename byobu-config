@@ -311,7 +311,7 @@ def writestatus(items):
 
 def togglestatus(screen, size):
     itemlist=readstatus()
-    rl=Label(_(""))
+    rl=Label("")
     r=CheckboxTree(12, scroll=1)
     count=0
     for item in itemlist:
