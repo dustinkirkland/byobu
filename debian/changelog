@@ -37,6 +37,10 @@ byobu (2.12) unreleased; urgency=low
     improvement
   * bin/network: pull network bytes directly from /proc/net/dev, performance
     improvement
+  * bin/disk, bin/disk_used, profiles/common, profiles/profile.skel:
+    collapse disk usage down to a single status script for performance,
+    support disk partitions as well as mountpoints in ~/.byobu/disk,
+    LP: #388053
 
   * byobu-config: have ESC be a hotkey for 'cancel', LP: #373473
 
@@ -50,7 +54,7 @@ byobu (2.12) unreleased; urgency=low
     profiles/profile.skel, rpm/byobu.spec: add a mail status notification,
     LP: #387936
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jun 2009 14:55:33 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jun 2009 15:20:30 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 

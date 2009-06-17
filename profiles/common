@@ -50,8 +50,8 @@ backtick 119 10 10 byobu-status wifi_quality
 backtick 120 86400 86400 byobu-status date
 backtick 121 86400 86400 byobu-status time
 backtick 122 600 600 byobu-status ip_address
-backtick 123 86400 86400 byobu-status disk_available
-backtick 124 30 30 byobu-status disk_used
+backtick 123 30 30 byobu-status disk
+backtick 124 86400 86400 byobu-status true
 backtick 125 30 30 byobu-status temp_c
 backtick 126 30 30 byobu-status temp_f
 backtick 127 10 10 byobu-status mail

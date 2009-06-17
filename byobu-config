@@ -255,8 +255,7 @@ def readstatus():
     status["cpu_count"]=1
     status["cpu_freq"]=1
     status["date"]=1
-    status["disk_available"]=0
-    status["disk_used"]=0
+    status["disk"]=0
     status["ec2_cost"]=0
     status["hostname"]=0
     status["ip_address"]=0
