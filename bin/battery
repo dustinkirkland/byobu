@@ -20,10 +20,10 @@
 
 
 search () {
-   local str expr
-   str="$1"
-   expr="$2"
-   echo "$str" | sed -n "s/${expr}/\1/p"
+	local str expr
+	str="$1"
+	expr="$2"
+	echo "$str" | sed -n "s/${expr}/\1/p"
 }
 
 
@@ -36,43 +36,42 @@ if [ "$1" = "--detail" ]; then
 fi
 
 for bat in $(ls /proc/acpi/battery); do
-   # make sure that this battery is present
-   infofile=$(cat "/proc/acpi/battery/$bat/info")
-   present=$(search "$infofile" "present: *\(.*\)")
-   [ "${present}" = "no" ] && continue
+	# make sure that this battery is present
+	infofile=$(cat "/proc/acpi/battery/$bat/info")
+	present=$(search "$infofile" "present: *\(.*\)")
+	[ "${present}" = "no" ] && continue
 
-   # obtain full and remaining battery values
-   statefile=$(cat "/proc/acpi/battery/$bat/state")
-   full=$(search "$infofile" "last full capacity: *\(.*\) m[AW]h")
-   rem=$(search "$statefile" "remaining capacity: *\(.*\) m[AW]h")
+	# obtain full and remaining battery values
+	statefile=$(cat "/proc/acpi/battery/$bat/state")
+	full=$(search "$infofile" "last full capacity: *\(.*\) m[AW]h")
+	rem=$(search "$statefile" "remaining capacity: *\(.*\) m[AW]h")
 
-   percent=$( echo "$rem" "$full" | awk '{printf "%.0f",  100*$1/$2}')
-   if [ "$percent" -lt 33 ]; then
-	per_color="{= Rk}"
-   elif [ "$percent" -lt 67 ]; then
-	per_color="{= Yk}"
-   else
-	per_color="{= Gk}"
-   fi
-   percent="$percent%"
+	percent=$( echo "$rem" "$full" | awk '{printf "%.0f",  100*$1/$2}')
+	if [ "$percent" -lt 33 ]; then
+		per_color="{= Rk}"
+	elif [ "$percent" -lt 67 ]; then
+		per_color="{= Yk}"
+	else
+		per_color="{= Gk}"
+	fi
+	percent="$percent%"
 
-
-   state=$(search "$statefile" "charging state: *\(.*\)")
-   case $state in
-      charging)
-         sign="+"
-         ;;
-      discharging)
-         sign="-"
-         ;;
-      charged)
-         sign="="
-         percent=
-         ;;
-      *)
-         sign="$state"
-         ;;
-   esac
-   printf "\005%s%s|%s|\005{-} " "$per_color" "$percent" "$sign"
-   break
+	state=$(search "$statefile" "charging state: *\(.*\)")
+	case $state in
+		charging)
+			sign="+"
+		;;
+		discharging)
+			sign="-"
+		;;
+		charged)
+			sign="="
+			percent=
+		;;
+		*)
+			sign="$state"
+		;;
+	esac
+	printf "\005%s%s|%s|\005{-} " "$per_color" "$percent" "$sign"
+	break
 done
