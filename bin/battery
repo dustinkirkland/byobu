@@ -23,38 +23,26 @@ search () {
    local str expr
    str="$1"
    expr="$2"
-
    echo "$str" | sed -n "s/${expr}/\1/p"
 }
 
 
-BATS=$(ls /proc/acpi/battery)
-NB=$(echo "$BATS" | wc -l)
-
 if [ "$1" = "--detail" ]; then
-	for bat in $BATS; do
+	for bat in $(ls /proc/acpi/battery); do
 		cat "/proc/acpi/battery/$bat/info"
 		cat "/proc/acpi/battery/$bat/state"
 	done
 	exit 0
 fi
 
-for bat in $BATS; do
-   if [ "$NB" -gt 1 ]; then
-      echo -n "$bat: "
-   fi
-
-   # read files once
+for bat in $(ls /proc/acpi/battery); do
+   # make sure that this battery is present
    infofile=$(cat "/proc/acpi/battery/$bat/info")
-   statefile=$(cat "/proc/acpi/battery/$bat/state")
-
    present=$(search "$infofile" "present: *\(.*\)")
+   [ "${present}" = "no" ] && continue
 
-   if [ "x${present}" = "xno" ]; then
-      echo "n/a"
-      break
-   fi
-
+   # obtain full and remaining battery values
+   statefile=$(cat "/proc/acpi/battery/$bat/state")
    full=$(search "$infofile" "last full capacity: *\(.*\) m[AW]h")
    rem=$(search "$statefile" "remaining capacity: *\(.*\) m[AW]h")
 
@@ -85,6 +73,6 @@ for bat in $BATS; do
          sign="$state"
          ;;
    esac
-
    printf "\005%s%s|%s|\005{-} " "$per_color" "$percent" "$sign"
+   break
 done
