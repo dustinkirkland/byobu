@@ -34,8 +34,10 @@ byobu (2.12) unreleased; urgency=low
     improvement
   * bin/load_average: drop "cat", and just use awk, performance
     improvement
+  * bin/network: pull network bytes directly from /proc/net/dev, performance
+    improvement
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 20:46:37 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 20:47:32 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 
