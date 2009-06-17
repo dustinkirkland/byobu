@@ -22,4 +22,4 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-printf "\005{= Yk}%s\005{-} " $(cat /proc/loadavg | cut -d " " -f -1)
+printf "\005{= Yk}%s\005{-} " $(awk '{print $1}' /proc/loadavg)
