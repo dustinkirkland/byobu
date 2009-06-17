@@ -54,6 +54,7 @@ backtick 123 86400 86400 byobu-status disk_available
 backtick 124 30 30 byobu-status disk_used
 backtick 125 30 30 byobu-status temp_c
 backtick 126 30 30 byobu-status temp_f
+backtick 127 10 10 byobu-status mail
 
 hardstatus alwayslastline
 

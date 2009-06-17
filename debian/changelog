@@ -46,7 +46,11 @@ byobu (2.12) unreleased; urgency=low
     also support a new keyset, screen-escape-keys which profiles ctrl-a
     keybindings for common byobu functions, LP: #380944
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jun 2009 14:17:15 -0500
+  * bin/mail, byobu-status, byobu.1, profiles/common,
+    profiles/profile.skel, rpm/byobu.spec: add a mail status notification,
+    LP: #387936
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jun 2009 14:55:33 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 

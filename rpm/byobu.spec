@@ -108,6 +108,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/lib/byobu/ip_address
 /usr/lib/byobu/load_average
 /usr/lib/byobu/logo
+/usr/lib/byobu/mail
 /usr/lib/byobu/mem_available
 /usr/lib/byobu/mem_used
 /usr/lib/byobu/menu
