@@ -27,9 +27,9 @@ msgwait 1
 
 # Define status commands
 backtick 99  86400 86400 byobu-status logo
-backtick 100 3600 3600 byobu-status release
-backtick 101 10 10 byobu-status updates_available
-backtick 102 2 2 byobu-status reboot_required
+backtick 100 600 600 byobu-status release
+backtick 101 30 30 byobu-status updates_available
+backtick 102 10 10 byobu-status reboot_required
 backtick 103 2 2 byobu-status cpu_freq
 backtick 104 86400 86400 byobu-status cpu_count
 backtick 105 86400 86400 byobu-status mem_available
@@ -50,7 +50,7 @@ backtick 119 10 10 byobu-status wifi_quality
 backtick 120 86400 86400 byobu-status date
 backtick 121 86400 86400 byobu-status time
 backtick 122 600 600 byobu-status ip_address
-backtick 123 30 30 byobu-status disk
+backtick 123 10 10 byobu-status disk
 backtick 124 86400 86400 byobu-status true
 backtick 125 30 30 byobu-status temp_c
 backtick 126 30 30 byobu-status temp_f
