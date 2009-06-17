@@ -17,12 +17,15 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$1" = "--detail" ]; then
-	date
-	exit 0
-elif [ "$1" = "--short" ]; then
-        date +%H:%M:%S
-        exit 0
-fi
+case "$1" in
+	--detail)
+		date
+	;;
+	--short)
+        	date +%H:%M:%S
+	;;
+	*)
+		printf "\0050c:\005s"
+	;;
+esac
 
-printf "\0050c:\005s"
