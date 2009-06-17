@@ -36,20 +36,20 @@ backtick 105 86400 86400 byobu-status mem_available
 backtick 106 2 2 byobu-status load_average
 backtick 107 10 10 byobu-status mem_used
 backtick 108 600 600 byobu-status ec2_cost
-backtick 109 3600 3600 byobu-status hostname
+backtick 109 600 600 byobu-status hostname
 backtick 110 86400 86400 byobu-status whoami
 backtick 111 86400 86400 byobu-status menu
 backtick 112 86400 86400 byobu-status arch
 backtick 113 30 30 byobu-status battery
 backtick 114 10 10 byobu-status users
-backtick 115 60 60 byobu-status uptime
-backtick 116 2 2 byobu-status processes
+backtick 115 30 30 byobu-status uptime
+backtick 116 10 10 byobu-status processes
 backtick 117 2 2 byobu-status network
 backtick 118 86400 86400 true
 backtick 119 10 10 byobu-status wifi_quality
 backtick 120 86400 86400 byobu-status date
 backtick 121 86400 86400 byobu-status time
-backtick 122 3600 3600 byobu-status ip_address
+backtick 122 600 600 byobu-status ip_address
 backtick 123 86400 86400 byobu-status disk_available
 backtick 124 30 30 byobu-status disk_used
 backtick 125 30 30 byobu-status temp_c

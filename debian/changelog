@@ -9,8 +9,14 @@ byobu (2.12) unreleased; urgency=low
     all status scripts from *-* to *_*; this allows us to source the
     ~/.byobu/status file, rather than grepping through it for configuration
     information, yielding significant performance improvements, LP: #386546
-  * profiles/common: drop mem-used to run every 10 seconds, and disk-used to
-    run every 30 seconds, and wifi_quality to run every 10 seconds
+  * profiles/common:
+    - decrease mem-used to run every 10 seconds
+    - decrease disk-used to run every 30 seconds
+    - decrease wifi_quality to run every 10 seconds
+    - decrease release to run every 60 minutes, to handle dist upgrades
+    - decrease processes to run every 10 seconds
+    - increase hostname to run every 10 minutes, since its cheap
+    - increase uptime to run every 30 seconds, since its cheap
   * bin/wifi_quality: significant performance improvements, remove unneeded
     route call, cache iwconfig output so that it's only called once
   * bin/processes: improve performance by listing /proc (doubles the speed)
@@ -25,7 +31,7 @@ byobu (2.12) unreleased; urgency=low
   * bin/cpu-freq: drop "cat" and just use awk, don't printf twice,
     performance improvements
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 20:04:13 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 20:28:35 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 
