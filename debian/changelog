@@ -10,14 +10,9 @@ byobu (2.12) unreleased; urgency=low
     all status scripts from *-* to *_*; this allows us to source the
     ~/.byobu/status file, rather than grepping through it for configuration
     information, yielding significant performance improvements
-  * profiles/common:
-    - decrease mem-used to run every 10 seconds
-    - decrease disk-used to run every 30 seconds
-    - decrease wifi_quality to run every 10 seconds
-    - decrease release to run every 60 minutes, to handle dist upgrades
-    - decrease processes to run every 10 seconds
-    - increase hostname to run every 10 minutes, since its cheap
-    - increase uptime to run every 30 seconds, since its cheap
+  * profiles/common: massive rework of status frequencies; use prime numbers
+    to minimize collisions; increase/decrease a few, based on statistical
+    testing of required runtimes
   * bin/wifi_quality: significant performance improvements, remove unneeded
     route call, cache iwconfig output so that it's only called once
   * bin/processes: improve performance by listing /proc (doubles the speed)
@@ -37,6 +32,11 @@ byobu (2.12) unreleased; urgency=low
     improvement
   * bin/network: pull network bytes directly from /proc/net/dev, performance
     improvement
+  * bin/users: use pgrep -c, performance improvement
+  * bin/time, bin/date, bin/reboot-required: use case statement, performance
+    improvement
+  * bin/battery: ensure that only one present battery is displayed in the
+    status area
   * bin/disk, bin/disk_used, profiles/common, profiles/profile.skel:
     collapse disk usage down to a single status script for performance,
     support disk partitions as well as mountpoints in ~/.byobu/disk,
@@ -54,7 +54,7 @@ byobu (2.12) unreleased; urgency=low
     profiles/profile.skel, rpm/byobu.spec: add a mail status notification,
     LP: #387936
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jun 2009 15:20:30 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jun 2009 18:14:18 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 
