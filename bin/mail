@@ -23,4 +23,4 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-[ -s "$mailfile" ] && printf "\005{=b Wb}M\005{-} " || exit 0
+[ -s "$mailfile" ] && printf "\005{= wk}[M]\005{-} " || exit 0

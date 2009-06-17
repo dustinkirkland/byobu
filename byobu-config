@@ -262,6 +262,7 @@ def readstatus():
     status["ip_address"]=0
     status["load_average"]=1
     status["logo"]=1
+    status["mail"]=0
     status["mem_available"]=1
     status["mem_used"]=1
     status["menu"]=1
