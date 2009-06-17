@@ -22,9 +22,10 @@ byobu (2.12) unreleased; urgency=low
     bin/mem_available, byobu-status: drop grepping of status config file,
     source it instead, should improve performance
   * bin/reboot-required: don't exit 1 when a reboot is not required
-  * bin/cpu-freq: drop "cat" and just use awk, performance improvement
+  * bin/cpu-freq: drop "cat" and just use awk, don't printf twice,
+    performance improvements
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 18:27:35 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 20:04:13 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 
