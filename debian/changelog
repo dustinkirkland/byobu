@@ -38,7 +38,9 @@ byobu (2.12) unreleased; urgency=low
   * bin/network: pull network bytes directly from /proc/net/dev, performance
     improvement
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jun 2009 20:47:32 -0500
+  * byobu-config: have ESC be a hotkey for 'cancel', LP: #373473
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jun 2009 11:07:18 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 
