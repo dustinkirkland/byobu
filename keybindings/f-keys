@@ -40,4 +40,4 @@ bind R process r					# ctrl-a R | Reload profile
 
 # toggle f-key keybindings off
 register d "^a:source /usr/share/byobu/keybindings/screen-escape-keys^M"
-bind ~ process d
+bind ! process d

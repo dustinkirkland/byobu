@@ -47,6 +47,6 @@ bind @ screen -t help 0 byobu-config
 # ctrl-a-x      Lock this terminal              F12
 # ctrl-a-$      Show detailed status
 bind $ screen -t status 0 byobu-status-detail
-# ctrl-a-~	Toggle f-key keybindings on
+# ctrl-a-!	Toggle f-key keybindings on
 register e "^a:source /usr/share/byobu/keybindings/f-keys^M"
-bind ~ process e
+bind ! process e
