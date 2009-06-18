@@ -35,7 +35,7 @@ msgwait 1
 backtick 99  	86011	86011		byobu-status logo
 backtick 100	599	599		byobu-status release
 backtick 101 	181	181		byobu-status updates_available
-backtick 102 	3	3		byobu-status reboot_required
+backtick 102 	5	5		byobu-status reboot_required
 backtick 103 	2	2		byobu-status cpu_freq
 backtick 104 	86017	86017		byobu-status cpu_count
 backtick 105 	86027	86027		byobu-status mem_available
@@ -50,7 +50,7 @@ backtick 113 	61	61		byobu-status battery
 backtick 114 	11	11		byobu-status users
 backtick 115 	29	29		byobu-status uptime
 backtick 116 	7	7		byobu-status processes
-backtick 117 	2	2		byobu-status network
+backtick 117 	3	3		byobu-status network
 backtick 118 	86083	86083		true
 backtick 119 	17	17		byobu-status wifi_quality
 backtick 120 	86111	86111		byobu-status date
