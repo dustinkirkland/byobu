@@ -32,35 +32,35 @@ msgwait 1
 #   ~600   ~10 minutes
 #   ~180   ~3 minutes
 #   ~60    ~1 minute
-backtick 99  86011 86011	byobu-status logo
-backtick 100 599 599		byobu-status release
-backtick 101 181 181		byobu-status updates_available
-backtick 102 3 3		byobu-status reboot_required
-backtick 103 2 2		byobu-status cpu_freq
-backtick 104 86017 86017	byobu-status cpu_count
-backtick 105 86027 86027	byobu-status mem_available
-backtick 106 2 2		byobu-status load_average
-backtick 107 13 13		byobu-status mem_used
-backtick 108 601 601		byobu-status ec2_cost
-backtick 109 607 607		byobu-status hostname
-backtick 110 86029 86029	byobu-status whoami
-backtick 111 86069 86069	byobu-status menu
-backtick 112 86077 86077	byobu-status arch
-backtick 113 61 61		byobu-status battery
-backtick 114 11 11		byobu-status users
-backtick 115 29 29		byobu-status uptime
-backtick 116 7 7		byobu-status processes
-backtick 117 2 2		byobu-status network
-backtick 118 86083 86083	true
-backtick 119 17 17		byobu-status wifi_quality
-backtick 120 86111 86111	byobu-status date
-backtick 121 86113 86113	byobu-status time
-backtick 122 613 613		byobu-status ip_address
-backtick 123 13 13		byobu-status disk
-backtick 124 86117 86117	true
-backtick 125 23 23		byobu-status temp_c
-backtick 126 23 23		byobu-status temp_f
-backtick 127 5 5		byobu-status mail
+backtick 99  	86011	86011		byobu-status logo
+backtick 100	 599	599		byobu-status release
+backtick 101 	181	181		byobu-status updates_available
+backtick 102 	3	3		byobu-status reboot_required
+backtick 103 	2	2		byobu-status cpu_freq
+backtick 104 	86017	86017		byobu-status cpu_count
+backtick 105 	86027	86027		byobu-status mem_available
+backtick 106 	2	2		byobu-status load_average
+backtick 107 	13	13		byobu-status mem_used
+backtick 108 	601	601		byobu-status ec2_cost
+backtick 109 	607	607		byobu-status hostname
+backtick 110 	86029	86029		byobu-status whoami
+backtick 111 	86069	86069		byobu-status menu
+backtick 112 	86077	86077		byobu-status arch
+backtick 113 	61	61		byobu-status battery
+backtick 114 	11	11		byobu-status users
+backtick 115 	29	29		byobu-status uptime
+backtick 116 	7	7		byobu-status processes
+backtick 117 	2	2		byobu-status network
+backtick 118 	86083	86083		true
+backtick 119 	17	17		byobu-status wifi_quality
+backtick 120 	86111	86111		byobu-status date
+backtick 121 	86113	86113		byobu-status time
+backtick 122 	613	613		byobu-status ip_address
+backtick 123 	13	13		byobu-status disk
+backtick 124 	86117	86117		true
+backtick 125 	23	23		byobu-status temp_c
+backtick 126 	23	23		byobu-status temp_f
+backtick 127 	5	5		byobu-status mail
 
 hardstatus alwayslastline
 
