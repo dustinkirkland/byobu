@@ -58,8 +58,8 @@ backtick 121 	86113	86113		byobu-status time
 backtick 122 	613	613		byobu-status ip_address
 backtick 123 	13	13		byobu-status disk
 backtick 124 	86117	86117		true
-backtick 125 	23	23		byobu-status temp_c
-backtick 126 	23	23		byobu-status temp_f
+backtick 125 	19	19		byobu-status temp_c
+backtick 126 	19	19		byobu-status temp_f
 backtick 127 	5	5		byobu-status mail
 
 hardstatus alwayslastline
