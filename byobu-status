@@ -65,16 +65,17 @@ if [ -r "$HOME/.$PKG/status" ]; then
 fi
 
 P="$1"
-eval x=\$$P
-export $P
-
 case "$P" in
 	# default = on, user must override to turn off
 	cpu_count|cpu_freq|date|load_average|logo|mem_available|mem_used|menu|reboot_required|release|time|updates_available|uptime)
+		eval x=\$$P
+		export $P
 		[ "$x" = "0" ] && exit 0
 	;;
 	# default = off, user must override to turn on
 	arch|battery|disk|ec2_cost|hostname|ip_address|mail|network|processes|users|temp_c|temp_f|whoami|wifi_quality)
+		eval x=\$$P
+		export $P
 		[ "$x" = "1" ] || exit 0
 	;;
 	--detail)
