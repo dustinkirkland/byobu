@@ -28,12 +28,12 @@ msgwait 1
 # Define status commands
 #   Use prime number intervals, to decrease collisions, which
 #   yields some less expensive status updates.
-#   ~8600 ~1 day
+#   ~86000 ~1 day
 #   ~600   ~10 minutes
 #   ~180   ~3 minutes
 #   ~60    ~1 minute
 backtick 99  	86011	86011		byobu-status logo
-backtick 100	 599	599		byobu-status release
+backtick 100	599	599		byobu-status release
 backtick 101 	181	181		byobu-status updates_available
 backtick 102 	3	3		byobu-status reboot_required
 backtick 103 	2	2		byobu-status cpu_freq
