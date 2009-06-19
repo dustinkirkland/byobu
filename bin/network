@@ -32,6 +32,7 @@ if [ "$1" = "--detail" ]; then
 fi
 
 t2=`date +%s`
+ifconfig=`ifconfig "$interface" | grep "RX bytes:"`
 for i in up down; do
 	cache="/var/run/screen/S-$USER/$PKG.network_$i"
 	t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
@@ -42,10 +43,10 @@ for i in up down; do
 		x1=`cat "$cache"` 2>/dev/null || tx1=0
 		if [ "$i" = "up" ]; then
 			symbol="^"
-			x2=`grep "$interface:" /proc/net/dev | awk '{print $10}'`
+			x2=`echo "$ifconfig" | sed "s/^.*TX bytes://" | awk '{print $1}'`
 		else
 			symbol="v"
-			x2=`grep "$interface:" /proc/net/dev | awk '{print $2}'`
+			x2=`echo "$ifconfig" | sed "s/^.*RX bytes://" | awk '{print $1}'`
 		fi
 		echo "$x2" > "$cache"
 		rate=`echo "$t1" "$t2" "$x1" "$x2" | awk '{printf "%.0f", ($4 - $3) / ($2 - $1) / 1024 }'`
