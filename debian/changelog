@@ -2,11 +2,15 @@ byobu (2.13) unreleased; urgency=low
 
   [ Dustin Kirkland ]
   * bin/updates_available: direct which out to devnull
+  * screen-launcher-install: no need to check for executability of
+    screen-launcher
+  * byobu-config: improve the verbage of some of the menus, per
+    review with the Canonical Design Team
 
   [ Ciemon Dunville ]
   * byobu.1: reflect the keybinding toggle change to Ctrl-a-!
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 08:59:19 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 14:59:28 -0500
 
 byobu (2.12-0ubuntu1) karmic; urgency=low
 

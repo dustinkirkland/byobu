@@ -2,13 +2,12 @@
 # translation of byobu.po to
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#: byobu-config:306
 # byobu <dubrsl@altlinux.ru>, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-16 18:04-0500\n"
+"POT-Creation-Date: 2009-06-19 15:01-0500\n"
 "PO-Revision-Date: 2009-05-14 16:31+0300\n"
 "Last-Translator: byobu <dubrsl@altlinux.ru>\n"
 "Language-Team: \n"
@@ -17,137 +16,144 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: byobu-config:71
-msgid "Remove screen by default at login"
-msgstr "Убрать screen из загрузки по умолчанию"
-
-#: byobu-config:73
-msgid "Install screen by default at login"
+#: byobu-config:75
+#, fuzzy
+msgid "Do not launch Byobu by default at login"
 msgstr "Установить screen загружаться по умолчанию"
 
 #: byobu-config:77
+#, fuzzy
+msgid "Launch Byobu by default at login"
+msgstr "Установить screen загружаться по умолчанию"
+
+#: byobu-config:81
 msgid "Help"
 msgstr "Помощь"
 
-#: byobu-config:78
-msgid "Change screen profile"
-msgstr "Изменить профайл screen"
+#: byobu-config:82
+msgid "Change Byobu's colors"
+msgstr ""
 
-#: byobu-config:79
+#: byobu-config:83
 msgid "Toggle status notifications"
 msgstr "Переключатель состояния уведомлений"
 
-#: byobu-config:80
+#: byobu-config:84
 msgid "Change keybinding set"
 msgstr "Изменить привязки клавиш"
 
-#: byobu-config:81
+#: byobu-config:85
 msgid "Change escape sequence"
 msgstr "Изменение Escape-последовательности"
 
-#: byobu-config:82
+#: byobu-config:86
 msgid "Create new window(s)"
 msgstr "Создать новое окно"
 
-#: byobu-config:83
+#: byobu-config:87
 msgid "Manage default windows"
 msgstr "Управление окном по умолчанию"
 
-#: byobu-config:85
-msgid "Exit"
-msgstr "Выход"
-
-#: byobu-config:87 byobu-config:472
+#: byobu-config:91 byobu-config:475
 msgid " Byobu Configuration Menu"
 msgstr "Конфигурационное меню Byobu"
 
-#: byobu-config:98
+#: byobu-config:102
 msgid "Okay"
 msgstr "Ok"
 
-#: byobu-config:98 byobu-config:134 byobu-config:150
-#: byobu-config:185 byobu-config:313 byobu-config:355
-#: byobu-config:433
+#: byobu-config:102 byobu-config:136 byobu-config:154 byobu-config:189
+#: byobu-config:321 byobu-config:363 byobu-config:436
 msgid "Cancel"
 msgstr "Отмена"
 
-#: byobu-config:116 byobu-config:143 byobu-config:157
-#: byobu-config:326 byobu-config:380 byobu-config:388
-#: byobu-config:461
+#: byobu-config:121 byobu-config:145 byobu-config:161 byobu-config:334
+#: byobu-config:388 byobu-config:396 byobu-config:464
 msgid "Menu"
 msgstr "Меню"
 
-#: byobu-config:117
+#: byobu-config:122
 msgid "Byobu Help"
 msgstr "Помощь Byobu"
 
-#: byobu-config:134 byobu-config:150 byobu-config:185
-#: byobu-config:313 byobu-config:355 byobu-config:433
+#: byobu-config:136 byobu-config:154 byobu-config:189 byobu-config:321
+#: byobu-config:363 byobu-config:436
 msgid "Apply"
 msgstr "Применить"
 
-#: byobu-config:136
+#: byobu-config:138
 msgid "Which profile would you like to use?"
 msgstr "Какой профайл вы желаете использовать?"
 
-#: byobu-config:142 byobu-config:156 byobu-config:325
-#: byobu-config:387 byobu-config:459
+#: byobu-config:144 byobu-config:160 byobu-config:333 byobu-config:395
+#: byobu-config:462
 msgid "Message"
 msgstr "Сообщение"
 
-#: byobu-config:151
+#: byobu-config:155
 msgid "Which set of keybindings would you like to use?"
 msgstr "Какой набор привязок к клавишам хотели бы Вы использовать?"
 
-#: byobu-config:165
+#: byobu-config:169
 msgid "Title: "
 msgstr "Заголовок:"
 
-#: byobu-config:167
+#: byobu-config:171
 msgid "Command: "
 msgstr "Команда:"
 
-#: byobu-config:169
+#: byobu-config:173
 msgid "Presets: "
 msgstr "Задает:"
 
-#: byobu-config:183
+#: byobu-config:187
 msgid "Add to default windows"
 msgstr "Добавьте к окнам значения по умолчанию"
 
-#: byobu-config:187
+#: byobu-config:191
 msgid "Create new window(s):"
 msgstr "создать новое окно(а)"
 
-#: byobu-config:314
+#: byobu-config:322
 msgid "Toggle status notifications:"
 msgstr "Переключатель состояния уведомлений:"
 
-#: byobu-config:347
+#: byobu-config:355
 msgid "Windows:"
 msgstr "Окно:"
 
-#: byobu-config:357
+#: byobu-config:365
 msgid "Select window(s) to create by default:"
 msgstr "Выберите окно(на), чтобы создать по умолчанию:"
 
-#: byobu-config:377
-msgid "Screen will be launched automatically next time you login."
-msgstr "Screen будет запущен автоматически следующий раз, когда Вы залогинитесь."
-
 #: byobu-config:385
-msgid "Screen will not be used next time you login."
-msgstr "Screen не будет запущен автоматически следующий раз, когда Вы залогинитесь."
+msgid "Screen will be launched automatically next time you login."
+msgstr ""
+"Screen будет запущен автоматически следующий раз, когда Вы залогинитесь."
 
-#: byobu-config:432
+#: byobu-config:393
+msgid "Screen will not be used next time you login."
+msgstr ""
+"Screen не будет запущен автоматически следующий раз, когда Вы залогинитесь."
+
+#: byobu-config:435
 msgid "Escape key: ctrl-"
 msgstr ""
 
-#: byobu-config:435
+#: byobu-config:438
 msgid "Change escape sequence:"
 msgstr "Изменить Escape-последовательность"
 
-#: byobu-config:473
-msgid "<Tab>/<Alt-Tab> between elements | <Return> Validates"
+#: byobu-config:476
+#, fuzzy
+msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr "<Tab>/<Alt-Tab> между элементами | <Return> Приминение"
 
+#~ msgid "Remove screen by default at login"
+#~ msgstr "Убрать screen из загрузки по умолчанию"
+
+#~ msgid "Change screen profile"
+#~ msgstr "Изменить профайл screen"
+
+#~ msgid "Exit"
+#~ msgstr "Выход"

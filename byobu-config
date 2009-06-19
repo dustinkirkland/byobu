@@ -72,14 +72,14 @@ def terminal_size():                    ### decide on *some* terminal size
 
 def menu(screen, size, isInstalled):
     if isInstalled:
-        installtext=_("Remove screen by default at login")
+        installtext=_("Do not launch Byobu by default at login")
     else:
-        installtext=_("Install screen by default at login")
+        installtext=_("Launch Byobu by default at login")
 
 
     li = Listbox(height = 8, width = 60, returnExit = 1)
     li.append(_("Help"), 1)
-    li.append(_("Change screen profile"), 2)
+    li.append(_("Change Byobu's colors"), 2)
     li.append(_("Toggle status notifications"), 3)
     li.append(_("Change keybinding set"), 4)
     li.append(_("Change escape sequence"), 5)
@@ -473,7 +473,7 @@ def main():
     size = terminal_size()
     screen = SnackScreen()
     screen.drawRootText(1,0,_(' Byobu Configuration Menu'))
-    screen.pushHelpLine(_('<Tab>/<Alt-Tab> between elements | <Return> Validates'))
+    screen.pushHelpLine(_('<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits'))
 
     config = SafeConfigParser()
 
