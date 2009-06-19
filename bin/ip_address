@@ -24,7 +24,8 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-. "$HOME/.$PKG/status" 2>/dev/null || true
+. "/etc/$PKG/statusrc"
+. "$HOME/.$PKG/status"
 [ "$hostname" = "1" ] && space=" "
 [ "$whoami" = "1" ] && space=" "
 

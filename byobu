@@ -86,7 +86,8 @@ fi
 [ -s "$HOME/.$PKG/keybindings" ] || echo "source /usr/share/$PKG/keybindings/common" > "$HOME/.$PKG/keybindings"
 sed -i "s/$OLDPKG/$PKG/g" "$HOME/.$PKG/keybindings"
 
-# Ensure that their default windows are seeded
+# Ensure that the user's configuration is seeded
+[ -r "$HOME/.$PKG/status" ] || touch "$HOME/.$PKG/status"
 [ -r "$HOME/.$PKG/windows" ] || touch "$HOME/.$PKG/windows"
 if grep -qs "^[^#]" "$HOME/.$PKG/windows"; then
 	# User has some default windows, so don't launch motd+shell
