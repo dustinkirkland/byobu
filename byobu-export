@@ -85,22 +85,6 @@ choose() {
 	exit 1
 }
 
-status_config() {
-	# Generate the status configuration
-	# Disable the menu, since configurator is not available
-	# Enable user@host in its place
-	for i in $(ls /usr/lib/$PKG/); do
-		case "$i" in
-			cpu_count|cpu_freq|date|hostname|load_average|logo|mem_available|mem_used|reboot_required|release|time|updates_available|whoami)
-				echo "$i=1"
-			;;
-			*)
-				echo "$i=0"
-			;;
-		esac
-	done
-}
-
 hr() {
 	echo "###############################################################################"
 }
@@ -233,7 +217,7 @@ cp -a /usr/bin/$PKG-status "$DIR/.$PKG"
 # Generate the monolithic profile
 header > "$PROFILE"
 sources >> "$PROFILE"
-status_config > "$STATUS"
+cp /etc/$PKG/statusrc > "$STATUS"
 
 # Some gardening
 # Drop additional "source" calls

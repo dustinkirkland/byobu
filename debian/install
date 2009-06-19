@@ -7,6 +7,7 @@ profiles/black usr/share/byobu/profiles
 profiles/dark usr/share/byobu/profiles
 profiles/light usr/share/byobu/profiles
 keybindings/* usr/share/byobu/keybindings
+statusrc etc/byobu
 windows/common usr/share/byobu/windows
 select-screen-profile usr/bin
 byobu usr/bin

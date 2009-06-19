@@ -6,11 +6,15 @@ byobu (2.13) unreleased; urgency=low
     screen-launcher
   * byobu-config: improve the verbage of some of the menus, per
     review with the Canonical Design Team
+  * byobu-status, byobu-export, debian/install: source default status
+    states, rather than the big case statement, performance improvement
+    for all status, also reduces the number of places to touch when a
+    new status script is added
 
   [ Ciemon Dunville ]
   * byobu.1: reflect the keybinding toggle change to Ctrl-a-!
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 14:59:28 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 16:18:53 -0500
 
 byobu (2.12-0ubuntu1) karmic; urgency=low
 

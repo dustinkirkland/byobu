@@ -17,15 +17,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-###########################################################
-# We should be really "nice" about gathering status:
-#renice 10 $$ >/dev/null 2>&1 || true
-#ionice -c3 -p $$ >/dev/null 2>&1 || true
-# However, this *really* slows down startup.
-# We need a good way of only doing this for updates,
-# but not at screen startup.
-###########################################################
-
 PKG="byobu"
 
 migrate() {
@@ -44,60 +35,34 @@ migrate() {
         fi
 }
 
-# If the old config dir exists, but the new one doesn't, provide a migration mechanism
-[ -d "$HOME/.$OLDPKG" -a ! -d "$HOME/.$PKG" ] && migrate
+# If the old config dir exists, but the new one doesn't, provide a migration mechanism.
+[ -d "$HOME/.$OLDPKG"] && [ ! -d "$HOME/.$PKG" ] && migrate
 
 # Allow for local status scripts
-if [ -d "$HOME/.$PKG/bin" ]; then
-	DIR="$HOME/.$PKG/bin"
-elif [ -d "/usr/lib/$PKG" ]; then
-	DIR="/usr/lib/$PKG"
-else
-	exit 1
-fi
+DIR="/usr/lib/$PKG"
+[ -d "$HOME/.$PKG/bin" ] && DIR="$HOME/.$PKG/bin"
 
-# Source status file
-if [ -r "$HOME/.$PKG/status" ]; then
-	if ! . "$HOME/.$PKG/status" ; then
-		# If sourcing fails, try replacing - with _
-		sed -i "s/-/_/g" "$HOME/.$PKG/status"
+# Source global status configuration
+. "/etc/$PKG/statusrc" || true
+# Source local status configuration
+. "$HOME/.$PKG/status" || sed -i "s/-/_/g" "$HOME/.$PKG/status" || true
+
+export P="$1"
+if [ "$P" = "--detail" ]; then
+	VER=
+	if which dpkg-query >/dev/null; then
+		VER=`dpkg-query --show $PKG | awk '{print "-" $2 }'`
 	fi
-fi
-
-P="$1"
-case "$P" in
-	# default = on, user must override to turn off
-	cpu_count|cpu_freq|date|load_average|logo|mem_available|mem_used|menu|reboot_required|release|time|updates_available|uptime)
-		eval x=\$$P
-		export $P
-		[ "$x" = "0" ] && exit 0
-	;;
-	# default = off, user must override to turn on
-	arch|battery|disk|ec2_cost|hostname|ip_address|mail|network|processes|users|temp_c|temp_f|whoami|wifi_quality)
-		eval x=\$$P
-		export $P
+	printf "$PKG$VER Detailed Status Navigation\n  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
+	for i in `ls "$DIR"`; do
+		[ "$i" = "menu" ] && continue
+		short=`"$DIR"/$i --short | sed 's/^\s*//' | sed 's/\s*$//' | sed 's/.{[^}]*}//g'` || true
+		detail=`"$DIR"/$i --detail | sed '/^$/d' | sed 's/^/\t/g'` || true
+		printf "%s\n\t(%s)\n" "$short" "$i"
+		[ -n "$detail" ] && printf "%s\n" "$detail"
+	done
+else
+		eval x=\$$P || exit 1
 		[ "$x" = "1" ] || exit 0
-	;;
-	--detail)
-		VER=
-		if which dpkg-query >/dev/null; then
-			VER=`dpkg-query --show $PKG | awk '{print "-" $2 }'`
-		fi
-		printf "$PKG$VER Detailed Status Navigation\n  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
-		for i in `ls "$DIR"`; do
-			[ "$i" = "menu" ] && continue
-			short=`"$DIR"/$i --short | sed 's/^\s*//' | sed 's/\s*$//' | sed 's/.{[^}]*}//g'` || true
-			detail=`"$DIR"/$i --detail | sed '/^$/d' | sed 's/^/\t/g'` || true
-			printf "%s\n\t(%s)\n" "$short" "$i"
-			[ -n "$detail" ] && printf "%s\n" "$detail"
-		done
-		exit 0
-	;;
-	*)
-		exit 1
-	;;
-esac
-
-if [ -f "$DIR"/"$P" -a -x "$DIR"/"$P" ]; then
-	exec "$DIR"/"$P"
+		[ -x "$DIR"/"$P" ] exec "$DIR"/"$P"
 fi
