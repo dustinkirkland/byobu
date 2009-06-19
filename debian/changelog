@@ -1,4 +1,10 @@
-byobu (2.12) unreleased; urgency=low
+byobu (2.13) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 00:50:53 -0500
+
+byobu (2.12-0ubuntu1) karmic; urgency=low
 
   [ Massive changeset for LP: #386546 ]
   * bin/cpu_count, bin/cpu_freq, bin/disk_available, bin/disk_used,
