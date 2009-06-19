@@ -36,16 +36,16 @@ migrate() {
 }
 
 # If the old config dir exists, but the new one doesn't, provide a migration mechanism.
-[ -d "$HOME/.$OLDPKG"] && [ ! -d "$HOME/.$PKG" ] && migrate
+[ -d "$HOME/.$OLDPKG" ] && [ ! -d "$HOME/.$PKG" ] && migrate
 
 # Allow for local status scripts
 DIR="/usr/lib/$PKG"
 [ -d "$HOME/.$PKG/bin" ] && DIR="$HOME/.$PKG/bin"
 
 # Source global status configuration
-. "/etc/$PKG/statusrc" || true
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 # Source local status configuration
-. "$HOME/.$PKG/status" || sed -i "s/-/_/g" "$HOME/.$PKG/status" || true
+[ -r "$HOME/.$PKG/status" ] && . "$HOME/.$PKG/status"
 
 export P="$1"
 if [ "$P" = "--detail" ]; then
@@ -64,5 +64,5 @@ if [ "$P" = "--detail" ]; then
 else
 		eval x=\$$P || exit 1
 		[ "$x" = "1" ] || exit 0
-		[ -x "$DIR"/"$P" ] exec "$DIR"/"$P"
+		[ -x "$DIR/$P" ] && exec "$DIR/$P"
 fi
