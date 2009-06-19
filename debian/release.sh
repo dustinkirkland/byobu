@@ -31,8 +31,12 @@ sed -i "s%^Source0:.*$%Source0:        http://code.launchpad.net/$PKG/trunk/$MAJ
 
 gpg --armor --sign --detach-sig ../"$PKG"_*.orig.tar.gz
 
+sudo alien --to-rpm ../$PKG"_"$MAJOR.$minor"_all.deb"
+mv -f *.rpm ..
+rsync -aP ../*rpm kirkland@people.ubuntu.com:~kirkland/public_html/$PKG/rpm
+
 $PKG-export -c light -f /tmp/$PKG-export.tar.gz
-puc /tmp/$PKG-export.tar.gz
+rsync -aP /tmp/$PKG-export.tar.gz kirkland@people.ubuntu.com:~kirkland/public_html
 
 echo
 echo
