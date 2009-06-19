@@ -54,7 +54,10 @@ byobu (2.12) unreleased; urgency=low
     profiles/profile.skel, rpm/byobu.spec: add a mail status notification,
     LP: #387936
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 18 Jun 2009 00:53:42 -0500
+  * byobu-config: fix keybinding disabling for non-standard escape sequences,
+    LP: #389129
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 00:35:39 -0500
 
 byobu (2.11-0ubuntu1) karmic; urgency=low
 

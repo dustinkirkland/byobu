@@ -425,9 +425,9 @@ def setesckey(key):
             out = commands.getoutput("sed -i -e 's/^escape.*$//' "+path)
             appendtofile(path, "escape ^"+u+l+"\n")
             out = commands.getoutput("sed -i -e 's/^register.*$//' "+path)
-            out = commands.getoutput("grep ^register "+SHARE+"/keybindings/common")
+            out = commands.getoutput("grep -h ^register "+SHARE+"/keybindings/*keys")
             appendtofile(path, out+"\n")
-            out = commands.getoutput("sed -i -e 's/\"\^a/\"\^"+l+"/' "+path)
+            out = commands.getoutput("sed -i -e 's/\"\^a/\"\^"+l+"/g' "+path)
             out = commands.getoutput("sed -i -e '/^$/d' "+path)
 
 def chgesc(screen, size):
