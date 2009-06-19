@@ -23,7 +23,7 @@ PKG="byobu"
 install_screen_launcher() {
 	dest=$1
 	launcher="screen-launcher"
-	launcher_line="\`echo \$- | grep -qs i\` && [ -x $launcher ] && $launcher"
+	launcher_line="\`echo \$- | grep -qs i\` && $launcher"
 	# Add it at the end
 	echo "$launcher_line" >> "$dest"
 	# Hush login, since byobu will handle motd printing
