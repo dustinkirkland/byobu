@@ -97,13 +97,13 @@ ionice -c3 -p $$ >/dev/null 2>&1 || true
 if [ -x /usr/lib/update-notifier/apt-check ]; then
 	# If apt-check binary exists, use it
 	/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;/ /" > $mycache &
-elif which apt-get 2>/dev/null; then
+elif which apt-get >/dev/null; then
 	# If apt-get exists, use it
 	apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
-elif which zypper; then
+elif which zypper >/dev/null; then
 	# If zypper exists, use it
 	zypper --no-refresh lu --best-effort | grep 'v |' | wc -l > $mycache &
-elif which yum; then
+elif which yum >/dev/null; then
 	# If yum exists, use it
 	# TODO: We need a better way of counting updates available from a RH expert
 	yum list updates | egrep -v "Updated Packages|Loaded plugins" | wc -l > $mycache &

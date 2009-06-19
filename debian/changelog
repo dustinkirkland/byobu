@@ -1,8 +1,8 @@
 byobu (2.13) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/updates_available: direct which out to devnull
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 00:50:53 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 01:16:50 -0500
 
 byobu (2.12-0ubuntu1) karmic; urgency=low
 
