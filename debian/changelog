@@ -10,11 +10,14 @@ byobu (2.13) unreleased; urgency=low
     status states, rather than the big case statement, performance
     improvement for all status, also reduces the number of places to
     touch when a new status script is added
+  * byobu-status: move all of the cleanup hacks to byobu-janitor; create
+    a find_script() function that allows for scripts in both /usr/lib and
+    $HOME/.byobu
 
   [ Ciemon Dunville ]
   * byobu.1: reflect the keybinding toggle change to Ctrl-a-!
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 16:21:27 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 17:50:59 -0500
 
 byobu (2.12-0ubuntu1) karmic; urgency=low
 
