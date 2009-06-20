@@ -32,6 +32,7 @@ msgwait 1
 #   ~600   ~10 minutes
 #   ~180   ~3 minutes
 #   ~60    ~1 minute
+backtick 10 	86399	86399		byobu-janitor
 backtick 99  	86011	86011		byobu-status logo
 backtick 100	599	599		byobu-status release
 backtick 101 	181	181		byobu-status updates_available

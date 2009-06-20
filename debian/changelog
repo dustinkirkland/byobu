@@ -13,11 +13,16 @@ byobu (2.13) unreleased; urgency=low
   * byobu-status: move all of the cleanup hacks to byobu-janitor; create
     a find_script() function that allows for scripts in both /usr/lib and
     $HOME/.byobu
+  * byobu, byobu-janitor, debian/install, profiles/common,
+    profiles/profile.skel: remove janitorial logic scattered across
+    several scripts and put it in a single place; call this script before
+    launching byobu, and then only once a day or when the user refreshes
+    their profile
 
   [ Ciemon Dunville ]
   * byobu.1: reflect the keybinding toggle change to Ctrl-a-!
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 17:50:59 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 19:09:36 -0500
 
 byobu (2.12-0ubuntu1) karmic; urgency=low
 

@@ -1,0 +1,57 @@
+#!/bin/sh -e
+#
+#    byobu-janitor - a collection of byobu tasks that ensure  a clean
+#                    environtment and smooth upgrades
+#
+#    Copyright (C) 2009 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+OLDPKG="screen-profiles"
+PKG="byobu"
+DEFAULT_PROFILE="light"
+PROFILE="$HOME/.$PKG/profile"
+
+# Affects: Upgrades from screen-profiles
+# If the old config dir exists, but the new one doesn't, provide a migration mechanism.
+if [ -d "$HOME/.$OLDPKG" ] && [ ! -e "$HOME/.$PKG" ]; then
+	# Rename the config dir
+	mv -f "$HOME/.$OLDPKG" "$HOME/.$PKG"
+	ln -sf "$HOME/.$PKG" "$HOME/.$OLDPKG"
+	# Replace all instances of the old package name with the new
+	sed -i "s/$OLDPKG/$PKG/g" "$HOME/.$PKG"/*
+	# Fix the chosen profile symlink
+	if [ -h "$PROFILE" ]; then
+		# Determine the chosen profile color
+		profile=`readlink "$PROFILE" | sed "s:^.*-::"`
+		# Try to set that color, if it exists, otherwise set to default
+		select-screen-profile -s "$profile" >/dev/null 2>&1 || select-screen-profile -s "$DEFAULT_PROFILE" >/dev/null 2>&1
+	fi
+fi
+
+# Affects: First runs with no configuration
+# Seed the configuration
+[ -d "$HOME/.$PKG" ] || mkdir -p "$HOME/.$PKG"
+[ -r "$PROFILE" ] || select-screen-profile -s "$DEFAULT_PROFILE" >/dev/null 2>&1
+[ -s "$HOME/.$PKG/keybindings" ] || echo "source /usr/share/$PKG/keybindings/common" > "$HOME/.$PKG/keybindings"
+[ -r "$HOME/.$PKG/status" ] || touch "$HOME/.$PKG/status"
+[ -r "$HOME/.$PKG/windows" ] || touch "$HOME/.$PKG/windows"
+[ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
+
+# Affects: Upgrades from <= byobu-2.11
+# The status scripts used to have hyphens in their name, but now use
+# underscores such that we can source the file as a shell snippet;
+# fix existing status configuration.
+sed -i "s/-/_/g" "$HOME/.$PKG/status"
