@@ -119,10 +119,10 @@ header() {
 sources() {
 	# insert the common profile, replace the status exe path
 	echo
-	cat $SHARE/profiles/common | sed "s:$PKG-status:\$HOME/.$PKG/$PKG-status:"
+	cat $SHARE/profiles/common | sed "s:$PKG-:\$HOME/.$PKG/$PKG-:"
 	hr
 	echo
-	cat $SHARE/keybindings/common
+	cat $SHARE/keybindings/f-keys
 	hr
 	echo
 	hr
@@ -213,11 +213,12 @@ echo "http://launchpad.net/$PKG" >> "$DIR/.$PKG/version"
 # Copy status scripts
 cp -a /usr/lib/$PKG/* "$DIR/.$PKG/bin"
 cp -a /usr/bin/$PKG-status "$DIR/.$PKG"
+cp -a /usr/bin/$PKG-janitor "$DIR/.$PKG"
 
 # Generate the monolithic profile
 header > "$PROFILE"
 sources >> "$PROFILE"
-cp /etc/$PKG/statusrc > "$STATUS"
+cat /etc/$PKG/statusrc > "$STATUS"
 
 # Some gardening
 # Drop additional "source" calls
