@@ -18,11 +18,14 @@ byobu (2.13) unreleased; urgency=low
     several scripts and put it in a single place; call this script before
     launching byobu, and then only once a day or when the user refreshes
     their profile
+  * bin/reboot_required, byobu-janitor, byobu-status, byobu.1,
+    debian/postinst: display an <F5> next to the reboot symbol, if a byobu
+    reload is required; flag this in the postinst, after upgrading byobu
 
   [ Ciemon Dunville ]
   * byobu.1: reflect the keybinding toggle change to Ctrl-a-!
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 19 Jun 2009 19:09:36 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 20 Jun 2009 13:35:21 -0500
 
 byobu (2.12-0ubuntu1) karmic; urgency=low
 

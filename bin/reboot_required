@@ -17,15 +17,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-flag="/var/run/reboot-required"
+PKG="byobu"
+reboot="/var/run/reboot-required"
+reload="/var/run/screen/S-$USER/$PKG.reload-required"
 case "$1" in
 	--detail)
-		ls -alF "$flag" 2>&1
+		ls -alF "$reboot" "$reload" 2>&1
 	;;
 	--short)
-		[ -e "$flag" ] && printf "Yes" || printf "No"
+		[ -e "$reboot" ] && printf "Yes" || printf "No"
 	;;
 	*)
-		[ -e "$flag" ] && printf "\005{=b bW}(@)\005{-} " || exit 0
+		[ -e "$reboot" ] && printf "\005{=b bW}(@)\005{-} "
+		[ -e "$reload" ] && printf "\005{=b bW}<F5>\005{-} "
 	;;
 esac

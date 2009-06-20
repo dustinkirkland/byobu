@@ -11,4 +11,13 @@ if [ -x "/usr/bin/screen.real" ]; then
         dpkg-divert --package "$PKG" --rename --remove /usr/bin/screen
 fi
 
+# Notify users that they should reload their profile
+set -x
+DIR="/var/run/screen"
+for d in $(ls "$DIR"); do
+	touch "$DIR/$d/$PKG.reload-required"
+	u=$(echo "$d" | sed "s:^S-::")
+	chown $u:$u "$DIR/$d/$PKG.reload-required"
+done
+
 #DEBHELPER#
