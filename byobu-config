@@ -27,11 +27,13 @@ from ConfigParser import SafeConfigParser
 from snack import *
 
 HOME=os.getenv("HOME")
+USER=os.getenv("USER")
 PKG="byobu"
 SHARE='/usr/share/'+PKG
 DOC='/usr/share/doc/'+PKG
 DEF_ESC="A"
-RELOAD = "If you are using the default set of keybindings, press\n<F5> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
+RELOAD = "If you are using the default set of keybindings, press\n<F5> or <ctrl-a-R> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
+RELOAD_FLAG="/var/run/screen/S-"+USER+"/"+PKG+".reload-required"
 ESC = ''
 snack.hotkeys[ESC] = ord(ESC)
 snack.hotkeys[ord(ESC)] = ESC
@@ -53,6 +55,10 @@ def ioctl_GWINSZ(fd):                  #### TABULATION FUNCTIONS
     except:
         return None
     return cr
+
+def reload_required():
+    f = open(RELOAD_FLAG,'w')
+    f.close()
 
 def terminal_size():                    ### decide on *some* terminal size
     cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)  # try open fds
@@ -141,6 +147,7 @@ def profile(screen, size):
 
     if bb.buttonPressed(g.runOnce()) != "cancel":
         commands.getoutput('select-screen-profile --set %s' % li.current())
+	reload_required()
         button = messagebox(screen, 60, 4, _("Message"), _(RELOAD), \
             buttons=((_("Menu"), )))
     return 100
@@ -157,6 +164,7 @@ def keybindings(screen, size):
     g.add(bb, 0, 1, padding=(1,1,0,0))
     if bb.buttonPressed(g.runOnce()) != "cancel":
         switch_keybindings(li.current())
+	reload_required()
         button = messagebox(screen, 60, 4, _("Message"), _(RELOAD), \
             buttons=((_("Menu"), )))
     return 100
@@ -330,6 +338,7 @@ def togglestatus(screen, size):
                 item[0] = r.getEntryValue(count)[1]
             count=count+1
         writestatus(itemlist)
+	reload_required()
         button = messagebox(screen, 60, 4, _("Message"), _(RELOAD), \
             buttons=((_("Menu"), )))
     return 100
@@ -459,6 +468,7 @@ def chgesc(screen, size):
     screen.popWindow()
     if bb.buttonPressed(which) != "cancel":
         setesckey(esc.value())
+	reload_required()
         button = messagebox(screen, 60, 4, _("Message"), \
             _(RELOAD), \
             buttons=((_("Menu"), )))
