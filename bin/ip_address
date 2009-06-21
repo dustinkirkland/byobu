@@ -29,7 +29,7 @@ fi
 [ "$hostname" = "1" ] && space=" "
 [ "$whoami" = "1" ] && space=" "
 
-interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
+interface=`/sbin/route -n | tail -n 1 | awk '{print $8}'`
 ipaddr=`/sbin/ifconfig "$interface" | grep "inet addr:" | sed "s/^.*inet addr://" | sed "s/ .*$//"`
 
 printf "%s\005{+b }%s\005{-}" "$space" "$ipaddr"

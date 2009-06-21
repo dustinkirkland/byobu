@@ -23,7 +23,7 @@ PKG="byobu"
 if [ -r "$HOME/.$PKG/network" ]; then
 	interface=`cat "$HOME/.$PKG/network"`
 else
-	interface=`/sbin/route -n | tail -n 1 | sed "s/^.* //"`
+	interface=`/sbin/route -n | tail -n 1 | awk '{print $8}'`
 fi
 
 if [ "$1" = "--detail" ]; then
