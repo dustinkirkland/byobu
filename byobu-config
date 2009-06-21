@@ -78,9 +78,9 @@ def terminal_size():                    ### decide on *some* terminal size
 
 def menu(screen, size, isInstalled):
     if isInstalled:
-        installtext=_("Do not launch Byobu by default at login")
+        installtext=_("Byobu currently launches at login (toggle)")
     else:
-        installtext=_("Launch Byobu by default at login")
+        installtext=_("Byobu currently does not launch at login (toggle)")
 
 
     li = Listbox(height = 8, width = 60, returnExit = 1)
@@ -234,7 +234,13 @@ def appendwindow(win):
         f.close()
 
 def readwindows():
-    f=open(HOME+'/.'+PKG+'/windows', 'r')
+    if not os.path.isfile(HOME+'/.'+PKG+'/windows'):
+        windowsfile=SHARE+'/windows/common'
+    elif os.path.getsize(HOME+'/.'+PKG+'/windows') == 0:
+        windowsfile=SHARE+'/windows/common'
+    else:
+        windowsfile=HOME+'/.'+PKG+'/windows'
+    f=open(windowsfile)
     try:
         li=[]
         for line in f.readlines():
@@ -369,7 +375,7 @@ def defaultwindows(screen, size):
             r.append(win[1],count,selected=win[0])
        count=count+1
 
-    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel"), ESC), compact = 1)
+    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
 
     g = GridForm(screen, _("Select window(s) to create by default:"), 2, 4 )
     g.add(rl, 0, 0, anchorLeft=1, anchorTop=1, padding=(4,0,0,1))
@@ -391,7 +397,7 @@ def install(screen, size, isInstalled):
     if not isInstalled:
         out = commands.getoutput("bash /usr/share/"+PKG+"/screen-launcher-install")
         if out == "":
-            out = _("Screen will be launched automatically next time you login.")
+            out = _("Byobu will be launched automatically next time you login.")
 
         button = messagebox(screen, 60, 2, "Message", out, \
         buttons=((_("Menu"), )))
@@ -399,7 +405,7 @@ def install(screen, size, isInstalled):
     else:
         out = commands.getoutput("bash /usr/share/"+PKG+"/screen-launcher-uninstall")
         if out == "":
-            out = _("Screen will not be used next time you login.")
+            out = _("Byobu will not be used next time you login.")
 
         button = messagebox(screen, 60, 2, _("Message"), out, \
         buttons=((_("Menu"), )))
