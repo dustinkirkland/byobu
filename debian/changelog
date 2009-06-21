@@ -1,4 +1,10 @@
-byobu (2.13) unreleased; urgency=low
+byobu (2.14) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Jun 2009 13:47:43 -0500
+
+byobu (2.13-0ubuntu1) karmic; urgency=low
 
   [ Dustin Kirkland ]
   * bin/updates_available: direct which out to devnull
