@@ -29,13 +29,13 @@ byobu (2.13) unreleased; urgency=low
     file, all disabled by default;  in byobu-config, if the user's windows
     file is empty, show the examples in the default window management
     panel
-  * ip_address, network: awk seems to be more efficient than sed, in this
-    case
+  * bin/ec2_cost, bin/ip_address, bin/network: get default interface from
+    /proc/net/route, much more efficient
 
   [ Ciemon Dunville ]
   * byobu.1: reflect the keybinding toggle change to Ctrl-a-!
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Jun 2009 12:21:23 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Jun 2009 12:31:52 -0500
 
 byobu (2.12-0ubuntu1) karmic; urgency=low
 

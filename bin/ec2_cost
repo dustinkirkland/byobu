@@ -50,7 +50,7 @@ RX_RATE="0.10"
 TX_RATE="0.17"
 
 # Auto detect network interface
-IF=`/sbin/route -n | grep "0\.0\.0\.0" | tail -n1 | awk '{print $8}'`
+IF=`tail -n1 /proc/net/route  | awk '{print $1}'`
 
 ifconfig_out=`/sbin/ifconfig "$IF"`
 
