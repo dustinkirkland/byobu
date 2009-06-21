@@ -23,11 +23,13 @@ byobu (2.13) unreleased; urgency=low
     reload is required; flag this in the postinst, after upgrading byobu
   * byobu-config: add note about ctrl-a-R to reload profile, flag the
     reload-required file when making changes
+  * byobu-janitor: add fix for the collapsed disk* and network* status
+    items
 
   [ Ciemon Dunville ]
   * byobu.1: reflect the keybinding toggle change to Ctrl-a-!
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 20 Jun 2009 13:46:18 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Jun 2009 12:11:15 -0500
 
 byobu (2.12-0ubuntu1) karmic; urgency=low
 
