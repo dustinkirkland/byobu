@@ -31,11 +31,13 @@ byobu (2.13) unreleased; urgency=low
     panel
   * bin/ec2_cost, bin/ip_address, bin/network: get default interface from
     /proc/net/route, much more efficient
+  * bin/network: read bytes sent/received straight from /proc; more
+    efficient
 
   [ Ciemon Dunville ]
   * byobu.1: reflect the keybinding toggle change to Ctrl-a-!
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Jun 2009 12:31:52 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Jun 2009 12:44:19 -0500
 
 byobu (2.12-0ubuntu1) karmic; urgency=low
 
