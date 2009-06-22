@@ -1,4 +1,10 @@
-byobu (2.14) unreleased; urgency=low
+byobu (2.15) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 22 Jun 2009 11:29:21 -0500
+
+byobu (2.14-0ubuntu1) karmic; urgency=low
 
   * debian/postinst: remove set -x debugging
   * debian/control: create dummy screen-profiles and screen-profiles-extras
