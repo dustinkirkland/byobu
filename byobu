@@ -20,7 +20,7 @@
 PKG="byobu"
 
 # Sanitize the environment
-byobu-janitor
+byobu-janitor --force
 
 # Launch motd+shell, unless the user has default windows set to launch
 [ -n "$SHELL" ] || SHELL="/bin/sh"
