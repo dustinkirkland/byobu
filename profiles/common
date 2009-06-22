@@ -24,6 +24,7 @@
 startup_message off
 vbell off
 msgwait 1
+defutf8 on
 
 # Define status commands
 #   Use prime number intervals, to decrease collisions, which
