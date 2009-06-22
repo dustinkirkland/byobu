@@ -13,9 +13,6 @@ Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, screen, gettext-base, 
 Recommends: update-notifier-common, lsb-release
 Suggests: byobu-extras, vim
 Enhances: screen
-Provides: screen-profiles
-Replaces: screen-profiles
-Conflicts: screen-profiles
 Description: a set of useful profiles and a profile-switcher for GNU screen
  byobu includes a set of profiles for the GNU screen window manager.
  These profiles are quite useful on server machines which are not running
@@ -31,10 +28,19 @@ Description: a set of useful profiles and a profile-switcher for GNU screen
 Package: byobu-extras
 Architecture: all
 Depends: ${misc:Depends}, byobu
-Provides: screen-profiles-extras
-Replaces: screen-profiles-extras
-Conflicts: screen-profiles-extras
 Description: additional colored profiles for the byobu package
  The byobu contains a basic set of light and dark screen profiles.
  The byobu-extras package provides additional profiles of various
  different light and dark colors.
+
+Package: screen-profiles
+Architecture: all
+Depends: ${misc:Depends}, byobu
+Description: this package has been renamed 'byobu'
+ The screen-profiles package has been renamed 'byobu'.
+
+Package: screen-profiles-extras
+Architecture: all
+Depends: ${misc:Depends}, byobu-extras
+Description: this package has been renamed 'byobu-extras'
+ The screen-profiles-extras package has been renamed 'byobu-extras'.

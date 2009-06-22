@@ -1,8 +1,10 @@
 byobu (2.14) unreleased; urgency=low
 
   * debian/postinst: remove set -x debugging
+  * debian/control: create dummy screen-profiles and screen-profiles-extras
+    packages, to handle seamless upgrades from screen-profiles -> byobu
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Jun 2009 21:10:26 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 22 Jun 2009 11:28:14 -0500
 
 byobu (2.13-0ubuntu1) karmic; urgency=low
 
