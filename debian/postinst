@@ -12,7 +12,6 @@ if [ -x "/usr/bin/screen.real" ]; then
 fi
 
 # Notify users that they should reload their profile
-set -x
 DIR="/var/run/screen"
 for d in $(ls "$DIR"); do
 	touch "$DIR/$d/$PKG.reload-required"

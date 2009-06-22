@@ -1,8 +1,8 @@
 byobu (2.14) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/postinst: remove set -x debugging
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Jun 2009 13:47:43 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Jun 2009 21:10:26 -0500
 
 byobu (2.13-0ubuntu1) karmic; urgency=low
 
