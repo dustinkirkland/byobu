@@ -1,8 +1,11 @@
 byobu (2.16) unreleased; urgency=low
 
   * byobu-config, doc/help.txt: update the verbage of some text
+  * byobu-config, byobu-janitor, byobu-select-profile, debian/install,
+    debian/rules, po/POTFILES.sh, rpm/byobu.spec: rename select-screen-profile
+    to byobu-select-profile; fits our namespace better
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jun 2009 02:05:56 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jun 2009 02:21:01 -0500
 
 byobu (2.15-0ubuntu1) karmic; urgency=low
 

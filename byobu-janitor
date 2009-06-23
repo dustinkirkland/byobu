@@ -45,14 +45,14 @@ if [ -d "$HOME/.$OLDPKG" ] && [ ! -e "$HOME/.$PKG" ]; then
 		# Determine the chosen profile color
 		profile=`readlink "$PROFILE" | sed "s:^.*-::"`
 		# Try to set that color, if it exists, otherwise set to default
-		select-screen-profile -s "$profile" >/dev/null 2>&1 || select-screen-profile -s "$DEFAULT_PROFILE" >/dev/null 2>&1
+		byobu-select-profile -s "$profile" >/dev/null 2>&1 || byobu-select-profile -s "$DEFAULT_PROFILE" >/dev/null 2>&1
 	fi
 fi
 
 # Affects: First runs with no configuration
 # Seed the configuration
 [ -d "$HOME/.$PKG" ] || mkdir -p "$HOME/.$PKG"
-[ -r "$PROFILE" ] || select-screen-profile -s "$DEFAULT_PROFILE" >/dev/null 2>&1
+[ -r "$PROFILE" ] || byobu-select-profile -s "$DEFAULT_PROFILE" >/dev/null 2>&1
 [ -s "$HOME/.$PKG/keybindings" ] || echo "source /usr/share/$PKG/keybindings/common" > "$HOME/.$PKG/keybindings"
 [ -r "$HOME/.$PKG/status" ] || touch "$HOME/.$PKG/status"
 [ -r "$HOME/.$PKG/windows" ] || touch "$HOME/.$PKG/windows"

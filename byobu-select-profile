@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    select-screen-profile
+#    byobu-select-profile
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -28,7 +28,7 @@ TEXTDOMAIN="$PKG"
 
 usage () {
     cat <<EOT
-usage: select-screen-profile [(-l|--list)][(-h|--help)][(-s|--set) PROFILE]
+usage: byobu-select-profile [(-l|--list)][(-h|--help)][(-s|--set) PROFILE]
     -l,--list           list available profiles
     -s,--set PROFILE    set profile
     -h,--help           this help

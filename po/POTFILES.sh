@@ -2,4 +2,4 @@
 # Please keep this file sorted alphabetically.
 bin/menu
 byobu-export
-select-screen-profile
+byobu-select-profile

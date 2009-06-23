@@ -69,7 +69,7 @@ cp -ar profiles/light ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
 cp -ar keybindings/common ${RPM_BUILD_ROOT}/usr/share/byobu/keybindings
 cp -ar keybindings/none ${RPM_BUILD_ROOT}/usr/share/byobu/keybindings
 cp -ar windows/common ${RPM_BUILD_ROOT}/usr/share/byobu/windows
-cp -ar select-screen-profile ${RPM_BUILD_ROOT}/usr/bin
+cp -ar byobu-select-profile ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-config ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-status ${RPM_BUILD_ROOT}/usr/bin
@@ -95,7 +95,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/byobu-export
 /usr/bin/byobu-status
 /usr/bin/byobu-status-detail
-/usr/bin/select-screen-profile
+/usr/bin/byobu-select-profile
 /usr/lib/byobu/arch
 /usr/lib/byobu/battery
 /usr/lib/byobu/cpu_count
