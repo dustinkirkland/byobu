@@ -41,6 +41,11 @@ if [ "$P" = "--detail" ]; then
 		VER=`dpkg-query --show $PKG | awk '{print "-" $2 }'`
 	fi
 	printf "$PKG$VER Detailed Status Navigation\n  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
+	if [ -d "$HOME/.$PKG/bin" ]; then
+		DIR="$HOME/.$PKG/bin"
+	else
+		DIR="/usr/lib/$PKG"
+	fi
 	for i in `ls "$DIR"`; do
 		[ "$i" = "menu" ] && continue
 		script=`find_script $i`
