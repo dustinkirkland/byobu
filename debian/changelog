@@ -1,3 +1,9 @@
+byobu (2.16) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jun 2009 01:03:52 -0500
+
 byobu (2.15-0ubuntu1) karmic; urgency=low
 
   * profiles/common: defutf8 on seems like a sane default, at this point,
