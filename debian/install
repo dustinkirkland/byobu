@@ -15,9 +15,9 @@ byobu-config usr/bin
 byobu-status usr/bin
 byobu-status-detail usr/bin
 byobu-janitor usr/bin
-screen-launcher-install usr/share/byobu
-screen-launcher-uninstall usr/share/byobu
+byobu-launcher-install usr/share/byobu
+byobu-launcher-uninstall usr/share/byobu
 motd+shell usr/bin
-screen-launcher usr/bin
+byobu-launcher usr/bin
 byobu-export usr/bin
 debian/lintian/byobu usr/share/lintian/overrides

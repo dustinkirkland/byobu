@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    screen-launcher
+#    byobu-launcher-uninstall
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Nick Barcet <nick.barcet@ubuntu.com>
@@ -19,17 +19,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-[ "$TERM" = "screen" ] && exit 0
+remove_launcher() {
+	dest=$1
+	if [ -w "$dest" ]; then
+		sed -i '/\/usr\/bin\/byobu-launcher$/d' "$dest"
+	fi
+	# the install disabled motd printing; re-enable
+	rm "$HOME"/.hushlogin 2>/dev/null || true
+}
 
-# Ensure that the PROMPT_COMMAND gets printed, such that gnome-terminal
-# and friends can pick it up before going into screen
-[ -x /bin/bash ] && echo | /bin/bash -i -s
-
-out=`screen -ls 2>/dev/null` || true
-if echo "$out" | grep -qsi "^No Sockets found in "; then
-	# Start new byobu session
-	exec byobu
-else
-	# Re-attach to an existing session
-	exec screen -xRR
-fi
+for i in ".profile" ".bashrc" ".bash_profile" ".zprofile"; do
+	remove_launcher "$HOME/$i"
+done

@@ -74,10 +74,10 @@ cp -ar byobu ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-config ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-status ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-status-detail ${RPM_BUILD_ROOT}/usr/bin
-cp -ar screen-launcher-install ${RPM_BUILD_ROOT}/usr/share/byobu
-cp -ar screen-launcher-uninstall ${RPM_BUILD_ROOT}/usr/share/byobu
+cp -ar byobu-launcher-install ${RPM_BUILD_ROOT}/usr/share/byobu
+cp -ar byobu-launcher-uninstall ${RPM_BUILD_ROOT}/usr/share/byobu
 cp -ar motd+shell ${RPM_BUILD_ROOT}/usr/bin
-cp -ar screen-launcher ${RPM_BUILD_ROOT}/usr/bin
+cp -ar byobu-launcher ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-export ${RPM_BUILD_ROOT}/usr/bin
 cp -ar profiles/*_* ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
 
@@ -89,7 +89,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 /usr/bin/motd+shell
-/usr/bin/screen-launcher
+/usr/bin/byobu-launcher
 /usr/bin/byobu
 /usr/bin/byobu-config
 /usr/bin/byobu-export
@@ -133,8 +133,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/byobu/profiles/common
 /usr/share/byobu/profiles/dark
 /usr/share/byobu/profiles/light
-/usr/share/byobu/screen-launcher-install
-/usr/share/byobu/screen-launcher-uninstall
+/usr/share/byobu/byobu-launcher-install
+/usr/share/byobu/byobu-launcher-uninstall
 /usr/share/byobu/windows/common
 %doc README
 %doc doc/help.txt

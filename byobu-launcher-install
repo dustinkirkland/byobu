@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    screen-launcher-install
+#    byobu-launcher-install
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Nick Barcet <nick.barcet@ubuntu.com>
@@ -20,9 +20,9 @@
 
 PKG="byobu"
 
-install_screen_launcher() {
+install_launcher() {
 	dest=$1
-	launcher="screen-launcher"
+	launcher="byobu-launcher"
 	launcher_line="\`echo \$- | grep -qs i\` && $launcher"
 	# Add it at the end
 	echo "$launcher_line" >> "$dest"
@@ -31,20 +31,20 @@ install_screen_launcher() {
 }
 
 # Sanitize the environment
-/usr/share/$PKG/screen-launcher-uninstall || true
+/usr/share/$PKG/byobu-launcher-uninstall || true
 
 # Install in $HOME/.profile unconditionally
-install_screen_launcher "$HOME/.profile"
+install_launcher "$HOME/.profile"
 
 # Install in zprofile if default shell is zsh
 if grep -qs "^$USER:.*zsh$" /etc/passwd; then
-	install_screen_launcher "$HOME/.zprofile"
+	install_launcher "$HOME/.zprofile"
 fi
 
 # Now, install in any shell-specific profiles, if they exist
 # This list may grow to support other shells
 for i in ".bash_profile" ".bash_login"; do
 	if [ -w "$HOME/$i" ]; then
-		install_screen_launcher "$HOME/$i"
+		install_launcher "$HOME/$i"
 	fi
 done

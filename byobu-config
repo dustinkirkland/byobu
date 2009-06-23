@@ -395,7 +395,7 @@ def defaultwindows(screen, size):
 
 def install(screen, size, isInstalled):
     if not isInstalled:
-        out = commands.getoutput("bash /usr/share/"+PKG+"/screen-launcher-install")
+        out = commands.getoutput("bash /usr/share/"+PKG+"/byobu-launcher-install")
         if out == "":
             out = _("Byobu will be launched automatically next time you login.")
 
@@ -403,7 +403,7 @@ def install(screen, size, isInstalled):
         buttons=((_("Menu"), )))
         return 100
     else:
-        out = commands.getoutput("bash /usr/share/"+PKG+"/screen-launcher-uninstall")
+        out = commands.getoutput("bash /usr/share/"+PKG+"/byobu-launcher-uninstall")
         if out == "":
             out = _("Byobu will not be used next time you login.")
 
@@ -493,7 +493,7 @@ def main():
 
     config = SafeConfigParser()
 
-    isInstalled = (commands.getoutput('grep screen-launcher '+(HOME+'/.profile')) != "")
+    isInstalled = (commands.getoutput('grep byobu-launcher '+(HOME+'/.profile')) != "")
 
     tag = 100
 
