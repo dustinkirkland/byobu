@@ -7,10 +7,10 @@ byobu (2.15) unreleased; urgency=low
     NOTE: we can't provide a dummy screen-profiles package, as we
     must have screen-profiles uninstalled first, to remove the
     dpkg-diversion of /usr/bin/screen
-  * byobu: must force the janitor to run on startup
+  * byobu: force the janitor to run on startup to create the environment
   * byobu-status: fix --detail, detect script dir
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 22 Jun 2009 23:23:20 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jun 2009 01:00:09 -0500
 
 byobu (2.14-0ubuntu1) karmic; urgency=low
 
