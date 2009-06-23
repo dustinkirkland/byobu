@@ -1,4 +1,4 @@
-byobu (2.15~ppa8) jaunty; urgency=low
+byobu (2.15) unreleased; urgency=low
 
   * profiles/common: defutf8 on seems like a sane default, at this point,
     LP: #301447
@@ -10,7 +10,7 @@ byobu (2.15~ppa8) jaunty; urgency=low
   * byobu: must force the janitor to run on startup
   * byobu-status: fix --detail, detect script dir
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 22 Jun 2009 22:32:00 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 22 Jun 2009 23:23:20 -0500
 
 byobu (2.14-0ubuntu1) karmic; urgency=low
 
