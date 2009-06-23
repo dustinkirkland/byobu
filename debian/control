@@ -37,13 +37,13 @@ Description: additional colored profiles for the byobu package
  different light and dark colors.
 
 Package: screen-profiles
-Depends: byobu
+Depends: ${misc:Depends}, byobu
 Architecture: all
 Description: package renamed -> byobu
  This package has been renamed to 'byobu'.
 
 Package: screen-profiles-extras
-Depends: byobu-extras
+Depends: ${misc:Depends}, byobu-extras
 Architecture: all
 Description: package renamed -> byobu-extras
  This package has been renamed to 'byobu-extras'.
