@@ -35,3 +35,15 @@ Description: additional colored profiles for the byobu package
  The byobu contains a basic set of light and dark screen profiles.
  The byobu-extras package provides additional profiles of various
  different light and dark colors.
+
+Package: screen-profiles
+Depends: byobu
+Architecture: all
+Description: package renamed -> byobu
+ This package has been renamed to 'byobu'.
+
+Package: screen-profiles-extras
+Depends: byobu-extras
+Architecture: all
+Description: package renamed -> byobu-extras
+ This package has been renamed to 'byobu-extras'.

@@ -1,0 +1,10 @@
+#!/bin/sh -e
+
+if dpkg --compare-versions "$2" lt-nl 2.0; then
+	if [ -e "/usr/bin/screen.real" ]; then
+		# clean up old screen diversion
+		dpkg-divert --package screen-profiles --rename --remove /usr/bin/screen
+	fi
+fi
+
+#DEBHELPER#

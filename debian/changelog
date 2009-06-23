@@ -7,11 +7,18 @@ byobu (2.16) unreleased; urgency=low
   * byobu-config, byobu-launcher, byobu-launcher-install,
     byobu-launcher-uninstall, debian/install, debian/rules,
     rpm/byobu.spec: rename to byobu-launcher*
-  * debian/rules: establish symlink for screen-launcher for existing
-    launch-on-login configurations; this seems better than auto-editing
-    user's .profile
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jun 2009 02:41:46 -0500
+  Fixes for: LP: #391105, #390405
+  * debian/control: add screen-profiles and screen-profiles-extras
+    transitional packages
+  * debian/postinst, debian/prerm, debian/rules: fix screen-profiles ->
+    byobu upgrades; drop byobu's attempt to remove the dpkg-divert on
+    /usr/bin/screen, as this fails; establish links in the postinst,
+    remove in the prerm
+  * debian/screen-profiles.postinst: remove the diversion on *installation*
+    of this transitional package
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jun 2009 14:05:56 -0500
 
 byobu (2.15-0ubuntu1) karmic; urgency=low
 
