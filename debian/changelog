@@ -8,7 +8,7 @@ byobu (2.16) unreleased; urgency=low
     byobu-launcher-uninstall, debian/install, debian/rules,
     rpm/byobu.spec: rename to byobu-launcher*
 
-  Fixes for: LP: #391105, #390405
+  Fixes for: LP: #391105, #390405, #391039
   * debian/control: add screen-profiles and screen-profiles-extras
     transitional packages
   * debian/postinst, debian/prerm, debian/rules: fix screen-profiles ->
@@ -18,7 +18,7 @@ byobu (2.16) unreleased; urgency=low
   * debian/screen-profiles.postinst: remove the diversion on *installation*
     of this transitional package
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jun 2009 14:05:56 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jun 2009 14:10:35 -0500
 
 byobu (2.15-0ubuntu1) karmic; urgency=low
 
