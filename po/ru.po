@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-22 11:22-0500\n"
+"POT-Creation-Date: 2009-06-23 02:06-0500\n"
 "PO-Revision-Date: 2009-05-14 16:31+0300\n"
 "Last-Translator: byobu <dubrsl@altlinux.ru>\n"
 "Language-Team: \n"
@@ -17,11 +17,11 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 
 #: byobu-config:81
-msgid "Byobu currently launches at login (toggle)"
+msgid "Byobu currently launches at login (toggle off)"
 msgstr ""
 
 #: byobu-config:83
-msgid "Byobu currently does not launch at login (toggle)"
+msgid "Byobu currently does not launch at login (toggle on)"
 msgstr ""
 
 #: byobu-config:87
@@ -45,7 +45,8 @@ msgid "Change escape sequence"
 msgstr "Изменение Escape-последовательности"
 
 #: byobu-config:92
-msgid "Create new window(s)"
+#, fuzzy
+msgid "Create new windows"
 msgstr "Создать новое окно"
 
 #: byobu-config:93

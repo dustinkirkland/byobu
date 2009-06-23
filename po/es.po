@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-22 11:22-0500\n"
+"POT-Creation-Date: 2009-06-23 02:06-0500\n"
 "PO-Revision-Date: 2008-12-22 01:01-0500\n"
 "Last-Translator: Nicolas Valcarcel <nvalcarcel@ubuntu.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: byobu-config:81
-msgid "Byobu currently launches at login (toggle)"
+msgid "Byobu currently launches at login (toggle off)"
 msgstr ""
 
 #: byobu-config:83
-msgid "Byobu currently does not launch at login (toggle)"
+msgid "Byobu currently does not launch at login (toggle on)"
 msgstr ""
 
 #: byobu-config:87
@@ -45,7 +45,7 @@ msgid "Change escape sequence"
 msgstr ""
 
 #: byobu-config:92
-msgid "Create new window(s)"
+msgid "Create new windows"
 msgstr ""
 
 #: byobu-config:93

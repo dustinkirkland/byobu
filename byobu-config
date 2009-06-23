@@ -78,9 +78,9 @@ def terminal_size():                    ### decide on *some* terminal size
 
 def menu(screen, size, isInstalled):
     if isInstalled:
-        installtext=_("Byobu currently launches at login (toggle)")
+        installtext=_("Byobu currently launches at login (toggle off)")
     else:
-        installtext=_("Byobu currently does not launch at login (toggle)")
+        installtext=_("Byobu currently does not launch at login (toggle on)")
 
 
     li = Listbox(height = 8, width = 60, returnExit = 1)
@@ -89,7 +89,7 @@ def menu(screen, size, isInstalled):
     li.append(_("Toggle status notifications"), 3)
     li.append(_("Change keybinding set"), 4)
     li.append(_("Change escape sequence"), 5)
-    li.append(_("Create new window(s)"), 6)
+    li.append(_("Create new windows"), 6)
     li.append(_("Manage default windows"), 7)
     li.append(installtext, 8)
     bb = ButtonBar(screen, (("Exit", "exit", ESC),), compact=1)
