@@ -38,8 +38,6 @@ if [ -d "$HOME/.$OLDPKG" ] && [ ! -e "$HOME/.$PKG" ]; then
 	# Rename the config dir
 	mv -f "$HOME/.$OLDPKG" "$HOME/.$PKG"
 	ln -sf "$HOME/.$PKG" "$HOME/.$OLDPKG"
-	# Replace all instances of the old package name with the new
-	sed -i "s/$OLDPKG/$PKG/g" "$HOME/.$PKG"/*
 	# Fix the chosen profile symlink
 	if [ -h "$PROFILE" ]; then
 		# Determine the chosen profile color
@@ -47,6 +45,8 @@ if [ -d "$HOME/.$OLDPKG" ] && [ ! -e "$HOME/.$PKG" ]; then
 		# Try to set that color, if it exists, otherwise set to default
 		byobu-select-profile -s "$profile" >/dev/null 2>&1 || byobu-select-profile -s "$DEFAULT_PROFILE" >/dev/null 2>&1
 	fi
+	# Replace all instances of the old package name with the new
+	sed -i "s/$OLDPKG/$PKG/g" "$HOME/.$PKG"/*
 fi
 
 # Affects: First runs with no configuration

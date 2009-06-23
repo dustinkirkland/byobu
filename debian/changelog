@@ -7,8 +7,11 @@ byobu (2.16) unreleased; urgency=low
   * byobu-config, byobu-launcher, byobu-launcher-install,
     byobu-launcher-uninstall, debian/install, debian/rules,
     rpm/byobu.spec: rename to byobu-launcher*
+  * debian/rules: establish symlink for screen-launcher for existing
+    launch-on-login configurations; this seems better than auto-editing
+    user's .profile
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jun 2009 02:30:27 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jun 2009 02:41:46 -0500
 
 byobu (2.15-0ubuntu1) karmic; urgency=low
 
