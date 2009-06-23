@@ -1,3 +1,9 @@
+byobu (2.17) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jun 2009 14:50:24 -0500
+
 byobu (2.16-0ubuntu1) karmic; urgency=low
 
   * byobu-config, doc/help.txt: update the verbage of some text
