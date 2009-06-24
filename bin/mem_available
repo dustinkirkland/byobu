@@ -28,7 +28,7 @@ fi
 . "$HOME/.$PKG/status"
 [ "$mem_used" = "1" ] && comma="," || whitespace=" "
 
-mem=`free | grep -m 1 "^Mem:" | awk '{print $2}'`
+mem=`head -n1 /proc/meminfo  | awk '{print $2}'`
 if [ $mem -ge 1048576 ]; then
 	mem=$(echo "$mem" | awk '{ printf "%.1f", $1 / 1048576 }')
 	unit="GB"
