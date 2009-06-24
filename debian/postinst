@@ -12,7 +12,8 @@ DIR="/var/run/screen"
 for d in $(ls "$DIR"); do
 	touch "$DIR/$d/$PKG.reload-required"
 	u=$(echo "$d" | sed "s:^S-::")
-	chown $u:$u "$DIR/$d/$PKG.reload-required"
+	chown $u "$DIR/$d/$PKG.reload-required"
+	chmod 700 "$DIR/$d/$PKG.reload-required"
 done
 
 #DEBHELPER#

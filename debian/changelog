@@ -1,8 +1,9 @@
 byobu (2.17) unreleased; urgency=low
 
   * UNRELEASED
+  * debian/postinst: can't assume a group named for the user, LP: #391722
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jun 2009 14:50:24 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 24 Jun 2009 12:44:29 -0500
 
 byobu (2.16-0ubuntu1) karmic; urgency=low
 
