@@ -6,11 +6,13 @@ byobu (2.17) unreleased; urgency=low
     efficient
   * byobu-launcher-uninstall: uninstall old screen-launcher entries too,
     LP: #391913
+  * byobu: detect and emit an error message if the user tries to run
+    byobu from within a screen session
 
   [ Ciemon Dunville ]
   * byobu.1: update description, add note about units of measure
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 25 Jun 2009 08:56:37 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 25 Jun 2009 16:05:04 -0500
 
 byobu (2.16-0ubuntu1) karmic; urgency=low
 
