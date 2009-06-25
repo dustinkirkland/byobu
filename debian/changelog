@@ -1,12 +1,16 @@
 byobu (2.17) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * debian/postinst: can't assume a group named for the user, LP: #391722
   * bin/mem_available: read mem_available from /proc, should be more
     efficient
   * byobu-launcher-uninstall: uninstall old screen-launcher entries too,
     LP: #391913
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 25 Jun 2009 08:22:21 -0500
+  [ Ciemon Dunville ]
+  * byobu.1: update description, add note about units of measure
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 25 Jun 2009 08:56:37 -0500
 
 byobu (2.16-0ubuntu1) karmic; urgency=low
 

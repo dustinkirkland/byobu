@@ -3,7 +3,7 @@
 byobu \- wrapper script for seeding a user's byobu configuration and launching screen
 
 .SH DESCRIPTION
-\fBbyobu\fP is a simple script that sanitizes a user's ~/.byobu directory, and launches screen in the byobu configuration.
+\fBbyobu\fP is a script that launches GNU screen in the byobu configuration.  This enables the display of system information and status notifications within two lines at the bottom of the screen session. It also enables multiple tabbed terminal sessions, accessible through simple keystrokes.
 
 .SH STATUS NOTIFICATIONS
 
@@ -64,6 +64,9 @@ byobu \- wrapper script for seeding a user's byobu configuration and launching s
 \fBwifi_quality\fP \- the connection rate and signal quality of the wifi connection; displayed in the lower bar toward the right in black text on a cyan background; the connection rate is in 'Mb/s' and the signal quality is as a percentage with a trailing '%'
 
 \fBwindows\fP \- each open window in the screen session appears is displayed in the upper bar toward the far right in blue text on a grey background
+
+.SH UNITS OF MEASURE
+byobu uses binary for measurements rather than decimal for KB, MB, and GB.  This means multiples of 1024 rather than multiples of 1000, in accordance with JEDEC Standard 100B.01.
 
 .SH KEYBINDINGS
 
