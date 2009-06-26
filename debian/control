@@ -12,9 +12,9 @@ Architecture: all
 Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, screen, gettext-base, python, python-newt (>= 0.52.2-11)
 Recommends: update-notifier-common, lsb-release
 Suggests: vim
-Provides: screen-profiles, screen-profiles-extras
-Replaces: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0)
-Conflicts: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0)
+Provides: screen-profiles, screen-profiles-extras, byobu-extras
+Replaces: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0), byobu-extras (<< 2.17)
+Conflicts: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0), byobu-extras (<< 2.17)
 Enhances: screen
 Description: a set of useful profiles and a profile-switcher for GNU screen
  byobu includes a set of profiles for the GNU screen window manager.
