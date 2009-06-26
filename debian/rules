@@ -38,7 +38,7 @@ build:
 
 clean:
 	dh_clean
-	./profiles/generate --clean
+	./profiles_generator/generate --clean
 	for po in po/*.po ; do \
 		lang=$${po#po/}; lang=$${lang%.po}; \
 		rm -f po/locale/$${lang}/LC_MESSAGES/${PKG}.mo ; \
