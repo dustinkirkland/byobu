@@ -13,11 +13,17 @@ byobu (2.17) unreleased; urgency=low
   * debian/postinst, debian/screen-profiles.postinst: ensure that
     /usr/bin/screen doesn't disappear, which causes the dpkg-divert
     removal to fail; LP: #390808
+  * debian/byobu-extras.install, debian/control, debian/install,
+    debian/release.sh, debian/rules, generate, rpm/byobu.spec: eliminate
+    the byobu-extras package; this was originally created because we
+    used to force select-screen-profile on first run, and the number of
+    profiles was overwhelming;  we're no longer doing this, and this
+    separate package is more trouble than its worth
 
   [ Ciemon Dunville ]
   * byobu.1: update description, add note about units of measure
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Jun 2009 11:39:04 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Jun 2009 11:51:11 -0500
 
 byobu (2.16-0ubuntu1) karmic; urgency=low
 

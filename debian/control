@@ -11,10 +11,10 @@ Package: byobu
 Architecture: all
 Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, screen, gettext-base, python, python-newt (>= 0.52.2-11)
 Recommends: update-notifier-common, lsb-release
-Suggests: byobu-extras, vim
-Provides: screen-profiles
-Replaces: screen-profiles (<< 2.0)
-Conflicts: screen-profiles (<< 2.0)
+Suggests: vim
+Provides: screen-profiles, screen-profiles-extras
+Replaces: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0)
+Conflicts: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0)
 Enhances: screen
 Description: a set of useful profiles and a profile-switcher for GNU screen
  byobu includes a set of profiles for the GNU screen window manager.
@@ -26,15 +26,10 @@ Description: a set of useful profiles and a profile-switcher for GNU screen
  their .screenrc to any of the available profiles.
 
 Package: byobu-extras
-Architecture: all
 Depends: ${misc:Depends}, byobu
-Provides: screen-profiles-extras
-Replaces: screen-profiles-extras (<< 2.0)
-Conflicts: screen-profiles-extras (<< 2.0)
-Description: additional colored profiles for the byobu package
- The byobu contains a basic set of light and dark screen profiles.
- The byobu-extras package provides additional profiles of various
- different light and dark colors.
+Architecture: all
+Description: package subsumed by byobu
+ This package has been subsumed by 'byobu'.
 
 Package: screen-profiles
 Depends: ${misc:Depends}, byobu
@@ -43,7 +38,7 @@ Description: package renamed -> byobu
  This package has been renamed to 'byobu'.
 
 Package: screen-profiles-extras
-Depends: ${misc:Depends}, byobu-extras
+Depends: ${misc:Depends}, byobu
 Architecture: all
-Description: package renamed -> byobu-extras
- This package has been renamed to 'byobu-extras'.
+Description: package renamed -> byobu
+ This package has been renamed to 'byobu'.

@@ -17,30 +17,6 @@ Requires:       screen, python >= 2.5, newt, gettext
 #   help.txt is in different locations under RPM/DEB
 #   python 2.5 is not available on RHEL 5
 
-%package extras
-Summary:        a set of useful profiles and a profile-switcher for GNU screen
-Group:          Applications/System
-Requires:	byobu
-
-%description
-byobu includes a set of profiles for the GNU screen window manager.
-These profiles are quite useful on server machines which are not running
-a graphical desktop.  The 'screen' command provides a number of advanced
-features are not necessarily exposed in the default profile.  These profiles
-provide features such as status bars, clocks, notifiers (reboot required,
-updates available), etc.  The profile-switcher allows users to quickly switch
-their .screenrc to any of the available profiles.
-
-update-notifier-common provides a more efficient and standard mechanism for
-calculating the number of updates available in the status panel.
-
-
-%description extras
-The byobu package contains a basic set of light and dark profiles.
-The byobu-extras package provides additional profiles of various
-different light and dark colors.
-
-
 %prep
 %setup -q -n %{name}_%{version}.orig
 
@@ -133,18 +109,6 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/byobu/profiles/common
 /usr/share/byobu/profiles/dark
 /usr/share/byobu/profiles/light
-/usr/share/byobu/byobu-launcher-install
-/usr/share/byobu/byobu-launcher-uninstall
-/usr/share/byobu/windows/common
-%doc README
-%doc doc/help.txt
-%doc debian/copyright
-%doc debian/changelog
-%doc COPYING
-
-
-%files extras
-%defattr(-,root,root,-)
 /usr/share/byobu/profiles/dark_blue
 /usr/share/byobu/profiles/dark_cyan
 /usr/share/byobu/profiles/dark_green
@@ -157,6 +121,14 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/byobu/profiles/light_purple
 /usr/share/byobu/profiles/light_red
 /usr/share/byobu/profiles/light_yellow
+/usr/share/byobu/byobu-launcher-install
+/usr/share/byobu/byobu-launcher-uninstall
+/usr/share/byobu/windows/common
+%doc README
+%doc doc/help.txt
+%doc debian/copyright
+%doc debian/changelog
+%doc COPYING
 
 
 %changelog

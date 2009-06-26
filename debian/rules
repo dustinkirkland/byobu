@@ -34,7 +34,7 @@ prebuild:
 
 build:
 	# auto-generate the logo'd light/dark profiles
-	./profiles/generate
+	./profiles_generator/generate
 
 clean:
 	dh_clean

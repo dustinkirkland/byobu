@@ -21,7 +21,6 @@ gpg --armor --sign --detach-sig ../"$PKG"_*.orig.tar.gz
 
 # Create the rpm export
 sudo alien --to-rpm ../$PKG"_"$MAJOR.$minor"_all.deb"
-sudo alien --to-rpm ../$PKG"-extras_"$MAJOR.$minor"_all.deb"
 mv -f *.rpm ..
 rsync -aP ../*.rpm kirkland@people.ubuntu.com:~kirkland/public_html/$PKG/rpm
 
