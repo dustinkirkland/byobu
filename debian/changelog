@@ -19,11 +19,12 @@ byobu (2.17) unreleased; urgency=low
     used to force select-screen-profile on first run, and the number of
     profiles was overwhelming;  we're no longer doing this, and this
     separate package is more trouble than its worth
+  * byobu: add a -v version argument
 
   [ Ciemon Dunville ]
   * byobu.1: update description, add note about units of measure
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Jun 2009 11:51:11 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Jun 2009 12:42:59 -0500
 
 byobu (2.16-0ubuntu1) karmic; urgency=low
 

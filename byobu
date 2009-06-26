@@ -18,6 +18,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+VERSION="2.17"
+
+# Add a version argument for debugging purposes
+if [ "$1" = "-v" ]; then
+	echo "$PKG version $VERSION"
+	screen -v
+	exit 0
+fi
 
 # Nesting byobu inside of screen doesn't work well
 if [ "$TERM" = "screen" ]; then
