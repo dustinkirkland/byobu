@@ -2,6 +2,10 @@
 
 PKG="byobu"
 
+# The target of the diversion somehow disappeared which will cause
+# the divert removal to fail; we don't want that to happen
+[ -e "/usr/bin/screen.real" ] && [ ! -e "/usr/bin/screen" ] && cp -a /usr/bin/screen.real /usr/bin/screen
+
 # The following two links significantly improve the upgrade
 # experience from screen-profiles to byobu.
 ln -sf /usr/bin/byobu-status /usr/bin/screen-profiles-status

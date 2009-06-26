@@ -10,11 +10,14 @@ byobu (2.17) unreleased; urgency=low
     byobu from within a screen session
   * byobu.1, byobu-config.1: move the putty bug note to the byobu manpage
     next to the keybinding documentation
+  * debian/postinst, debian/screen-profiles.postinst: ensure that
+    /usr/bin/screen doesn't disappear, which causes the dpkg-divert
+    removal to fail; LP: #390808
 
   [ Ciemon Dunville ]
   * byobu.1: update description, add note about units of measure
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 25 Jun 2009 16:08:05 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Jun 2009 11:39:04 -0500
 
 byobu (2.16-0ubuntu1) karmic; urgency=low
 
