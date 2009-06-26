@@ -2,24 +2,24 @@ byobu (2.17) unreleased; urgency=low
 
   [ Dustin Kirkland ]
   * debian/postinst: can't assume a group named for the user, LP: #391722
+  * debian/postinst, debian/screen-profiles.postinst: ensure that
+    /usr/bin/screen doesn't disappear, which causes the dpkg-divert
+    removal to fail; LP: #390808
   * bin/mem_available: read mem_available from /proc, should be more
     efficient
   * byobu-launcher-uninstall: uninstall old screen-launcher entries too,
     LP: #391913
   * byobu: detect and emit an error message if the user tries to run
     byobu from within a screen session
+  * byobu: add a -v version argument
   * byobu.1, byobu-config.1: move the putty bug note to the byobu manpage
     next to the keybinding documentation
-  * debian/postinst, debian/screen-profiles.postinst: ensure that
-    /usr/bin/screen doesn't disappear, which causes the dpkg-divert
-    removal to fail; LP: #390808
   * debian/byobu-extras.install, debian/control, debian/install,
     debian/release.sh, debian/rules, generate, rpm/byobu.spec: eliminate
     the byobu-extras package; this was originally created because we
     used to force select-screen-profile on first run, and the number of
     profiles was overwhelming;  we're no longer doing this, and this
     separate package is more trouble than its worth
-  * byobu: add a -v version argument
 
   [ Ciemon Dunville ]
   * byobu.1: update description, add note about units of measure
