@@ -1,8 +1,10 @@
 byobu (2.18) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/screen-profiles.postinst: try to remove the dpkg-divert, but
+    if it fails, let the installation proceed, since we've copied
+    screen.real back into place now, LP: #393204
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Jun 2009 17:35:57 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 29 Jun 2009 15:14:59 -0700
 
 byobu (2.17-0ubuntu1) karmic; urgency=low
 

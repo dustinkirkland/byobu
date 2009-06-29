@@ -9,7 +9,7 @@ if dpkg --compare-versions "$2" lt-nl 2.0; then
 			cp -a /usr/bin/screen.real /usr/bin/screen
 		fi
 		# clean up old screen diversion
-		dpkg-divert --package screen-profiles --rename --remove /usr/bin/screen
+		dpkg-divert --package screen-profiles --rename --remove /usr/bin/screen || true
 	fi
 fi
 
