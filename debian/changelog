@@ -2,14 +2,15 @@ byobu (2.18) unreleased; urgency=low
 
   * debian/screen-profiles.postinst: try to remove the dpkg-divert, but
     if it fails, let the installation proceed, since we've copied
-    screen.real back into place now, LP: #393204
+    screen.real back into place now, (much hate shall descend upon
+    dpkg-divert!!!), LP: #393204
   * byobu-launcher-uninstall, byobu-janitor: byobu-launcher is no longer
     fully qualified, update the remove to account for this; clean out
     old screen-launcher entries as a janitor item LP: #392978
   * keybindings/f-keys, keybindings/screen-escape-keys: call the
     byobu-config window 'config', rather than 'help'
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 30 Jun 2009 16:02:38 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 30 Jun 2009 16:08:47 -0700
 
 byobu (2.17-0ubuntu1) karmic; urgency=low
 
