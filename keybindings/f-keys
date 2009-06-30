@@ -30,12 +30,12 @@ bindkey -k k6 detach					# F6  | Detach from this session
 bindkey -k k7 copy					# F7  | Enter copy/scrollback mode
 register t "^aA^aa^k^h"					#     | Goes with the F8 definition
 bindkey -k k8 process t 				# F8  | Re-title a window
-bindkey -k k9 screen -t help 0 byobu-config		# F9  | Configuration
+bindkey -k k9 screen -t config 0 byobu-config		# F9  | Configuration
 							# F10 | 'toolbar' in gnome-terminal
 							# F11 | 'fullscreen' in gnome-terminal
 bindkey -k F2 lockscreen				# F12 | Lock this terminal
 bind $ screen -t status 0 byobu-status-detail 		# ctrl-a $ | show detailed status
-bind @ screen -t help 0 byobu-config			# ctrl-a @ | Configuration
+bind @ screen -t config 0 byobu-config			# ctrl-a @ | Configuration
 bind R process r					# ctrl-a R | Reload profile
 
 # toggle f-key keybindings off
