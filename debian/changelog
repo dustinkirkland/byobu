@@ -3,10 +3,11 @@ byobu (2.18) unreleased; urgency=low
   * debian/screen-profiles.postinst: try to remove the dpkg-divert, but
     if it fails, let the installation proceed, since we've copied
     screen.real back into place now, LP: #393204
-  * byobu-launcher-uninstall: byobu-launcher is no longer fully qualified,
-    update the remove to account for this
+  * byobu-launcher-uninstall, byobu-janitor: byobu-launcher is no longer
+    fully qualified, update the remove to account for this; clean out
+    old screen-launcher entries as a janitor item LP: #392978
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 30 Jun 2009 15:38:17 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 30 Jun 2009 15:49:38 -0700
 
 byobu (2.17-0ubuntu1) karmic; urgency=low
 

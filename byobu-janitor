@@ -66,5 +66,12 @@ sed -i "s/-/_/g" "$HOME/.$PKG/status"
 sed -i "s/^disk.*=/disk=/" "$HOME/.$PKG/status"
 sed -i "s/^network.*=/network=/" "$HOME/.$PKG/status"
 
+# Affects: Upgrades from <= byobu-2.16
+# screen-launcher was renamed byobu-launcher; if the user has byobu
+# set to auto-launch, update their configuration to use the byobu-launcher
+if grep -qs "screen-launcher$" "$HOME/.profile"; then
+	/usr/share/$PKG/byobu-launcher-install
+fi
+
 # Clean up flag
 rm -f "$FLAG"
