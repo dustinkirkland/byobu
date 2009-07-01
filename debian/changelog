@@ -1,8 +1,9 @@
 byobu (2.19) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/cpu_freq, bin/disk, bin/mem_available, bin/mem_used: use bold
+    font for these, to help with dark colored tty's
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Jul 2009 00:17:08 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Jul 2009 14:29:02 -0700
 
 byobu (2.18-0ubuntu1) karmic; urgency=low
 

@@ -30,4 +30,4 @@ case $MP in
 	/dev/*) MP=`grep "$MP" /proc/mounts | awk '{print $2}'` ;;
 esac
 
-df -h -P "$MP" | tail -n 1 | awk '{printf "\005{= MW}%sB,%s\005{-} ", $2, $5}'
+df -h -P "$MP" | tail -n 1 | awk '{printf "\005{=b MW}%sB,%s\005{-} ", $2, $5}'

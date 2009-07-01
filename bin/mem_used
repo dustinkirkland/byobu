@@ -22,4 +22,4 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-free | awk '/buffers\/cache:/ {printf "\005{= gW}%.0f%%\005{-} ", 100*$3/($3 + $4)}'
+free | awk '/buffers\/cache:/ {printf "\005{=b gW}%.0f%%\005{-} ", 100*$3/($3 + $4)}'

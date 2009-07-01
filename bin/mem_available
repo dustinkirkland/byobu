@@ -39,4 +39,4 @@ else
 	mem="$mem"
 	unit="KB"
 fi
-printf "\005{= gW}%s$unit%s\005{-}%s" "$mem" "$comma" "$whitespace"
+printf "\005{=b gW}%s$unit%s\005{-}%s" "$mem" "$comma" "$whitespace"
