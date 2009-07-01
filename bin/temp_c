@@ -29,6 +29,6 @@ fi
 
 for i in `ls "$DIR/"*"/temperature"`; do
 	t=$(sed "s/^[^0-9]\+//" "$i" | sed "s/\s.*$//")
-	printf "\005{= kY}%sC\005{-} " "$t"
+	printf "\005{=b kY}%sC\005{-} " "$t"
 	break
 done
