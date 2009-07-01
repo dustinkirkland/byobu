@@ -1,4 +1,4 @@
-byobu (2.18) unreleased; urgency=low
+byobu (2.18-0ubuntu1) karmic; urgency=low
 
   * debian/screen-profiles.postinst: try to remove the dpkg-divert, but
     if it fails, let the installation proceed, since we've copied
