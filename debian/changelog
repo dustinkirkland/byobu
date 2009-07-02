@@ -2,12 +2,9 @@ byobu (2.19) unreleased; urgency=low
 
   * bin/cpu_freq, bin/disk, bin/mem_available, bin/mem_used: use bold
     font for these, to help with dark colored tty's
-  * bin/load_average, bin/temp_c, bin/temp_f: fix display of yellow on
-    dark tty's (note, if users start complaining about their load average
-    blinking, *this* is where that was introduced)
+  * bin/temp_c, bin/temp_f: fix display of yellow on dark tty's
 
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Jul 2009 14:38:26 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 02 Jul 2009 16:02:09 -0700
 
 byobu (2.18-0ubuntu1) karmic; urgency=low
 
