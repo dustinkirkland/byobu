@@ -23,7 +23,7 @@
 
 # Ensure that the PROMPT_COMMAND gets printed, such that gnome-terminal
 # and friends can pick it up before going into screen
-[ -x /bin/bash ] && echo | /bin/bash -i -s
+[ -x /bin/bash ] && echo "echo 'Launching Byobu...'" | /bin/bash -i -s 2>/dev/null
 
 out=`screen -ls 2>/dev/null` || true
 if echo "$out" | grep -qsi "^No Sockets found in "; then
