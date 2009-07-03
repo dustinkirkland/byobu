@@ -79,6 +79,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/lib/byobu/date
 /usr/lib/byobu/disk
 /usr/lib/byobu/ec2_cost
+/usr/lib/byobu/fan_speed
 /usr/lib/byobu/hostname
 /usr/lib/byobu/ip_address
 /usr/lib/byobu/load_average

@@ -25,6 +25,7 @@ cpu_freq=1
 date=1
 disk=0
 ec2_cost=0
+fan_speed=0
 hostname=0
 ip_address=0
 load_average=1

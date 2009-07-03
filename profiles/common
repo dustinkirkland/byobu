@@ -63,6 +63,7 @@ backtick 124 	86117	86117		true
 backtick 125 	19	19		byobu-status temp_c
 backtick 126 	19	19		byobu-status temp_f
 backtick 127 	5	5		byobu-status mail
+backtick 128 	23	23		byobu-status fan_speed
 
 hardstatus alwayslastline
 

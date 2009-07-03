@@ -5,8 +5,11 @@ byobu (2.19) unreleased; urgency=low
   * bin/temp_c, bin/temp_f: fix display of yellow on dark tty's
   * bin/*: use bold for measurements, and non-bold for units; this really
     makes byobu's status items 'pop'!
+  * bin/fan_speed, byobu-config, byobu.1, profiles/common,
+    profiles_generator/profile.skel, rpm/byobu.spec, statusrc: added cpu
+    fan speed status
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 03 Jul 2009 15:46:49 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 03 Jul 2009 16:09:08 -0700
 
 byobu (2.18-0ubuntu1) karmic; urgency=low
 
