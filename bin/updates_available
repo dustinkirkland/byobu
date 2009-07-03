@@ -40,7 +40,7 @@ print_updates() {
 	s=$2
 	if [ -n "$u" ]; then
 		if [ "$u" -gt 0 ]; then
-			printf "\005{=b rW}%d!" "$u"
+			printf "\005{=b rW}%d\005{-}\005{= rW}!" "$u"
 			if [ -n "$s" ]; then
 				if [ "$s" -gt 0 ]; then
 					printf "!"

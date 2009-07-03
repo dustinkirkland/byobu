@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    mem_available: grab the current memory available
+#    mem: grab the current memory and usage
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -39,4 +39,4 @@ else
 	mem="$mem"
 	unit="KB"
 fi
-printf "\005{=b gW}%s$unit%s\005{-}%s" "$mem" "$comma" "$whitespace"
+printf "\005{=b gW}%s\005{-}\005{= gW}$unit%s\005{-}%s" "$mem" "$comma" "$whitespace"

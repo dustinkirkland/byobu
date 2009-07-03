@@ -64,7 +64,7 @@ network_cost=`echo "$tx_gb" "$TX_RATE" "$rx_gb" "$RX_RATE" | awk '{printf "%f %f
 #      Some additional input will be required to account for reboots!!!
 hours=`awk '{printf "%f", 1 + $1 / 60 / 60 }' /proc/uptime | sed 's/\..*$//' `
 uptime_cost=`echo "$hours" | awk "{printf \"%f\", "$CPU_RATE" * $hours}"`
-total_cost=`echo "$network_cost" "$uptime_cost" | awk '{printf "~\$%.2f", $1 + $2}'`
+total_cost=`echo "$network_cost" "$uptime_cost" | awk '{printf "%.2f", $1 + $2}'`
 
 if [ "$DETAIL" = "1" ]; then
 	echo "================================================"
@@ -77,9 +77,9 @@ if [ "$DETAIL" = "1" ]; then
 	echo "  Uptime:        $hours hr  @ \$$CPU_RATE/hr"
 	echo "  Uptime cost:   \$$uptime_cost"
 	echo "------------------------------------------------"
-	echo "Total cost:      $total_cost"
+	echo "Total cost:      ~\$$total_cost"
 	echo "================================================"
 	exit 0
 fi
 
-printf "\005{= wg}%s\005{-} " $total_cost
+printf "\005{= KG}~\$\005{-}\005{=b KG}%s\005{-} " $total_cost

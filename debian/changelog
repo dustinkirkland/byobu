@@ -3,8 +3,10 @@ byobu (2.19) unreleased; urgency=low
   * bin/cpu_freq, bin/disk, bin/mem_available, bin/mem_used: use bold
     font for these, to help with dark colored tty's
   * bin/temp_c, bin/temp_f: fix display of yellow on dark tty's
+  * bin/*: use bold for measurements, and non-bold for units; this really
+    makes byobu's status items 'pop'!
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 02 Jul 2009 16:02:09 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 03 Jul 2009 15:46:49 -0700
 
 byobu (2.18-0ubuntu1) karmic; urgency=low
 

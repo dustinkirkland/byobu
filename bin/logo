@@ -81,7 +81,8 @@ print_logo() {
 			$MARKUP && printf "\005{= Wr}$logo" || printf "$logo"
 		;;
 		*)
-			false
+			logo=" 屏風 "
+			$MARKUP && printf "\005{= Wk}$logo" || printf " $logo "
 		;;
 	esac
 }

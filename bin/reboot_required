@@ -28,7 +28,7 @@ case "$1" in
 		[ -e "$reboot" ] && printf "Yes" || printf "No"
 	;;
 	*)
-		[ -e "$reboot" ] && printf "\005{=b bW}(@)\005{-} "
-		[ -e "$reload" ] && printf "\005{=b bW}<F5>\005{-} "
+		[ -e "$reboot" ] && printf "\005{= bW}(\005{-}\005{=b bW}R\005{-}\005{= bW})\005{-} "
+		[ -e "$reload" ] && printf "\005{= bW}<\005{-}\005{=b bW}F5\005{-}\005{= bW}>\005{-} "
 	;;
 esac
