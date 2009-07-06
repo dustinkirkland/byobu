@@ -10,8 +10,10 @@ byobu (2.19) unreleased; urgency=low
   * bin/fan_speed, byobu-config, byobu.1, profiles/common,
     profiles_generator/profile.skel, rpm/byobu.spec, statusrc: added cpu
     fan speed status
+  * bin/users, byobu.1: don't display '0#' if no users logged in; waste of
+    space, match behavior of updates_available
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 03 Jul 2009 16:57:03 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 06 Jul 2009 00:35:45 -0500
 
 byobu (2.18-0ubuntu1) karmic; urgency=low
 

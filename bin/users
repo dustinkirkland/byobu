@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#  users: print the number of users on the machine
+#  users: print the number of remote users on the machine
 #  Copyright (C) 2009 Raphaël Pinson.
 #  Copyright (C) 2009 Canonical Ltd.
 #
@@ -25,4 +25,5 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-printf "\005{=b wr}%d\005{-}\005{= wr}#\005{-} " `pgrep -c -f "sshd:.*@"`
+count=`pgrep -c -f "sshd:.*@"` || exit 0
+printf "\005{=b wr}%d\005{-}\005{= wr}#\005{-} " $count
