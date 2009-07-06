@@ -12,8 +12,10 @@ byobu (2.19) unreleased; urgency=low
     fan speed status
   * bin/users, byobu.1: don't display '0#' if no users logged in; waste of
     space, match behavior of updates_available
+  * bin/processes, byobu.1: use white text on yellow background, more
+    readable on tty's
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 06 Jul 2009 00:35:45 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 06 Jul 2009 15:50:50 -0500
 
 byobu (2.18-0ubuntu1) karmic; urgency=low
 
