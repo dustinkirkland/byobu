@@ -1,4 +1,4 @@
-byobu (2.19) unreleased; urgency=low
+byobu (2.19-0ubuntu1) karmic; urgency=low
 
   * byobu-launcher: print 'Launching Byobu...' banner for slower terminals,
     and drop the printing of 'exit'; much nicer user experience
