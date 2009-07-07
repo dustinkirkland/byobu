@@ -1,3 +1,9 @@
+byobu (2.20) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 Jul 2009 01:30:05 -0500
+
 byobu (2.19-0ubuntu1) karmic; urgency=low
 
   * byobu-launcher: print 'Launching Byobu...' banner for slower terminals,
