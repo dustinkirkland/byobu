@@ -21,4 +21,5 @@ byobu-launcher-uninstall usr/share/byobu
 motd+shell usr/bin
 byobu-launcher usr/bin
 byobu-export usr/bin
+debian/source_byobu.py usr/share/apport/package-hooks
 debian/lintian/byobu usr/share/lintian/overrides

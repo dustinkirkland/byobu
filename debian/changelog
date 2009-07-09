@@ -1,8 +1,8 @@
 byobu (2.20) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/source_byobu.py: add apport hooks for byobu
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 Jul 2009 01:30:05 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 09 Jul 2009 13:31:15 -0500
 
 byobu (2.19-0ubuntu1) karmic; urgency=low
 
