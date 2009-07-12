@@ -1,8 +1,14 @@
 byobu (2.20) unreleased; urgency=low
 
+  * byobu: make this script set -e, such that it will fail if byobu-janitor
+    exits non-zero
+  * byobu-janitor: check that ~/.byobu is writable; print an error message
+    and exit non-zero if not; handles odd situation where user launches
+    byobu from a sudo/root shell, and root owns their ~/.byobu dir, but then
+    they launch as non-root sometime later, LP: #394147
   * debian/source_byobu.py: add apport hooks for byobu
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 09 Jul 2009 13:31:15 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Jul 2009 12:36:38 -0500
 
 byobu (2.19-0ubuntu1) karmic; urgency=low
 
