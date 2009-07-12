@@ -1,4 +1,4 @@
-byobu (2.20) unreleased; urgency=low
+byobu (2.20-0ubuntu1) karmic; urgency=low
 
   * byobu: make this script set -e, such that it will fail if byobu-janitor
     exits non-zero
