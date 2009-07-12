@@ -14,7 +14,7 @@ head -n1 debian/changelog | grep "karmic" || error "This version must be ready f
 minor=`head -n1 debian/changelog | sed "s/^.*($MAJOR.//" | sed "s/-.*$//"`
 bzr tag --delete "$MAJOR.$minor" || true
 bzr tag "$MAJOR.$minor"
-bzr commit -m 'releasing $MAJOR.$minor'
+bzr commit -m "releasing $MAJOR.$minor"
 
 # Sign the tarball
 gpg --armor --sign --detach-sig ../"$PKG"_*.orig.tar.gz
@@ -35,7 +35,7 @@ dch -v "$MAJOR.$nextminor" "UNRELEASED"
 sed -i "s/$MAJOR.$nextminor) .*;/$MAJOR.$nextminor) unreleased;/" debian/changelog
 sed -i "s/^Version:.*$/Version:        $MAJOR.$nextminor/" rpm/$PKG.spec
 sed -i "s%^Source0:.*$%Source0:        http://code.launchpad.net/$PKG/trunk/$MAJOR.$nextminor/+download/byobu_$MAJOR.$nextminor.orig.tar.gz%" rpm/$PKG.spec
-bzr commit -m 'opening $MAJOR.$nextminor'
+bzr commit -m "opening $MAJOR.$nextminor"
 
 echo
 echo "# To upload PPA packages:"
