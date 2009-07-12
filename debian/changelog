@@ -1,3 +1,9 @@
+byobu (2.21) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Jul 2009 14:43:59 -0500
+
 byobu (2.20-0ubuntu1) karmic; urgency=low
 
   * byobu: make this script set -e, such that it will fail if byobu-janitor
