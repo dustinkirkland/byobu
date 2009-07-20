@@ -1,8 +1,9 @@
 byobu (2.21) unreleased; urgency=low
 
-  * UNRELEASED
+  * byobu-launcher: drop "Launching byobu", since this ends up in the
+    bash history, LP: #400275
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Jul 2009 14:43:59 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 20 Jul 2009 15:12:22 -0500
 
 byobu (2.20-0ubuntu1) karmic; urgency=low
 
