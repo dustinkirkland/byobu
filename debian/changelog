@@ -2,8 +2,10 @@ byobu (2.21) unreleased; urgency=low
 
   * byobu-launcher: drop "Launching byobu", since this ends up in the
     bash history, LP: #400275
+  * bin/disk: unbold the first letter of the disk size units, match
+    format of the mem status reporting
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 20 Jul 2009 15:12:22 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 20 Jul 2009 15:27:06 -0500
 
 byobu (2.20-0ubuntu1) karmic; urgency=low
 
