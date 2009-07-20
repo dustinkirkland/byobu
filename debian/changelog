@@ -1,4 +1,4 @@
-byobu (2.21) unreleased; urgency=low
+byobu (2.21-0ubuntu1) karmic; urgency=low
 
   * byobu-launcher: drop "Launching byobu", since this ends up in the
     bash history, LP: #400275
