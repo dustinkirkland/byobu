@@ -22,11 +22,11 @@ gpg --armor --sign --detach-sig ../"$PKG"_*.orig.tar.gz
 # Create the rpm export
 sudo alien --to-rpm ../$PKG"_"$MAJOR.$minor"_all.deb"
 mv -f *.rpm ..
-rsync -aP ../*.rpm kirkland@people.ubuntu.com:~kirkland/public_html/$PKG/rpm
+rsync -aP ../*.rpm kirkland@people.canonical.com:~kirkland/public_html/$PKG/rpm
 
 # Create the tarball export
 $PKG-export -c light -f /tmp/$PKG-export.tar.gz
-rsync -aP /tmp/$PKG-export.tar.gz kirkland@people.ubuntu.com:~kirkland/public_html
+rsync -aP /tmp/$PKG-export.tar.gz kirkland@people.canonical.com:~kirkland/public_html
 
 # Open the next release for development
 nextminor=`expr $minor + 1`
