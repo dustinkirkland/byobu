@@ -1,3 +1,9 @@
+byobu (2.23) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 Jul 2009 19:41:42 -0500
+
 byobu (2.22-0ubuntu1) karmic; urgency=low
 
   * byobu-launcher: must explicitly set PROMPT_COMMAND in byobu_launcher;
