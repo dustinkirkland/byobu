@@ -1,4 +1,4 @@
-byobu (2.22) unreleased; urgency=low
+byobu (2.22-0ubuntu1) karmic; urgency=low
 
   * byobu-launcher: must explicitly set PROMPT_COMMAND in byobu_launcher;
     this used to be in /etc/skel/.bashrc, but has since been dropped
