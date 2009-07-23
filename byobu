@@ -37,7 +37,7 @@ fi
 byobu-janitor --force
 
 # Set window title until https://bugs.launchpad.net/bugs/338722 is fixed in screen
-echo -ne "\033]0;${USER}@$(hostname) - byobu\007"
+echo -ne "\033]0;${USER}@$(hostname) - ${PKG}\007"
 
 # Launch motd+shell, unless the user has default windows set to launch
 [ -n "$SHELL" ] || SHELL="/bin/sh"
