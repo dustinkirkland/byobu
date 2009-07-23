@@ -1,8 +1,11 @@
 byobu (2.22) unreleased; urgency=low
 
-  * UNRELEASED
+  * byobu-launcher: must explicitly set PROMPT_COMMAND in byobu_launcher;
+    this used to be in /etc/skel/.bashrc, but has since been dropped
+    (see Debian Bug #420656); thus, we need to set it ourself if we
+    want gnome-terminal to be updated with the remote host/username
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 20 Jul 2009 15:37:02 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 Jul 2009 19:34:51 -0500
 
 byobu (2.21-0ubuntu1) karmic; urgency=low
 
