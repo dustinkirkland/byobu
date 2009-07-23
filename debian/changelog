@@ -1,4 +1,4 @@
-byobu (2.23) unreleased; urgency=low
+byobu (2.23-0ubuntu1) karmic; urgency=low
 
   [ Kees Cook ]
   * byobu, byobu-launcher:
