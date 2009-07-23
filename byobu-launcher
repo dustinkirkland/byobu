@@ -18,13 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 [ "$TERM" = "screen" ] && exit 0
-
-# Ensure that the PROMPT_COMMAND gets printed, such that gnome-terminal
-# and friends can pick it up before going into screen
-export PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"'
-[ -x /bin/bash ] && echo | /bin/bash -i -s 2>/dev/null
 
 out=`screen -ls 2>/dev/null` || true
 if echo "$out" | grep -qsi "^No Sockets found in "; then

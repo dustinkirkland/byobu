@@ -1,8 +1,19 @@
 byobu (2.23) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Kees Cook ]
+  * byobu, byobu-launcher:
+    - set the window title to "$USER@HOST - byobu"
+    - do this in byobu, rather than byobu-launcher so that all byobu
+      sessions, and not just auto-launched sessions get this
+    - note that we're dropping $PWD since this does not actually work
+      and replacing this with " - byobu"
+    - for $PWD to work, we'd need screen to support two separate
+      hardstatus lines, as we can either put it at the bottom of byobu,
+      or in the window title, and hardstatus is the only tool available
+      to us for tracking $PWD
+    - drop the bash -i hack in byobu-launcher; this speeds up logins
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 Jul 2009 19:41:42 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 Jul 2009 21:26:42 -0500
 
 byobu (2.22-0ubuntu1) karmic; urgency=low
 
