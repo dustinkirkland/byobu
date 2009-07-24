@@ -130,7 +130,7 @@ setprofile() {
 			ln -s "$PROFILE_DIR/$x" "$HOME/.$PKG/profile"
 			found=1
 			echo
-			if [ ! -z $STY ]; then
+			if [ -n "$STY" ]; then
 				echo `gettext 'If you are using the default set of keybindings, press\n<F5> to activate these changes.\n\nOtherwise, exit this screen session and start a new one.'`
 			else
 				echo `gettext 'Run "byobu" to activate'`
