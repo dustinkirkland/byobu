@@ -28,7 +28,7 @@ if [ "$1" = "-v" ]; then
 fi
 
 # Nesting byobu inside of screen doesn't work well
-if [ "$TERM" = "screen" ]; then
+if [ ! -z "$STY" ]; then
 	echo `gettext "Exit the current screen session to run $PKG"`
 	exit 1
 fi
