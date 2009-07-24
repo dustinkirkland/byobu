@@ -20,12 +20,8 @@ install-po: update-pot
 
 update-pot:
 	rm -f po/${PKG}.pot
-	grep -v "^#" po/POTFILES.sh | while read po ; do \
-		xgettext -o po/${PKG}.pot -L Shell $${po} ; \
-	done
-	grep -v "^#" po/POTFILES.python | while read po ; do \
-		xgettext -o po/${PKG}.pot -L Python $${po} ; \
-	done
+	xgettext -f po/POTFILES.Shell -o po/${PKG}.pot -L Shell
+	xgettext -f po/POTFILES.Python -o po/${PKG}.pot -L Python -j
 	for po in po/*.po ; do \
 		msgmerge $${po} po/${PKG}.pot -o $${po} ; \
 	done

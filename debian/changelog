@@ -6,7 +6,12 @@ byobu (2.24) unreleased; urgency=low
     screen's manpage; wrap $STY in double quotes; use -n rather than -z;
     LP: #403988, LP: #403809
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 24 Jul 2009 08:29:49 -0500
+  [ Dustin Kirkland ]
+  * debian/rules: fix update-pot section of rules file; previous code
+    was only actually gathering messages from the last file input
+    (byobu-config); this joins the code properly
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 24 Jul 2009 08:54:31 -0500
 
 byobu (2.23-0ubuntu1) karmic; urgency=low
 
