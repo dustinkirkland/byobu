@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-23 02:06-0500\n"
+"POT-Creation-Date: 2009-07-24 08:55-0500\n"
 "PO-Revision-Date: 2009-05-14 16:31+0300\n"
 "Last-Translator: byobu <dubrsl@altlinux.ru>\n"
 "Language-Team: \n"
@@ -15,6 +15,67 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
+
+#: bin/menu:22 byobu-config:127 byobu-config:152 byobu-config:169
+#: byobu-config:350 byobu-config:404 byobu-config:412 byobu-config:481
+msgid "Menu"
+msgstr "Меню"
+
+#: byobu-export:68 byobu-export:71 byobu-select-profile:104
+#: byobu-select-profile:107
+msgid "Choose"
+msgstr ""
+
+#: byobu-export:171
+msgid "File exists"
+msgstr ""
+
+#: byobu-export:172
+msgid "Remove file? [y/N] "
+msgstr ""
+
+#: byobu-export:199
+msgid "Select a color: "
+msgstr ""
+
+#: byobu-export:237
+msgid "Profile"
+msgstr ""
+
+#: byobu-export:238
+msgid "Archive"
+msgstr ""
+
+#: byobu-export:240
+msgid "Extract the archive in your home directory on the target system."
+msgstr ""
+
+#: byobu-select-profile:49
+msgid "Error:"
+msgstr ""
+
+#: byobu-select-profile:49
+msgid " file exists, but is not a symlink"
+msgstr ""
+
+#: byobu-select-profile:80
+#, fuzzy
+msgid "Select a screen profile: "
+msgstr "Изменить профайл screen"
+
+#: byobu-select-profile:97
+msgid "ERROR: Invalid selection"
+msgstr ""
+
+#: byobu-select-profile:134
+msgid ""
+"If you are using the default set of keybindings, press\\n<F5> to activate "
+"these changes.\\n\\nOtherwise, exit this screen session and start a new one."
+msgstr ""
+
+#: byobu-select-profile:136
+msgid "Run \"byobu\" to activate"
+msgstr ""
 
 #: byobu-config:81
 msgid "Byobu currently launches at login (toggle off)"
@@ -53,7 +114,7 @@ msgstr "Создать новое окно"
 msgid "Manage default windows"
 msgstr "Управление окном по умолчанию"
 
-#: byobu-config:97 byobu-config:491
+#: byobu-config:97 byobu-config:492
 msgid " Byobu Configuration Menu"
 msgstr "Конфигурационное меню Byobu"
 
@@ -62,21 +123,16 @@ msgid "Okay"
 msgstr "Ok"
 
 #: byobu-config:108 byobu-config:142 byobu-config:161 byobu-config:197
-#: byobu-config:335 byobu-config:378 byobu-config:451
+#: byobu-config:336 byobu-config:379 byobu-config:452
 msgid "Cancel"
 msgstr "Отмена"
-
-#: byobu-config:127 byobu-config:152 byobu-config:169 byobu-config:349
-#: byobu-config:403 byobu-config:411 byobu-config:480
-msgid "Menu"
-msgstr "Меню"
 
 #: byobu-config:128
 msgid "Byobu Help"
 msgstr "Помощь Byobu"
 
-#: byobu-config:142 byobu-config:161 byobu-config:197 byobu-config:335
-#: byobu-config:378 byobu-config:451
+#: byobu-config:142 byobu-config:161 byobu-config:197 byobu-config:336
+#: byobu-config:379 byobu-config:452
 msgid "Apply"
 msgstr "Применить"
 
@@ -84,8 +140,8 @@ msgstr "Применить"
 msgid "Which profile would you like to use?"
 msgstr "Какой профайл вы желаете использовать?"
 
-#: byobu-config:151 byobu-config:168 byobu-config:348 byobu-config:410
-#: byobu-config:478
+#: byobu-config:151 byobu-config:168 byobu-config:349 byobu-config:411
+#: byobu-config:479
 msgid "Message"
 msgstr "Сообщение"
 
@@ -113,39 +169,39 @@ msgstr "Добавьте к окнам значения по умолчанию"
 msgid "Create new window(s):"
 msgstr "создать новое окно(а)"
 
-#: byobu-config:336
+#: byobu-config:337
 msgid "Toggle status notifications:"
 msgstr "Переключатель состояния уведомлений:"
 
-#: byobu-config:370
+#: byobu-config:371
 msgid "Windows:"
 msgstr "Окно:"
 
-#: byobu-config:380
+#: byobu-config:381
 msgid "Select window(s) to create by default:"
 msgstr "Выберите окно(на), чтобы создать по умолчанию:"
 
-#: byobu-config:400
+#: byobu-config:401
 #, fuzzy
 msgid "Byobu will be launched automatically next time you login."
 msgstr ""
 "Screen будет запущен автоматически следующий раз, когда Вы залогинитесь."
 
-#: byobu-config:408
+#: byobu-config:409
 #, fuzzy
 msgid "Byobu will not be used next time you login."
 msgstr ""
 "Screen не будет запущен автоматически следующий раз, когда Вы залогинитесь."
 
-#: byobu-config:450
+#: byobu-config:451
 msgid "Escape key: ctrl-"
 msgstr ""
 
-#: byobu-config:453
+#: byobu-config:454
 msgid "Change escape sequence:"
 msgstr "Изменить Escape-последовательность"
 
-#: byobu-config:492
+#: byobu-config:493
 #, fuzzy
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr "<Tab>/<Alt-Tab> между элементами | <Return> Приминение"
@@ -160,9 +216,6 @@ msgstr "<Tab>/<Alt-Tab> между элементами | <Return> Примин�
 
 #~ msgid "Remove screen by default at login"
 #~ msgstr "Убрать screen из загрузки по умолчанию"
-
-#~ msgid "Change screen profile"
-#~ msgstr "Изменить профайл screen"
 
 #~ msgid "Exit"
 #~ msgstr "Выход"
