@@ -3,10 +3,10 @@ byobu (2.24) unreleased; urgency=low
   [ Chow Loong Jin and Dustin Kirkland ]
   * byobu, byobu-launcher, byobu-select-profile: check $STY rather than
     $TERM, to determine if we're already inside of a screen session, per
-    screen's manpage; wrap $STY in double quotes; use -n rather than -z
+    screen's manpage; wrap $STY in double quotes; use -n rather than -z;
+    LP: #403988, LP: #403809
 
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 24 Jul 2009 08:27:24 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 24 Jul 2009 08:29:49 -0500
 
 byobu (2.23-0ubuntu1) karmic; urgency=low
 
