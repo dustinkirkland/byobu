@@ -1,112 +1,99 @@
-# Byobu
-# Copyright (C) 2008 Dustin Kirkland
-# This file is distributed under the same license as the Byobu package.
-# Nicolas Barcet <nicolas.barcet@ubuntu.com>, 2008.
+# Japanese translation for screen-profiles
+# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
+# This file is distributed under the same license as the screen-profiles package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 1.0\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: screen-profiles\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2009-07-24 08:55-0500\n"
-"PO-Revision-Date: 2009-07-24 14:46+0000\n"
-"Last-Translator: Nick Barcet <nicolas.barcet@ubuntu.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2009-05-23 15:28+0000\n"
+"Last-Translator: Fumihito YOSHIDA <hito@kugutsu.org>\n"
+"Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2009-07-28 18:17+0000\n"
 "X-Generator: Launchpad (build 8323)\n"
 
 #: byobu-select-profile:49
 msgid "Error:"
-msgstr "Erreur :"
-
-#: byobu-select-profile:49
-msgid " file exists, but is not a symlink"
-msgstr " fichire existe, mais n'est pas un lien symbolique"
+msgstr "エラー:"
 
 #: byobu-select-profile:80
 msgid "Select a screen profile: "
-msgstr "Sélectionnez un profil screen : "
+msgstr "スクリーンプロファイルを選択してください: "
 
 #: byobu-config:87
 msgid "Help"
-msgstr "Aide"
+msgstr "ヘルプ"
 
 #: byobu-config:90
 msgid "Change keybinding set"
-msgstr "Changer d'ensemble de raccourcis clavier"
+msgstr "キー割り当て表の変更"
 
 #: byobu-config:91
 msgid "Change escape sequence"
-msgstr "Changer la séquence d'échapement"
+msgstr "エスケープシーケンスの変更"
 
 #: byobu-config:93
 msgid "Manage default windows"
-msgstr "Gérer les fenêtres par défaut"
+msgstr "標準ウィンドウの管理"
 
 #: byobu-config:108
 msgid "Okay"
-msgstr "Ok"
+msgstr "了解"
 
 #: byobu-config:108 byobu-config:142 byobu-config:161 byobu-config:197
 #: byobu-config:336 byobu-config:379 byobu-config:452
 msgid "Cancel"
-msgstr "Annuler"
+msgstr "取消"
 
 #: byobu-config:142 byobu-config:161 byobu-config:197 byobu-config:336
 #: byobu-config:379 byobu-config:452
 msgid "Apply"
-msgstr "Appliquer"
+msgstr "適用"
 
 #: byobu-config:144
 msgid "Which profile would you like to use?"
-msgstr "Quel profil voudriez-vous utiliser ?"
-
-#: byobu-config:151 byobu-config:168 byobu-config:349 byobu-config:411
-#: byobu-config:479
-msgid "Message"
-msgstr "Message"
+msgstr "どのプロファイルを使いますか?"
 
 #: byobu-config:162
 msgid "Which set of keybindings would you like to use?"
-msgstr "Quel ensemble de raccourcis clavier voudriez-vous utiliser ?"
+msgstr "どのキー割り当てを使いますか?"
 
 #: byobu-config:177
 msgid "Title: "
-msgstr "Titre : "
+msgstr "タイトル: "
 
 #: byobu-config:179
 msgid "Command: "
-msgstr "Commande : "
-
-#: byobu-config:181
-msgid "Presets: "
-msgstr "Pré-réglages : "
+msgstr "コマンド: "
 
 #: byobu-config:195
 msgid "Add to default windows"
-msgstr "Ajouter aux fenêtres par défaut"
+msgstr "標準ウィンドウに追加"
 
 #: byobu-config:199
 msgid "Create new window(s):"
-msgstr "Créer nouvelle(s) fenêtre(s) :"
+msgstr "新しいウィンドウを作成する:"
 
 #: byobu-config:371
 msgid "Windows:"
-msgstr "Fenêtres :"
+msgstr "ウィンドウ:"
 
 #: byobu-config:381
 msgid "Select window(s) to create by default:"
-msgstr "Sélectionner fenêtre(s) à créer par défaut :"
+msgstr "標準で作成するウィンドウを選択してください:"
 
 #: byobu-config:451
 msgid "Escape key: ctrl-"
-msgstr "Séquence d'échapement : ctrl-"
+msgstr "エスケープキー: ctrl-"
 
 #: byobu-config:454
 msgid "Change escape sequence:"
-msgstr "Changer la séquence d'échapement :"
+msgstr "エスケープシーケンスを変更する:"
 
 #: bin/menu:22 byobu-config:127 byobu-config:152 byobu-config:169
 #: byobu-config:350 byobu-config:404 byobu-config:412 byobu-config:481
@@ -116,7 +103,7 @@ msgstr ""
 #: byobu-export:68 byobu-export:71 byobu-select-profile:104
 #: byobu-select-profile:107
 msgid "Choose"
-msgstr "Choisir"
+msgstr ""
 
 #: byobu-export:171
 msgid "File exists"
@@ -141,6 +128,10 @@ msgstr ""
 #: byobu-export:240
 msgid "Extract the archive in your home directory on the target system."
 msgstr ""
+
+#: byobu-select-profile:49
+msgid " file exists, but is not a symlink"
+msgstr " ファイルが存在しますが, シンボリックリンクではありません"
 
 #: byobu-select-profile:97
 msgid "ERROR: Invalid selection"
@@ -184,6 +175,15 @@ msgstr ""
 msgid "Byobu Help"
 msgstr ""
 
+#: byobu-config:151 byobu-config:168 byobu-config:349 byobu-config:411
+#: byobu-config:479
+msgid "Message"
+msgstr "メッセージ"
+
+#: byobu-config:181
+msgid "Presets: "
+msgstr "プリセット: "
+
 #: byobu-config:337
 msgid "Toggle status notifications:"
 msgstr ""
@@ -199,6 +199,3 @@ msgstr ""
 #: byobu-config:493
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr ""
-
-#~ msgid "recommended"
-#~ msgstr "recommandé"
