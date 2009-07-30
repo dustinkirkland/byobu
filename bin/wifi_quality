@@ -26,4 +26,4 @@ iwconfig=`/sbin/iwconfig 2>/dev/null`
 bitrate=`echo "$iwconfig" | grep "Bit Rate." | sed "s/^.*Bit Rate.//" | sed "s/ .*$//g"`
 [ -z "$bitrate" ] && bitrate="0"
 quality=`echo "$iwconfig" | grep "Link Quality=" | sed "s/^.*Link Quality=//" | sed "s/ .*$//g"`
-echo "$bitrate" "$quality" | awk '{printf "\005{=b Ck}%s\005{-}\005{= Ck}Mb/s,\005{-}\005{=b Ck}%.0f\005{-}\005{= Ck}%%\005{-} ", $1, $2}'
+echo | awk "{printf \"\005{=b Ck}%s\005{-}\005{= Ck}Mb/s,\005{-}\005{=b Ck}%d\005{-}\005{= Ck}%%\005{-} \", $bitrate, 100*$quality}"
