@@ -1,4 +1,4 @@
-byobu (2.24) unreleased; urgency=low
+byobu (2.24-0ubuntu1) karmic; urgency=low
 
   [ Chow Loong Jin and Dustin Kirkland ]
   * byobu, byobu-launcher, byobu-select-profile: check $STY rather than
