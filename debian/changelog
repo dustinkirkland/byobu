@@ -2,9 +2,10 @@ byobu (2.25) unreleased; urgency=low
 
   * hostname, ip_address, mem_available: make sure statusrc exists
     before sourcing it, LP: #407478
+  * temp_f, temp_c: use degree character
 
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 02 Aug 2009 09:54:39 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 02 Aug 2009 21:45:56 -0400
 
 byobu (2.24-0ubuntu1) karmic; urgency=low
 
