@@ -3,9 +3,9 @@ byobu (2.25) unreleased; urgency=low
   * hostname, ip_address, mem_available: make sure statusrc exists
     before sourcing it, LP: #407478
   * temp_f, temp_c: use degree character
+  * release, logo: default the logo and release to Byobu, if undetermined
 
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 02 Aug 2009 21:45:56 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 03 Aug 2009 03:51:06 +0100
 
 byobu (2.24-0ubuntu1) karmic; urgency=low
 

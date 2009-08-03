@@ -81,8 +81,8 @@ print_logo() {
 			$MARKUP && printf "\005{= Wr}$logo" || printf "$logo"
 		;;
 		*)
-			logo=" 屏風 "
-			$MARKUP && printf "\005{= Wk}$logo" || printf " $logo "
+			logo="|B|"
+			$MARKUP && printf "\005{=b kW}$logo" || printf " $logo "
 		;;
 	esac
 }
@@ -112,4 +112,4 @@ if which lsb_release >/dev/null 2>&1; then
 fi
 
 # No idea!
-printf " ? "
+printf "|B|"

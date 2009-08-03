@@ -17,7 +17,11 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if which lsb_release >/dev/null 2>&1; then
+PKG="byobu"
+
+if [ -r "$HOME/.$PKG/distro" ]; then
+	printf "\005{+b }%s\005{-} " `cat "$HOME/.$PKG/distro"`
+elif which lsb_release >/dev/null 2>&1; then
 	if [ "$1" = "--detail" ]; then
 		lsb_release -a 2>/dev/null
 		exit 0
@@ -42,5 +46,5 @@ elif [ -r "/etc/issue" ]; then
 	# Otherwise, grab part of /etc/issue, ideally the distro and version
 	printf "\005{+b }%s\005{-} " $(head -n1 /etc/issue | sed "s/ [^0-9]* / /" | awk '{print $1 " " $2}')
 else
-	echo "Unknown"
+	echo "Byobu"
 fi
