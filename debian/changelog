@@ -1,4 +1,4 @@
-byobu (2.25-0ubuntu1) karmic; urgency=low
+byobu (2.25) unreleased; urgency=low
 
   [ Dustin Kirkland ]
   * hostname, ip_address, mem_available: make sure statusrc exists
@@ -15,7 +15,7 @@ byobu (2.25-0ubuntu1) karmic; urgency=low
     LP: #408936
   * byobu-janitor: do not fail on optional sed replacement, LP: #408945
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Aug 2009 16:27:37 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Aug 2009 16:28:15 +0100
 
 byobu (2.24-0ubuntu1) karmic; urgency=low
 
