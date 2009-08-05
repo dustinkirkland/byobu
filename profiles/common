@@ -73,6 +73,11 @@ hardstatus alwayslastline
 termcapinfo xterm* ti@:te@
 altscreen on
 
+# Enable 256 color terminal
+attrcolor b ".I"
+termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+defbce "on"
+
 # Log 10000 lines
 defscrollback 10000
 
