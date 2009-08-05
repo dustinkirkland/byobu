@@ -28,6 +28,12 @@ rsync -aP ../*.rpm kirkland@people.canonical.com:~kirkland/public_html/$PKG/rpm
 $PKG-export -c light -f /tmp/$PKG-export.tar.gz
 rsync -aP /tmp/$PKG-export.tar.gz kirkland@people.canonical.com:~kirkland/public_html
 
+# Do the Ubuntu packaging
+#cd ..
+#rm -rf byobu-ubuntu
+#bzr branch lp:ubuntu/byobu byobu-ubuntu
+#...
+
 # Open the next release for development
 nextminor=`expr $minor + 1`
 sed -i "s/^VERSION=.*$/VERSION=$MAJOR.$nextminor/" byobu
