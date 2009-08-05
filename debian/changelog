@@ -1,4 +1,4 @@
-byobu (2.25) unreleased; urgency=low
+byobu (2.25-0ubuntu1) karmic; urgency=low
 
   [ Dustin Kirkland ]
   * hostname, ip_address, mem_available: make sure statusrc exists
@@ -8,13 +8,14 @@ byobu (2.25) unreleased; urgency=low
   * profiles/common: ip_address is really cheap, changes more frequently
     than previously considered, check this every ~2 minutes
   * profiles/common: enable 256 color support, LP: #409353
+  * debian/control: bump standards version
 
   [ Scott Moser ]
   * debian/source_byobu.py: invoke ls command allowing for shell expansion,
     LP: #408936
   * byobu-janitor: do not fail on optional sed replacement, LP: #408945
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Aug 2009 16:23:33 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Aug 2009 16:27:37 +0100
 
 byobu (2.24-0ubuntu1) karmic; urgency=low
 
