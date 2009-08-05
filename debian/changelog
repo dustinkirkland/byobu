@@ -1,4 +1,4 @@
-byobu (2.25) unreleased; urgency=low
+byobu (2.25-0ubuntu1) karmic; urgency=low
 
   [ Dustin Kirkland ]
   * hostname, ip_address, mem_available: make sure statusrc exists
