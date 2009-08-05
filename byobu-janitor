@@ -53,7 +53,7 @@ if [ -d "$HOME/.$OLDPKG" ] && [ ! -e "$HOME/.$PKG" ]; then
 		byobu-select-profile -s "$profile" >/dev/null 2>&1 || byobu-select-profile -s "$DEFAULT_PROFILE" >/dev/null 2>&1
 	fi
 	# Replace all instances of the old package name with the new
-	sed -i "s/$OLDPKG/$PKG/g" "$HOME/.$PKG"/*
+	sed -i "s/$OLDPKG/$PKG/g" "$HOME/.$PKG"/* || true
 fi
 
 # Affects: First runs with no configuration

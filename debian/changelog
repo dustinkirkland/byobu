@@ -1,13 +1,17 @@
 byobu (2.25) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * hostname, ip_address, mem_available: make sure statusrc exists
     before sourcing it, LP: #407478
   * temp_f, temp_c: use degree character
   * release, logo: default the logo and release to Byobu, if undetermined
+
+  [ Scott Moser ]
   * debian/source_byobu.py: invoke ls command allowing for shell expansion,
     LP: #408936
+  * byobu-janitor: do not fail on optional sed replacement, LP: #408945
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Aug 2009 12:24:14 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Aug 2009 12:27:16 +0100
 
 byobu (2.24-0ubuntu1) karmic; urgency=low
 
