@@ -58,7 +58,7 @@ backtick 118 	86083	86083		true
 backtick 119 	17	17		byobu-status wifi_quality
 backtick 120 	86111	86111		byobu-status date
 backtick 121 	86113	86113		byobu-status time
-backtick 122 	613	613		byobu-status ip_address
+backtick 122 	127	127		byobu-status ip_address
 backtick 123 	13	13		byobu-status disk
 backtick 124 	86117	86117		true
 backtick 125 	19	19		byobu-status temp_c
