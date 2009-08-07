@@ -99,6 +99,8 @@ def menu(screen, size, isInstalled):
     g.add(bb, 0, 1, padding=(1,1,0,0))
 
     if bb.buttonPressed(g.runOnce()) == "exit":
+        win='screen -X at 0 source $HOME/.byobu/profile'
+        commands.getoutput(win)
         return 0
     else:
         return li.current()
