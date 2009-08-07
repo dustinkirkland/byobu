@@ -147,6 +147,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Aug  7 2009 Derek Carter <goozbach@friocorte.com>
+- Updated specfile to build on Fedora11
+- Fixed some keybindings for Fedora11
+- Made an expermental trigger for sourcing config on exit of byobu-config
+
 * Tue May  5 2009 David Duffey <email@davidduffey.com>
 - Initial RPM release
 - see /usr/share/doc/byobu-*/changelog for upstream changelog
