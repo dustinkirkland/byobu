@@ -92,7 +92,7 @@ for i in disk network distro logo; do
 			distro|logo)
 				key="$uc" ;;
 		esac
-		echo "$key=\"$val\"" >> "$HOME/.$PKG/status"
+		echo "$key=\"$val\"" >> "$HOME/.$PKG/statusrc"
 		rm "$HOME/.$PKG/$i"
 	fi
 done
