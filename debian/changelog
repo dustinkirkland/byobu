@@ -1,4 +1,4 @@
-byobu (2.26) unreleased; urgency=low
+byobu (2.26-0ubuntu1) karmic; urgency=low
 
   * bin/temp_c, bin/temp_f: fix temperature listing, LP: #411108
   * bin/disk, bin/logo, bin/network, bin/release, bin/temp_c, bin/temp_f,
