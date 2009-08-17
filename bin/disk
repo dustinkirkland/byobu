@@ -25,7 +25,8 @@ if [ "$1" = "--detail" ]; then
 fi
 
 # Default to /, but let users override
-[ -n "$MONITORED_DISK" ] || MP="/"
+MP="/"
+[ -n "$MONITORED_DISK" ] && MP="$MONITORED_DISK"
 case $MP in
 	/dev/*) MP=`grep "$MP" /proc/mounts | awk '{print $2}'` ;;
 esac

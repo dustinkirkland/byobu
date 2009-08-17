@@ -4,8 +4,11 @@ byobu (2.26) unreleased; urgency=low
   * bin/disk, bin/logo, bin/network, bin/release, bin/temp_c, bin/temp_f,
     byobu-janitor: move config files to sourced config file, use
     janitor item to clean up
+  * byobu-status: source, rather than exec the target status script,
+    such that the script inherits the source status config variables
+  * bin/disk: fix up reading of MONITORED_DISK
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 13:19:50 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 13:34:45 -0500
 
 byobu (2.25-0ubuntu1) karmic; urgency=low
 
