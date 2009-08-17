@@ -1,4 +1,4 @@
-byobu (2.27) unreleased; urgency=low
+byobu (2.27-0ubuntu1) karmic; urgency=low
 
   [ Derek Carter <goozbach@friocorte.com> ]
   * byobu-config, rpm/byobu.spec: fixed to build on Fedora 11; merged
