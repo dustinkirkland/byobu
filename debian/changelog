@@ -9,8 +9,9 @@ byobu (2.26) unreleased; urgency=low
     source statusrc (which contains overrides)
   * bin/disk: fix up reading of MONITORED_DISK
   * byobu.1: update documentation for new .byobu/statusrc file
+  * bin/ip_address: allow interface override
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 14:05:44 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 14:12:48 -0500
 
 byobu (2.25-0ubuntu1) karmic; urgency=low
 
