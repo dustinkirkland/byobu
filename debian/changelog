@@ -5,7 +5,11 @@ byobu (2.27) unreleased; urgency=low
     with minor modifications (install keybindings/common as a symlink to
     f-keys)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 15:46:14 -0500
+  [ Dustin Kirkland ]
+  * byobu-config: use Derek's *awesome* "screen -X" hack to reload profiles
+    automatically, and drop the "reload" prompt
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 16:08:53 -0500
 
 byobu (2.26-0ubuntu1) karmic; urgency=low
 

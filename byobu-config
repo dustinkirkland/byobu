@@ -34,6 +34,7 @@ DOC='/usr/share/doc/'+PKG
 DEF_ESC="A"
 RELOAD = "If you are using the default set of keybindings, press\n<F5> or <ctrl-a-R> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
 RELOAD_FLAG="/var/run/screen/S-"+USER+"/"+PKG+".reload-required"
+RELOAD_CMD="screen -X at 0 source $HOME/."+PKG+"/profile"
 ESC = ''
 snack.hotkeys[ESC] = ord(ESC)
 snack.hotkeys[ord(ESC)] = ESC
@@ -59,6 +60,7 @@ def ioctl_GWINSZ(fd):                  #### TABULATION FUNCTIONS
 def reload_required():
     f = open(RELOAD_FLAG,'w')
     f.close()
+    commands.getoutput(RELOAD_CMD)
 
 def terminal_size():                    ### decide on *some* terminal size
     cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)  # try open fds
@@ -99,8 +101,6 @@ def menu(screen, size, isInstalled):
     g.add(bb, 0, 1, padding=(1,1,0,0))
 
     if bb.buttonPressed(g.runOnce()) == "exit":
-        win="screen -X at 0 source $HOME/."+PKG+"/profile"
-        commands.getoutput(win)
         return 0
     else:
         return li.current()
@@ -150,8 +150,6 @@ def profile(screen, size):
     if bb.buttonPressed(g.runOnce()) != "cancel":
         commands.getoutput('byobu-select-profile --set %s' % li.current())
 	reload_required()
-        button = messagebox(screen, 60, 4, _("Message"), _(RELOAD), \
-            buttons=((_("Menu"), )))
     return 100
 
 def keybindings(screen, size):
@@ -167,8 +165,6 @@ def keybindings(screen, size):
     if bb.buttonPressed(g.runOnce()) != "cancel":
         switch_keybindings(li.current())
 	reload_required()
-        button = messagebox(screen, 60, 4, _("Message"), _(RELOAD), \
-            buttons=((_("Menu"), )))
     return 100
 
 def switch_keybindings(set):
@@ -348,8 +344,6 @@ def togglestatus(screen, size):
             count=count+1
         writestatus(itemlist)
 	reload_required()
-        button = messagebox(screen, 60, 4, _("Message"), _(RELOAD), \
-            buttons=((_("Menu"), )))
     return 100
 
 def writewindows(winlist):
@@ -478,9 +472,6 @@ def chgesc(screen, size):
     if bb.buttonPressed(which) != "cancel":
         setesckey(esc.value())
 	reload_required()
-        button = messagebox(screen, 60, 4, _("Message"), \
-            _(RELOAD), \
-            buttons=((_("Menu"), )))
         if button == "exit":
             return 0
     return 100
