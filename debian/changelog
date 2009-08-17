@@ -1,3 +1,9 @@
+byobu (2.28) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 16:32:52 -0500
+
 byobu (2.27-0ubuntu1) karmic; urgency=low
 
   [ Derek Carter <goozbach@friocorte.com> ]
