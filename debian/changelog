@@ -1,10 +1,4 @@
-byobu (2.27) unreleased; urgency=low
-
-  * UNRELEASED
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 14:32:57 -0500
-
-byobu (2.26-0ubuntu1) karmic; urgency=low
+byobu (2.26) unreleased; urgency=low
 
   * bin/temp_c, bin/temp_f: fix temperature listing, LP: #411108
   * bin/disk, bin/logo, bin/network, bin/release, bin/temp_c, bin/temp_f,
@@ -21,6 +15,11 @@ byobu (2.26-0ubuntu1) karmic; urgency=low
     forked shells by multiple sed-calls on one line by using a single
     sed call with multiple -e arguments (thanks for the suggestion smoser)
   * debian/control: bumping standards version
+  * po/byobu-bg.po, po/byobu-de.po, po/byobu-en_GB.po, po/byobu-es.po,
+    po/byobu-fr.po, po/byobu-hu.po, po/byobu-id.po, po/byobu-it.po,
+    po/byobu-ja.po, po/byobu-la.po, po/byobu-nl.po, po/byobu-ru.po,
+    po/byobu-sv.po, po/es.po, po/fr.po, po/ru.po: translations import
+    from launchpad
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 14:30:27 -0500
 
