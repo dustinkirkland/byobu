@@ -13,6 +13,12 @@ BuildArch:	noarch
 BuildRequires:  gettext
 Requires:       screen, python >= 2.5, newt, gettext
 
+%Description
+Byobu is a Japanese term for decorative, multi-panel screens that serve as folding room dividers.
+As an open source project, Byobu is an elegant enhancement of the otherwise functional, plain,
+practical GNU Screen. Byobu includes an enhanced profile and configuration utilities for the GNU
+screen window manager, such as toggle-able system status notifications.
+
 # TODO
 #   help.txt is in different locations under RPM/DEB
 #   python 2.5 is not available on RHEL 5
@@ -22,7 +28,7 @@ Requires:       screen, python >= 2.5, newt, gettext
 
 
 %build
-profiles/generate
+profiles_generator/generate
 
 
 %install
@@ -34,6 +40,7 @@ mkdir -p ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
 mkdir -p ${RPM_BUILD_ROOT}/usr/share/byobu/keybindings
 mkdir -p ${RPM_BUILD_ROOT}/usr/share/byobu/windows
 mkdir -p ${RPM_BUILD_ROOT}/usr/bin
+mkdir -p ${RPM_BUILD_ROOT}/etc/byobu
 cp -ar bin/* ${RPM_BUILD_ROOT}/usr/lib/byobu
 cp -ar po/locale/* ${RPM_BUILD_ROOT}/usr/share/locale
 cp -ar profiles/byoburc ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
@@ -42,7 +49,8 @@ cp -ar profiles/NONE ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
 cp -ar profiles/black ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
 cp -ar profiles/dark ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
 cp -ar profiles/light ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
-cp -ar keybindings/common ${RPM_BUILD_ROOT}/usr/share/byobu/keybindings
+ln -sf f-keys ${RPM_BUILD_ROOT}/usr/share/byobu/keybindings/common
+cp -ar keybindings/f-keys ${RPM_BUILD_ROOT}/usr/share/byobu/keybindings
 cp -ar keybindings/none ${RPM_BUILD_ROOT}/usr/share/byobu/keybindings
 cp -ar windows/common ${RPM_BUILD_ROOT}/usr/share/byobu/windows
 cp -ar byobu-select-profile ${RPM_BUILD_ROOT}/usr/bin
@@ -54,8 +62,10 @@ cp -ar byobu-launcher-install ${RPM_BUILD_ROOT}/usr/share/byobu
 cp -ar byobu-launcher-uninstall ${RPM_BUILD_ROOT}/usr/share/byobu
 cp -ar motd+shell ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-launcher ${RPM_BUILD_ROOT}/usr/bin
+cp -ar byobu-janitor ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-export ${RPM_BUILD_ROOT}/usr/bin
 cp -ar profiles/*_* ${RPM_BUILD_ROOT}/usr/share/byobu/profiles
+cp -ar statusrc ${RPM_BUILD_ROOT}/etc/byobu
 
 
 %clean
@@ -66,6 +76,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 /usr/bin/motd+shell
 /usr/bin/byobu-launcher
+/usr/bin/byobu-janitor
 /usr/bin/byobu
 /usr/bin/byobu-config
 /usr/bin/byobu-export
@@ -102,7 +113,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/lib/byobu/wifi_quality
 /usr/share/locale/es/LC_MESSAGES/byobu.mo
 /usr/share/locale/fr/LC_MESSAGES/byobu.mo
+/usr/share/locale/ru/LC_MESSAGES/byobu.mo
 /usr/share/byobu/keybindings/common
+/usr/share/byobu/keybindings/f-keys
 /usr/share/byobu/keybindings/none
 /usr/share/byobu/profiles/byoburc
 /usr/share/byobu/profiles/NONE
@@ -125,6 +138,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/byobu/byobu-launcher-install
 /usr/share/byobu/byobu-launcher-uninstall
 /usr/share/byobu/windows/common
+/etc/byobu
 %doc README
 %doc doc/help.txt
 %doc debian/copyright
@@ -133,6 +147,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Aug  7 2009 Derek Carter <goozbach@friocorte.com>
+- Updated specfile to build on Fedora11
+- Fixed some keybindings for Fedora11
+- Made an expermental trigger for sourcing config on exit of byobu-config
+
 * Tue May  5 2009 David Duffey <email@davidduffey.com>
 - Initial RPM release
 - see /usr/share/doc/byobu-*/changelog for upstream changelog

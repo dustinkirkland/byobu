@@ -1,8 +1,11 @@
 byobu (2.27) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Derek Carter <goozbach@friocorte.com> ]
+  * byobu-config, rpm/byobu.spec: fixed to build on Fedora 11; merged
+    with minor modifications (install keybindings/common as a symlink to
+    f-keys)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 15:14:20 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 15:46:14 -0500
 
 byobu (2.26-0ubuntu1) karmic; urgency=low
 
