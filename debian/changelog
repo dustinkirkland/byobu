@@ -1,6 +1,6 @@
 byobu (2.26) unreleased; urgency=low
 
-  * bin/temp_c, bin/temp_f: fix temperature listing
+  * bin/temp_c, bin/temp_f: fix temperature listing, LP: #411108
   * bin/disk, bin/logo, bin/network, bin/release, bin/temp_c, bin/temp_f,
     byobu-janitor: move config files to sourced config file, use
     janitor item to clean up
@@ -10,7 +10,7 @@ byobu (2.26) unreleased; urgency=low
   * bin/disk: fix up reading of MONITORED_DISK
   * byobu.1: update documentation for new .byobu/statusrc file
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 14:03:05 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 14:05:44 -0500
 
 byobu (2.25-0ubuntu1) karmic; urgency=low
 
