@@ -1,3 +1,9 @@
+byobu (2.27) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 15:14:20 -0500
+
 byobu (2.26-0ubuntu1) karmic; urgency=low
 
   * bin/temp_c, bin/temp_f: fix temperature listing, LP: #411108
