@@ -1,8 +1,11 @@
 byobu (2.26) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/temp_c, bin/temp_f: fix temperature listing
+  * bin/disk, bin/logo, bin/network, bin/release, bin/temp_c, bin/temp_f,
+    byobu-janitor: move config files to sourced config file, use
+    janitor item to clean up
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Aug 2009 16:31:00 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 13:19:50 -0500
 
 byobu (2.25-0ubuntu1) karmic; urgency=low
 

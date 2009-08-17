@@ -25,7 +25,7 @@ if [ "$1" = "--detail" ]; then
 fi
 
 # Default to /, but let users override
-[ -r "$HOME/.$PKG/disk" ] && MP=`cat "$HOME/.$PKG/disk"` || MP="/"
+[ -n "$MONITORED_DISK" ] || MP="/"
 case $MP in
 	/dev/*) MP=`grep "$MP" /proc/mounts | awk '{print $2}'` ;;
 esac

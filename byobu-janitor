@@ -80,5 +80,22 @@ if grep -qs "screen-launcher$" "$HOME/.profile"; then
 	/usr/share/$PKG/byobu-launcher-install
 fi
 
+# Affects: Upgrades from <= byobu-2.25
+# Collapse separate status config files into the sourced config
+for i in disk network distro logo; do
+	if [ -r "$HOME/.$PKG/$i" ]; then
+		val=`cat $HOME/.$PKG/$i`
+		uc=`echo "$i" | tr "[:lower:]" "[:upper:]"`
+		case $i in
+			disk|network)
+				key="MONITORED_"$uc ;;
+			distro|logo)
+				key="$uc" ;;
+		esac
+		echo "$key=\"$val\"" >> "$HOME/.$PKG/status"
+		rm "$HOME/.$PKG/$i"
+	fi
+done
+
 # Clean up flag
 rm -f "$FLAG"

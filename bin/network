@@ -19,9 +19,9 @@
 
 PKG="byobu"
 
-# Allow interface overrides in configuration directory
-if [ -r "$HOME/.$PKG/network" ]; then
-	interface=`cat "$HOME/.$PKG/network"`
+# Allow interface overrides in $HOME/.$PKG/status
+if [ -n "$MONITORED_NETWORK" ]; then
+	interface="$MONITORED_NETWORK"
 else
 	interface=`tail -n1 /proc/net/route  | awk '{print $1}'`
 fi

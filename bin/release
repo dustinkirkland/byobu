@@ -19,8 +19,8 @@
 
 PKG="byobu"
 
-if [ -r "$HOME/.$PKG/distro" ]; then
-	printf "\005{+b }%s\005{-} " `cat "$HOME/.$PKG/distro"`
+if [ -n "$DISTRO" ]; then
+	printf "\005{+b }%s\005{-} " "$DISTRO"
 elif which lsb_release >/dev/null 2>&1; then
 	if [ "$1" = "--detail" ]; then
 		lsb_release -a 2>/dev/null

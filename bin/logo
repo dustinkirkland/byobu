@@ -87,15 +87,14 @@ print_logo() {
 	esac
 }
 
-if [ -r "$HOME/.$PKG/logo" ]; then
-	# Allow users to define their own logo
-	cat "$HOME/.$PKG/logo" && exit 0 || true
+if [ -n "$LOGO" ]; then
+	# Allow users to define their own logo in $HOME/.$PKG/status
+	printf "%s" "$LOGO" && exit 0 || true
 fi
 
-if [ -r "$HOME/.$PKG/distro" ]; then
-	# Allow manual override of distro
-	distro=`cat "$HOME/.$PKG/distro"`
-	print_logo "$distro" && exit 0 || true
+if [ -n "$DISTRO" ]; then
+	# Allow manual override of distro in $HOME/.$PKG/status
+	print_logo "$DISTRO" && exit 0 || true
 fi
 
 if [ -r "/etc/issue" ]; then
