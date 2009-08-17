@@ -29,7 +29,13 @@ fi
 [ "$hostname" = "1" ] && space=" "
 [ "$whoami" = "1" ] && space=" "
 
-interface=`tail -n1 /proc/net/route  | awk '{print $1}'`
+# Allow interface overrides in $HOME/.$PKG/statusrc
+if [ -n "$MONITORED_NETWORK" ]; then
+	interface="$MONITORED_NETWORK"
+else
+	interface=`tail -n1 /proc/net/route  | awk '{print $1}'`
+fi
+
 ipaddr=`/sbin/ifconfig "$interface" | grep "inet addr:" | sed "s/^.*inet addr://" | sed "s/ .*$//"`
 
 printf "%s\005{+b }%s\005{-}" "$space" "$ipaddr"
