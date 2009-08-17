@@ -7,8 +7,9 @@ byobu (2.26) unreleased; urgency=low
   * byobu-status: source, rather than exec the target status script,
     such that the script inherits the source status config variables
   * bin/disk: fix up reading of MONITORED_DISK
+  * byobu.1: update documentation for new .byobu/statusrc file
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 13:34:45 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 14:02:25 -0500
 
 byobu (2.25-0ubuntu1) karmic; urgency=low
 
