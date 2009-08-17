@@ -10,8 +10,12 @@ byobu (2.26) unreleased; urgency=low
   * bin/disk: fix up reading of MONITORED_DISK
   * byobu.1: update documentation for new .byobu/statusrc file
   * bin/ip_address: allow interface override
+  * bin/ip_address, bin/mem_used, bin/temp_c, bin/temp_f,
+    bin/wifi_quality: performance improvements, reduce the number of
+    forked shells by multiple sed-calls on one line by using a single
+    sed call with multiple -e arguments (thanks for the suggestion smoser)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 14:12:48 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 14:23:19 -0500
 
 byobu (2.25-0ubuntu1) karmic; urgency=low
 

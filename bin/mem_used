@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    mem_used: grab the current memory used
+#    mem_used: grab the current memory usage
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>

@@ -20,7 +20,7 @@
 PKG="byobu"
 
 if [ "$1" = "--detail" ]; then
-	/sbin/ifconfig | grep "inet addr" | sed 's/^\s*//' | sed 's/\s*$//'
+	/sbin/ifconfig | grep "inet addr" | sed -e 's/^\s*//' -e 's/\s*$//'
 	exit 0
 fi
 
@@ -36,6 +36,6 @@ else
 	interface=`tail -n1 /proc/net/route  | awk '{print $1}'`
 fi
 
-ipaddr=`/sbin/ifconfig "$interface" | grep "inet addr:" | sed "s/^.*inet addr://" | sed "s/ .*$//"`
+ipaddr=`/sbin/ifconfig "$interface" | grep "inet addr:" | sed -e "s/^.*inet addr://" -e "s/ .*$//"`
 
 printf "%s\005{+b }%s\005{-}" "$space" "$ipaddr"
