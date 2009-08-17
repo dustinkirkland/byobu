@@ -57,5 +57,5 @@ if [ "$P" = "--detail" ]; then
 else
 		eval x="\$$P" || exit 1
 		[ "$x" = "1" ] || exit 0
-		exec $(find_script "$P")
+		. $(find_script "$P")
 fi
