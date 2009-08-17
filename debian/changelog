@@ -14,8 +14,9 @@ byobu (2.26) unreleased; urgency=low
     bin/wifi_quality: performance improvements, reduce the number of
     forked shells by multiple sed-calls on one line by using a single
     sed call with multiple -e arguments (thanks for the suggestion smoser)
+  * debian/control: bumping standards version
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 14:23:19 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Aug 2009 14:30:27 -0500
 
 byobu (2.25-0ubuntu1) karmic; urgency=low
 
