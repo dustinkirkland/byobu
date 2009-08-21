@@ -14,55 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-08-20 09:25+0000\n"
+"X-Launchpad-Export-Date: 2009-08-21 09:55+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
-
-#: byobu-select-profile:49
-msgid "Error:"
-msgstr "Грешка:"
-
-#: byobu-config:87
-msgid "Help"
-msgstr "Помощ"
-
-#: byobu-config:108
-msgid "Okay"
-msgstr "ОК"
-
-#: byobu-config:108 byobu-config:142 byobu-config:161 byobu-config:197
-#: byobu-config:336 byobu-config:379 byobu-config:452
-msgid "Cancel"
-msgstr "Отказ"
-
-#: byobu-config:142 byobu-config:161 byobu-config:197 byobu-config:336
-#: byobu-config:379 byobu-config:452
-msgid "Apply"
-msgstr "Приложи"
-
-#: byobu-config:144
-msgid "Which profile would you like to use?"
-msgstr "Кой профил бихте желали да ползвате?"
-
-#: byobu-config:151 byobu-config:168 byobu-config:349 byobu-config:411
-#: byobu-config:479
-msgid "Message"
-msgstr "Съобщение"
-
-#: byobu-config:177
-msgid "Title: "
-msgstr "Заглавие: "
-
-#: byobu-config:179
-msgid "Command: "
-msgstr "Команда: "
-
-#: byobu-config:195
-msgid "Add to default windows"
-msgstr "Добавяне към прозорците по подразбиране"
-
-#: byobu-config:371
-msgid "Windows:"
-msgstr "Прозорци:"
 
 #: bin/menu:22 byobu-config:127 byobu-config:152 byobu-config:169
 #: byobu-config:350 byobu-config:404 byobu-config:412 byobu-config:481
@@ -99,6 +52,10 @@ msgid "Extract the archive in your home directory on the target system."
 msgstr ""
 
 #: byobu-select-profile:49
+msgid "Error:"
+msgstr "Грешка:"
+
+#: byobu-select-profile:49
 msgid " file exists, but is not a symlink"
 msgstr ""
 
@@ -128,6 +85,10 @@ msgstr ""
 msgid "Byobu currently does not launch at login (toggle on)"
 msgstr ""
 
+#: byobu-config:87
+msgid "Help"
+msgstr "Помощ"
+
 #: byobu-config:88
 msgid "Change Byobu's colors"
 msgstr ""
@@ -156,17 +117,52 @@ msgstr ""
 msgid " Byobu Configuration Menu"
 msgstr ""
 
+#: byobu-config:108
+msgid "Okay"
+msgstr "ОК"
+
+#: byobu-config:108 byobu-config:142 byobu-config:161 byobu-config:197
+#: byobu-config:336 byobu-config:379 byobu-config:452
+msgid "Cancel"
+msgstr "Отказ"
+
 #: byobu-config:128
 msgid "Byobu Help"
 msgstr ""
+
+#: byobu-config:142 byobu-config:161 byobu-config:197 byobu-config:336
+#: byobu-config:379 byobu-config:452
+msgid "Apply"
+msgstr "Приложи"
+
+#: byobu-config:144
+msgid "Which profile would you like to use?"
+msgstr "Кой профил бихте желали да ползвате?"
+
+#: byobu-config:151 byobu-config:168 byobu-config:349 byobu-config:411
+#: byobu-config:479
+msgid "Message"
+msgstr "Съобщение"
 
 #: byobu-config:162
 msgid "Which set of keybindings would you like to use?"
 msgstr "Коя клавишна комбинация ще ползвате?"
 
+#: byobu-config:177
+msgid "Title: "
+msgstr "Заглавие: "
+
+#: byobu-config:179
+msgid "Command: "
+msgstr "Команда: "
+
 #: byobu-config:181
 msgid "Presets: "
 msgstr ""
+
+#: byobu-config:195
+msgid "Add to default windows"
+msgstr "Добавяне към прозорците по подразбиране"
 
 #: byobu-config:199
 msgid "Create new window(s):"
@@ -175,6 +171,10 @@ msgstr ""
 #: byobu-config:337
 msgid "Toggle status notifications:"
 msgstr ""
+
+#: byobu-config:371
+msgid "Windows:"
+msgstr "Прозорци:"
 
 #: byobu-config:381
 msgid "Select window(s) to create by default:"

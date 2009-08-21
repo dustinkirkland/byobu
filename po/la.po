@@ -14,29 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-08-20 09:25+0000\n"
+"X-Launchpad-Export-Date: 2009-08-21 09:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
-
-#: byobu-config:87
-msgid "Help"
-msgstr "Auxilium"
-
-#: byobu-config:90
-msgid "Change keybinding set"
-msgstr "Mutare clavis congeries"
-
-#: byobu-config:91
-msgid "Change escape sequence"
-msgstr "Mutare fuga"
-
-#: byobu-config:93
-msgid "Manage default windows"
-msgstr "Administrare fenestrae"
-
-#: byobu-config:108 byobu-config:142 byobu-config:161 byobu-config:197
-#: byobu-config:336 byobu-config:379 byobu-config:452
-msgid "Cancel"
-msgstr "Abrogare"
 
 #: bin/menu:22 byobu-config:127 byobu-config:152 byobu-config:169
 #: byobu-config:350 byobu-config:404 byobu-config:412 byobu-config:481
@@ -106,6 +85,10 @@ msgstr ""
 msgid "Byobu currently does not launch at login (toggle on)"
 msgstr ""
 
+#: byobu-config:87
+msgid "Help"
+msgstr "Auxilium"
+
 #: byobu-config:88
 msgid "Change Byobu's colors"
 msgstr ""
@@ -114,9 +97,21 @@ msgstr ""
 msgid "Toggle status notifications"
 msgstr ""
 
+#: byobu-config:90
+msgid "Change keybinding set"
+msgstr "Mutare clavis congeries"
+
+#: byobu-config:91
+msgid "Change escape sequence"
+msgstr "Mutare fuga"
+
 #: byobu-config:92
 msgid "Create new windows"
 msgstr ""
+
+#: byobu-config:93
+msgid "Manage default windows"
+msgstr "Administrare fenestrae"
 
 #: byobu-config:97 byobu-config:492
 msgid " Byobu Configuration Menu"
@@ -125,6 +120,11 @@ msgstr ""
 #: byobu-config:108
 msgid "Okay"
 msgstr ""
+
+#: byobu-config:108 byobu-config:142 byobu-config:161 byobu-config:197
+#: byobu-config:336 byobu-config:379 byobu-config:452
+msgid "Cancel"
+msgstr "Abrogare"
 
 #: byobu-config:128
 msgid "Byobu Help"
