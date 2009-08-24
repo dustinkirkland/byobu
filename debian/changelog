@@ -1,4 +1,4 @@
-byobu (2.28) unreleased; urgency=low
+byobu (2.28-0ubuntu1) karmic; urgency=low
 
   [ Daniel Hahler ]
   * Fix bashism in byobu script (LP: #418273)
