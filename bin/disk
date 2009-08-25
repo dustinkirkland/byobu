@@ -31,4 +31,4 @@ case $MP in
 	/dev/*) MP=`grep "$MP" /proc/mounts | awk '{print $2}'` ;;
 esac
 
-df -h -P "$MP" | tail -n 1 | awk '{print $2 " " $5}' | sed "s/\([^0-9 ]\)/ \1/g" | awk '{printf "\005{=b MW}%d\005{-}\005{= MW}%sB,\005{-}\005{=b MW}%d\005{-}\005{= MW}%%\005{-} ", $1, $2, $3}'
+df -h -P "$MP" | tail -n 1 | awk '{print $2 " " $5}' | sed "s/\([^0-9\. ]\)/ \1/g" | awk '{printf "\005{=b MW}%d\005{-}\005{= MW}%sB,\005{-}\005{=b MW}%d\005{-}\005{= MW}%%\005{-} ", $1, $2, $3}'
