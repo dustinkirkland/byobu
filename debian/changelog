@@ -1,4 +1,4 @@
-byobu (2.29) unreleased; urgency=low
+byobu (2.29-0ubuntu1) karmic; urgency=low
 
   * bin/disk: fix disk units for <10GB disks
 
