@@ -18,17 +18,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="byobu"
+
 # Make sure that we're not already in a screen session
 [ -z "$STY" ] || exit 0
-case "$TERM" in
-	*screen*) exit 0 ;;
-esac
+[ "$TERM" = "screen-bce" ] && exit 0
 
 out=`screen -ls 2>/dev/null` || true
 if echo "$out" | grep -qsi "^No Sockets found in "; then
-	# Start new byobu session
-	exec byobu
+	# Start new session
+	exec $PKG
 else
-	# Re-attach to an existing session
+	# Set window title and re-attach to an existing session
+	printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
 	exec screen -xRR
 fi

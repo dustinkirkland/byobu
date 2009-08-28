@@ -28,7 +28,7 @@ if [ "$1" = "-v" ]; then
 fi
 
 # Nesting byobu inside of screen doesn't work well
-if [ -n "$STY" ]; then
+if [ -n "$STY" ] || [ "$TERM" = "screen-bce" ]; then
 	echo `gettext "Exit the current screen session to run $PKG"`
 	exit 1
 fi
@@ -40,7 +40,6 @@ byobu-janitor --force
 printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
 
 # Launch motd+shell, unless the user has default windows set to launch
-[ -n "$SHELL" ] || SHELL="/bin/sh"
 [ -x "$SHELL" ] || SHELL="/bin/sh"
 DEFAULT_WINDOW="$SHELL -c motd+shell"
 grep -qs "^[^#]" "$HOME/.$PKG/windows" && DEFAULT_WINDOW=
