@@ -1,9 +1,10 @@
 byobu (2.30) unreleased; urgency=low
 
   * byobu-launcher: make sure that we're not already in a screen session
-    before launching or re-attaching byobu
+    before launching or re-attaching byobu; it seems that $STY is not
+    quite enough, must also check $TERM
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 28 Aug 2009 10:48:38 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 28 Aug 2009 10:53:03 -0500
 
 byobu (2.29-0ubuntu1) karmic; urgency=low
 

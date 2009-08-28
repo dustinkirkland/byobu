@@ -18,6 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Make sure that we're not already in a screen session
 [ -z "$STY" ] || exit 0
 case "$TERM" in
 	*screen*) exit 0 ;;
