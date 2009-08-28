@@ -19,6 +19,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 [ -z "$STY" ] || exit 0
+case "$TERM" in
+	*screen*) exit 0 ;;
+esac
 
 out=`screen -ls 2>/dev/null` || true
 if echo "$out" | grep -qsi "^No Sockets found in "; then
