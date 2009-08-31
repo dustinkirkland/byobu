@@ -1,15 +1,15 @@
 byobu (2.30) unreleased; urgency=low
 
-  * byobu-launcher:
+  * byobu-launcher: LP: #422155
     - it seems that checking $STY is not totally sufficient for
       determining if we're already in a screen session; additionally
       check that TERM != screen-bce
-    - set window title before we attach to an existing session
-  * byobu:
+    - set window title before we attach to an existing session, LP: #422158
+  * byobu: LP: #422155
     - test TERM against screen-bce here too
     - checking that $SHELL is executable covers -n too
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 28 Aug 2009 11:01:24 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 28 Aug 2009 11:14:40 -0500
 
 byobu (2.29-0ubuntu1) karmic; urgency=low
 
