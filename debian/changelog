@@ -1,4 +1,4 @@
-byobu (2.30) unreleased; urgency=low
+byobu (2.30-0ubuntu1) karmic; urgency=low
 
   * byobu-launcher: LP: #422155
     - it seems that checking $STY is not totally sufficient for
