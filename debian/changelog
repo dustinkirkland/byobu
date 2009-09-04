@@ -1,6 +1,11 @@
 byobu (2.31) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * UNRELEASED
+
+  [ Mathias Gug ]
+  * Check that byobu-launcher exists before calling it (chroots use the same
+    .profile as the main system but may not have byobu installed).
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Aug 2009 19:30:20 -0500
 

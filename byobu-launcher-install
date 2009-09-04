@@ -23,7 +23,7 @@ PKG="byobu"
 install_launcher() {
 	dest=$1
 	launcher="byobu-launcher"
-	launcher_line="\`echo \$- | grep -qs i\` && $launcher"
+	launcher_line="\`echo \$- | grep -qs i\` && which $launcher > /dev/null && $launcher"
 	# Add it at the end
 	echo "$launcher_line" >> "$dest"
 	# Hush login, since byobu will handle motd printing
