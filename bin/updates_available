@@ -76,21 +76,17 @@ update_cache() {
 
 PKG="byobu"
 
-# The following is somewhat Ubuntu and Debian specific.
+# The following is somewhat Ubuntu and Debian specific (apt).
 # I would welcome contributions from other distros to make this
 # more distro-agnostic.
 
-cache="/var/lib/update-notifier/updates-available"
 mycache="/var/run/screen/S-$USER/$PKG.updates-available"
 
-# If global cache is newer than mycache, overwrite mycache
-[ $cache -nt $mycache ] && cp -a "$cache" "$mycache"
-
-# If apt is newer than mycache, background an update now
-[ "/var/lib/apt" -nt "$mycache" ] && update_cache "$mycache"
-
-# If mycache is present, use it
-if [ -r $mycache ]; then
+if [ "/var/lib/apt" -nt "$mycache" ]; then
+	# If apt is newer than mycache, background an update now
+	update_cache "$mycache"
+elif [ -r $mycache ]; then
+	# If mycache is present, use it
 	print_updates `grep "^[0-9]" $mycache | sed "s/ .*$//"`
 else
 	# Otherwise, background an update now
