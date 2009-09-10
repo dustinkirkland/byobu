@@ -44,11 +44,11 @@ sed -i "s%^Source0:.*$%Source0:        http://code.launchpad.net/$PKG/trunk/$MAJ
 bzr commit -m "opening $MAJOR.$nextminor"
 
 echo
-echo "# To upload PPA packages:"
-echo "  dput $PKG-ppa ../*ppa*changes"
-echo
 echo "# To push:"
 echo "  bzr push lp:$PKG"
+echo
+echo "# To upload PPA packages:"
+echo "  dput $PKG-ppa ../*ppa*changes"
 echo
 echo "# Publish tarball at:"
 echo "  https://launchpad.net/$PKG/trunk/+addrelease"
