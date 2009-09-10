@@ -1,7 +1,16 @@
 byobu (2.31) unreleased; urgency=low
 
   [ Dustin Kirkland ]
-  * UNRELEASED
+  * bin/updates-available, profiles/common:
+    - reworked to be far more efficient, and accurate, LP: #427373
+    - look at the timestamp on /var/lib/apt, and only update cache
+      if /var/lib/apt has been touched since the cache
+    - in particular, these changes fix a bug when the user does an
+      apt-get install or upgrade, and changes to the update status
+      are not update for up to an hour later; with these fixes, it's
+      nearly immediate
+    - and now that updates_available is trivial (in most cases), we
+      can run it more frequently
 
   [ Mathias Gug ]
   * Check that byobu-launcher exists before calling it (chroots use the same

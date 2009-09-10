@@ -30,11 +30,6 @@ if [ "$1" = "--detail" -o "$1" = "--short" ]; then
 	exit 0
 fi
 
-PKG="byobu"
-
-# expire the cache in X seconds; 1 hour by default
-EXPIRATION=3600
-
 print_updates() {
 	u=$1
 	s=$2
@@ -49,65 +44,55 @@ print_updates() {
 			printf "\005{-} "
 		fi
 	fi
-	exit 0
 }
 
-cache="/var/run/updates-available"
-mycache="/var/run/screen/S-$USER/$PKG.updates-available"
-now=`date +%s`
-cache_timestamp=`stat -c "%Y" $cache 2>/dev/null || echo 0`
-mycache_timestamp=`stat -c "%Y" $mycache 2>/dev/null || echo 0`
-diff=`expr $now - $cache_timestamp`
-u=
-# If global updates-available cache is present, and newer than mycache, and
-# within expiration, use it, and cache it (to preserve across reboots).
-# Only available in Jaunty+.
-if [ -r $cache -a $cache_timestamp -gt $mycache_timestamp -a $diff -lt $EXPIRATION ]; then
-	u=`grep -m 1 "^[0-9]" $cache | sed "s/\s.*$//"`
-	s=`grep -m 2 "^[0-9]" $cache | tail -n 1 | sed "s/\s.*$//"`
-	cp -a "$cache" "$mycache"
-	print_updates $u $s
-fi
-
-# If the user's updates-available cache is present, and less than an hour old,
-# use it.  (The "hour" part should be configurable)
-if [ -r $mycache -a -O $mycache ]; then
-	diff=`expr $now - $mycache_timestamp`
-	if [ $diff -lt $EXPIRATION ]; then
-		print_updates `grep "^[0-9]" $mycache | sed "s/ .*$//"`
-	fi
-else
-	# Otherwise, let's quickly clear the cache, and then recreate it with
-	# a really old timestamp (so that it get's updated on next run)
-	# and exit immediately
+update_cache() {
+	mycache=$1
+	# Clear the cache, and background an immediate update.
 	rm -f $mycache
 	touch -t 197001010000 $mycache
-	exit 0
-fi
+	# Now we actually have to do hard computational work to calculate updates.
+	# Let's try to be "nice" about it:
+	renice 10 $$ >/dev/null 2>&1 || true
+	ionice -c3 -p $$ >/dev/null 2>&1 || true
+	# These are very computationally intensive processes.
+	# Background this work, have it write to the cache files,
+	# and let the next cache check pick up the results.
+	if [ -x /usr/lib/update-notifier/apt-check ]; then
+		# If apt-check binary exists, use it
+		exec /usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;/ /" > $mycache &
+	elif which apt-get >/dev/null; then
+		# If apt-get exists, use it
+		exec apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
+	elif which zypper >/dev/null; then
+		# If zypper exists, use it
+		exec zypper --no-refresh lu --best-effort | grep 'v |' | wc -l > $mycache &
+	elif which yum >/dev/null; then
+		# If yum exists, use it
+		# TODO: We need a better way of counting updates available from a RH expert
+		exec yum list updates | egrep -v "Updated Packages|Loaded plugins" | wc -l > $mycache &
+	fi
+}
 
-# If we make it to this point, we actually have to do hard computational
-# work to calculate updates.  Let's try to be "nice" about it:
-renice 10 $$ >/dev/null 2>&1 || true
-ionice -c3 -p $$ >/dev/null 2>&1 || true
+PKG="byobu"
 
-# These are very computationally intensive processes.
-# Background this work, have it write to the cache files,
-# and let the next cache check pick up the results.
+# The following is somewhat Ubuntu and Debian specific.
+# I would welcome contributions from other distros to make this
+# more distro-agnostic.
 
-if [ -x /usr/lib/update-notifier/apt-check ]; then
-	# If apt-check binary exists, use it
-	/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;/ /" > $mycache &
-elif which apt-get >/dev/null; then
-	# If apt-get exists, use it
-	apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
-elif which zypper >/dev/null; then
-	# If zypper exists, use it
-	zypper --no-refresh lu --best-effort | grep 'v |' | wc -l > $mycache &
-elif which yum >/dev/null; then
-	# If yum exists, use it
-	# TODO: We need a better way of counting updates available from a RH expert
-	yum list updates | egrep -v "Updated Packages|Loaded plugins" | wc -l > $mycache &
+cache="/var/lib/update-notifier/updates-available"
+mycache="/var/run/screen/S-$USER/$PKG.updates-available"
+
+# If global cache is newer than mycache, overwrite mycache
+[ $cache -nt $mycache ] && cp -a "$cache" "$mycache"
+
+# If apt is newer than mycache, background an update now
+[ "/var/lib/apt" -nt "$mycache" ] && update_cache "$mycache"
+
+# If mycache is present, use it
+if [ -r $mycache ]; then
+	print_updates `grep "^[0-9]" $mycache | sed "s/ .*$//"`
 else
-	# If we're here, we have no idea
-	print_updates "?"
+	# Otherwise, background an update now
+	update_cache "$mycache"
 fi
