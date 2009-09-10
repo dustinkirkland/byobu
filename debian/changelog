@@ -1,4 +1,4 @@
-byobu (2.31) unreleased; urgency=low
+byobu (2.31-0ubuntu1) karmic; urgency=low
 
   [ Dustin Kirkland ]
   * bin/updates-available, profiles/common:
