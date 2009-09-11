@@ -1,8 +1,9 @@
 byobu (2.32) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/updates_available: also monitor /var/lib/apt/lists for changes,
+    as this is touched on 'apt-get update', LP: #427855
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 10 Sep 2009 12:29:09 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 11 Sep 2009 07:59:50 -0500
 
 byobu (2.31-0ubuntu1) karmic; urgency=low
 

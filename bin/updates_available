@@ -82,7 +82,7 @@ PKG="byobu"
 
 mycache="/var/run/screen/S-$USER/$PKG.updates-available"
 
-if [ "/var/lib/apt" -nt "$mycache" ]; then
+if [ "/var/lib/apt" -nt "$mycache" ] || [ "/var/lib/apt/lists" -nt "$mycache" ]; then
 	# If apt is newer than mycache, background an update now
 	update_cache "$mycache"
 elif [ -r $mycache ]; then
