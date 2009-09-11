@@ -1,4 +1,4 @@
-byobu (2.32) unreleased; urgency=low
+byobu (2.32-0ubuntu1) karmic; urgency=low
 
   * bin/updates_available: also monitor /var/lib/apt/lists for changes,
     as this is touched on 'apt-get update', LP: #427855
