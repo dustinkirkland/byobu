@@ -21,5 +21,5 @@ if [ "$1" = "--detail" ]; then
 	grep -i "^model name" /proc/cpuinfo
 	exit 0
 fi
-count=`getconf _NPROCESSORS_ONLN`
+count=`getconf _NPROCESSORS_ONLN 2>/dev/null || grep -ci "^processor" /proc/cpuinfo`
 [ "$count" = "1" ] || printf "%sx" "$count"

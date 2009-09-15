@@ -19,7 +19,8 @@
 
 PKG="byobu"
 reboot="/var/run/reboot-required"
-reload="/var/run/screen/S-$USER/$PKG.reload-required"
+[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$HOME/.byobu"
+reload="$DIR/$PKG.reload-required"
 case "$1" in
 	--detail)
 		ls -alF "$reboot" "$reload" 2>&1

@@ -31,9 +31,10 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
+[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$HOME/.byobu"
 t2=`date +%s`
 for i in up down; do
-	cache="/var/run/screen/S-$USER/$PKG.network_$i"
+	cache="$DIR/$PKG.network_$i"
 	t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
 	unit="kB/s"
 	if [ $t2 -le $t1 ]; then

@@ -20,14 +20,14 @@
 
 DIR="/proc/acpi/thermal_zone"
 if [ "$1" = "--detail" ]; then
-	for i in `ls $DIR`; do
+	for i in `ls $DIR 2>/dev/null`; do
 		echo "$i:"
 		cat "$DIR/$i"/*
 	done
 	exit 0
 fi
 
-for i in $MONITORED_TEMP `ls $DIR/*/temperature`; do
+for i in $MONITORED_TEMP `ls $DIR/*/temperature 2>/dev/null`; do
 	t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i")
 	printf "\005{=b kY}%s\005{-}\005{= kY}\260C\005{-} " "$t"
 	break

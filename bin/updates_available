@@ -80,7 +80,8 @@ PKG="byobu"
 # I would welcome contributions from other distros to make this
 # more distro-agnostic.
 
-mycache="/var/run/screen/S-$USER/$PKG.updates-available"
+[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$HOME/.byobu"
+mycache="$DIR/$PKG.updates-available"
 
 if [ "/var/lib/apt" -nt "$mycache" ] || [ "/var/lib/apt/lists" -nt "$mycache" ]; then
 	# If apt is newer than mycache, background an update now

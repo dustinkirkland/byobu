@@ -1,8 +1,10 @@
 byobu (2.33) unreleased; urgency=low
 
-  * UNRELEASED
+  * cpu_count, disk, logo, network, reboot_required, release, temp_c,
+    temp_f, updates_available: make byobu status scripts friendlier
+    for busybox environments (tested on the Palm Pre)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 11 Sep 2009 08:04:05 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 14 Sep 2009 23:47:29 -0500
 
 byobu (2.32-0ubuntu1) karmic; urgency=low
 

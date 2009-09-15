@@ -19,8 +19,14 @@
 
 PKG="byobu"
 
+if [ "$1" = "--detail" ]; then
+	cat /etc/issue
+	exit 0
+fi
+
 if [ -n "$DISTRO" ]; then
-	printf "\005{+b }%s\005{-} " "$DISTRO"
+	# skip down to the bottom
+	true
 elif which lsb_release >/dev/null 2>&1; then
 	if [ "$1" = "--detail" ]; then
 		lsb_release -a 2>/dev/null
@@ -30,21 +36,22 @@ elif which lsb_release >/dev/null 2>&1; then
 	r=$(lsb_release -s -d)
 	if echo "$r" | grep -qs "^Ubuntu .*\..*\..*$"; then
 		# Use the -d if an Ubuntu LTS
-		printf "\005{+b }%s\005{-} " "$r"
+		DISTRO="$r"
 	else
 		# But for other distros the description
 		# is too long, so build from -i and -r
 		i=$(lsb_release -s -i)
 		r=$(lsb_release -s -r)
-		printf "\005{+b }%s %s\005{-} " "$i" "$r"
+		DISTRO="$i $r"
 	fi
+elif [ -r "/etc/palm-build-info" ]; then
+	# Palm Pre hack
+	DISTRO=$(grep "^PRODUCT_VERSION_STRING=Palm " /etc/palm-build-info | sed "s/^.*=Palm //")
 elif [ -r "/etc/issue" ]; then
-	if [ "$1" = "--detail" ]; then
-		cat /etc/issue
-		exit 0
-	fi
 	# Otherwise, grab part of /etc/issue, ideally the distro and version
-	printf "\005{+b }%s\005{-} " $(head -n1 /etc/issue | sed "s/ [^0-9]* / /" | awk '{print $1 " " $2}')
+	DISTRO=$(head -n1 /etc/issue | sed "s/ [^0-9]* / /" | awk '{print $1 " " $2}')
 else
-	echo "Byobu"
+	DISTRO="Byobu"
 fi
+
+printf "\005{+b }%s\005{-} " "$DISTRO"

@@ -27,7 +27,7 @@ else
 fi
 
 print_logo() {
-	distro=`echo "$1" | tr '[:upper:]' '[:lower:]'`
+	distro=`echo "$1" | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/' `
 	case "$distro" in
 		*ubuntu*)
 			$MARKUP && printf "\005{=b kr}\\\\\005{= ky}o\005{=b kY}/" || printf "\\o/"
@@ -67,6 +67,10 @@ print_logo() {
 		*redhat*)
 			logo=" RH "
 			$MARKUP && printf "\005{= Rk}$logo" || printf "$logo"
+		;;
+		*rockhopper*)
+			logo="palm"
+			$MARKUP && printf "\005{=b YW}$logo" || printf "$logo"
 		;;
 		*slackware*)
 			logo=",S "
