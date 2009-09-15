@@ -6,194 +6,199 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: byobu\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-15 10:05-0500\n"
-"PO-Revision-Date: 2009-08-07 15:07+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2009-07-24 08:55-0500\n"
+"PO-Revision-Date: 2009-08-26 13:34+0000\n"
+"Last-Translator: Guybrush88 <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-08-17 19:32+0000\n"
+"X-Launchpad-Export-Date: 2009-09-15 11:21+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: bin/menu:22 byobu-config:129 byobu-config:400 byobu-config:408
+#: bin/menu:22 byobu-config:127 byobu-config:152 byobu-config:169
+#: byobu-config:350 byobu-config:404 byobu-config:412 byobu-config:481
 msgid "Menu"
-msgstr ""
+msgstr "Menu"
 
 #: byobu-export:68 byobu-export:71 byobu-select-profile:104
 #: byobu-select-profile:107
 msgid "Choose"
-msgstr ""
+msgstr "Scegli"
 
 #: byobu-export:171
 msgid "File exists"
-msgstr ""
+msgstr "File già esistente"
 
 #: byobu-export:172
 msgid "Remove file? [y/N] "
-msgstr ""
+msgstr "Rimuovere il file? [s/N] "
 
 #: byobu-export:199
 msgid "Select a color: "
-msgstr ""
+msgstr "Seleziona un colore: "
 
 #: byobu-export:237
 msgid "Profile"
-msgstr ""
+msgstr "Profilo"
 
 #: byobu-export:238
 msgid "Archive"
-msgstr ""
+msgstr "Archivio"
 
 #: byobu-export:240
 msgid "Extract the archive in your home directory on the target system."
-msgstr ""
+msgstr "Estrai l'archivio nel percorso principale del sistema."
 
 #: byobu-select-profile:49
 msgid "Error:"
-msgstr ""
+msgstr "Errore:"
 
 #: byobu-select-profile:49
 msgid " file exists, but is not a symlink"
-msgstr ""
+msgstr " il file esiste, ma non è un link simbolico"
 
 #: byobu-select-profile:80
 msgid "Select a screen profile: "
-msgstr ""
+msgstr "Selezionare un profilo dello schermo: "
 
 #: byobu-select-profile:97
 msgid "ERROR: Invalid selection"
-msgstr ""
+msgstr "ERRORE: Selezione non valida"
 
 #: byobu-select-profile:134
 msgid ""
 "If you are using the default set of keybindings, press\\n<F5> to activate "
 "these changes.\\n\\nOtherwise, exit this screen session and start a new one."
 msgstr ""
+"Se si sta usando l'associazione dei tasti predefinita, premere\\n<F5> per "
+"rendere attivi questi cambiamenti.\\n\\nAltrimenti uscire da questa sessione "
+"dello schermo e inziarne una nuova."
 
 #: byobu-select-profile:136
 msgid "Run \"byobu\" to activate"
-msgstr ""
+msgstr "Esegui \"byobu\" per attivare"
+
+#: byobu-config:81
+msgid "Byobu currently launches at login (toggle off)"
+msgstr "Byobu attualmente si avvia al login (disabilita)"
 
 #: byobu-config:83
-msgid "Byobu currently launches at login (toggle off)"
-msgstr ""
-
-#: byobu-config:85
 msgid "Byobu currently does not launch at login (toggle on)"
-msgstr ""
+msgstr "Byobu attualmente non si avvia la login (abilita)"
+
+#: byobu-config:87
+msgid "Help"
+msgstr "Aiuto"
+
+#: byobu-config:88
+msgid "Change Byobu's colors"
+msgstr "Cambia i colori di Byobu"
 
 #: byobu-config:89
-msgid "Help"
-msgstr ""
+msgid "Toggle status notifications"
+msgstr "Abilita notifiche sullo stato"
 
 #: byobu-config:90
-msgid "Change Byobu's colors"
-msgstr ""
+msgid "Change keybinding set"
+msgstr "Modifica associazione tasti predefinita"
 
 #: byobu-config:91
-msgid "Toggle status notifications"
-msgstr ""
+msgid "Change escape sequence"
+msgstr "Cambia la sequenza di escape"
 
 #: byobu-config:92
-msgid "Change keybinding set"
-msgstr ""
+msgid "Create new windows"
+msgstr "Crea nuove finestre"
 
 #: byobu-config:93
-msgid "Change escape sequence"
-msgstr ""
-
-#: byobu-config:94
-msgid "Create new windows"
-msgstr ""
-
-#: byobu-config:95
 msgid "Manage default windows"
-msgstr ""
+msgstr "Gestisci finestre predefinite"
 
-#: byobu-config:99 byobu-config:485
+#: byobu-config:97 byobu-config:492
 msgid " Byobu Configuration Menu"
-msgstr ""
+msgstr " Menu di configurazione di Byobu"
 
-#: byobu-config:110
+#: byobu-config:108
 msgid "Okay"
-msgstr ""
+msgstr "Okay"
 
-#: byobu-config:110 byobu-config:144 byobu-config:161 byobu-config:195
-#: byobu-config:334 byobu-config:375 byobu-config:448
+#: byobu-config:108 byobu-config:142 byobu-config:161 byobu-config:197
+#: byobu-config:336 byobu-config:379 byobu-config:452
 msgid "Cancel"
-msgstr ""
+msgstr "Annulla"
 
-#: byobu-config:130
+#: byobu-config:128
 msgid "Byobu Help"
-msgstr ""
+msgstr "Aiuto di Byobu"
 
-#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:334
-#: byobu-config:375 byobu-config:448
+#: byobu-config:142 byobu-config:161 byobu-config:197 byobu-config:336
+#: byobu-config:379 byobu-config:452
 msgid "Apply"
-msgstr ""
+msgstr "Applica"
 
-#: byobu-config:146
+#: byobu-config:144
 msgid "Which profile would you like to use?"
-msgstr ""
+msgstr "Quale profilo vorresti usare?"
+
+#: byobu-config:151 byobu-config:168 byobu-config:349 byobu-config:411
+#: byobu-config:479
+msgid "Message"
+msgstr "Messaggio"
 
 #: byobu-config:162
 msgid "Which set of keybindings would you like to use?"
-msgstr ""
-
-#: byobu-config:175
-msgid "Title: "
-msgstr ""
+msgstr "Quale associazione di tasti vuoi utilizzare?"
 
 #: byobu-config:177
-msgid "Command: "
-msgstr ""
+msgid "Title: "
+msgstr "Titolo: "
 
 #: byobu-config:179
+msgid "Command: "
+msgstr "Comando: "
+
+#: byobu-config:181
 msgid "Presets: "
-msgstr ""
+msgstr "Preset: "
 
-#: byobu-config:193
+#: byobu-config:195
 msgid "Add to default windows"
-msgstr ""
+msgstr "Aggiungi alle finestre predefinite"
 
-#: byobu-config:197
+#: byobu-config:199
 msgid "Create new window(s):"
-msgstr ""
+msgstr "Crea nuova/e finestra/e:"
 
-#: byobu-config:335
+#: byobu-config:337
 msgid "Toggle status notifications:"
-msgstr ""
+msgstr "Abilita notifiche sullo stato:"
 
-#: byobu-config:367
+#: byobu-config:371
 msgid "Windows:"
-msgstr ""
+msgstr "Finestre:"
 
-#: byobu-config:377
+#: byobu-config:381
 msgid "Select window(s) to create by default:"
-msgstr ""
+msgstr "Seleziona una o più finestre per crearle di default:"
 
-#: byobu-config:397
+#: byobu-config:401
 msgid "Byobu will be launched automatically next time you login."
-msgstr ""
+msgstr "Byobu sarà avviato automaticamente al prossimo login."
 
-#: byobu-config:405
+#: byobu-config:409
 msgid "Byobu will not be used next time you login."
-msgstr ""
+msgstr "Byobu non verrà utilizzato al prossimo accesso."
 
-#: byobu-config:407
-msgid "Message"
-msgstr ""
-
-#: byobu-config:447
+#: byobu-config:451
 msgid "Escape key: ctrl-"
-msgstr ""
+msgstr "Comando d'uscita: ctrl-"
 
-#: byobu-config:450
+#: byobu-config:454
 msgid "Change escape sequence:"
-msgstr ""
+msgstr "Cambia sequenza d'uscita"
 
-#: byobu-config:486
+#: byobu-config:493
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
-msgstr ""
+msgstr "<Tab>/<Alt-Tab> tra elementi | <Invio> seleziona | <Esc> esce"
