@@ -3,9 +3,11 @@ byobu (2.33) unreleased; urgency=low
   * cpu_count, disk, logo, network, reboot_required, release, temp_c,
     temp_f, updates_available, wifi: make byobu status scripts friendlier
     for busybox environments (tested on the Palm Pre), LP: #430096
+  * bin/updates_available: print the current cache even if we're
+    updating the cache
   * po/byoub-*.po: rename to just *.po, fix translations location, LP: #430095
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Sep 2009 10:09:38 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Sep 2009 13:36:33 -0500
 
 byobu (2.32-0ubuntu1) karmic; urgency=low
 

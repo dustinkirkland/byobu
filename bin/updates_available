@@ -60,17 +60,17 @@ update_cache() {
 	# and let the next cache check pick up the results.
 	if [ -x /usr/lib/update-notifier/apt-check ]; then
 		# If apt-check binary exists, use it
-		exec /usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;/ /" > $mycache &
+		/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;/ /" > $mycache &
 	elif which apt-get >/dev/null; then
 		# If apt-get exists, use it
-		exec apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
+		apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
 	elif which zypper >/dev/null; then
 		# If zypper exists, use it
-		exec zypper --no-refresh lu --best-effort | grep 'v |' | wc -l > $mycache &
+		zypper --no-refresh lu --best-effort | grep 'v |' | wc -l > $mycache &
 	elif which yum >/dev/null; then
 		# If yum exists, use it
 		# TODO: We need a better way of counting updates available from a RH expert
-		exec yum list updates | egrep -v "Updated Packages|Loaded plugins" | wc -l > $mycache &
+		yum list updates | egrep -v "Updated Packages|Loaded plugins" | wc -l > $mycache &
 	fi
 }
 
@@ -86,7 +86,8 @@ mycache="$DIR/$PKG.updates-available"
 if [ "/var/lib/apt" -nt "$mycache" ] || [ "/var/lib/apt/lists" -nt "$mycache" ]; then
 	# If apt is newer than mycache, background an update now
 	update_cache "$mycache"
-elif [ -r $mycache ]; then
+fi
+if [ -r $mycache ]; then
 	# If mycache is present, use it
 	print_updates `grep "^[0-9]" $mycache | sed "s/ .*$//"`
 else
