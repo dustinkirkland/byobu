@@ -6,12 +6,10 @@ byobu (2.33) unreleased; urgency=low
   * bin/updates_available: print the current cache even if we're
     updating the cache, handle it more efficiently
   * po/byoub-*.po: rename to just *.po, fix translations location, LP: #430095
-  * debian/control: drop update-notifier-common and lsb-release to suggests,
-    as we can live without these now, LP: #431875
   * debian/postinst, debian/preinst: move symlink of screen-profiles-status ->
     byobu-status from the postinst to the preinst
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 17 Sep 2009 01:09:50 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 17 Sep 2009 09:05:57 -0500
 
 byobu (2.32-0ubuntu1) karmic; urgency=low
 
