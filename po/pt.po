@@ -1,4 +1,4 @@
-# Dutch translation for byobu
+# Portuguese translation for byobu
 # Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
 # This file is distributed under the same license as the byobu package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: byobu\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2009-09-15 10:05-0500\n"
-"PO-Revision-Date: 2009-09-16 07:47+0000\n"
-"Last-Translator: Dustin Kirkland <dustin.kirkland@gmail.com>\n"
-"Language-Team: Dutch <nl@li.org>\n"
+"PO-Revision-Date: 2009-09-16 10:59+0000\n"
+"Last-Translator: Bruno Vitorino <Unknown>\n"
+"Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,27 +24,27 @@ msgstr "Menu"
 #: byobu-export:68 byobu-export:71 byobu-select-profile:104
 #: byobu-select-profile:107
 msgid "Choose"
-msgstr "Kies"
+msgstr "Seleccionar"
 
 #: byobu-export:171
 msgid "File exists"
-msgstr "Bestand bestaat al"
+msgstr "O ficheiro existe"
 
 #: byobu-export:172
 msgid "Remove file? [y/N] "
-msgstr ""
+msgstr "Remover ficheiro? [y/N] "
 
 #: byobu-export:199
 msgid "Select a color: "
-msgstr ""
+msgstr "Selecionar uma cor: "
 
 #: byobu-export:237
 msgid "Profile"
-msgstr "Profiel"
+msgstr "Perfil"
 
 #: byobu-export:238
 msgid "Archive"
-msgstr ""
+msgstr "Arquivar"
 
 #: byobu-export:240
 msgid "Extract the archive in your home directory on the target system."
@@ -52,148 +52,153 @@ msgstr ""
 
 #: byobu-select-profile:49
 msgid "Error:"
-msgstr "Fout:"
+msgstr "Erro:"
 
 #: byobu-select-profile:49
 msgid " file exists, but is not a symlink"
-msgstr " het bestand bestaat, maar het is geen symlink"
+msgstr " o ficheiro existe, mas não é um link simbólico"
 
 #: byobu-select-profile:80
 msgid "Select a screen profile: "
-msgstr "Selecteer een schermprofiel: "
+msgstr "Seleccionar um perfil do screen: "
 
 #: byobu-select-profile:97
 msgid "ERROR: Invalid selection"
-msgstr ""
+msgstr "ERRO: Selecção inválida"
 
 #: byobu-select-profile:134
 msgid ""
 "If you are using the default set of keybindings, press\\n<F5> to activate "
 "these changes.\\n\\nOtherwise, exit this screen session and start a new one."
 msgstr ""
+"Se está a usar o mapeamento de teclas por defeito, pressione\\n<F5> para "
+"activas as alterações.\\n\\nCaso contrário, abandone esta sessão do screen e "
+"inicie uma nova."
 
 #: byobu-select-profile:136
 msgid "Run \"byobu\" to activate"
-msgstr ""
+msgstr "Execute \"byobu\" para activar"
 
 #: byobu-config:83
 msgid "Byobu currently launches at login (toggle off)"
-msgstr ""
+msgstr "O Byobu é iniciado a quando do login (desactivar)"
 
 #: byobu-config:85
 msgid "Byobu currently does not launch at login (toggle on)"
-msgstr ""
+msgstr "O Byobu não é iniciado a quando do login (activar)"
 
 #: byobu-config:89
 msgid "Help"
-msgstr "Help"
+msgstr "Ajuda"
 
 #: byobu-config:90
 msgid "Change Byobu's colors"
-msgstr ""
+msgstr "Alterar o esquema de cores do Byobu"
 
 #: byobu-config:91
 msgid "Toggle status notifications"
-msgstr ""
+msgstr "Activar as notificações de estado"
 
 #: byobu-config:92
 msgid "Change keybinding set"
-msgstr "Toetsencombinatie aanpassen"
+msgstr "Alterar o mapeamento de teclas"
 
 #: byobu-config:93
 msgid "Change escape sequence"
-msgstr "Uitlogvolgorde aanpassen"
+msgstr ""
 
 #: byobu-config:94
 msgid "Create new windows"
-msgstr ""
+msgstr "Criar novas janelas"
 
 #: byobu-config:95
 msgid "Manage default windows"
-msgstr "Standaard venster beheer"
+msgstr "Gerir janelas por defeito"
 
 #: byobu-config:99 byobu-config:485
 msgid " Byobu Configuration Menu"
-msgstr ""
+msgstr " Menu de configuração do Byobu"
 
 #: byobu-config:110
 msgid "Okay"
-msgstr "OK"
+msgstr "Ok"
 
 #: byobu-config:110 byobu-config:144 byobu-config:161 byobu-config:195
 #: byobu-config:334 byobu-config:375 byobu-config:448
 msgid "Cancel"
-msgstr "Annuleren"
+msgstr "Cancelar"
 
 #: byobu-config:130
 msgid "Byobu Help"
-msgstr ""
+msgstr "Ajuda do Byobu"
 
 #: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:334
 #: byobu-config:375 byobu-config:448
 msgid "Apply"
-msgstr "Toepassen"
+msgstr "Aplicar"
 
 #: byobu-config:146
 msgid "Which profile would you like to use?"
-msgstr "Welk profiel wilt u gebruiken?"
+msgstr "Qual o perfil que deseja utilizar?"
 
 #: byobu-config:162
 msgid "Which set of keybindings would you like to use?"
-msgstr "Welke toetscombinaties wilt u gebruiken?"
+msgstr "Qual o mapeamento de teclas que deseja utilizar?"
 
 #: byobu-config:175
 msgid "Title: "
-msgstr "Titel: "
+msgstr "Título: "
 
 #: byobu-config:177
 msgid "Command: "
-msgstr "Commando: "
+msgstr "Comando: "
 
 #: byobu-config:179
 msgid "Presets: "
-msgstr "Instellingen: "
+msgstr "Pré-definições: "
 
 #: byobu-config:193
 msgid "Add to default windows"
-msgstr "Toevoegen aan de standaard vensters"
+msgstr "Adicionar às janelas por defeito"
 
 #: byobu-config:197
 msgid "Create new window(s):"
-msgstr "Nieuw(e) venster(s) aanmaken"
+msgstr "Criar nova(s) janela(s):"
 
 #: byobu-config:335
 msgid "Toggle status notifications:"
-msgstr ""
+msgstr "Activar notificações de estado:"
 
 #: byobu-config:367
 msgid "Windows:"
-msgstr "Vensters:"
+msgstr "Janelas:"
 
 #: byobu-config:377
 msgid "Select window(s) to create by default:"
-msgstr "Selecteer venster(s) die standaard  gecreëerd moetne worden:"
+msgstr "Seleccionar a(s) janela(s) a criar por defeito:"
 
 #: byobu-config:397
 msgid "Byobu will be launched automatically next time you login."
 msgstr ""
+"O Byobu vai ser iniciado automaticamente da próxima vez que efectuar login."
 
 #: byobu-config:405
 msgid "Byobu will not be used next time you login."
-msgstr ""
+msgstr "O Byobu não vai ser utilizado da próxima vez que efectuar login."
 
 #: byobu-config:407
 msgid "Message"
-msgstr "Bericht"
+msgstr "Mensagem"
 
 #: byobu-config:447
 msgid "Escape key: ctrl-"
-msgstr "Escape toets: ctrl-"
+msgstr ""
 
 #: byobu-config:450
 msgid "Change escape sequence:"
-msgstr "Aanpassen escape volgorde:"
+msgstr ""
 
 #: byobu-config:486
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr ""
+"<Tab>/<Alt-Tab> navega pelos elementos | <Enter> selecciona | <Esc> sai"
