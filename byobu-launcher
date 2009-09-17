@@ -19,6 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+RUN="/var/run/screen/S-$USER"
 
 # Make sure that we're not already in a screen session
 [ -z "$STY" ] || exit 0
