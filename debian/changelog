@@ -1,3 +1,9 @@
+byobu (2.34) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 17 Sep 2009 17:49:21 -0500
+
 byobu (2.33-0ubuntu1) karmic; urgency=low
 
   * cpu_count, disk, logo, network, reboot_required, release, temp_c,
