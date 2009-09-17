@@ -48,9 +48,6 @@ print_updates() {
 
 update_cache() {
 	mycache=$1
-	# Clear the cache, and background an immediate update.
-	rm -f $mycache
-	touch -t 197001010000 $mycache
 	# Now we actually have to do hard computational work to calculate updates.
 	# Let's try to be "nice" about it:
 	renice 10 $$ >/dev/null 2>&1 || true
@@ -83,14 +80,11 @@ PKG="byobu"
 [ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$HOME/.byobu"
 mycache="$DIR/$PKG.updates-available"
 
+# If mycache is present, use it
+[ -r $mycache ] && print_updates `grep "^[0-9]" $mycache | sed "s/ .*$//"`
+
+# Update the cache if necessary
 if [ "/var/lib/apt" -nt "$mycache" ] || [ "/var/lib/apt/lists" -nt "$mycache" ]; then
 	# If apt is newer than mycache, background an update now
-	update_cache "$mycache"
-fi
-if [ -r $mycache ]; then
-	# If mycache is present, use it
-	print_updates `grep "^[0-9]" $mycache | sed "s/ .*$//"`
-else
-	# Otherwise, background an update now
 	update_cache "$mycache"
 fi
