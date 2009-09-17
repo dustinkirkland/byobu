@@ -1,4 +1,4 @@
-byobu (2.33) unreleased; urgency=low
+byobu (2.33-0ubuntu1) karmic; urgency=low
 
   * cpu_count, disk, logo, network, reboot_required, release, temp_c,
     temp_f, updates_available, wifi: make byobu status scripts friendlier
