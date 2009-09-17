@@ -20,7 +20,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-FLAG="/var/run/screen/S-$USER/$PKG.reload-required"
+RUN="/var/run/screen/S-$USER"
+FLAG="$RUN/$PKG.reload-required"
 
 # Exit immediately, if we're not forced, and there is no reload flag
 if [ "$1" != "--force" ] && [ ! -e "$FLAG" ]; then
@@ -31,6 +32,9 @@ fi
 OLDPKG="screen-profiles"
 DEFAULT_PROFILE="light"
 PROFILE="$HOME/.$PKG/profile"
+
+# Establish ssh-agent socket, helps when reconnecting to a detached session
+[ -r "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ] && ln -sf "$SSH_AUTH_SOCK" "$RUN/$PKG.ssh-agent"
 
 # Affects: users who launched using sudo, such that their config dir
 # is not writable by them

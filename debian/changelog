@@ -8,8 +8,10 @@ byobu (2.33) unreleased; urgency=low
   * po/byoub-*.po: rename to just *.po, fix translations location, LP: #430095
   * debian/postinst, debian/preinst: move symlink of screen-profiles-status ->
     byobu-status from the postinst to the preinst
+  * byobu-janitor, byobu-launcher, profiles/common: establish and update an
+    SSH_AUTH_SOCK link, on screen launch and reconnect, LP: #424522
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 17 Sep 2009 09:05:57 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 17 Sep 2009 11:07:03 -0500
 
 byobu (2.32-0ubuntu1) karmic; urgency=low
 

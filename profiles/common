@@ -81,4 +81,7 @@ defbce "on"
 # Log 10000 lines
 defscrollback 10000
 
+# Maintain SSH_AUTH_SOCK link
+setenv SSH_AUTH_SOCK /var/run/screen/S-$USER/byobu.ssh-agent
+
 source $HOME/.byobu/keybindings
