@@ -1,8 +1,11 @@
 byobu (2.34) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/users: use wc -l, since pgrep -c doesn't work in some
+    distros (busybox, Arch), LP: #434047
+  * byobu.1: fix manpage, mem_used was listed twice, mail was in the wrong
+    place, LP: #434052
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 17 Sep 2009 17:49:21 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 21 Sep 2009 09:58:55 -0700
 
 byobu (2.33-0ubuntu1) karmic; urgency=low
 

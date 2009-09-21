@@ -21,10 +21,6 @@ byobu \- wrapper script for seeding a user's byobu configuration and launching s
 
 \fBdisk\fP \- total disk space available and total used on / directory; displayed in the lower bar on the far right in white text on a light purple background; override the default directory by specifying an alternate mount point with MONITORED_DISK=/wherever in \fI$HOME/.byobu/statusrc\fP
 
-\fBmail\fP \- system mail for the current user; the letter '[M]' is displayed in the lower bar toward the left in black text on a grey background
-
-\fBmem_used\fP \- memory used as a percentage of the total memory available; displayed in the lower bar on the far right in white text on a green background with a trailing '%' sign
-
 \fBec2_cost\fP \- an estimation of the cost of the current boot of the system in terms of the Amazon EC2 billing model; displayed in the lower bar toward the right in green text on a black background; there is a leading '~' to indicate that this is an estimation, and the monetary units are US Dollars '$'
 
 \fBfan_speed\fP \- cpu or system fan speed as reported by lm-sensors; displayed in the lower bar toward the right in black text on a grey background; there is a trailing 'rpm' for units
@@ -36,6 +32,8 @@ byobu \- wrapper script for seeding a user's byobu configuration and launching s
 \fBload_average\fP \- the system load average over the last 1 minute; displayed in the lower bar toward the right in black text on a yellow background
 
 \fBlogo\fP \- an approximation of the current operating system's logo; displayed in the lower bar on the far left; you may customize this logo by setting a chosen logo in \fI$HOME/.byobu/logo\fP, or you may override this with LOGO=:-D in \fI$HOME/.byobu/statusrc\fP
+
+\fBmail\fP \- system mail for the current user; the letter '[M]' is displayed in the lower bar toward the left in black text on a grey background
 
 \fBmem_available\fP \- total memory available in the system; displayed in the lower bar toward the right in white text on a green background
 
