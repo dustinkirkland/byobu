@@ -4,8 +4,11 @@ byobu (2.34) unreleased; urgency=low
     distros (busybox, Arch), LP: #434047
   * byobu.1: fix manpage, mem_used was listed twice, mail was in the wrong
     place, LP: #434052
+  * byobu-export.1, byobu-launcher.1, byobu-select-profile.1: minor manpage
+    fixes, updating the names of the utilities to use "byobu" rather than
+    "screen"
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 21 Sep 2009 09:58:55 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 21 Sep 2009 11:04:11 -0700
 
 byobu (2.33-0ubuntu1) karmic; urgency=low
 
