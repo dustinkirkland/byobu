@@ -1,4 +1,4 @@
-byobu (2.34) unreleased; urgency=low
+byobu (2.34-0ubuntu1) karmic; urgency=low
 
   * bin/users: use wc -l, since pgrep -c doesn't work in some
     distros (busybox, Arch), LP: #434047
