@@ -8,7 +8,7 @@ byobu (2.34) unreleased; urgency=low
     fixes, updating the names of the utilities to use "byobu" rather than
     "screen"
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 21 Sep 2009 11:04:11 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 21 Sep 2009 11:27:09 -0700
 
 byobu (2.33-0ubuntu1) karmic; urgency=low
 
