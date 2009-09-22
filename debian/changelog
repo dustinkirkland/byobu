@@ -1,4 +1,4 @@
-byobu (2.35) unreleased; urgency=low
+byobu (2.35-0ubuntu1) karmic; urgency=low
 
   * bin/updates_available: fix updates available, broken when updates
     cache file does not exist, LP: #434736
