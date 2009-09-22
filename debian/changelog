@@ -1,3 +1,9 @@
+byobu (2.36) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 22 Sep 2009 09:40:10 -0700
+
 byobu (2.35-0ubuntu1) karmic; urgency=low
 
   * bin/updates_available: fix updates available, broken when updates
