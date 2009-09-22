@@ -84,7 +84,7 @@ mycache="$DIR/$PKG.updates-available"
 [ -r $mycache ] && print_updates `grep "^[0-9]" $mycache | sed "s/ .*$//"`
 
 # Update the cache if necessary
-if [ "/var/lib/apt" -nt "$mycache" ] || [ "/var/lib/apt/lists" -nt "$mycache" ]; then
+if [ ! -e "$mycache" ] || [ "/var/lib/apt" -nt "$mycache" ] || [ "/var/lib/apt/lists" -nt "$mycache" ]; then
 	# If apt is newer than mycache, background an update now
 	update_cache "$mycache"
 fi

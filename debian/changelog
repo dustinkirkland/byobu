@@ -1,8 +1,9 @@
 byobu (2.35) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/updates_available: fix updates available, broken when updates
+    cache file does not exist, LP: #434736
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 21 Sep 2009 11:30:19 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 22 Sep 2009 09:30:21 -0700
 
 byobu (2.34-0ubuntu1) karmic; urgency=low
 
