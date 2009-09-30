@@ -8,23 +8,23 @@ msgstr ""
 "Project-Id-Version: byobu\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2009-09-15 10:05-0500\n"
-"PO-Revision-Date: 2009-09-16 07:36+0000\n"
-"Last-Translator: Pittmann Tamás <zaivaldi@ubuntu.hu>\n"
+"PO-Revision-Date: 2009-09-25 09:06+0000\n"
+"Last-Translator: Muszela Balázs <bazsi86@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-09-23 11:08+0000\n"
+"X-Launchpad-Export-Date: 2009-09-30 06:45+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: bin/menu:22 byobu-config:129 byobu-config:400 byobu-config:408
 msgid "Menu"
-msgstr ""
+msgstr "Menü"
 
 #: byobu-export:68 byobu-export:71 byobu-select-profile:104
 #: byobu-select-profile:107
 msgid "Choose"
-msgstr ""
+msgstr "Kiválasztás"
 
 #: byobu-export:171
 msgid "File exists"
@@ -32,19 +32,19 @@ msgstr ""
 
 #: byobu-export:172
 msgid "Remove file? [y/N] "
-msgstr ""
+msgstr "Eltávolítsam a fájlt? [y/N] "
 
 #: byobu-export:199
 msgid "Select a color: "
-msgstr ""
+msgstr "Válasszon egy színt: "
 
 #: byobu-export:237
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #: byobu-export:238
 msgid "Archive"
-msgstr ""
+msgstr "Archív"
 
 #: byobu-export:240
 msgid "Extract the archive in your home directory on the target system."
@@ -64,7 +64,7 @@ msgstr "Válasszon egy profilt: "
 
 #: byobu-select-profile:97
 msgid "ERROR: Invalid selection"
-msgstr ""
+msgstr "HIBA: Érvénytelen választás"
 
 #: byobu-select-profile:134
 msgid ""
