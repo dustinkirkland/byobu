@@ -27,7 +27,10 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-for i in `ls "$DIR/"*"/device/fan"* 2>/dev/null`; do
-        printf "\005{=b }%s\005{-}\005{= }rpm\005{-} " `cat $i`
-        break
+for i in $(find $DIR/*/*/ -type f -name "fan1_input"); do
+	speed=$(cat "$i")
+	if [ "$speed" -gt 0 ]; then
+	        printf "\005{=b }%s\005{-}\005{= }rpm\005{-} " "$speed"
+		exit 0
+	fi
 done

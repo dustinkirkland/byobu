@@ -1,8 +1,9 @@
 byobu (2.36) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/fan_speed: improve the logic for find the fan_speed system monitor
+    LP: #439524
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 22 Sep 2009 09:40:10 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 30 Sep 2009 13:16:38 -0500
 
 byobu (2.35-0ubuntu1) karmic; urgency=low
 
