@@ -1,4 +1,4 @@
-byobu (2.37) unreleased; urgency=low
+byobu (2.37-0ubuntu1) karmic; urgency=low
 
   * bin/updates_available: fix yum output when listing updates
     available, LP: #440659
