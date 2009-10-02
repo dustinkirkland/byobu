@@ -67,7 +67,7 @@ update_cache() {
 	elif which yum >/dev/null; then
 		# If yum exists, use it
 		# TODO: We need a better way of counting updates available from a RH expert
-		yum list updates | egrep -v "Updated Packages|Loaded plugins" | wc -l > $mycache &
+		yum list updates -q | egrep -v "Updated Packages" | wc -l > $mycache &
 	fi
 }
 

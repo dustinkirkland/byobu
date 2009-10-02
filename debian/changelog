@@ -1,8 +1,9 @@
 byobu (2.37) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/updates_available: fix Fedora yum output when listing updates
+    available, LP: #440659
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 01 Oct 2009 22:15:21 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 02 Oct 2009 11:26:08 -0500
 
 byobu (2.36-0ubuntu1) karmic; urgency=low
 
