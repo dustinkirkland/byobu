@@ -2,8 +2,12 @@ byobu (2.36) unreleased; urgency=low
 
   * bin/fan_speed: improve the logic for find the fan_speed system monitor
     LP: #439524
+  * byobu-launcher, byobu-janitor: sometimes the ssh socket link can become
+    a symlink to itself, causing byobu to fail to start due to too many
+    levels of symlinks; remove the link first, before creating it;
+    LP: #440221
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 30 Sep 2009 13:16:38 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 01 Oct 2009 21:43:41 -0500
 
 byobu (2.35-0ubuntu1) karmic; urgency=low
 

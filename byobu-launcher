@@ -33,7 +33,10 @@ else
 	# Set window title
 	printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
 	# Update ssh-agent socket
-	[ -r "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ] &&  ln -sf "$SSH_AUTH_SOCK" "$RUN/$PKG.ssh-agent"
+	if [ -S "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ]; then 
+		rm -f "$RUN/$PKG.ssh-agent"
+		ln -sf "$SSH_AUTH_SOCK" "$RUN/$PKG.ssh-agent"
+	fi
 	# Re-attach to existing session
 	exec screen -xRR
 fi

@@ -34,7 +34,10 @@ DEFAULT_PROFILE="light"
 PROFILE="$HOME/.$PKG/profile"
 
 # Establish ssh-agent socket, helps when reconnecting to a detached session
-[ -r "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ] && ln -sf "$SSH_AUTH_SOCK" "$RUN/$PKG.ssh-agent"
+if [ -S "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ]; then
+	rm -f "$RUN/$PKG.ssh-agent"
+	ln -sf "$SSH_AUTH_SOCK" "$RUN/$PKG.ssh-agent"
+fi
 
 # Affects: users who launched using sudo, such that their config dir
 # is not writable by them
