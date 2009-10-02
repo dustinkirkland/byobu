@@ -1,4 +1,4 @@
-byobu (2.36) unreleased; urgency=low
+byobu (2.36-0ubuntu1) karmic; urgency=low
 
   * bin/fan_speed: improve the logic for find the fan_speed system monitor
     LP: #439524
