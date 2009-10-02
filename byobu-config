@@ -469,7 +469,8 @@ def chgesc(screen, size):
         else:
             loop=0
     screen.popWindow()
-    if bb.buttonPressed(which) != "cancel":
+    button = bb.buttonPressed(which)
+    if button != "cancel":
         setesckey(esc.value())
 	reload_required()
         if button == "exit":
