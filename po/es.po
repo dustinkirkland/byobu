@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-15 10:05-0500\n"
-"PO-Revision-Date: 2009-09-21 10:11+0000\n"
-"Last-Translator: Nicolas Valcárcel <nicolas.valcarcel@canonical.com>\n"
+"PO-Revision-Date: 2009-10-03 23:47+0000\n"
+"Last-Translator: oscrp <mazonovo@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-09-23 11:08+0000\n"
+"X-Launchpad-Export-Date: 2009-10-04 06:50+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: bin/menu:22 byobu-config:129 byobu-config:400 byobu-config:408
@@ -148,7 +148,7 @@ msgstr "¿Qué conjunto de atajos de teclado desea usar?"
 
 #: byobu-config:175
 msgid "Title: "
-msgstr ""
+msgstr "Título: "
 
 #: byobu-config:177
 msgid "Command: "
