@@ -1,0 +1,199 @@
+# Brazilian Portuguese translation for byobu
+# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
+# This file is distributed under the same license as the byobu package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: byobu\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2009-09-15 10:05-0500\n"
+"PO-Revision-Date: 2009-10-06 12:33+0000\n"
+"Last-Translator: slowtux <slowtux@gmail.com>\n"
+"Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2009-10-07 06:50+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: bin/menu:22 byobu-config:129 byobu-config:400 byobu-config:408
+msgid "Menu"
+msgstr "Menu"
+
+#: byobu-export:68 byobu-export:71 byobu-select-profile:104
+#: byobu-select-profile:107
+msgid "Choose"
+msgstr "Escolher"
+
+#: byobu-export:171
+msgid "File exists"
+msgstr "O arquivo já existe"
+
+#: byobu-export:172
+msgid "Remove file? [y/N] "
+msgstr ""
+
+#: byobu-export:199
+msgid "Select a color: "
+msgstr ""
+
+#: byobu-export:237
+msgid "Profile"
+msgstr "Perfil"
+
+#: byobu-export:238
+msgid "Archive"
+msgstr "Arquivo"
+
+#: byobu-export:240
+msgid "Extract the archive in your home directory on the target system."
+msgstr ""
+
+#: byobu-select-profile:49
+msgid "Error:"
+msgstr "Erro:"
+
+#: byobu-select-profile:49
+msgid " file exists, but is not a symlink"
+msgstr ""
+
+#: byobu-select-profile:80
+msgid "Select a screen profile: "
+msgstr ""
+
+#: byobu-select-profile:97
+msgid "ERROR: Invalid selection"
+msgstr "Erro: Seleção inválida"
+
+#: byobu-select-profile:134
+msgid ""
+"If you are using the default set of keybindings, press\\n<F5> to activate "
+"these changes.\\n\\nOtherwise, exit this screen session and start a new one."
+msgstr ""
+
+#: byobu-select-profile:136
+msgid "Run \"byobu\" to activate"
+msgstr ""
+
+#: byobu-config:83
+msgid "Byobu currently launches at login (toggle off)"
+msgstr ""
+
+#: byobu-config:85
+msgid "Byobu currently does not launch at login (toggle on)"
+msgstr ""
+
+#: byobu-config:89
+msgid "Help"
+msgstr "Ajuda"
+
+#: byobu-config:90
+msgid "Change Byobu's colors"
+msgstr ""
+
+#: byobu-config:91
+msgid "Toggle status notifications"
+msgstr "Alternar notificações de estado"
+
+#: byobu-config:92
+msgid "Change keybinding set"
+msgstr ""
+
+#: byobu-config:93
+msgid "Change escape sequence"
+msgstr ""
+
+#: byobu-config:94
+msgid "Create new windows"
+msgstr "Criar novas janelas"
+
+#: byobu-config:95
+msgid "Manage default windows"
+msgstr "Gerenciar janelas padrões"
+
+#: byobu-config:99 byobu-config:485
+msgid " Byobu Configuration Menu"
+msgstr " Configuração de menus Byobu"
+
+#: byobu-config:110
+msgid "Okay"
+msgstr "Ok"
+
+#: byobu-config:110 byobu-config:144 byobu-config:161 byobu-config:195
+#: byobu-config:334 byobu-config:375 byobu-config:448
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: byobu-config:130
+msgid "Byobu Help"
+msgstr "Ajuda Byobu"
+
+#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:334
+#: byobu-config:375 byobu-config:448
+msgid "Apply"
+msgstr "Aplicar"
+
+#: byobu-config:146
+msgid "Which profile would you like to use?"
+msgstr "Qual o perfil que você gostaria de usar?"
+
+#: byobu-config:162
+msgid "Which set of keybindings would you like to use?"
+msgstr ""
+
+#: byobu-config:175
+msgid "Title: "
+msgstr "Título: "
+
+#: byobu-config:177
+msgid "Command: "
+msgstr "Comando: "
+
+#: byobu-config:179
+msgid "Presets: "
+msgstr "Pré-definições: "
+
+#: byobu-config:193
+msgid "Add to default windows"
+msgstr "Adicionar as janelas padrões"
+
+#: byobu-config:197
+msgid "Create new window(s):"
+msgstr "Criar nova janela(s):"
+
+#: byobu-config:335
+msgid "Toggle status notifications:"
+msgstr "Alternar notificações de estado:"
+
+#: byobu-config:367
+msgid "Windows:"
+msgstr "Janelas:"
+
+#: byobu-config:377
+msgid "Select window(s) to create by default:"
+msgstr ""
+
+#: byobu-config:397
+msgid "Byobu will be launched automatically next time you login."
+msgstr "Byobu será executado automaticamente na próxima vez que você logar."
+
+#: byobu-config:405
+msgid "Byobu will not be used next time you login."
+msgstr "Byobu não será usado na próxima vez que você logar."
+
+#: byobu-config:407
+msgid "Message"
+msgstr "Mensagem"
+
+#: byobu-config:447
+msgid "Escape key: ctrl-"
+msgstr ""
+
+#: byobu-config:450
+msgid "Change escape sequence:"
+msgstr ""
+
+#: byobu-config:486
+msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
+msgstr ""
