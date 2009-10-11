@@ -18,5 +18,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 [ "$1" = "--detail" ] && exit 0
+PKG="byobu"
+bindings="$HOME/.$PKG/keybindings"
 
-printf " \005{= kw}%s:<\005{-}\005{=b kw}F9\005{= kw}>" `gettext "Menu"`
+key="F9"
+esc="^a-"
+if ! grep -qs "^source.*f-keys$" $bindings 2>/dev/null; then
+	esc=`grep "^escape" $bindings | sed "s/^.*\(.\)$/\1/"`
+	[ -n "$esc" ] && key="^$esc-@" || key="^a-@"
+fi
+printf " \005{= kw}%s:<\005{-}\005{=b kw}$key\005{= kw}>" `gettext "Menu"`
