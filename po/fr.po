@@ -8,14 +8,18 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-15 10:05-0500\n"
-"PO-Revision-Date: 2009-08-10 21:00+0000\n"
+"PO-Revision-Date: 2009-09-16 07:25+0000\n"
 "Last-Translator: Pierre Slamich <pierre.slamich@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-08-17 19:32+0000\n"
+"X-Launchpad-Export-Date: 2009-09-23 11:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
+
+#: byobu-select-profile:49
+msgid "Error:"
+msgstr "Erreur :"
 
 #: bin/menu:22 byobu-config:129 byobu-config:400 byobu-config:408
 msgid "Menu"
@@ -32,7 +36,7 @@ msgstr "Le fichier existe."
 
 #: byobu-export:172
 msgid "Remove file? [y/N] "
-msgstr ""
+msgstr "Supprimer le fichier? [y/N] "
 
 #: byobu-export:199
 msgid "Select a color: "
@@ -51,10 +55,6 @@ msgid "Extract the archive in your home directory on the target system."
 msgstr ""
 "Décompressez l'archive dans votre répertoire personnel (home) sur le système "
 "cible."
-
-#: byobu-select-profile:49
-msgid "Error:"
-msgstr "Erreur :"
 
 #: byobu-select-profile:49
 msgid " file exists, but is not a symlink"
@@ -99,7 +99,7 @@ msgstr "Changer les couleurs de Byobu"
 
 #: byobu-config:91
 msgid "Toggle status notifications"
-msgstr ""
+msgstr "Changer les notification d'état"
 
 #: byobu-config:92
 msgid "Change keybinding set"
@@ -169,7 +169,7 @@ msgstr "Créer nouvelle(s) fenêtre(s) :"
 
 #: byobu-config:335
 msgid "Toggle status notifications:"
-msgstr ""
+msgstr "Changer les notifications d'état :"
 
 #: byobu-config:367
 msgid "Windows:"
@@ -186,7 +186,8 @@ msgstr ""
 
 #: byobu-config:405
 msgid "Byobu will not be used next time you login."
-msgstr "Byobu ne sera pas utilisé la prochaine fois que vous vous connecterez."
+msgstr ""
+"Byobu ne sera pas utilisé la prochaine fois que vous vous connecterez."
 
 #: byobu-config:407
 msgid "Message"
