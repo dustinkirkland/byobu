@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-15 10:05-0500\n"
+"POT-Creation-Date: 2009-10-11 14:34-0500\n"
 "PO-Revision-Date: 2009-08-10 21:00+0000\n"
 "Last-Translator: Pierre Slamich <pierre.slamich@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Launchpad-Export-Date: 2009-08-17 19:32+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: bin/menu:22 byobu-config:129 byobu-config:400 byobu-config:408
+#: bin/menu:30 byobu-config:129 byobu-config:400 byobu-config:408
 msgid "Menu"
 msgstr "Menu"
 
@@ -117,7 +117,7 @@ msgstr "Créer de nouvelles fenêtres"
 msgid "Manage default windows"
 msgstr "Gérer les fenêtres par défaut"
 
-#: byobu-config:99 byobu-config:485
+#: byobu-config:99 byobu-config:486
 msgid " Byobu Configuration Menu"
 msgstr " Menu de Configuration de Byobu"
 
@@ -200,7 +200,7 @@ msgstr "Séquence d'échapement : ctrl-"
 msgid "Change escape sequence:"
 msgstr "Changer la séquence d'échapement :"
 
-#: byobu-config:486
+#: byobu-config:487
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr ""
 "<Tab>/<Alt-Tab> entre les éléments | <Enter> sélectionne | <Esc> quitte"
