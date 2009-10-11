@@ -1,4 +1,4 @@
-byobu (2.38) unreleased; urgency=low
+byobu (2.38-0ubuntu1) karmic; urgency=low
 
   * bin/menu: dynamically change the menu message between
     Menu:<F9> and Menu:^a-@, based on the users chosen keybinding set,
