@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: byobu\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-09-15 10:05-0500\n"
-"PO-Revision-Date: 2009-10-05 12:56+0000\n"
-"Last-Translator: Carl-Uno Olsson <Unknown>\n"
+"POT-Creation-Date: 2009-10-11 14:34-0500\n"
+"PO-Revision-Date: 2009-10-11 20:46+0000\n"
+"Last-Translator: Dustin Kirkland <dustin.kirkland@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-10-06 06:46+0000\n"
+"X-Launchpad-Export-Date: 2009-10-12 07:06+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: bin/menu:22 byobu-config:129 byobu-config:400 byobu-config:408
+#: bin/menu:30 byobu-config:129 byobu-config:400 byobu-config:408
 msgid "Menu"
 msgstr "Meny"
 
@@ -115,7 +115,7 @@ msgstr "Skapa nya fönster"
 msgid "Manage default windows"
 msgstr "Hantera standardfönster"
 
-#: byobu-config:99 byobu-config:485
+#: byobu-config:99 byobu-config:486
 msgid " Byobu Configuration Menu"
 msgstr " Konfigurationsmeny för Byobu"
 
@@ -197,6 +197,6 @@ msgstr "Escape-tangent: ctrl-"
 msgid "Change escape sequence:"
 msgstr "Ändra escape-sekvens:"
 
-#: byobu-config:486
+#: byobu-config:487
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr "<Tab>/<Alt-Tab> mellan element | <Enter> väljer | <Esc> avslutar"

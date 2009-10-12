@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: byobu\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-09-15 10:05-0500\n"
-"PO-Revision-Date: 2009-09-16 10:59+0000\n"
-"Last-Translator: Bruno Vitorino <Unknown>\n"
+"POT-Creation-Date: 2009-10-11 14:34-0500\n"
+"PO-Revision-Date: 2009-10-11 20:46+0000\n"
+"Last-Translator: Dustin Kirkland <dustin.kirkland@gmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-09-23 11:08+0000\n"
+"X-Launchpad-Export-Date: 2009-10-12 07:06+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: bin/menu:22 byobu-config:129 byobu-config:400 byobu-config:408
+#: bin/menu:30 byobu-config:129 byobu-config:400 byobu-config:408
 msgid "Menu"
 msgstr "Menu"
 
@@ -115,7 +115,7 @@ msgstr "Criar novas janelas"
 msgid "Manage default windows"
 msgstr "Gerir janelas por defeito"
 
-#: byobu-config:99 byobu-config:485
+#: byobu-config:99 byobu-config:486
 msgid " Byobu Configuration Menu"
 msgstr " Menu de configuração do Byobu"
 
@@ -198,7 +198,7 @@ msgstr ""
 msgid "Change escape sequence:"
 msgstr ""
 
-#: byobu-config:486
+#: byobu-config:487
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr ""
 "<Tab>/<Alt-Tab> navega pelos elementos | <Enter> selecciona | <Esc> sai"
