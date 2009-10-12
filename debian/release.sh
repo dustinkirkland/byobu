@@ -12,9 +12,8 @@ head -n1 debian/changelog | grep "karmic" || error "This version must be ready f
 
 # Tag the release in bzr
 minor=`head -n1 debian/changelog | sed "s/^.*($MAJOR.//" | sed "s/-.*$//"`
-bzr tag --delete "$MAJOR.$minor" || true
-bzr tag "$MAJOR.$minor"
-bzr commit -m "releasing $MAJOR.$minor" --unchanged
+dch --release
+debcommit --release --message="releasing $MAJOR.$minor"
 
 # Sign the tarball
 gpg --armor --sign --detach-sig ../"$PKG"_*.orig.tar.gz
