@@ -21,10 +21,13 @@
 PKG="byobu"
 bindings="$HOME/.$PKG/keybindings"
 
-key="F9"
-esc="^a-"
-if ! grep -qs "^source.*f-keys$" $bindings 2>/dev/null; then
+if grep -qs "^source.*screen-escape-keys$" $bindings 2>/dev/null; then
 	esc=`grep "^escape" $bindings | sed "s/^.*\(.\)$/\1/"`
 	[ -n "$esc" ] && key="^$esc-@" || key="^a-@"
+elif grep -qs "^source.*none$" $bindings 2>/dev/null; then
+	key="byobu-config"
+else
+	key="F9"
 fi
+
 printf " \005{= kw}%s:<\005{-}\005{=b kw}$key\005{= kw}>" `gettext "Menu"`
