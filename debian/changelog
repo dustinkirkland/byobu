@@ -1,9 +1,13 @@
 byobu (2.39) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * debian/install, desktop/byobu.desktop, desktop/byobu.svg: add a
     desktop icon for Byobu, LP: #449200
   * bin/menu: improve logic for the menu button, to explicitly look for
     screen-escape-keys (^a-@), or none (byobu-config), else (F9), LP: #450421
+
+  [ Derek Carter ]
+  * rpm/byobu.spec: updated for Fedora 11
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 11 Oct 2009 14:58:18 -0500
 
