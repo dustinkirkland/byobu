@@ -111,9 +111,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/lib/byobu/users
 /usr/lib/byobu/whoami
 /usr/lib/byobu/wifi_quality
-/usr/share/locale/es/LC_MESSAGES/byobu.mo
-/usr/share/locale/fr/LC_MESSAGES/byobu.mo
-/usr/share/locale/ru/LC_MESSAGES/byobu.mo
+/usr/share/locale/*
 /usr/share/byobu/keybindings/common
 /usr/share/byobu/keybindings/f-keys
 /usr/share/byobu/keybindings/none
