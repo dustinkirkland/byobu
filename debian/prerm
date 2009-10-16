@@ -7,4 +7,6 @@ for i in /usr/bin/screen-profiles-status /usr/bin/screen-launcher; do
 	[ -h "$i" ] && rm -f "$i"
 done
 
+true
+
 #DEBHELPER#
