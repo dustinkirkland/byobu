@@ -210,10 +210,11 @@ touch "$DIR/.$PKG/profile"
 dpkg-query --show --showformat '${Package} ${Version}\n' $PKG > "$DIR/.$PKG/version" 2>/dev/null || true
 echo "http://launchpad.net/$PKG" >> "$DIR/.$PKG/version"
 
-# Copy status scripts
+# Copy necessary scripts
 cp -a /usr/lib/$PKG/* "$DIR/.$PKG/bin"
 cp -a /usr/bin/$PKG-status "$DIR/.$PKG"
 cp -a /usr/bin/$PKG-janitor "$DIR/.$PKG"
+cp -a /usr/bin/$PKG-config "$DIR/.$PKG"
 
 # Generate the monolithic profile
 header > "$PROFILE"
@@ -227,6 +228,8 @@ sed -i "s:^source .*::" "$PROFILE"
 sed -i "s:.$PKG/profile\":\.screenrc\":" "$PROFILE"
 # Drop the F9->Menu key
 sed -i "s:^bindkey -k k9 screen -t help:#bindkey -k k9 screen -t help:" "$PROFILE"
+# Use the local byobu-config
+sed -i "s:$PKG-config:\$HOME/.$PKG/$PKG-config:" "$PROFILE"
 
 # tar up the results
 tar --owner=root --group=root -zcf "$file" -C "$DIR" . || error "Could not create archive"

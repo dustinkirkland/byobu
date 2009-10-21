@@ -10,6 +10,7 @@ byobu (2.39) unreleased; urgency=low
   * byobu-config: make byobu more python 2.5 friendly, by dropping the
     'finally' clauses
   * bin/menu: add some logic in support of byobu-export'd configurations
+  * byobu-export: add byobu-config to the export tarball
 
   [ Derek Carter ]
   * rpm/byobu.spec: updated for Fedora 11
