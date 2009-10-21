@@ -226,10 +226,10 @@ def appendwindow(win):
         f.write(win+"\n")
 
     except IOError:
+        f.close()
         return None
 
-    finally:
-        f.close()
+    f.close()
 
 def readwindows():
     if not os.path.isfile(HOME+'/.'+PKG+'/windows'):
@@ -255,10 +255,10 @@ def readwindows():
         return li
 
     except IOError:
+        f.close()
         return None
 
-    finally:
-        f.close()
+    f.close()
 
 def readstatus():
     status={}
@@ -318,9 +318,9 @@ def writestatus(items):
             elif i[0] == 0:
                 f.write(i[1]+"=0\n")
     except IOError:
-        return None
-    finally:
         f.close()
+        return None
+    f.close()
 
 def togglestatus(screen, size):
     itemlist=readstatus()
@@ -357,9 +357,9 @@ def writewindows(winlist):
             else:
                 f.write(win[1])
     except IOError:
-        return None
-    finally:
         f.close()
+        return None
+    f.close()
 
 def defaultwindows(screen, size):
     winlist=readwindows()
@@ -413,9 +413,9 @@ def appendtofile(p, s):
     try:
         f.write(s)
     except IOError:
-        return
-    finally:
         f.close()
+        return
+    f.close()
     return
 
 

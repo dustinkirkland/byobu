@@ -7,6 +7,8 @@ byobu (2.39) unreleased; urgency=low
     screen-escape-keys (^a-@), or none (byobu-config), else (F9), LP: #450421
   * debian/prerm: the for loop might not actually do anything, so make
     sure we do "something", like run "true", LP: #441788
+  * byobu-config: make byobu more python 2.5 friendly, by dropping the
+    'finally' clauses
 
   [ Derek Carter ]
   * rpm/byobu.spec: updated for Fedora 11
