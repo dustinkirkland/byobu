@@ -19,7 +19,7 @@
 
 [ "$1" = "--detail" ] && exit 0
 PKG="byobu"
-bindings="$HOME/.$PKG/keybindings"
+[ -r "$HOME/.$PKG/keybindings"] && bindings="$HOME/.$PKG/keybindings" || bindings="$HOME/.screenrc"
 
 if grep -qs "^source.*screen-escape-keys$" $bindings 2>/dev/null; then
 	esc=`grep "^escape" $bindings | sed "s/^.*\(.\)$/\1/"`

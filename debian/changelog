@@ -9,6 +9,7 @@ byobu (2.39) unreleased; urgency=low
     sure we do "something", like run "true", LP: #441788
   * byobu-config: make byobu more python 2.5 friendly, by dropping the
     'finally' clauses
+  * bin/menu: add some logic in support of byobu-export'd configurations
 
   [ Derek Carter ]
   * rpm/byobu.spec: updated for Fedora 11
