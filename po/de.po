@@ -7,48 +7,48 @@ msgid ""
 msgstr ""
 "Project-Id-Version: screen-profiles\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-09-15 10:05-0500\n"
-"PO-Revision-Date: 2009-09-16 07:07+0000\n"
-"Last-Translator: Dustin Kirkland <dustin.kirkland@gmail.com>\n"
+"POT-Creation-Date: 2009-10-11 14:34-0500\n"
+"PO-Revision-Date: 2009-11-04 07:11+0000\n"
+"Last-Translator: traumtal <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-09-23 11:08+0000\n"
+"X-Launchpad-Export-Date: 2009-11-04 08:33+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: bin/menu:22 byobu-config:129 byobu-config:400 byobu-config:408
+#: bin/menu:30 byobu-config:129 byobu-config:400 byobu-config:408
 msgid "Menu"
-msgstr ""
+msgstr "Menü"
 
 #: byobu-export:68 byobu-export:71 byobu-select-profile:104
 #: byobu-select-profile:107
 msgid "Choose"
-msgstr ""
+msgstr "Auswählen"
 
 #: byobu-export:171
 msgid "File exists"
-msgstr ""
+msgstr "Datei existiert bereits"
 
 #: byobu-export:172
 msgid "Remove file? [y/N] "
-msgstr ""
+msgstr "Lösche Datei? [j/N] "
 
 #: byobu-export:199
 msgid "Select a color: "
-msgstr ""
+msgstr "Wähle eine Farbe: "
 
 #: byobu-export:237
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #: byobu-export:238
 msgid "Archive"
-msgstr ""
+msgstr "Archiv"
 
 #: byobu-export:240
 msgid "Extract the archive in your home directory on the target system."
-msgstr ""
+msgstr "Archiv im Home Verzeichnis auf dem Zielsystem extrahieren"
 
 #: byobu-select-profile:49
 msgid "Error:"
@@ -64,25 +64,28 @@ msgstr "Wählen Sie ein Bildschirmprofil aus: "
 
 #: byobu-select-profile:97
 msgid "ERROR: Invalid selection"
-msgstr ""
+msgstr "FEHLER: ungültige Auswahl"
 
 #: byobu-select-profile:134
 msgid ""
 "If you are using the default set of keybindings, press\\n<F5> to activate "
 "these changes.\\n\\nOtherwise, exit this screen session and start a new one."
 msgstr ""
+"Wenn sie die standard Tastenkombinationen benutzen\\ndrücken sie <F5> um die "
+"Änderungen zu aktivieren.\\n\\nAnderenfalls verlassen sie diese screen "
+"Sitzung und starten\\nsie eine neue."
 
 #: byobu-select-profile:136
 msgid "Run \"byobu\" to activate"
-msgstr ""
+msgstr "\"byobu\" eingeben um zu starten"
 
 #: byobu-config:83
 msgid "Byobu currently launches at login (toggle off)"
-msgstr ""
+msgstr "Byobu startet beim einloggen (ausschalten)"
 
 #: byobu-config:85
 msgid "Byobu currently does not launch at login (toggle on)"
-msgstr ""
+msgstr "Byobu startet nicht beim einloggen (einschalten)"
 
 #: byobu-config:89
 msgid "Help"
@@ -90,11 +93,11 @@ msgstr "Hilfe"
 
 #: byobu-config:90
 msgid "Change Byobu's colors"
-msgstr ""
+msgstr "Farben ändern"
 
 #: byobu-config:91
 msgid "Toggle status notifications"
-msgstr ""
+msgstr "Statusmeldungen ändern"
 
 #: byobu-config:92
 msgid "Change keybinding set"
@@ -106,19 +109,19 @@ msgstr "Escape-Folge ändern"
 
 #: byobu-config:94
 msgid "Create new windows"
-msgstr ""
+msgstr "neues Fenster erstellen"
 
 #: byobu-config:95
 msgid "Manage default windows"
 msgstr "Standardfenster verwalten"
 
-#: byobu-config:99 byobu-config:485
+#: byobu-config:99 byobu-config:486
 msgid " Byobu Configuration Menu"
-msgstr ""
+msgstr " Byobu Konfiguration"
 
 #: byobu-config:110
 msgid "Okay"
-msgstr "Okay"
+msgstr "Ok"
 
 #: byobu-config:110 byobu-config:144 byobu-config:161 byobu-config:195
 #: byobu-config:334 byobu-config:375 byobu-config:448
@@ -127,7 +130,7 @@ msgstr "Abbrechen"
 
 #: byobu-config:130
 msgid "Byobu Help"
-msgstr ""
+msgstr "Byobu Hilfe"
 
 #: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:334
 #: byobu-config:375 byobu-config:448
@@ -140,7 +143,7 @@ msgstr "Welches Profil möchten Sie nutzen?"
 
 #: byobu-config:162
 msgid "Which set of keybindings would you like to use?"
-msgstr ""
+msgstr "Welche Tastenbelegung würden Sie gerne benutzen?"
 
 #: byobu-config:175
 msgid "Title: "
@@ -164,7 +167,7 @@ msgstr "Neue(s) Fenster erstellen:"
 
 #: byobu-config:335
 msgid "Toggle status notifications:"
-msgstr ""
+msgstr "Benachrichtigungen ein/aus schalten"
 
 #: byobu-config:367
 msgid "Windows:"
@@ -192,8 +195,9 @@ msgstr "Escape-Taste: Strg-"
 
 #: byobu-config:450
 msgid "Change escape sequence:"
-msgstr "Escape-Sequenz ändern:"
+msgstr "Menü"
 
-#: byobu-config:486
+#: byobu-config:487
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr ""
+"<Tab>/<Alt-Tab> zwischen den Elementen| <Enter> auswählen | <Esc> Ende"
