@@ -8,7 +8,7 @@ error() {
 	exit 1
 }
 
-head -n1 debian/changelog | grep "karmic" || error "This version must be ready for 'karmic'"
+head -n1 debian/changelog | grep "lucid" || error "This version must be ready for 'lucid'"
 
 # Tag the release in bzr
 minor=`head -n1 debian/changelog | sed "s/^.*($MAJOR.//" | sed "s/-.*$//"`

@@ -18,7 +18,9 @@ sed -i "s/ppa1) hardy;/ppa2) intrepid;/" debian/changelog
 bzr bd -S
 sed -i "s/ppa2) intrepid;/ppa3) jaunty;/" debian/changelog
 bzr bd -S
-sed -i "s/~ppa3) jaunty;/) karmic;/" debian/changelog
+sed -i "s/ppa3) jaunty;/ppa3) karmic;/" debian/changelog
+bzr bd -S
+sed -i "s/~ppa4) karmic;/) lucid;/" debian/changelog
 bzr bd -S
 
 echo

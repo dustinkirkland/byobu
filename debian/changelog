@@ -11,6 +11,7 @@ byobu (2.39) unreleased; urgency=low
     'finally' clauses
   * bin/menu: add some logic in support of byobu-export'd configurations
   * byobu-export: add byobu-config to the export tarball
+  * debian/release-build.sh, debian/release.sh: update for karmic->lucid
 
   [ Derek Carter ]
   * rpm/byobu.spec: updated for Fedora 11
