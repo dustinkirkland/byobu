@@ -1,4 +1,4 @@
-byobu (2.39) unreleased; urgency=low
+byobu (2.39-0ubuntu1) lucid; urgency=low
 
   [ Dustin Kirkland ]
   * debian/install, desktop/byobu.desktop, desktop/byobu.svg: add a
@@ -16,7 +16,7 @@ byobu (2.39) unreleased; urgency=low
   [ Derek Carter ]
   * rpm/byobu.spec: updated for Fedora 11
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 11 Oct 2009 14:58:18 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:00 -0600
 
 byobu (2.38-0ubuntu1) karmic; urgency=low
 
