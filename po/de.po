@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: screen-profiles\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2009-10-11 14:34-0500\n"
-"PO-Revision-Date: 2009-11-04 07:11+0000\n"
-"Last-Translator: traumtal <Unknown>\n"
+"PO-Revision-Date: 2009-11-09 22:53+0000\n"
+"Last-Translator: BBO <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-11-05 08:40+0000\n"
+"X-Launchpad-Export-Date: 2009-11-10 11:39+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: bin/menu:30 byobu-config:129 byobu-config:400 byobu-config:408
@@ -175,15 +175,15 @@ msgstr "Fenster:"
 
 #: byobu-config:377
 msgid "Select window(s) to create by default:"
-msgstr ""
+msgstr "Wähle Fenster die immer erstellt werden:"
 
 #: byobu-config:397
 msgid "Byobu will be launched automatically next time you login."
-msgstr ""
+msgstr "Byobu wird beim nächsten Einloggen automatisch gestartet."
 
 #: byobu-config:405
 msgid "Byobu will not be used next time you login."
-msgstr ""
+msgstr "Byobu wird beim nächsten Einloggen nicht genutzt."
 
 #: byobu-config:407
 msgid "Message"
