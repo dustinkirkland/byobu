@@ -1,0 +1,199 @@
+# Lithuanian translation for byobu
+# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
+# This file is distributed under the same license as the byobu package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: byobu\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2009-10-11 14:34-0500\n"
+"PO-Revision-Date: 2009-11-20 20:00+0000\n"
+"Last-Translator: Povilas Balzaravičius aka Pawka <pavvka@gmail.com>\n"
+"Language-Team: Lithuanian <lt@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2009-11-21 04:47+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: bin/menu:30 byobu-config:129 byobu-config:400 byobu-config:408
+msgid "Menu"
+msgstr "Meniu"
+
+#: byobu-export:68 byobu-export:71 byobu-select-profile:104
+#: byobu-select-profile:107
+msgid "Choose"
+msgstr "Pasirinkti"
+
+#: byobu-export:171
+msgid "File exists"
+msgstr "Failas egzistuoja"
+
+#: byobu-export:172
+msgid "Remove file? [y/N] "
+msgstr "Šalinti failą? [y/N] "
+
+#: byobu-export:199
+msgid "Select a color: "
+msgstr "Pakeisti spalvą "
+
+#: byobu-export:237
+msgid "Profile"
+msgstr "Profilis"
+
+#: byobu-export:238
+msgid "Archive"
+msgstr "Archyvas"
+
+#: byobu-export:240
+msgid "Extract the archive in your home directory on the target system."
+msgstr ""
+
+#: byobu-select-profile:49
+msgid "Error:"
+msgstr "Klaida:"
+
+#: byobu-select-profile:49
+msgid " file exists, but is not a symlink"
+msgstr ""
+
+#: byobu-select-profile:80
+msgid "Select a screen profile: "
+msgstr ""
+
+#: byobu-select-profile:97
+msgid "ERROR: Invalid selection"
+msgstr "KLAIDA: Klaidingas pasirinkimas"
+
+#: byobu-select-profile:134
+msgid ""
+"If you are using the default set of keybindings, press\\n<F5> to activate "
+"these changes.\\n\\nOtherwise, exit this screen session and start a new one."
+msgstr ""
+
+#: byobu-select-profile:136
+msgid "Run \"byobu\" to activate"
+msgstr "Paleiskite \"byobu\", kad aktyvuotumėte"
+
+#: byobu-config:83
+msgid "Byobu currently launches at login (toggle off)"
+msgstr "Byobu startuos vartotojui prisijungus (paspauskite, kad išjungti)"
+
+#: byobu-config:85
+msgid "Byobu currently does not launch at login (toggle on)"
+msgstr "Byoby nestartuos prisijungus vartotojui (paspauskite, kad įjungti)"
+
+#: byobu-config:89
+msgid "Help"
+msgstr "Pagalba"
+
+#: byobu-config:90
+msgid "Change Byobu's colors"
+msgstr "Pakeisti Byobu spalvas"
+
+#: byobu-config:91
+msgid "Toggle status notifications"
+msgstr ""
+
+#: byobu-config:92
+msgid "Change keybinding set"
+msgstr ""
+
+#: byobu-config:93
+msgid "Change escape sequence"
+msgstr ""
+
+#: byobu-config:94
+msgid "Create new windows"
+msgstr "Sukurti naujus langus"
+
+#: byobu-config:95
+msgid "Manage default windows"
+msgstr ""
+
+#: byobu-config:99 byobu-config:486
+msgid " Byobu Configuration Menu"
+msgstr ""
+
+#: byobu-config:110
+msgid "Okay"
+msgstr "Gerai"
+
+#: byobu-config:110 byobu-config:144 byobu-config:161 byobu-config:195
+#: byobu-config:334 byobu-config:375 byobu-config:448
+msgid "Cancel"
+msgstr "Atsisakyti"
+
+#: byobu-config:130
+msgid "Byobu Help"
+msgstr "Byobu pagalba"
+
+#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:334
+#: byobu-config:375 byobu-config:448
+msgid "Apply"
+msgstr "Pritaikyti"
+
+#: byobu-config:146
+msgid "Which profile would you like to use?"
+msgstr "Kurį profilį norite naudoti?"
+
+#: byobu-config:162
+msgid "Which set of keybindings would you like to use?"
+msgstr "Kurį klavišų kombinacijų rinkinį norite naudoti?"
+
+#: byobu-config:175
+msgid "Title: "
+msgstr "Pavadinimas: "
+
+#: byobu-config:177
+msgid "Command: "
+msgstr "Komanda: "
+
+#: byobu-config:179
+msgid "Presets: "
+msgstr ""
+
+#: byobu-config:193
+msgid "Add to default windows"
+msgstr ""
+
+#: byobu-config:197
+msgid "Create new window(s):"
+msgstr "Sukurti naują langą(-us):"
+
+#: byobu-config:335
+msgid "Toggle status notifications:"
+msgstr ""
+
+#: byobu-config:367
+msgid "Windows:"
+msgstr "Langai:"
+
+#: byobu-config:377
+msgid "Select window(s) to create by default:"
+msgstr ""
+
+#: byobu-config:397
+msgid "Byobu will be launched automatically next time you login."
+msgstr ""
+
+#: byobu-config:405
+msgid "Byobu will not be used next time you login."
+msgstr ""
+
+#: byobu-config:407
+msgid "Message"
+msgstr "Pranešimas"
+
+#: byobu-config:447
+msgid "Escape key: ctrl-"
+msgstr ""
+
+#: byobu-config:450
+msgid "Change escape sequence:"
+msgstr ""
+
+#: byobu-config:487
+msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
+msgstr ""
