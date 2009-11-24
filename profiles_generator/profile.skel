@@ -26,7 +26,7 @@ source /usr/share/byobu/profiles/common
 caption always "%{kW}%?%-Lw%50L>%?%{bw}%n*%f %t%?(%u)%?%{kW}%?%+Lw%?%11` %=%{= Wk}%110`%109`%122`%111`%10`%<"
 
 # Status string, last line
-hardstatus string '%99`%{= Wk} %100`%112`%= %102`%101`%127`%114`%115`%108`%128`%125`%126`%113`%119`%117`%116`%106`%104`%103`%105`%107`%123`%120`%121`'
+hardstatus string '%99`%{= Wk} %100`%112`%= %102`%101`%129`%127`%114`%115`%108`%128`%125`%126`%113`%119`%117`%116`%106`%104`%103`%105`%107`%123`%120`%121`'
 
 # NOTE: Older version of screen have an arbitrary limit of only being able
 # to change colors 16 times in this 'hardstatus string'.

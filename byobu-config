@@ -262,6 +262,7 @@ def readwindows():
 
 def readstatus():
     status={}
+    status["apport"]=0
     status["arch"]=0
     status["battery"]=0
     status["cpu_count"]=1

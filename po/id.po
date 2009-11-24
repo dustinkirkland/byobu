@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: byobu\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-09-15 10:05-0500\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-11-23 19:12-0600\n"
 "PO-Revision-Date: 2009-08-17 21:09+0000\n"
 "Last-Translator: Andika Triwidada <andika@gmail.com>\n"
 "Language-Team: Indonesian <id@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Launchpad-Export-Date: 2009-09-23 11:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: bin/menu:22 byobu-config:129 byobu-config:400 byobu-config:408
+#: bin/menu:33 byobu-config:129 byobu-config:401 byobu-config:409
 msgid "Menu"
 msgstr "Menu"
 
@@ -38,15 +38,15 @@ msgstr "Hapus berkas? [y/T] "
 msgid "Select a color: "
 msgstr "Pilih warna: "
 
-#: byobu-export:237
+#: byobu-export:240
 msgid "Profile"
 msgstr "Profil"
 
-#: byobu-export:238
+#: byobu-export:241
 msgid "Archive"
 msgstr "Arsip"
 
-#: byobu-export:240
+#: byobu-export:243
 msgid "Extract the archive in your home directory on the target system."
 msgstr "Ekstrak arsip di direktori rumah anda pada sistem target."
 
@@ -115,7 +115,7 @@ msgstr "Buat jendela baru"
 msgid "Manage default windows"
 msgstr "Kelola jendela bawaan"
 
-#: byobu-config:99 byobu-config:485
+#: byobu-config:99 byobu-config:487
 msgid " Byobu Configuration Menu"
 msgstr " Menu Konfigurasi Byobu"
 
@@ -124,7 +124,7 @@ msgid "Okay"
 msgstr "Ok"
 
 #: byobu-config:110 byobu-config:144 byobu-config:161 byobu-config:195
-#: byobu-config:334 byobu-config:375 byobu-config:448
+#: byobu-config:335 byobu-config:376 byobu-config:449
 msgid "Cancel"
 msgstr "Batal"
 
@@ -132,8 +132,8 @@ msgstr "Batal"
 msgid "Byobu Help"
 msgstr "Bantuan Byobu"
 
-#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:334
-#: byobu-config:375 byobu-config:448
+#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:335
+#: byobu-config:376 byobu-config:449
 msgid "Apply"
 msgstr "Terapkan"
 
@@ -165,38 +165,38 @@ msgstr "Tambahkan ke jendela bawaan"
 msgid "Create new window(s):"
 msgstr "Buat jendela baru:"
 
-#: byobu-config:335
+#: byobu-config:336
 msgid "Toggle status notifications:"
 msgstr "Toggle pemberitahuan status:"
 
-#: byobu-config:367
+#: byobu-config:368
 msgid "Windows:"
 msgstr "Jendela:"
 
-#: byobu-config:377
+#: byobu-config:378
 msgid "Select window(s) to create by default:"
 msgstr "Pilih jendela yang akan dibuat secara default"
 
-#: byobu-config:397
+#: byobu-config:398
 msgid "Byobu will be launched automatically next time you login."
 msgstr "Byobu akan diluncurkan secara otomatis saat anda login berikutnya."
 
-#: byobu-config:405
+#: byobu-config:406
 msgid "Byobu will not be used next time you login."
 msgstr "Byobu tidak akan dipakai ketika anda login berikutnya."
 
-#: byobu-config:407
+#: byobu-config:408
 msgid "Message"
 msgstr "Pesan"
 
-#: byobu-config:447
+#: byobu-config:448
 msgid "Escape key: ctrl-"
 msgstr "Kunci escape: ctrl-"
 
-#: byobu-config:450
+#: byobu-config:451
 msgid "Change escape sequence:"
 msgstr "Ubah urutan escape:"
 
-#: byobu-config:486
+#: byobu-config:488
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr "<Tab>/<Alt-Tab> antar elemen | <Enter> pilih | <Esc> keluar"

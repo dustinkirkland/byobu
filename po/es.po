@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-15 10:05-0500\n"
+"POT-Creation-Date: 2009-11-23 19:12-0600\n"
 "PO-Revision-Date: 2009-10-03 23:47+0000\n"
 "Last-Translator: oscrp <mazonovo@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Launchpad-Export-Date: 2009-10-04 06:50+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: bin/menu:22 byobu-config:129 byobu-config:400 byobu-config:408
+#: bin/menu:33 byobu-config:129 byobu-config:401 byobu-config:409
 msgid "Menu"
 msgstr "Menú"
 
@@ -38,18 +38,17 @@ msgstr "¿Eliminar archivo? [y/N] "
 msgid "Select a color: "
 msgstr "Seleccionar un color: "
 
-#: byobu-export:237
+#: byobu-export:240
 msgid "Profile"
 msgstr "Perfil"
 
-#: byobu-export:238
+#: byobu-export:241
 msgid "Archive"
 msgstr "Archivador"
 
-#: byobu-export:240
+#: byobu-export:243
 msgid "Extract the archive in your home directory on the target system."
-msgstr ""
-"Extraiga el archivador en su directorio personal del sistema objetivo."
+msgstr "Extraiga el archivador en su directorio personal del sistema objetivo."
 
 #: byobu-select-profile:49
 msgid "Error:"
@@ -116,7 +115,7 @@ msgstr "Crear nuevas ventanas"
 msgid "Manage default windows"
 msgstr "Gestionar ventanas predeterminadas"
 
-#: byobu-config:99 byobu-config:485
+#: byobu-config:99 byobu-config:487
 msgid " Byobu Configuration Menu"
 msgstr " Menú de configuración Byobu"
 
@@ -125,7 +124,7 @@ msgid "Okay"
 msgstr "Aceptar"
 
 #: byobu-config:110 byobu-config:144 byobu-config:161 byobu-config:195
-#: byobu-config:334 byobu-config:375 byobu-config:448
+#: byobu-config:335 byobu-config:376 byobu-config:449
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -133,8 +132,8 @@ msgstr "Cancelar"
 msgid "Byobu Help"
 msgstr "Ayuda de Byobu"
 
-#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:334
-#: byobu-config:375 byobu-config:448
+#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:335
+#: byobu-config:376 byobu-config:449
 msgid "Apply"
 msgstr "Aplicar"
 
@@ -166,43 +165,41 @@ msgstr "Añadir a las ventanas por defecto"
 msgid "Create new window(s):"
 msgstr "Crear ventana(s) nueva(s):"
 
-#: byobu-config:335
+#: byobu-config:336
 msgid "Toggle status notifications:"
 msgstr "Activar/Desactivar notificaciónes:"
 
-#: byobu-config:367
+#: byobu-config:368
 msgid "Windows:"
 msgstr "Ventanas:"
 
-#: byobu-config:377
+#: byobu-config:378
 msgid "Select window(s) to create by default:"
 msgstr "Seleccionar ventana(s) para crear por defecto:"
 
-#: byobu-config:397
+#: byobu-config:398
 msgid "Byobu will be launched automatically next time you login."
-msgstr ""
-"Byobu se lanzará automáticamente la próxima vez que inicie su sesión."
+msgstr "Byobu se lanzará automáticamente la próxima vez que inicie su sesión."
 
-#: byobu-config:405
+#: byobu-config:406
 msgid "Byobu will not be used next time you login."
 msgstr "Byobu no se iniciará la próxima vez que se identifique."
 
-#: byobu-config:407
+#: byobu-config:408
 msgid "Message"
 msgstr "Mensaje"
 
-#: byobu-config:447
+#: byobu-config:448
 msgid "Escape key: ctrl-"
 msgstr "Tecla de escape: ctrl-"
 
-#: byobu-config:450
+#: byobu-config:451
 msgid "Change escape sequence:"
 msgstr "Cambiar la secuencia de escape:"
 
-#: byobu-config:486
+#: byobu-config:488
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
-msgstr ""
-"<Tab>/<Alt-Tab> entre los elementos | <Intro> seleccione | <Esc> salir"
+msgstr "<Tab>/<Alt-Tab> entre los elementos | <Intro> seleccione | <Esc> salir"
 
 #~ msgid "recommended"
 #~ msgstr "recomendado"

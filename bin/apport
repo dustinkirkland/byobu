@@ -1,7 +1,6 @@
-#    statusrc
-#      Byobu's default status notifications
-#      Override these in $HOME/.byobu/status
+#!/bin/sh -e
 #
+#    apport: note if there are crash dumps available for apporting
 #    Copyright (C) 2009 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -18,37 +17,17 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-apport=0
-arch=0
-battery=0
-cpu_count=1
-cpu_freq=1
-date=1
-disk=0
-ec2_cost=0
-fan_speed=0
-hostname=0
-ip_address=0
-load_average=1
-logo=1
-mail=0
-mem_available=1
-mem_used=1
-menu=1
-network=0
-processes=0
-reboot_required=1
-release=1
-temp_c=0
-temp_f=0
-time=1
-users=0
-updates_available=1
-uptime=1
-whoami=0
-wifi_quality=0
+if [ "$1" = "--detail" ]; then
+	if ls /var/crash/*.crash >/dev/null 2>&1; then
+		printf "To file bugs on the existing crash reports, run:\n"
+		for i in /var/crash/*.crash; do
+			printf "  apport-cli $i\n"
+		done
+	else
+		printf "No pending crash reports"
+	fi
+	exit 0
+fi
 
-# Define colors
-XXX="\005{-}"
-brW="\005{=b rW}"
-rW="\005{= rW}"
+# Print {!} if a /var/crash/*.crash file exists
+ls /var/crash/*.crash >/dev/null 2>&1 && printf "\005{= yk}{!}\005{-} "

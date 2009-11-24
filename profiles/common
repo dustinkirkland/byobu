@@ -65,6 +65,7 @@ backtick 125 	19	19		byobu-status temp_c
 backtick 126 	19	19		byobu-status temp_f
 backtick 127 	5	5		byobu-status mail
 backtick 128 	23	23		byobu-status fan_speed
+backtick 129 	67	67		byobu-status apport
 
 hardstatus alwayslastline
 

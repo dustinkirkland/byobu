@@ -84,6 +84,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/byobu-status-detail
 /usr/bin/byobu-select-profile
 /usr/lib/byobu/arch
+/usr/lib/byobu/apport
 /usr/lib/byobu/battery
 /usr/lib/byobu/cpu_count
 /usr/lib/byobu/cpu_freq

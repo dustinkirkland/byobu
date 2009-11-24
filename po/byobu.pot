@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-11 14:34-0500\n"
+"POT-Creation-Date: 2009-11-23 19:12-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bin/menu:30 byobu-config:129 byobu-config:400 byobu-config:408
+#: bin/menu:33 byobu-config:129 byobu-config:401 byobu-config:409
 msgid "Menu"
 msgstr ""
 
@@ -37,15 +37,15 @@ msgstr ""
 msgid "Select a color: "
 msgstr ""
 
-#: byobu-export:237
+#: byobu-export:240
 msgid "Profile"
 msgstr ""
 
-#: byobu-export:238
+#: byobu-export:241
 msgid "Archive"
 msgstr ""
 
-#: byobu-export:240
+#: byobu-export:243
 msgid "Extract the archive in your home directory on the target system."
 msgstr ""
 
@@ -111,7 +111,7 @@ msgstr ""
 msgid "Manage default windows"
 msgstr ""
 
-#: byobu-config:99 byobu-config:486
+#: byobu-config:99 byobu-config:487
 msgid " Byobu Configuration Menu"
 msgstr ""
 
@@ -120,7 +120,7 @@ msgid "Okay"
 msgstr ""
 
 #: byobu-config:110 byobu-config:144 byobu-config:161 byobu-config:195
-#: byobu-config:334 byobu-config:375 byobu-config:448
+#: byobu-config:335 byobu-config:376 byobu-config:449
 msgid "Cancel"
 msgstr ""
 
@@ -128,8 +128,8 @@ msgstr ""
 msgid "Byobu Help"
 msgstr ""
 
-#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:334
-#: byobu-config:375 byobu-config:448
+#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:335
+#: byobu-config:376 byobu-config:449
 msgid "Apply"
 msgstr ""
 
@@ -161,38 +161,38 @@ msgstr ""
 msgid "Create new window(s):"
 msgstr ""
 
-#: byobu-config:335
+#: byobu-config:336
 msgid "Toggle status notifications:"
 msgstr ""
 
-#: byobu-config:367
+#: byobu-config:368
 msgid "Windows:"
 msgstr ""
 
-#: byobu-config:377
+#: byobu-config:378
 msgid "Select window(s) to create by default:"
 msgstr ""
 
-#: byobu-config:397
+#: byobu-config:398
 msgid "Byobu will be launched automatically next time you login."
 msgstr ""
 
-#: byobu-config:405
+#: byobu-config:406
 msgid "Byobu will not be used next time you login."
 msgstr ""
 
-#: byobu-config:407
+#: byobu-config:408
 msgid "Message"
 msgstr ""
 
-#: byobu-config:447
+#: byobu-config:448
 msgid "Escape key: ctrl-"
 msgstr ""
 
-#: byobu-config:450
+#: byobu-config:451
 msgid "Change escape sequence:"
 msgstr ""
 
-#: byobu-config:487
+#: byobu-config:488
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr ""
