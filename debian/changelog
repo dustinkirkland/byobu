@@ -15,6 +15,7 @@ byobu (2.40) unreleased; urgency=low
     bin/temp_c, bin/temp_f, bin/updates_available, bin/uptime, bin/users,
     bin/whoami, bin/wifi_quality statusrc: define a set of color variables,
     such that it's easier to make these theme-able
+  * windows/common: suggest w3m rather than elinks
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 
