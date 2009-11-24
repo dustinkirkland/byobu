@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 
 if [ "$1" = "--detail" ]; then
 	cat /etc/issue
@@ -54,4 +55,4 @@ else
 	DISTRO="Byobu"
 fi
 
-printf "\005{+b }%s\005{-} " "$DISTRO"
+printf "$BOLD2%s$UNDO " "$DISTRO"

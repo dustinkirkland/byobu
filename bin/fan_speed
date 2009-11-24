@@ -18,6 +18,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
+
 DIR="/sys/class/hwmon"
 if [ "$1" = "--detail" ]; then
 	for i in `ls $DIR 2>/dev/null`; do
@@ -30,7 +33,7 @@ fi
 for i in $(find $DIR/*/*/ -type f -name "fan1_input"); do
 	speed=$(cat "$i")
 	if [ "$speed" -gt 0 ]; then
-	        printf "\005{=b }%s\005{-}\005{= }rpm\005{-} " "$speed"
+	        printf "$BOLD1%s$UNDO$NONE%s$UNDO " "$speed" "rpm"
 		exit 0
 	fi
 done

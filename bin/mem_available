@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 
 if [ "$1" = "--detail" ]; then
 	free
@@ -39,4 +40,4 @@ else
 	mem="$mem"
 	unit="KB"
 fi
-printf "\005{=b gW}%s\005{-}\005{= gW}$unit%s\005{-}%s" "$mem" "$comma" "$whitespace"
+printf "$bgW%s$UNDO$gW$unit%s$UNDO%s" "$mem" "$comma" "$whitespace"

@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 
 if [ "$1" = "--detail" ]; then
 	MARKUP="false"
@@ -30,63 +31,63 @@ print_logo() {
 	distro=`echo "$1" | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/' `
 	case "$distro" in
 		*ubuntu*)
-			$MARKUP && printf "\005{=b kr}\\\\\005{= ky}o\005{=b kY}/" || printf "\\o/"
+			$MARKUP && printf "$bkr%s$ky%s$bkY%s" "\\" "o" "/" || printf "\\o/"
 		;;
 		*altlinux*)
 			logo="alt"
-			$MARKUP && printf "\005{= Yk}$logo" || printf "$logo"
+			$MARKUP && printf "$Yk%s" "$logo" || printf "$logo"
 		;;
 	 	*arch*)
 			logo=" A "
-			$MARKUP && printf "\005{=b wb}$logo" || printf "$logo"
+			$MARKUP && printf "$bwb%s" "$logo" || printf "$logo"
 		;;
 		*centos*)
 			logo="****"
-			$MARKUP && printf "\005{= gw}*\005{= mw}*\005{= yw}*\005{= bw}*\005{=b Wk}" || printf "$logo"
+			$MARKUP && printf "$gw*$mw*$yw*$bw*" || printf "$logo"
 		;;
 		*debian*)
 			logo=" @ "
-			$MARKUP && printf "\005{= wr}$logo" || printf "$logo"
+			$MARKUP && printf "$wr%s" "$logo" || printf "$logo"
 		;;
 		*fedora*)
 			logo=" f "
-			$MARKUP && printf "\005{=b bw}$logo" || printf "$logo"
+			$MARKUP && printf "$bw%s" "$logo" || printf "$logo"
 		;;
 		*foresight*)
 			logo="<@>"
-			$MARKUP && printf "\005{=b Wg}$logo" || printf "$logo"
+			$MARKUP && printf "$bWg%s" "$logo" || printf "$logo"
 		;;
 		*gentoo*)
 			logo=" > "
-			$MARKUP && printf "\005{=b cw}$logo" || printf "$logo"
+			$MARKUP && printf "$bcw%s" "$logo" || printf "$logo"
 		;;
 		*mandriva*)
 			logo=" (* "
-			$MARKUP && printf "\005{=b kc} (\005{=b ky}* " || printf "$logo"
+			$MARKUP && printf "$bkc ($bky* " || printf "$logo"
 		;;
 		*redhat*)
 			logo=" RH "
-			$MARKUP && printf "\005{= Rk}$logo" || printf "$logo"
+			$MARKUP && printf "$Rk%s" "$logo" || printf "$logo"
 		;;
 		*rockhopper*)
 			logo="palm"
-			$MARKUP && printf "\005{=b YW}$logo" || printf "$logo"
+			$MARKUP && printf "$kw%s" "$logo" || printf "$logo"
 		;;
 		*slackware*)
-			logo=",S "
-			$MARKUP && printf "\005{=u Bk}$logo" || printf "$logo"
+			logo=".S "
+			$MARKUP && printf "$uBk%s" "$logo" || printf "$logo"
 		;;
 		*suse*)
 			logo="SuSE"
-			$MARKUP && printf "\005{= Wg}$logo" || printf "$logo"
+			$MARKUP && printf "$Wg%s" "$logo" || printf "$logo"
 		;;
 		*xandros*)
 			logo=" X "
-			$MARKUP && printf "\005{= Wr}$logo" || printf "$logo"
+			$MARKUP && printf "$Wr%s" "$logo" || printf "$logo"
 		;;
 		*)
-			logo="|B|"
-			$MARKUP && printf "\005{=b kW}$logo" || printf " $logo "
+			logo="[B]"
+			$MARKUP && printf "$bkW%s" "$logo" || printf " $logo "
 		;;
 	esac
 }

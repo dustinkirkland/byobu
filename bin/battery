@@ -18,6 +18,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 
 search () {
 	local str expr
@@ -48,11 +50,14 @@ for bat in $(ls /proc/acpi/battery); do
 
 	percent=$( echo "$rem" "$full" | awk '{printf "%.0f",  100*$1/$2}')
 	if [ "$percent" -lt 33 ]; then
-		per_color="Rk"
+		color="$Rk"
+		bcolor="$bRk"
 	elif [ "$percent" -lt 67 ]; then
-		per_color="Yk"
+		color="$Yk"
+		bcolor="$bYk"
 	else
-		per_color="Gk"
+		color="$Gk"
+		bcolor="$bGk"
 	fi
 	percent="$percent%"
 
@@ -72,6 +77,6 @@ for bat in $(ls /proc/acpi/battery); do
 			sign="$state"
 		;;
 	esac
-	printf "\005{=b %s}%s\005{-}\005{= %s}|%s|\005{-} " "$per_color" "$percent" "$per_color" "$sign"
+	printf "$bcolor%s$UNDO$color|%s|$UNDO " "$percent" "$sign"
 	break
 done

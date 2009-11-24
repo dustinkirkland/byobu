@@ -19,6 +19,7 @@
 
 DETAIL=0
 PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 
 for arg in $@; do
 	case "$arg" in
@@ -82,4 +83,4 @@ if [ "$DETAIL" = "1" ]; then
 	exit 0
 fi
 
-printf "\005{= KG}~\$\005{-}\005{=b KG}%s\005{-} " $total_cost
+printf "$KG~\$$UNDO$bKG%s$UNDO " $total_cost

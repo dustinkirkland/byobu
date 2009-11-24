@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 
 # Allow interface overrides in $HOME/.$PKG/status
 if [ -n "$MONITORED_NETWORK" ]; then
@@ -57,5 +58,5 @@ for i in up down; do
 			unit="MB/s"
 		fi
 	fi
-	printf "$symbol\005{=b mw}$rate\005{-}\005{= mw}$unit\005{-} "
+	printf "$symbol$bmw$rate$UNDO$mw$unit$UNDO "
 done

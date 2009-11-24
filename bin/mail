@@ -17,10 +17,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
+
 mailfile="/var/spool/mail/$USER"
 if [ "$1" = "--detail" ]; then
 	ls -alF "$mailfile" 2>&1
 	exit 0
 fi
 
-[ -s "$mailfile" ] && printf "\005{= wk}[\005{-}\005{=b wk}M\005{-}\005{= wk}]\005{-} " || exit 0
+[ -s "$mailfile" ] && printf "$wk[M]$UNDO " || exit 0

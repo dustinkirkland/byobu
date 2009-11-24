@@ -18,6 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
+
 reboot="/var/run/reboot-required"
 [ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$HOME/.byobu"
 reload="$DIR/$PKG.reload-required"
@@ -29,7 +31,7 @@ case "$1" in
 		[ -e "$reboot" ] && printf "Yes" || printf "No"
 	;;
 	*)
-		[ -e "$reboot" ] && printf "\005{= bW}(\005{-}\005{=b bW}R\005{-}\005{= bW})\005{-} "
-		[ -e "$reload" ] && printf "\005{= bW}<\005{-}\005{=b bW}F5\005{-}\005{= bW}>\005{-} "
+		[ -e "$reboot" ] && printf "$bW($UNDO$bbW%s$UNDO$bW)$UNDO " "R"
+		[ -e "$reload" ] && printf "$bW<$UNDO$bbW%s$UNDO$bW>$UNDO " "F5"
 	;;
 esac

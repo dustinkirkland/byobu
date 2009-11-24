@@ -17,9 +17,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
+
 if [ "$1" = "--detail" ]; then
 	cat /proc/loadavg
 	exit 0
 fi
 
-printf "\005{= Yk}%s\005{-} " $(awk '{print $1}' /proc/loadavg)
+printf "$Yk%s$UNDO " $(awk '{print $1}' /proc/loadavg)

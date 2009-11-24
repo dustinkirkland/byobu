@@ -18,6 +18,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
+
 DIR="/proc/acpi/thermal_zone"
 if [ "$1" = "--detail" ]; then
 	exit 0
@@ -25,6 +28,6 @@ fi
 
 for i in `ls $DIR/*/temperature 2>/dev/null`; do
 	t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i" | awk '{printf "%.0f", $1 *9/5 + 32}')
-	printf "\005{=b kY}%s\005{-}\005{= kY}\260F\005{-} " "$t"
+	printf "$bkY%s$UNDO$kY\260F$UNDO " "$t"
         break
 done

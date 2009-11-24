@@ -20,6 +20,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
+
 if [ "$1" = "--detail" ]; then
 	ps -ef | grep "sshd;.*@" | grep -v grep
 	exit 0
@@ -28,4 +31,4 @@ fi
 # Note: we'd like to use pgrep -c, however, this isn't available in
 # busybox and some distro's pgrep (and it doesn't exit non-zero).
 count=`pgrep -f "sshd:.*@" | wc -l` || exit 0
-[ $count -gt 0 ] && printf "\005{=b wr}%d\005{-}\005{= wr}#\005{-} " $count
+[ $count -gt 0 ] && printf "$bwr%d$UNDO$wr#$UNDO " $count

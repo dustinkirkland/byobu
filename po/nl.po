@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: byobu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-11-23 19:35-0600\n"
+"POT-Creation-Date: 2009-11-23 20:48-0600\n"
 "PO-Revision-Date: 2009-09-21 10:12+0000\n"
 "Last-Translator: Dustin Kirkland <dustin.kirkland@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Launchpad-Export-Date: 2009-09-23 11:08+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: bin/menu:33 byobu-config:129 byobu-config:401 byobu-config:409
+#: bin/menu:34 byobu-config:129 byobu-config:401 byobu-config:409
 msgid "Menu"
 msgstr ""
 

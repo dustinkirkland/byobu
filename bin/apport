@@ -17,11 +17,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
+
 if [ "$1" = "--detail" ]; then
 	if ls /var/crash/*.crash >/dev/null 2>&1; then
 		printf "\nTo file bugs on the existing crash reports, run:\n"
 		which apport-cli >/dev/null || printf "  sudo apt-get install apport\n"
-		fi
 		for i in /var/crash/*.crash; do
 			printf "  apport-cli $i\n"
 		done
@@ -34,4 +36,4 @@ if [ "$1" = "--detail" ]; then
 fi
 
 # Print {!} if a /var/crash/*.crash file exists
-ls /var/crash/*.crash >/dev/null 2>&1 && printf "\005{= yk}{!}\005{-} "
+ls /var/crash/*.crash >/dev/null 2>&1 && printf "$yk{!}$UNDO "

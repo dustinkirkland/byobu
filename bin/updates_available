@@ -38,13 +38,13 @@ print_updates() {
 	s=$2
 	if [ -n "$u" ]; then
 		if [ "$u" -gt 0 ]; then
-			printf "$brW%d$XXX$rW!" "$u"
+			printf "$brW%d$UNDO$rW!" "$u"
 			if [ -n "$s" ]; then
 				if [ "$s" -gt 0 ]; then
 					printf "!"
 				fi
 			fi
-			printf "$XXX "
+			printf "$UNDO "
 		fi
 	fi
 }

@@ -17,6 +17,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
+
 if [ "$1" = "--detail" ]; then
 	/sbin/iwconfig 2>/dev/null
 	exit 0
@@ -25,5 +28,5 @@ fi
 iwconfig=`/sbin/iwconfig 2>/dev/null`
 bitrate=`echo "$iwconfig" | grep "Bit Rate." | sed -e "s/^.*Bit Rate.//" -e "s/ .*$//g"`
 [ -z "$bitrate" ] && bitrate="0"
-quality=`echo "$iwconfig" | grep "Link Quality." | sed -e "s/^.*Link Quality.//" -e "s/ .*$//g"`
-echo | awk "{printf \"\005{=b Ck}%s\005{-}\005{= Ck}Mb/s,\005{-}\005{=b Ck}%d\005{-}\005{= Ck}%%\005{-} \", $bitrate, 100*$quality}"
+quality=`echo "$iwconfig" | grep "Link Quality." | sed -e "s/^.*Link Quality.//" -e "s/ .*$//g" | awk -F/ '{printf "%.0f", 100*$1/$2}'`
+printf "$bCk%s$UNDO$Ck%s,$UNDO$bCk%s$UNDO$Ck%%$UNDO " "$bitrate" "Mbps" "$quality"

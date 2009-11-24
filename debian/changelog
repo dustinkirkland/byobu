@@ -8,6 +8,13 @@ byobu (2.40) unreleased; urgency=low
   * bin/apport: improve the formatting of the detailed output to
     suggest installing apport if necessary
   * debian/control: suggest apport
+  * bin/apport, bin/battery, bin/cpu_freq, bin/disk, bin/ec2_cost,
+    bin/fan_speed, bin/hostname, bin/ip_address, bin/load_average,
+    bin/logo, bin/mail, bin/mem_available, bin/mem_used, bin/menu,
+    bin/network, bin/processes, bin/reboot_required, bin/release,
+    bin/temp_c, bin/temp_f, bin/updates_available, bin/uptime, bin/users,
+    bin/whoami, bin/wifi_quality statusrc: define a set of color variables,
+    such that it's easier to make these theme-able
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 

@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 
 if [ "$1" = "--detail" ]; then
 	hostname -f
@@ -28,4 +29,4 @@ fi
 . "$HOME/.$PKG/status"
 [ "$whoami" = "1" ] && at="@"
 
-printf "\005{+b }%s%s\005{-}" "$at" $(hostname -s 2>/dev/null || hostname)
+printf "$BOLD2%s%s$UNDO" "$at" $(hostname -s 2>/dev/null || hostname)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-11-23 19:35-0600\n"
+"POT-Creation-Date: 2009-11-23 20:48-0600\n"
 "PO-Revision-Date: 2009-10-03 23:47+0000\n"
 "Last-Translator: oscrp <mazonovo@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Launchpad-Export-Date: 2009-10-04 06:50+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: bin/menu:33 byobu-config:129 byobu-config:401 byobu-config:409
+#: bin/menu:34 byobu-config:129 byobu-config:401 byobu-config:409
 msgid "Menu"
 msgstr "Menú"
 

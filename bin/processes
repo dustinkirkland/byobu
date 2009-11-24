@@ -17,9 +17,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
+
 if [ "$1" = "--detail" ]; then
 	ps -ejH
 	exit 0
 fi
 
-printf "\005{=b yw}%s\005{-}\005{= yw}&\005{-} " $(ls -d /proc/[0-9]* 2>/dev/null| wc -l)
+printf "$byw%s$UNDO$yw&$UNDO " $(ls -d /proc/[0-9]* 2>/dev/null| wc -l)
