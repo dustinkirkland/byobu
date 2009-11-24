@@ -19,12 +19,16 @@
 
 if [ "$1" = "--detail" ]; then
 	if ls /var/crash/*.crash >/dev/null 2>&1; then
-		printf "To file bugs on the existing crash reports, run:\n"
+		printf "\nTo file bugs on the existing crash reports, run:\n"
+		which apport-cli >/dev/null || printf "  sudo apt-get install apport\n"
+		fi
 		for i in /var/crash/*.crash; do
 			printf "  apport-cli $i\n"
 		done
+		printf "\nTo clear the pending reports:\n"
+		printf "  rm -f /var/crash/*.crash\n\n"
 	else
-		printf "No pending crash reports"
+		printf "No pending crash reports\n"
 	fi
 	exit 0
 fi

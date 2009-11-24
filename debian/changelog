@@ -1,10 +1,13 @@
-byobu (2.40-0ubuntu1) lucid; urgency=low
+byobu (2.40) unreleased; urgency=low
 
   * bin/updates_available, statusrc: move the color coding out to the config
     file
   * byobu-config, byobu.1, po/*, profiles/common,
-    profiles_generator/profile.skel, rpm/byobu.spec, statusrc: add an apport
-    hook, LP: #485380
+    profiles_generator/profile.skel, rpm/byobu.spec, statusrc:
+    - add an apport hook, LP: #485380
+  * bin/apport: improve the formatting of the detailed output to
+    suggest installing apport if necessary
+  * debian/control: suggest apport
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 

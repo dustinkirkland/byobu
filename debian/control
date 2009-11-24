@@ -11,7 +11,7 @@ Package: byobu
 Architecture: all
 Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, screen, gettext-base, python, python-newt (>= 0.52.2-11)
 Recommends: update-notifier-common, lsb-release
-Suggests: vim, w3m
+Suggests: apport, vim, w3m
 Provides: screen-profiles, screen-profiles-extras, byobu-extras
 Replaces: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0), byobu-extras (<< 2.17)
 Conflicts: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0), byobu-extras (<< 2.17)
