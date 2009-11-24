@@ -35,6 +35,7 @@ defutf8 on
 #   ~60    ~1 minute
 backtick 10 	86389	86389		byobu-janitor
 backtick 11	86399	86399		printf "\005-1="
+backtick 12	86413	86413		byobu-status color
 backtick 99  	86011	86011		byobu-status logo
 backtick 100	599	599		byobu-status release
 backtick 101 	7	7		byobu-status updates_available

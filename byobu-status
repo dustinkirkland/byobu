@@ -36,27 +36,33 @@ find_script () {
 [ -r "$HOME/.$PKG/statusrc" ] && . "$HOME/.$PKG/statusrc"
 
 export P="$1"
-if [ "$P" = "--detail" ]; then
-	VER=
-	if which dpkg-query >/dev/null; then
-		VER=`dpkg-query --show $PKG | awk '{print "-" $2 }'`
-	fi
-	printf "$PKG$VER Detailed Status Navigation\n  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
-	if [ -d "$HOME/.$PKG/bin" ]; then
-		DIR="$HOME/.$PKG/bin"
-	else
-		DIR="/usr/lib/$PKG"
-	fi
-	for i in `ls "$DIR"`; do
-		[ "$i" = "menu" ] && continue
-		script=`find_script $i`
-		short=`$script --short | sed 's/^\s*//' | sed 's/\s*$//' | sed 's/.{[^}]*}//g'` || true
-		detail=`$script --detail | sed '/^$/d' | sed 's/^/\t/g'` || true
-		printf "%s\n\t(%s)\n" "$short" "$i"
-		[ -n "$detail" ] && printf "%s\n" "$detail"
-	done
-else
+case "$P" in
+	--detail)
+		VER=
+		if which dpkg-query >/dev/null; then
+			VER=`dpkg-query --show $PKG | awk '{print "-" $2 }'`
+		fi
+		printf "$PKG$VER Detailed Status Navigation\n  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
+		if [ -d "$HOME/.$PKG/bin" ]; then
+			DIR="$HOME/.$PKG/bin"
+		else
+			DIR="/usr/lib/$PKG"
+		fi
+		for i in `ls "$DIR"`; do
+			[ "$i" = "menu" ] && continue
+			script=`find_script $i`
+			short=`$script --short | sed 's/^\s*//' | sed 's/\s*$//' | sed 's/.{[^}]*}//g'` || true
+			detail=`$script --detail | sed '/^$/d' | sed 's/^/\t/g'` || true
+			printf "%s\n\t(%s)\n" "$short" "$i"
+			[ -n "$detail" ] && printf "%s\n" "$detail"
+		done
+	;;
+	color)
+		[ -r "$HOME/.$PKG/color" ] && . "$HOME/.$PKG/color"
+		[ -z "$COLOR" ] && printf "$Wk" || printf "$ESC{= $COLOR}"
+	;;
+	*)
 		eval x="\$$P" || exit 1
 		[ "$x" = "1" ] || exit 0
 		. $(find_script "$P")
-fi
+esac
