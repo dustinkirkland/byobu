@@ -17,6 +17,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="byobu"
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
+
 if [ "$1" = "--detail" -o "$1" = "--short" ]; then
 	if which apt-get >/dev/null; then
 		detail=`apt-get -s -o Debug::NoLocking=true upgrade`
@@ -35,13 +38,13 @@ print_updates() {
 	s=$2
 	if [ -n "$u" ]; then
 		if [ "$u" -gt 0 ]; then
-			printf "\005{=b rW}%d\005{-}\005{= rW}!" "$u"
+			printf "$brW%d$XXX$rW!" "$u"
 			if [ -n "$s" ]; then
 				if [ "$s" -gt 0 ]; then
 					printf "!"
 				fi
 			fi
-			printf "\005{-} "
+			printf "$XXX "
 		fi
 	fi
 }
