@@ -20,6 +20,7 @@ byobu (2.40) unreleased; urgency=low
     statusrc: obviate the need for separate profiles per color; read the
     profile colors from a config file, and use a special "color" status
     item to dynamically render it
+  * bin/menu: add a space to the -r test, LP: #490894
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 
