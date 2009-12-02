@@ -59,7 +59,9 @@ case "$P" in
 	;;
 	color)
 		[ -r "$HOME/.$PKG/color" ] && . "$HOME/.$PKG/color"
-		[ -z "$COLOR" ] && printf "$Wk" || printf "$ESC{= $COLOR}"
+		[ -z "$FOREGROUND" ] && FOREGROUND="k"
+		[ -z "$BACKGROUND" ] && BACKGROUND="W"
+		printf "$ESC{= $BACKGROUND$FOREGROUND}"
 	;;
 	*)
 		eval x="\$$P" || exit 1
