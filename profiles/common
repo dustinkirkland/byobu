@@ -3,6 +3,9 @@
 #      This configuration profile is intended to be a common header of useful
 #      functionality, included by other profiles.
 #
+#      It is intended to roughly approximate graphical desktop within 'screen';
+#      inspired by the Ubuntu Gnome Desktop.
+#
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -87,3 +90,16 @@ defscrollback 10000
 setenv SSH_AUTH_SOCK /var/run/screen/S-$USER/byobu.ssh-agent
 
 source $HOME/.byobu/keybindings
+
+# Window tabs, second to last line
+caption always "%12`%?%-Lw%50L>%?%{=r }%{+b }%n*%f %t%?(%u)%?%12`%?%+Lw%?%11` %=%12`%110`%109`%122`%111`%10`%<"
+
+# Status string, last line
+hardstatus string '%99`%12` %100`%112`%= %102`%101`%129`%127`%114`%115`%108`%128`%125`%126`%113`%119`%117`%116`%106`%104`%103`%105`%107`%123`%120`%121`'
+
+# NOTE: Older version of screen have an arbitrary limit of only being able
+# to change colors 16 times in this 'hardstatus string'.
+# Ubuntu (fixed in Jaunty):
+#  * https://bugs.launchpad.net/bugs/315871
+# Upstream:
+#  * http://savannah.gnu.org/bugs/?22146

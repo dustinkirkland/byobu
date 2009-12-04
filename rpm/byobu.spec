@@ -28,8 +28,6 @@ screen window manager, such as toggle-able system status notifications.
 
 
 %build
-profiles_generator/generate
-
 
 %install
 rm -rf $RPM_BUILD_ROOT

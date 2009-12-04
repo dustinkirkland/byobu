@@ -4,11 +4,6 @@ desktop/byobu.desktop usr/share/applications/
 po/locale/* usr/share/locale
 profiles/byoburc usr/share/byobu/profiles
 profiles/common usr/share/byobu/profiles
-profiles/NONE usr/share/byobu/profiles
-profiles/black usr/share/byobu/profiles
-profiles/dark usr/share/byobu/profiles
-profiles/light usr/share/byobu/profiles
-profiles/*_* usr/share/byobu/profiles
 keybindings/* usr/share/byobu/keybindings
 statusrc etc/byobu
 windows/common usr/share/byobu/windows

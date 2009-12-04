@@ -29,12 +29,9 @@ update-pot:
 prebuild:
 
 build:
-	# auto-generate the logo'd light/dark profiles
-	./profiles_generator/generate
 
 clean:
 	dh_clean
-	./profiles_generator/generate --clean
 	for po in po/*.po ; do \
 		lang=$${po#po/}; lang=$${lang%.po}; \
 		rm -f po/locale/$${lang}/LC_MESSAGES/${PKG}.mo ; \

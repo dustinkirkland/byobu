@@ -28,6 +28,10 @@ byobu (2.40) unreleased; urgency=low
     flexibility
   * byobu-config, byobu-select-profile: rework to independently select
     background color and foreground color, rather than profile; improve text
+  * debian/install, debian/rules, profiles/common,
+    profiles_generator/generate, profiles_generator/profile.skel,
+    rpm/byobu.spec: get rid of the generated profiles; now, everything is
+    handled by FOREGROUND and BACKGROUND colors, dynamically
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 
