@@ -85,15 +85,16 @@ def menu(screen, size, isInstalled):
         installtext=_("Byobu currently does not launch at login (toggle on)")
 
 
-    li = Listbox(height = 8, width = 60, returnExit = 1)
+    li = Listbox(height = 9, width = 60, returnExit = 1)
     li.append(_("Help"), 1)
-    li.append(_("Change Byobu's colors"), 2)
-    li.append(_("Toggle status notifications"), 3)
-    li.append(_("Change keybinding set"), 4)
-    li.append(_("Change escape sequence"), 5)
-    li.append(_("Create new windows"), 6)
-    li.append(_("Manage default windows"), 7)
-    li.append(installtext, 8)
+    li.append(_("Change Byobu's background color"), 2)
+    li.append(_("Change Byobu's foreground color"), 3)
+    li.append(_("Toggle status notifications"), 4)
+    li.append(_("Change keybinding set"), 5)
+    li.append(_("Change escape sequence"), 6)
+    li.append(_("Create new windows"), 7)
+    li.append(_("Manage default windows"), 8)
+    li.append(installtext, 9)
     bb = ButtonBar(screen, (("Exit", "exit", ESC),), compact=1)
 
     g = GridForm(screen, _(" Byobu Configuration Menu"), 1, 2)
@@ -135,7 +136,7 @@ def help(screen, size, config):
 
     return 100
 
-def profile(screen, size):
+def select_color(screen, size, layer):
     li = Listbox(height = 8, width = 60, scroll = 1, returnExit = 1)
 
     for choice in commands.getoutput('byobu-select-profile -l').splitlines():
@@ -143,12 +144,20 @@ def profile(screen, size):
 
     bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
 
-    g = GridForm(screen, _("Which profile would you like to use?"), 1, 2)
+    if layer == "foreground":
+        g = GridForm(screen, _("Choose a foreground color:"), 1, 2)
+    else:
+        g = GridForm(screen, _("Choose a background color:"), 1, 2)
+
     g.add(li, 0, 0, padding=(4,2,4,2))
     g.add(bb, 0, 1, padding=(1,1,0,0))
 
     if bb.buttonPressed(g.runOnce()) != "cancel":
-        commands.getoutput('byobu-select-profile --set %s' % li.current())
+        commands.getoutput("echo %s > /tmp/out" % layer)
+        if layer == "foreground":
+            commands.getoutput('byobu-select-profile --foreground %s' % li.current())
+        else:
+            commands.getoutput('byobu-select-profile --background %s' % li.current())
 	reload_required()
     return 100
 
@@ -498,18 +507,20 @@ def main():
         if tag == 1:
             tag = help(screen, size, config)
         elif tag == 2:
-            tag = profile(screen, size)
+            tag = select_color(screen, size, "background")
         elif tag == 3:
-            tag = togglestatus(screen, size)
+            tag = select_color(screen, size, "foreground")
         elif tag == 4:
+            tag = togglestatus(screen, size)
+        elif tag == 5:
             tag = keybindings(screen, size)
-	elif tag == 5:
+	elif tag == 6:
             tag = chgesc(screen, size)
-        elif tag == 6:
-            tag = newwindow(screen, size)
         elif tag == 7:
-            tag = defaultwindows(screen, size)
+            tag = newwindow(screen, size)
         elif tag == 8:
+            tag = defaultwindows(screen, size)
+        elif tag == 9:
             tag = install(screen, size, isInstalled)
             isInstalled=(tag == 100)
 

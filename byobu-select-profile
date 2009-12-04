@@ -26,6 +26,8 @@ PKG="byobu"
 
 TEXTDOMAIN="$PKG"
 
+COLORS="black blue cyan green purple red grey yellow"
+
 usage () {
     cat <<EOT
 usage: byobu-select-profile [(-l|--list)][(-h|--help)][(-s|--set) PROFILE]
@@ -40,8 +42,10 @@ EOT
 # Initialize variables
 BASE_DIR="/usr/share/$PKG"
 PROFILE_DIR="$BASE_DIR/profiles"
+FILE="$HOME"/."$PKG"/color
 profile=""
 selected=-1
+color=
 
 assert_symlink() {
 	if [ -e "$1" ]; then
@@ -58,47 +62,42 @@ assert_symlink "$HOME/.$PKG/profile"
 
 listprofiles() {
 	# Display list of profiles, one per line
-	# Start with basic profiles
-	basename $(ls $PROFILE_DIR/NONE 2>/dev/null) 2>/dev/null
-	basename $(ls $PROFILE_DIR/light 2>/dev/null) 2>/dev/null
-	basename $(ls $PROFILE_DIR/dark 2>/dev/null) 2>/dev/null
-	basename $(ls $PROFILE_DIR/black 2>/dev/null) 2>/dev/null
-	# Now, list advanced profiles
-	for x in $(ls $PROFILE_DIR/*_* 2>/dev/null); do
-		x=$(basename "$x")
-		if [ $x = "common" -o $x = "misc" ]; then
-			# Skip the common profile, no value there
-			continue
-		fi
-		echo "$x"
+	for x in $COLORS; do
+		echo "dark_$x"
+		echo "light_$x"
 	done
 }
 
 prompt() {
-	# Prompt the user to choose among the available profiles
-	echo
-	echo `gettext "Select a screen profile: "`
-	i=0
-	profiles=$(listprofiles)
-	for x in $profiles; do
-		i=$(expr $i + 1)
-		desc="          "
-		if [ "$x" = "light" ]; then
-			simple=$i
-		fi
-		[ $i -lt 10 ] && i=" $i"
-		echo " $i. $x$desc"
-	done
-	echo
-	selected=x
+	which="$1"
 	count=1
+	selected=-1
 	while /bin/true; do
 		if [ $count -gt 5 ]; then
 			echo `gettext "ERROR: Invalid selection"`
 			exit 1
 		fi
-		count=`expr $count + 1`
-		if [ -z "$selected" -a ! -z "$simple" ]; then
+		count=$(expr $count + 1)
+		echo
+		if [ "$which" = "foreground" ]; then
+			echo `gettext 'Select the foreground color: '`
+			simple="black"
+		else
+			echo `gettext 'Select the background color: '`
+			simple="grey"
+		fi
+		i=1
+		for x in $COLORS; do
+			test $i -lt 10 2>/dev/null && echo -n "  " || echo -n " "
+			echo "$i. dark_$x"
+			i=$(expr $i + 1)
+			[ "$simple" = "$x" ] && simple=$i
+			test $i -lt 10 2>/dev/null && echo -n "  " || echo -n " "
+			echo "$i. light_$x"
+			i=$(expr $i + 1)
+		done
+		echo
+		if [ -z "$selected" -a -n "$simple" ]; then
 			selected="$simple"
 		elif ! test $selected -gt 0 2>/dev/null; then
 			echo -n "`gettext 'Choose'` 1-$i [$simple]: "
@@ -107,10 +106,20 @@ prompt() {
 			echo -n "`gettext 'Choose'` 1-$i [$simple]: "
 			selected=`head -n1`
 		else
-			break
+			i=1
+			for x in $COLORS; do
+				color="dark_$x"
+				[ "$i" = "$selected" ] && break
+				i=$(expr $i + 1)
+				color="light_$x"
+				[ "$i" = "$selected" ] && break
+				i=$(expr $i + 1)
+			done
+			echo `gettext "Selected"` " [$color]"
+			setcolor "$which" "$color"
+			return 0
 		fi
 	done
-	SELECTED="$selected"
 }
 
 setprofile() {
@@ -144,18 +153,60 @@ setprofile() {
 	fi
 }
 
+getletter() {
+	desc=$(echo "$1" | awk -F"_" '{print $1}')
+	color=$(echo "$1" | awk -F"_" '{print $2}')
+COLORS="black blue cyan green purple red grey yellow"
+
+	case $color in
+		black)  letter="k";;
+		blue)   letter="b";;
+		cyan)   letter="c";;
+		green)  letter="g";;
+		purple) letter="m";;
+		red)    letter="r";;
+		grey)  letter="w";;
+		yellow) letter="y";;
+		*)      letter="w";;
+	esac
+	if [ "$desc" = "light" ]; then
+		letter=$(echo "$letter" | tr "[:lower:]" "[:upper:]")
+	fi
+	echo "$letter"
+}
+
+setcolor() {
+	which="$1"
+	color="$2"
+	[ -r $FILE ] && . $FILE
+	if [ "$which" = "foreground" ]; then
+		FOREGROUND=$(getletter "$color")
+	else
+		BACKGROUND=$(getletter "$color")
+	fi
+	printf "FOREGROUND=$FOREGROUND\nBACKGROUND=$BACKGROUND\n" > $FILE
+	touch "/var/run/screen/S-$USER/$PKG.reload-required"
+}
+
 if [ $# -eq 0 ]; then
-	prompt
-	setprofile
+	prompt "background"
+	prompt "foreground"
+	screen -X at 0 source "$HOME/.$PKG/profile"
 else
-	TEMP=`getopt -o lhs: --long list,help,set: -- "$@"`
-	eval set -- "$TEMP"
 	while true; do
 		case "$1" in
 			-s|--set)
 				setprofile "$2"
 				shift 2
 				break
+			;;
+			-b|--background)
+				setcolor "background" "$2"
+				shift 2
+			;;
+			-f|--foreground)
+				setcolor "foreground" "$2"
+				shift 2
 			;;
 			-l|--list)
 				listprofiles
@@ -171,6 +222,7 @@ else
 				break
 			;;
 		esac
+		[ $# -eq 0 ] && break
 	done
 fi
 
