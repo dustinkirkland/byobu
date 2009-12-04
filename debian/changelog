@@ -37,6 +37,8 @@ byobu (2.40) unreleased; urgency=low
   * byobu-select-profile, byobu-select-profile.1: deprecate the --set
     option, only support --background and --foreground now; update the
     documentation
+  * debian/profile: establish symlinks for the color profiles to ensure
+    smooth upgrades; all point to the common profile now
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 
