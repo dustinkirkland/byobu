@@ -27,7 +27,7 @@ byobu (2.40) unreleased; urgency=low
   * byobu-status: separate COLOR into FOREGROUND and BACKGROUND; more
     flexibility
   * byobu-config, byobu-select-profile: rework to independently select
-    background color and foreground color, rather than profile
+    background color and foreground color, rather than profile; improve text
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 

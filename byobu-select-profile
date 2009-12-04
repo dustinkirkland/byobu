@@ -115,7 +115,7 @@ prompt() {
 				[ "$i" = "$selected" ] && break
 				i=$(expr $i + 1)
 			done
-			echo `gettext "Selected"` " [$color]"
+			echo `gettext "Selected"` "$which [$color]"
 			setcolor "$which" "$color"
 			return 0
 		fi
