@@ -52,21 +52,42 @@ if [ -d "$HOME/.$OLDPKG" ] && [ ! -e "$HOME/.$PKG" ]; then
 	# Rename the config dir
 	mv -f "$HOME/.$OLDPKG" "$HOME/.$PKG"
 	ln -sf "$HOME/.$PKG" "$HOME/.$OLDPKG"
-	# Fix the chosen profile symlink
-	if [ -h "$PROFILE" ]; then
-		# Determine the chosen profile color
-		profile=`readlink "$PROFILE" | sed "s:^.*-::"`
-		# Try to set that color, if it exists, otherwise set to default
-		byobu-select-profile -s "$profile" >/dev/null 2>&1 || byobu-select-profile -s "$DEFAULT_PROFILE" >/dev/null 2>&1
-	fi
 	# Replace all instances of the old package name with the new
 	sed -i "s/$OLDPKG/$PKG/g" "$HOME/.$PKG"/* || true
 fi
 
-# Affects: First runs with no configuration
+# Affects: First runs with no configuration, or broken profile symlinks
 # Seed the configuration
 [ -d "$HOME/.$PKG" ] || mkdir -p "$HOME/.$PKG"
-[ -r "$PROFILE" ] || byobu-select-profile -s "$DEFAULT_PROFILE" >/dev/null 2>&1
+if [ ! -r "$PROFILE" ]; then
+	# Set default colors
+	BG=W
+	FG=k
+	if [ -h "$PROFILE" ]; then
+		# Symlink is broken; try to guess chosen colors
+		color=$(ls -l "$PROFILE" | sed "s/^.* //")
+		case $color in
+			black|dark)   BG=k; FG=W;;
+			dark_blue)    BG=b; FG=W;;
+			dark_cyan)    BG=c; FG=W;;
+			dark_green)   BG=g; FG=W;;
+			dark_purple)  BG=m; FG=W;;
+			dark_red)     BG=r; FG=W;;
+			dark_yellow)  BG=y; FG=W;;
+			light)        BG=W; FG=k;;
+			light_blue)   BG=B; FG=k;;
+			light_cyan)   BG=C; FG=k;;
+			light_green)  BG=G; FG=k;;
+			light_purple) BG=M; FG=k;;
+			light_red)    BG=R; FG=k;;
+			light_yellow) BG=Y; FG=k;;
+			*)            BG=W; FG=k;;
+		esac
+	fi
+	byobu-select-profile -b $BG -f $FG >/dev/null 2>&1
+	rm -f "$PROFILE" 2>/dev/null
+	ln -s /usr/share/$PKG/profiles/common "$PROFILE"
+fi
 [ -s "$HOME/.$PKG/keybindings" ] || echo "source /usr/share/$PKG/keybindings/common" > "$HOME/.$PKG/keybindings"
 [ -r "$HOME/.$PKG/status" ] || touch "$HOME/.$PKG/status"
 [ -r "$HOME/.$PKG/windows" ] || touch "$HOME/.$PKG/windows"
