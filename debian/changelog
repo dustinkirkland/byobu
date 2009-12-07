@@ -47,6 +47,7 @@ byobu (2.40) unreleased; urgency=low
     default values, making it easier for users to customize themselves
   * bin/custom, byobu-config, byobu.1, profiles/common, rpm/byobu.spec,
     statusrc: add support for a custom status script indicator
+  * byobu-config, byobu-select-profile: make color selection more readable
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 

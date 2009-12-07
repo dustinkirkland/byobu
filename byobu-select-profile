@@ -89,11 +89,11 @@ prompt() {
 		i=1
 		for x in $COLORS; do
 			test $i -lt 10 2>/dev/null && echo -n "  " || echo -n " "
-			echo "$i. dark_$x"
+			echo "$i. $x"
 			i=$(expr $i + 1)
 			[ "$simple" = "$x" ] && simple=$i
 			test $i -lt 10 2>/dev/null && echo -n "  " || echo -n " "
-			echo "$i. light_$x"
+			echo "$i. $x (light)"
 			i=$(expr $i + 1)
 		done
 		echo
