@@ -280,8 +280,8 @@ def readstatus():
     status["disk"]=0
     status["ec2_cost"]=0
     status["fan_speed"]=0
-    status["hostname"]=0
-    status["ip_address"]=0
+    status["hostname"]=1
+    status["ip_address"]=1
     status["load_average"]=1
     status["logo"]=1
     status["mail"]=0
@@ -298,7 +298,7 @@ def readstatus():
     status["users"]=0
     status["updates_available"]=1
     status["uptime"]=1
-    status["whoami"]=0
+    status["whoami"]=1
     status["wifi_quality"]=0
     if os.path.exists(HOME+'/.'+PKG+'/status'):
         f=open(HOME+'/.'+PKG+'/status', 'r')

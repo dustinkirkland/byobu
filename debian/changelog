@@ -40,6 +40,11 @@ byobu (2.40) unreleased; urgency=low
     documentation
   * debian/profile: establish symlinks for the color profiles to ensure
     smooth upgrades; all point to the common profile now
+  * byobu-config, statusrc: enable whoami, hostname, ip_address by default;
+    it seems I almost *always* turn these on, seem useful; re-disable if
+    there are noisy complaints
+  * byobu-janitor, statusrc: seed the ~/.byobu/status file with the
+    default values, making it easier for users to customize themselves
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 
