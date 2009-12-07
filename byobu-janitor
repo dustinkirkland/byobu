@@ -60,7 +60,7 @@ fi
 # Seed the configuration
 [ -d "$HOME/.$PKG" ] || mkdir -p "$HOME/.$PKG"
 [ -r "$HOME/.$PKG/color" ] || byobu-select-profile -b W -f k >/dev/null 2>&1
-[ -r "$HOME/.$PKG/profile" ] || ln -sf /usr/share/$PKG/profiles/common "$PROFILE"
+[ -r "$PROFILE" ] || ln -sf /usr/share/$PKG/profiles/common "$PROFILE"
 
 # Affects: Symlinks pointing to color profiles
 if [ -h "$PROFILE" ] && \
@@ -87,8 +87,8 @@ if [ -h "$PROFILE" ] && \
 		light_yellow) BG=Y; FG=k;;
 		*)            BG=W; FG=k;;
 	esac
-	byobu-select-profile -b $BG -f $FG >/dev/null 2>&1
 	rm -f "$PROFILE" 2>/dev/null
+	byobu-select-profile -b $BG -f $FG >/dev/null 2>&1
 fi
 
 [ -s "$HOME/.$PKG/keybindings" ] || echo "source /usr/share/$PKG/keybindings/common" > "$HOME/.$PKG/keybindings"

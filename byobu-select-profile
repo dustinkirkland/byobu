@@ -42,6 +42,8 @@ EOT
 
 # Initialize variables
 FILE="$HOME"/."$PKG"/color
+PROFILE="$HOME/.$PKG/profile"
+[ -r "$PROFILE" ] || ln -sf /usr/share/$PKG/profiles/common "$PROFILE"
 selected=-1
 color=
 
