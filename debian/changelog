@@ -33,7 +33,8 @@ byobu (2.40) unreleased; urgency=low
     rpm/byobu.spec: get rid of the generated profiles; now, everything is
     handled by FOREGROUND and BACKGROUND colors, dynamically
   * byobu-janitor: clean up old ~/.byobu/profile symlinks; guess the user's
-    colors and set them in ~/.byobu/colors
+    colors and set them in ~/.byobu/colors; ensure that profile gets linked
+    to the common one
   * byobu-select-profile, byobu-select-profile.1: deprecate the --set
     option, only support --background and --foreground now; update the
     documentation
