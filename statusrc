@@ -25,6 +25,7 @@ arch=0
 battery=0
 cpu_count=1
 cpu_freq=1
+custom=1
 date=1
 disk=0
 ec2_cost=0
@@ -65,6 +66,7 @@ UNDO="$ESC{-}"
 BOLD1="$ESC{=b }"
 BOLD2="$ESC{+b }"
 NONE="$ESC{= }"
+INVERT="$ESC{=r }"
 
 bw="$ESC{= bw}"
 bW="$ESC{= bW}"

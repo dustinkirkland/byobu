@@ -19,6 +19,8 @@ byobu \- wrapper script for seeding a user's byobu configuration and launching s
 
 \fBcpu_freq\fP \- the current frequency of the cpu in GHz; displayed in the lower bar toward the right in white text on a light blue background
 
+\fBcustom\fP \- user defined custom scripts; must be executable programs of any kind in \fI$HOME/.byobu/bin\fP; must be named N_NAME, where N is the frequency in seconds to refresh the status indicator, and NAME is the name of the script; N should not be less than 5 seconds; script should echo a small amount of text to standard out, standard error is discared; the indicator will be displayed in the lower panel, in inverted colors to your current background/foreground scheme, unless you manually specify the colors in your script's output; BEWARE, cpu-intensive custom scripts may impact your overall system performance and could upset your system administrator!
+
 \fBdate\fP \- the system date in YYYY-MM-DD formate; displayed in the lower on the far right in the default text color on the default background
 
 \fBdisk\fP \- total disk space available and total used on / directory; displayed in the lower bar on the far right in white text on a light purple background; override the default directory by specifying an alternate mount point with MONITORED_DISK=/wherever in \fI$HOME/.byobu/statusrc\fP

@@ -1,0 +1,48 @@
+#!/bin/sh -e
+#
+#    custom: run the user's custom status scripts
+#
+#    Copyright (C) 2009 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+PKG="byobu"
+[ -d "$HOME/.$PKG/bin" ] || exit 0
+
+[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
+[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$HOME/.byobu"
+NOW=$(date +%s)
+CACHE="$DIR/$PKG.custom"
+
+# Loop over custom scripts
+for i in $(ls "$HOME/.$PKG/bin/"[0-9]*_* 2>/dev/null); do
+	[ -x "$i" ] || continue
+	script=$(basename "$i")
+	freq=$(echo "$script" | awk -F_ '{print $1}')
+	lastrun=$(stat -c %Y "$CACHE.$script") 2>/dev/null || lastrun=0
+	expiration=$(expr $lastrun + $freq)
+	if [ $NOW -ge $expiration ]; then
+		# Update the cache
+		$i > "$CACHE.$script" 2>/dev/null
+	fi
+	output=$(cat "$CACHE.$script")
+	if echo "$output" | grep -qs "$ESC{"; then
+		# User has formatted the colors
+		echo "$output"
+	else
+		# Default to inverted coloring
+		echo "$INVERT$output$UNDO "
+	fi
+done

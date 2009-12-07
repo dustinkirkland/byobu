@@ -276,6 +276,7 @@ def readstatus():
     status["battery"]=0
     status["cpu_count"]=1
     status["cpu_freq"]=1
+    status["custom"]=1
     status["date"]=1
     status["disk"]=0
     status["ec2_cost"]=0

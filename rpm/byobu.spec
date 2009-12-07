@@ -86,6 +86,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/lib/byobu/battery
 /usr/lib/byobu/cpu_count
 /usr/lib/byobu/cpu_freq
+/usr/lib/byobu/custom
 /usr/lib/byobu/date
 /usr/lib/byobu/disk
 /usr/lib/byobu/ec2_cost
