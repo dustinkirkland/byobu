@@ -1,10 +1,7 @@
 ###############################################################################
 #    Screen common profile
-#      This configuration profile is intended to be a common header of useful
-#      functionality, included by other profiles.
-#
-#      It is intended to roughly approximate graphical desktop within 'screen';
-#      inspired by the Ubuntu Gnome Desktop.
+#      This GNU Screen configuration profile is intended to roughly
+#      approximate a graphical desktop, inspired by the Ubuntu Gnome Desktop.
 #
 #    Copyright (C) 2008 Canonical Ltd.
 #
