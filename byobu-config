@@ -444,11 +444,16 @@ def getesckey():
     line = commands.getoutput("grep ^escape "+path)
     if line == "":
         return DEF_ESC
-    return line[line.find('^')+1]
+    esc = line[line.find('^')+1]
+    if esc == "`":
+        esc = " "
+    return esc
 
 def setesckey(key):
     path = HOME+'/.'+PKG+'/keybindings'
     if key != "":
+        if key == " ":
+            key = "`"
         u = key[0].upper()
         l = key[0].lower()
         if os.path.exists(path):
