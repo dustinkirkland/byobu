@@ -20,8 +20,6 @@
 PKG="byobu"
 SHARE="/usr/share/$PKG"
 DIR=`mktemp -t -d $PKG.XXXXXXXX` || error "Could not create a temporary directory"
-# Grab list of available colors
-colors=`find $SHARE/profiles/ -type f | sed "s/^.*\///" | sed "s/^.*-//" | sort -u | egrep -v "common|plain|NONE"`
 
 # Make sure we clean up $DIR if we exit for any reason
 trap "rm -rf "$DIR" 2>/dev/null || true" EXIT HUP INT QUIT TERM
@@ -29,15 +27,10 @@ trap "rm -rf "$DIR" 2>/dev/null || true" EXIT HUP INT QUIT TERM
 usage() {
 	echo
 	echo "Usage:"
-	echo " $0 [-c COLOR] -f TARGET.tar.gz"
+	echo " $0 [-f TARGET.tar.gz]"
 	echo
 	echo "If TARGET.tar.gz is unspecified, a randomly generated"
 	echo "filename will be used."
-	echo
-	echo "COLOR is obtained interactively if unspecified; or one of:"
-	for c in $colors; do
-		echo " * $c"
-	done
 	echo
 	exit 1
 }
@@ -45,43 +38,6 @@ usage() {
 error() {
 	echo "ERROR: $1" 1>&2
 	[ "$generated" = "1" -a -f "$file" ] && rm -f "$file"
-	exit 1
-}
-
-choose() {
-	i=0
-	x=
-	selected=
-	for x in $@; do
-		i=$(expr $i + 1)
-		[ $i -lt 10 ] && i=" $i"
-		echo " $i. $x" 1>&2
-	done
-	echo
-	count=1
-	while /bin/true; do
-		if [ $count -gt 5 ]; then
-			error "Invalid selection"
-		fi
-		count=`expr $count + 1`
-		if ! test $selected -gt 0 2>/dev/null; then
-			echo -n "`gettext 'Choose'` [1 -$i]: "
-			selected=`head -n1`
-		elif ! test $selected -le $i 2>/dev/null; then
-			echo -n "`gettext 'Choose'` [1 -$i]: "
-			selected=`head -n1`
-		else
-			break
-		fi
-	done
-	i=0
-	for x in $@; do
-		i=$(expr $i + 1)
-		if [ "$i" = "$selected" ]; then
-			SELECTED="$x"
-			return 0
-		fi
-	done
 	exit 1
 }
 
@@ -122,24 +78,18 @@ sources() {
 	cat $SHARE/profiles/common | sed "s:$PKG-:\$HOME/.$PKG/$PKG-:"
 	hr
 	echo
+	# insert the keybindings
 	cat $SHARE/keybindings/f-keys
 	hr
 	echo
-	hr
-	cat "$SOURCE"
 	hr
 }
 
 
 # Handle command line parameters
-color=
 file=
 while [ $# -gt 1 ]; do
 	case "$1" in
-		-c)
-			color="$2"
-			shift 2
-		;;
 		-f)
 			file="$2"
 			shift 2
@@ -179,29 +129,6 @@ else
 	fi
 fi
 
-# Obtain selections
-count=1
-while /bin/true; do
-	if [ $count -gt 5 ]; then
-		error "Invalid selection"
-	fi
-	SOURCE="$SHARE"/profiles/"$color"
-	if [ -f "$SOURCE" ]; then
-		break
-	else
-		# Try in the misc directory too
-		SOURCE="$SHARE"/profiles/misc/"$color"
-		if [ -f "$SOURCE" ]; then
-			break
-		fi
-	fi
-	echo
-	echo `gettext "Select a color: "`
-	choose $colors
-	color=$SELECTED
-	count=`expr $count + 1`
-done
-
 # Create workspace
 PROFILE="$DIR/.screenrc"
 STATUS="$DIR/.$PKG/status"
@@ -237,7 +164,6 @@ tar --owner=root --group=root -zcf "$file" -C "$DIR" . || error "Could not creat
 echo
 echo "Success!"
 echo
-echo "  "`gettext "Profile"` ": [$color]"
 echo "  "`gettext "Archive"` ": [$file]"
 echo
 echo `gettext "Extract the archive in your home directory on the target system."`

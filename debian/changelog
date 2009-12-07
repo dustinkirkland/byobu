@@ -50,6 +50,8 @@ byobu (2.40) unreleased; urgency=low
   * byobu-config, byobu-select-profile: make color selection more readable;
     support ctrl-<space> escape sequence
   * bin/custom, byobu-status: support --detail in custom scripts
+  * bin/byobu-export:
+    - drop the color selection, no longer necessary
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 
