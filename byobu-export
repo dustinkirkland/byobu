@@ -72,20 +72,6 @@ header() {
 	hr
 }
 
-sources() {
-	# insert the common profile, replace the status exe path
-	echo
-	cat $SHARE/profiles/common | sed "s:$PKG-:\$HOME/.$PKG/$PKG-:"
-	hr
-	echo
-	# insert the keybindings
-	cat $SHARE/keybindings/f-keys
-	hr
-	echo
-	hr
-}
-
-
 # Handle command line parameters
 file=
 while [ $# -gt 1 ]; do
@@ -130,33 +116,30 @@ else
 fi
 
 # Create workspace
-PROFILE="$DIR/.screenrc"
+PROFILE="$DIR/.byobu/profile"
 STATUS="$DIR/.$PKG/status"
 mkdir -p "$DIR/.$PKG/bin"
-touch "$DIR/.$PKG/profile"
 dpkg-query --show --showformat '${Package} ${Version}\n' $PKG > "$DIR/.$PKG/version" 2>/dev/null || true
 echo "http://launchpad.net/$PKG" >> "$DIR/.$PKG/version"
+header > "$PROFILE"
+printf "FOREGROUND=k\nBACKGROUND=W\n" > "$DIR/.$PKG/color"
 
 # Copy necessary scripts
+cat /usr/share/byobu/profiles/common >> "$PROFILE"
+cp -a /usr/share/byobu/keybindings/*-keys "$DIR/.$PKG"
 cp -a /usr/lib/$PKG/* "$DIR/.$PKG/bin"
 cp -a /usr/bin/$PKG-status "$DIR/.$PKG"
 cp -a /usr/bin/$PKG-janitor "$DIR/.$PKG"
 cp -a /usr/bin/$PKG-config "$DIR/.$PKG"
-
-# Generate the monolithic profile
-header > "$PROFILE"
-sources >> "$PROFILE"
 cat /etc/$PKG/statusrc > "$STATUS"
+echo "source \$HOME/.$PKG/profile" > "$DIR/.screenrc"
 
 # Some gardening
-# Drop additional "source" calls
-sed -i "s:^source .*::" "$PROFILE"
-# Use .screenrc instead
-sed -i "s:.$PKG/profile\":\.screenrc\":" "$PROFILE"
-# Drop the F9->Menu key
-sed -i "s:^bindkey -k k9 screen -t help:#bindkey -k k9 screen -t help:" "$PROFILE"
 # Use the local byobu-config
-sed -i "s:$PKG-config:\$HOME/.$PKG/$PKG-config:" "$PROFILE"
+sed -i "s:$PKG-config:\$HOME/.$PKG/$PKG-config:" "$DIR/.$PKG/"*-keys
+sed -i "s:$PKG-status:\$HOME/.$PKG/$PKG-status:" "$PROFILE"
+sed -i "s:$PKG-janitor:\$HOME/.$PKG/$PKG-janitor:" "$PROFILE"
+cd "$DIR/.$PKG"; ln -s f-keys keybindings; cd -
 
 # tar up the results
 tar --owner=root --group=root -zcf "$file" -C "$DIR" . || error "Could not create archive"
