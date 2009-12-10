@@ -10,6 +10,7 @@ windows/common usr/share/byobu/windows
 byobu-select-profile usr/bin
 byobu usr/bin
 byobu-config usr/bin
+byobu-reconnect-sockets usr/bin
 byobu-status usr/bin
 byobu-status-detail usr/bin
 byobu-janitor usr/bin
