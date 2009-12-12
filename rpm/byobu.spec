@@ -56,8 +56,8 @@ cp -ar byobu ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-config ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-status ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-status-detail ${RPM_BUILD_ROOT}/usr/bin
-cp -ar byobu-launcher-install ${RPM_BUILD_ROOT}/usr/share/byobu
-cp -ar byobu-launcher-uninstall ${RPM_BUILD_ROOT}/usr/share/byobu
+cp -ar byobu-launcher-install ${RPM_BUILD_ROOT}/usr/bin
+cp -ar byobu-launcher-uninstall ${RPM_BUILD_ROOT}/usr/bin
 cp -ar motd+shell ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-launcher ${RPM_BUILD_ROOT}/usr/bin
 cp -ar byobu-janitor ${RPM_BUILD_ROOT}/usr/bin
@@ -133,8 +133,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/byobu/profiles/light_purple
 /usr/share/byobu/profiles/light_red
 /usr/share/byobu/profiles/light_yellow
-/usr/share/byobu/byobu-launcher-install
-/usr/share/byobu/byobu-launcher-uninstall
+/usr/bin/byobu-launcher-install
+/usr/bin/byobu-launcher-uninstall
 /usr/share/byobu/windows/common
 /etc/byobu
 %doc README

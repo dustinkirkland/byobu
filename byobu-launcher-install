@@ -31,7 +31,7 @@ install_launcher() {
 }
 
 # Sanitize the environment
-/usr/share/$PKG/byobu-launcher-uninstall || true
+byobu-launcher-uninstall || true
 
 # Install in $HOME/.profile unconditionally
 install_launcher "$HOME/.profile"

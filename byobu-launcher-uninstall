@@ -18,12 +18,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="byobu"
 
 remove_launcher() {
 	dest=$1
 	if [ -w "$dest" ]; then
-		sed -i '/byobu-launcher$/d' "$dest"
-		sed -i '/screen-launcher$/d' "$dest"
+		sed -i "/$PKG-launcher$/d" "$dest"
+		sed -i "/screen-launcher$/d" "$dest"
 	fi
 	# the install disabled motd printing; re-enable
 	rm "$HOME"/.hushlogin 2>/dev/null || true
