@@ -30,7 +30,11 @@ HOME=os.getenv("HOME")
 USER=os.getenv("USER")
 PKG="byobu"
 SHARE='/usr/share/'+PKG
+if not os.path.exists(SHARE):
+    SHARE = "%s/.%s/%s" % (HOME, PKG, SHARE)
 DOC='/usr/share/doc/'+PKG
+if not os.path.exists(DOC):
+    DOC = "%s/.%s/%s" % (HOME, PKG, DOC)
 DEF_ESC="A"
 RELOAD = "If you are using the default set of keybindings, press\n<F5> or <ctrl-a-R> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
 RELOAD_FLAG="/var/run/screen/S-"+USER+"/"+PKG+".reload-required"
@@ -106,8 +110,7 @@ def menu(screen, size, isInstalled):
     else:
         return li.current()
 
-def messagebox(screen, width, height, title, text, \
-    scroll=0, \
+def messagebox(screen, width, height, title, text, scroll=0, \
     buttons=((_("Okay"), "okay"),(_("Cancel"), "cancel", ESC)) ):
 
     t = Textbox(width, height, text, scroll=scroll )
@@ -119,10 +122,9 @@ def messagebox(screen, width, height, title, text, \
     return bb.buttonPressed(g.runOnce())
 
 def help(screen, size, config):
-    for fn in glob.glob(DOC+'*/help.txt'):
-        f=file(fn)
-        text=f.read()
-        f.close()
+    f=file(DOC+'/help.txt')
+    text=f.read()
+    f.close()
 
     text=text.replace("<esckey>", getesckey(), 1)
 
@@ -410,7 +412,7 @@ def defaultwindows(screen, size):
 
 def install(screen, size, isInstalled):
     if not isInstalled:
-        out = commands.getoutput("bash /usr/share/"+PKG+"/byobu-launcher-install")
+        out = commands.getoutput("byobu-launcher-install")
         if out == "":
             out = _("Byobu will be launched automatically next time you login.")
 
@@ -418,7 +420,7 @@ def install(screen, size, isInstalled):
         buttons=((_("Menu"), )))
         return 100
     else:
-        out = commands.getoutput("bash /usr/share/"+PKG+"/byobu-launcher-uninstall")
+        out = commands.getoutput("byobu-launcher-uninstall")
         if out == "":
             out = _("Byobu will not be used next time you login.")
 
