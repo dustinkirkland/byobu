@@ -50,11 +50,17 @@ byobu (2.40) unreleased; urgency=low
   * byobu-config, byobu-select-profile: make color selection more readable;
     support ctrl-<space> escape sequence
   * bin/custom, byobu-status: support --detail in custom scripts
-  * bin/byobu-export:
+  * byobu-export, byobu-config:
+    - comprehensively rewritten, basically put all of byobu's installed
+      files in ~/.byobu, and use some clever sed scripts to fixup paths
     - drop the color selection, no longer necessary
   * byobu-reconnect-sockets, byobu-reconnect-sockets.1, debian/install,
     debian/rules: create a sourcable shell script that updates the gpg-agent
     and dbus socket environment variables, LP: #486511
+  * README: update link to exported tarball
+  * debian/install, rpm/byobu.spec, byobu-launcher-install,
+    byobu-launcher-uninstall, byobu-janitor: put the launcher install and
+    uninstall utilities in /usr/bin
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 
