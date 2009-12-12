@@ -28,7 +28,7 @@ RUN="/var/run/screen/S-$USER"
 out=`screen -ls 2>/dev/null` || true
 if echo "$out" | grep -qsi "^No Sockets found in "; then
 	# Start new session
-	exec $PKG
+	$(which $PKG >/dev/null) && exec $PKG || exec screen
 else
 	# Set window title
 	printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
