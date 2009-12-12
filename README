@@ -4,6 +4,8 @@ For more information about this package, please see:
 If byobu is not packaged for your Linux or Unix OS, or if you do not have
 administrative privileges in order to install byobu, you may be able to
 simply download and extract:
- * http://people.ubuntu.com/~kirkland/byobu-export.tar.gz
-in your home directory, and then run 'screen'.  Note that this will overwrite
-your ~/.screenrc.
+ * http://people.ubuntu.com/~kirkland/byobu.tar.gz
+in your home directory, and then run 'screen'.
+Note that this will overwrite your ~/.screenrc.
+
+Dustin Kirkland <dustin.kirkland@gmail.com>
