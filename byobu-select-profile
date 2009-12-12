@@ -30,7 +30,7 @@ COLORS="black blue cyan green purple red grey yellow"
 
 usage () {
     cat <<EOT
-usage: byobu-select-profile [(-l|--list)][(-h|--help)]
+Usage: $0 [(-l|--list)][(-h|--help)]
     -l,--list           list available profiles
     -b,--background	set the background color
     -f,--foreground     set the foreground color
