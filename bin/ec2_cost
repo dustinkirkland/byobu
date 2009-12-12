@@ -19,7 +19,6 @@
 
 DETAIL=0
 PKG="byobu"
-[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 
 for arg in $@; do
 	case "$arg" in

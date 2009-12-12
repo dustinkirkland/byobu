@@ -19,7 +19,6 @@
 #
 
 PKG="byobu"
-[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 
 DIR="/proc/acpi/thermal_zone"
 if [ "$1" = "--detail" ]; then

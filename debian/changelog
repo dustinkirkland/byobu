@@ -61,6 +61,8 @@ byobu (2.40) unreleased; urgency=low
   * debian/install, rpm/byobu.spec, byobu-launcher-install,
     byobu-launcher-uninstall, byobu-janitor: put the launcher install and
     uninstall utilities in /usr/bin
+  * bin/*: drop sourcing of /etc/byobu/statusrc, as this is done in
+    byobu-status now
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 

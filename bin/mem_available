@@ -18,14 +18,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 
 if [ "$1" = "--detail" ]; then
 	free
 	exit 0
 fi
 
-[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 . "$HOME/.$PKG/status"
 [ "$mem_used" = "1" ] && comma="," || whitespace=" "
 

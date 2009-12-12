@@ -18,14 +18,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 
 if [ "$1" = "--detail" ]; then
 	/sbin/ifconfig | grep "inet addr" | sed -e 's/^\s*//' -e 's/\s*$//'
 	exit 0
 fi
 
-[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 . "$HOME/.$PKG/status"
 [ "$hostname" = "1" ] && space=" "
 [ "$whoami" = "1" ] && space=" "

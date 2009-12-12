@@ -21,7 +21,6 @@
 #
 
 PKG="byobu"
-[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 
 if [ "$1" = "--detail" ]; then
 	ps -ef | grep "sshd;.*@" | grep -v grep
