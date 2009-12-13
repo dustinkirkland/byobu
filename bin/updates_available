@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" -o "$1" = "--short" ]; then
 	if which apt-get >/dev/null; then
@@ -37,13 +38,13 @@ print_updates() {
 	s=$2
 	if [ -n "$u" ]; then
 		if [ "$u" -gt 0 ]; then
-			printf "$brW%d$UNDO$rW!" "$u"
+			printf "$(color b r W)%d$(color undo)$(color r W)!" "$u"
 			if [ -n "$s" ]; then
 				if [ "$s" -gt 0 ]; then
 					printf "!"
 				fi
 			fi
-			printf "$UNDO "
+			printf "$(color undo) "
 		fi
 	fi
 }

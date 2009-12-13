@@ -19,6 +19,7 @@
 
 [ "$1" = "--detail" ] && exit 0
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 [ -r "$HOME/.$PKG/keybindings" ] && bindings="$HOME/.$PKG/keybindings" || bindings="$HOME/.screenrc"
 
@@ -31,4 +32,4 @@ else
 	key="F9"
 fi
 
-printf " $kw%s:<$UNDO$bkw$key$kw>" `gettext "Menu"`
+printf " $(color k w)%s:<$(color undo)$(color b k w)$key$(color k w)>" `gettext "Menu"`

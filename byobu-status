@@ -30,7 +30,29 @@ find_script () {
 	fi
 }
 
+# Define colors
+ESC="\005"
+color() {
+	case $1 in
+		"")     true ;;
+		esc)    printf "$ESC" ;;
+		undo)   printf "$ESC{-}" ;;
+		bold1)  printf "$ESC{=b }" ;;
+		bold2)  printf "$ESC{+b }" ;;
+		none)   printf "$ESC{= }" ;;
+		invert) printf "$ESC{=r }" ;;
+		*)
+			if [ "$#" = "2" ]; then
+				[ "$MONOCHROME" = "1" ] && printf "$ESC{ }" || printf "$ESC{= $1$2}"
+			else
+				[ "$MONOCHROME" = "1" ] && printf "$ESC{=$1 }" || printf "$ESC{=$1 $2$3}"
+			fi
+		;;
+	esac
+}
+
 # Source configurations
+[ -r "$HOME/.$PKG/color" ] && . "$HOME/.$PKG/color"
 [ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
 [ -r "$HOME/.$PKG/status" ] && . "$HOME/.$PKG/status"
 [ -r "$HOME/.$PKG/statusrc" ] && . "$HOME/.$PKG/statusrc"
@@ -53,7 +75,6 @@ case "$P" in
 		done
 	;;
 	color)
-		[ -r "$HOME/.$PKG/color" ] && . "$HOME/.$PKG/color"
 		[ -z "$FOREGROUND" ] && FOREGROUND="k"
 		[ -z "$BACKGROUND" ] && BACKGROUND="W"
 		printf "$ESC{= $BACKGROUND$FOREGROUND}"

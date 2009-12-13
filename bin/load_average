@@ -18,10 +18,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" ]; then
 	cat /proc/loadavg
 	exit 0
 fi
 
-printf "$Yk%s$UNDO " $(awk '{print $1}' /proc/loadavg)
+printf "$(color Y k)%s$(color undo) " $(awk '{print $1}' /proc/loadavg)

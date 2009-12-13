@@ -20,6 +20,7 @@
 
 PKG="byobu"
 [ -d "$HOME/.$PKG/bin" ] || exit 0
+color 2>/dev/null || color() { true; }
 
 [ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$HOME/.byobu"
 NOW=$(date +%s)
@@ -39,9 +40,9 @@ for i in $(ls "$HOME/.$PKG/bin/"[0-9]*_* 2>/dev/null); do
 	output=$(cat "$CACHE.$script")
 	if echo "$output" | grep -qs "$ESC{"; then
 		# User has formatted the colors
-		echo "$output"
+		printf "$output"
 	else
 		# Default to inverted coloring
-		echo "$INVERT$output$UNDO "
+		printf "$(color invert)$output$(color undo) "
 	fi
 done

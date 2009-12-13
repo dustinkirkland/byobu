@@ -19,6 +19,7 @@
 #
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 DIR="/proc/acpi/thermal_zone"
 if [ "$1" = "--detail" ]; then
@@ -27,6 +28,6 @@ fi
 
 for i in `ls $DIR/*/temperature 2>/dev/null`; do
 	t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i" | awk '{printf "%.0f", $1 *9/5 + 32}')
-	printf "$bkY%s$UNDO$kY\260F$UNDO " "$t"
+	printf "$(color b k Y)%s$(color undo)$(color k Y)\260F$(color undo) " "$t"
         break
 done

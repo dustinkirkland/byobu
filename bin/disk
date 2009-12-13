@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" ]; then
 	df -h -P
@@ -33,4 +34,4 @@ esac
 
 disk=$(df -h -P "$MP" 2>/dev/null || df -h "$MP")
 disk=$(echo "$disk" | tail -n 1 | awk '{print $2 " " $5}' | sed "s/\([^0-9\. ]\)/ \1/g" | awk '{printf "%d%sB,%d%", $1, $2, $3}')
-printf "$MW%s$UNDO " "$disk"
+printf "$(color M W)%s$(color undo) " "$disk"

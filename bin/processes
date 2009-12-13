@@ -18,10 +18,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" ]; then
 	ps -ejH
 	exit 0
 fi
 
-printf "$byw%s$UNDO$yw&$UNDO " $(ls -d /proc/[0-9]* 2>/dev/null| wc -l)
+printf "$(color b y w)%s$(color undo)$(color y w)&$(color undo) " $(ls -d /proc/[0-9]* 2>/dev/null| wc -l)

@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 # Allow interface overrides in $HOME/.$PKG/status
 if [ -n "$MONITORED_NETWORK" ]; then
@@ -57,5 +58,5 @@ for i in up down; do
 			unit="MB/s"
 		fi
 	fi
-	printf "$symbol$bmw$rate$UNDO$mw$unit$UNDO "
+	printf "$symbol$(color b m w)$rate$(color undo)$(color m w)$unit$(color undo) "
 done

@@ -19,6 +19,7 @@
 #
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 DIR="/sys/class/hwmon"
 if [ "$1" = "--detail" ]; then
@@ -32,7 +33,7 @@ fi
 for i in $(find $DIR/*/*/ -type f -name "fan1_input"); do
 	speed=$(cat "$i")
 	if [ "$speed" -gt 0 ]; then
-	        printf "$BOLD1%s$UNDO$NONE%s$UNDO " "$speed" "rpm"
+	        printf "$(color bold1)%s$(color undo)$(color none)%s$(color undo) " "$speed" "rpm"
 		exit 0
 	fi
 done

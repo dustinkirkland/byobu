@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" ]; then
 	/sbin/ifconfig | grep "inet addr" | sed -e 's/^\s*//' -e 's/\s*$//'
@@ -37,4 +38,4 @@ fi
 
 ipaddr=`/sbin/ifconfig "$interface" | grep "inet addr:" | sed -e "s/^.*inet addr://" -e "s/ .*$//"`
 
-printf "%s$BOLD2%s$UNDO" "$space" "$ipaddr"
+printf "%s$(color bold2)%s$(color undo)" "$space" "$ipaddr"

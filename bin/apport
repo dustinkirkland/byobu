@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" ]; then
 	if ls /var/crash/*.crash >/dev/null 2>&1; then
@@ -35,4 +36,4 @@ if [ "$1" = "--detail" ]; then
 fi
 
 # Print {!} if a /var/crash/*.crash file exists
-ls /var/crash/*.crash >/dev/null 2>&1 && printf "$yk{!}$UNDO "
+ls /var/crash/*.crash >/dev/null 2>&1 && printf "$(color y k){!}$(color undo) "

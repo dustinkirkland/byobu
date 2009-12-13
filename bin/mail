@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 mailfile="/var/spool/mail/$USER"
 if [ "$1" = "--detail" ]; then
@@ -25,4 +26,4 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-[ -s "$mailfile" ] && printf "$wk[M]$UNDO " || exit 0
+[ -s "$mailfile" ] && printf "$(color w k)[M]$(color undo) " || exit 0

@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" ]; then
 	free
@@ -38,4 +39,4 @@ else
 	mem="$mem"
 	unit="KB"
 fi
-printf "$bgW%s$UNDO$gW$unit%s$UNDO%s" "$mem" "$comma" "$whitespace"
+printf "$(color b g W)%s$(color undo)$(color g W)$unit%s$(color undo)%s" "$mem" "$comma" "$whitespace"

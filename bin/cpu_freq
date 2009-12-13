@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" ]; then
 	cat /proc/cpuinfo
@@ -29,4 +30,4 @@ if [ -r "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq" ]; then
 else
 	freq=$(egrep -i -m 1 "^cpu MHz|^clock|^bogomips" /proc/cpuinfo | awk -F"[:.]" '{ printf "%.1f", $2 / 1000 }')
 fi
-printf "$bcW%s$UNDO$cW%s$UNDO " "$freq" "GHz"
+printf "$(color b c W)%s$(color undo)$(color c W)%s$(color undo) " "$freq" "GHz"

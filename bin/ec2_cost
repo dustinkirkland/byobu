@@ -19,6 +19,7 @@
 
 DETAIL=0
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 for arg in $@; do
 	case "$arg" in
@@ -82,4 +83,4 @@ if [ "$DETAIL" = "1" ]; then
 	exit 0
 fi
 
-printf "$KG~\$$UNDO$bKG%s$UNDO " $total_cost
+printf "$(color K G)~\$$(color undo)$(color b K G)%s$(color undo) " $total_cost

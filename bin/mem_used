@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" ]; then
 	cat /proc/meminfo
@@ -25,4 +26,4 @@ if [ "$1" = "--detail" ]; then
 fi
 
 f=$(free | awk '/buffers\/cache:/ {printf "%.0f", 100*$3/($3 + $4)}')
-printf "$bgW%s$UNDO$gW%%$UNDO " "$f"
+printf "$(color b g W)%s$(color undo)$(color g W)%%$(color undo) " "$f"

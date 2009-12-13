@@ -19,6 +19,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+color 2>/dev/null || color() { true; }
 
 search () {
 	local str expr
@@ -49,14 +50,14 @@ for bat in $(ls /proc/acpi/battery); do
 
 	percent=$( echo "$rem" "$full" | awk '{printf "%.0f",  100*$1/$2}')
 	if [ "$percent" -lt 33 ]; then
-		color="$Rk"
-		bcolor="$bRk"
+		color="$(color R k)"
+		bcolor="$(color b R k)"
 	elif [ "$percent" -lt 67 ]; then
-		color="$Yk"
-		bcolor="$bYk"
+		color="$(color Y k)"
+		bcolor="$(color b Y k)"
 	else
-		color="$Gk"
-		bcolor="$bGk"
+		color="$(color G k)"
+		bcolor="$(color b G k)"
 	fi
 	percent="$percent%"
 
@@ -76,6 +77,6 @@ for bat in $(ls /proc/acpi/battery); do
 			sign="$state"
 		;;
 	esac
-	printf "$bcolor%s$UNDO$color|%s|$UNDO " "$percent" "$sign"
+	printf "$bcolor%s$(color undo)$color|%s|$(color undo) " "$percent" "$sign"
 	break
 done
