@@ -21,7 +21,7 @@ PKG="byobu"
 VERSION=2.41
 
 # Add a version argument for debugging purposes
-if [ "$1" = "-v" ]; then
+if [ "$#" = "1" ] && [ "$1" = "-v" ]; then
 	echo "$PKG version $VERSION"
 	screen -v
 	exit 0
