@@ -1,6 +1,8 @@
 byobu (2.41) unreleased; urgency=low
 
-  * byobu: check number of args for "1", and "-v", LP: #494465
+  * byobu:
+    - check number of args for "1", and "-v", LP: #494465
+    - make more zsh friendly, don't use -c
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 13 Dec 2009 19:16:43 -0800
 

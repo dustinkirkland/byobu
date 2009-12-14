@@ -40,13 +40,11 @@ byobu-janitor --force
 printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
 
 # Launch motd+shell, unless the user has default windows set to launch
-[ -x "$SHELL" ] || SHELL="/bin/sh"
-DEFAULT_WINDOW="$SHELL -c motd+shell"
-grep -qs "^[^#]" "$HOME/.$PKG/windows" && DEFAULT_WINDOW=
+grep -qs "^[^#]" "$HOME/.$PKG/windows" && DEFAULT_WINDOW= || DEFAULT_WINDOW="motd+shell"
 
 # Now let's execute screen!
 if [ "$#" = "0" ]; then
-	exec screen -c "/usr/share/$PKG/profiles/byoburc" $DEFAULT_WINDOW
+	exec screen -c "/usr/share/$PKG/profiles/byoburc" -t shell $DEFAULT_WINDOW
 else
 	exec screen -c "$HOME/.$PKG/profile" "$@"
 fi
