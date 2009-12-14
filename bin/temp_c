@@ -32,6 +32,6 @@ fi
 
 for i in $MONITORED_TEMP `ls $DIR/*/temperature 2>/dev/null`; do
 	t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i")
-	printf "$(color b k Y)%s$(color undo)$(color k Y)\260C$(color undo) " "$t"
+	printf "$(color b k Y)%s$(color -)$(color k Y)\260C$(color -) " "$t"
 	break
 done

@@ -32,4 +32,4 @@ else
 	key="F9"
 fi
 
-printf " $(color k w)%s:<$(color undo)$(color b k w)$key$(color k w)>" `gettext "Menu"`
+printf " $(color k w)%s:<$(color -)$(color b k w)$key$(color k w)>" `gettext "Menu"`

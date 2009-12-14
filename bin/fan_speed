@@ -33,7 +33,7 @@ fi
 for i in $(find $DIR/*/*/ -type f -name "fan1_input"); do
 	speed=$(cat "$i")
 	if [ "$speed" -gt 0 ]; then
-	        printf "$(color bold1)%s$(color undo)$(color none)%s$(color undo) " "$speed" "rpm"
+	        printf "$(color bold1)%s$(color -)$(color none)%s$(color -) " "$speed" "rpm"
 		exit 0
 	fi
 done

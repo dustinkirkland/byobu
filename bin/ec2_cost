@@ -83,4 +83,4 @@ if [ "$DETAIL" = "1" ]; then
 	exit 0
 fi
 
-printf "$(color K G)~\$$(color undo)$(color b K G)%s$(color undo) " $total_cost
+printf "$(color K G)~\$$(color -)$(color b K G)%s$(color -) " $total_cost

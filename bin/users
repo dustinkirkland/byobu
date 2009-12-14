@@ -31,4 +31,4 @@ fi
 # Note: we'd like to use pgrep -c, however, this isn't available in
 # busybox and some distro's pgrep (and it doesn't exit non-zero).
 count=`pgrep -f "sshd:.*@" | wc -l` || exit 0
-[ $count -gt 0 ] && printf "$(color b w r)%d$(color undo)$(color w r)#$(color undo) " $count
+[ $count -gt 0 ] && printf "$(color b w r)%d$(color -)$(color w r)#$(color -) " $count

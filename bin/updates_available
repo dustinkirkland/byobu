@@ -38,13 +38,13 @@ print_updates() {
 	s=$2
 	if [ -n "$u" ]; then
 		if [ "$u" -gt 0 ]; then
-			printf "$(color b r W)%d$(color undo)$(color r W)!" "$u"
+			printf "$(color b r W)%d$(color -)$(color r W)!" "$u"
 			if [ -n "$s" ]; then
 				if [ "$s" -gt 0 ]; then
 					printf "!"
 				fi
 			fi
-			printf "$(color undo) "
+			printf "$(color -) "
 		fi
 	fi
 }

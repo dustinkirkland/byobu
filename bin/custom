@@ -43,6 +43,6 @@ for i in $(ls "$HOME/.$PKG/bin/"[0-9]*_* 2>/dev/null); do
 		printf "$output"
 	else
 		# Default to inverted coloring
-		printf "$(color invert)$output$(color undo) "
+		printf "$(color invert)$output$(color -) "
 	fi
 done

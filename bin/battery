@@ -77,6 +77,6 @@ for bat in $(ls /proc/acpi/battery); do
 			sign="$state"
 		;;
 	esac
-	printf "$bcolor%s$(color undo)$color|%s|$(color undo) " "$percent" "$sign"
+	printf "$bcolor%s$(color -)$color|%s|$(color -) " "$percent" "$sign"
 	break
 done

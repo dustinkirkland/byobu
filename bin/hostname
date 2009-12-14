@@ -28,4 +28,4 @@ fi
 . "$HOME/.$PKG/status"
 [ "$whoami" = "1" ] && at="@"
 
-printf "$(color bold2)%s%s$(color undo)" "$at" $(hostname -s 2>/dev/null || hostname)
+printf "$(color bold2)%s%s$(color -)" "$at" $(hostname -s 2>/dev/null || hostname)

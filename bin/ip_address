@@ -38,4 +38,4 @@ fi
 
 ipaddr=`/sbin/ifconfig "$interface" | grep "inet addr:" | sed -e "s/^.*inet addr://" -e "s/ .*$//"`
 
-printf "%s$(color bold2)%s$(color undo)" "$space" "$ipaddr"
+printf "%s$(color bold2)%s$(color -)" "$space" "$ipaddr"

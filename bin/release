@@ -55,4 +55,4 @@ else
 	DISTRO="Byobu"
 fi
 
-printf "$(color bold2)%s$(color undo) " "$DISTRO"
+printf "$(color bold2)%s$(color -) " "$DISTRO"

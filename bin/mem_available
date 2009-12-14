@@ -39,4 +39,4 @@ else
 	mem="$mem"
 	unit="KB"
 fi
-printf "$(color b g W)%s$(color undo)$(color g W)$unit%s$(color undo)%s" "$mem" "$comma" "$whitespace"
+printf "$(color b g W)%s$(color -)$(color g W)$unit%s$(color -)%s" "$mem" "$comma" "$whitespace"

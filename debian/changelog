@@ -69,8 +69,10 @@ byobu (2.40) unreleased; urgency=low
     bin/menu, bin/network, bin/processes, bin/reboot_required,
     bin/release, bin/temp_c, bin/temp_f, bin/updates_available,
     bin/uptime, bin/users, bin/whoami, bin/wifi_quality, byobu-status,
-    statusrc: define and use a color function for all status indicators,
-    gives infinite flexibility
+    statusrc:
+    - define and use a color function for all status indicators, gives
+      infinite flexibility
+    - replace "undo" with "-"
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 

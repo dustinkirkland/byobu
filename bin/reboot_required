@@ -31,7 +31,7 @@ case "$1" in
 		[ -e "$reboot" ] && printf "Yes" || printf "No"
 	;;
 	*)
-		[ -e "$reboot" ] && printf "$(color b W)($(color undo)$(color b b W)%s$(color undo)$(color b W))$(color undo) " "R"
-		[ -e "$reload" ] && printf "$(color b W)<$(color undo)$(color b b W)%s$(color undo)$(color b W)>$(color undo) " "F5"
+		[ -e "$reboot" ] && printf "$(color b W)($(color -)$(color b b W)%s$(color -)$(color b W))$(color -) " "R"
+		[ -e "$reload" ] && printf "$(color b W)<$(color -)$(color b b W)%s$(color -)$(color b W)>$(color -) " "F5"
 	;;
 esac

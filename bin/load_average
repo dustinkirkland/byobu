@@ -25,4 +25,4 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-printf "$(color Y k)%s$(color undo) " $(awk '{print $1}' /proc/loadavg)
+printf "$(color Y k)%s$(color -) " $(awk '{print $1}' /proc/loadavg)

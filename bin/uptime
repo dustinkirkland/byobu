@@ -39,4 +39,4 @@ elif [ "$u" -gt 60 ]; then
 else
 	printf "%ds" "$u"
 fi
-printf "$(color undo) "
+printf "$(color -) "
