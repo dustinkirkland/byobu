@@ -1,3 +1,9 @@
+byobu (2.41) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 13 Dec 2009 19:16:43 -0800
+
 byobu (2.40-0ubuntu1) lucid; urgency=low
 
   * bin/updates_available, statusrc: move the color coding out to the config
