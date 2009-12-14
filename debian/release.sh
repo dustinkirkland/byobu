@@ -24,7 +24,7 @@ mv -f *.rpm ..
 rsync -aP ../*.rpm kirkland@people.canonical.com:~kirkland/public_html/$PKG/rpm
 
 # Create the tarball export
-$PKG-export -c light -f /tmp/$PKG-export.tar.gz
+$PKG-export -f /tmp/$PKG.tar.gz
 rsync -aP /tmp/$PKG.tar.gz kirkland@people.canonical.com:~kirkland/public_html
 
 # Do the Ubuntu packaging
