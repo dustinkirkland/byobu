@@ -1,4 +1,4 @@
-byobu (2.40) unreleased; urgency=low
+byobu (2.40-0ubuntu1) lucid; urgency=low
 
   * bin/updates_available, statusrc: move the color coding out to the config
     file
@@ -76,7 +76,7 @@ byobu (2.40) unreleased; urgency=low
   * byobu-status: allow for no color decorations, helps with older versions
     of screen, LP: #432165
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 13 Dec 2009 19:12:14 -0800
 
 byobu (2.39-0ubuntu1) lucid; urgency=low
 
