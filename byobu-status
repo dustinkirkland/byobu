@@ -33,8 +33,10 @@ find_script () {
 # Define colors
 ESC="\005"
 color() {
+	if [ -z "$1" ] || [ "$COLOR" = "none" ]; then
+		return 0
+	fi
 	case $1 in
-		"")     true ;;
 		-)   printf "$ESC{-}" ;;
 		esc)    printf "$ESC" ;;
 		bold1)  printf "$ESC{=b }" ;;
@@ -43,9 +45,9 @@ color() {
 		invert) printf "$ESC{=r }" ;;
 		*)
 			if [ "$#" = "2" ]; then
-				[ "$MONOCHROME" = "1" ] && printf "$ESC{= }" || printf "$ESC{= $1$2}"
+				[ "$COLOR" = "monochrome" ] && printf "$ESC{= }" || printf "$ESC{= $1$2}"
 			else
-				[ "$MONOCHROME" = "1" ] && printf "$ESC{=$1 }" || printf "$ESC{=$1 $2$3}"
+				[ "$COLOR" = "monochrome" ] && printf "$ESC{=$1 }" || printf "$ESC{=$1 $2$3}"
 			fi
 		;;
 	esac

@@ -73,6 +73,8 @@ byobu (2.40) unreleased; urgency=low
     - define and use a color function for all status indicators, gives
       infinite flexibility
     - replace "undo" with "-"
+  * byobu-status: allow for no color decorations, helps with older versions
+    of screen, LP: #432165
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 Nov 2009 10:18:20 -0600
 
