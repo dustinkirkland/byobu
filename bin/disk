@@ -33,5 +33,5 @@ case $MP in
 esac
 
 disk=$(df -h -P "$MP" 2>/dev/null || df -h "$MP")
-disk=$(echo "$disk" | tail -n 1 | awk '{print $2 " " $5}' | sed "s/\([^0-9\. ]\)/ \1/g" | awk '{printf "%d%sB,%d%", $1, $2, $3}')
+disk=$(echo "$disk" | tail -n 1 | awk '{print $2 " " $5}' | sed "s/\([^0-9\. ]\)/ \1/g" | awk '{printf "%d%sB,%d%%", $1, $2, $3}')
 printf "$(color M W)%s$(color -) " "$disk"
