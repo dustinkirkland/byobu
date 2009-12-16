@@ -8,7 +8,7 @@ byobu (2.41-0ubuntu1) lucid; urgency=low
   [ Jon Bernard ]
   * bin/disk: fix missing %, LP: #497136
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Dec 2009 20:24:24 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Dec 2009 20:24:39 -0600
 
 byobu (2.40-0ubuntu1) lucid; urgency=low
 
