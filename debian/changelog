@@ -1,6 +1,6 @@
 byobu (2.42) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/disk: use bolding similar to the rest of the status notifications
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Dec 2009 20:24:57 -0600
 
