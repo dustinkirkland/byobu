@@ -1,3 +1,9 @@
+byobu (2.43) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Dec 2009 14:01:55 -0600
+
 byobu (2.42-0ubuntu1) lucid; urgency=low
 
   * bin/disk: use bolding similar to the rest of the status notifications
