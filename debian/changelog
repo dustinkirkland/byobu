@@ -1,9 +1,9 @@
-byobu (2.42) unreleased; urgency=low
+byobu (2.42-0ubuntu1) lucid; urgency=low
 
   * bin/disk: use bolding similar to the rest of the status notifications
   * debian/install: drop desktop file installation, LP: #498322
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Dec 2009 20:24:57 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Dec 2009 14:01:32 -0600
 
 byobu (2.41-0ubuntu1) lucid; urgency=low
 
