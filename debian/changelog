@@ -1,6 +1,6 @@
 byobu (2.43) unreleased; urgency=low
 
-  * UNRELEASED
+  * byobu.1: improve putty bug documentation
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Dec 2009 14:01:55 -0600
 
