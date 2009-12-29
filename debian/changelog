@@ -6,6 +6,8 @@ byobu (2.43-0ubuntu1) lucid; urgency=low
   * byobu-select-profile, byobu-config: improve color selection with more
     informative color names and support screen default background/foreground
     colors, LP: #500669
+  * bin/logo, profiles/common: must undo each color change on logo printing
+    like all other status items, fix hardstatus line for "default color"
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Dec 2009 14:01:55 -0600
 

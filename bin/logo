@@ -31,63 +31,63 @@ print_logo() {
 	distro=`echo "$1" | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/' `
 	case "$distro" in
 		*ubuntu*)
-			$MARKUP && printf "$(color b k r)%s$(color k y)%s$(color b k Y)%s" "\\" "o" "/" || printf "\\o/"
+			$MARKUP && printf "$(color b k r)%s$(color -)$(color k y)%s$(color -)$(color b k Y)%s$(color -)" "\\" "o" "/" || printf "\\o/"
 		;;
 		*altlinux*)
 			logo="alt"
-			$MARKUP && printf "$(color Y k)%s" "$logo" || printf "$logo"
+			$MARKUP && printf "$(color Y k)%s$(color -)" "$logo" || printf "$logo"
 		;;
 	 	*arch*)
 			logo=" A "
-			$MARKUP && printf "$(color b w b)%s" "$logo" || printf "$logo"
+			$MARKUP && printf "$(color b w b)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*centos*)
 			logo="****"
-			$MARKUP && printf "$(color g w)*$(color m w)*$(color y w)*$(color b w)*" || printf "$logo"
+			$MARKUP && printf "$(color g w)*$(color -)$(color m w)*$(color -)$(color y w)*$(color -)$(color b w)*$(color -)" || printf "$logo"
 		;;
 		*debian*)
 			logo=" @ "
-			$MARKUP && printf "$(color w r)%s" "$logo" || printf "$logo"
+			$MARKUP && printf "$(color w r)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*fedora*)
 			logo=" f "
-			$MARKUP && printf "$(color b w)%s" "$logo" || printf "$logo"
+			$MARKUP && printf "$(color b w)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*foresight*)
 			logo="<@>"
-			$MARKUP && printf "$(color b W g)%s" "$logo" || printf "$logo"
+			$MARKUP && printf "$(color b W g)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*gentoo*)
 			logo=" > "
-			$MARKUP && printf "$(color b c w)%s" "$logo" || printf "$logo"
+			$MARKUP && printf "$(color b c w)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*mandriva*)
 			logo=" (* "
-			$MARKUP && printf "$(color b k c) ($(color b k y)* " || printf "$logo"
+			$MARKUP && printf "$(color b k c) ($(color -)$(color b k y)*$(color -) " || printf "$logo"
 		;;
 		*redhat*)
 			logo=" RH "
-			$MARKUP && printf "$(color R k)%s" "$logo" || printf "$logo"
+			$MARKUP && printf "$(color R k)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*rockhopper*)
 			logo="palm"
-			$MARKUP && printf "$(color k w)%s" "$logo" || printf "$logo"
+			$MARKUP && printf "$(color k w)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*slackware*)
 			logo=".S "
-			$MARKUP && printf "$(color u B k)%s" "$logo" || printf "$logo"
+			$MARKUP && printf "$(color u B k)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*suse*)
 			logo="SuSE"
-			$MARKUP && printf "$(color W g)%s" "$logo" || printf "$logo"
+			$MARKUP && printf "$(color W g)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*xandros*)
 			logo=" X "
-			$MARKUP && printf "$(color W r)%s" "$logo" || printf "$logo"
+			$MARKUP && printf "$(color W r)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*)
 			logo="[B]"
-			$MARKUP && printf "$(color b k W)%s" "$logo" || printf " $logo "
+			$MARKUP && printf "$(color b k W)%s$(color -)" "$logo" || printf " $logo "
 		;;
 	esac
 }
