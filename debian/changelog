@@ -3,9 +3,9 @@ byobu (2.43-0ubuntu1) lucid; urgency=low
   * byobu.1: improve putty bug documentation
   * profiles/common: monitor windows, showing "@" next to the window name,
     but don't print an "Activity" message
-  * byobu-select-profile: improve color selection with more informative
-    color names and support screen default background/foreground colors,
-    LP: #500669
+  * byobu-select-profile, byobu-config: improve color selection with more
+    informative color names and support screen default background/foreground
+    colors, LP: #500669
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Dec 2009 14:01:55 -0600
 

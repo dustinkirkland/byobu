@@ -142,14 +142,7 @@ def select_color(screen, size, layer):
     li = Listbox(height = 8, width = 60, scroll = 1, returnExit = 1)
 
     for choice in commands.getoutput('byobu-select-profile -l').splitlines():
-        (intensity, color) = choice.split("_")
-        if choice == "light_grey":
-            choice_desc = "white"
-        elif intensity == "dark":
-            choice_desc = color
-        else:
-            choice_desc = "%s (light)" % color
-        li.append(choice_desc, choice)
+        li.append(choice, choice)
 
     bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
 
