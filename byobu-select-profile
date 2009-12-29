@@ -26,7 +26,25 @@ PKG="byobu"
 
 TEXTDOMAIN="$PKG"
 
-COLORS="black blue cyan green purple red grey yellow"
+COLORS="default_light \
+	default_dark \
+	white \
+	black \
+	grey \
+	dark_grey \
+	light_grey \
+	blue \
+	light_blue \
+	cyan \
+	light_cyan \
+	green \
+	light_green \
+	purple \
+	light_purple \
+	red \
+	light_red \
+	yellow \
+	brown"
 
 usage () {
     cat <<EOT
@@ -63,8 +81,7 @@ assert_symlink "$HOME/.$PKG/profile"
 listprofiles() {
 	# Display list of profiles, one per line
 	for x in $COLORS; do
-		echo "dark_$x"
-		echo "light_$x"
+		echo "$x"
 	done
 }
 
@@ -81,10 +98,10 @@ prompt() {
 		echo
 		if [ "$which" = "foreground" ]; then
 			echo `gettext 'Select the foreground color: '`
-			simple="black"
+			simple="default"
 		else
 			echo `gettext 'Select the background color: '`
-			simple="grey"
+			simple="default"
 		fi
 		i=1
 		for x in $COLORS; do
@@ -92,9 +109,6 @@ prompt() {
 			echo "$i. $x"
 			i=$(expr $i + 1)
 			[ "$simple" = "$x" ] && simple=$i
-			test $i -lt 10 2>/dev/null && echo -n "  " || echo -n " "
-			echo "$i. $x (light)"
-			i=$(expr $i + 1)
 		done
 		echo
 		if [ -z "$selected" -a -n "$simple" ]; then
@@ -107,11 +121,7 @@ prompt() {
 			selected=`head -n1`
 		else
 			i=1
-			for x in $COLORS; do
-				color="dark_$x"
-				[ "$i" = "$selected" ] && break
-				i=$(expr $i + 1)
-				color="light_$x"
+			for color in $COLORS; do
 				[ "$i" = "$selected" ] && break
 				i=$(expr $i + 1)
 			done
@@ -128,24 +138,29 @@ getletter() {
 		echo "$1"
 		return
 	fi
-	desc=$(echo "$1" | awk -F"_" '{print $1}')
-	color=$(echo "$1" | awk -F"_" '{print $2}')
-COLORS="black blue cyan green purple red grey yellow"
-
+	color="$1"
 	case $color in
-		black)  letter="k";;
-		blue)   letter="b";;
-		cyan)   letter="c";;
-		green)  letter="g";;
-		purple) letter="m";;
-		red)    letter="r";;
-		grey)  letter="w";;
-		yellow) letter="y";;
-		*)      letter="w";;
+		default_light) letter="d";;
+		default_dark)  letter="D";;
+		black)         letter="k";;
+		dark_grey)     letter="K";;
+		blue)          letter="b";;
+		light_blue)    letter="B";;
+		cyan)          letter="c";;
+		light_cyan)    letter="C";;
+		green)         letter="g";;
+		light_green)   letter="G";;
+		purple)        letter="m";;
+		light_purple)  letter="M";;
+		red)           letter="r";;
+		light_red)     letter="R";;
+		grey)          letter="w";;
+		light_grey)    letter="W";;
+		white)         letter="w";;
+		yellow)        letter="Y";;
+		brown)         letter="y";;
+		*)             letter="d";;
 	esac
-	if [ "$desc" = "light" ]; then
-		letter=$(echo "$letter" | tr "[:lower:]" "[:upper:]")
-	fi
 	echo "$letter"
 }
 
