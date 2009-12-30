@@ -1,4 +1,4 @@
-byobu (2.43) unreleased; urgency=low
+byobu (2.43-0ubuntu1) lucid; urgency=low
 
   * byobu.1: improve putty bug documentation
   * profiles/common: monitor windows, showing "@" next to the window name,
@@ -11,7 +11,7 @@ byobu (2.43) unreleased; urgency=low
   * profiles/common: fix active window highlight, make it reverse+underline
     for all color combinations
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Dec 2009 14:01:55 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 29 Dec 2009 20:31:42 -0600
 
 byobu (2.42-0ubuntu1) lucid; urgency=low
 
