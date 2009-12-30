@@ -1,4 +1,4 @@
-byobu (2.43-0ubuntu1) lucid; urgency=low
+byobu (2.43) unreleased; urgency=low
 
   * byobu.1: improve putty bug documentation
   * profiles/common: monitor windows, showing "@" next to the window name,
