@@ -1,3 +1,9 @@
+byobu (2.44) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 29 Dec 2009 20:32:32 -0600
+
 byobu (2.43-0ubuntu1) lucid; urgency=low
 
   * byobu.1: improve putty bug documentation
