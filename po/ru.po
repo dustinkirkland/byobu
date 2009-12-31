@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-11-23 20:48-0600\n"
-"PO-Revision-Date: 2009-11-26 14:44+0000\n"
-"Last-Translator: Alexander Aen Markevitch <Unknown>\n"
+"PO-Revision-Date: 2009-12-30 16:52+0000\n"
+"Last-Translator: Sergey Sedov <Unknown>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-11-27 04:52+0000\n"
+"X-Launchpad-Export-Date: 2009-12-31 04:58+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: bin/menu:34 byobu-config:129 byobu-config:401 byobu-config:409
@@ -24,11 +24,11 @@ msgstr "Меню"
 #: byobu-export:68 byobu-export:71 byobu-select-profile:104
 #: byobu-select-profile:107
 msgid "Choose"
-msgstr ""
+msgstr "Выбор"
 
 #: byobu-export:171
 msgid "File exists"
-msgstr ""
+msgstr "Файл уже существует"
 
 #: byobu-export:172
 msgid "Remove file? [y/N] "
@@ -40,7 +40,7 @@ msgstr "Выберите цвет: "
 
 #: byobu-export:240
 msgid "Profile"
-msgstr ""
+msgstr "Профиль"
 
 #: byobu-export:241
 msgid "Archive"
@@ -52,7 +52,7 @@ msgstr "Распакуйте архив в ваш домашний раздел 
 
 #: byobu-select-profile:49
 msgid "Error:"
-msgstr ""
+msgstr "Ошибка:"
 
 #: byobu-select-profile:49
 msgid " file exists, but is not a symlink"
@@ -74,15 +74,15 @@ msgstr ""
 
 #: byobu-select-profile:136
 msgid "Run \"byobu\" to activate"
-msgstr ""
+msgstr "Запустите \"byobu\" для активации"
 
 #: byobu-config:83
 msgid "Byobu currently launches at login (toggle off)"
-msgstr ""
+msgstr "Byobu запускается при входе в систему (выключить)"
 
 #: byobu-config:85
 msgid "Byobu currently does not launch at login (toggle on)"
-msgstr ""
+msgstr "Byobu не запускается при входе в систему (включить)"
 
 #: byobu-config:89
 msgid "Help"
@@ -90,7 +90,7 @@ msgstr "Помощь"
 
 #: byobu-config:90
 msgid "Change Byobu's colors"
-msgstr ""
+msgstr "Изменить цвета Byobu"
 
 #: byobu-config:91
 msgid "Toggle status notifications"
@@ -106,7 +106,7 @@ msgstr "Изменение Escape-последовательности"
 
 #: byobu-config:94
 msgid "Create new windows"
-msgstr ""
+msgstr "Создать новые окна"
 
 #: byobu-config:95
 msgid "Manage default windows"
@@ -176,11 +176,11 @@ msgstr "Выберите окно(на), чтобы создать по умол
 
 #: byobu-config:398
 msgid "Byobu will be launched automatically next time you login."
-msgstr ""
+msgstr "Byobu будет автоматически запущен при вашем следующем входе."
 
 #: byobu-config:406
 msgid "Byobu will not be used next time you login."
-msgstr ""
+msgstr "Byobu не будет использоваться при следующем входе в систему."
 
 #: byobu-config:408
 msgid "Message"
