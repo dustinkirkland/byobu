@@ -26,7 +26,7 @@ find_script () {
 	elif [ -x "/usr/lib/$PKG/$1" ]; then
 		echo "/usr/lib/$PKG/$1"
 	else
-		echo "/bin/true"
+		echo "/dev/null"
 	fi
 }
 
