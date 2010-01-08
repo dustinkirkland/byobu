@@ -1,0 +1,69 @@
+#!/bin/sh -e
+#
+#    services: show what services are running on this server (configurable)
+#
+#    Copyright (C) 2009 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+PKG="byobu"
+color 2>/dev/null || color() { true; }
+
+# Users can define a list of SERVICES to monitor in $HOME/.byobu/status
+if [ -z "$SERVICES" ]; then
+	if [ -f "/etc/eucalyptus/eucalyptus.conf" ]; then
+		# If the user has not defined any SERVICES, but this system is a
+		# UEC system, default to the list of Ubuntu Enterprise Cloud Services
+		SERVICES="eucalyptus-cloud|CLC eucalyptus-walrus|WC eucalyptus-cc|CC eucalyptus-sc|SC eucalyptus-nc|NC"
+	fi
+fi
+
+running() {
+	if [ -f "/etc/init/$1.conf" ]; then
+		# Use upstart
+		status $1 2>/dev/null | grep -qs running && true
+	elif [ -f "/etc/init.d/$1" ]; then
+		# Fall back to sysvinit
+		/etc/init.d/$1 status >/dev/null 2>&1
+	else
+		false
+	fi
+}
+
+output=
+for i in $SERVICES; do
+	service=$(echo "$i" | sed "s/|.*//")
+	nick=$(echo "$i" | sed "s/.*|//")
+	case "$service" in
+		eucalyptus-nc)
+			if running $service; then
+				# This is a node controller, determine VM usage
+				. /etc/eucalyptus/eucalyptus.conf
+				if [ -z "$MAX_CORES" ]; then
+					max=$(grep -ci "^processor" /proc/cpuinfo)
+				else
+					max="$MAX_CORES"
+				fi
+				count=$(pgrep -c kvm)
+				output="$output,NC ($count/$max)"
+			fi
+		;;
+		*)
+			running $service && output="$output,$nick"
+		;;
+	esac
+done
+printf "$(color w c)$(echo $output | sed 's/^,//')$(color -) "

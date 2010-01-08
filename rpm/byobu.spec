@@ -103,6 +103,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/lib/byobu/processes
 /usr/lib/byobu/reboot_required
 /usr/lib/byobu/release
+/usr/lib/byobu/services
 /usr/lib/byobu/temp_c
 /usr/lib/byobu/temp_f
 /usr/lib/byobu/time

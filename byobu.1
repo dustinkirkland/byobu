@@ -15,6 +15,8 @@ byobu \- wrapper script for seeding a user's byobu configuration and launching s
 
 \fBbattery\fP \- battery information; display on the lower bar toward the right; |\-| indicates discharging, |+| indicates charging, |=| indicates fully charged;  when charging or discharging, the current battery capacity as a percentage is displayed;  the colours green, yellow, and red are used to give further indication of the battery's charge state
 
+\fBservices\fP \- users can configure a list of services to monitor, define the SERVICES variable in $HOME/.byobu/status, a whitespace separated of services, each service should include the init name of the service, then a pipe, and then an abbreviated name or symbol to display when running; displayed in the lower bar toward the center in cyan on a white background
+
 \fBcpu_count\fP \- the number of cpu's or cores on the system; displayed in the lower bar toward the right in the default text color on the default background, followed by a trailing 'x'
 
 \fBcpu_freq\fP \- the current frequency of the cpu in GHz; displayed in the lower bar toward the right in white text on a light blue background

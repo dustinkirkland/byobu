@@ -1,6 +1,7 @@
 byobu (2.44) unreleased; urgency=low
 
-  * UNRELEASED
+  * byobu-config, byobu.1, profiles/common, rpm/byobu.spec, statusrc,
+    bin/services: add a service status item to monitor running services
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 29 Dec 2009 20:32:32 -0600
 

@@ -42,6 +42,7 @@ network=0
 processes=0
 reboot_required=1
 release=1
+services=1
 temp_c=0
 temp_f=0
 time=1
@@ -58,4 +59,5 @@ wifi_quality=0
 #MONITORED_INTERFACE=eth0
 #MONITORED_TEMP=/proc/acpi/thermal_zone/THM0/temperature
 #DISTRO=Ubuntu
+#SERVICES="eucalyptus-nc|NC eucalyptus-cloud|CLC eucalyptus-walrus eucalyptus-cc|CC eucalyptus-sc|SC"
 # END_CUT_HERE
