@@ -1,11 +1,11 @@
-byobu (2.45) unreleased; urgency=low
+byobu (2.45-0ubuntu1) lucid; urgency=low
 
   * bin/services: look for /usr/bin/kvm in the eucalyptus-nc service
     handling
   * byobu-status: can't source /bin/true
   * re-upload, as bin/services was missing from the previous tarball
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Jan 2010 18:43:27 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Jan 2010 21:52:49 -0600
 
 byobu (2.44-0ubuntu1) lucid; urgency=low
 
