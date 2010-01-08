@@ -1,3 +1,9 @@
+byobu (2.46) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Jan 2010 21:53:14 -0600
+
 byobu (2.45-0ubuntu1) lucid; urgency=low
 
   * bin/services: look for /usr/bin/kvm in the eucalyptus-nc service
