@@ -59,7 +59,7 @@ fi
 # Affects: First runs with no configuration
 # Seed the configuration
 [ -d "$HOME/.$PKG" ] || mkdir -p "$HOME/.$PKG"
-[ -r "$HOME/.$PKG/color" ] || byobu-select-profile -b W -f k >/dev/null 2>&1
+[ -r "$HOME/.$PKG/color" ] || printf "BACKGROUND=w\nFOREGROUND=k" > "$HOME/.$PKG/color"
 [ -r "$PROFILE" ] || ln -sf /usr/share/$PKG/profiles/common "$PROFILE"
 
 # Affects: Symlinks pointing to color profiles

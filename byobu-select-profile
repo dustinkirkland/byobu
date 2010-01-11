@@ -98,10 +98,10 @@ prompt() {
 		echo
 		if [ "$which" = "foreground" ]; then
 			echo `gettext 'Select the foreground color: '`
-			simple="default"
+			simple="white"
 		else
 			echo `gettext 'Select the background color: '`
-			simple="default"
+			simple="black"
 		fi
 		i=1
 		for x in $COLORS; do
