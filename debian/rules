@@ -7,7 +7,7 @@
 PKG=byobu
 VER=`head -n 1 debian/changelog | sed 's/^.*(//' | sed 's/).*//' | sed 's/-.*//'`
 
-release-upstream:
+get-orig-source:
 	dh_testdir
 	bzr export ../${PKG}_${VER}.orig.tar.gz
 

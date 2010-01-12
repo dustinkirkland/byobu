@@ -1,4 +1,4 @@
-bin/* usr/lib/byobu
+usr/lib/byobu/*
 #desktop/byobu.svg usr/share/byobu/pixmaps/
 #desktop/byobu.desktop usr/share/applications/
 po/locale/* usr/share/locale
