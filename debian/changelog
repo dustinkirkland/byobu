@@ -1,6 +1,6 @@
 byobu (2.47) unreleased; urgency=low
 
-  * UNRELEASED
+  * bin/network: fix network script regresssion, LP: #506315
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 Jan 2010 22:54:36 -0600
 

@@ -44,10 +44,10 @@ for i in up down; do
 		x1=`cat "$cache"` 2>/dev/null || tx1=0
 		if [ "$i" = "up" ]; then
 			symbol="^"
-			x2=`grep -w -m1 "$interface:" /proc/net/dev | sed "s/^.*://" | awk '{print $9}'`
+			x2=`grep -m1 "\W$interface:" /proc/net/dev | sed "s/^.*://" | awk '{print $9}'`
 		else
 			symbol="v"
-			x2=`grep -w -m1 "$interface:" /proc/net/dev | sed "s/^.*://" | awk '{print $1}'`
+			x2=`grep -m1 "\W$interface:" /proc/net/dev | sed "s/^.*://" | awk '{print $1}'`
 		fi
 		echo "$x2" > "$cache"
 		rate=`echo "$t1" "$t2" "$x1" "$x2" | awk '{printf "%.0f", ($4 - $3) / ($2 - $1) / 1024 }'`
