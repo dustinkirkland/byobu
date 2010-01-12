@@ -8,6 +8,7 @@ byobu (2.47) unreleased; urgency=low
     - debian/install, bin/*, usr/lib/byobu/*: move the status scripts
     - debian/install, usr/share/byobu/*: move the share files
     - debian/install, usr/bin/*: move the binary scripts
+    - debian/install, usr/share/doc/byobu/*: move the docs
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 Jan 2010 22:54:36 -0600
 
