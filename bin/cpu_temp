@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#  temp_c: cpu temperature in celsius
+#  cpu_temp: cpu temperature
 #  Copyright (C) 2008 Canonical Ltd.
 #
 #  Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -30,8 +30,14 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-for i in $MONITORED_TEMP `ls $DIR/*/temperature 2>/dev/null`; do
-	t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i")
-	printf "$(color b k Y)%s$(color -)$(color k Y)\260C$(color -) " "$t"
+for i in $MONITORED_TEMP $DIR/*/temperature; do
+	if [ "$TEMP" = "F" ]; then
+	        t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i" | awk '{printf "%.0f", $1 *9/5 + 32}')
+		unit="F"
+	else
+		t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i")
+		unit="C"
+	fi
+	printf "$(color b k Y)%s$(color -)$(color k Y)\260%s$(color -) " "$t" "$unit"
 	break
 done

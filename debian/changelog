@@ -12,6 +12,12 @@ byobu (2.46) unreleased; urgency=low
   * byobu: deprecate code that prevented nested byobu sessions; this is
     is actually quite useful, although you should choose different
     escape sequences for each nested host, LP: #403988
+  * bin/battery, bin/custom, bin/fan_speed, bin/temp, bin/temp_f: don't
+    use ls programatically in for-loops, LP: #452405
+  * bin/cpu_temp, bin/temp_f, bin/temp_c, byobu-config, byobu.1,
+    profiles/common, rpm/byobu.spec, statusrc: merge temp_f and temp_c
+    into a single cpu_temp script
+
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Jan 2010 21:53:14 -0600
 

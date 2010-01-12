@@ -104,8 +104,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/lib/byobu/reboot_required
 /usr/lib/byobu/release
 /usr/lib/byobu/services
-/usr/lib/byobu/temp_c
-/usr/lib/byobu/temp_f
+/usr/lib/byobu/temp
 /usr/lib/byobu/time
 /usr/lib/byobu/updates_available
 /usr/lib/byobu/uptime

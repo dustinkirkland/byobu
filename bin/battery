@@ -30,21 +30,21 @@ search () {
 
 
 if [ "$1" = "--detail" ]; then
-	for bat in $(ls /proc/acpi/battery); do
-		cat "/proc/acpi/battery/$bat/info"
-		cat "/proc/acpi/battery/$bat/state"
+	for bat in /proc/acpi/battery/*; do
+		cat "$bat/info"
+		cat "$bat/state"
 	done
 	exit 0
 fi
 
-for bat in $(ls /proc/acpi/battery); do
+for bat in /proc/acpi/battery/*; do
 	# make sure that this battery is present
-	infofile=$(cat "/proc/acpi/battery/$bat/info")
+	infofile=$(cat "$bat/info")
 	present=$(search "$infofile" "present: *\(.*\)")
 	[ "${present}" = "no" ] && continue
 
 	# obtain full and remaining battery values
-	statefile=$(cat "/proc/acpi/battery/$bat/state")
+	statefile=$(cat "$bat/state")
 	full=$(search "$infofile" "last full capacity: *\(.*\) m[AW]h")
 	rem=$(search "$statefile" "remaining capacity: *\(.*\) m[AW]h")
 
