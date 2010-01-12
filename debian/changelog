@@ -1,6 +1,8 @@
 byobu (2.47) unreleased; urgency=low
 
   * bin/network: fix network script regresssion, LP: #506315
+  * debian/rules, debian/manpages, usr/share/man/man1/*: move the manpages
+    to make byobu more portable
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 Jan 2010 22:54:36 -0600
 
