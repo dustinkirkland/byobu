@@ -1,3 +1,9 @@
+byobu (2.48) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 12 Jan 2010 12:14:16 -0600
+
 byobu (2.47-0ubuntu1) lucid; urgency=low
 
   [ Dustin Kirkland ]
