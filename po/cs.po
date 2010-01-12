@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: byobu\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2009-11-23 20:48-0600\n"
-"PO-Revision-Date: 2009-12-21 13:25+0000\n"
+"PO-Revision-Date: 2010-01-11 10:22+0000\n"
 "Last-Translator: Kuvaly <kuvaly@seznam.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-12-22 04:36+0000\n"
+"X-Launchpad-Export-Date: 2010-01-12 04:47+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: bin/menu:34 byobu-config:129 byobu-config:401 byobu-config:409
@@ -56,7 +56,7 @@ msgstr "Chyba:"
 
 #: byobu-select-profile:49
 msgid " file exists, but is not a symlink"
-msgstr " existuje, ale není symlink"
+msgstr " soubor existuje, ale není to symbolický odkaz"
 
 #: byobu-select-profile:80
 msgid "Select a screen profile: "
@@ -72,7 +72,7 @@ msgid ""
 "these changes.\\n\\nOtherwise, exit this screen session and start a new one."
 msgstr ""
 "Pokud používáte výchozí klávesové zkratky, stiskněte\\n<F5> pro aktivaci "
-"změn.\\n\\nJinak, ukončí tuto relaci a začne novou."
+"těchto změn.\\n\\nJinak, ukončete toto sezení a začne nové."
 
 #: byobu-select-profile:136
 msgid "Run \"byobu\" to activate"
@@ -138,11 +138,11 @@ msgstr "Použít"
 
 #: byobu-config:146
 msgid "Which profile would you like to use?"
-msgstr "Který profil rádi používáte?"
+msgstr "Který profil byste chtěli použít?"
 
 #: byobu-config:162
 msgid "Which set of keybindings would you like to use?"
-msgstr "Které klávesové zkratky rádi používáte?"
+msgstr "Které klávesové zkratky byste chtěli použít?"
 
 #: byobu-config:175
 msgid "Title: "
@@ -154,7 +154,7 @@ msgstr "Příkaz: "
 
 #: byobu-config:179
 msgid "Presets: "
-msgstr ""
+msgstr "Předvolby: "
 
 #: byobu-config:193
 msgid "Add to default windows"
