@@ -12,6 +12,7 @@ byobu (2.47) unreleased; urgency=low
     - debian/install, usr/bin/*: move the binary scripts
     - debian/install, usr/share/doc/byobu/*: move the docs
     - debian/install, etc/*: move the config file
+    - debian/install, debian/rules, po/*: move the translations
     - usr/share/applications/byobu.desktop, usr/share/byobu/pixmaps/byobu.svg:
       moved
     - usr/share/byobu/tests/byobu-time-notifications: relocate, rename, and

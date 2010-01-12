@@ -14,8 +14,8 @@ get-orig-source:
 install-po: update-pot
 	for po in po/*.po ; do \
 		lang=$${po#po/}; lang=$${lang%.po}; \
-		mkdir -p po/locale/$${lang}/LC_MESSAGES/; \
-		msgfmt $${po} -o po/locale/$${lang}/LC_MESSAGES/${PKG}.mo ; \
+		mkdir -p usr/share/locale/$${lang}/LC_MESSAGES/; \
+		msgfmt $${po} -o usr/share/locale/$${lang}/LC_MESSAGES/${PKG}.mo ; \
 	done
 
 update-pot:
