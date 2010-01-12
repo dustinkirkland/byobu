@@ -1,5 +1,6 @@
 byobu (2.47) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/network: fix network script regresssion, LP: #506315
   * usr/lib/byobu/wifi_quality: silence error
   * byobu.desktop, byobu.svg: install these again, but hide the menu item
@@ -18,6 +19,9 @@ byobu (2.47) unreleased; urgency=low
     - usr/share/byobu/tests/byobu-time-notifications: relocate, rename, and
       install the notification timing tests, add a copyright header
     - AUTHORS, ChangeLog, NEWS: added
+
+  [ Jason Cohen ]
+  * usr/bin/byobu: check if our terminfo supports 256 colors, LP: #409353
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 Jan 2010 22:54:36 -0600
 
