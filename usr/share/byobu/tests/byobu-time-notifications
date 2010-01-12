@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+#    byobu-time-notifications: performance testing of byobu's status scripts
+#
+#    Copyright (C) 2009 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+PKG=byobu
+RUNS=100
+
+loop() {
+	for j in $(seq 1 $RUNS); do
+		/usr/lib/$PKG/$1 >/dev/null
+	done
+}
+
+TIMEFORMAT="%R"
+if [ -n "$1" ]; then
+	list="$1"
+else
+	list=$(ls /usr/lib/$PKG/)
+fi
+for i in $list; do
+	freq=`grep "byobu-status $i" /usr/share/$PKG/profiles/common | awk '{print $3}'`
+	echo -n "$i $freq "
+	time loop $i
+done
