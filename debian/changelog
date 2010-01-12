@@ -1,4 +1,4 @@
-byobu (2.47) unreleased; urgency=low
+byobu (2.47-0ubuntu1) lucid; urgency=low
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/network: fix network script regresssion, LP: #506315
@@ -29,7 +29,7 @@ byobu (2.47) unreleased; urgency=low
   [ Jason Cohen ]
   * usr/bin/byobu: check if our terminfo supports 256 colors, LP: #409353
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 Jan 2010 22:54:36 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 12 Jan 2010 12:11:19 -0600
 
 byobu (2.46-0ubuntu1) lucid; urgency=low
 

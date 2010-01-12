@@ -9,7 +9,7 @@ error() {
 
 head -n1 debian/changelog | grep "unreleased" || error "This version must be 'unreleased'"
 
-./debian/rules release-upstream
+./debian/rules get-orig-source
 bzr bd
 sed -i "s/) unreleased;/-0ubuntu1~ppa1) hardy;/" debian/changelog
 bzr bd -S
