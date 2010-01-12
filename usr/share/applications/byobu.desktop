@@ -6,4 +6,5 @@ Exec=byobu-launcher
 Type=Application
 Terminal=true
 Encoding=UTF-8
-Categories=Utility;System;
+Categories=GNOME;GTK;Utility;
+NoDisplay=True

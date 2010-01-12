@@ -1,10 +1,5 @@
-usr/bin/*
-usr/lib/byobu/*
-usr/share/byobu/*
-usr/share/doc/*
+etc/*
+usr/*
 po/locale/* usr/share/locale
-statusrc etc/byobu
 debian/source_byobu.py usr/share/apport/package-hooks
 debian/lintian/byobu usr/share/lintian/overrides
-#desktop/byobu.svg usr/share/byobu/pixmaps/
-#desktop/byobu.desktop usr/share/applications/
