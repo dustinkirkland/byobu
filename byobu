@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-VERSION=2.46
+VERSION=2.47
 
 # Add a version argument for debugging purposes
 if [ "$#" = "1" ] && [ "$1" = "-v" ]; then

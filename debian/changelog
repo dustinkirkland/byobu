@@ -1,3 +1,9 @@
+byobu (2.47) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 Jan 2010 22:54:36 -0600
+
 byobu (2.46-0ubuntu1) lucid; urgency=low
 
   * byobu-janitor: seed the default color choices more effciently, also
