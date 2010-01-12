@@ -1,0 +1,59 @@
+#! /usr/bin/env python
+#
+#    byobu-select-session
+#    Copyright (C) 2010 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+import commands, os, sys
+
+sessions = []
+choice = ""
+sessions.append(0)
+i = 0
+output = commands.getoutput('byobu -ls | sed "s/\s\+/ /g" | grep "^\s"')
+if output:
+	for s in output.split("\n"):
+		items = s.split(" ")
+		sessions.append(items[1])
+		i += 1
+
+if i > 1:
+	sys.stdout.write("\nByobu sessions...\n\n")
+	tries = 0
+	while tries < 3:
+		i = 1
+		for s in output.split("\n"):
+			sys.stdout.write("  %d. %s\n" % (i, s))
+			i += 1
+		try:
+			choice = input("\nChoose [1-%d]: " % (i-1))
+			if choice < 1 or choice >= i:
+				choice = ""
+		except:
+			tries += 1
+			choice = ""
+		if choice:
+			break
+		else:
+			sys.stderr.write("\nERROR: Invalid input\n");
+
+if choice:
+	# Attach to the chosen session
+	os.execv("/usr/bin/byobu", ["", "-x", sessions[choice]])
+else:
+	# No valid selection, default to the youngest session
+	os.execv("/usr/bin/byobu", ["", "-xRR"])

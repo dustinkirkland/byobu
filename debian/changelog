@@ -19,6 +19,10 @@ byobu (2.47) unreleased; urgency=low
     - usr/share/byobu/tests/byobu-time-notifications: relocate, rename, and
       install the notification timing tests, add a copyright header
     - AUTHORS, ChangeLog, NEWS: added
+  * bin/byobu-launcher, bin/byobu-select-session,
+    share/man/man1/byobu-select-session.1: add a dynamic prompt if
+    automatically launching byobu on a server where multiple sessions
+    exist, LP: #368963
 
   [ Jason Cohen ]
   * usr/bin/byobu: check if our terminfo supports 256 colors, LP: #409353

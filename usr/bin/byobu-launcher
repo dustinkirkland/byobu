@@ -37,6 +37,5 @@ else
 		rm -f "$RUN/$PKG.ssh-agent"
 		ln -sf "$SSH_AUTH_SOCK" "$RUN/$PKG.ssh-agent"
 	fi
-	# Re-attach to existing session
-	exec screen -xRR
+	exec byobu-select-session
 fi
