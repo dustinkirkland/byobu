@@ -41,8 +41,8 @@ backtick 100	599	599		byobu-status release
 backtick 101 	7	7		byobu-status updates_available
 backtick 102 	5	5		byobu-status reboot_required
 backtick 103 	2	2		byobu-status cpu_freq
-backtick 104 	86017	86017		byobu-status cpu_count
-backtick 105 	86027	86027		byobu-status mem_available
+backtick 104 	43	43		byobu-status cpu_count
+backtick 105 	47	47		byobu-status mem_available
 backtick 106 	2	2		byobu-status load_average
 backtick 107 	13	13		byobu-status mem_used
 backtick 108 	601	601		byobu-status ec2_cost

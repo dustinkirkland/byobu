@@ -19,7 +19,10 @@ byobu (2.46) unreleased; urgency=low
     into a single cpu_temp script
   * profiles/common: adjust the formatting-only, and run-only-at-startup
     status scripts to run every 9,999,999 seconds (~115 days), minor
-    performance improvement once a day, easier to identify such jobs
+    performance improvement once a day, easier to identify such jobs;
+    adjust cpu_count and mem_available to run more frequently, as
+    cpu-hotplug and memory-ballooning are becoming more feasible,
+    particularly in VMs
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Jan 2010 21:53:14 -0600
 
