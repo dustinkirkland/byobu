@@ -1,7 +1,6 @@
 #!/bin/sh -e
 
 PKG="byobu"
-MAJOR=2
 
 error() {
 	echo "ERROR: $@"
@@ -26,7 +25,7 @@ bzr bd -S
 echo
 echo
 echo "# Test this build:"
-echo "  sudo dpkg -i ../*.deb"
+echo "  sudo dpkg -i ../byobu_*.deb"
 echo
 echo "# If everything looks good, release:"
 echo "  ./debian/release.sh"

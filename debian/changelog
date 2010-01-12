@@ -1,4 +1,4 @@
-byobu (2.46) unreleased; urgency=low
+byobu (2.46-0ubuntu1) lucid; urgency=low
 
   * byobu-janitor: seed the default color choices more effciently, also
     fixes some strange crashes on first run; default the colors to white
@@ -24,7 +24,7 @@ byobu (2.46) unreleased; urgency=low
     cpu-hotplug and memory-ballooning are becoming more feasible,
     particularly in VMs
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Jan 2010 21:53:14 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 Jan 2010 22:54:07 -0600
 
 byobu (2.45-0ubuntu1) lucid; urgency=low
 
