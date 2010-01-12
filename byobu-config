@@ -127,6 +127,7 @@ def help(screen, size, config):
     f.close()
 
     text=text.replace("<esckey>", getesckey(), 1)
+    text=text.replace("_VER_", commands.getoutput("byobu -v | head -n1 | sed 's/.* //'"), 1)
 
     t = Textbox(70, 14, text, scroll=0)
     bb = ButtonBar(screen, ((_("Menu"), "menu", ESC),), compact = 1)

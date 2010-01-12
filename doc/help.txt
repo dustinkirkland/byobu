@@ -1,5 +1,5 @@
-Byobu is an enhancement to GNU Screen, a command line tool
-providing live system status, dynamic window management,
+Byobu _VER_ is an enhancement to GNU Screen, a command line
+tool providing live system status, dynamic window management,
 and some convenient keybindings:
 
 F2    Create a new window    |  F6    Detach from the session

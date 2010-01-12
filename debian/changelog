@@ -3,6 +3,8 @@ byobu (2.46) unreleased; urgency=low
   * byobu-janitor: seed the default color choices more effciently, also
     fixes some strange crashes on first run; default the colors to white
     on black
+  * byobu-config, doc/help.txt: insert version number in byobu help menu,
+    LP: #502119
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Jan 2010 21:53:14 -0600
 
