@@ -59,7 +59,7 @@ fi
 # Affects: First runs with no configuration
 # Seed the configuration
 [ -d "$HOME/.$PKG" ] || mkdir -p "$HOME/.$PKG"
-[ -r "$HOME/.$PKG/color" ] || printf "BACKGROUND=w\nFOREGROUND=k" > "$HOME/.$PKG/color"
+[ -r "$HOME/.$PKG/color" ] || printf "BACKGROUND=k\nFOREGROUND=w" > "$HOME/.$PKG/color"
 [ -r "$PROFILE" ] || ln -sf /usr/share/$PKG/profiles/common "$PROFILE"
 
 # Affects: Symlinks pointing to color profiles

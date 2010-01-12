@@ -79,7 +79,7 @@ for i in etc usr/bin usr/lib usr/share/doc; do
 done
 dpkg-query --show --showformat '${Package} ${Version}\n' $PKG > "$DIR/.$PKG/version" 2>/dev/null || true
 echo "http://launchpad.net/$PKG" >> "$DIR/.$PKG/version"
-printf "FOREGROUND=k\nBACKGROUND=W\n" > "$DIR/.$PKG/color"
+printf "FOREGROUND=w\nBACKGROUND=k\n" > "$DIR/.$PKG/color"
 
 # Copy necessary scripts
 cp -a /etc/$PKG "$DIR/.$PKG/etc"

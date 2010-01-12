@@ -77,8 +77,8 @@ case "$P" in
 		done
 	;;
 	color)
-		[ -z "$FOREGROUND" ] && FOREGROUND="k"
-		[ -z "$BACKGROUND" ] && BACKGROUND="W"
+		[ -z "$FOREGROUND" ] && FOREGROUND="w"
+		[ -z "$BACKGROUND" ] && BACKGROUND="k"
 		printf "$ESC{= $BACKGROUND$FOREGROUND}"
 	;;
 	*)

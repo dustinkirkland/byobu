@@ -23,6 +23,8 @@ byobu (2.47) unreleased; urgency=low
     share/man/man1/byobu-select-session.1: add a dynamic prompt if
     automatically launching byobu on a server where multiple sessions
     exist, LP: #368963
+  * byobu-export, byobu-janitor, byobu-status: default to white text on
+    black backgrounds
 
   [ Jason Cohen ]
   * usr/bin/byobu: check if our terminfo supports 256 colors, LP: #409353
