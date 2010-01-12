@@ -1,10 +1,11 @@
 #!/bin/bash
 
+PKG=byobu
 RUNS=100
 
 loop() {
 	for j in $(seq 1 $RUNS); do
-		./bin/$1 >/dev/null
+		/usr/lib/$PKG/$1 >/dev/null
 	done
 }
 
@@ -12,10 +13,10 @@ TIMEFORMAT="%R"
 if [ -n "$1" ]; then
 	list="$1"
 else
-	list=$(ls bin)
+	list=$(ls /usr/lib/$PKG/)
 fi
 for i in $list; do
-	freq=`grep "byobu-status $i" ./profiles/common | awk '{print $3}'`
+	freq=`grep "byobu-status $i" /usr/share/$PKG/profiles/common | awk '{print $3}'`
 	echo -n "$i $freq "
 	time loop $i
 done

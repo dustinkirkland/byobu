@@ -1,11 +1,13 @@
 byobu (2.47) unreleased; urgency=low
 
-  * bin/network: fix network script regresssion, LP: #506315
+  * usr/lib/byobu/network: fix network script regresssion, LP: #506315
+  * usr/lib/byobu/wifi_quality: silence error
   * Make byobu more portable, LP: #503554
     - debian/rules, debian/manpages, usr/share/man/man1/*: move the manpages
       to make byobu more portable
     - debian/install, bin/*, usr/lib/byobu/*: move the status scripts
     - debian/install, usr/share/byobu/*: move the share files
+    - debian/install, usr/bin/*: move the binary scripts
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 Jan 2010 22:54:36 -0600
 
