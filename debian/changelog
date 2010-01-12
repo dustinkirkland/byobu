@@ -5,6 +5,7 @@ byobu (2.46) unreleased; urgency=low
     on black
   * byobu-config, doc/help.txt: insert version number in byobu help menu,
     LP: #502119
+  * bin/network: match interface a bit better for bridges, LP: #498722
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Jan 2010 21:53:14 -0600
 
