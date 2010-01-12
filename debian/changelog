@@ -4,7 +4,7 @@ byobu (2.47) unreleased; urgency=low
   * usr/lib/byobu/wifi_quality: silence error
   * byobu.desktop, byobu.svg: install these again, but hide the menu item
     by default, per pitti's fallback suggestion to LP: #498322
-  * Make byobu more portable, LP: #503554
+  * Make byobu more portable, much help from Derek Carter, LP: #503554
     - debian/rules, debian/manpages, usr/share/man/man1/*: move the manpages
       to make byobu more portable
     - debian/install, bin/*, usr/lib/byobu/*: move the status scripts
@@ -17,6 +17,7 @@ byobu (2.47) unreleased; urgency=low
       moved
     - usr/share/byobu/tests/byobu-time-notifications: relocate, rename, and
       install the notification timing tests, add a copyright header
+    - AUTHORS, ChangeLog, NEWS: added
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 11 Jan 2010 22:54:36 -0600
 
