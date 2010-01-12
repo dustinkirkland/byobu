@@ -17,7 +17,9 @@ byobu (2.46) unreleased; urgency=low
   * bin/cpu_temp, bin/temp_f, bin/temp_c, byobu-config, byobu.1,
     profiles/common, rpm/byobu.spec, statusrc: merge temp_f and temp_c
     into a single cpu_temp script
-
+  * profiles/common: adjust the formatting-only, and run-only-at-startup
+    status scripts to run every 9,999,999 seconds (~115 days), minor
+    performance improvement once a day, easier to identify such jobs
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Jan 2010 21:53:14 -0600
 
