@@ -6,6 +6,9 @@ byobu (2.46) unreleased; urgency=low
   * byobu-config, doc/help.txt: insert version number in byobu help menu,
     LP: #502119
   * bin/network: match interface a bit better for bridges, LP: #498722
+  * bin/logo, bin/release: when looking at /etc/issue, grab the first
+    line that starts with a real letter rather than control character,
+    LP: #432751
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Jan 2010 21:53:14 -0600
 

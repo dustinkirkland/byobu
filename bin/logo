@@ -104,7 +104,7 @@ fi
 
 if [ -r "/etc/issue" ]; then
 	# Otherwise, check /etc/issue
-	distro=`cat /etc/issue`
+	distro=`grep -m1 "^[A-Za-z]" /etc/issue`
 	print_logo "$distro" && exit 0 || true
 fi
 
