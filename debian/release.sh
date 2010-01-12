@@ -35,7 +35,7 @@ rsync -aP /tmp/$PKG.tar.gz kirkland@people.canonical.com:~kirkland/public_html
 
 # Open the next release for development
 nextminor=`expr $minor + 1`
-sed -i "s/^VERSION=.*$/VERSION=$MAJOR.$nextminor/" $PKG
+sed -i "s/^VERSION=.*$/VERSION=$MAJOR.$nextminor/" usr/bin/$PKG
 dch -v "$MAJOR.$nextminor" "UNRELEASED"
 sed -i "s/$MAJOR.$nextminor) .*;/$MAJOR.$nextminor) unreleased;/" debian/changelog
 sed -i "s/^Version:.*$/Version:        $MAJOR.$nextminor/" rpm/$PKG.spec
