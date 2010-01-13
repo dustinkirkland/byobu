@@ -6,53 +6,53 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: byobu\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-10-11 14:34-0500\n"
-"PO-Revision-Date: 2009-11-05 17:50+0000\n"
-"Last-Translator: Yentl <y.v.t@scarlet.be>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-11-23 20:48-0600\n"
+"PO-Revision-Date: 2010-01-12 14:33+0000\n"
+"Last-Translator: cumulus007 <cumulus0007@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-11-07 04:43+0000\n"
+"X-Launchpad-Export-Date: 2010-01-13 04:51+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: bin/menu:30 byobu-config:129 byobu-config:400 byobu-config:408
+#: bin/menu:34 byobu-config:129 byobu-config:401 byobu-config:409
 msgid "Menu"
 msgstr "Menu"
 
 #: byobu-export:68 byobu-export:71 byobu-select-profile:104
 #: byobu-select-profile:107
 msgid "Choose"
-msgstr "Kies"
+msgstr "Kiezen"
 
 #: byobu-export:171
 msgid "File exists"
-msgstr "Bestand bestaat reeds"
+msgstr "Bestand bestaat al"
 
 #: byobu-export:172
 msgid "Remove file? [y/N] "
-msgstr "Verwijder bestand? [y/N] "
+msgstr "Bestand verwijderen? [y/N] "
 
 #: byobu-export:199
 msgid "Select a color: "
-msgstr "Selecteer een kleur: "
+msgstr "Kies een kleur: "
 
-#: byobu-export:237
+#: byobu-export:240
 msgid "Profile"
 msgstr "Profiel"
 
-#: byobu-export:238
+#: byobu-export:241
 msgid "Archive"
 msgstr "Archief"
 
-#: byobu-export:240
+#: byobu-export:243
 msgid "Extract the archive in your home directory on the target system."
-msgstr "Pak het archief uit in jouw home map op het doelsysteem."
+msgstr "Pak het archief uit in uw persoonlijke map op het doelsysteem."
 
 #: byobu-select-profile:49
 msgid "Error:"
-msgstr "Foutmelding:"
+msgstr "Fout:"
 
 #: byobu-select-profile:49
 msgid " file exists, but is not a symlink"
@@ -60,7 +60,7 @@ msgstr " het bestand bestaat, maar het is geen symlink"
 
 #: byobu-select-profile:80
 msgid "Select a screen profile: "
-msgstr "Selecteer een schermprofiel: "
+msgstr "Kies een schermprofiel: "
 
 #: byobu-select-profile:97
 msgid "ERROR: Invalid selection"
@@ -71,8 +71,8 @@ msgid ""
 "If you are using the default set of keybindings, press\\n<F5> to activate "
 "these changes.\\n\\nOtherwise, exit this screen session and start a new one."
 msgstr ""
-"Als je de standaard set van sneltoetsen gebruiks, druk\\n<F5> om deze "
-"wijzigingen te activeren.\\n\\nAnders, sluit deze scherm sessie en start een "
+"Alsu de standaard sneltoetsen gebruikt, druk dan op \\n<F5> om deze "
+"wijzigingen in te schakelen.\\n\\nSluit anders deze sessie af en start een "
 "nieuwe."
 
 #: byobu-select-profile:136
@@ -81,27 +81,27 @@ msgstr "Voer \"byobu\" uit om te activeren"
 
 #: byobu-config:83
 msgid "Byobu currently launches at login (toggle off)"
-msgstr "Byobu start momenteel bij aanmelden (schakel uit)"
+msgstr "Byobu start momenteel bij aanmelden (uitschakelen)"
 
 #: byobu-config:85
 msgid "Byobu currently does not launch at login (toggle on)"
-msgstr "Byobu start momenteel niet bij aanmelden (schakel in)"
+msgstr "Byobu start momenteel niet bij aanmelden (inschakelen)"
 
 #: byobu-config:89
 msgid "Help"
-msgstr "Help"
+msgstr "Hulp"
 
 #: byobu-config:90
 msgid "Change Byobu's colors"
-msgstr "Wijzig Byobu's kleuren"
+msgstr "Byobu's kleuren wijzigen"
 
 #: byobu-config:91
 msgid "Toggle status notifications"
-msgstr "Status meldingen aan/uit"
+msgstr "Statusmeldingen aan/uit"
 
 #: byobu-config:92
 msgid "Change keybinding set"
-msgstr "Toetsencombinatie aanpassen"
+msgstr "Sneltoetsen wijzigen"
 
 #: byobu-config:93
 msgid "Change escape sequence"
@@ -109,22 +109,22 @@ msgstr "Uitlogvolgorde aanpassen"
 
 #: byobu-config:94
 msgid "Create new windows"
-msgstr "Maak nieuwe vensters"
+msgstr "Nieuwe vensters aanmaken"
 
 #: byobu-config:95
 msgid "Manage default windows"
-msgstr "Standaard venster beheer"
+msgstr "Standaardvensters beheren"
 
-#: byobu-config:99 byobu-config:486
+#: byobu-config:99 byobu-config:487
 msgid " Byobu Configuration Menu"
-msgstr " Byobu Configuratie Menu"
+msgstr " Byobu instellen"
 
 #: byobu-config:110
 msgid "Okay"
 msgstr "OK"
 
 #: byobu-config:110 byobu-config:144 byobu-config:161 byobu-config:195
-#: byobu-config:334 byobu-config:375 byobu-config:448
+#: byobu-config:335 byobu-config:376 byobu-config:449
 msgid "Cancel"
 msgstr "Annuleren"
 
@@ -132,8 +132,8 @@ msgstr "Annuleren"
 msgid "Byobu Help"
 msgstr "Byobu Help"
 
-#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:334
-#: byobu-config:375 byobu-config:448
+#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:335
+#: byobu-config:376 byobu-config:449
 msgid "Apply"
 msgstr "Toepassen"
 
@@ -143,7 +143,7 @@ msgstr "Welk profiel wilt u gebruiken?"
 
 #: byobu-config:162
 msgid "Which set of keybindings would you like to use?"
-msgstr "Welke toetscombinaties wilt u gebruiken?"
+msgstr "Welke sneltoetsen wilt u gebruiken?"
 
 #: byobu-config:175
 msgid "Title: "
@@ -151,7 +151,7 @@ msgstr "Titel: "
 
 #: byobu-config:177
 msgid "Command: "
-msgstr "Commando: "
+msgstr "Opdracht: "
 
 #: byobu-config:179
 msgid "Presets: "
@@ -159,45 +159,45 @@ msgstr "Instellingen: "
 
 #: byobu-config:193
 msgid "Add to default windows"
-msgstr "Toevoegen aan de standaard vensters"
+msgstr "Toevoegen aan de standaardvensters"
 
 #: byobu-config:197
 msgid "Create new window(s):"
 msgstr "Nieuw(e) venster(s) aanmaken"
 
-#: byobu-config:335
+#: byobu-config:336
 msgid "Toggle status notifications:"
 msgstr "Status meldingen aan/uit:"
 
-#: byobu-config:367
+#: byobu-config:368
 msgid "Windows:"
 msgstr "Vensters:"
 
-#: byobu-config:377
+#: byobu-config:378
 msgid "Select window(s) to create by default:"
-msgstr "Selecteer venster(s) die standaard  gecreëerd moetne worden:"
+msgstr "Kies venster(s) die standaard aangemaakt worden:"
 
-#: byobu-config:397
+#: byobu-config:398
 msgid "Byobu will be launched automatically next time you login."
-msgstr "Byobu zal automatisch starten bij de volgende keer dat je aanmeld."
+msgstr "Byobu zal automatisch starten bij de volgende keer dat u inlogt."
 
-#: byobu-config:405
+#: byobu-config:406
 msgid "Byobu will not be used next time you login."
-msgstr "Byobu zal niet gebruikt worden de volgende keer dat je aanmeld."
+msgstr "Byobu zal niet gebruikt worden bij de volgende keer dat u inlogt."
 
-#: byobu-config:407
+#: byobu-config:408
 msgid "Message"
 msgstr "Bericht"
 
-#: byobu-config:447
+#: byobu-config:448
 msgid "Escape key: ctrl-"
-msgstr "Escape toets: ctrl-"
+msgstr "Escape-toets: ctrl-"
 
-#: byobu-config:450
+#: byobu-config:451
 msgid "Change escape sequence:"
-msgstr "Aanpassen escape volgorde:"
+msgstr "Escape-volgorde aanpassen:"
 
-#: byobu-config:487
+#: byobu-config:488
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr ""
 "<Tab>/<Alt-Tab> tussen elementen | <Enter> selecteert | <Esc> sluit af"
