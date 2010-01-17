@@ -1,8 +1,11 @@
 byobu (2.48) unreleased; urgency=low
 
-  [ darwinawdwinner@gmail.com  ]
+  [ launchpad.net/~rct86 ]
   * usr/bin/byobu-launcher: use screen -wipe, instead of screen -ls, to
     clean up destroyed sessions, LP: #508609
+
+  [ launchpad.net/~dperson ]
+  * usr/bin/byobu-export: correct paths to their new locations, LP: #507461
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 12 Jan 2010 12:14:16 -0600
 
