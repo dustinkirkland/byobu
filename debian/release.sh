@@ -25,6 +25,7 @@ mv -f *.rpm ..
 rsync -azP ../*.rpm kirkland@people.canonical.com:~kirkland/public_html/$PKG/rpm
 
 # Create the tarball export
+rm -f /tmp/$PKG.tar.gz
 $PKG-export -f /tmp/$PKG.tar.gz
 rsync -azP /tmp/$PKG.tar.gz kirkland@people.canonical.com:~kirkland/public_html
 
