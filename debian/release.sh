@@ -22,11 +22,11 @@ gpg --armor --sign --detach-sig ../"$PKG"_*.orig.tar.gz
 # Create the rpm export
 sudo alien --to-rpm ../$PKG"_"$MAJOR.$minor"_all.deb"
 mv -f *.rpm ..
-rsync -aP ../*.rpm kirkland@people.canonical.com:~kirkland/public_html/$PKG/rpm
+rsync -azP ../*.rpm kirkland@people.canonical.com:~kirkland/public_html/$PKG/rpm
 
 # Create the tarball export
 $PKG-export -f /tmp/$PKG.tar.gz
-rsync -aP /tmp/$PKG.tar.gz kirkland@people.canonical.com:~kirkland/public_html
+rsync -azP /tmp/$PKG.tar.gz kirkland@people.canonical.com:~kirkland/public_html
 
 # Do the Ubuntu packaging
 #cd ..

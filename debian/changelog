@@ -1,3 +1,9 @@
+byobu (2.50) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Jan 2010 11:13:20 +1300
+
 byobu (2.49-0ubuntu1) lucid; urgency=low
 
   * Re-release, cleaning up the tarball a bit, removing the debian/
