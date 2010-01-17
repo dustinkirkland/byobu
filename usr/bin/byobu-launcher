@@ -25,7 +25,7 @@ RUN="/var/run/screen/S-$USER"
 [ -z "$STY" ] || exit 0
 [ "$TERM" = "screen-bce" ] && exit 0
 
-out=`screen -ls 2>/dev/null` || true
+out=`screen -wipe 2>/dev/null` || true
 if echo "$out" | grep -qsi "^No Sockets found in "; then
 	# Start new session
 	$(which $PKG >/dev/null) && exec $PKG || exec screen
