@@ -1,12 +1,14 @@
-byobu (2.49) unreleased; urgency=low
+byobu (2.49-0ubuntu1) lucid; urgency=low
 
+  * Re-release, cleaning up the tarball a bit, removing the debian/
+    directory
   * ChangeLog: replace symlink with URLs to pertinent changelog information
   * debian/rules: fix get-orig-source target, such that .bzr and debian
     directories are not shipped as part of the upstream release tarball
   * debian/release-build.sh: perform some rudimentary checks for recurring
     issues with release tarballs
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Jan 2010 09:54:58 +1300
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Jan 2010 11:10:47 +1300
 
 byobu (2.48-0ubuntu1) lucid; urgency=low
 
