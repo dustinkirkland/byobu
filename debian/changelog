@@ -1,4 +1,4 @@
-byobu (2.48-0ubuntu1) unreleased; urgency=low
+byobu (2.48-0ubuntu1) lucid; urgency=low
 
   [ launchpad.net/~rct86 ]
   * usr/bin/byobu-launcher: use screen -wipe, instead of screen -ls, to
@@ -7,7 +7,7 @@ byobu (2.48-0ubuntu1) unreleased; urgency=low
   [ launchpad.net/~dperson ]
   * usr/bin/byobu-export: correct paths to their new locations, LP: #507461
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Jan 2010 09:36:11 +1300
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Jan 2010 09:43:52 +1300
 
 byobu (2.47-0ubuntu1) lucid; urgency=low
 
