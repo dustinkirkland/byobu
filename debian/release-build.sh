@@ -25,7 +25,7 @@ bzr bd -S
 echo
 echo
 echo "# Test this build:"
-echo "  sudo dpkg -i ../byobu_*.deb"
+echo "  sudo dpkg -Oi ../byobu_*.deb"
 echo
 echo "# If everything looks good, release:"
 echo "  ./debian/release.sh"
