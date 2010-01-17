@@ -102,8 +102,8 @@ for i in /etc/ /usr/lib/ /usr/share/; do
 	sed -i "s:$i\$PKG:\$HOME/.$PKG$i\$PKG:g" $(find $DIR -type f)
 	sed -i "s:\$HOME/\.$PKG$i\$HOME/\.$PKG$i:\$HOME/.$PKG$i:g" $(find $DIR -type f)
 done
-+sed -i "s:\$HOME/\.$PKG\$HOME/\.$PKG:\$HOME/.$PKG:g" $(find $DIR -type f)
-+sed -i "s:\$HOME/\.$PKG/usr/bin/\$HOME/\.$PKG/usr/bin/:\$HOME/.$PKG/usr/bin/:g" $(find $DIR -type f)
+sed -i "s:\$HOME/\.$PKG\$HOME/\.$PKG:\$HOME/.$PKG:g" $(find $DIR -type f)
+sed -i "s:\$HOME/\.$PKG/usr/bin/\$HOME/\.$PKG/usr/bin/:\$HOME/.$PKG/usr/bin/:g" $(find $DIR -type f)
 
 rm -f $DIR/.$PKG/usr/bin/$PKG-export
 
