@@ -1,4 +1,4 @@
-byobu (2.48-0ubuntu1) lucid; urgency=low
+byobu (2.48-0ubuntu1) unreleased; urgency=low
 
   [ launchpad.net/~rct86 ]
   * usr/bin/byobu-launcher: use screen -wipe, instead of screen -ls, to
