@@ -1,3 +1,9 @@
+byobu (2.49) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Jan 2010 09:54:58 +1300
+
 byobu (2.48-0ubuntu1) lucid; urgency=low
 
   [ launchpad.net/~rct86 ]
