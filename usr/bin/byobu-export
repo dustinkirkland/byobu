@@ -90,7 +90,7 @@ cp -a /usr/bin/$PKG-* "$DIR/.$PKG/usr/bin"
 cp /etc/$PKG/statusrc "$DIR/.$PKG/status"
 echo "source \$HOME/.$PKG/profile" > "$DIR/.screenrc"
 echo "source \$HOME/.$PKG/usr/share/$PKG/keybindings/common" > "$DIR/.$PKG/keybindings"
-ln -s usr/share/$PKG/profiles/common profile; cd -
+ln -sf usr/share/$PKG/profiles/common profile; cd -
 
 # Some gardening; update paths to be $HOME-based
 for i in $(ls /usr/bin/$PKG-* | grep -v "install"); do
