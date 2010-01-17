@@ -13,6 +13,7 @@ head -n1 debian/changelog | grep "lucid" || error "This version must be ready fo
 # Tag the release in bzr
 minor=`head -n1 debian/changelog | sed "s/^.*($MAJOR.//" | sed "s/-.*$//"`
 dch --release
+bzr tag --delete $MAJOR.$minor-0ubuntu1 || true
 debcommit --release --message="releasing $MAJOR.$minor"
 
 # Sign the tarball
