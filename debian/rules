@@ -14,7 +14,7 @@ get-orig-source:
 	# use tar instead
 	mkdir -p ../tmp
 	rm -rf ../tmp/*
-	cp -a ${PWD} ../tmp/${PKG}-${VER}
+	cp -a . ../tmp/${PKG}-${VER}
 	tar -C ../tmp --exclude .bzr --exclude debian -zcvf ../${PKG}_${VER}.orig.tar.gz ${PKG}-${VER}
 	rm -rf ../tmp
 	ls -halF ../${PKG}_${VER}.orig.tar.gz
