@@ -1,6 +1,7 @@
 byobu (2.50) unreleased; urgency=low
 
   * debian/rules: fix lintian warning about PWD
+  * usr/bin/byobu-export: silence cd -
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Jan 2010 11:13:20 +1300
 
