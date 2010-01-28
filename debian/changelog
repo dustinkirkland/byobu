@@ -1,3 +1,9 @@
+byobu (2.51) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 27 Jan 2010 23:09:39 -0600
+
 byobu (2.50-0ubuntu1) lucid; urgency=low
 
   * debian/rules: fix lintian warning about PWD
