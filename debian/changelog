@@ -2,6 +2,8 @@ byobu (2.50) unreleased; urgency=low
 
   * debian/rules: fix lintian warning about PWD
   * usr/bin/byobu-export: silence cd -
+  * usr/share/applications/byobu.desktop: hide menu item by default,
+    LP: #513586
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Jan 2010 11:13:20 +1300
 
