@@ -1,3 +1,9 @@
+byobu (2.52) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 03 Feb 2010 10:56:23 -0800
+
 byobu (2.51-0ubuntu1) lucid; urgency=low
 
   * usr/lib/byobu/services: fix eucalyptus-nc service handling, was
