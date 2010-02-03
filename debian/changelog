@@ -1,6 +1,7 @@
 byobu (2.51) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/services: fix eucalyptus-nc service handling, was
+    broken when running no vm's
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 27 Jan 2010 23:09:39 -0600
 

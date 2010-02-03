@@ -39,8 +39,10 @@ if i > 1:
 		for s in output.split("\n"):
 			sys.stdout.write("  %d. %s\n" % (i, s))
 			i += 1
+		sys.stdout.write("  %d. Create a new session\n" % i)
+		i += 1
 		try:
-			choice = input("\nChoose [1-%d]: " % (i-1))
+			choice = input("\nChoose 1-%d [1]: " % (i-1))
 			if choice < 1 or choice >= i:
 				choice = ""
 		except:

@@ -57,8 +57,8 @@ for i in $SERVICES; do
 				else
 					max="$MAX_CORES"
 				fi
-				count=$(pgrep -c -f /usr/bin/kvm)
-				output="$output,NC ($count/$max)"
+				count=$(pgrep -c -f /usr/bin/kvm || true)
+				output="$output,NC $count/$max"
 			fi
 		;;
 		*)
