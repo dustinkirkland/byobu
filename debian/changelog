@@ -1,4 +1,4 @@
-byobu (2.52) unreleased; urgency=low
+byobu (2.52-0ubuntu1) lucid; urgency=low
 
   * debian/rules, usr/bin/byobu, usr/bin/byobu-launcher:
     - deprecate the launcher script as a separate script; do this
@@ -15,7 +15,7 @@ byobu (2.52) unreleased; urgency=low
   * usr/bin/byobu-export:
     - install profile symlink properly
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 03 Feb 2010 10:56:23 -0800
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 05 Feb 2010 01:02:43 -0800
 
 byobu (2.51-0ubuntu1) lucid; urgency=low
 
