@@ -28,6 +28,7 @@ install_launcher() {
 	echo "$launcher_line" >> "$dest"
 	# Hush login, since byobu will handle motd printing
 	touch "$HOME"/.hushlogin
+	rm -f "$HOME/.$PKG/disable-autolaunch"
 }
 
 # Sanitize the environment

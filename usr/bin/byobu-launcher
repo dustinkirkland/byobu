@@ -1,10 +1,9 @@
 #!/bin/sh -e
 #
-#    byobu-launcher-uninstall
-#    Copyright (C) 2008 Canonical Ltd.
+#    byobu-launcher - conditionally launch byobu
+#    Copyright (C) 2010 Canonical Ltd.
 #
-#    Authors: Nick Barcet <nick.barcet@ubuntu.com>
-#             Dustin Kirkland <kirkland@canonical.com>
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -20,17 +19,6 @@
 
 PKG="byobu"
 
-remove_launcher() {
-	dest=$1
-	if [ -w "$dest" ]; then
-		sed -i "/$PKG-launcher$/d" "$dest"
-		sed -i "/screen-launcher$/d" "$dest"
-	fi
-	touch "$HOME/.$PKG/disable-autolaunch"
-	# the install disabled motd printing; re-enable
-	rm -f "$HOME"/.hushlogin
-}
+[ -r "$HOME/.$PKG/disable-autolaunch" ] && exit 0
 
-for i in ".profile" ".bashrc" ".bash_profile" ".zprofile"; do
-	remove_launcher "$HOME/$i"
-done
+exec /usr/bin/$PKG

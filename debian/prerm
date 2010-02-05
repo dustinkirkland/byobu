@@ -6,6 +6,7 @@ PKG="byobu"
 for i in /usr/bin/screen-profiles-status /usr/bin/screen-launcher; do
 	[ -h "$i" ] && rm -f "$i"
 done
+rm -f /etc/profile.d/$PKG.sh
 
 true
 
