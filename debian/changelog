@@ -1,6 +1,6 @@
 byobu (2.54) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-launcher: profile.d is sourced, not executed
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 05 Feb 2010 01:17:41 -0800
 

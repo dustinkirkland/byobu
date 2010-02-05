@@ -17,8 +17,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-
-[ -r "$HOME/.$PKG/disable-autolaunch" ] && exit 0
-
-exec /usr/bin/$PKG
+if [ ! -r "$HOME/.byobu/disable-autolaunch" ]; then
+	exec /usr/bin/byobu
+fi
