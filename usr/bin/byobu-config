@@ -496,6 +496,16 @@ def chgesc(screen, size):
             return 0
     return 100
 
+def autolaunch():
+    if os.path.exists("%s/.%s/disable-autolaunch" % (HOME, PKG)):
+	return 0
+    if commands.getoutput('grep -qs byobu-launcher %s/.profile' % HOME):
+	return 1
+    if os.path.exists("/etc/profile.d/%s.sh" % PKG):
+	return 1
+    return 0
+
+
 def main():
     """This is the main loop of our utility
     """
@@ -507,7 +517,7 @@ def main():
 
     config = SafeConfigParser()
 
-    isInstalled = (commands.getoutput('grep byobu-launcher '+(HOME+'/.profile')) != "")
+    isInstalled = autolaunch()
 
     tag = 100
 

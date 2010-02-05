@@ -1,13 +1,17 @@
 byobu (2.52) unreleased; urgency=low
 
-  * debian/rules, usr/bin/byobu, usr/bin/byobu-launcher: deprecate the
-    launcher script as a separate script; do this in /usr/bin/byobu
+  * debian/rules, usr/bin/byobu, usr/bin/byobu-launcher:
+    - deprecate the launcher script as a separate script; do this
+      in /usr/bin/byobu
   * debian/config, debian/postinst, debian/prerm, debian/rules,
     debian/templates, usr/bin/byobu, usr/bin/byobu-launcher,
     usr/bin/byobu-launcher-install, usr/bin/byobu-launcher-uninstall:
     - support a preseedable debconf question that allows
       an administrator to launch byobu by default on all logins on a
       system (default = false), allow for per-user overriding
+  * debian/control, debian/po/POTFILES.in, debian/po/templates.pot,
+    debian/templates, usr/bin/byobu-config:
+    - make the new debconf question translatable
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 03 Feb 2010 10:56:23 -0800
 

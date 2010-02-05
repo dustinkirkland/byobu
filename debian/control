@@ -9,7 +9,7 @@ Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/byobu/trunk
 
 Package: byobu
 Architecture: all
-Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, screen, gettext-base, python, python-newt (>= 0.52.2-11)
+Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, screen, gettext-base, python, python-newt (>= 0.52.2-11), po-debconf
 Recommends: update-notifier-common, lsb-release
 Suggests: apport, vim, w3m
 Provides: screen-profiles, screen-profiles-extras, byobu-extras
