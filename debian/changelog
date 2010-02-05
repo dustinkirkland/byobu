@@ -1,8 +1,8 @@
-byobu (2.53) unreleased; urgency=low
+byobu (2.53-0ubuntu1) lucid; urgency=low
 
   * debian/control: suggest po-debconf
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 05 Feb 2010 01:03:51 -0800
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 05 Feb 2010 01:17:11 -0800
 
 byobu (2.52-0ubuntu1) lucid; urgency=low
 
