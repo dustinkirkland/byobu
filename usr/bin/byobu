@@ -41,7 +41,19 @@ grep -qs "^[^#]" "$HOME/.$PKG/windows" && DEFAULT_WINDOW= || DEFAULT_WINDOW="mot
 
 # Now let's execute screen!
 if [ "$#" = "0" ]; then
-	exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc" -t shell $DEFAULT_WINDOW
+	out=$(screen -wipe 2>/dev/null) || true
+	if echo "$out" | grep -qsi "^No Sockets found in "; then
+		# Start new session
+		exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc" -t shell $DEFAULT_WINDOW
+	else
+		# Select and attach to an existing session
+		# Update ssh-agent socket
+		if [ -S "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ]; then 
+			rm -f "$RUN/$PKG.ssh-agent"
+			ln -sf "$SSH_AUTH_SOCK" "$RUN/$PKG.ssh-agent"
+		fi
+		exec byobu-select-session
+	fi
 else
 	exec screen $SCREEN_TERM -c "$HOME/.$PKG/profile" "$@"
 fi

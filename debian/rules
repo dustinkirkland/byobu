@@ -54,6 +54,7 @@ install: build install-po
 	#dh_link usr/bin/byobu-status usr/bin/screen-profiles-status
 	#dh_link usr/bin/byobu-launcher usr/bin/screen-launcher
 	dh_link usr/share/byobu/keybindings/f-keys usr/share/byobu/keybindings/common
+	dh_link usr/bin/byobu usr/bin/byobu-launcher
 	for i in black dark dark_blue dark_cyan dark_green dark_purple dark_red dark_yellow light light_blue light_cyan light_green light_purple light_red light_yellow; do dh_link usr/share/byobu/profiles/common usr/share/byobu/profiles/$${i}; done
 	dh_install -X.bzr
 

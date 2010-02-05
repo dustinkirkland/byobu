@@ -1,6 +1,7 @@
 byobu (2.52) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/rules, usr/bin/byobu, usr/bin/byobu-launcher: deprecate the
+    launcher script as a separate script; do this in /usr/bin/byobu
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 03 Feb 2010 10:56:23 -0800
 
