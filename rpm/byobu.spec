@@ -1,12 +1,12 @@
 Name:           byobu
-Version:        2.52
+Version:        2.53
 Release:        1%{?dist}
 Summary:        a set of useful profiles and a profile-switcher for GNU screen
 
 Group:          Applications/System
 License:        GPL
 URL:            http://launchpad.net/byobu
-Source0:        http://code.launchpad.net/byobu/trunk/2.52/+download/byobu_2.52.orig.tar.gz
+Source0:        http://code.launchpad.net/byobu/trunk/2.53/+download/byobu_2.53.orig.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:	noarch
 
