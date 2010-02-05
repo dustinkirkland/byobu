@@ -1,6 +1,6 @@
 byobu (2.53) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/control: suggest po-debconf
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 05 Feb 2010 01:03:51 -0800
 
