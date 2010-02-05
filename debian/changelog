@@ -12,6 +12,8 @@ byobu (2.52) unreleased; urgency=low
   * debian/control, debian/po/POTFILES.in, debian/po/templates.pot,
     debian/templates, usr/bin/byobu-config:
     - make the new debconf question translatable
+  * usr/bin/byobu-export:
+    - install profile symlink properly
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 03 Feb 2010 10:56:23 -0800
 

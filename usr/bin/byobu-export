@@ -1,7 +1,7 @@
 #!/bin/sh -e
 #
-#    screen-profile-export
-#    Copyright (C) 2008 Canonical Ltd.
+#    byobu-export
+#    Copyright (C) 2008-2010 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
 #
@@ -90,7 +90,7 @@ cp -a /usr/bin/$PKG-* "$DIR/.$PKG/usr/bin"
 cp /etc/$PKG/statusrc "$DIR/.$PKG/status"
 echo "source \$HOME/.$PKG/profile" > "$DIR/.screenrc"
 echo "source \$HOME/.$PKG/usr/share/$PKG/keybindings/common" > "$DIR/.$PKG/keybindings"
-ln -sf usr/share/$PKG/profiles/common profile; cd - >/dev/null 2>&1
+ln -sf usr/share/$PKG/profiles/common "$DIR/.$PKG/profile"
 
 # Some gardening; update paths to be $HOME-based
 for i in $(ls /usr/bin/$PKG-* | grep -v "install"); do
