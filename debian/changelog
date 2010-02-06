@@ -1,6 +1,9 @@
 byobu (2.55) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/postinst: make sure that byobu-launcher, if selected by default,
+    gets installed late in the /etc/profile.d list
+  * usr/bin/byobu-launcher: do not exec, as this precludes detaching from a
+    session, and being in a non-byobu shell
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 05 Feb 2010 09:16:55 -0800
 
