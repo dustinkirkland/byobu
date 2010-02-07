@@ -1,3 +1,9 @@
+byobu (2.56) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 06 Feb 2010 22:10:52 -0600
+
 byobu (2.55-0ubuntu1) lucid; urgency=low
 
   * debian/postinst: make sure that byobu-launcher, if selected by default,
