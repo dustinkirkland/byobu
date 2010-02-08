@@ -1,6 +1,6 @@
 byobu (2.56) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/control: drop byobu-extras empty package
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 06 Feb 2010 22:10:52 -0600
 

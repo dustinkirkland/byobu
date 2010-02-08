@@ -25,12 +25,6 @@ Description: a set of useful profiles and a profile-switcher for GNU screen
  updates available), etc.  The profile-switcher allows users to quickly switch
  their .screenrc to any of the available profiles.
 
-Package: byobu-extras
-Depends: ${misc:Depends}, byobu
-Architecture: all
-Description: package subsumed by byobu
- This package has been subsumed by 'byobu'.
-
 Package: screen-profiles
 Depends: ${misc:Depends}, byobu
 Architecture: all
