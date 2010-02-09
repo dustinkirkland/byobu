@@ -10,6 +10,9 @@ byobu (2.57) unreleased; urgency=low
   * debian/postinst, usr/bin/byobu-launch, usr/bin/byobu-launcher,
     usr/bin/byobu-launcher-install: ensure that all login methods work
     (tty, ssh, gdm), and that each detach behaves properly (c-a-d, c-a-DD)
+  * usr/bin/byobu-janitor, usr/bin/byobu-launcher-install: ensure that we
+    don't end up with two byobu-launch commands in both the global profile
+    and local one
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Feb 2010 00:07:27 -0600
 

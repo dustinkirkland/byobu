@@ -21,31 +21,30 @@
 PKG="byobu"
 
 install_launcher() {
-	dest=$1
-	launcher="byobu-launcher"
-	launcher_line="\`echo \$- | grep -qs i\` && $launcher"
-	# Add it at the end
-	echo "$launcher_line" >> "$dest"
-	# Hush login, since byobu will handle motd printing
-	touch "$HOME"/.hushlogin
-	rm -f "$HOME/.$PKG/disable-autolaunch"
+	echo "\`echo \$- | grep -qs i\` && $PKG-launcher" >> "$1"
 }
 
 # Sanitize the environment
-byobu-launcher-uninstall || true
+$PKG-launcher-uninstall || true
+# Hush login, since we will handle motd printing
+touch "$HOME"/.hushlogin
+rm -f "$HOME/.$PKG/disable-autolaunch"
 
-# Install in $HOME/.profile unconditionally
-install_launcher "$HOME/.profile"
+# Handle bourne shells, if not set globally in /etc/profile.d
+if [ ! -h "/etc/profile.d/Z98-$PKG.sh" ]; then
+	# Install in $HOME/.profile unconditionally
+	install_launcher "$HOME/.profile"
+	# Now, install in any shell-specific profiles, if they exist
+	# This list may grow to support other shells
+	for i in ".bash_profile" ".bash_login"; do
+		if [ -w "$HOME/$i" ]; then
+			install_launcher "$HOME/$i"
+		fi
+	done
+fi
 
 # Install in zprofile if default shell is zsh
 if grep -qs "^$USER:.*zsh$" /etc/passwd; then
 	install_launcher "$HOME/.zprofile"
 fi
 
-# Now, install in any shell-specific profiles, if they exist
-# This list may grow to support other shells
-for i in ".bash_profile" ".bash_login"; do
-	if [ -w "$HOME/$i" ]; then
-		install_launcher "$HOME/$i"
-	fi
-done

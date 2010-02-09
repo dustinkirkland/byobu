@@ -128,5 +128,12 @@ for i in disk network distro logo; do
 	fi
 done
 
+# Affects: Upgrades from <= byobu-2.57 that autolaunch
+# If the global autolaunch is on, then remove duplicate entry in ~/.profile
+if [ -h "/etc/profile.d/Z98-$PKG.sh" ]; then
+	sed -i "/$PKG-launcher$/d" "$HOME"/.profile || true
+fi
+
+
 # Clean up flag
 rm -f "$FLAG"
