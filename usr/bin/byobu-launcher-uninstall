@@ -26,11 +26,11 @@ remove_launcher() {
 		sed -i "/$PKG-launcher$/d" "$dest"
 		sed -i "/screen-launcher$/d" "$dest"
 	fi
-	touch "$HOME/.$PKG/disable-autolaunch"
-	# the install disabled motd printing; re-enable
-	rm -f "$HOME"/.hushlogin
 }
 
 for i in ".profile" ".bashrc" ".bash_profile" ".zprofile"; do
 	remove_launcher "$HOME/$i"
 done
+touch "$HOME/.$PKG/disable-autolaunch"
+# install disabled motd printing; re-enable
+rm -f "$HOME"/.hushlogin

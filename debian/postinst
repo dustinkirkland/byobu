@@ -7,9 +7,9 @@ PKG="byobu"
 
 db_get byobu/launch-by-default
 if [ "$RET" = true ]; then
-	ln -sf /usr/bin/$PKG-launcher /etc/profile.d/95-$PKG.sh
+	ln -sf /usr/bin/$PKG-launcher /etc/profile.d/Z98-$PKG.sh
 else
-	rm -f /etc/profile.d/95-$PKG.sh
+	rm -f /etc/profile.d/Z98-$PKG.sh
 fi
 
 # The target of the diversion somehow disappeared which will cause

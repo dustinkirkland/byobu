@@ -1,6 +1,10 @@
 byobu (2.57) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/postinst, usr/bin/byobu-config, usr/bin/byobu-launcher,
+    usr/bin/byobu-launcher-uninstall: install the profile.d script
+    at Z98-* to ensure that it's sourced last-ish; clean up and check
+    for the new location; check if shell is interactive before exec'ing
+    in the launcher
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Feb 2010 00:07:27 -0600
 

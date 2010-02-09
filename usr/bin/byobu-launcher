@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 if [ ! -r "$HOME/.byobu/disable-autolaunch" ]; then
-	if [ -r "$HOME/.byobu/disable-exec" ]; then
+	if echo $- | grep -qs i; then
 		/usr/bin/byobu
 	else
 		exec /usr/bin/byobu
