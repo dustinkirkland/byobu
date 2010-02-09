@@ -42,7 +42,7 @@ byobu (2.52-0ubuntu1) lucid; urgency=low
     debian/templates, usr/bin/byobu-config:
     - make the new debconf question translatable
   * usr/bin/byobu-export:
-    - install profile symlink properly
+    - install profile symlink properly, LP: #507461
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 05 Feb 2010 01:02:43 -0800
 
