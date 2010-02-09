@@ -405,22 +405,18 @@ def defaultwindows(screen, size):
     return 100
 
 def install(screen, size, isInstalled):
-    if not isInstalled:
-        out = commands.getoutput("byobu-launcher-install")
-        if out == "":
-            out = _("Byobu will be launched automatically next time you login.")
-
-        button = messagebox(screen, 60, 2, "Message", out, \
-        buttons=((_("Menu"), )))
-        return 100
-    else:
+    if isInstalled:
         out = commands.getoutput("byobu-launcher-uninstall")
         if out == "":
             out = _("Byobu will not be used next time you login.")
-
-        button = messagebox(screen, 60, 2, _("Message"), out, \
-        buttons=((_("Menu"), )))
+        button = messagebox(screen, 60, 2, _("Message"), out, buttons=((_("Menu"), )))
         return 101
+    else:
+        out = commands.getoutput("byobu-launcher-install")
+        if out == "":
+            out = _("Byobu will be launched automatically next time you login.")
+        button = messagebox(screen, 60, 2, "Message", out, buttons=((_("Menu"), )))
+        return 100
 
 def appendtofile(p, s):
     f = open(p, 'a')
@@ -499,7 +495,7 @@ def chgesc(screen, size):
 def autolaunch():
     if os.path.exists("%s/.%s/disable-autolaunch" % (HOME, PKG)):
 	return 0
-    if commands.getoutput('grep -qs byobu-launcher %s/.profile' % HOME):
+    if commands.getstatusoutput('grep -qs byobu-launcher %s/.profile' % HOME):
 	return 1
     if os.path.exists("/etc/profile.d/Z98-%s.sh" % PKG):
 	return 1
@@ -541,7 +537,7 @@ def main():
             tag = defaultwindows(screen, size)
         elif tag == 9:
             tag = install(screen, size, isInstalled)
-            isInstalled=(tag == 100)
+            isInstalled = autolaunch()
 
     screen.finish()
     sys.exit(0)
