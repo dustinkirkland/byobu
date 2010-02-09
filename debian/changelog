@@ -3,6 +3,8 @@ byobu (2.56) unreleased; urgency=low
   * debian/control: drop byobu-extras empty package
   * usr/bin/byobu-launcher: fix recent regression, do exec byobu by default,
     but allow for not exec'ing if ~/.byobu/disable-exec exists, LP: #519018
+  * usr/lib/byobu/network: improve regex of the interface matching, which
+    was broken for device names >6 chars, LP: #509278
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 06 Feb 2010 22:10:52 -0600
 
