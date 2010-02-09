@@ -1,3 +1,9 @@
+byobu (2.58) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Feb 2010 13:55:40 -0600
+
 byobu (2.57-0ubuntu1) lucid; urgency=low
 
   * debian/postinst, usr/bin/byobu-config, usr/bin/byobu-launcher,
