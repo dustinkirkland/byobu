@@ -17,5 +17,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Do not 'exec' here
-[ ! -r "$HOME/.byobu/disable-autolaunch" ] && /usr/bin/byobu
+if [ ! -r "$HOME/.byobu/disable-autolaunch" ]; then
+	if [ -r "$HOME/.byobu/disable-exec" ]; then
+		/usr/bin/byobu
+	else
+		exec /usr/bin/byobu
+	fi
+fi
