@@ -1,4 +1,4 @@
-byobu (2.57-0ubuntu1) lucid; urgency=low
+byobu (2.57) unreleased; urgency=low
 
   * debian/postinst, usr/bin/byobu-config, usr/bin/byobu-launcher,
     usr/bin/byobu-launcher-uninstall: install the profile.d script
