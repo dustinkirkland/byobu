@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    byobu-launcher - conditionally launch byobu
+#    byobu-launch - call the launcher if we're in an interactive shell
 #    Copyright (C) 2010 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -17,4 +17,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-[ ! -r "$HOME/.byobu/disable-autolaunch" ] && exec /usr/bin/byobu
+`echo \$- | grep -qs i` && byobu-launcher

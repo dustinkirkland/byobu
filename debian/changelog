@@ -7,6 +7,9 @@ byobu (2.57) unreleased; urgency=low
     in the launcher
   * byobu-config: correct logic in determining if byobu is set to auto
     launch
+  * debian/postinst, usr/bin/byobu-launch, usr/bin/byobu-launcher,
+    usr/bin/byobu-launcher-install: ensure that all login methods work
+    (tty, ssh, gdm), and that each detach behaves properly (c-a-d, c-a-DD)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Feb 2010 00:07:27 -0600
 
