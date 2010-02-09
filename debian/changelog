@@ -1,4 +1,4 @@
-byobu (2.56) unreleased; urgency=low
+byobu (2.56-0ubuntu1) lucid; urgency=low
 
   * debian/control: drop byobu-extras empty package
   * usr/bin/byobu-launcher: fix recent regression, do exec byobu by default,
@@ -6,7 +6,7 @@ byobu (2.56) unreleased; urgency=low
   * usr/lib/byobu/network: improve regex of the interface matching, which
     was broken for device names >6 chars, LP: #509278
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 06 Feb 2010 22:10:52 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Feb 2010 00:07:20 -0600
 
 byobu (2.55-0ubuntu1) lucid; urgency=low
 
