@@ -173,7 +173,8 @@ setcolor() {
 	else
 		BACKGROUND=$(getletter "$color")
 	fi
-	printf "FOREGROUND=$FOREGROUND\nBACKGROUND=$BACKGROUND\n" > $FILE
+	[ "$MONOCHROME" = "1" ] || MONOCHROME=0
+	printf "FOREGROUND=$FOREGROUND\nBACKGROUND=$BACKGROUND\nMONOCHROME=$MONOCHROME" > $FILE
 	touch "/var/run/screen/S-$USER/$PKG.reload-required"
 }
 

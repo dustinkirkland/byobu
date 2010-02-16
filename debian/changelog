@@ -1,6 +1,8 @@
 byobu (2.58) unreleased; urgency=low
 
   * usr/share/byobu/pixmaps/byobu.svg: cleaned up icon
+  * byobu-export, byobu-janitor, byobu-select-profile, byobu-status:
+    make MONOCHROME more discoverable
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Feb 2010 13:55:40 -0600
 

@@ -45,9 +45,9 @@ color() {
 		invert) printf "$ESC{=r }" ;;
 		*)
 			if [ "$#" = "2" ]; then
-				[ "$COLOR" = "monochrome" ] && printf "$ESC{= }" || printf "$ESC{= $1$2}"
+				[ "$MONOCHROME" = "1" ] && printf "$ESC{= }" || printf "$ESC{= $1$2}"
 			else
-				[ "$COLOR" = "monochrome" ] && printf "$ESC{=$1 }" || printf "$ESC{=$1 $2$3}"
+				[ "$MONOCHROME" = "1" ] && printf "$ESC{=$1 }" || printf "$ESC{=$1 $2$3}"
 			fi
 		;;
 	esac
