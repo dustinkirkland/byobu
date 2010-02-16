@@ -1,6 +1,6 @@
 byobu (2.58) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/pixmaps/byobu.svg: cleaned up icon
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Feb 2010 13:55:40 -0600
 
