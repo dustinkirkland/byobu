@@ -1,10 +1,10 @@
-byobu (2.58) unreleased; urgency=low
+byobu (2.58-0ubuntu1) lucid; urgency=low
 
   * usr/share/byobu/pixmaps/byobu.svg: cleaned up icon
   * byobu-export, byobu-janitor, byobu-select-profile, byobu-status:
     make MONOCHROME more discoverable
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Feb 2010 13:55:40 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Feb 2010 23:16:27 -0600
 
 byobu (2.57-0ubuntu1) lucid; urgency=low
 
