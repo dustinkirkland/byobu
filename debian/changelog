@@ -1,6 +1,6 @@
 byobu (2.59) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-config: fix logic auto-launch detection logic, LP: #528545
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Feb 2010 23:16:33 -0600
 
