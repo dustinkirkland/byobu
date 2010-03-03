@@ -2,7 +2,7 @@ byobu (2.60) unreleased; urgency=low
 
   * usr/bin/byobu-export, usr/lib/byobu/ec2_cost,
     usr/share/byobu/ec2/rates.eu_ie, usr/share/byobu/ec2/rates.us_ca,
-    usr/share/byobu/ec2/rates.us_va:
+    usr/share/byobu/ec2/rates.us_va: LP: #531497
     - update ec2 pricing model, allow for local overrides of prices
       via a sourced symlink or bespoke file in $HOME/.byobu/ec2_rates
 
