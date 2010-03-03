@@ -91,6 +91,7 @@ cp /etc/$PKG/statusrc "$DIR/.$PKG/status"
 echo "source \$HOME/.$PKG/profile" > "$DIR/.screenrc"
 echo "source \$HOME/.$PKG/usr/share/$PKG/keybindings/common" > "$DIR/.$PKG/keybindings"
 ln -sf usr/share/$PKG/profiles/common "$DIR/.$PKG/profile"
+ln -sf usr/share/$PKG/ec2/rates.us_ca "$DIR/.$PKG/ec2_rates"
 
 # Some gardening; update paths to be $HOME-based
 for i in $(ls /usr/bin/$PKG-* | grep -v "install"); do

@@ -1,0 +1,13 @@
+# 2010-03-03: Approximate Instance Cost Basis per hour from
+# http://aws.amazon.com/ec2/instance-types/
+# http://aws.amazon.com/ec2/#pricing
+# for US - N. California
+M1_SMALL="0.095"
+M1_LARGE="0.38"
+M1_XLARGE="0.76"
+M2_XLARGE="0.57"
+M2_2XLARGE="1.34"
+M2_4XLARGE="2.68"
+C1_MEDIUM="0.19"
+C1_XLARGE="0.76"
+

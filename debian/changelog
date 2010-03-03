@@ -1,6 +1,10 @@
 byobu (2.60) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-export, usr/lib/byobu/ec2_cost,
+    usr/share/byobu/ec2/rates.eu_ie, usr/share/byobu/ec2/rates.us_ca,
+    usr/share/byobu/ec2/rates.us_va:
+    - update ec2 pricing model, allow for local overrides of prices
+      via a sourced symlink or bespoke file in $HOME/.byobu/ec2_rates
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Feb 2010 10:43:00 -0600
 

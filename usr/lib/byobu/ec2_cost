@@ -29,26 +29,36 @@ for arg in $@; do
 	esac
 done
 
-# Approximate Instance Cost Basis
-#			US		Europe
-# Small  (1cpu, 32bit)	$0.10/h		$0.11/h
-# Medium (2cpu, 32bit)	$0.20/h		$0.22/h
-# Large  (4cpu, 64bit)	$0.40/h		$0.44/h
-# XLarge (8cpu, 64bit)	$0.80/h		$0.88/h
+# Get the going rates
+[ -r "$HOME/.$PKG/ec2_rates" ] || ln -s /usr/share/$PKG/ec2/rates.us_ca "$HOME/.$PKG/ec2_rates"
+. "$HOME/.$PKG/ec2_rates" || exit 1
 
-# Count CPUs
-cpu_count=`grep -c "^processor.*:" /proc/cpuinfo`
-[ -z "$cpu_count" ] && cpu_count=1
-# Apply the going rate
-CPU_RATE=`echo "$cpu_count" | awk '{printf "%f", 0.10*$1}'`
-# BUG: Some logic needed here to add 10% cost for Europe instances?
+# Count CPUs, Memory, Architecture
+cpu=$(grep -c "^processor.*:" /proc/cpuinfo) || cpu=1
+mem=$(grep ^MemTotal /proc/meminfo | awk '{print $2}')
+
+# Guess this system's going rate, based on mem available (m* types)
+if [ $mem -gt 64000000 ]; then
+	RATE=$M2_4XLARGE
+elif [ $mem -gt 32000000 ]; then
+	RATE=$M2_2XLARGE
+elif [ $mem -gt 16000000 ]; then
+	RATE=$M2_XLARGE
+elif [ $mem -gt 14000000 ]; then
+	RATE=$M1_XLARGE
+elif [ $mem -gt 7000000 ]; then
+	RATE=$M1_LARGE
+else
+	# Otherwise, scale based on number of cpu's (c* types)
+	RATE=$(echo "$cpu" "$M1_SMALL" | awk '{printf "%f", $1*$2}')
+fi
 
 # Data Transfer Cost Basis
 # Incoming	$0.10/GB
 # Outgoing	$0.17/GB
 # (This gets more complex if you use >1TB/mo)
 RX_RATE="0.10"
-TX_RATE="0.17"
+TX_RATE="0.15"
 
 # Auto detect network interface
 IF=`tail -n1 /proc/net/route  | awk '{print $1}'`
@@ -64,7 +74,7 @@ network_cost=`echo "$tx_gb" "$TX_RATE" "$rx_gb" "$RX_RATE" | awk '{printf "%f %f
 # BUG: This will only calculate uptime since boot!
 #      Some additional input will be required to account for reboots!!!
 hours=`awk '{printf "%f", 1 + $1 / 60 / 60 }' /proc/uptime | sed 's/\..*$//' `
-uptime_cost=`echo "$hours" | awk "{printf \"%f\", "$CPU_RATE" * $hours}"`
+uptime_cost=`echo "$hours" | awk "{printf \"%f\", "$RATE" * $hours}"`
 total_cost=`echo "$network_cost" "$uptime_cost" | awk '{printf "%.2f", $1 + $2}'`
 
 if [ "$DETAIL" = "1" ]; then
@@ -75,7 +85,7 @@ if [ "$DETAIL" = "1" ]; then
 	echo "  Network recv:  $rx_gb GB   @ \$$TX_RATE/GB"
 	echo "  Network cost:  \$$network_cost"
 	echo "------------------------------------------------"
-	echo "  Uptime:        $hours hr  @ \$$CPU_RATE/hr"
+	echo "  Uptime:        $hours hr  @ \$$RATE/hr"
 	echo "  Uptime cost:   \$$uptime_cost"
 	echo "------------------------------------------------"
 	echo "Total cost:      ~\$$total_cost"
