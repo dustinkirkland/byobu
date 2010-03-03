@@ -1,4 +1,4 @@
-byobu (2.60) unreleased; urgency=low
+byobu (2.60-0ubuntu1) lucid; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-export, usr/lib/byobu/ec2_cost,
@@ -15,7 +15,7 @@ byobu (2.60) unreleased; urgency=low
   [ Meethune Bhowmick <meethune@gmail.com> ]
   * rpm/byobu.spec: specfile updated/modernized for current layout, LP: #526233
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Feb 2010 10:43:00 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 03 Mar 2010 12:55:52 -0600
 
 byobu (2.59-0ubuntu1) lucid; urgency=low
 
