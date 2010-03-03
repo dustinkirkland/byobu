@@ -30,9 +30,3 @@ Depends: ${misc:Depends}, byobu
 Architecture: all
 Description: package renamed -> byobu
  This package has been renamed to 'byobu'.
-
-Package: screen-profiles-extras
-Depends: ${misc:Depends}, byobu
-Architecture: all
-Description: package renamed -> byobu
- This package has been renamed to 'byobu'.

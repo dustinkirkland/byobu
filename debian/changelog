@@ -10,6 +10,7 @@ byobu (2.60) unreleased; urgency=low
     agent on first launch of byobu, LP: #528967
   * usr/share/man/man1/byobu.1: add manpage note about Mac OSX terminal
     setting, LP: #506576
+  * debian/control: drop the screen-profiles-extras transitional package
 
   [ Meethune Bhowmick <meethune@gmail.com> ]
   * rpm/byobu.spec: specfile updated/modernized for current layout, LP: #526233
