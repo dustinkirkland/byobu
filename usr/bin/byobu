@@ -44,13 +44,14 @@ grep -qs "^[^#]" "$HOME/.$PKG/windows" && DEFAULT_WINDOW= || DEFAULT_WINDOW="mot
 # Check if our terminfo supports 256 colors
 [ -x /usr/bin/tput ] && [ $(/usr/bin/tput colors) -eq 256 ] && SCREEN_TERM="-T screen-256color"
 
+# Create or update ssh-agent socket
+if [ -S "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ]; then
+	rm -f "$RUN/$PKG.ssh-agent"
+	ln -sf "$SSH_AUTH_SOCK" "$RUN/$PKG.ssh-agent"
+fi
+
 # Now let's execute screen!
 if [ "$#" = "0" ]; then
-	# Create or update ssh-agent socket
-	if [ -S "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ]; then
-		rm -f "$RUN/$PKG.ssh-agent"
-		ln -sf "$SSH_AUTH_SOCK" "$RUN/$PKG.ssh-agent"
-	fi
 	out=$(screen -wipe 2>/dev/null) || true
 	if echo "$out" | grep -qsi "^No Sockets found in "; then
 		# Start new session

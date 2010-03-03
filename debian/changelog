@@ -6,8 +6,8 @@ byobu (2.60) unreleased; urgency=low
     usr/share/byobu/ec2/rates.us_va: LP: #531497
     - update ec2 pricing model, allow for local overrides of prices
       via a sourced symlink or bespoke file in $HOME/.byobu/ec2_rates
-  * usr/bin/byobu: support attaching to an existing ssh agent on first
-    launch of byobu, LP: #528967
+  * usr/bin/byobu: more completely support attaching to an existing ssh
+    agent on first launch of byobu, LP: #528967
 
   [ Meethune Bhowmick <meethune@gmail.com> ]
   * rpm/byobu.spec: specfile updated/modernized for current layout, LP: #526233
