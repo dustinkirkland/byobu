@@ -1,6 +1,7 @@
 byobu (2.61) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Sebastian Markow ]
+  * usr/share/byobu/pixmaps/byobu_multi.svg: added second icon
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 03 Mar 2010 12:55:59 -0600
 
