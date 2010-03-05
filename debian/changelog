@@ -1,4 +1,4 @@
-byobu (2.61) unreleased; urgency=low
+byobu (2.61-0ubuntu1) lucid; urgency=low
 
   [ Sebastian Markow ]
   * usr/share/byobu/pixmaps/byobu_multi.svg: added second icon
@@ -7,7 +7,7 @@ byobu (2.61) unreleased; urgency=low
   * usr/share/byobu/profiles/common: remove underline; does not play
     nicely with reverse on tty's, LP: #532666
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 03 Mar 2010 12:55:59 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 05 Mar 2010 08:42:42 -0600
 
 byobu (2.60-0ubuntu1) lucid; urgency=low
 
