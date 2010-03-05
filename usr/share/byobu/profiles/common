@@ -95,7 +95,7 @@ setenv SSH_AUTH_SOCK /var/run/screen/S-$USER/byobu.ssh-agent
 source $HOME/.byobu/keybindings
 
 # Window tabs, second to last line
-caption always "%12`%?%-Lw%50L>%?%{=r}%{+u}%n*%f %t%?(%u)%?%{-}%12`%?%+Lw%?%11` %=%12`%110`%109`%122`%111`%10`%<"
+caption always "%12`%?%-Lw%50L>%?%{=r}%n*%f %t%?(%u)%?%{-}%12`%?%+Lw%?%11` %=%12`%110`%109`%122`%111`%10`%<"
 
 # Status string, last line
 hardstatus string '%99`%{-}%{=r}%12` %100`%112`%= %130`%102`%101`%129`%131`%127`%114`%115`%108`%128`%125`%126`%113`%119`%117`%116`%106`%104`%103`%105`%107`%123`%120`%121`'
