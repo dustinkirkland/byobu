@@ -1,0 +1,10 @@
+# Set the location of the socket directory that byobu will use.
+# On Debian/Ubuntu systems, this is in /var/run/screen, but on
+# other distros, it might be elsewhere, such as /tmp
+#
+# This file will be sourced by both shell scripts and python code,
+# so please ensure that:
+#  * the variable name is SOCKETDIR
+#  * there is no space around the "="
+#  * and that the path value is quoted
+SOCKETDIR="/var/run/screen"

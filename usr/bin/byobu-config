@@ -37,7 +37,13 @@ if not os.path.exists(DOC):
     DOC = "%s/.%s/%s" % (HOME, PKG, DOC)
 DEF_ESC="A"
 RELOAD = "If you are using the default set of keybindings, press\n<F5> or <ctrl-a-R> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
-RELOAD_FLAG="/var/run/screen/S-"+USER+"/"+PKG+".reload-required"
+SOCKETDIR="/var/run/screen"
+if os.path.exists("/etc/%s/socketdir" % PKG):
+    try:
+	execfile(i)
+    except:
+	SOCKETDIR="/var/run/screen"
+RELOAD_FLAG="%s/S-%s/%s.reload-required" % (SOCKETDIR, USER, PKG)
 RELOAD_CMD="screen -X at 0 source $HOME/."+PKG+"/profile"
 ESC = ''
 snack.hotkeys[ESC] = ord(ESC)
@@ -183,9 +189,9 @@ def switch_keybindings(set):
     commands.getoutput("sed -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+HOME+"/."+PKG+"/keybindings")
 
 def newwindow(screen, size):
-    title=Entry(8, text="bash", returnExit=1)
+    title=Entry(8, text="shell", returnExit=1)
     titlel=Label(_("Title: "))
-    command=Entry(20, text="/bin/bash", returnExit=1)
+    command=Entry(20, text="/bin/sh", returnExit=1)
     commandl=Label(_("Command: "))
 
     rl=Label(_("Presets: "))
