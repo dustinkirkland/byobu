@@ -1,9 +1,9 @@
-byobu (2.62) unreleased; urgency=low
+byobu (2.62-0ubuntu1) lucid; urgency=low
 
   * usr/share/byobu/keybindings/common: added symlink, LP: #535166
   * debian/rules: drop get-orig-source target
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 05 Mar 2010 08:42:51 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Mar 2010 14:52:59 -0600
 
 byobu (2.61-0ubuntu1) lucid; urgency=low
 
