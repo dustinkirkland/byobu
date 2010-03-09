@@ -63,6 +63,6 @@ binary-indep: build install
 	dh_builddeb -i
 
 binary: binary-indep
-.PHONY: build clean binary-indep binary install prebuild get-orig-source
+.PHONY: build clean binary-indep binary install prebuild
 
 binary-arch:
