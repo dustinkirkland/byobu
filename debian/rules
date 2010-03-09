@@ -7,18 +7,6 @@
 PKG=byobu
 VER=`head -n 1 debian/changelog | sed 's/^.*(//' | sed 's/).*//' | sed 's/-.*//'`
 
-get-orig-source:
-	dh_testdir
-	# bzr export needs a --exclude option for the following to work:
-	#bzr export ../${PKG}_${VER}.orig.tar.gz
-	# use tar instead
-	mkdir -p ../tmp
-	rm -rf ../tmp/*
-	cp -a . ../tmp/${PKG}-${VER}
-	tar -C ../tmp --exclude .bzr --exclude debian -zcvf ../${PKG}_${VER}.orig.tar.gz ${PKG}-${VER}
-	rm -rf ../tmp
-	ls -halF ../${PKG}_${VER}.orig.tar.gz
-
 install-po: update-pot
 	for po in po/*.po ; do \
 		lang=$${po#po/}; lang=$${lang%.po}; \
