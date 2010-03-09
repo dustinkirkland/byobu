@@ -5,7 +5,7 @@ byobu (2.63) unreleased; urgency=low
     create socketdir conffile and SOCKETDIR variable for users who don't
     use /var/run/screen as the socket directory, LP: #535378
   * usr/bin/byobu-config: change a sample reference from "bash" to "shell"
-    again for portability, LP: #xxxxxx
+    again for portability, LP: #535407
 
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Mar 2010 14:53:10 -0600
