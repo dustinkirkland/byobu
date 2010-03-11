@@ -1,5 +1,6 @@
 byobu (2.63) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * etc/byobu/socketdir, usr/bin/byobu-config, usr/bin/byobu-janitor,
     usr/bin/byobu-select-profile: increase portability to other distros,
     create socketdir conffile and SOCKETDIR variable for users who don't
@@ -7,6 +8,9 @@ byobu (2.63) unreleased; urgency=low
   * usr/bin/byobu-config: change a sample reference from "bash" to "shell"
     again for portability, LP: #535407
 
+  [ Torsten Spindler ]
+  * debian/postinst: handle situation where /var/run/screen does not
+    exist, LP: #535648
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Mar 2010 14:53:10 -0600
 
