@@ -1,4 +1,4 @@
-byobu (2.63) unreleased; urgency=low
+byobu (2.63-0ubuntu1) lucid; urgency=low
 
   [ Dustin Kirkland ]
   * etc/byobu/socketdir, usr/bin/byobu-config, usr/bin/byobu-janitor,
@@ -15,7 +15,7 @@ byobu (2.63) unreleased; urgency=low
   * debian/postinst: handle situation where /var/run/screen does not
     exist, LP: #535648
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Mar 2010 14:53:10 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Mar 2010 18:47:15 -0600
 
 byobu (2.62-0ubuntu1) lucid; urgency=low
 
