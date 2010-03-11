@@ -15,7 +15,7 @@ byobu (2.63-0ubuntu1) lucid; urgency=low
   * debian/postinst: handle situation where /var/run/screen does not
     exist, LP: #535648
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Mar 2010 18:47:15 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Mar 2010 18:48:47 -0600
 
 byobu (2.62-0ubuntu1) lucid; urgency=low
 
