@@ -31,12 +31,14 @@ if ! echo $- | grep -qs i; then
 fi
 
 # Establish gpg-agent socket, helps when reconnecting to a detached session
-for i in $(ls "$HOME/.gnupg/"gpg-agent-info-*); do
+# Sorry, ls -t is needed here, to sort by time
+for i in $(ls -t "$HOME/.gnupg/"gpg-agent-info-*); do
 	. "$i" || continue
 	export GPG_AGENT_INFO && break
 done
 
 # Reconnect dbus, source the most recently touched session-bus
+# Sorry, ls -t is needed here, to sort by time
 for i in $(ls -t "$HOME/.dbus/session-bus/" 2>/dev/null); do
 	. "$HOME/.dbus/session-bus/$i" || continue
 	export DBUS_SESSION_BUS_ADDRESS && break

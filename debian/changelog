@@ -7,6 +7,9 @@ byobu (2.63) unreleased; urgency=low
     use /var/run/screen as the socket directory, LP: #535378
   * usr/bin/byobu-config: change a sample reference from "bash" to "shell"
     again for portability, LP: #535407
+  * bin/byobu-export, bin/byobu-reconnect-sockets, bin/byobu-status,
+    lib/byobu/cpu_temp: avoid programmatic use of ls in for loops,
+    LP: #452405
 
   [ Torsten Spindler ]
   * debian/postinst: handle situation where /var/run/screen does not

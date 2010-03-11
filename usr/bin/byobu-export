@@ -94,7 +94,10 @@ ln -sf usr/share/$PKG/profiles/common "$DIR/.$PKG/profile"
 ln -sf usr/share/$PKG/ec2/rates.us_ca "$DIR/.$PKG/ec2_rates"
 
 # Some gardening; update paths to be $HOME-based
-for i in $(ls /usr/bin/$PKG-* | grep -v "install"); do
+for i in /usr/bin/$PKG-*; do
+	if echo "$i" | grep -qs "install"; then
+		continue
+	fi
 	bin=$(basename "$i")
 	sed -i "s:$bin:\$HOME/.$PKG$i:g" $(find $DIR -type f)
 done
