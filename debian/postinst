@@ -20,11 +20,11 @@ fi
 DIR="/var/run/screen"
 if [ -d "$DIR" ]; then
 	for d in "$DIR"/*; do
-		[ -d "$DIR/$d" ] || continue
-		touch "$DIR/$d/$PKG.reload-required"
-		u=$(echo "$d" | sed "s:^S-::")
-		chown $u "$DIR/$d/$PKG.reload-required"
-		chmod 700 "$DIR/$d/$PKG.reload-required"
+		[ -d "$d" ] || continue
+		touch "$d/$PKG.reload-required"
+		u=$(echo "$d" | sed "s:^.*/S-::")
+		chown $u "$d/$PKG.reload-required"
+		chmod 700 "$d/$PKG.reload-required"
 	done
 fi
 

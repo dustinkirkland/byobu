@@ -1,8 +1,9 @@
-byobu (2.64) unreleased; urgency=low
+byobu (2.64-0ubuntu1) lucid; urgency=low
 
-  * UNRELEASED
+  * debian/postinst: fix bug introduced by last upload, $d contains
+    $DIR
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Mar 2010 18:49:05 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Mar 2010 19:06:34 -0600
 
 byobu (2.63-0ubuntu1) lucid; urgency=low
 
