@@ -1,6 +1,10 @@
 byobu (2.65) unreleased; urgency=low
 
-  * UNRELEASED
+  * etc/byobu/statusrc, usr/bin/byobu-config, usr/lib/byobu/time_utc,
+    usr/share/byobu/profiles/common, usr/share/man/man1/byobu.1:
+    - daylight savings really sucks for those few weeks now when the
+      US is completely different from the rest of the world; having
+      a UTC time byobu status is really useful, LP: #540038
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Mar 2010 19:06:51 -0600
 

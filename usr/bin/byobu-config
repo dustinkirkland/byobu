@@ -305,6 +305,7 @@ def readstatus():
     status["release"]=1
     status["services"]=1
     status["time"]=1
+    status["time_utc"]=0
     status["users"]=0
     status["updates_available"]=1
     status["uptime"]=1

@@ -45,6 +45,7 @@ reboot_required=1
 release=1
 services=1
 time=1
+time_utc=0
 users=0
 updates_available=1
 uptime=1
