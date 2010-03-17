@@ -1,3 +1,9 @@
+byobu (2.66) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Mar 2010 23:27:30 -0500
+
 byobu (2.65-0ubuntu1) lucid; urgency=low
 
   * etc/byobu/statusrc, usr/bin/byobu-config, usr/lib/byobu/time_utc,
