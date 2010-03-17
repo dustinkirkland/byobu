@@ -1,4 +1,4 @@
-byobu (2.65) unreleased; urgency=low
+byobu (2.65-0ubuntu1) lucid; urgency=low
 
   * etc/byobu/statusrc, usr/bin/byobu-config, usr/lib/byobu/time_utc,
     usr/share/byobu/profiles/common, usr/share/man/man1/byobu.1:
@@ -6,7 +6,7 @@ byobu (2.65) unreleased; urgency=low
       US is completely different from the rest of the world; having
       a UTC time byobu status is really useful, LP: #540038
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Mar 2010 19:06:51 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Mar 2010 23:27:20 -0500
 
 byobu (2.64-0ubuntu1) lucid; urgency=low
 

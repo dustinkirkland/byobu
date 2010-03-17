@@ -22,7 +22,7 @@ case "$1" in
 		date -u
 	;;
 	*)
-		printf "%s UTC" $(date -u +%H:%M)
+		printf "$(color invert)%s UTC$(color -) " $(date -u +%H:%M)
 	;;
 esac
 
