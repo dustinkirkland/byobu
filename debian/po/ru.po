@@ -1,0 +1,46 @@
+# Russian translation for byobu
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# This file is distributed under the same license as the byobu package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: byobu\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2010-02-05 00:55-0800\n"
+"PO-Revision-Date: 2010-03-19 15:49+0000\n"
+"Last-Translator: Vadim Rutkovsky <roignac@gmail.com>\n"
+"Language-Team: Russian <ru@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2010-03-20 04:48+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid "Do you want to launch Byobu at shell login for all users?"
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"Byobu can launch automatically at login (e.g. console, ssh), providing an "
+"attachable/detachable window manager on the command line."
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"If you select this option, Byobu will install a symlink in /etc/profile.d. "
+"This setting is system-wide, for all users logging into the system. "
+"Individual users can disable this by touching ~/.byobu/disable-autolaunch, "
+"or configuring with 'byobu-config'."
+msgstr ""
+"При выборе этой опции, Byobu добавит ссылку в каталог /etc/profile.d. Эта "
+"настройка влияет на всех пользователей, которые войдут в систему. Отдельные "
+"пользователи могут быть отключены, создав файл ~/.byobu/disable-autolaunch "
+"или в конфигурации с помощью команды 'byobu-config'."
