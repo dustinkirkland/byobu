@@ -1,0 +1,203 @@
+# Turkish translation for byobu
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# This file is distributed under the same license as the byobu package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: byobu\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2009-11-23 20:48-0600\n"
+"PO-Revision-Date: 2010-03-21 13:24+0000\n"
+"Last-Translator: Fethican Coşkuner <Unknown>\n"
+"Language-Team: Turkish <tr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2010-03-22 04:47+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+
+#: bin/menu:34 byobu-config:129 byobu-config:401 byobu-config:409
+msgid "Menu"
+msgstr "Menü"
+
+#: byobu-export:68 byobu-export:71 byobu-select-profile:104
+#: byobu-select-profile:107
+msgid "Choose"
+msgstr "Seç"
+
+#: byobu-export:171
+msgid "File exists"
+msgstr "Dosya mevcut"
+
+#: byobu-export:172
+msgid "Remove file? [y/N] "
+msgstr "Dosyayı sil? [e/H] "
+
+#: byobu-export:199
+msgid "Select a color: "
+msgstr "Bir renk seçin: "
+
+#: byobu-export:240
+msgid "Profile"
+msgstr "Profil"
+
+#: byobu-export:241
+msgid "Archive"
+msgstr "Arşiv"
+
+#: byobu-export:243
+msgid "Extract the archive in your home directory on the target system."
+msgstr ""
+
+#: byobu-select-profile:49
+msgid "Error:"
+msgstr "Hata:"
+
+#: byobu-select-profile:49
+msgid " file exists, but is not a symlink"
+msgstr " dosya mevcut fakat sembolik link değil"
+
+#: byobu-select-profile:80
+msgid "Select a screen profile: "
+msgstr "Bir screen profili seçiniz: "
+
+#: byobu-select-profile:97
+msgid "ERROR: Invalid selection"
+msgstr "HATA: Geçersiz seçim"
+
+#: byobu-select-profile:134
+msgid ""
+"If you are using the default set of keybindings, press\\n<F5> to activate "
+"these changes.\\n\\nOtherwise, exit this screen session and start a new one."
+msgstr ""
+"Eğer ön tanımlı klavye kısayollarını kullanıyorsanız, değişiklikleri\\n "
+"etkinleştirmek için <F5>'e basınız.\\n\\nAksi taktirde, bu screen "
+"oturumundan çıkarak yeni bir tane başlatınız."
+
+#: byobu-select-profile:136
+msgid "Run \"byobu\" to activate"
+msgstr ""
+
+#: byobu-config:83
+msgid "Byobu currently launches at login (toggle off)"
+msgstr "Byobu varsayılan olarak girişte başlar (başlamayı devredışı bırak)"
+
+#: byobu-config:85
+msgid "Byobu currently does not launch at login (toggle on)"
+msgstr "Byobu varsayılan olarak girişte başlamaz (başlamayı etkinleştir)"
+
+#: byobu-config:89
+msgid "Help"
+msgstr "Yardım"
+
+#: byobu-config:90
+msgid "Change Byobu's colors"
+msgstr "Byobu'nun renklerini değiştir"
+
+#: byobu-config:91
+msgid "Toggle status notifications"
+msgstr ""
+
+#: byobu-config:92
+msgid "Change keybinding set"
+msgstr "Klavye kısayollarını değiştir"
+
+#: byobu-config:93
+msgid "Change escape sequence"
+msgstr ""
+
+#: byobu-config:94
+msgid "Create new windows"
+msgstr "Yeni pencere yarat"
+
+#: byobu-config:95
+msgid "Manage default windows"
+msgstr "Varsayılan pencereleri yönet"
+
+#: byobu-config:99 byobu-config:487
+msgid " Byobu Configuration Menu"
+msgstr " Byobu Ayar Menüsü"
+
+#: byobu-config:110
+msgid "Okay"
+msgstr "Tamam"
+
+#: byobu-config:110 byobu-config:144 byobu-config:161 byobu-config:195
+#: byobu-config:335 byobu-config:376 byobu-config:449
+msgid "Cancel"
+msgstr "İptal"
+
+#: byobu-config:130
+msgid "Byobu Help"
+msgstr "Byobu Yardım"
+
+#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:335
+#: byobu-config:376 byobu-config:449
+msgid "Apply"
+msgstr "Uygula"
+
+#: byobu-config:146
+msgid "Which profile would you like to use?"
+msgstr "Hangi profili kullanmak istersiniz?"
+
+#: byobu-config:162
+msgid "Which set of keybindings would you like to use?"
+msgstr ""
+
+#: byobu-config:175
+msgid "Title: "
+msgstr "Başlık: "
+
+#: byobu-config:177
+msgid "Command: "
+msgstr "Komut: "
+
+#: byobu-config:179
+msgid "Presets: "
+msgstr ""
+
+#: byobu-config:193
+msgid "Add to default windows"
+msgstr "Öntanımlı pencerelere akle"
+
+#: byobu-config:197
+msgid "Create new window(s):"
+msgstr "Yeni pencere(ler) yarat:"
+
+#: byobu-config:336
+msgid "Toggle status notifications:"
+msgstr ""
+
+#: byobu-config:368
+msgid "Windows:"
+msgstr "Pencereler:"
+
+#: byobu-config:378
+msgid "Select window(s) to create by default:"
+msgstr "Öntanımlı olarak yaratılacak pencereleri seçiniz:"
+
+#: byobu-config:398
+msgid "Byobu will be launched automatically next time you login."
+msgstr ""
+"Byobu bir dahaki sefere giriş yaptığınızda otomatik olarak başlatılacak."
+
+#: byobu-config:406
+msgid "Byobu will not be used next time you login."
+msgstr ""
+
+#: byobu-config:408
+msgid "Message"
+msgstr "Mesaj"
+
+#: byobu-config:448
+msgid "Escape key: ctrl-"
+msgstr ""
+
+#: byobu-config:451
+msgid "Change escape sequence:"
+msgstr ""
+
+#: byobu-config:488
+msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
+msgstr ""
