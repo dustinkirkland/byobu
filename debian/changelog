@@ -1,6 +1,7 @@
 byobu (2.66) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu, usr/bin/byobu-janitor: ensure that the SSH_AUTH_SOCK
+    link is not circular, LP: #549091
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Mar 2010 23:27:30 -0500
 
