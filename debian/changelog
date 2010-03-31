@@ -1,10 +1,10 @@
-byobu (2.67) unreleased; urgency=low
+byobu (2.67-0ubuntu1) lucid; urgency=low
 
   * Close LP: #528967, which was also fixed by the last upload
   * usr/bin/byobu-select-session: fix create-a-new-session on
     select-session dialog, LP: #550808
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 30 Mar 2010 00:56:18 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 31 Mar 2010 15:27:24 -0500
 
 byobu (2.66-0ubuntu1) lucid; urgency=low
 
