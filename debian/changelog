@@ -1,6 +1,6 @@
 byobu (2.67) unreleased; urgency=low
 
-  * UNRELEASED
+  * Close LP: #528967, which was also fixed by the last upload
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 30 Mar 2010 00:56:18 -0500
 
