@@ -20,6 +20,7 @@
 
 import commands, os, sys
 
+SHELL = os.getenv("SHELL", "/bin/bash")
 sessions = []
 choice = ""
 sessions.append(0)
@@ -39,7 +40,7 @@ if i > 1:
 		for s in output.split("\n"):
 			sys.stdout.write("  %d. %s\n" % (i, s))
 			i += 1
-		sys.stdout.write("  %d. Create a new session\n" % i)
+		sys.stdout.write("  %d.  Create a new session\n" % i)
 		i += 1
 		try:
 			choice = input("\nChoose 1-%d [1]: " % (i-1))
@@ -54,8 +55,12 @@ if i > 1:
 			sys.stderr.write("\nERROR: Invalid input\n");
 
 if choice:
-	# Attach to the chosen session
-	os.execv("/usr/bin/byobu", ["", "-x", sessions[choice]])
+	if choice == i-1:
+		# Create a new session
+		os.execv("/usr/bin/byobu", ["", SHELL])
+	else:
+	 	# Attach to the chosen session
+		os.execv("/usr/bin/byobu", ["", "-x", sessions[choice]])
 else:
 	# No valid selection, default to the youngest session
 	os.execv("/usr/bin/byobu", ["", "-xRR"])
