@@ -1,9 +1,9 @@
-byobu (2.68) unreleased; urgency=low
+byobu (2.68-0ubuntu1) lucid; urgency=low
 
   * usr/lib/byobu/logo: update the default Ubuntu logo to match the
     10.04 brand refresh, white U on a purple background
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 31 Mar 2010 15:27:43 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 15 Apr 2010 12:12:31 -0500
 
 byobu (2.67-0ubuntu1) lucid; urgency=low
 
