@@ -31,7 +31,8 @@ print_logo() {
 	distro=`echo "$1" | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/' `
 	case "$distro" in
 		*ubuntu*)
-			$MARKUP && printf "$(color b k r)%s$(color -)$(color k y)%s$(color -)$(color b k Y)%s$(color -)" "\\" "o" "/" || printf "\\o/"
+			#$MARKUP && printf "$(color b k r)%s$(color -)$(color k y)%s$(color -)$(color b k Y)%s$(color -)" "\\" "o" "/" || printf "\\o/"
+			$MARKUP && printf "$(color m W)%s$(color -)" " U " || printf "\\o/"
 		;;
 		*altlinux*)
 			logo="alt"
