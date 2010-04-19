@@ -17,4 +17,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-[ ! -r "$HOME/.byobu/disable-autolaunch" ] && exec /usr/bin/byobu
+if [ ! -r "$HOME/.byobu/disable-autolaunch" ]; then
+	if printf "$TERM" | grep -qs "screen"; then
+		printf "Do you want to launch byobu in a nested session? [y/N]: "
+		answer=$(head -n1)
+		if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
+			exec /usr/bin/byobu
+		fi
+	fi
+fi
+true
