@@ -19,7 +19,7 @@
 
 if [ ! -r "$HOME/.byobu/disable-autolaunch" ]; then
 	if printf "$TERM" | grep -qs "screen"; then
-		printf "Do you want to launch byobu in a nested session? [y/N]: "
+		printf "$(gettext 'Do you want to launch byobu in a nested session?') [y/N]: "
 		answer=$(head -n1)
 		if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
 			exec /usr/bin/byobu
