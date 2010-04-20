@@ -1,203 +1,201 @@
-# German translation for screen-profiles
+# Czech translation for byobu
 # Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
-# This file is distributed under the same license as the screen-profiles package.
+# This file is distributed under the same license as the byobu package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: screen-profiles\n"
+"Project-Id-Version: byobu\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-10-11 14:34-0500\n"
-"PO-Revision-Date: 2009-11-09 22:53+0000\n"
-"Last-Translator: BBO <Unknown>\n"
-"Language-Team: German <de@li.org>\n"
+"POT-Creation-Date: 2009-11-23 20:48-0600\n"
+"PO-Revision-Date: 2010-03-05 10:38+0000\n"
+"Last-Translator: Konki <pavel.konkol@seznam.cz>\n"
+"Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-11-10 11:39+0000\n"
+"X-Launchpad-Export-Date: 2010-03-06 05:11+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: bin/menu:30 byobu-config:129 byobu-config:400 byobu-config:408
+#: bin/menu:34 byobu-config:129 byobu-config:401 byobu-config:409
 msgid "Menu"
-msgstr "Menü"
+msgstr "Nabídka"
 
 #: byobu-export:68 byobu-export:71 byobu-select-profile:104
 #: byobu-select-profile:107
 msgid "Choose"
-msgstr "Auswählen"
+msgstr "Zvolit"
 
 #: byobu-export:171
 msgid "File exists"
-msgstr "Datei existiert bereits"
+msgstr "Soubor existuje"
 
 #: byobu-export:172
 msgid "Remove file? [y/N] "
-msgstr "Lösche Datei? [j/N] "
+msgstr "Odstranit soubor? [y/N] "
 
 #: byobu-export:199
 msgid "Select a color: "
-msgstr "Wähle eine Farbe: "
+msgstr "Vyberte barvu: "
 
-#: byobu-export:237
+#: byobu-export:240
 msgid "Profile"
 msgstr "Profil"
 
-#: byobu-export:238
+#: byobu-export:241
 msgid "Archive"
 msgstr "Archiv"
 
-#: byobu-export:240
+#: byobu-export:243
 msgid "Extract the archive in your home directory on the target system."
-msgstr "Archiv im Home Verzeichnis auf dem Zielsystem extrahieren"
+msgstr "Extrahujte archiv ve Vašem domovském adresáři v cílovém systému."
 
 #: byobu-select-profile:49
 msgid "Error:"
-msgstr "Fehler:"
+msgstr "Chyba:"
 
 #: byobu-select-profile:49
 msgid " file exists, but is not a symlink"
-msgstr " Datei existiert, ist aber keine symbolische Verknüpfung"
+msgstr " soubor existuje, ale není to symbolický odkaz"
 
 #: byobu-select-profile:80
 msgid "Select a screen profile: "
-msgstr "Wählen Sie ein Bildschirmprofil aus: "
+msgstr "Vyberte profil zobrazení: "
 
 #: byobu-select-profile:97
 msgid "ERROR: Invalid selection"
-msgstr "FEHLER: ungültige Auswahl"
+msgstr "CHYBA: Neplatný výběr"
 
 #: byobu-select-profile:134
 msgid ""
 "If you are using the default set of keybindings, press\\n<F5> to activate "
 "these changes.\\n\\nOtherwise, exit this screen session and start a new one."
 msgstr ""
-"Wenn sie die standard Tastenkombinationen benutzen\\ndrücken sie <F5> um die "
-"Änderungen zu aktivieren.\\n\\nAnderenfalls verlassen sie diese screen "
-"Sitzung und starten\\nsie eine neue."
+"Pokud používáte výchozí klávesové zkratky, stiskněte\\n<F5> pro aktivaci "
+"těchto změn.\\n\\nJinak, ukončete toto sezení a začne nové."
 
 #: byobu-select-profile:136
 msgid "Run \"byobu\" to activate"
-msgstr "\"byobu\" eingeben um zu starten"
+msgstr "Spusťte \"byobu\" pro aktivaci"
 
 #: byobu-config:83
 msgid "Byobu currently launches at login (toggle off)"
-msgstr "Byobu startet beim einloggen (ausschalten)"
+msgstr ""
 
 #: byobu-config:85
 msgid "Byobu currently does not launch at login (toggle on)"
-msgstr "Byobu startet nicht beim einloggen (einschalten)"
+msgstr ""
 
 #: byobu-config:89
 msgid "Help"
-msgstr "Hilfe"
+msgstr "Nápověda"
 
 #: byobu-config:90
 msgid "Change Byobu's colors"
-msgstr "Farben ändern"
+msgstr "Změna barev Byobu"
 
 #: byobu-config:91
 msgid "Toggle status notifications"
-msgstr "Statusmeldungen ändern"
+msgstr "Upozornění stavu"
 
 #: byobu-config:92
 msgid "Change keybinding set"
-msgstr "Tastaurbelegung wechseln"
+msgstr "Změnit klávesové zkratky"
 
 #: byobu-config:93
 msgid "Change escape sequence"
-msgstr "Escape-Folge ändern"
+msgstr "Změnit sekvenci escape"
 
 #: byobu-config:94
 msgid "Create new windows"
-msgstr "neues Fenster erstellen"
+msgstr "Vytvořit nová okna"
 
 #: byobu-config:95
 msgid "Manage default windows"
-msgstr "Standardfenster verwalten"
+msgstr "Spravovat výchozí okna"
 
-#: byobu-config:99 byobu-config:486
+#: byobu-config:99 byobu-config:487
 msgid " Byobu Configuration Menu"
-msgstr " Byobu Konfiguration"
+msgstr " Nabídka nastavení Byobu"
 
 #: byobu-config:110
 msgid "Okay"
 msgstr "Ok"
 
 #: byobu-config:110 byobu-config:144 byobu-config:161 byobu-config:195
-#: byobu-config:334 byobu-config:375 byobu-config:448
+#: byobu-config:335 byobu-config:376 byobu-config:449
 msgid "Cancel"
-msgstr "Abbrechen"
+msgstr "Ukončit"
 
 #: byobu-config:130
 msgid "Byobu Help"
-msgstr "Byobu Hilfe"
+msgstr "Nápověda Byobu"
 
-#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:334
-#: byobu-config:375 byobu-config:448
+#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:335
+#: byobu-config:376 byobu-config:449
 msgid "Apply"
-msgstr "Übernehmen"
+msgstr "Použít"
 
 #: byobu-config:146
 msgid "Which profile would you like to use?"
-msgstr "Welches Profil möchten Sie nutzen?"
+msgstr "Který profil byste chtěli použít?"
 
 #: byobu-config:162
 msgid "Which set of keybindings would you like to use?"
-msgstr "Welche Tastenbelegung würden Sie gerne benutzen?"
+msgstr "Které klávesové zkratky byste chtěli použít?"
 
 #: byobu-config:175
 msgid "Title: "
-msgstr "Titel: "
+msgstr "Název: "
 
 #: byobu-config:177
 msgid "Command: "
-msgstr "Befehl: "
+msgstr "Příkaz: "
 
 #: byobu-config:179
 msgid "Presets: "
-msgstr "Voreinstellungen: "
+msgstr "Předvolby: "
 
 #: byobu-config:193
 msgid "Add to default windows"
-msgstr "Hinzufügen zu Standardfenstern"
+msgstr "Přidat do výchozích oken"
 
 #: byobu-config:197
 msgid "Create new window(s):"
-msgstr "Neue(s) Fenster erstellen:"
+msgstr "Vytvořit nová okna:"
 
-#: byobu-config:335
+#: byobu-config:336
 msgid "Toggle status notifications:"
-msgstr "Benachrichtigungen ein/aus schalten"
+msgstr "Přepínač stavu oznámení:"
 
-#: byobu-config:367
+#: byobu-config:368
 msgid "Windows:"
-msgstr "Fenster:"
+msgstr "Okna:"
 
-#: byobu-config:377
+#: byobu-config:378
 msgid "Select window(s) to create by default:"
-msgstr "Wähle Fenster die immer erstellt werden:"
+msgstr "Vyberte okna pro výchozí vytvoření:"
 
-#: byobu-config:397
+#: byobu-config:398
 msgid "Byobu will be launched automatically next time you login."
-msgstr "Byobu wird beim nächsten Einloggen automatisch gestartet."
+msgstr "Byobu bude použito po přihlášení."
 
-#: byobu-config:405
+#: byobu-config:406
 msgid "Byobu will not be used next time you login."
-msgstr "Byobu wird beim nächsten Einloggen nicht genutzt."
+msgstr "Byobu nebude použito po přihlášení."
 
-#: byobu-config:407
+#: byobu-config:408
 msgid "Message"
-msgstr "Nachricht"
+msgstr "Zpráva"
 
-#: byobu-config:447
+#: byobu-config:448
 msgid "Escape key: ctrl-"
-msgstr "Escape-Taste: Strg-"
-
-#: byobu-config:450
-msgid "Change escape sequence:"
-msgstr "Menü"
-
-#: byobu-config:487
-msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr ""
-"<Tab>/<Alt-Tab> zwischen den Elementen| <Enter> auswählen | <Esc> Ende"
+
+#: byobu-config:451
+msgid "Change escape sequence:"
+msgstr "Změňte sekvenci escape:"
+
+#: byobu-config:488
+msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
+msgstr "<Tab>/<Alt-Tab> mezi elementy | <Enter> vybere | <Esc> ukončí"

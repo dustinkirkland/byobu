@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: byobu\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-11-23 20:48-0600\n"
-"PO-Revision-Date: 2009-10-06 12:33+0000\n"
-"Last-Translator: slowtux <slowtux@gmail.com>\n"
+"PO-Revision-Date: 2010-02-19 16:58+0000\n"
+"Last-Translator: alms21 <alms21@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-10-07 06:50+0000\n"
+"X-Launchpad-Export-Date: 2010-02-20 04:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: bin/menu:34 byobu-config:129 byobu-config:401 byobu-config:409
@@ -32,11 +32,11 @@ msgstr "O arquivo já existe"
 
 #: byobu-export:172
 msgid "Remove file? [y/N] "
-msgstr ""
+msgstr "Remover arquivo? [s/N] "
 
 #: byobu-export:199
 msgid "Select a color: "
-msgstr ""
+msgstr "Selecione a cor: "
 
 #: byobu-export:240
 msgid "Profile"
@@ -48,7 +48,7 @@ msgstr "Arquivo"
 
 #: byobu-export:243
 msgid "Extract the archive in your home directory on the target system."
-msgstr ""
+msgstr "Extrair o arquivo na pasta pessoal como alvo do sistema."
 
 #: byobu-select-profile:49
 msgid "Error:"
@@ -74,15 +74,15 @@ msgstr ""
 
 #: byobu-select-profile:136
 msgid "Run \"byobu\" to activate"
-msgstr ""
+msgstr "Execute \"byobu\" para ativar"
 
 #: byobu-config:83
 msgid "Byobu currently launches at login (toggle off)"
-msgstr ""
+msgstr "Byobu atualmente é executado ao logar (tornar desligado)"
 
 #: byobu-config:85
 msgid "Byobu currently does not launch at login (toggle on)"
-msgstr ""
+msgstr "Byobu atualmente não é executado ao logar (tornar ligado)"
 
 #: byobu-config:89
 msgid "Help"
@@ -90,7 +90,7 @@ msgstr "Ajuda"
 
 #: byobu-config:90
 msgid "Change Byobu's colors"
-msgstr ""
+msgstr "Alterar cores do Byobu"
 
 #: byobu-config:91
 msgid "Toggle status notifications"
@@ -98,11 +98,11 @@ msgstr "Alternar notificações de estado"
 
 #: byobu-config:92
 msgid "Change keybinding set"
-msgstr ""
+msgstr "Alterar o conjunto de teclas de atalho"
 
 #: byobu-config:93
 msgid "Change escape sequence"
-msgstr ""
+msgstr "Alterar sequência de escape"
 
 #: byobu-config:94
 msgid "Create new windows"
@@ -140,7 +140,7 @@ msgstr "Qual o perfil que você gostaria de usar?"
 
 #: byobu-config:162
 msgid "Which set of keybindings would you like to use?"
-msgstr ""
+msgstr "Qual conjunto de teclas de atalho você deseja utilizar?"
 
 #: byobu-config:175
 msgid "Title: "
@@ -172,7 +172,7 @@ msgstr "Janelas:"
 
 #: byobu-config:378
 msgid "Select window(s) to create by default:"
-msgstr ""
+msgstr "Selecione a janela(s) para criar por padrão:"
 
 #: byobu-config:398
 msgid "Byobu will be launched automatically next time you login."
@@ -188,12 +188,12 @@ msgstr "Mensagem"
 
 #: byobu-config:448
 msgid "Escape key: ctrl-"
-msgstr ""
+msgstr "Tecla de escape: crtl-"
 
 #: byobu-config:451
 msgid "Change escape sequence:"
-msgstr ""
+msgstr "Alterar sequência de escape:"
 
 #: byobu-config:488
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
-msgstr ""
+msgstr "<Tab>/<Alt-Tab> entre elementos | <Enter> seleciona | <Esc> finaliza"

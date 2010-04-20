@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: byobu\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-11-23 20:48-0600\n"
-"PO-Revision-Date: 2009-09-16 10:59+0000\n"
-"Last-Translator: Bruno Vitorino <Unknown>\n"
+"PO-Revision-Date: 2010-04-05 13:21+0000\n"
+"Last-Translator: Tiago Silva <Unknown>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-09-23 11:08+0000\n"
+"X-Launchpad-Export-Date: 2010-04-06 04:02+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: bin/menu:34 byobu-config:129 byobu-config:401 byobu-config:409
@@ -36,7 +36,7 @@ msgstr "Remover ficheiro? [y/N] "
 
 #: byobu-export:199
 msgid "Select a color: "
-msgstr "Selecionar uma cor: "
+msgstr "Seleccionar uma cor: "
 
 #: byobu-export:240
 msgid "Profile"
@@ -44,11 +44,11 @@ msgstr "Perfil"
 
 #: byobu-export:241
 msgid "Archive"
-msgstr "Arquivar"
+msgstr "Arquivo"
 
 #: byobu-export:243
 msgid "Extract the archive in your home directory on the target system."
-msgstr ""
+msgstr "Extraia o arquivo no seu directório pessoal no sistema de destino."
 
 #: byobu-select-profile:49
 msgid "Error:"
@@ -56,7 +56,7 @@ msgstr "Erro:"
 
 #: byobu-select-profile:49
 msgid " file exists, but is not a symlink"
-msgstr " o ficheiro existe, mas não é um link simbólico"
+msgstr " o ficheiro existe, mas não é uma ligação simbólica"
 
 #: byobu-select-profile:80
 msgid "Select a screen profile: "
@@ -105,7 +105,7 @@ msgstr "Alterar o mapeamento de teclas"
 
 #: byobu-config:93
 msgid "Change escape sequence"
-msgstr ""
+msgstr "Altere a sequência de escape"
 
 #: byobu-config:94
 msgid "Create new windows"
@@ -192,11 +192,11 @@ msgstr "Mensagem"
 
 #: byobu-config:448
 msgid "Escape key: ctrl-"
-msgstr ""
+msgstr "Tecla de escape: ctrl-"
 
 #: byobu-config:451
 msgid "Change escape sequence:"
-msgstr ""
+msgstr "Altere a sequência de escape:"
 
 #: byobu-config:488
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"

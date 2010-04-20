@@ -6,18 +6,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: byobu\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-11-23 20:48-0600\n"
-"PO-Revision-Date: 2009-10-05 12:56+0000\n"
-"Last-Translator: Carl-Uno Olsson <Unknown>\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2009-10-11 14:34-0500\n"
+"PO-Revision-Date: 2009-10-11 20:46+0000\n"
+"Last-Translator: Dustin Kirkland <dustin.kirkland@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-10-06 06:46+0000\n"
+"X-Launchpad-Export-Date: 2009-10-12 07:06+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
-#: bin/menu:34 byobu-config:129 byobu-config:401 byobu-config:409
+#: bin/menu:30 byobu-config:129 byobu-config:400 byobu-config:408
 msgid "Menu"
 msgstr "Meny"
 
@@ -38,15 +38,15 @@ msgstr "Ta bort filen? [j/N] "
 msgid "Select a color: "
 msgstr "Välj en färg: "
 
-#: byobu-export:240
+#: byobu-export:237
 msgid "Profile"
 msgstr "Profil"
 
-#: byobu-export:241
+#: byobu-export:238
 msgid "Archive"
 msgstr "Arkiv"
 
-#: byobu-export:243
+#: byobu-export:240
 msgid "Extract the archive in your home directory on the target system."
 msgstr "Extrahera arkivet i din hemkatalog på målsystemet."
 
@@ -115,7 +115,7 @@ msgstr "Skapa nya fönster"
 msgid "Manage default windows"
 msgstr "Hantera standardfönster"
 
-#: byobu-config:99 byobu-config:487
+#: byobu-config:99 byobu-config:486
 msgid " Byobu Configuration Menu"
 msgstr " Konfigurationsmeny för Byobu"
 
@@ -124,7 +124,7 @@ msgid "Okay"
 msgstr "Okej"
 
 #: byobu-config:110 byobu-config:144 byobu-config:161 byobu-config:195
-#: byobu-config:335 byobu-config:376 byobu-config:449
+#: byobu-config:334 byobu-config:375 byobu-config:448
 msgid "Cancel"
 msgstr "Avbryt"
 
@@ -132,8 +132,8 @@ msgstr "Avbryt"
 msgid "Byobu Help"
 msgstr "Hjälp för Byobu"
 
-#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:335
-#: byobu-config:376 byobu-config:449
+#: byobu-config:144 byobu-config:161 byobu-config:195 byobu-config:334
+#: byobu-config:375 byobu-config:448
 msgid "Apply"
 msgstr "Verkställ"
 
@@ -165,38 +165,38 @@ msgstr "Lägg till i standardfönster"
 msgid "Create new window(s):"
 msgstr "Skapa nya fönster:"
 
-#: byobu-config:336
+#: byobu-config:335
 msgid "Toggle status notifications:"
 msgstr "Växla statusnotifieringar:"
 
-#: byobu-config:368
+#: byobu-config:367
 msgid "Windows:"
 msgstr "Fönster:"
 
-#: byobu-config:378
+#: byobu-config:377
 msgid "Select window(s) to create by default:"
 msgstr "Välj fönster att skapa som standard:"
 
-#: byobu-config:398
+#: byobu-config:397
 msgid "Byobu will be launched automatically next time you login."
 msgstr "Byobu kommer att startas automatiskt nästa gång du loggar in."
 
-#: byobu-config:406
+#: byobu-config:405
 msgid "Byobu will not be used next time you login."
 msgstr "Byobu kommer inte att användas nästa gång du loggar in."
 
-#: byobu-config:408
+#: byobu-config:407
 msgid "Message"
 msgstr "Meddelande"
 
-#: byobu-config:448
+#: byobu-config:447
 msgid "Escape key: ctrl-"
 msgstr "Escape-tangent: ctrl-"
 
-#: byobu-config:451
+#: byobu-config:450
 msgid "Change escape sequence:"
 msgstr "Ändra escape-sekvens:"
 
-#: byobu-config:488
+#: byobu-config:487
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr "<Tab>/<Alt-Tab> mellan element | <Enter> väljer | <Esc> avslutar"

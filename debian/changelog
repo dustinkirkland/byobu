@@ -1,6 +1,12 @@
 byobu (2.69) unreleased; urgency=low
 
   * usr/bin/byobu-launcher: prompt on nested screen connection, LP: #565398
+  * debian/po/POTFILES.in, debian/po/de.po, debian/po/en_GB.po,
+    debian/po/es.po, debian/po/pt.po, debian/po/ru.po,
+    debian/po/templates.pot, po/bg.po, po/cs.po, po/de.po, po/es.po,
+    po/fr.po, po/hu.po, po/is.po, po/it.po, po/la.po, po/lt.po, po/nl.po,
+    po/pt.po, po/pt_BR.po, po/ru.po, po/sv.po, po/tr.po, po/uk.po:
+    - translations merged
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 15 Apr 2010 12:12:39 -0500
 
