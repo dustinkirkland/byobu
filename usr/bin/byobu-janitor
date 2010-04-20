@@ -40,6 +40,11 @@ if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ]; then
 	ln -sf "$SSH_AUTH_SOCK" "$RUN/$PKG.ssh-agent"
 fi
 
+# Create byobu-exchange buffer file, with secure permissions, if it doesn't exist
+if [ -w "$RUN" ] && [ ! -e "$RUN/$PKG-exchange" ]; then
+	install -m 600 /dev/null "$RUN/$PKG-exchange"
+fi
+
 # Affects: users who launched using sudo, such that their config dir
 # is not writable by them
 if [ -d "$HOME/.$PKG" ] && [ ! -w "$HOME/.$PKG" ]; then

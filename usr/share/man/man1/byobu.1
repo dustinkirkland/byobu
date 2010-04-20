@@ -106,6 +106,8 @@ byobu keybindings can be user defined in /usr/share/byobu/keybindings/ (or withi
 
 \fBCtrl-a k\fP \- Kill the current window
 
+\fBCtrl-a ~\fP \- Write the current window's scrollback buffer to \fI/var/run/screen/S-$USER/byobu-exchange\fP
+
 .SH "BUGS"
 
 PuTTY users have reported that the F2, F3, and F4 shortcut keys are not working properly.  PuTTY sends the same escape sequences as the linux console for F1-F4 by default.  You can fix this problem in the PuTTY config, Terminal -> Keyboard -> Function keys: Xterm R6.  See: \fIhttp://www.mail-archive.com/screen-users@gnu.org/msg01525.html\fP

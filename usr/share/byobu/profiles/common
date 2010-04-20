@@ -86,6 +86,10 @@ defbce "on"
 # Log 10000 lines
 defscrollback 10000
 
+# Set per-user screen-exchange
+bufferfile /var/run/screen/S-$USER/byobu-exchange
+compacthist on
+
 # Monitor windows
 defmonitor on
 activity ""
