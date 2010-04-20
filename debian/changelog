@@ -13,6 +13,8 @@ byobu (2.69) unreleased; urgency=low
   * debian/control, debian/screen-profiles.postinst, debian/preinst,
     debian/prerm, debian/rules, usr/bin/byobu-janitor:
     - remove more remnants of screen-profiles
+  * debian/rules: drop color symlinks, no longer necessary, should be
+    cleaned up by byobu-janitor now
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 15 Apr 2010 12:12:39 -0500
 
