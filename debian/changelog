@@ -10,8 +10,9 @@ byobu (2.69) unreleased; urgency=low
   * bin/byobu-janitor, share/byobu/keybindings/f-keys,
     share/byobu/profiles/common, share/man/man1/byobu.1: add a keybinding,
     ctrl-a ~ to write the current window's buffer to a file, LP: #565399
-  * debian/control, debian/screen-profiles.postinst: remove final remnants
-    of screen-profiles
+  * debian/control, debian/screen-profiles.postinst, debian/preinst,
+    debian/prerm, debian/rules, usr/bin/byobu-janitor:
+    - remove more remnants of screen-profiles
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 15 Apr 2010 12:12:39 -0500
 

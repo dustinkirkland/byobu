@@ -1,8 +1,0 @@
-#!/bin/sh -e
-
-# The following two links significantly improve the upgrade
-# experience from screen-profiles to byobu.
-ln -sf /usr/bin/byobu-status /usr/bin/screen-profiles-status
-ln -sf /usr/bin/byobu-launcher /usr/bin/screen-launcher
-
-#DEBHELPER#

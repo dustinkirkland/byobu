@@ -30,7 +30,6 @@ if [ "$1" != "--force" ] && [ ! -e "$FLAG" ]; then
 fi
 
 # Set the rest of the variables
-OLDPKG="screen-profiles"
 DEFAULT_PROFILE="light"
 PROFILE="$HOME/.$PKG/profile"
 
@@ -50,16 +49,6 @@ fi
 if [ -d "$HOME/.$PKG" ] && [ ! -w "$HOME/.$PKG" ]; then
 	echo "ERROR: [$HOME/.$PKG] is not writable by the current user" 1>&2
 	exit 1
-fi
-
-# Affects: Upgrades from screen-profiles
-# If the old config dir exists, but the new one doesn't, provide a migration mechanism.
-if [ -d "$HOME/.$OLDPKG" ] && [ ! -e "$HOME/.$PKG" ]; then
-	# Rename the config dir
-	mv -f "$HOME/.$OLDPKG" "$HOME/.$PKG"
-	ln -sf "$HOME/.$PKG" "$HOME/.$OLDPKG"
-	# Replace all instances of the old package name with the new
-	sed -i "s/$OLDPKG/$PKG/g" "$HOME/.$PKG"/* || true
 fi
 
 # Affects: First runs with no configuration
