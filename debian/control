@@ -24,9 +24,3 @@ Description: a set of useful profiles and a profile-switcher for GNU screen
  provide features such as status bars, clocks, notifiers (reboot required,
  updates available), etc.  The profile-switcher allows users to quickly switch
  their .screenrc to any of the available profiles.
-
-Package: screen-profiles
-Depends: ${misc:Depends}, byobu
-Architecture: all
-Description: package renamed -> byobu
- This package has been renamed to 'byobu'.
