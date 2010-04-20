@@ -37,7 +37,8 @@ bindkey -k F2 lockscreen				# F12 | Lock this terminal
 bind $ screen -t status 0 byobu-status-detail 		# ctrl-a $ | show detailed status
 bind @ screen -t config 0 byobu-config			# ctrl-a @ | Configuration
 bind R process r					# ctrl-a R | Reload profile
-bind ~ eval writebuf 'exec sed -i "/./,/^$/!d" /var/run/screen/S-$USER/byobu-exchange' # ctrl-a ~ | write the buffer to file
+register s "^a[g G$>^h"					# Goes with ^a~ definition
+bind ~ eval 'process s' 'exec sed -i "/./,/^$/!d" /var/run/screen/S-$USER/byobu-exchange' 'echo "See: /var/run/screen/S-$USER/byobu-exchange"' # ctrl-a ~ | write the buffer to file
 
 # toggle f-key keybindings off
 register d "^a:source /usr/share/byobu/keybindings/screen-escape-keys^M"
