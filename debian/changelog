@@ -1,4 +1,4 @@
-byobu (2.69) unreleased; urgency=low
+byobu (2.69-0ubuntu1) lucid; urgency=low
 
   * usr/bin/byobu-launcher: prompt on nested screen connection, LP: #565398
   * debian/po/POTFILES.in, debian/po/de.po, debian/po/en_GB.po,
@@ -16,7 +16,7 @@ byobu (2.69) unreleased; urgency=low
   * debian/rules: drop color symlinks, no longer necessary, should be
     cleaned up by byobu-janitor now
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 15 Apr 2010 12:12:39 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Apr 2010 15:07:06 -0500
 
 byobu (2.68-0ubuntu1) lucid; urgency=low
 
