@@ -1,4 +1,4 @@
-byobu (2.71) unreleased; urgency=low
+byobu (2.71-0ubuntu1) maverick; urgency=low
 
   * usr/bin/byobu-launch, usr/bin/byobu-launcher-install,
     usr/bin/byobu-janitor: exit 0 after launching byobu; this is superior
@@ -7,7 +7,7 @@ byobu (2.71) unreleased; urgency=low
     keep the user from having to do the double-exit when detaching,
     LP: #568306
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Apr 2010 23:08:18 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Apr 2010 12:31:12 -0500
 
 byobu (2.70-0ubuntu1) maverick; urgency=low
 
