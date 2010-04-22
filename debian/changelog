@@ -1,8 +1,8 @@
-byobu (2.70) unreleased; urgency=low
+byobu (2.70-0ubuntu1) maverick; urgency=low
 
   * usr/bin/byobu-launcher: fix regression in last upload
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Apr 2010 15:07:17 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Apr 2010 23:08:06 -0500
 
 byobu (2.69-0ubuntu1) lucid; urgency=low
 
