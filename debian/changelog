@@ -1,6 +1,11 @@
 byobu (2.71) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-launch, usr/bin/byobu-launcher-install,
+    usr/bin/byobu-janitor: exit 0 after launching byobu; this is superior
+    to previously reverted implementations where we exec'd byobu, since
+    we'll only exit 0 if the byobu/screen session exits cleanly; this will
+    keep the user from having to do the double-exit when detaching,
+    LP: #568306
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Apr 2010 23:08:18 -0500
 

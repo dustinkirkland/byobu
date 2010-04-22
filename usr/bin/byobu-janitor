@@ -129,6 +129,11 @@ if [ -h "/etc/profile.d/Z98-$PKG.sh" ]; then
 	sed -i "/$PKG-launcher$/d" "$HOME"/.profile || true
 fi
 
+# Affects: Upgrades from <= byobu-2.70 that autolaunch
+# Update the byobu-launch line, if necessary
+if grep -qs "^\`echo \$- | grep -qs i\` && $PKG-launcher$" "$HOME"/.profile; then
+	$PKG-launcher-uninstall && $PKG-launcher-install
+fi
 
 # Clean up flag
 rm -f "$FLAG"

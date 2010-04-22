@@ -21,7 +21,7 @@
 PKG="byobu"
 
 install_launcher() {
-	echo "\`echo \$- | grep -qs i\` && $PKG-launcher" >> "$1"
+	echo "\`echo \$- | grep -qs i\` && $PKG-launcher && exit 0" >> "$1"
 }
 
 # Sanitize the environment
