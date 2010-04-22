@@ -1,6 +1,6 @@
 byobu (2.70) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-launcher: fix regression in last upload
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Apr 2010 15:07:17 -0500
 

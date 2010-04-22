@@ -24,6 +24,8 @@ if [ ! -r "$HOME/.byobu/disable-autolaunch" ]; then
 		if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
 			exec /usr/bin/byobu
 		fi
+	else
+		exec /usr/bin/byobu
 	fi
 fi
 true
