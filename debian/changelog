@@ -1,3 +1,9 @@
+byobu (2.72) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Apr 2010 12:31:20 -0500
+
 byobu (2.71-0ubuntu1) maverick; urgency=low
 
   * usr/bin/byobu-launch, usr/bin/byobu-launcher-install,
