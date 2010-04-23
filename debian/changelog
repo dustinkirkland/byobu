@@ -3,6 +3,7 @@ byobu (2.72) unreleased; urgency=low
   * usr/bin/byobu: support nethack screen mode, LP: #568751
   * usr/share/man/man1/byobu.1: document a sample custom script using
     custom colors, LP: #568967
+  * usr/bin/byobu: LANG=C before grepping for text
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Apr 2010 12:31:20 -0500
 

@@ -58,7 +58,7 @@ if [ "$#" = "0" ]; then
 	else
 		NO_SOCKETS="^No Sockets found in "
 	fi
-	if echo "$out" | grep -qsi "$NO_SOCKETS"; then
+	if echo "$out" | LANG=C grep -qsi "$NO_SOCKETS"; then
 		# Start new session
 		exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc" -t shell $DEFAULT_WINDOW
 	else
