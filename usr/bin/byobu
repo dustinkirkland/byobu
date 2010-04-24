@@ -42,7 +42,7 @@ printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
 grep -qs "^[^#]" "$HOME/.$PKG/windows" && DEFAULT_WINDOW= || DEFAULT_WINDOW="motd+shell"
 
 # Check if our terminfo supports 256 colors
-[ -x /usr/bin/tput ] && [ $(/usr/bin/tput colors) -eq 256 ] && SCREEN_TERM="-T screen-256color"
+[ -x /usr/bin/tput ] && [ $(/usr/bin/tput colors 2>/dev/null || echo 0) -eq 256 ] && SCREEN_TERM="-T screen-256color"
 
 # Create or update ssh-agent socket
 if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ]; then
