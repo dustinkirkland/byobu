@@ -1,4 +1,4 @@
-byobu (2.72-0ubuntu1) maverick; urgency=low
+byobu (2.72) UNRELEASED; urgency=low
 
   * usr/bin/byobu: support nethack screen mode, LP: #568751
   * usr/share/man/man1/byobu.1: document a sample custom script using
