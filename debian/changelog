@@ -1,10 +1,14 @@
-byobu (2.72) unreleased; urgency=low
+byobu (2.72-0ubuntu1) maverick; urgency=low
 
   * usr/bin/byobu: support nethack screen mode, LP: #568751
   * usr/share/man/man1/byobu.1: document a sample custom script using
     custom colors, LP: #568967
   * usr/bin/byobu: LANG=C before grepping for text
   * usr/bin/byobu: handle unset term in tput 256 color check
+  * bin/byobu-config, lib/byobu/disk_io, share/byobu/profiles/common,
+    share/man/man1/byobu.1: added a disk throughput notification
+  * usr/bin/byobu-janitor: add hyphenation to the regex to allow for
+    disk_io
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Apr 2010 12:31:20 -0500
 

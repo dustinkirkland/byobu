@@ -96,8 +96,8 @@ fi
 # underscores such that we can source the file as a shell snippet;
 # fix existing status configuration.
 sed -i "s/\(.*\)-\(.*\)=/\1_\2=/g" "$HOME/.$PKG/status"
-sed -i "s/^disk.*=/disk=/" "$HOME/.$PKG/status"
-sed -i "s/^network.*=/network=/" "$HOME/.$PKG/status"
+sed -i "s/^disk-.*=/disk=/" "$HOME/.$PKG/status"
+sed -i "s/^network-.*=/network=/" "$HOME/.$PKG/status"
 
 # Affects: Upgrades from <= byobu-2.16
 # screen-launcher was renamed byobu-launcher; if the user has byobu

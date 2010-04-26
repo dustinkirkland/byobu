@@ -289,6 +289,7 @@ def readstatus():
     status["custom"]=1
     status["date"]=1
     status["disk"]=0
+    status["disk_io"]=0
     status["ec2_cost"]=0
     status["fan_speed"]=0
     status["hostname"]=1

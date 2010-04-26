@@ -32,6 +32,8 @@ byobu \- wrapper script for seeding a user's byobu configuration and launching s
 
 \fBdisk\fP \- total disk space available and total used on / directory; displayed in the lower bar on the far right in white text on a light purple background; override the default directory by specifying an alternate mount point with MONITORED_DISK=/wherever in \fI$HOME/.byobu/statusrc\fP
 
+\fBdisk_io\fP \- instantaneous read/write througput in kB/s or MB/s over the last 3 seconds; displayed in the lower bar toward the right in white text on a light purple background with a leading '<' sign indicating 'read speed' and '>' sign indicating 'write speed'; override the default monitored disk by specifying an alternate device with MONITORED_disk=/dev/sdb in \fI$HOME/.byobu/statusrc\fP
+
 \fBec2_cost\fP \- an estimation of the cost of the current boot of the system in terms of the Amazon EC2 billing model; displayed in the lower bar toward the right in green text on a black background; there is a leading '~' to indicate that this is an estimation, and the monetary units are US Dollars '$'
 
 \fBfan_speed\fP \- cpu or system fan speed as reported by lm-sensors; displayed in the lower bar toward the right in black text on a grey background; there is a trailing 'rpm' for units
@@ -52,7 +54,7 @@ byobu \- wrapper script for seeding a user's byobu configuration and launching s
 
 \fBmenu\fP \- a simple indicator directing new users to use the F9 keybinding to access the byobu menu
 
-\fBnetwork\fP \- instantaneous upload/download bandwidth in kB/s over the last 2 seconds; displayed in the lower bar toward the right in white text on a purple background with a leading '^' sign indicating 'up' and 'v' sign indicating 'down'; override the default interface by specifying an alternate interface with MONITORED_NETWORK=eth1 in \fI$HOME/.byobu/statusrc\fP
+\fBnetwork\fP \- instantaneous upload/download bandwidth in kB/s over the last 3 seconds; displayed in the lower bar toward the right in white text on a purple background with a leading '^' sign indicating 'up' and 'v' sign indicating 'down'; override the default interface by specifying an alternate interface with MONITORED_NETWORK=eth1 in \fI$HOME/.byobu/statusrc\fP
 
 \fBprocesses\fP \- total number of processes running on the system; displayed in the lower bar in white text on a dark yellow background with a trailing '&' indicating 'background processes'
 
