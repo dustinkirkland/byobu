@@ -20,15 +20,16 @@
 PKG="byobu"
 color 2>/dev/null || color() { true; }
 
-# Allow interface overrides in $HOME/.$PKG/status
-if [ -n "$MONITORED_DISK" ]; then
-	disk="$MONITORED_DISK"
-else
-	disk=$(df -h / | tail -n1 | sed -e "s/[0-9].*$//" -e "s:^.*/::")
-fi
+# Default to disk providing /, but let users override with MONITORED_DISK
+[ -z "$MONITORED_DISK" ] && MP="/" ||  MP="$MONITORED_DISK"
+case $MP in
+	/dev/*) disk="$MP" ;;
+	*) disk=$(grep -m 1 " $MP " /etc/mtab | sed -e "s: .*$::") ;;
+esac
+disk=$(echo "$disk" | sed -e "s: .*$::" -e "s:^.*/::" -e "s:[0-9]*$::")
 
 if [ "$1" = "--detail" ]; then
-	if [ -x /usr/bin/iostat ]; then
+	if which iostat >/dev/null; then
 		iostat -d -m -h
 	else
 		echo "Please install iostat if you want detailed information on your disk throughput"

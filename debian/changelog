@@ -9,6 +9,7 @@ byobu (2.72) UNRELEASED; urgency=low
     share/man/man1/byobu.1: added a disk throughput notification
   * usr/bin/byobu-janitor: add hyphenation to the regex to allow for
     disk_io
+  * usr/lib/byobu/disk_io: improve MONITORED_DISK overriding
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Apr 2010 12:31:20 -0500
 
