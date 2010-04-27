@@ -28,4 +28,4 @@ if [ ! -r "$HOME/.byobu/disable-autolaunch" ]; then
 		exec /usr/bin/byobu
 	fi
 fi
-true
+false

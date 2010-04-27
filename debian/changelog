@@ -1,6 +1,8 @@
 byobu (2.73) unreleased; urgency=low
 
   * usr/bin/byobu-reconnect-sockets: look for gpg sessions quietly
+  * usr/bin/byobu-launcher: ensure that if user does not want a nested
+    session, they still get a local shell
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 26 Apr 2010 19:25:51 -0500
 
