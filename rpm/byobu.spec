@@ -1,12 +1,12 @@
 Name:           byobu
-Version:        2.72
+Version:        2.73
 Release:        1%{?dist}
 Summary:        a light-weight, configurable window manager built upon GNU screen
 
 Group:          Applications/System
 License:        GPL
 URL:            http://launchpad.net/byobu
-Source0:        http://code.launchpad.net/byobu/trunk/2.72/+download/byobu_2.72.orig.tar.gz
+Source0:        http://code.launchpad.net/byobu/trunk/2.73/+download/byobu_2.73.orig.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:	noarch
 
