@@ -1,4 +1,4 @@
-byobu (2.72) UNRELEASED; urgency=low
+byobu (2.72-0ubuntu1) maverick; urgency=low
 
   * usr/bin/byobu: support nethack screen mode, LP: #568751
   * usr/share/man/man1/byobu.1: document a sample custom script using
@@ -12,7 +12,7 @@ byobu (2.72) UNRELEASED; urgency=low
   * usr/lib/byobu/disk_io: improve MONITORED_DISK overriding
   * usr/lib/byobu/disk: minor simplification
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 22 Apr 2010 12:31:20 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 26 Apr 2010 19:25:37 -0500
 
 byobu (2.71-0ubuntu1) maverick; urgency=low
 
