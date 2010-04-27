@@ -32,7 +32,7 @@ fi
 
 # Establish gpg-agent socket, helps when reconnecting to a detached session
 # Sorry, ls -t is needed here, to sort by time
-for i in $(ls -t "$HOME/.gnupg/"gpg-agent-info-*); do
+for i in $(ls -t "$HOME/.gnupg/"gpg-agent-info-* 2>/dev/null); do
 	. "$i" || continue
 	export GPG_AGENT_INFO && break
 done

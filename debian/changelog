@@ -1,6 +1,6 @@
 byobu (2.73) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-reconnect-sockets: look for gpg sessions quietly
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 26 Apr 2010 19:25:51 -0500
 
