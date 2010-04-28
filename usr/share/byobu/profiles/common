@@ -71,6 +71,7 @@ backtick 130 	5	5		byobu-status custom
 backtick 131 	53	53		byobu-status services
 backtick 132 	11	11		byobu-status time_utc
 backtick 133 	3	3		byobu-status disk_io
+backtick 134 	613	613		byobu-status rcs_cost
 
 hardstatus alwayslastline
 
