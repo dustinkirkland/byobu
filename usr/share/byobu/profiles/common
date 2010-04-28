@@ -70,6 +70,7 @@ backtick 129 	67	67		byobu-status apport
 backtick 130 	5	5		byobu-status custom
 backtick 131 	53	53		byobu-status services
 backtick 132 	11	11		byobu-status time_utc
+backtick 133 	613	613		byobu-status rcs_cost
 
 hardstatus alwayslastline
 
