@@ -42,6 +42,7 @@ mem_used=1
 menu=1
 network=0
 processes=0
+rcs_cost=0
 reboot_required=1
 release=1
 services=1

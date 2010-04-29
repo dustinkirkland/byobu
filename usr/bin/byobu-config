@@ -302,6 +302,7 @@ def readstatus():
     status["menu"]=1
     status["network"]=0
     status["processes"]=0
+    status["rcs_cost"]=0
     status["reboot_required"]=1
     status["release"]=1
     status["services"]=1

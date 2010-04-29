@@ -1,8 +1,14 @@
 byobu (2.73) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu-reconnect-sockets: look for gpg sessions quietly
   * usr/bin/byobu-launcher: ensure that if user does not want a nested
     session, they still get a local shell
+
+  [ Jon Bernard ]
+  * etc/byobu/statusrc, usr/bin/byobu-config, usr/lib/byobu/rcs_cost,
+    usr/share/byobu/profiles/common, usr/share/man/man1/byobu.1:
+    - Rackspace cost estimation (based on the ec2 one)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 26 Apr 2010 19:25:51 -0500
 
