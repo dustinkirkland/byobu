@@ -1,4 +1,4 @@
-byobu (2.73) unreleased; urgency=low
+byobu (2.73-0ubuntu1) maverick; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-reconnect-sockets: look for gpg sessions quietly
@@ -10,7 +10,7 @@ byobu (2.73) unreleased; urgency=low
     usr/share/byobu/profiles/common, usr/share/man/man1/byobu.1:
     - Rackspace cost estimation (based on the ec2 one)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 26 Apr 2010 19:25:51 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 28 Apr 2010 23:11:08 -0500
 
 byobu (2.72-0ubuntu1) maverick; urgency=low
 
