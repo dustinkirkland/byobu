@@ -58,16 +58,17 @@ if [ "$#" = "0" ]; then
 	else
 		NO_SOCKETS="^No Sockets found in "
 	fi
-	if echo "$out" | LANG=C grep -qsi "$NO_SOCKETS"; then
+	if [ -s "$BYOBU_WINDOWS" ]; then
+		# Launch with custom window set
+		cat "$BYOBU_WINDOWS" > "$HOME/.$PKG/.windows-tmp"
+		exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc"
+	elif echo "$out" | LANG=C grep -qsi "$NO_SOCKETS"; then
 		# Start new session
 		exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc" -t shell $DEFAULT_WINDOW
 	else
 		# Select and attach to an existing session
 		exec byobu-select-session
 	fi
-elif [ -s "$BYOBU_WINDOWS" ]; then
-	cat "$BYOBU_WINDOWS" > "$HOME/.$PKG/.windows-tmp"
-	exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc"
 else
 	exec screen $SCREEN_TERM -c "$HOME/.$PKG/profile" "$@"
 fi
