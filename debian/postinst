@@ -5,7 +5,7 @@ db_version 2.0
 
 PKG="byobu"
 
-db_get byobu/launch-by-default
+db_get byobu/launch-by-default || true
 if [ "$RET" = true ]; then
 	ln -sf /usr/bin/$PKG-launch /etc/profile.d/Z98-$PKG.sh
 else
