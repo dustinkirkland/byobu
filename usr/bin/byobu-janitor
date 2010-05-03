@@ -23,6 +23,7 @@ PKG="byobu"
 [ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir" || SOCKETDIR="/var/run/screen"
 RUN="$SOCKETDIR/S-$USER"
 FLAG="$RUN/$PKG.reload-required"
+echo > "$HOME/.$PKG/.windows-tmp"
 
 # Exit immediately, if we're not forced, and there is no reload flag
 if [ "$1" != "--force" ] && [ ! -e "$FLAG" ]; then
@@ -90,7 +91,6 @@ fi
 [ -r "$HOME/.$PKG/status" ] || $(grep -A 999999 BEGIN_CUT_HERE /etc/$PKG/statusrc | grep -B 999999 END_CUT_HERE | grep -v CUT > "$HOME/.$PKG/status")
 [ -r "$HOME/.$PKG/windows" ] || touch "$HOME/.$PKG/windows"
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
-echo > "$HOME/.$PKG/.windows-tmp"
 
 # Affects: Upgrades from <= byobu-2.11
 # The status scripts used to have hyphens in their name, but now use
