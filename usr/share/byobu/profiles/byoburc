@@ -21,4 +21,5 @@
 
 source $HOME/.byobu/profile
 source $HOME/.byobu/windows
+source $HOME/.byobu/.windows-tmp
 source $HOME/.screenrc

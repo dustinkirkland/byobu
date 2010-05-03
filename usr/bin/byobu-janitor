@@ -90,6 +90,7 @@ fi
 [ -r "$HOME/.$PKG/status" ] || $(grep -A 999999 BEGIN_CUT_HERE /etc/$PKG/statusrc | grep -B 999999 END_CUT_HERE | grep -v CUT > "$HOME/.$PKG/status")
 [ -r "$HOME/.$PKG/windows" ] || touch "$HOME/.$PKG/windows"
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
+echo > "$HOME/.$PKG/.windows-tmp"
 
 # Affects: Upgrades from <= byobu-2.11
 # The status scripts used to have hyphens in their name, but now use
