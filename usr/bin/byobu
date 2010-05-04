@@ -20,15 +20,27 @@
 PKG="byobu"
 VERSION=2.74
 
-# Add a version argument for debugging purposes
-if [ "$#" = "1" ] && [ "$1" = "-v" ]; then
-	echo "$PKG version $VERSION"
-	screen -v
-	exit 0
-fi
+while [ ! -z "$1" ]; do
+	case "$1" in
+		-v|--version)
+			echo "$PKG version $VERSION"
+			screen -v
+			exit 0
+		;;
+		--windows)
+			if [ -r "$2" ]; then
+				WINDOWS=$(cat "$2")
+			fi
+			shift 2
+		;;
+		*)
+			ARGS="$ARGS $1"
+		;;
+	esac
+done
 
 # Check if we're being autolaunched, and this user explicitly does not want it.
-if [ "$0" = "/etc/profile.d/$PKG.sh" ] && [ -r "$HOME/.$PKG/disable-autolaunch" ]; then
+if [ "$0" = "/etc/profile.d/Z98-$PKG.sh" ] && [ -r "$HOME/.$PKG/disable-autolaunch" ]; then
 	exit 0
 fi
 
@@ -38,8 +50,15 @@ byobu-janitor --force
 # Set window title until https://bugs.launchpad.net/bugs/338722 is fixed in screen
 printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
 
-# Launch motd+shell, unless the user has default windows set to launch
-grep -qs "^[^#]" "$HOME/.$PKG/windows" && DEFAULT_WINDOW= || DEFAULT_WINDOW="motd+shell"
+# Configure default windows
+DEFAULT_WINDOW=
+if [ -n "$WINDOWS" ];
+	mv -f "$HOME/.byobu/windows" "$HOME/.byobu/.windows-swap"
+	cleanup='mv -f "$HOME/.byobu/.windows-swap" "$HOME/.byobu/windows"'
+	printf "%s\n%s\n" "$WINDOWS\n" "$cleanup" > "$HOME/.byobu/windows"
+elif !  grep -qs "^[^#]" "$HOME/.$PKG/windows"; then
+	DEFAULT_WINDOW="-t shell motd+shell"
+fi
 
 # Check if our terminfo supports 256 colors
 [ -x /usr/bin/tput ] && [ $(/usr/bin/tput colors 2>/dev/null || echo 0) -eq 256 ] && SCREEN_TERM="-T screen-256color"
@@ -58,13 +77,9 @@ if [ "$#" = "0" ]; then
 	else
 		NO_SOCKETS="^No Sockets found in "
 	fi
-	if [ -s "$BYOBU_WINDOWS" ]; then
-		# Launch with custom window set
-		cat "$BYOBU_WINDOWS" > "$HOME/.$PKG/.windows-tmp"
-		exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc"
-	elif echo "$out" | LANG=C grep -qsi "$NO_SOCKETS"; then
+	if echo "$out" | LANG=C grep -qsi "$NO_SOCKETS"; then
 		# Start new session
-		exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc" -t shell $DEFAULT_WINDOW
+		exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc" $DEFAULT_WINDOW
 	else
 		# Select and attach to an existing session
 		exec byobu-select-session
