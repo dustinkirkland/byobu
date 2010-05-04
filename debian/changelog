@@ -1,8 +1,9 @@
-byobu (2.74-0ubuntu1) maverick; urgency=low
+byobu (2.74) unreleased; urgency=low
 
   * usr/lib/byobu/disk_io: fix regex to support RAID devices, LP: #572855
   * debian/postinst: make debconf question failsafe, LP: #569041
-  * usr/bin/byobu: add support for different window sets, LP: #517796
+  * usr/bin/byobu, usr/share/byobu/profiles/byoburc: add support for
+    different window sets, LP: #517796
   * usr/bin/byobu-select-session: use screen -ls, less overhead
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 28 Apr 2010 23:11:14 -0500

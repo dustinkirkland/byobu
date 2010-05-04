@@ -20,5 +20,5 @@
 ###############################################################################
 
 source $HOME/.byobu/profile
-source $HOME/.byobu/windows
+source $BYOBU_WINDOWS
 source $HOME/.screenrc
