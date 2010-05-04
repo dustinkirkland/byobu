@@ -39,8 +39,12 @@ byobu-janitor --force
 printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
 
 # Allow override of default window list, with BYOBU_WINDOWS environment variable
+CUSTOM_WINDOW_SET=0
 if [ -r "$BYOBU_WINDOWS" ]; then
 	CUSTOM_WINDOW_SET=1
+elif [ -r "$HOME/.$PKG/windows.$BYOBU_WINDOWS" ]; then
+	CUSTOM_WINDOW_SET=1
+	BYOBU_WINDOWS="$HOME/.$PKG/windows.$BYOBU_WINDOWS"
 else
 	BYOBU_WINDOWS="$HOME/.$PKG/windows"
 fi
