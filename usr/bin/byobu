@@ -38,16 +38,15 @@ byobu-janitor --force
 # Set window title until https://bugs.launchpad.net/bugs/338722 is fixed in screen
 printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
 
-DEFAULT_WINDOW=
-WINDOW_LIST="$HOME/.$PKG/windows"
-if [ -r "$BYOBU_WINDOWS" ]; then
-	# Override default window list, based on BYOBU_WINDOWS environment variable
-	WINDOW_LIST="$HOME/.$PKG/windows"
+# Allow override of default window list, with BYOBU_WINDOWS environment variable
+if [ ! -r "$BYOBU_WINDOWS" ]; then
+	BYOBU_WINDOWS="$HOME/.$PKG/windows"
+	DEFAULT_WINDOW_SET=1
 fi
+export BYOBU_WINDOWS
 
 # Launch motd+shell, unless the user has default windows set to launch
-grep -qs "^[^#]" "$WINDOW_LIST" || DEFAULT_WINDOW="-t shell motd+shell"
-export BYOBU_WINDOWS
+grep -qs "^[^#]" "$BYOBU_WINDOWS" && DEFAULT_WINDOW= || DEFAULT_WINDOW="-t shell motd+shell"
 
 # Check if our terminfo supports 256 colors
 [ -x /usr/bin/tput ] && [ $(/usr/bin/tput colors 2>/dev/null || echo 0) -eq 256 ] && SCREEN_TERM="-T screen-256color"
@@ -59,7 +58,7 @@ if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ]; then
 fi
 
 # Now let's execute screen!
-if [ "$#" = "0" ]; then
+if [ "$#" = "0" ] && [ "$DEFAULT_WINDOW_SET" = "1" ]; then
 	out=$(screen -wipe 2>/dev/null) || true
 	if [ -r "$HOME/.nethackrc" ] || [ "$NETHACKOPTIONS" != "" ]; then
 		NO_SOCKETS="^This room is empty "
