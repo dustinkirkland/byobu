@@ -65,15 +65,10 @@ fi
 # Now let's execute screen!
 if [ "$#" = "0" ]; then
 	out=$(screen -wipe 2>/dev/null) || true
-	if [ -r "$HOME/.nethackrc" ] || [ "$NETHACKOPTIONS" != "" ]; then
-		NO_SOCKETS="^This room is empty "
-	else
-		NO_SOCKETS="^No Sockets found in "
-	fi
 	if [ "$CUSTOM_WINDOW_SET" = "1" ]; then
 		# Start new custom window set session
 		exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc"
-	elif echo "$out" | LANG=C grep -qsi "$NO_SOCKETS"; then
+	elif echo "$out" | LANG=C egrep -qsi "(No Sockets found in|This room is empty)"; then
 		# Start new default session
 		exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc" $DEFAULT_WINDOW
 	else
