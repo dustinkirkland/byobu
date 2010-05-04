@@ -39,9 +39,10 @@ byobu-janitor --force
 printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
 
 # Allow override of default window list, with BYOBU_WINDOWS environment variable
-if [ ! -r "$BYOBU_WINDOWS" ]; then
+if [ -r "$BYOBU_WINDOWS" ]; then
+	CUSTOM_WINDOW_SET=1
+else
 	BYOBU_WINDOWS="$HOME/.$PKG/windows"
-	DEFAULT_WINDOW_SET=1
 fi
 export BYOBU_WINDOWS
 
@@ -58,15 +59,18 @@ if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ]; then
 fi
 
 # Now let's execute screen!
-if [ "$#" = "0" ] && [ "$DEFAULT_WINDOW_SET" = "1" ]; then
+if [ "$#" = "0" ]; then
 	out=$(screen -wipe 2>/dev/null) || true
 	if [ -r "$HOME/.nethackrc" ] || [ "$NETHACKOPTIONS" != "" ]; then
 		NO_SOCKETS="^This room is empty "
 	else
 		NO_SOCKETS="^No Sockets found in "
 	fi
-	if echo "$out" | LANG=C grep -qsi "$NO_SOCKETS"; then
-		# Start new session
+	if [ "$CUSTOM_WINDOW_SET" = "1" ]; then
+		# Start new custom window set session
+		exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc"
+	elif echo "$out" | LANG=C grep -qsi "$NO_SOCKETS"; then
+		# Start new default session
 		exec screen $SCREEN_TERM -c "/usr/share/$PKG/profiles/byoburc" $DEFAULT_WINDOW
 	else
 		# Select and attach to an existing session
