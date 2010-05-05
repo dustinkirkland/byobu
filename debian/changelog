@@ -1,3 +1,9 @@
+byobu (2.75) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 May 2010 16:07:39 +0200
+
 byobu (2.74-0ubuntu1) maverick; urgency=low
 
   * usr/lib/byobu/disk_io: fix regex to support RAID devices, LP: #572855
