@@ -5,6 +5,7 @@ byobu (2.74) unreleased; urgency=low
   * usr/bin/byobu, usr/share/byobu/profiles/byoburc: add support for
     different window sets, LP: #517796
   * usr/bin/byobu-select-session: use screen -ls, less overhead
+  * usr/share/man/man1/byobu.1: document the different window sets
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 28 Apr 2010 23:11:14 -0500
 

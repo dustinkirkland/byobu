@@ -78,7 +78,21 @@ byobu \- wrapper script for seeding a user's byobu configuration and launching s
 
 \fBwifi_quality\fP \- the connection rate and signal quality of the wifi connection; displayed in the lower bar toward the right in black text on a cyan background; the connection rate is in 'Mb/s' and the signal quality is as a percentage with a trailing '%'
 
-\fBwindows\fP \- each open window in the screen session appears is displayed in the upper bar toward the far right in blue text on a grey background
+.SH WINDOWS
+
+Each open window in the screen session is displayed in the upper bar toward the far left.  These are numbered, and include indicators as to activity in the window (see "activity" in \fBscreen\fP(1) for symbol definitions).  The current active window is highlighted by inverting the background/text from the rest of the window bar.
+
+Users can create a list of windows to launch at startup in \fI~/.byobu/windows\fP.  This file is the same syntax as \fI~/.screenrc\fP, each line specifying a window using the "screen" command, as described in \fBscreen\fP(1).
+
+User can also launch Byobu with unique window sets.  Users can store these as \fI~/.byobu/windows.[NAME]\fP, and launch Byobu with the environment variable \fBBYOBU_WINDOWS\fP.
+
+For example:
+  $ cat ~/.byobu/windows.ssh_sessions
+  screen -t localhost bash
+  screen -t aussie ssh root@aussie
+  screen -t beagle ssh root@beagle
+  screen -t collie ssh root@collie
+  $ BYOBU_WINDOWS=ssh_sessions byobu
 
 .SH UNITS OF MEASURE
 byobu uses binary for measurements rather than decimal for KB, MB, and GB.  This means multiples of 1024 rather than multiples of 1000, in accordance with JEDEC Standard 100B.01.
