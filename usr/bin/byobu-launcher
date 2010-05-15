@@ -22,10 +22,10 @@ if [ ! -r "$HOME/.byobu/disable-autolaunch" ]; then
 		printf "$(gettext 'Do you want to launch byobu in a nested session?') [y/N]: "
 		answer=$(head -n1)
 		if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
-			exec /usr/bin/byobu
+			exec /usr/bin/byobu "$@"
 		fi
 	else
-		exec /usr/bin/byobu
+		exec /usr/bin/byobu "$@"
 	fi
 fi
 false
