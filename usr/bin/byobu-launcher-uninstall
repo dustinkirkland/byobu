@@ -31,6 +31,7 @@ remove_launcher() {
 for i in ".profile" ".bashrc" ".bash_profile" ".zprofile"; do
 	remove_launcher "$HOME/$i"
 done
+mkdir -p "$HOME/.$PKG"
 touch "$HOME/.$PKG/disable-autolaunch"
 # install disabled motd printing; re-enable
 rm -f "$HOME"/.hushlogin

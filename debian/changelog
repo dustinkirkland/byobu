@@ -4,7 +4,8 @@ byobu (2.75) UNRELEASED; urgency=low
     with arguments, LP: #580760
   * ec2_cost, ip_address, network, rcs_cost: fix bug when calling ifconfig
     without setting lang to english, LP: #578792
-
+  * byobu-launcher-uninstall: create the directory, in case this script is
+    executed before byobu actually runs, LP: #580384
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 15 May 2010 15:32:30 -0400
 
