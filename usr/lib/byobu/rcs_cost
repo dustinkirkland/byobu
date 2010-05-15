@@ -66,7 +66,7 @@ TX_RATE="0.22"
 # Auto detect network interface
 IF=`tail -n1 /proc/net/route  | awk '{print $1}'`
 
-ifconfig_out=`/sbin/ifconfig "$IF"`
+ifconfig_out=`LC_ALL=C /sbin/ifconfig "$IF"`
 
 # Calculate bandwidth cost
 tx_gb=`echo "$ifconfig_out" | grep "TX bytes:" | sed "s/^.*TX bytes://" | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }'`
