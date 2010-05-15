@@ -1,8 +1,9 @@
-byobu (2.75) unreleased; urgency=low
+byobu (2.75) UNRELEASED; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu: ensure that .screenrc gets sourced if byobu is run
+    with arguments, LP: #580760
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 May 2010 16:07:39 +0200
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 15 May 2010 15:32:30 -0400
 
 byobu (2.74-0ubuntu1) maverick; urgency=low
 
