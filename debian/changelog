@@ -1,4 +1,4 @@
-byobu (2.76) unreleased; urgency=low
+byobu (2.76-0ubuntu1) maverick; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-select-session: default to -UDR, the "author's favorite"
@@ -11,7 +11,7 @@ byobu (2.76) unreleased; urgency=low
   * ec2_cost, rcs_cost: calculate cost from the start of the
     instance, rather than the uptime
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 15 May 2010 16:52:04 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 21 May 2010 09:37:10 -0500
 
 byobu (2.75-0ubuntu1) maverick; urgency=low
 
