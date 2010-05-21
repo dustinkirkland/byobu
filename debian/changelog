@@ -1,10 +1,15 @@
 byobu (2.76) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu-select-session: default to -UDR, the "author's favorite"
     according to the screen(1) manpage; slightly more secure as it logs out
     other sessions; special handling is needed if the user wants to share
     sessions, LP: #578373; also, droping the -x should fix some resize
     problems, LP: #553085
+
+  [ Jon Bernard ]
+  * ec2_cost, rcs_cost: calculate cost from the start of the
+    instance, rather than the uptime
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 15 May 2010 16:52:04 -0400
 
