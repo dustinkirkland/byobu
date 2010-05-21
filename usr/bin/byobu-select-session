@@ -60,7 +60,7 @@ if choice:
 		os.execv("/usr/bin/byobu", ["", SHELL])
 	else:
 	 	# Attach to the chosen session
-		os.execv("/usr/bin/byobu", ["", "-x", sessions[choice]])
+		os.execv("/usr/bin/byobu", ["", "-UDR", sessions[choice]])
 else:
 	# No valid selection, default to the youngest session
-	os.execv("/usr/bin/byobu", ["", "-xRR"])
+	os.execv("/usr/bin/byobu", ["", "-UDR"])
