@@ -1,10 +1,10 @@
-byobu (2.77) unreleased; urgency=low
+byobu (2.77-0ubuntu1) maverick; urgency=low
 
   * debian/control: drop update-notifier-common and lsb-release from
     Recommends to Suggests (their status scripts are smart enough to
     operate without them), LP: #588340
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 21 May 2010 09:37:16 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 01 Jun 2010 10:53:49 -0500
 
 byobu (2.76-0ubuntu1) maverick; urgency=low
 
