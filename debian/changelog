@@ -1,6 +1,8 @@
 byobu (2.77) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/control: drop update-notifier-common and lsb-release from
+    Recommends to Suggests (their status scripts are smart enough to
+    operate without them), LP: #588340
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 21 May 2010 09:37:16 -0500
 
