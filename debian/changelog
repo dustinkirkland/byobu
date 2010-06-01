@@ -1,3 +1,9 @@
+byobu (2.78) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 01 Jun 2010 10:53:54 -0500
+
 byobu (2.77-0ubuntu1) maverick; urgency=low
 
   * debian/control: drop update-notifier-common and lsb-release from
