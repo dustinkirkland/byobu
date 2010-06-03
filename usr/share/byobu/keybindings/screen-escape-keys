@@ -49,4 +49,4 @@ bind @ screen -t config 0 byobu-config
 bind $ screen -t status 0 byobu-status-detail
 # ctrl-a-!	Toggle f-key keybindings on
 register e "^a:source /usr/share/byobu/keybindings/f-keys^M"
-bind ! process e
+bind ! eval 'process e' 'backtick 111 9999999 9999999 byobu-status menu'

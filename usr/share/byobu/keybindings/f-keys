@@ -42,4 +42,4 @@ bind ~ eval 'process s' 'exec sed -i "/./,/^$/!d" /var/run/screen/S-$USER/byobu-
 
 # toggle f-key keybindings off
 register d "^a:source /usr/share/byobu/keybindings/screen-escape-keys^M"
-bind ! process d
+bind ! eval 'process d' 'backtick 111 9999999 9999999 byobu-status menu --disable-f-keys'

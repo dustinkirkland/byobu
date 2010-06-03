@@ -85,5 +85,6 @@ case "$P" in
 	*)
 		eval x="\$$P" || exit 1
 		[ "$x" = "1" ] || exit 0
-		. $(find_script "$P")
+		shift
+		. $(find_script "$P") "$@"
 esac
