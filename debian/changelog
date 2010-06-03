@@ -8,6 +8,7 @@ byobu (2.78) UNRELEASED; urgency=low
   * usr/bin/byobu-select-session: revert recent change, which defaulted to
     -UDR (which detached and logged out other connections on reattach);
     feedback was negative on this one, numerous questions in IRC, LP: #589027
+  * usr/bin/byobu-select-session: allow for default selection of session 1
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 01 Jun 2010 10:53:54 -0500
 

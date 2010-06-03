@@ -44,14 +44,18 @@ if i > 1:
 		i += 1
 		try:
 			choice = input("\nChoose 1-%d [1]: " % (i-1))
-			if choice < 1 or choice >= i:
+			if choice >= 1 and choice < i:
+				break
+			else:
+				tries += 1
 				choice = ""
+				sys.stderr.write("\nERROR: Invalid input\n");
 		except:
+			if choice == "":
+				choice = 1
+				break
 			tries += 1
 			choice = ""
-		if choice:
-			break
-		else:
 			sys.stderr.write("\nERROR: Invalid input\n");
 
 if choice:
