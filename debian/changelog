@@ -1,3 +1,9 @@
+byobu (2.79) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 03 Jun 2010 01:58:24 -0500
+
 byobu (2.78-0ubuntu1) maverick; urgency=low
 
   * usr/bin/byobu-status, usr/lib/byobu/menu,
