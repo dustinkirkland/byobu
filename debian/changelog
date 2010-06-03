@@ -1,4 +1,4 @@
-byobu (2.78) UNRELEASED; urgency=low
+byobu (2.78-0ubuntu1) maverick; urgency=low
 
   * usr/bin/byobu-status, usr/lib/byobu/menu,
     usr/share/byobu/keybindings/f-keys,
@@ -16,7 +16,7 @@ byobu (2.78) UNRELEASED; urgency=low
     breakage by dropping the "-t shell" title hardcoding, and move/rename
     motd+shell to just shell, LP: #368925
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 01 Jun 2010 10:53:54 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 03 Jun 2010 01:58:15 -0500
 
 byobu (2.77-0ubuntu1) maverick; urgency=low
 
