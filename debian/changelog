@@ -5,6 +5,9 @@ byobu (2.78) UNRELEASED; urgency=low
     usr/share/byobu/keybindings/screen-escape-keys: show a visual queue
     when toggling on/off the f-key keybindings; Menu:<F9> vs. Menu:<^a-@>,
     LP: #589016
+  * usr/bin/byobu-select-session: revert recent change, which defaulted to
+    -UDR (which detached and logged out other connections on reattach);
+    feedback was negative on this one, numerous questions in IRC, LP: #589027
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 01 Jun 2010 10:53:54 -0500
 
