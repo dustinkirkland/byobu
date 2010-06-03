@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#    motd+shell
+#    shell: display the MOTD and launch the default shell
 #    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>

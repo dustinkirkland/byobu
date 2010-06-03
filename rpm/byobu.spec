@@ -58,12 +58,12 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_sysconfdir}/%{name}
 %config %{_sysconfdir}/%{name}/*
 %{_bindir}/%{name}*
-%{_bindir}/motd+shell
+%{_bindir}/shell
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/%{name}/*
 %{_datadir}/locale/*/LC_MESSAGES/%{name}.mo
 %{_mandir}/man1/%{name}*.1.gz
-%{_mandir}/man1/motd+shell.1.gz
+%{_mandir}/man1/shell.1.gz
 %{_prefix}/lib/%{name}/*
 
 %changelog

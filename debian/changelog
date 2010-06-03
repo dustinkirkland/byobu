@@ -11,6 +11,10 @@ byobu (2.78) UNRELEASED; urgency=low
   * usr/bin/byobu-select-session: allow for default selection of session 1
   * usr/bin/byobu-config: prevent the user from changing the escape sequence
     to / or \, both of which cause problems, LP: #581533
+  * debian/manpages, rpm/byobu.spec, usr/bin/byobu, usr/bin/shell,
+    usr/share/byobu/windows/common, usr/share/man/man1/shell.1: fix shelltitle
+    breakage by dropping the "-t shell" title hardcoding, and move/rename
+    motd+shell to just shell, LP: #368925
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 01 Jun 2010 10:53:54 -0500
 

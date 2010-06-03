@@ -2,4 +2,4 @@
 #screen -t notify-osd -M tail -f $HOME/.cache/notify-osd.log
 #screen -t top top
 #screen -t web w3m
-#screen -t shell motd+shell
+#screen -t shell shell
