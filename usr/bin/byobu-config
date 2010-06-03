@@ -483,6 +483,9 @@ def chgesc(screen, size):
             val=esc.value()
             if len(val) > 1:
                 esc.set(val[1])
+            # Ensure that escape sequence is not \ or /
+            if val == '/' or val == '\\':
+                esc.set(DEF_ESC)
             # Ensure that the escape sequence is not set to a number
             try:
                 dummy = int(esc.value())

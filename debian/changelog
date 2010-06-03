@@ -9,6 +9,8 @@ byobu (2.78) UNRELEASED; urgency=low
     -UDR (which detached and logged out other connections on reattach);
     feedback was negative on this one, numerous questions in IRC, LP: #589027
   * usr/bin/byobu-select-session: allow for default selection of session 1
+  * usr/bin/byobu-config: prevent the user from changing the escape sequence
+    to / or \, both of which cause problems, LP: #581533
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 01 Jun 2010 10:53:54 -0500
 
