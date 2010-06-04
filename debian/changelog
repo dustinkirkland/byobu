@@ -1,6 +1,6 @@
 byobu (2.79) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/rules: symlink motd+shell to shell, LP: #589715
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 03 Jun 2010 01:58:24 -0500
 
