@@ -1,3 +1,9 @@
+byobu (2.80) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 04 Jun 2010 16:05:03 -0500
+
 byobu (2.79-0ubuntu1) maverick; urgency=low
 
   * debian/rules: symlink motd+shell to shell, LP: #589715
