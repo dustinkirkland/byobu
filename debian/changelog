@@ -1,3 +1,9 @@
+byobu (2.81) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 16 Jun 2010 12:46:29 -0500
+
 byobu (2.80-0ubuntu1) maverick; urgency=low
 
   * usr/bin/byobu-launcher: handle nasty recursion, if ssh'ing to localhost,
