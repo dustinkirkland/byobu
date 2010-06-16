@@ -19,10 +19,32 @@
 
 if [ ! -r "$HOME/.byobu/disable-autolaunch" ]; then
 	if printf "$TERM" | grep -qs "screen"; then
+		# Handle nesting
 		printf "$(gettext 'Do you want to launch byobu in a nested session?') [y/N]: "
 		answer=$(head -n1)
 		if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
-			exec /usr/bin/byobu "$@"
+			# Prevent nasty launch recursion, if ssh'ing to localhost
+			if [ -n "$SSH_CONNECTION" ]; then
+				# This is an SSH session
+				from=$(echo "$SSH_CONNECTION" | awk '{print $1}')
+				to=$(echo "$SSH_CONNECTION" | awk '{print $3}')
+				if [ "$from" = "$to" ]; then
+					# We have ssh'd from this machine, to this machine
+					if screen -ls | grep -qs '(Attached)$'; then
+						# And there is already an attached screen session
+						# Exit to prevent recursion
+						false
+					else
+						exec /usr/bin/byobu "$@"
+					fi
+				else
+					exec /usr/bin/byobu "$@"
+				fi
+			else
+				exec /usr/bin/byobu "$@"
+			fi
+		else
+			false
 		fi
 	else
 		exec /usr/bin/byobu "$@"

@@ -1,6 +1,7 @@
 byobu (2.80) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-launcher: handle nasty recursion, if ssh'ing to localhost,
+    and byobu-launches-by-default, LP: #595137
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 04 Jun 2010 16:05:03 -0500
 
