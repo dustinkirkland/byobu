@@ -24,7 +24,7 @@ RUNS=100
 
 loop() {
 	for j in $(seq 1 $RUNS); do
-		/usr/lib/$PKG/$1 >/dev/null
+		usr/lib/$PKG/$1 >/dev/null
 	done
 }
 
