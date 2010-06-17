@@ -64,9 +64,9 @@ case "$P" in
 	--detail)
 		VER=
 		if which dpkg-query >/dev/null; then
-			VER=`dpkg-query --show $PKG | awk '{print "-" $2 }'`
+			VER=$(set -- $(dpkg-query --show $PKG); echo "$2")
 		fi
-		printf "$PKG$VER Detailed Status Navigation\n  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
+		printf "$PKG-$VER Detailed Status Navigation\n  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
 		for i in "/usr/lib/$PKG"/* "$HOME/.$PKG/bin"/*; do
 			i=${i##*/}
 			[ "$i" = "menu" ] && continue
