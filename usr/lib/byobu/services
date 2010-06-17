@@ -34,7 +34,14 @@ fi
 running() {
 	if [ -f "/etc/init/$1.conf" ]; then
 		# Use upstart
-		status $1 2>/dev/null | grep -qs running && true
+		case "$(status $1 2>/dev/null)" in
+			*running*)
+				true
+			;;
+			*)
+				false
+			;;
+		esac
 	elif [ -f "/etc/init.d/$1" ]; then
 		# Fall back to sysvinit
 		/etc/init.d/$1 status >/dev/null 2>&1
