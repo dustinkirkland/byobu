@@ -68,11 +68,11 @@ case "$P" in
 		fi
 		printf "$PKG$VER Detailed Status Navigation\n  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
 		for i in "/usr/lib/$PKG"/* "$HOME/.$PKG/bin"/*; do
-			i=$(echo "$i" | sed "s:^.*/::")
+			i=${i##*/}
 			[ "$i" = "menu" ] && continue
 			script=`find_script $i`
-			short=`$script --short | sed 's/^\s*//' | sed 's/\s*$//' | sed 's/.{[^}]*}//g'` || true
-			detail=`$script --detail | sed '/^$/d' | sed 's/^/\t/g'` || true
+			short=`$script --short | sed -e 's/^\s*//' -e 's/\s*$//' -e 's/.{[^}]*}//g'` || true
+			detail=`$script --detail | sed -e '/^$/d' -e 's/^/\t/g'` || true
 			printf "%s\n\t(%s)\n" "$short" "$i"
 			[ -n "$detail" ] && printf "%s\n" "$detail"
 		done
