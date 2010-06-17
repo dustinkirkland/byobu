@@ -35,16 +35,19 @@ elif which lsb_release >/dev/null 2>&1; then
 	fi
 	# If lsb_release is available, use it
 	r=$(lsb_release -s -d)
-	if echo "$r" | grep -qs "^Ubuntu .*\..*\..*$"; then
-		# Use the -d if an Ubuntu LTS
-		DISTRO="$r"
-	else
-		# But for other distros the description
-		# is too long, so build from -i and -r
-		i=$(lsb_release -s -i)
-		r=$(lsb_release -s -r)
-		DISTRO="$i $r"
-	fi
+	case "$r" in
+		Ubuntu*.*.*)
+			# Use the -d if an Ubuntu LTS
+			DISTRO="$r"
+		;;
+		*)
+			# But for other distros the description
+			# is too long, so build from -i and -r
+			i=$(lsb_release -s -i)
+			r=$(lsb_release -s -r)
+			DISTRO="$i $r"
+		;;
+	esac
 elif [ -r "/etc/palm-build-info" ]; then
 	# Palm Pre hack
 	DISTRO=$(grep "^PRODUCT_VERSION_STRING=Palm " /etc/palm-build-info | sed "s/^.*=Palm //")

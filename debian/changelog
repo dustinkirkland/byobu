@@ -1,6 +1,7 @@
 byobu (2.81) unreleased; urgency=low
 
-  * usr/lib/byobu/custom: save a fork
+  Save a fork:
+  * usr/lib/byobu/custom, usr/lib/byobu/release
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 16 Jun 2010 12:46:29 -0500
 
