@@ -38,11 +38,14 @@ for i in "$HOME"/.$PKG/bin/[0-9]*_*; do
 		$i $@ > "$CACHE.$script" 2>/dev/null
 	fi
 	output=$(cat "$CACHE.$script")
-	if echo "$output" | grep -qs "$ESC{"; then
-		# User has formatted the colors
-		printf "$output"
-	else
-		# Default to inverted coloring
-		printf "$(color invert)$output$(color -) "
-	fi
+	case "$output" in
+		*"$ESC{"*)
+			# User has formatted the colors
+			printf "$output"
+		;;
+		*)
+			# Default to inverted coloring
+			printf "$(color invert)$output$(color -) "
+		;;
+	esac
 done
