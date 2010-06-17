@@ -52,8 +52,8 @@ running() {
 
 output=
 for i in $SERVICES; do
-	service=$(echo "$i" | sed "s/|.*//")
-	nick=$(echo "$i" | sed "s/.*|//")
+	service=${i%|*}
+	nick=${i#*|}
 	case "$service" in
 		eucalyptus-nc)
 			if running $service; then
@@ -73,4 +73,4 @@ for i in $SERVICES; do
 		;;
 	esac
 done
-printf "$(color w c)$(echo $output | sed 's/^,//')$(color -) "
+printf "$(color w c)${output#,}$(color -) "
