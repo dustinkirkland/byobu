@@ -96,7 +96,7 @@ def menu(screen, size, isInstalled):
 
 
     li = Listbox(height = 9, width = 60, returnExit = 1)
-    li.append(_("Help"), 1)
+    li.append(_("Help -- Quick Start Guide"), 1)
     li.append(_("Change Byobu's background color"), 2)
     li.append(_("Change Byobu's foreground color"), 3)
     li.append(_("Toggle status notifications"), 4)

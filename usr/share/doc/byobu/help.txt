@@ -3,8 +3,8 @@ tool providing live system status, dynamic window management,
 and some convenient keybindings:
 
 F2    Create a new window    |  F6    Detach from the session
-F3    Go to the prev window  |  F7    Enter scrollback mode
-F4    Go to the next window  |  F8    Re-title a window
+F3    Go to the prev window  |  F7    Scrollback and search
+F4    Go to the next window  |  F8    Rename a window
 F5    Reload profile         |  F9    Configuration
                              |  F12   Lock this terminal
 'screen -r'  - reattach      |  <ctrl-<esckey>> Escape sequence
