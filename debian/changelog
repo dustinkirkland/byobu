@@ -8,7 +8,8 @@ byobu (2.81-0ubuntu1) maverick; urgency=low
     - usr/bin/byobu-status-detail
     - usr/bin/byobu-reconnect-sockets
     - usr/bin/byobu-launch, usr/bin/byobu-launcher-install,
-      usr/bin/byobu-launcher-uninstall:
+      usr/bin/byobu-launcher-uninstall
+    - usr/bin/byobu-launcher
 
   * usr/bin/byobu-config, usr/share/doc/byobu/help.txt: improve help
     text, per feedback from Turnkey Linux users

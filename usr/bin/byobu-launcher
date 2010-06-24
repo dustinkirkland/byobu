@@ -17,37 +17,45 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ ! -r "$HOME/.byobu/disable-autolaunch" ]; then
-	if printf "$TERM" | grep -qs "screen"; then
-		# Handle nesting
-		printf "$(gettext 'Do you want to launch byobu in a nested session?') [y/N]: "
-		answer=$(head -n1)
-		if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
-			# Prevent nasty launch recursion, if ssh'ing to localhost
-			if [ -n "$SSH_CONNECTION" ]; then
-				# This is an SSH session
-				from=$(echo "$SSH_CONNECTION" | awk '{print $1}')
-				to=$(echo "$SSH_CONNECTION" | awk '{print $3}')
-				if [ "$from" = "$to" ]; then
-					# We have ssh'd from this machine, to this machine
-					if screen -ls | grep -qs '(Attached)$'; then
-						# And there is already an attached screen session
-						# Exit to prevent recursion
-						false
+if [ ! -e "$HOME/.byobu/disable-autolaunch" ]; then
+	case "$TERM" in
+		*screen*)
+			# Handle nesting
+			printf "$(gettext 'Do you want to launch byobu in a nested session?') [y/N]: "
+			answer=$(head -n1)
+			case "$answer" in
+				y|Y)
+					# Prevent nasty launch recursion, if ssh'ing to localhost
+					if [ -n "$SSH_CONNECTION" ]; then
+						# This is an SSH session
+						from=$(echo "$SSH_CONNECTION" | awk '{print $1}')
+						to=$(echo "$SSH_CONNECTION" | awk '{print $3}')
+						if [ "$from" = "$to" ]; then
+							# We have ssh'd from this machine, to this machine
+							case "$(screen -ls)" in
+								*\(Attached\)*)
+									# And there is already an attached screen session, exit to prevent recursion
+									false
+								;;
+								*)
+									exec /usr/bin/byobu "$@"
+								;;
+							esac
+						else
+							exec /usr/bin/byobu "$@"
+						fi
 					else
 						exec /usr/bin/byobu "$@"
 					fi
-				else
-					exec /usr/bin/byobu "$@"
-				fi
-			else
-				exec /usr/bin/byobu "$@"
-			fi
-		else
-			false
-		fi
-	else
-		exec /usr/bin/byobu "$@"
-	fi
+				;;
+				*)
+					false
+				;;
+			esac
+		;;
+		*)
+			exec /usr/bin/byobu "$@"
+		;;
+	esac
 fi
 false
