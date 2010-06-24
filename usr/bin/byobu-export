@@ -61,7 +61,14 @@ done
 if [ -z "$file" ]; then
 	file="$TMP/$PKG.tar.gz"
 fi
-echo "$file" | grep -qs "\.tar\.gz$" || error "Target file must be a '.tar.gz' archive"
+case "$file" in
+	*.tar.gz)
+		true
+	;;
+	*)
+		error "Target file must be a '.tar.gz' archive"
+	;;
+esac
 if [ -e "$file" ]; then
 	echo `gettext "File exists"` " [$file]"
 	echo -n "`gettext 'Remove file? [y/N] '`"
@@ -95,9 +102,11 @@ ln -sf usr/share/$PKG/ec2/rates.us_ca "$DIR/.$PKG/ec2_rates"
 
 # Some gardening; update paths to be $HOME-based
 for i in /usr/bin/$PKG-*; do
-	if echo "$i" | grep -qs "install"; then
-		continue
-	fi
+	case "$i" in
+		install)
+			continue
+		;;
+	esac
 	bin=$(basename "$i")
 	sed -i "s:$bin:\$HOME/.$PKG$i:g" $(find $DIR -type f)
 done
