@@ -58,32 +58,38 @@ fi
 [ -r "$PROFILE" ] || ln -sf /usr/share/$PKG/profiles/common "$PROFILE"
 
 # Affects: Symlinks pointing to color profiles
-if [ -h "$PROFILE" ] && \
-   stat "$PROFILE" | grep -qs "File:.*->.*/usr/share/byobu/profiles/" && \
- ! stat "$PROFILE" | grep -qs "File:.*->.*/usr/share/byobu/profiles/common" ; then
-	# Set default colors
-	BG=W
-	FG=k
-	color=$(ls -l "$PROFILE" | sed "s/^.*\///")
-	case $color in
-		black|dark)   BG=k; FG=W;;
-		dark_blue)    BG=b; FG=W;;
-		dark_cyan)    BG=c; FG=W;;
-		dark_green)   BG=g; FG=W;;
-		dark_purple)  BG=m; FG=W;;
-		dark_red)     BG=r; FG=W;;
-		dark_yellow)  BG=y; FG=W;;
-		light)        BG=W; FG=k;;
-		light_blue)   BG=B; FG=k;;
-		light_cyan)   BG=C; FG=k;;
-		light_green)  BG=G; FG=k;;
-		light_purple) BG=M; FG=k;;
-		light_red)    BG=R; FG=k;;
-		light_yellow) BG=Y; FG=k;;
-		*)            BG=W; FG=k;;
+if [ -h "$PROFILE" ]; then
+	case "$(stat $PROFILE)" in
+		*File:*-\>*/usr/share/byobu/profiles/common)
+			# All good, nothing to do
+			true
+		;;
+		*File:*-\>*/usr/share/byobu/profiles/*)
+			# Set default colors
+			BG=W
+			FG=k
+			color=$(ls -l "$PROFILE" | sed "s/^.*\///")
+			case $color in
+				black|dark)   BG=k; FG=W;;
+				dark_blue)    BG=b; FG=W;;
+				dark_cyan)    BG=c; FG=W;;
+				dark_green)   BG=g; FG=W;;
+				dark_purple)  BG=m; FG=W;;
+				dark_red)     BG=r; FG=W;;
+				dark_yellow)  BG=y; FG=W;;
+				light)        BG=W; FG=k;;
+				light_blue)   BG=B; FG=k;;
+				light_cyan)   BG=C; FG=k;;
+				light_green)  BG=G; FG=k;;
+				light_purple) BG=M; FG=k;;
+				light_red)    BG=R; FG=k;;
+				light_yellow) BG=Y; FG=k;;
+				*)            BG=W; FG=k;;
+			esac
+			rm -f "$PROFILE" 2>/dev/null
+			byobu-select-profile -b $BG -f $FG >/dev/null 2>&1
+		;;
 	esac
-	rm -f "$PROFILE" 2>/dev/null
-	byobu-select-profile -b $BG -f $FG >/dev/null 2>&1
 fi
 
 [ -s "$HOME/.$PKG/keybindings" ] || echo "source /usr/share/$PKG/keybindings/common" > "$HOME/.$PKG/keybindings"
