@@ -23,7 +23,7 @@ PKG="byobu"
 remove_launcher() {
 	dest=$1
 	if [ -w "$dest" ]; then
-		sed -i -e "/$PKG-launcher/d" -e "/screen-launcher/d" "$dest"
+		sed -i -e "/ $PKG-launcher/d" -e "/ screen-launcher/d" "$dest"
 	fi
 }
 

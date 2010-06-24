@@ -1,4 +1,4 @@
-byobu (2.81) unreleased; urgency=low
+byobu (2.81-0ubuntu1) maverick; urgency=low
 
   * Save some forks:
     - usr/bin/byobu-status
