@@ -3,6 +3,7 @@ byobu (2.81) unreleased; urgency=low
   * Save some forks:
     - usr/bin/byobu-status
     - usr/lib/byobu/custom
+    - usr/lib/ec2_cost, usr/lib/rcs_cost
     - usr/lib/byobu/ip_address
     - usr/lib/byobu/release
     - usr/lib/services
