@@ -22,13 +22,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-if ! echo $- | grep -qs i; then
-	echo
-	echo "ERROR: You must source this file, rather than execute it."
-	echo "  . $0"
-	echo
-	#exit 1
-fi
+case "$-" in
+	*i*)
+		# no-op
+	;;
+	*)
+		echo
+		echo "ERROR: You must source this file, rather than execute it."
+		echo "  . $0"
+		echo
+		#exit 1
+	;;
+esac
 
 # Establish gpg-agent socket, helps when reconnecting to a detached session
 # Sorry, ls -t is needed here, to sort by time
