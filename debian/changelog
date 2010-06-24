@@ -21,6 +21,7 @@ byobu (2.81) unreleased; urgency=low
     text, per feedback from Turnkey Linux users
   * debian/release,sh, debian/release-build.sh: drop, no longer needed,
     now in lp:~kirkland/+junk/bin
+  * usr/bin/byobu-janitor: clean up launch gardening code
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 16 Jun 2010 12:46:29 -0500
 

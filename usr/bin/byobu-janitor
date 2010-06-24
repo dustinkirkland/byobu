@@ -108,7 +108,7 @@ sed -i "s/^network-.*=/network=/" "$HOME/.$PKG/status"
 # Affects: Upgrades from <= byobu-2.16
 # screen-launcher was renamed byobu-launcher; if the user has byobu
 # set to auto-launch, update their configuration to use the byobu-launcher
-if grep -qs "screen-launcher$" "$HOME/.profile"; then
+if grep -qs " screen-launcher" "$HOME/.profile"; then
 	byobu-launcher-install
 fi
 
@@ -132,13 +132,13 @@ done
 # Affects: Upgrades from <= byobu-2.57 that autolaunch
 # If the global autolaunch is on, then remove duplicate entry in ~/.profile
 if [ -h "/etc/profile.d/Z98-$PKG.sh" ]; then
-	sed -i "/$PKG-launcher$/d" "$HOME"/.profile || true
+	sed -i "/ $PKG-launcher/d" "$HOME"/.profile || true
 fi
 
 # Affects: Upgrades from <= byobu-2.70 that autolaunch
 # Update the byobu-launch line, if necessary
-if grep -qs "^\`echo \$- | grep -qs i\` && $PKG-launcher$" "$HOME"/.profile; then
-	$PKG-launcher-uninstall && $PKG-launcher-install
+if grep -qs " $PKG-launcher$" "$HOME"/.profile; then
+	$PKG-launcher-install
 fi
 
 # Clean up flag
