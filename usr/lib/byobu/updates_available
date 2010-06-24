@@ -26,7 +26,7 @@ if [ "$1" = "--detail" -o "$1" = "--short" ]; then
 		if [ "$1" = "--detail" ]; then
 			printf "$detail"
 		else
-			short=`printf "$detail" | grep ^Inst | wc -l`
+			short=`printf "$detail" | grep -c ^Inst`
 			printf "$short"
 		fi
 	fi
@@ -66,7 +66,7 @@ update_cache() {
 		apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
 	elif which zypper >/dev/null; then
 		# If zypper exists, use it
-		zypper --no-refresh lu --best-effort | grep 'v |' | wc -l > $mycache &
+		zypper --no-refresh lu --best-effort | grep -c 'v |' > $mycache &
 	elif which yum >/dev/null; then
 		# If yum exists, use it
 		# TODO: We need a better way of counting updates available from a RH expert
