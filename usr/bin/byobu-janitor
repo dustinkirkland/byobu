@@ -68,8 +68,9 @@ if [ -h "$PROFILE" ]; then
 			# Set default colors
 			BG=W
 			FG=k
-			color=$(ls -l "$PROFILE" | sed "s/^.*\///")
-			case $color in
+			color=$(ls -l "$PROFILE")
+			color=${color##*/}
+			case "$color" in
 				black|dark)   BG=k; FG=W;;
 				dark_blue)    BG=b; FG=W;;
 				dark_cyan)    BG=c; FG=W;;
