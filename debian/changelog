@@ -1,11 +1,11 @@
 byobu (2.81) unreleased; urgency=low
 
-  Save some forks:
-  * usr/bin/byobu-status
-  * usr/lib/byobu/custom
-  * usr/lib/byobu/release
-  * usr/lib/services
-  * usr/bin/byobu-status-detail
+  * Save some forks:
+    - usr/bin/byobu-status
+    - usr/lib/byobu/custom
+    - usr/lib/byobu/release
+    - usr/lib/services
+    - usr/bin/byobu-status-detail
   * usr/bin/byobu-config, usr/share/doc/byobu/help.txt: improve help
     text, per feedback from Turnkey Linux users
 
