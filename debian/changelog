@@ -1,4 +1,4 @@
-byobu (2.81-0ubuntu1) maverick; urgency=low
+byobu (2.81) unreleased; urgency=low
 
   * Save some forks:
     - usr/bin/byobu-status
@@ -10,6 +10,7 @@ byobu (2.81-0ubuntu1) maverick; urgency=low
     - usr/bin/byobu-launch, usr/bin/byobu-launcher-install,
       usr/bin/byobu-launcher-uninstall
     - usr/bin/byobu-launcher
+    - usr/bin/byobu
 
   * usr/bin/byobu-config, usr/share/doc/byobu/help.txt: improve help
     text, per feedback from Turnkey Linux users
