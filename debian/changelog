@@ -16,11 +16,11 @@ byobu (2.81) unreleased; urgency=low
     - usr/bin/byobu
     - usr/bin/byobu-export
     - usr/bin/byobu-janitor
-
   * usr/bin/byobu-status: save a conditional
-
   * usr/bin/byobu-config, usr/share/doc/byobu/help.txt: improve help
     text, per feedback from Turnkey Linux users
+  * debian/release,sh, debian/release-build.sh: drop, no longer needed,
+    now in lp:~kirkland/+junk/bin
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 16 Jun 2010 12:46:29 -0500
 
