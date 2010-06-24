@@ -6,6 +6,7 @@ byobu (2.81) unreleased; urgency=low
     - usr/lib/byobu/ip_address
     - usr/lib/byobu/release
     - usr/lib/services
+    - usr/lib/updates_available
     - usr/bin/byobu-status-detail
     - usr/bin/byobu-reconnect-sockets
     - usr/bin/byobu-launch, usr/bin/byobu-launcher-install,
