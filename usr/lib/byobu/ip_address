@@ -21,7 +21,7 @@ PKG="byobu"
 color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" ]; then
-	LC_ALL=C /sbin/ifconfig | grep "inet addr" | sed -e 's/^\s*//' -e 's/\s*$//'
+	/sbin/ifconfig
 	exit 0
 fi
 
@@ -36,6 +36,8 @@ else
 	interface=`tail -n1 /proc/net/route  | awk '{print $1}'`
 fi
 
-ipaddr=`LC_ALL=C /sbin/ifconfig "$interface" | grep "inet addr:" | sed -e "s/^.*inet addr://" -e "s/ .*$//"`
+ipaddr=$(LC_ALL=C /sbin/ifconfig "$interface")
+ipaddr=${ipaddr#* inet addr:}
+ipaddr=${ipaddr%% *}
 
 printf "%s$(color bold2)%s$(color -)" "$space" "$ipaddr"
