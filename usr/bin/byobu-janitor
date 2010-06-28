@@ -60,10 +60,6 @@ fi
 # Affects: Symlinks pointing to color profiles
 if [ -h "$PROFILE" ]; then
 	case "$(stat $PROFILE)" in
-		*File:*-\>*/usr/share/byobu/profiles/common)
-			# All good, nothing to do
-			true
-		;;
 		*File:*-\>*/usr/share/byobu/profiles/*)
 			# Set default colors
 			BG=W
@@ -71,6 +67,7 @@ if [ -h "$PROFILE" ]; then
 			color=$(ls -l "$PROFILE")
 			color=${color##*/}
 			case "$color" in
+				common)       BG=;  FG=;;
 				black|dark)   BG=k; FG=W;;
 				dark_blue)    BG=b; FG=W;;
 				dark_cyan)    BG=c; FG=W;;
@@ -87,8 +84,10 @@ if [ -h "$PROFILE" ]; then
 				light_yellow) BG=Y; FG=k;;
 				*)            BG=W; FG=k;;
 			esac
-			rm -f "$PROFILE" 2>/dev/null
-			byobu-select-profile -b $BG -f $FG >/dev/null 2>&1
+			if [ -n "$BG" ] && [ -n "$FG" ]; then
+				rm -f "$PROFILE" 2>/dev/null
+				byobu-select-profile -b $BG -f $FG >/dev/null 2>&1
+			fi
 		;;
 	esac
 fi
