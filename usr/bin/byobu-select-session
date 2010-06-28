@@ -20,12 +20,13 @@
 
 import commands, os, sys
 
+PKG = "byobu"
 SHELL = os.getenv("SHELL", "/bin/bash")
 sessions = []
 choice = ""
 sessions.append(0)
 i = 0
-output = commands.getoutput('screen -ls | sed "s/\s\+/ /g" | grep "^\s"')
+output = commands.getoutput('screen -ls "' + PKG + '" | sed "s/\s\+/ /g" | grep "^\s"')
 if output:
 	for s in output.split("\n"):
 		items = s.split(" ")
