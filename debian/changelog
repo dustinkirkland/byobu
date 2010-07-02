@@ -1,4 +1,4 @@
-byobu (2.81) unreleased; urgency=low
+byobu (2.81-0ubuntu1) maverick; urgency=low
 
   * Save some forks:
     - usr/bin/byobu-status
@@ -27,7 +27,7 @@ byobu (2.81) unreleased; urgency=low
     sessions, LP: #599334
   * uploading to Maverick, LP: #599876
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 16 Jun 2010 12:46:29 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 02 Jul 2010 10:02:10 -0500
 
 byobu (2.80-0ubuntu1) maverick; urgency=low
 
