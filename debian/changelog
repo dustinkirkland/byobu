@@ -25,6 +25,7 @@ byobu (2.81) unreleased; urgency=low
     detection and correction
   * byobu, byobu-select-session: name new byobu sessions, only select byobu
     sessions, LP: #599334
+  * uploading to Maverick, LP: #599876
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 16 Jun 2010 12:46:29 -0500
 
