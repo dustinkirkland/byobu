@@ -1,3 +1,9 @@
+byobu (2.83) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jul 2010 11:36:03 -0400
+
 byobu (2.82-0ubuntu1) maverick; urgency=low
 
   * usr/bin/byobu-select-session:
