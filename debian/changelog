@@ -3,6 +3,7 @@ byobu (2.82) unreleased; urgency=low
   * usr/bin/byobu-select-session:
     - save a few forks, use regexes for screen -ls processing
     - fix select-session code, LP: #602750
+    - handle ctrl-c bail-out of select-session, LP: #602753
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 02 Jul 2010 10:02:18 -0500
 
