@@ -18,27 +18,30 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import commands, os, sys
+import commands, os, re, sys
 
 PKG = "byobu"
 SHELL = os.getenv("SHELL", "/bin/bash")
-sessions = []
 choice = ""
-sessions.append(0)
+sessions = []
+text = []
 i = 0
-output = commands.getoutput('screen -ls "' + PKG + '" | sed "s/\s\+/ /g" | grep "^\s"')
+output = commands.getoutput('screen -ls ' + PKG)
 if output:
 	for s in output.split("\n"):
-		items = s.split(" ")
-		sessions.append(items[1])
-		i += 1
+		s = re.sub(r'\s+', ' ', s)
+		if s.find(" ") == 0 and len(s) > 1:
+			text.append(s)
+			items = s.split(" ")
+			sessions.append(items[1])
+			i += 1
 
 if i > 1:
 	sys.stdout.write("\nByobu sessions...\n\n")
 	tries = 0
 	while tries < 3:
 		i = 1
-		for s in output.split("\n"):
+		for s in text:
 			sys.stdout.write("  %d. %s\n" % (i, s))
 			i += 1
 		sys.stdout.write("  %d.  Create a new session\n" % i)
@@ -64,8 +67,8 @@ if choice:
 		# Create a new session
 		os.execv("/usr/bin/byobu", ["", SHELL])
 	else:
-	 	# Attach to the chosen session
-		os.execv("/usr/bin/byobu", ["", "-AOxRR", sessions[choice]])
-else:
-	# No valid selection, default to the youngest session
-	os.execv("/usr/bin/byobu", ["", "-AOxRR"])
+	 	# Attach to the chosen session; must use the 'screen' binary
+		os.execv("/usr/bin/screen", ["", "-AOxRR", sessions[choice-1]])
+
+# No valid selection, default to the youngest session, create if necessary
+os.execv("/usr/bin/byobu", ["", "-AOxRR"])
