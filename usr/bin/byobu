@@ -65,12 +65,17 @@ if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ]; then
 fi
 
 PROFILE="-c /usr/share/$PKG/profiles/byoburc"
+NAME="-S $PKG"
+# Zero out $NAME if user has specified a -S
+for i in $@; do
+	case $i in -S) NAME= ;; esac
+done
 # Now let's execute screen!
 if [ "$#" = "0" ]; then
 	out=$(screen -wipe 2>/dev/null) || true
 	if [ "$CUSTOM_WINDOW_SET" = "1" ]; then
 		# Start new custom window set session
-		exec screen $SCREEN_TERM -S $PKG $PROFILE
+		exec screen $SCREEN_TERM $NAME $PROFILE
 	else
 		case "$out" in
 			*\(*\)*)
@@ -79,11 +84,11 @@ if [ "$#" = "0" ]; then
 			;;
 			*)
 				# Start new default session
-				exec screen $SCREEN_TERM -S $PKG $PROFILE $DEFAULT_WINDOW
+				exec screen $SCREEN_TERM $NAME $PROFILE $DEFAULT_WINDOW
 			;;
 		esac
 	fi
 else
 	# Launch with command line args
-	exec screen $SCREEN_TERM -S $PKG $PROFILE "$@"
+	exec screen $SCREEN_TERM $NAME $PROFILE "$@"
 fi

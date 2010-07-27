@@ -1,6 +1,6 @@
 byobu (2.83) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu: allow users to specify their own -S, LP: #610134
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jul 2010 11:36:03 -0400
 
