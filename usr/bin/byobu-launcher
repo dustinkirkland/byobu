@@ -17,6 +17,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+[ -z "$BYOBU_PREFIX" ] && BYOBU_PREFIX="/usr"
+
 if [ ! -e "$HOME/.byobu/disable-autolaunch" ]; then
 	case "$TERM" in
 		*screen*)
@@ -38,14 +40,14 @@ if [ ! -e "$HOME/.byobu/disable-autolaunch" ]; then
 									false
 								;;
 								*)
-									exec /usr/bin/byobu "$@"
+									exec $BYOBU_PREFIX/bin/byobu "$@"
 								;;
 							esac
 						else
-							exec /usr/bin/byobu "$@"
+							exec $BYOBU_PREFIX/bin/byobu "$@"
 						fi
 					else
-						exec /usr/bin/byobu "$@"
+						exec $BYOBU_PREFIX/bin/byobu "$@"
 					fi
 				;;
 				*)
@@ -54,7 +56,7 @@ if [ ! -e "$HOME/.byobu/disable-autolaunch" ]; then
 			esac
 		;;
 		*)
-			exec /usr/bin/byobu "$@"
+			exec $BYOBU_PREFIX/bin/byobu "$@"
 		;;
 	esac
 fi

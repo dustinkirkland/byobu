@@ -18,13 +18,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -z "$BYOBU_PREFIX" ] && BYOBU_PREFIX="/usr"
 
 find_script () {
 	# Allow for local status scripts
 	if [ -x "$HOME/.$PKG/bin/$1" ]; then
 		echo "$HOME/.$PKG/bin/$1"
-	elif [ -x "/usr/lib/$PKG/$1" ]; then
-		echo "/usr/lib/$PKG/$1"
+	elif [ -x "$BYOBU_PREFIX/lib/$PKG/$1" ]; then
+		echo "$BYOBU_PREFIX/lib/$PKG/$1"
 	else
 		echo "/dev/null"
 	fi
@@ -65,7 +66,7 @@ case "$P" in
 			VER=$(set -- $(dpkg-query --show $PKG); echo "$2")
 		fi
 		printf "$PKG-$VER Detailed Status Navigation\n  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
-		for i in "/usr/lib/$PKG"/* "$HOME/.$PKG/bin"/*; do
+		for i in "$BYOBU_PREFIX/lib/$PKG"/* "$HOME/.$PKG/bin"/*; do
 			i=${i##*/}
 			[ "$i" = "menu" ] && continue
 			script=`find_script $i`

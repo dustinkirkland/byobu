@@ -22,6 +22,10 @@ import commands, os, re, sys
 
 PKG = "byobu"
 SHELL = os.getenv("SHELL", "/bin/bash")
+if os.getenv("BYOBU_PREFIX"):
+	PREFIX = os.getenv("BYOBU_PREFIX")
+else:
+	PREFIX = "/usr"
 choice = ""
 sessions = []
 text = []
@@ -68,10 +72,10 @@ if i > 1:
 if choice:
 	if choice == i-1:
 		# Create a new session
-		os.execv("/usr/bin/byobu", ["", SHELL])
+		os.execv(PREFIX+"/bin/byobu", ["", SHELL])
 	else:
 	 	# Attach to the chosen session; must use the 'screen' binary
-		os.execv("/usr/bin/screen", ["", "-AOxRR", sessions[choice-1]])
+		os.execv(PREFIX+"/bin/screen", ["", "-AOxRR", sessions[choice-1]])
 
 # No valid selection, default to the youngest session, create if necessary
-os.execv("/usr/bin/byobu", ["", "-AOxRR"])
+os.execv(PREFIX+"/bin/byobu", ["", "-AOxRR"])

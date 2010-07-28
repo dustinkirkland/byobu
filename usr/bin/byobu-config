@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/python
 #
 #    byobu-config
 #    Copyright (C) 2008 Canonical Ltd.
@@ -28,11 +28,15 @@ from snack import *
 
 HOME=os.getenv("HOME")
 USER=os.getenv("USER")
+if os.getenv("BYOBU_PREFIX"):
+    PREFIX = os.getenv("BYOBU_PREFIX")
+else:
+    PREFIX = "/usr"
 PKG="byobu"
-SHARE='/usr/share/'+PKG
+SHARE=PREFIX+'/share/'+PKG
 if not os.path.exists(SHARE):
     SHARE = "%s/.%s/%s" % (HOME, PKG, SHARE)
-DOC='/usr/share/doc/'+PKG
+DOC=PREFIX+'/share/doc/'+PKG
 if not os.path.exists(DOC):
     DOC = "%s/.%s/%s" % (HOME, PKG, DOC)
 DEF_ESC="A"
