@@ -3,6 +3,7 @@ SUBDIRS = usr/share/applications \
 	usr/share/byobu/pixmaps \
 	usr/share/byobu/profiles \
 	usr/share/byobu/tests \
+	usr/share/byobu/windows \
 	usr/share/doc/byobu \
 	usr/lib/byobu \
 	usr/share/man/man1 \

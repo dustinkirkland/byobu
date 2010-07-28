@@ -21,6 +21,7 @@ AC_OUTPUT(Makefile \
 	usr/share/byobu/pixmaps/Makefile \
 	usr/share/byobu/profiles/Makefile \
 	usr/share/byobu/tests/Makefile \
+	usr/share/byobu/windows/Makefile \
 	usr/share/doc/byobu/Makefile \
 	usr/lib/byobu/Makefile \
 	usr/share/man/man1/Makefile usr/bin/Makefile)
