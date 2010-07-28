@@ -10,8 +10,8 @@ VER=`head -n 1 debian/changelog | sed 's/^.*(//' | sed 's/).*//' | sed 's/-.*//'
 install-po: update-pot
 	for po in po/*.po ; do \
 		lang=$${po#po/}; lang=$${lang%.po}; \
-		mkdir -p usr/share/locale/$${lang}/LC_MESSAGES/; \
-		msgfmt $${po} -o usr/share/locale/$${lang}/LC_MESSAGES/${PKG}.mo ; \
+		mkdir -p debian/tmp/usr/share/locale/$${lang}/LC_MESSAGES/; \
+		msgfmt $${po} -o debian/tmp/usr/share/locale/$${lang}/LC_MESSAGES/${PKG}.mo ; \
 	done
 
 update-pot:
@@ -22,12 +22,21 @@ update-pot:
 		msgmerge $${po} po/${PKG}.pot -o $${po} ; \
 	done
 
-prebuild:
+prebuild: clean
+	dh_testdir
+	aclocal
+	automake --add-missing
+	autoconf
+	./configure --prefix=/usr
 
-build:
+build: prebuild
+	dh_testdir
+	$(MAKE)
 
 clean:
+	dh_testdir
 	dh_clean
+	[ ! -f Makefile ] || $(MAKE) distclean
 	for po in po/*.po ; do \
 		lang=$${po#po/}; lang=$${lang%.po}; \
 		rm -f po/locale/$${lang}/LC_MESSAGES/${PKG}.mo ; \
@@ -36,17 +45,15 @@ clean:
 install: build install-po
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	$(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
 	dh_link usr/share/byobu/keybindings/f-keys usr/share/byobu/keybindings/common
 	dh_link usr/bin/shell usr/bin/motd+shell
-	dh_install -X.bzr
-
-# Everything else is handled by dh_install
 
 # Build architecture-independent files here.
 binary-indep: build install
 	dh_testdir -i
 	dh_testroot -i
+	dh_install -X.bzr --fail-missing --sourcedir=debian/tmp -i
 	dh_installdocs -X.bzr -i
 	dh_installman -i
 	dh_installchangelogs -i

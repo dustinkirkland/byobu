@@ -22,6 +22,8 @@ byobu (3.0) unreleased; urgency=low
       Unix/Linux distro) to $(./configure && make && make install) byobu!
       LP: #609851, #608995, #503554
     - I think this is a significant enough milestone to bump version to 3.0
+  * install, manpages, rules: update package build/install procedures to
+    use configure && make && make install
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jul 2010 11:36:03 -0400
 

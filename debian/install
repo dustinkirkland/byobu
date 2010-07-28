@@ -1,4 +1,5 @@
-etc/*
-usr/*
-debian/source_byobu.py usr/share/apport/package-hooks
-debian/lintian/byobu usr/share/lintian/overrides
+/usr
+../../etc/byobu/socketdir etc/byobu/
+../../etc/byobu/statusrc etc/byobu/
+../../debian/source_byobu.py usr/share/apport/package-hooks
+../../debian/lintian/byobu usr/share/lintian/overrides
