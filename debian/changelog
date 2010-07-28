@@ -25,6 +25,7 @@ byobu (3.0) unreleased; urgency=low
   * install, manpages, rules: update package build/install procedures to
     use configure && make && make install
   * debian/control: depend on automake, autoconf for new build
+  * AUTHORS, README: update email address and install instructions
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jul 2010 11:36:03 -0400
 

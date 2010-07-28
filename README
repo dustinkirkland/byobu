@@ -1,11 +1,31 @@
 For more information about this package, please see:
  * https://launchpad.net/byobu
 
-If byobu is not packaged for your Linux or Unix OS, or if you do not have
-administrative privileges in order to install byobu, you may be able to
-simply download and extract:
- * http://people.ubuntu.com/~kirkland/byobu.tar.gz
-in your home directory, and then run 'screen'.
-Note that this will overwrite your ~/.screenrc.
+If Byobu is not packaged for your Linux or UNIX OS, or if you do not have
+administrative privileges in order to install Byobu, you may be able to
+install locally by:
+
+ 1) Download the latest version (>= 3.0) from:
+    https://launchpad.net/byobu/+download
+ 2) Extract:
+    tar zxvf byobu*.tar.gz
+ 3) Configure:
+    cd byobu*
+    ./configure --prefix="$HOME/byobu"
+ 4) Build:
+    make
+ 5) Install:
+    make install
+ 6) Set up two environment variables:
+    echo "export BYOBU_PREFIX=$HOME/byobu" >> $HOME/.bashrc
+    echo "export PATH=$PATH:$BYOBU_PREFIX/bin" >> $HOME/.bashrc
+    . $HOME/.bashrc
+ 7) Run:
+    byobu
+
+Note that you will need to have two dependencies installed:
+ * screen
+ * python-newt (if you want to use Byobu's configuration utility)
 
 Dustin Kirkland <dustin.kirkland@gmail.com>
+2010-07-28
