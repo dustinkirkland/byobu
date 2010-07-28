@@ -24,6 +24,7 @@ update-pot:
 
 prebuild: clean
 	dh_testdir
+	cp debian/changelog ChangeLog
 	aclocal
 	automake --add-missing
 	autoconf
@@ -37,6 +38,7 @@ clean:
 	dh_testdir
 	dh_clean
 	[ ! -f Makefile ] || $(MAKE) distclean
+	rm -f ChangeLog
 	for po in po/*.po ; do \
 		lang=$${po#po/}; lang=$${lang%.po}; \
 		rm -f po/locale/$${lang}/LC_MESSAGES/${PKG}.mo ; \
