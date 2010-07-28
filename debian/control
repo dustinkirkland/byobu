@@ -3,7 +3,7 @@ Section: misc
 Priority: optional
 Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 Standards-Version: 3.8.3
-Build-Depends: debhelper (>= 6), gettext-base
+Build-Depends: debhelper (>= 6), gettext-base, automake, autoconf
 Homepage: http://launchpad.net/byobu
 Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/byobu/trunk
 
