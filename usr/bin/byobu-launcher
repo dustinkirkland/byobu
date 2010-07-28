@@ -17,7 +17,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-[ -z "$BYOBU_PREFIX" ] && BYOBU_PREFIX="/usr"
+[ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
+export BYOBU_PREFIX
 
 if [ ! -e "$HOME/.byobu/disable-autolaunch" ]; then
 	case "$TERM" in

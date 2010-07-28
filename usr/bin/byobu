@@ -19,7 +19,14 @@
 
 PKG="byobu"
 VERSION=2.83
-[ -z "$BYOBU_PREFIX" ] && BYOBU_PREFIX="/usr"
+[ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
+export BYOBU_PREFIX
+
+if [ ! -x "$BYOBU_PREFIX/bin/$PKG" ]; then
+	echo "ERROR: Cannot find $BYOBU_PREFIX/bin/$PKG" 2>&1
+	echo "ERROR: If you have installed it elsewhere, export BYOBU_PREFIX in your shell" 2>&1
+	exit 1
+fi
 
 # Add a version argument for debugging purposes
 if [ "$#" = "1" ] && [ "$1" = "-v" ]; then
