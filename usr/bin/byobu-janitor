@@ -94,7 +94,16 @@ if [ -h "$PROFILE" ]; then
 fi
 
 [ -s "$HOME/.$PKG/keybindings" ] || echo "source $BYOBU_PREFIX/share/$PKG/keybindings/common" > "$HOME/.$PKG/keybindings"
-[ -r "$HOME/.$PKG/status" ] || $(grep -A 999999 BEGIN_CUT_HERE /etc/$PKG/statusrc | grep -B 999999 END_CUT_HERE | grep -v CUT > "$HOME/.$PKG/status")
+if [ ! -r "$HOME/.$PKG/status" ]; then
+	if [ -r /etc/$PKG/statusrc ]; then
+		skel=/etc/$PKG/statusrc
+	elif [ -r "$BYOBU_PREFIX/share/$PKG/profiles/statusrc" ]; then
+		skel="$BYOBU_PREFIX/share/$PKG/profiles/statusrc"
+	else
+		skel=/dev/null
+	fi
+	grep -A 999999 BEGIN_CUT_HERE $skel | grep -B 999999 END_CUT_HERE | grep -v CUT > "$HOME/.$PKG/status"
+fi
 [ -r "$HOME/.$PKG/windows" ] || touch "$HOME/.$PKG/windows"
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
 

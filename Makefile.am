@@ -1,5 +1,7 @@
-SUBDIRS = usr/share/applications \
+SUBDIRS = etc/byobu \
+	usr/share/applications \
 	usr/share/byobu/ec2 \
+	usr/share/byobu/keybindings \
 	usr/share/byobu/pixmaps \
 	usr/share/byobu/profiles \
 	usr/share/byobu/tests \

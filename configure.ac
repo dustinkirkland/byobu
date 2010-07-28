@@ -16,8 +16,10 @@ AM_INIT_AUTOMAKE(byobu, 2.83)
 # Checks for library functions.
 
 AC_OUTPUT(Makefile \
+	etc/byobu/Makefile \
 	usr/share/applications/Makefile \
 	usr/share/byobu/ec2/Makefile \
+	usr/share/byobu/keybindings/Makefile \
 	usr/share/byobu/pixmaps/Makefile \
 	usr/share/byobu/profiles/Makefile \
 	usr/share/byobu/tests/Makefile \
