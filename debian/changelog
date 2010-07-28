@@ -1,6 +1,27 @@
-byobu (2.83) unreleased; urgency=low
+byobu (3.0) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu: allow users to specify their own -S, LP: #610134
+  * Makefile.am, configure.ac, etc/byobu/Makefile.am, usr/bin/Makefile.am,
+    usr/bin/byobu, usr/bin/byobu-config, usr/bin/byobu-janitor,
+    usr/bin/byobu-launcher, usr/bin/byobu-select-profile,
+    usr/bin/byobu-select-session, usr/bin/byobu-status,
+    usr/lib/byobu/Makefile.am, usr/lib/byobu/ec2_cost,
+    usr/share/applications/Makefile.am, usr/share/byobu/ec2/Makefile.am,
+    usr/share/byobu/keybindings/Makefile.am,
+    usr/share/byobu/keybindings/f-keys,
+    usr/share/byobu/keybindings/screen-escape-keys,
+    usr/share/byobu/pixmaps/Makefile.am,
+    usr/share/byobu/profiles/Makefile.am,
+    usr/share/byobu/tests/Makefile.am,
+    usr/share/byobu/tests/byobu-time-notifications,
+    usr/share/byobu/windows/Makefile.am, usr/share/doc/byobu/Makefile.am,
+    usr/share/man/man1/Makefile.am:
+    - Positively massive changeset, enabling users of Unix/Linux distros
+      for which Byobu is not packaged (as well as non-root users of any
+      Unix/Linux distro) to $(./configure && make && make install) byobu!
+      LP: #609851, #608995, #503554
+    - I think this is a significant enough milestone to bump version to 3.0
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jul 2010 11:36:03 -0400
 

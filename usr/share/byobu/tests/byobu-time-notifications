@@ -21,6 +21,8 @@
 
 PKG=byobu
 RUNS=100
+[ -z "$BYOBU_PREFIX" ] && BYOBU_PREFIX="/usr"
+export BYOBU_PREFIX
 
 loop() {
 	for j in $(seq 1 $RUNS); do

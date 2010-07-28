@@ -20,6 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
 [ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir" || SOCKETDIR="/var/run/screen"
 RUN="$SOCKETDIR/S-$USER"
 FLAG="$RUN/$PKG.reload-required"
@@ -55,12 +56,12 @@ fi
 # Seed the configuration
 [ -d "$HOME/.$PKG" ] || mkdir -p "$HOME/.$PKG"
 [ -r "$HOME/.$PKG/color" ] || printf "BACKGROUND=k\nFOREGROUND=w\nMONOCHROME=0" > "$HOME/.$PKG/color"
-[ -r "$PROFILE" ] || ln -sf /usr/share/$PKG/profiles/common "$PROFILE"
+[ -r "$PROFILE" ] || ln -sf $BYOBU_PREFIX/share/$PKG/profiles/common "$PROFILE"
 
 # Affects: Symlinks pointing to color profiles
 if [ -h "$PROFILE" ]; then
 	case "$(stat $PROFILE)" in
-		*File:*-\>*/usr/share/byobu/profiles/*)
+		*File:*-\>*$BYOBU_PREFIX/share/byobu/profiles/*)
 			# Set default colors
 			BG=W
 			FG=k
@@ -92,8 +93,17 @@ if [ -h "$PROFILE" ]; then
 	esac
 fi
 
-[ -s "$HOME/.$PKG/keybindings" ] || echo "source /usr/share/$PKG/keybindings/common" > "$HOME/.$PKG/keybindings"
-[ -r "$HOME/.$PKG/status" ] || $(grep -A 999999 BEGIN_CUT_HERE /etc/$PKG/statusrc | grep -B 999999 END_CUT_HERE | grep -v CUT > "$HOME/.$PKG/status")
+[ -s "$HOME/.$PKG/keybindings" ] || echo "source $BYOBU_PREFIX/share/$PKG/keybindings/common" > "$HOME/.$PKG/keybindings"
+if [ ! -r "$HOME/.$PKG/status" ]; then
+	if [ -r /etc/$PKG/statusrc ]; then
+		skel=/etc/$PKG/statusrc
+	elif [ -r "$BYOBU_PREFIX/share/$PKG/profiles/statusrc" ]; then
+		skel="$BYOBU_PREFIX/share/$PKG/profiles/statusrc"
+	else
+		skel=/dev/null
+	fi
+	grep -A 999999 BEGIN_CUT_HERE $skel | grep -B 999999 END_CUT_HERE | grep -v CUT > "$HOME/.$PKG/status"
+fi
 [ -r "$HOME/.$PKG/windows" ] || touch "$HOME/.$PKG/windows"
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
 

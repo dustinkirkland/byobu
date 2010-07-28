@@ -41,5 +41,5 @@ register s "^a[g G$>^h"					# Goes with ^a~ definition
 bind ~ eval 'process s' 'exec sed -i "/./,/^$/!d" /var/run/screen/S-$USER/byobu-exchange' 'echo "See: /var/run/screen/S-$USER/byobu-exchange"' # ctrl-a ~ | write the buffer to file
 
 # toggle f-key keybindings off
-register d "^a:source /usr/share/byobu/keybindings/screen-escape-keys^M"
+register d "^a:source $BYOBU_PREFIX/share/byobu/keybindings/screen-escape-keys^M"
 bind ! eval 'process d' 'backtick 111 9999999 9999999 byobu-status menu --disable-f-keys'
