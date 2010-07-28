@@ -1,5 +1,6 @@
 SUBDIRS = usr/share/applications \
 	usr/share/byobu/ec2 \
+	usr/share/byobu/pixmaps \
 	usr/share/byobu/profiles \
 	usr/share/doc/byobu \
 	usr/lib/byobu \

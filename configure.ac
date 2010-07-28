@@ -18,6 +18,7 @@ AM_INIT_AUTOMAKE(byobu, 2.83)
 AC_OUTPUT(Makefile \
 	usr/share/applications/Makefile \
 	usr/share/byobu/ec2/Makefile \
+	usr/share/byobu/pixmaps/Makefile \
 	usr/share/byobu/profiles/Makefile \
 	usr/share/doc/byobu/Makefile \
 	usr/lib/byobu/Makefile \
