@@ -88,10 +88,10 @@ User can also launch Byobu with unique window sets.  Users can store these as \f
 
 For example:
   $ cat ~/.byobu/windows.ssh_sessions
-  screen -t localhost bash
-  screen -t aussie ssh root@aussie
-  screen -t beagle ssh root@beagle
-  screen -t collie ssh root@collie
+  screen \-t localhost bash
+  screen \-t aussie ssh root@aussie
+  screen \-t beagle ssh root@beagle
+  screen \-t collie ssh root@collie
   $ BYOBU_WINDOWS=ssh_sessions byobu
 
 .SH UNITS OF MEASURE

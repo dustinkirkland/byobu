@@ -32,6 +32,7 @@ byobu (3.0) unreleased; urgency=low
   * AUTHORS, README: update email address and install instructions
   * debian/rules, usr/bin/byobu-export, usr/share/man/man1/byobu-export.1:
     - deprecate the byobu-export utility
+  * usr/share/man/man1/byobu.1: fix lintian warning about hyphen
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jul 2010 11:36:03 -0400
 
