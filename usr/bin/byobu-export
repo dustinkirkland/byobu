@@ -17,116 +17,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-set -e
+gettext "
+The byobu-export utility is now deprecated.
 
-PKG="byobu"
-DIR=`mktemp -t -d $PKG.XXXXXXXX` || error "Could not create a temporary directory"
-[ -d "$TMP" ] || TMP=/tmp
+To install byobu on a system for which byobu is not packaged, or
+where you are not the root user, simply:
+ * Download the latest release (>= 3.0) from:
+    https://launchpad.net/byobu/+download
+ * And follow the instructions in the README
 
-# Make sure we clean up $DIR if we exit for any reason
-trap "rm -rf "$DIR" "$file" 2>/dev/null || true" EXIT HUP INT QUIT TERM
-
-usage() {
-	echo
-	echo "Usage:"
-	echo " $0 [-f TARGET.tar.gz]"
-	echo
-	echo "If TARGET.tar.gz is unspecified, $TMP/$PKG.tar.gz will be used."
-	echo
-	exit 1
-}
-
-error() {
-	echo "ERROR: $1" 1>&2
-	[ -f "$file" ] && rm -f "$file"
-	exit 1
-}
-
-# Handle command line parameters
-file=
-while [ $# -gt 1 ]; do
-	case "$1" in
-		-f)
-			file="$2"
-			shift 2
-		;;
-		*)
-			usage
-		;;
-	esac
-done
-
-# Handle filename
-[ $# -eq 1 ] && file="$1"
-if [ -z "$file" ]; then
-	file="$TMP/$PKG.tar.gz"
-fi
-case "$file" in
-	*.tar.gz)
-		true
-	;;
-	*)
-		error "Target file must be a '.tar.gz' archive"
-	;;
-esac
-if [ -e "$file" ]; then
-	echo `gettext "File exists"` " [$file]"
-	echo -n "`gettext 'Remove file? [y/N] '`"
-	remove=`head -n1`
-	if [ "$remove" = "Y" -o "$remove" = "y" ]; then
-		rm -f "$file"
-	else
-		exit 1
-	fi
-fi
-
-# Create workspace
-for i in etc usr/bin usr/lib usr/share/doc; do
-	mkdir -p "$DIR/.$PKG/$i"
-done
-dpkg-query --show --showformat '${Package} ${Version}\n' $PKG > "$DIR/.$PKG/version" 2>/dev/null || true
-echo "http://launchpad.net/$PKG" >> "$DIR/.$PKG/version"
-printf "FOREGROUND=w\nBACKGROUND=k\nMONOCHROME=0" > "$DIR/.$PKG/color"
-
-# Copy necessary scripts
-cp -a /etc/$PKG "$DIR/.$PKG/etc"
-cp -a /usr/share/$PKG "$DIR/.$PKG/usr/share"
-cp -a /usr/share/doc/$PKG "$DIR/.$PKG/usr/share/doc"
-cp -a /usr/lib/$PKG "$DIR/.$PKG/usr/lib"
-cp -a /usr/bin/$PKG-* "$DIR/.$PKG/usr/bin"
-cp /etc/$PKG/statusrc "$DIR/.$PKG/status"
-echo "source \$HOME/.$PKG/profile" > "$DIR/.screenrc"
-echo "source \$HOME/.$PKG/usr/share/$PKG/keybindings/common" > "$DIR/.$PKG/keybindings"
-ln -sf usr/share/$PKG/profiles/common "$DIR/.$PKG/profile"
-ln -sf usr/share/$PKG/ec2/rates.us_ca "$DIR/.$PKG/ec2_rates"
-
-# Some gardening; update paths to be $HOME-based
-for i in /usr/bin/$PKG-*; do
-	case "$i" in
-		install)
-			continue
-		;;
-	esac
-	bin=$(basename "$i")
-	sed -i "s:$bin:\$HOME/.$PKG$i:g" $(find $DIR -type f)
-done
-for i in /etc/ /usr/lib/ /usr/share/; do
-	sed -i "s:$i$PKG:\$HOME/.$PKG$i$PKG:g" $(find $DIR -type f)
-	sed -i "s:$i\$PKG:\$HOME/.$PKG$i\$PKG:g" $(find $DIR -type f)
-	sed -i "s:\$HOME/\.$PKG$i\$HOME/\.$PKG$i:\$HOME/.$PKG$i:g" $(find $DIR -type f)
-done
-sed -i "s:\$HOME/\.$PKG\$HOME/\.$PKG:\$HOME/.$PKG:g" $(find $DIR -type f)
-sed -i "s:\$HOME/\.$PKG/usr/bin/\$HOME/\.$PKG/usr/bin/:\$HOME/.$PKG/usr/bin/:g" $(find $DIR -type f)
-
-rm -f $DIR/.$PKG/usr/bin/$PKG-export
-
-# tar up the results
-tar --owner=root --group=root -zcf "$file" -C "$DIR" . || error "Could not create archive"
-
-echo
-echo "Success!"
-echo
-echo "  "`gettext "Archive"` ": [$file]"
-echo
-echo `gettext "Extract the archive in your home directory on the target system."`
-echo
+"
