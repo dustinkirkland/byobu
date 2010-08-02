@@ -34,7 +34,7 @@ byobu (3.0) unreleased; urgency=low
     - deprecate the byobu-export utility
   * usr/share/man/man1/byobu.1: fix lintian warning about hyphen
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Jul 2010 11:36:03 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Aug 2010 18:54:32 -0400
 
 byobu (2.82-0ubuntu1) maverick; urgency=low
 
