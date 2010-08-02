@@ -1,4 +1,4 @@
-byobu (3.0) unreleased; urgency=low
+byobu (3.0-0ubuntu1) maverick; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu: allow users to specify their own -S, LP: #610134
@@ -35,6 +35,7 @@ byobu (3.0) unreleased; urgency=low
   * usr/share/man/man1/byobu.1: fix lintian warning about hyphen
   * usr/share/applications/byobu.desktop: fix lintian warning about encoding
     key
+  * debian/source/format: added
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Aug 2010 18:54:32 -0400
 
