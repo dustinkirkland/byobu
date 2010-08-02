@@ -36,6 +36,7 @@ byobu (3.0-0ubuntu1) maverick; urgency=low
   * usr/share/applications/byobu.desktop: fix lintian warning about encoding
     key
   * debian/source/format: added
+  * configure.ac: fixup BYOBU_PREFIX in the configure, LP: #611157
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Aug 2010 18:54:32 -0400
 

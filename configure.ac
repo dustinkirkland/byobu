@@ -27,3 +27,7 @@ AC_OUTPUT(Makefile \
 	usr/share/doc/byobu/Makefile \
 	usr/lib/byobu/Makefile \
 	usr/share/man/man1/Makefile usr/bin/Makefile)
+
+if [ -n "${prefix}" ] && [ "${prefix}" != "/usr"]; then
+	sed -i "s: && export BYOBU_PREFIX=\"/usr\": && export BYOBU_PREFIX=\"${prefix}\":g" usr/bin/byobu-janitor usr/bin/byobu-launcher usr/bin/byobu-select-profile usr/bin/byobu-status usr/bin/byobu
+fi
