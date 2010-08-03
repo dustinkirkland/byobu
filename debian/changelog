@@ -1,4 +1,4 @@
-byobu (3.0) maverick; urgency=low
+byobu (3.0) unreleased; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu: allow users to specify their own -S, LP: #610134
