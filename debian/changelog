@@ -37,6 +37,8 @@ byobu (3.0) unreleased; urgency=low
     key
   * debian/source/format: added
   * configure.ac: fixup BYOBU_PREFIX in the configure, LP: #611157
+  * rpm/byobu.spec: deprecated; byobu is now in Fedora proper; please use
+    that package if you require RPMs
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Aug 2010 18:54:32 -0400
 
