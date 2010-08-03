@@ -1,3 +1,9 @@
+byobu (3.1) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Aug 2010 22:30:53 -0400
+
 byobu (3.0-0ubuntu1) maverick; urgency=low
 
   [ Dustin Kirkland ]
