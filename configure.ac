@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.65])
-AC_INIT(byobu, 2.83, http://bugs.launchpad.net/byobu)
-AM_INIT_AUTOMAKE(byobu, 2.83)
+AC_INIT(byobu, 3.0, http://bugs.launchpad.net/byobu)
+AM_INIT_AUTOMAKE(byobu, 3.0)
 
 # Checks for programs.
 
