@@ -1,6 +1,7 @@
 byobu (3.1) unreleased; urgency=low
 
-  * UNRELEASED
+  * configure.ac: drop autoconf version dependency to 2.61, so that we
+    can build on Hardy
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Aug 2010 22:30:53 -0400
 
