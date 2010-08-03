@@ -1,10 +1,4 @@
-byobu (3.1) unreleased; urgency=low
-
-  * UNRELEASED
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Aug 2010 20:14:16 -0400
-
-byobu (3.0-0ubuntu1) maverick; urgency=low
+byobu (3.0) maverick; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu: allow users to specify their own -S, LP: #610134
