@@ -16,8 +16,7 @@ install locally by:
     make
  5) Install:
     make install
- 6) Set up two environment variables:
-    echo "export BYOBU_PREFIX=$HOME/byobu" >> $HOME/.bashrc
+ 6) Update your PATH environment variable
     echo "export PATH=$PATH:$BYOBU_PREFIX/bin" >> $HOME/.bashrc
     . $HOME/.bashrc
  7) Run:
