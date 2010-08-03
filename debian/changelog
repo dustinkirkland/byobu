@@ -1,9 +1,9 @@
-byobu (3.1) unreleased; urgency=low
+byobu (3.1-0ubuntu1) maverick; urgency=low
 
   * configure.ac: drop autoconf version dependency to 2.61, so that we
     can build on Hardy
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Aug 2010 22:30:53 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Aug 2010 15:19:16 -0400
 
 byobu (3.0-0ubuntu1) maverick; urgency=low
 
