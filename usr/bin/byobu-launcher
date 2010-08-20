@@ -56,6 +56,10 @@ if [ ! -e "$HOME/.byobu/disable-autolaunch" ]; then
 				;;
 			esac
 		;;
+		dumb)
+			# Dumb terminal, don't launch
+			exit 0
+		;;
 		*)
 			exec $BYOBU_PREFIX/bin/byobu "$@"
 		;;
