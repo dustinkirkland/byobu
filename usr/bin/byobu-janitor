@@ -151,5 +151,11 @@ if grep -qs " $PKG-launcher$" "$HOME"/.profile; then
 	$PKG-launcher-install
 fi
 
+# Affects: Upgrades from <= byobu-2.78 which might have "motd+shell"
+# in their window list; update this to just "shell"
+if grep -qs "motd+shell" "$HOME/.$PKG/windows"; then
+	sed -i "s/motd+shell/shell/g" "$HOME/.$PKG/windows" || true
+fi
+
 # Clean up flag
 rm -f "$FLAG"

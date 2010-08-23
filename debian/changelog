@@ -8,6 +8,8 @@ byobu (3.2) unreleased; urgency=low
   * configure.ac: POSIX sed doesn't include -i option, LP: #619328, #622640
   * usr/bin/byobu-janitor: improve dash replacement in status config,
     LP: #598488
+  * usr/bin/byobu-janitor: fix upgrades where one's window list might have
+    motd+shell, LP: #589715
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Aug 2010 15:19:23 -0400
 
