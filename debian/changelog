@@ -1,9 +1,3 @@
-byobu (3.3) unreleased; urgency=low
-
-  * UNRELEASED
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 Aug 2010 17:34:42 -0400
-
 byobu (3.2-0ubuntu1) maverick; urgency=low
 
   * usr/share/byobu/keybindings/f-keys: resize the screen as part of the
@@ -17,7 +11,7 @@ byobu (3.2-0ubuntu1) maverick; urgency=low
   * usr/bin/byobu-janitor: fix upgrades where one's window list might have
     motd+shell, LP: #589715
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 Aug 2010 17:34:33 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 Aug 2010 17:52:21 -0400
 
 byobu (3.1-0ubuntu1) maverick; urgency=low
 
