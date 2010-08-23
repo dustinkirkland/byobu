@@ -6,6 +6,8 @@ byobu (3.2) unreleased; urgency=low
   * usr/lib/byobu/network, usr/share/man/man1/byobu.1: allow for
     configuration of network traffic in [kM]ps, LP: #578377
   * configure.ac: POSIX sed doesn't include -i option, LP: #619328, #622640
+  * usr/bin/byobu-janitor: improve dash replacement in status config,
+    LP: #598488
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Aug 2010 15:19:23 -0400
 
