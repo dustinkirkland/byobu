@@ -29,5 +29,10 @@ AC_OUTPUT(Makefile \
 	usr/share/man/man1/Makefile usr/bin/Makefile)
 
 if test -n "${prefix}" && test "${prefix}" != "/usr"; then
-	sed -i "s: \&\& export BYOBU_PREFIX=.*$: \&\& export BYOBU_PREFIX=\"${prefix}\":" usr/bin/byobu-janitor usr/bin/byobu-launcher usr/bin/byobu-select-profile usr/bin/byobu-status usr/bin/byobu
+	for i in usr/bin/byobu-*; do
+		# This hackery seems necessary for Mac OSX and Solaris installs
+		sed "s/BYOBU_PREFIX=.*$/BYOBU_PREFIX=\"${prefix}\"/" "$i" > "$i.new"
+		mv -f "$i.new" "$i"
+		chmod 755 "$i"
+	done
 fi
