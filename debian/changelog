@@ -1,4 +1,4 @@
-byobu (3.3) unreleased; urgency=low
+byobu (3.3-0ubuntu1) maverick; urgency=low
 
   * lib/byobu/network, share/man/man1/byobu.1: clean up binary/decimal
     multipliers for network transfer vs. memory/disk capacities, in
@@ -6,7 +6,7 @@ byobu (3.3) unreleased; urgency=low
   * usr/share/man/man1/byobu.1: add a note about non-utf8 locales,
     LP: #613769
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 Aug 2010 17:52:26 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 24 Aug 2010 18:21:09 -0400
 
 byobu (3.2-0ubuntu1) maverick; urgency=low
 
