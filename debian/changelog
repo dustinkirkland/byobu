@@ -1,6 +1,8 @@
 byobu (3.3) unreleased; urgency=low
 
-  * UNRELEASED
+  * lib/byobu/network, share/man/man1/byobu.1: clean up binary/decimal
+    multipliers for network transfer vs. memory/disk capacities, in
+    accordance with industry standards
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 Aug 2010 17:52:26 -0400
 
