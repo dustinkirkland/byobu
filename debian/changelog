@@ -1,3 +1,9 @@
+byobu (3.4) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 24 Aug 2010 18:21:14 -0400
+
 byobu (3.3-0ubuntu1) maverick; urgency=low
 
   * lib/byobu/network, share/man/man1/byobu.1: clean up binary/decimal
