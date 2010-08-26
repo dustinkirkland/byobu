@@ -20,7 +20,8 @@
 ###############################################################################
 
 # F-keys seem to work well in both gnome-terminal and tty consoles
-							# F1  | 'help' in gnome-terminal
+bindkey -k k1 screen -t config 0 byobu-config		# F1  | Configuration (along with F9)
+							#     | since F1 = Help in gnome-terminal
 bindkey -k k2 screen					# F2  | Create new window
 bindkey -k k3 prev					# F3  | Previous Window
 bindkey -k k4 next					# F4  | Next Window
