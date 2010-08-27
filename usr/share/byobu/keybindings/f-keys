@@ -39,7 +39,7 @@ bind $ screen -t status 0 byobu-status-detail 		# ctrl-a $ | show detailed statu
 bind @ screen -t config 0 byobu-config			# ctrl-a @ | Configuration
 bind R process r					# ctrl-a R | Reload profile
 register s "^a[g G$>^h"					# Goes with ^a~ definition
-bind ~ eval 'process s' 'exec sed -i "/./,/^$/!d" /var/run/screen/S-$USER/byobu-exchange' 'echo "See: /var/run/screen/S-$USER/byobu-exchange"' # ctrl-a ~ | write the buffer to file
+bind ~ eval 'process s' 'exec sed -i -e "/./,/^$/!d" /var/run/screen/S-$USER/byobu-exchange' 'echo "See: /var/run/screen/S-$USER/byobu-exchange"' # ctrl-a ~ | write the buffer to file
 
 # toggle f-key keybindings off
 register d "^a:source $BYOBU_PREFIX/share/byobu/keybindings/screen-escape-keys^M"

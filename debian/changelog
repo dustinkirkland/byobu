@@ -3,6 +3,8 @@ byobu (3.4) unreleased; urgency=low
   * usr/share/byobu/keybindings/f-keys: make F1 also point to the menu,
     along with F9; this might help in some tty environments outside of
     gnome-terminal
+  * bin/byobu-janitor, share/byobu/keybindings/f-keys: use sed -e, for
+    Mac OS X compatibility, LP: #625387
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 24 Aug 2010 18:21:14 -0400
 
