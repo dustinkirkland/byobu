@@ -21,7 +21,9 @@ PKG="byobu"
 color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" ]; then
-	/sbin/ifconfig
+	[ -x /sbin/ifconfig ] && /sbin/ifconfig
+	/sbin/ip -4 addr list
+	/sbin/ip -6 addr list
 	exit 0
 fi
 
@@ -33,11 +35,25 @@ fi
 if [ -n "$MONITORED_NETWORK" ]; then
 	interface="$MONITORED_NETWORK"
 else
-	interface=`tail -n1 /proc/net/route  | awk '{print $1}'`
+	case "$IPV6" in
+		1|true|yes) interface=$(grep -v "\Wlo$" /proc/net/ipv6_route | tail -n1 | awk '{print $10}') ;;
+		*) interface=$(tail -n1 /proc/net/route  | awk '{print $1}') ;;
+	esac
 fi
 
-ipaddr=$(LC_ALL=C /sbin/ifconfig "$interface")
-ipaddr=${ipaddr#* inet addr:}
-ipaddr=${ipaddr%% *}
+case "$IPV6" in
+	1|true|yes)
+		ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface")
+		# Print 'None' if we have no global address
+		[ -z "$ipaddr" ] && ipaddr="None"
+		ipaddr=${ipaddr#* inet6 }
+		ipaddr=${ipaddr%%/*}
+	;;
+	*)
+		ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface")
+		ipaddr=${ipaddr#* inet }
+		ipaddr=${ipaddr%%/*}
+	;;
+esac
 
 printf "%s$(color bold2)%s$(color -)" "$space" "$ipaddr"

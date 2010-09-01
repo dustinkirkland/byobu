@@ -5,6 +5,14 @@ byobu (3.4) unreleased; urgency=low
     gnome-terminal
   * bin/byobu-janitor, share/byobu/keybindings/f-keys: use sed -e, for
     Mac OS X compatibility, LP: #625387
+  * lib/byobu/ip_address, share/man/man1/byobu.1:
+    - display both ifconfig and ip output in ip_address detail display
+    - use ip rather than ifconfig to get the ip address, slight performance
+      improvement
+    - support a flag, IPV6=1, in .byobu/status, to allow for showing
+      IPv6 addresses instead of IPv4
+    - thanks to Mark Schouten <mark@prevented.net> for the IPv6 idea and
+      sample code
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 24 Aug 2010 18:21:14 -0400
 
