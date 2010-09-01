@@ -14,6 +14,7 @@ byobu (3.4) unreleased; urgency=low
     - thanks to Mark Schouten <mark@prevented.net> for the IPv6 idea and
       sample code
   * usr/share/man/man1/byobu.1: fix typos
+  * usr/share/applications/byobu.desktop: add gettext domain, LP: #623935
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 24 Aug 2010 18:21:14 -0400
 
