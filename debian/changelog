@@ -1,4 +1,4 @@
-byobu (3.4) unreleased; urgency=low
+byobu (3.4-0ubuntu1) maverick; urgency=low
 
   * usr/share/byobu/keybindings/f-keys: make F1 also point to the menu,
     along with F9; this might help in some tty environments outside of
@@ -16,7 +16,7 @@ byobu (3.4) unreleased; urgency=low
   * usr/share/man/man1/byobu.1: fix typos
   * usr/share/applications/byobu.desktop: add gettext domain, LP: #623935
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 24 Aug 2010 18:21:14 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Sep 2010 13:11:23 -0600
 
 byobu (3.3-0ubuntu1) maverick; urgency=low
 
