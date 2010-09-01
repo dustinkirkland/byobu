@@ -4,7 +4,7 @@ byobu (3.4) unreleased; urgency=low
     along with F9; this might help in some tty environments outside of
     gnome-terminal
   * bin/byobu-janitor, share/byobu/keybindings/f-keys: use sed -e, for
-    Mac OS X compatibility, LP: #625387
+    Mac OS X compatibility, LP: #625387, #623595
   * lib/byobu/ip_address, share/man/man1/byobu.1:
     - display both ifconfig and ip output in ip_address detail display
     - use ip rather than ifconfig to get the ip address, slight performance
