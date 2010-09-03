@@ -1,0 +1,24 @@
+byobu.php
+
+This web application is the output of the Canonical Platform's Ubuntu Server Team's first "Fedex" day.
+
+The goal of this application is to provide a web interface for input to, and output from a running Byobu (GNU Screen) session on an Ubuntu Server.
+
+The motivation is that most smart phones have really crappy SSH/Terminal applications, but have much better web browsers.  Ubuntu system administrators often leave long running processes in detached Byobu sessions, and may want to check them later.  Ideally, they would be able to do this from their smart phone.  A web interface would provide a very convenient way of doing quick checks on running sessions, and perhaps sending some basic commands.
+
+The state of this code as of 2010-09-03 15:10:45 is that it's working well as a proof of concept for the www-data user.  Obviously this needs to be extended to run as normal users for this to be useful.  The devil is in the Apache configuration.
+
+TODO List:
+ * Use Apache's suexec module to allow byobu.php to interface with "real" user's byobu sessions (rather than just www-data)
+ * Use Apache's userdir module to allow users to configure this on/off within their ~/public_html, perhaps by symlinking byobu.php into place (or using a byobu utility to toggle this on/off;  could be an administrator only function)
+ * Use Apache's libapache2-mod-auth-pam to authenticate users with their normal system username/password
+ * Use Apache's ssl to secure the session
+ * Handle ctrl characters (no way yet to pass characters like ESC, CTRL, ALT, etc through the form to the session)
+ * Colorize the byobu status line at the bottom
+ * Support switching between windows in the byobu session (perhaps tabs in the web UI)
+ * Make it ajaxy, real time, and faster, with fewer page loads
+ * Select among one or more open sessions
+
+
+Dustin Kirkland <kirkland@canonical.com>
+2010-09-03 15:10:45
