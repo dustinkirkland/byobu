@@ -7,7 +7,9 @@ byobu (3.5) unreleased; urgency=low
   * usr/lib/byobu/rcs_cost, usr/lib/byobu/ec2_cost: testing crontab
     creation time is not accurate, seems this happens at image creation
     rather than instance instantiation; use /etc/hostname instead; ensure
-    that minimum hours is 1, not 0
+    that minimum hours is 1, not 0; LP: #639855
+  * usr/lib/byobu/network: use bps rather than B/s by default for network
+    traffic, LP: #578377
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Sep 2010 13:11:34 -0600
 
