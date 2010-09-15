@@ -10,6 +10,8 @@ byobu (3.5) unreleased; urgency=low
     that minimum hours is 1, not 0; LP: #639855
   * usr/lib/byobu/network: use bps rather than B/s by default for network
     traffic, LP: #578377
+  * This Maverick release also includes the fix:
+    - usr/share/applications/byobu.desktop: add gettext domain, LP: #623935
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Sep 2010 13:11:34 -0600
 
