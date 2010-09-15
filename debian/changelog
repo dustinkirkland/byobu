@@ -1,4 +1,4 @@
-byobu (3.5) unreleased; urgency=low
+byobu (3.5-0ubuntu1) maverick; urgency=low
 
   [ Jan Klepek ]
   * usr/bin/byobu-status: fix libexec path for Fedora, LP: #630054
@@ -13,7 +13,7 @@ byobu (3.5) unreleased; urgency=low
   * This Maverick release also includes the fix:
     - usr/share/applications/byobu.desktop: add gettext domain, LP: #623935
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Sep 2010 13:11:34 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 15 Sep 2010 13:30:56 -0600
 
 byobu (3.4-0ubuntu1) maverick; urgency=low
 
