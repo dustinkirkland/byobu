@@ -1,6 +1,8 @@
 byobu (3.6) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Ryan Thompson ]
+  * usr/bin/byobu-launcher: return false, if byobu doesn't launch because
+    TERM=dumb, LP: #654608
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 15 Sep 2010 13:31:03 -0600
 
