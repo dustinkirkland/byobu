@@ -1,4 +1,4 @@
-byobu (3.6) unreleased; urgency=low
+byobu (3.6-0ubuntu1) natty; urgency=low
 
   [ Ryan Thompson ]
   * usr/bin/byobu-launcher: return false, if byobu doesn't launch because
@@ -8,7 +8,7 @@ byobu (3.6) unreleased; urgency=low
   * usr/bin/byobu: fix SSH_AUTH_SOCK breakage, define $RUN dir, LP: #664059
   * experimental/byobu.php, experimental/README: delete
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 15 Sep 2010 13:31:03 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:08 -0500
 
 byobu (3.5-0ubuntu1) maverick; urgency=low
 
