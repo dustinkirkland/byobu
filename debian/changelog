@@ -6,6 +6,7 @@ byobu (3.6) unreleased; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu: fix SSH_AUTH_SOCK breakage, define $RUN dir, LP: #664059
+  * experimental/byobu.php, experimental/README: delete
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 15 Sep 2010 13:31:03 -0600
 
