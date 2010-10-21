@@ -21,6 +21,8 @@ PKG="byobu"
 VERSION=3.6
 [ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
 export BYOBU_PREFIX
+[ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir" || SOCKETDIR="/var/run/screen"
+RUN="$SOCKETDIR/S-$USER"
 
 if [ ! -x "$BYOBU_PREFIX/bin/$PKG" ]; then
 	echo "ERROR: Cannot find $BYOBU_PREFIX/bin/$PKG" 2>&1
