@@ -36,6 +36,7 @@ defutf8 on
 backtick 10 	9999999	9999999		byobu-janitor
 backtick 11	9999999	9999999		printf "\005-1="
 backtick 12	9999999	9999999		byobu-status color
+backtick 13	0	0		byobu-status notify_osd
 backtick 99  	9999999	9999999		byobu-status logo
 backtick 100	599	599		byobu-status release
 backtick 101 	7	7		byobu-status updates_available

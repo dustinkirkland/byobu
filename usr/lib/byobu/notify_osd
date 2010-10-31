@@ -1,0 +1,35 @@
+#!/bin/sh -e
+#
+#    notify_osd: print notify-osd messages in screen's notification buffer
+#    Copyright (C) 2010 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#             with help from Mathias Gug <mathias.gug@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+LOG="$HOME"/.cache/notify-osd.log
+
+if [ "$1" = "--detail" ]; then
+	cat "$LOG"
+	exit 0
+fi
+
+# This line operates basically as a daemon, watching the notify-osd log file,
+# processing new messages and sending them to screen
+tail -n 0 -F "$LOG" | perl -e '
+	$/ = "\n\n";
+	while (<STDIN>) {
+		$_ =~ s/^.*\]//;
+		system("/usr/bin/screen -X at 0 echo \"$_\"");
+	}'
