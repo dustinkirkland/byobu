@@ -39,7 +39,9 @@ cpu=$(grep -c "^processor.*:" /proc/cpuinfo) || cpu=1
 mem=$(grep ^MemTotal /proc/meminfo | awk '{print $2}')
 
 # Guess this system's going rate, based on mem available (m* types)
-if [ $mem -gt 64000000 ]; then
+if [ $mem -lt 700000 ]; then
+	RATE=$T1_MICRO
+elif [ $mem -gt 64000000 ]; then
 	RATE=$M2_4XLARGE
 elif [ $mem -gt 32000000 ]; then
 	RATE=$M2_2XLARGE
