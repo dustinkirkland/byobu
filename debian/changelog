@@ -2,7 +2,7 @@ byobu (3.7) unreleased; urgency=low
 
   * usr/lib/byobu/ec2_cost, usr/share/byobu/ec2/rates.eu_ie,
     usr/share/byobu/ec2/rates.us_ca, usr/share/byobu/ec2/rates.us_va:
-    - add ec2_cost support for t1.micro instances
+    - add ec2_cost support for t1.micro instances, LP: #669190
   * etc/byobu/statusrc, usr/bin/byobu-config, usr/lib/byobu/Makefile.am,
     usr/lib/byobu/notify_osd, usr/share/byobu/profiles/common,
     usr/share/man/man1/byobu.1:
