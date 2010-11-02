@@ -11,6 +11,7 @@ byobu (3.7) unreleased; urgency=low
     - add per-pid notifier monitors, terminate when screen terminates
     - allow for disabling the notify_osd status; must handle in the perl
       script
+    - use BYOBU_PREFIX for local installs
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 

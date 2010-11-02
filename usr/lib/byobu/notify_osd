@@ -19,6 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 LOG="$HOME"/.cache/notify-osd.log
+[ -z "$BYOBU_PREFIX" ] && BYOBU_PREFIX="/usr"
 
 case "$1" in
 	--detail)
@@ -29,4 +30,4 @@ esac
 
 # This line operates basically as a daemon, watching the notify-osd log file,
 # processing new messages and sending them to screen
-tail --pid $PPID -n 0 -F $LOG | /usr/lib/byobu/.notify_osd "$PPID"
+tail --pid $PPID -n 0 -F $LOG | $BYOBU_PREFIX/lib/byobu/.notify_osd "$PPID"
