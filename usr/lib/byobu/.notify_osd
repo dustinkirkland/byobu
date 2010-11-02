@@ -27,5 +27,5 @@ while (<STDIN>) {
 	$msg =~ s/\s+/ /g;		# collapse multi-whitespace into one
 	$msg =~ s/\s+$//g;		# strip trailing whitespace
 	$msg =~ s/^\s+//g;		# strip leading whitespace
-	system("/usr/bin/screen", "-X", "at", "0", "echo", "[$msg]");
+	system("/usr/bin/screen", "-X", "-S", "$ARGV[0]", "at", "*", "echo", "[$msg]");
 }
