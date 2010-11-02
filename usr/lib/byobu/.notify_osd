@@ -20,7 +20,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 $/ = "\n\n";
+$PKG = "byobu";
 while (<STDIN>) {
+	# Ensure that the notify_osd indicator is enabled
+	my $skip = 0;
+	open(F, "<$ENV{HOME}/.$PKG/status");
+	foreach my $i (<F>) {
+		if ($i =~ /notify_osd=0/) {
+			$skip = 1;
+		}
+	}
+	close(F);
+	if ($skip == 1) {
+		next;
+	}
 	$msg = $_;
 	$msg =~ s/\[[^,]*, //;		# strip the leading "[timestamp, "
 	$msg =~ s/ \] /: /;		# replace the " ] " following the indicator name, with ":"

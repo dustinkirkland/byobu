@@ -9,6 +9,8 @@ byobu (3.7) unreleased; urgency=low
     - add notify_osd support to byobu, LP: #669189
     - separate the perl into a script of its own
     - add per-pid notifier monitors, terminate when screen terminates
+    - allow for disabling the notify_osd status; must handle in the perl
+      script
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 
