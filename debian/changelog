@@ -7,6 +7,9 @@ byobu (3.7) unreleased; urgency=low
     usr/lib/byobu/notify_osd, usr/share/byobu/profiles/common,
     usr/share/man/man1/byobu.1:
     - add notify_osd support to byobu, LP: #669189
+  * usr/lib/byobu/.notify_osd, usr/lib/byobu/notify_osd,
+    usr/share/byobu/profiles/common: separate the perl into a script of
+    its own
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 

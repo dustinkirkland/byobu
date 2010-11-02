@@ -1,6 +1,7 @@
-#!/bin/sh -e
+#!/usr/bin/perl
 #
-#    notify_osd: print notify-osd messages in screen's notification buffer
+#    .notify_osd: perform some string manipulation on notify-osd messages
+#                 and then send to the screen message window
 #    Copyright (C) 2010 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
@@ -18,17 +19,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-LOG="$HOME"/.cache/notify-osd.log
-
-if [ "$1" = "--detail" ]; then
-	cat "$LOG"
-	exit 0
-fi
-
-# This line operates basically as a daemon, watching the notify-osd log file,
-# processing new messages and sending them to screen
-if ! ps -ef | grep -qs "^$USER .*tail -n 0 -F \"$LOG\"$"; then
-	tail -n 0 -F "$LOG" | /usr/lib/byobu/.notify_osd
-else
-	exit 0
-fi
+$/ = "\n\n";
+while (<STDIN>) {
+	$msg = $_;
+	$msg =~ s/\[[^,]*, //;
+	$msg =~ s/ \] /: /;
+	$msg =~ s/\s+/ /g;
+	$msg =~ s/\s+$//g;
+	$msg =~ s/^\s+//g;
+	system("/usr/bin/screen", "-X", "at", "0", "echo", "[$msg]");
+}

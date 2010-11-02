@@ -23,7 +23,7 @@
 # Now, let's override with our customizations
 startup_message off
 vbell off
-msgwait 1
+msgwait 5
 defutf8 on
 
 # Define status commands
