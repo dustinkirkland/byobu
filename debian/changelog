@@ -16,6 +16,7 @@ byobu (3.7) unreleased; urgency=low
     uninstall, usr/share/byobu/keybindings/f-keys:
     - use gsed, where available; should help with BSD issues running byobu,
       LP: #651993
+  * README: add a note about gsed
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 

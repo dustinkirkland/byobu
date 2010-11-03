@@ -22,9 +22,10 @@ install locally by:
  7) Run:
     byobu
 
-Note that you will need to have two dependencies installed:
+Note that you will need to have a few dependencies installed:
  * screen
  * python-newt (if you want to use Byobu's configuration utility)
+ * gsed (if your sed implementation doesn't support -i)
 
 Dustin Kirkland <dustin.kirkland@gmail.com>
 2010-07-28
