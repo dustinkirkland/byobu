@@ -17,6 +17,8 @@ byobu (3.7) unreleased; urgency=low
     - use gsed, where available; should help with BSD issues running byobu,
       LP: #651993
   * README: add a note about gsed
+  * usr/share/man/man1/byobu.1: add a synopsis section that mentions options
+    simply passed through to screen, LP: #669566
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 
