@@ -12,6 +12,10 @@ byobu (3.7) unreleased; urgency=low
     - allow for disabling the notify_osd status; must handle in the perl
       script
     - use BYOBU_PREFIX for local installs
+  * usr/bin/byobu-config, usr/bin/byobu-janitor, usr/bin/byobu-launcher-
+    uninstall, usr/share/byobu/keybindings/f-keys:
+    - use gsed, where available; should help with BSD issues running byobu,
+      LP: #651993
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 

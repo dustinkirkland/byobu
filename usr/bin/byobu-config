@@ -52,7 +52,10 @@ RELOAD_CMD="screen -X at 0 source $HOME/."+PKG+"/profile"
 ESC = ''
 snack.hotkeys[ESC] = ord(ESC)
 snack.hotkeys[ord(ESC)] = ESC
-
+if commands.getstatusoutput('which gsed')[0] == 0:
+	SED = "gsed"
+else:
+	SED = "sed"
 gettext.bindtextdomain(PKG, SHARE+'/po')
 gettext.textdomain(PKG)
 _ = gettext.gettext
@@ -137,7 +140,7 @@ def help(screen, size, config):
     f.close()
 
     text=text.replace("<esckey>", getesckey(), 1)
-    text=text.replace("_VER_", commands.getoutput("byobu -v | head -n1 | sed 's/.* //'"), 1)
+    text=text.replace("_VER_", commands.getoutput("byobu -v | head -n1 | " + SED + " 's/.* //'"), 1)
 
     t = Textbox(70, 14, text, scroll=0)
     bb = ButtonBar(screen, ((_("Menu"), "menu", ESC),), compact = 1)
@@ -190,7 +193,7 @@ def keybindings(screen, size):
     return 100
 
 def switch_keybindings(set):
-    commands.getoutput("sed -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+HOME+"/."+PKG+"/keybindings")
+    commands.getoutput(SED + " -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+HOME+"/."+PKG+"/keybindings")
 
 def newwindow(screen, size):
     title=Entry(8, text="shell", returnExit=1)
@@ -463,13 +466,13 @@ def setesckey(key):
         u = key[0].upper()
         l = key[0].lower()
         if os.path.exists(path):
-            out = commands.getoutput("sed -i -e 's/^escape.*$//' "+path)
+            out = commands.getoutput(SED+" -i -e 's/^escape.*$//' "+path)
             appendtofile(path, "escape ^"+u+l+"\n")
-            out = commands.getoutput("sed -i -e 's/^register.*$//' "+path)
+            out = commands.getoutput(SED+" -i -e 's/^register.*$//' "+path)
             out = commands.getoutput("grep -h ^register "+SHARE+"/keybindings/*keys")
             appendtofile(path, out+"\n")
-            out = commands.getoutput("sed -i -e 's/\"\^a/\"\^"+l+"/g' "+path)
-            out = commands.getoutput("sed -i -e '/^$/d' "+path)
+            out = commands.getoutput(SED+" -i -e 's/\"\^a/\"\^"+l+"/g' "+path)
+            out = commands.getoutput(SED+" -i -e '/^$/d' "+path)
 
 def chgesc(screen, size):
     esc=Entry(2, text=getesckey(), returnExit=1)

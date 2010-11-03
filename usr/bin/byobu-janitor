@@ -25,6 +25,9 @@ PKG="byobu"
 RUN="$SOCKETDIR/S-$USER"
 FLAG="$RUN/$PKG.reload-required"
 
+# Use gsed on non-Linux OS's
+which gsed 2>/dev/null && SED="gsed" || SED="sed"
+
 # Exit immediately, if we're not forced, and there is no reload flag
 if [ "$1" != "--force" ] && [ ! -e "$FLAG" ]; then
 	exit 0
@@ -111,9 +114,9 @@ fi
 # The status scripts used to have hyphens in their name, but now use
 # underscores such that we can source the file as a shell snippet;
 # fix existing status configuration.
-sed -i -e "s/\([^=]+\)-\([^=]+\)=/\1_\2=/g" "$HOME/.$PKG/status"
-sed -i -e "s/^disk-.*=/disk=/" "$HOME/.$PKG/status"
-sed -i -e "s/^network-.*=/network=/" "$HOME/.$PKG/status"
+$SED -i -e "s/\([^=]+\)-\([^=]+\)=/\1_\2=/g" "$HOME/.$PKG/status"
+$SED -i -e "s/^disk-.*=/disk=/" "$HOME/.$PKG/status"
+$SED -i -e "s/^network-.*=/network=/" "$HOME/.$PKG/status"
 
 # Affects: Upgrades from <= byobu-2.16
 # screen-launcher was renamed byobu-launcher; if the user has byobu
@@ -142,7 +145,7 @@ done
 # Affects: Upgrades from <= byobu-2.57 that autolaunch
 # If the global autolaunch is on, then remove duplicate entry in ~/.profile
 if [ -h "/etc/profile.d/Z98-$PKG.sh" ]; then
-	sed -i -e "/ $PKG-launcher/d" "$HOME"/.profile || true
+	$SED -i -e "/ $PKG-launcher/d" "$HOME"/.profile || true
 fi
 
 # Affects: Upgrades from <= byobu-2.70 that autolaunch
@@ -154,7 +157,7 @@ fi
 # Affects: Upgrades from <= byobu-2.78 which might have "motd+shell"
 # in their window list; update this to just "shell"
 if grep -qs "motd+shell" "$HOME/.$PKG/windows"; then
-	sed -i -e "s/motd+shell/shell/g" "$HOME/.$PKG/windows" || true
+	$SED -i -e "s/motd+shell/shell/g" "$HOME/.$PKG/windows" || true
 fi
 
 # Clean up flag
