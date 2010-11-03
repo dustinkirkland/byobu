@@ -25,9 +25,6 @@ PKG="byobu"
 RUN="$SOCKETDIR/S-$USER"
 FLAG="$RUN/$PKG.reload-required"
 
-# Use gsed on non-Linux OS's
-which gsed 2>/dev/null && SED="gsed" || SED="sed"
-
 # Exit immediately, if we're not forced, and there is no reload flag
 if [ "$1" != "--force" ] && [ ! -e "$FLAG" ]; then
 	exit 0
@@ -36,12 +33,8 @@ fi
 # Set the rest of the variables
 DEFAULT_PROFILE="light"
 PROFILE="$HOME/.$PKG/profile"
-
-# Establish ssh-agent socket, helps when reconnecting to a detached session
-if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ] && [ -w "$RUN" ]; then
-	rm -f "$RUN/$PKG.ssh-agent"
-	ln -sf "$SSH_AUTH_SOCK" "$RUN/$PKG.ssh-agent"
-fi
+# Use gsed on non-Linux OS's
+which gsed 2>/dev/null && SED="gsed" || SED="sed"
 
 # Create byobu-exchange buffer file, with secure permissions, if it doesn't exist
 if [ -w "$RUN" ] && [ ! -e "$RUN/$PKG-exchange" ]; then
@@ -158,6 +151,12 @@ fi
 # in their window list; update this to just "shell"
 if grep -qs "motd+shell" "$HOME/.$PKG/windows"; then
 	$SED -i -e "s/motd+shell/shell/g" "$HOME/.$PKG/windows" || true
+fi
+
+# Affects: Upgrades from <= byobu-3.6, change location of $SSH_AUTH_SOCK
+if [ -h "$RUN/$PKG.ssh-agent" ]; then
+	rm -f "$HOME/.$PKG/.ssh-agent"
+	mv -f "$RUN/$PKG.ssh-agent" "$HOME/.$PKG/.ssh-agent"
 fi
 
 # Clean up flag

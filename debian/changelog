@@ -19,6 +19,10 @@ byobu (3.7) unreleased; urgency=low
   * README: add a note about gsed
   * usr/share/man/man1/byobu.1: add a synopsis section that mentions options
     simply passed through to screen, LP: #669566
+  * usr/bin/byobu, usr/bin/byobu-janitor,
+    usr/share/byobu/profiles/common: change location of $SSH_AUTH_SOCK symlink
+    from /var/run to $HOME, as we can't be sure that the user's var/run
+    dir will exist before screen starts, LP: #664059
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 

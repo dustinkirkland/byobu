@@ -98,7 +98,7 @@ defmonitor on
 activity ""
 
 # Maintain SSH_AUTH_SOCK link
-setenv SSH_AUTH_SOCK /var/run/screen/S-$USER/byobu.ssh-agent
+setenv SSH_AUTH_SOCK $HOME/.byobu/.ssh-agent
 
 source $HOME/.byobu/keybindings
 
