@@ -308,7 +308,7 @@ def readstatus():
     status["mem_used"]=1
     status["menu"]=1
     status["network"]=0
-    status["notify_osd"]=1
+    status["notify_osd"]=0
     status["processes"]=0
     status["rcs_cost"]=0
     status["reboot_required"]=1
