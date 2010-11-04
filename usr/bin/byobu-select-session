@@ -30,7 +30,7 @@ choice = ""
 sessions = []
 text = []
 i = 0
-output = commands.getoutput('screen -ls ' + PKG)
+output = commands.getoutput('screen -ls ')
 if output:
 	for s in output.split("\n"):
 		s = re.sub(r'\s+', ' ', s)

@@ -28,6 +28,8 @@ byobu (3.7) unreleased; urgency=low
     usr/bin/byobu-enable:
     - add a helpful update-motd message and a convenient command to enable-and-
       launch byobu
+  * usr/bin/byobu-select-session: enable byobu-select-session to list
+    custom session names, LP: #630673
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 
