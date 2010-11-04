@@ -17,7 +17,6 @@ AM_INIT_AUTOMAKE(byobu, 3.0)
 
 AC_OUTPUT(Makefile \
 	etc/byobu/Makefile \
-	etc/update-motd.d/Makefile \
 	usr/share/applications/Makefile \
 	usr/share/byobu/ec2/Makefile \
 	usr/share/byobu/keybindings/Makefile \

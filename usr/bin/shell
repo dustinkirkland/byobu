@@ -17,5 +17,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-[ -r /etc/motd ] && cat /etc/motd
+if [ -r /etc/motd ]; then
+	# Prune the byobu advert, if you're already running within byobu
+	grep -v "^For a superior command line experience, enable our text-based window manger" /etc/motd | grep -v "^  byobu-enable"
+fi
 [ -n "$SHELL" -a -x "$SHELL" ] && exec "$SHELL" || exec /bin/sh

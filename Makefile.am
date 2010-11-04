@@ -1,5 +1,4 @@
 SUBDIRS = etc/byobu \
-	etc/update-motd.d \
 	usr/share/applications \
 	usr/share/byobu/ec2 \
 	usr/share/byobu/keybindings \

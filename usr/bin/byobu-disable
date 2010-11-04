@@ -25,5 +25,3 @@ echo
 echo "To re-enable this behavior later, just run:"
 echo "  byobu-enable"
 echo
-echo -n "Press <enter> to continue..."
-$(head -n1)
