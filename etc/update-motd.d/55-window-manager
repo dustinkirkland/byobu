@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ ! -e /etc/profile.d/Z98-byobu.sh ]; then
+	cat <<EOF
+For a superior command line experience, enable our text-based window manger:
+  byobu-enable
+EOF
+fi

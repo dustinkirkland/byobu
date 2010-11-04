@@ -23,6 +23,11 @@ byobu (3.7) unreleased; urgency=low
     usr/share/byobu/profiles/common: change location of $SSH_AUTH_SOCK symlink
     from /var/run to $HOME, as we can't be sure that the user's var/run
     dir will exist before screen starts, LP: #664059
+  * etc/update-motd.d, etc/update-motd.d/55-window-manager,
+    etc/update-motd.d/Makefile.am, Makefile.am, usr/bin/byobu-disable,
+    usr/bin/byobu-enable:
+    - add a helpful update-motd message and a convenient command to enable-and-
+      launch byobu
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 
