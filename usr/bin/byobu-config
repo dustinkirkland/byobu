@@ -26,19 +26,23 @@ import sys, os, os.path, time, string, commands, gettext, glob, snack
 from ConfigParser import SafeConfigParser
 from snack import *
 
+PKG="byobu"
 HOME=os.getenv("HOME")
 USER=os.getenv("USER")
 if os.getenv("BYOBU_PREFIX"):
     PREFIX = os.getenv("BYOBU_PREFIX")
 else:
     PREFIX = "/usr"
-PKG="byobu"
 SHARE=PREFIX+'/share/'+PKG
-if not os.path.exists(SHARE):
-    SHARE = "%s/.%s/%s" % (HOME, PKG, SHARE)
 DOC=PREFIX+'/share/doc/'+PKG
+if os.getenv("XDG_DATA_HOME"):
+	DATA=os.getenv("XDG_DATA_HOME")+"/"+PKG
+else:
+	DATA=HOME+"/.local/share/"+PKG
+if not os.path.exists(SHARE):
+    SHARE = DATA+"/"+SHARE
 if not os.path.exists(DOC):
-    DOC = "%s/.%s/%s" % (HOME, PKG, DOC)
+    DOC = DATA+"/"+DOC
 DEF_ESC="A"
 RELOAD = "If you are using the default set of keybindings, press\n<F5> or <ctrl-a-R> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
 SOCKETDIR="/var/run/screen"
@@ -48,7 +52,7 @@ if os.path.exists("/etc/%s/socketdir" % PKG):
     except:
 	SOCKETDIR="/var/run/screen"
 RELOAD_FLAG="%s/S-%s/%s.reload-required" % (SOCKETDIR, USER, PKG)
-RELOAD_CMD="screen -X at 0 source $HOME/."+PKG+"/profile"
+RELOAD_CMD="screen -X at 0 source "+DATA+"/profile"
 ESC = ''
 snack.hotkeys[ESC] = ord(ESC)
 snack.hotkeys[ord(ESC)] = ESC
@@ -193,7 +197,7 @@ def keybindings(screen, size):
     return 100
 
 def switch_keybindings(set):
-    commands.getoutput(SED + " -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+HOME+"/."+PKG+"/keybindings")
+    commands.getoutput(SED + " -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+DATA+"/keybindings")
 
 def newwindow(screen, size):
     title=Entry(8, text="shell", returnExit=1)
@@ -246,7 +250,7 @@ def newwindow(screen, size):
     return 100
 
 def appendwindow(win):
-    f=open(HOME+'/.'+PKG+'/windows', 'a')
+    f=open(DATA+'/windows', 'a')
     try:
         f.write(win+"\n")
 
@@ -257,12 +261,12 @@ def appendwindow(win):
     f.close()
 
 def readwindows():
-    if not os.path.isfile(HOME+'/.'+PKG+'/windows'):
+    if not os.path.isfile(DATA+'/windows'):
         windowsfile=SHARE+'/windows/common'
-    elif os.path.getsize(HOME+'/.'+PKG+'/windows') == 0:
+    elif os.path.getsize(DATA+'/windows') == 0:
         windowsfile=SHARE+'/windows/common'
     else:
-        windowsfile=HOME+'/.'+PKG+'/windows'
+        windowsfile=DATA+'/windows'
     f=open(windowsfile)
     try:
         li=[]
@@ -321,8 +325,8 @@ def readstatus():
     status["uptime"]=1
     status["whoami"]=1
     status["wifi_quality"]=0
-    if os.path.exists(HOME+'/.'+PKG+'/status'):
-        f=open(HOME+'/.'+PKG+'/status', 'r')
+    if os.path.exists(DATA+'/status'):
+        f=open(DATA+'/status', 'r')
         for line in f.readlines():
            try:
                line = line.rstrip()
@@ -341,7 +345,7 @@ def readstatus():
     return li
 
 def writestatus(items):
-    f=open(HOME+'/.'+PKG+'/status', 'w')
+    f=open(DATA+'/status', 'w')
     try:
         for i in items:
             if i[0] == 1:
@@ -378,7 +382,7 @@ def togglestatus(screen, size):
     return 100
 
 def writewindows(winlist):
-    f=open(HOME+'/.'+PKG+'/windows', 'w')
+    f=open(DATA+'/windows', 'w')
     try:
         for win in winlist:
             if win[0] == -1:
@@ -447,7 +451,7 @@ def appendtofile(p, s):
 
 
 def getesckey():
-    path=HOME+'/.'+PKG+'/keybindings'
+    path=DATA+'/keybindings'
     if not os.path.exists(path):
         return DEF_ESC
     line = commands.getoutput("grep ^escape "+path)
@@ -459,7 +463,7 @@ def getesckey():
     return esc
 
 def setesckey(key):
-    path = HOME+'/.'+PKG+'/keybindings'
+    path = DATA+'/keybindings'
     if key != "":
         if key == " ":
             key = "`"
@@ -513,7 +517,7 @@ def chgesc(screen, size):
     return 100
 
 def autolaunch():
-    if os.path.exists("%s/.%s/disable-autolaunch" % (HOME, PKG)):
+    if os.path.exists(DATA+"/disable-autolaunch")
 	return 0
     if commands.getstatusoutput('grep -qs byobu-launcher %s/.profile' % HOME)[0] == 0:
 	return 1
