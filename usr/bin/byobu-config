@@ -517,7 +517,7 @@ def chgesc(screen, size):
     return 100
 
 def autolaunch():
-    if os.path.exists(DATA+"/disable-autolaunch")
+    if os.path.exists(DATA+"/disable-autolaunch"):
 	return 0
     if commands.getstatusoutput('grep -qs byobu-launcher %s/.profile' % HOME)[0] == 0:
 	return 1
