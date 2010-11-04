@@ -19,9 +19,10 @@
 
 [ "$1" = "--detail" ] && exit 0
 PKG="byobu"
+[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
 color 2>/dev/null || color() { true; }
 
-[ -r "$HOME/.$PKG/keybindings" ] && bindings="$HOME/.$PKG/keybindings" || bindings="$HOME/.screenrc"
+[ -r "$DATA/keybindings" ] && bindings="$DATA/keybindings" || bindings="$HOME/.screenrc"
 
 if grep -qs "^source.*screen-escape-keys$" $bindings 2>/dev/null || [ "$1" = "--disable-f-keys" ]; then
 	esc=`grep "^escape" $bindings | sed "s/^.*\(.\)$/\1/"`

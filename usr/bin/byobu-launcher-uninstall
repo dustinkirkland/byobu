@@ -19,6 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
 
 # Use gsed on non-Linux OS's
 which gsed 2>/dev/null && SED="gsed" || SED="sed"
@@ -33,7 +34,7 @@ remove_launcher() {
 for i in ".profile" ".bashrc" ".bash_profile" ".zprofile"; do
 	remove_launcher "$HOME/$i"
 done
-mkdir -p "$HOME/.$PKG"
-touch "$HOME/.$PKG/disable-autolaunch"
+mkdir -p "$DATA"
+touch "$DATA/disable-autolaunch"
 # install disabled motd printing; re-enable
 rm -f "$HOME"/.hushlogin

@@ -23,6 +23,7 @@ VERSION=3.7
 export BYOBU_PREFIX
 [ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir" || SOCKETDIR="/var/run/screen"
 RUN="$SOCKETDIR/S-$USER"
+[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
 
 if [ ! -x "$BYOBU_PREFIX/bin/$PKG" ]; then
 	echo "ERROR: Cannot find $BYOBU_PREFIX/bin/$PKG" 2>&1
@@ -38,7 +39,7 @@ if [ "$#" = "1" ] && [ "$1" = "-v" ]; then
 fi
 
 # Check if we're being autolaunched, and this user explicitly does not want it.
-if [ "$0" = "/etc/profile.d/Z98-$PKG.sh" ] && [ -r "$HOME/.$PKG/disable-autolaunch" ]; then
+if [ "$0" = "/etc/profile.d/Z98-$PKG.sh" ] && [ -r "$DATA/disable-autolaunch" ]; then
 	exit 0
 fi
 
@@ -52,11 +53,11 @@ printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
 CUSTOM_WINDOW_SET=0
 if [ -r "$BYOBU_WINDOWS" ]; then
 	CUSTOM_WINDOW_SET=1
-elif [ -r "$HOME/.$PKG/windows.$BYOBU_WINDOWS" ]; then
+elif [ -r "$DATA/windows.$BYOBU_WINDOWS" ]; then
 	CUSTOM_WINDOW_SET=1
-	BYOBU_WINDOWS="$HOME/.$PKG/windows.$BYOBU_WINDOWS"
+	BYOBU_WINDOWS="$DATA/windows.$BYOBU_WINDOWS"
 elif [ "$#" = "0" ]; then
-	BYOBU_WINDOWS="$HOME/.$PKG/windows"
+	BYOBU_WINDOWS="$DATA/windows"
 else
 	BYOBU_WINDOWS="/dev/null"
 fi
@@ -70,8 +71,8 @@ $(which tput >/dev/null) && [ $(tput colors 2>/dev/null || echo 0) -eq 256 ] && 
 
 # Drop a symlink to the ssh socket in $HOME, since we can ensure that exists
 if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ]; then
-	rm -f "$HOME/.$PKG/.ssh-agent"
-	ln -sf "$SSH_AUTH_SOCK" "$HOME/.$PKG/.ssh-agent"
+	rm -f "$DATA/.ssh-agent"
+	ln -sf "$SSH_AUTH_SOCK" "$DATA/.ssh-agent"
 fi
 
 PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/byoburc"

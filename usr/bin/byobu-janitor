@@ -20,6 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
 [ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
 [ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir" || SOCKETDIR="/var/run/screen"
 RUN="$SOCKETDIR/S-$USER"
@@ -32,9 +33,15 @@ fi
 
 # Set the rest of the variables
 DEFAULT_PROFILE="light"
-PROFILE="$HOME/.$PKG/profile"
+PROFILE="$DATA/profile"
 # Use gsed on non-Linux OS's
 which gsed 2>/dev/null && SED="gsed" || SED="sed"
+
+# If the old dir exists, but the xdg one doesn't, migrate
+if [ -d "$HOME/.$PKG" ] && [ ! -e "$DATA" ]; then
+	mv -f "$HOME/.$PKG" "$DATA"
+	ln -sf "$DATA" "$HOME/.$PKG"
+fi
 
 # Create byobu-exchange buffer file, with secure permissions, if it doesn't exist
 if [ -w "$RUN" ] && [ ! -e "$RUN/$PKG-exchange" ]; then
@@ -43,15 +50,15 @@ fi
 
 # Affects: users who launched using sudo, such that their config dir
 # is not writable by them
-if [ -d "$HOME/.$PKG" ] && [ ! -w "$HOME/.$PKG" ]; then
-	echo "ERROR: [$HOME/.$PKG] is not writable by the current user" 1>&2
+if [ -d "$DATA" ] && [ ! -w "$DATA" ]; then
+	echo "ERROR: [$DATA] is not writable by the current user" 1>&2
 	exit 1
 fi
 
 # Affects: First runs with no configuration
 # Seed the configuration
-[ -d "$HOME/.$PKG" ] || mkdir -p "$HOME/.$PKG"
-[ -r "$HOME/.$PKG/color" ] || printf "BACKGROUND=k\nFOREGROUND=w\nMONOCHROME=0" > "$HOME/.$PKG/color"
+[ -d "$DATA" ] || mkdir -p "$DATA"
+[ -r "$DATA/color" ] || printf "BACKGROUND=k\nFOREGROUND=w\nMONOCHROME=0" > "$DATA/color"
 [ -r "$PROFILE" ] || ln -sf $BYOBU_PREFIX/share/$PKG/profiles/common "$PROFILE"
 
 # Affects: Symlinks pointing to color profiles
@@ -89,8 +96,8 @@ if [ -h "$PROFILE" ]; then
 	esac
 fi
 
-[ -s "$HOME/.$PKG/keybindings" ] || echo "source $BYOBU_PREFIX/share/$PKG/keybindings/common" > "$HOME/.$PKG/keybindings"
-if [ ! -r "$HOME/.$PKG/status" ]; then
+[ -s "$DATA/keybindings" ] || echo "source $BYOBU_PREFIX/share/$PKG/keybindings/common" > "$DATA/keybindings"
+if [ ! -r "$DATA/status" ]; then
 	if [ -r /etc/$PKG/statusrc ]; then
 		skel=/etc/$PKG/statusrc
 	elif [ -r "$BYOBU_PREFIX/share/$PKG/profiles/statusrc" ]; then
@@ -98,18 +105,18 @@ if [ ! -r "$HOME/.$PKG/status" ]; then
 	else
 		skel=/dev/null
 	fi
-	grep -A 999999 BEGIN_CUT_HERE $skel | grep -B 999999 END_CUT_HERE | grep -v CUT > "$HOME/.$PKG/status"
+	grep -A 999999 BEGIN_CUT_HERE $skel | grep -B 999999 END_CUT_HERE | grep -v CUT > "$DATA/status"
 fi
-[ -r "$HOME/.$PKG/windows" ] || touch "$HOME/.$PKG/windows"
+[ -r "$DATA/windows" ] || touch "$DATA/windows"
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
 
 # Affects: Upgrades from <= byobu-2.11
 # The status scripts used to have hyphens in their name, but now use
 # underscores such that we can source the file as a shell snippet;
 # fix existing status configuration.
-$SED -i -e "s/\([^=]+\)-\([^=]+\)=/\1_\2=/g" "$HOME/.$PKG/status"
-$SED -i -e "s/^disk-.*=/disk=/" "$HOME/.$PKG/status"
-$SED -i -e "s/^network-.*=/network=/" "$HOME/.$PKG/status"
+$SED -i -e "s/\([^=]+\)-\([^=]+\)=/\1_\2=/g" "$DATA/status"
+$SED -i -e "s/^disk-.*=/disk=/" "$DATA/status"
+$SED -i -e "s/^network-.*=/network=/" "$DATA/status"
 
 # Affects: Upgrades from <= byobu-2.16
 # screen-launcher was renamed byobu-launcher; if the user has byobu
@@ -121,8 +128,8 @@ fi
 # Affects: Upgrades from <= byobu-2.25
 # Collapse separate status config files into the sourced config
 for i in disk network distro logo; do
-	if [ -r "$HOME/.$PKG/$i" ]; then
-		val=`cat $HOME/.$PKG/$i`
+	if [ -r "$DATA/$i" ]; then
+		val=`cat $DATA/$i`
 		uc=`echo "$i" | tr "[:lower:]" "[:upper:]"`
 		case $i in
 			disk|network)
@@ -130,8 +137,8 @@ for i in disk network distro logo; do
 			distro|logo)
 				key="$uc" ;;
 		esac
-		echo "$key=\"$val\"" >> "$HOME/.$PKG/statusrc"
-		rm "$HOME/.$PKG/$i"
+		echo "$key=\"$val\"" >> "$DATA/statusrc"
+		rm "$DATA/$i"
 	fi
 done
 
@@ -149,14 +156,14 @@ fi
 
 # Affects: Upgrades from <= byobu-2.78 which might have "motd+shell"
 # in their window list; update this to just "shell"
-if grep -qs "motd+shell" "$HOME/.$PKG/windows"; then
-	$SED -i -e "s/motd+shell/shell/g" "$HOME/.$PKG/windows" || true
+if grep -qs "motd+shell" "$DATA/windows"; then
+	$SED -i -e "s/motd+shell/shell/g" "$DATA/windows" || true
 fi
 
 # Affects: Upgrades from <= byobu-3.6, change location of $SSH_AUTH_SOCK
 if [ -h "$RUN/$PKG.ssh-agent" ]; then
-	rm -f "$HOME/.$PKG/.ssh-agent"
-	mv -f "$RUN/$PKG.ssh-agent" "$HOME/.$PKG/.ssh-agent"
+	rm -f "$DATA/.ssh-agent"
+	mv -f "$RUN/$PKG.ssh-agent" "$DATA/.ssh-agent"
 fi
 
 # Clean up flag

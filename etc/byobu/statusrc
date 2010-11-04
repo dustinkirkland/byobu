@@ -1,6 +1,6 @@
 #    statusrc
 #      Byobu's default status notifications
-#      Override these in $HOME/.byobu/status
+#      Override these in $HOME/.local/share/byobu/status
 #
 #    Copyright (C) 2009 Canonical Ltd.
 #

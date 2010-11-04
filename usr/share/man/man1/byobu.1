@@ -10,6 +10,8 @@ Options to \fBbyobu\fP are simply passed through \fBscreen\fP(1).
 .SH DESCRIPTION
 \fBbyobu\fP is a script that launches GNU screen in the byobu configuration.  This enables the display of system information and status notifications within two lines at the bottom of the screen session. It also enables multiple tabbed terminal sessions, accessible through simple keystrokes.
 
+Note that DATA=\fI$HOME/.local/share/byobu\fP, per XDG Base Directory Specification.
+
 .SH STATUS NOTIFICATIONS
 
 \fBbyobu\fP supports a number of unique and interesting status notifications across the lowest two lines in the screen.  Each status notification item is independently configurable, enabled and disabled by the configuration utility.  The guide below helps identify each status item (in alphabetical order):
@@ -20,24 +22,22 @@ Options to \fBbyobu\fP are simply passed through \fBscreen\fP(1).
 
 \fBbattery\fP \- battery information; display on the lower bar toward the right; |\-| indicates discharging, |+| indicates charging, |=| indicates fully charged;  when charging or discharging, the current battery capacity as a percentage is displayed;  the colours green, yellow, and red are used to give further indication of the battery's charge state
 
-\fBservices\fP \- users can configure a list of services to monitor, define the SERVICES variable in $HOME/.byobu/status, a whitespace separated of services, each service should include the init name of the service, then a pipe, and then an abbreviated name or symbol to display when running; displayed in the lower bar toward the center in cyan on a white background
-
 \fBcpu_count\fP \- the number of cpu's or cores on the system; displayed in the lower bar toward the right in the default text color on the default background, followed by a trailing 'x'
 
 \fBcpu_freq\fP \- the current frequency of the cpu in GHz; displayed in the lower bar toward the right in white text on a light blue background
 
-\fBcpu_temp\fP \- the cpu temperature in Celsius (default) or Fahrenheit, configure TEMP=F or TEMP=C in \fI$HOME/.byobu/statusrc\fP; displayed in the lower bar toward the right in yellow text on a black background; you may override the detected cpu temperature device by setting MONITORED_TEMP=/proc/acpi/whatever in \fI$HOME/.byobu/statusrc\fP
+\fBcpu_temp\fP \- the cpu temperature in Celsius (default) or Fahrenheit, configure TEMP=F or TEMP=C in \fI$DATA/statusrc\fP; displayed in the lower bar toward the right in yellow text on a black background; you may override the detected cpu temperature device by setting MONITORED_TEMP=/proc/acpi/whatever in \fI$DATA/statusrc\fP
 
-\fBcustom\fP \- user defined custom scripts; must be executable programs of any kind in \fI$HOME/.byobu/bin\fP; must be named N_NAME, where N is the frequency in seconds to refresh the status indicator, and NAME is the name of the script; N should not be less than 5 seconds; the script should echo a small amount of text to standard out, standard error is discarded; the indicator will be displayed in the lower panel, in inverted colors to your current background/foreground scheme, unless you manually specify the colors in your script's output; BEWARE, cpu-intensive custom scripts may impact your overall system performance and could upset your system administrator!
-  Example: \fI~/.byobu/bin/1000_uname\fP
+\fBcustom\fP \- user defined custom scripts; must be executable programs of any kind in \fI$DATA/bin\fP; must be named N_NAME, where N is the frequency in seconds to refresh the status indicator, and NAME is the name of the script; N should not be less than 5 seconds; the script should echo a small amount of text to standard out, standard error is discarded; the indicator will be displayed in the lower panel, in inverted colors to your current background/foreground scheme, unless you manually specify the colors in your script's output; BEWARE, cpu-intensive custom scripts may impact your overall system performance and could upset your system administrator!
+  Example: \fI$DATA/bin/1000_uname\fP
     #!/bin/sh
     printf "\\005{= bw}%s\\005{\-}" "$(uname -r)"
 
 \fBdate\fP \- the system date in YYYY-MM-DD formate; displayed in the lower on the far right in the default text color on the default background
 
-\fBdisk\fP \- total disk space available and total used on / directory; displayed in the lower bar on the far right in white text on a light purple background; override the default directory by specifying an alternate mount point with MONITORED_DISK=/wherever in \fI$HOME/.byobu/statusrc\fP
+\fBdisk\fP \- total disk space available and total used on / directory; displayed in the lower bar on the far right in white text on a light purple background; override the default directory by specifying an alternate mount point with MONITORED_DISK=/wherever in \fI$DATA/statusrc\fP
 
-\fBdisk_io\fP \- instantaneous read/write througput in kB/s or MB/s over the last 3 seconds; displayed in the lower bar toward the right in white text on a light purple background with a leading '<' sign indicating 'read speed' and '>' sign indicating 'write speed'; override the default monitored disk by specifying an alternate device with MONITORED_disk=/dev/sdb in \fI$HOME/.byobu/statusrc\fP
+\fBdisk_io\fP \- instantaneous read/write througput in kB/s or MB/s over the last 3 seconds; displayed in the lower bar toward the right in white text on a light purple background with a leading '<' sign indicating 'read speed' and '>' sign indicating 'write speed'; override the default monitored disk by specifying an alternate device with MONITORED_disk=/dev/sdb in \fI$DATA/statusrc\fP
 
 \fBec2_cost\fP \- an estimation of the cost of the current boot of the system in terms of the Amazon EC2 billing model; displayed in the lower bar toward the right in green text on a black background; there is a leading '~' to indicate that this is an estimation, and the monetary units are US Dollars '$'
 
@@ -47,11 +47,11 @@ Options to \fBbyobu\fP are simply passed through \fBscreen\fP(1).
 
 \fBhostname\fP \- the hostname of the system; displayed in the upper bar on the far right in bold black text on a grey background; there is a leading '@' symbol if the username status is also enabled
 
-\fBip_address\fP \- the IPv4 address of the system in dotted decimal form; displayed in the upper bar on the far right in bold black text on a grey background;  you can override and display your IPv6 address by setting 'IPV6=1' in \fI$HOME/.byobu/statusrc\fP
+\fBip_address\fP \- the IPv4 address of the system in dotted decimal form; displayed in the upper bar on the far right in bold black text on a grey background;  you can override and display your IPv6 address by setting 'IPV6=1' in \fI$DATA/statusrc\fP
 
 \fBload_average\fP \- the system load average over the last 1 minute; displayed in the lower bar toward the right in black text on a yellow background
 
-\fBlogo\fP \- an approximation of the current operating system's logo; displayed in the lower bar on the far left; you may customize this logo by setting a chosen logo in \fI$HOME/.byobu/logo\fP, or you may override this with LOGO=:-D in \fI$HOME/.byobu/statusrc\fP
+\fBlogo\fP \- an approximation of the current operating system's logo; displayed in the lower bar on the far left; you may customize this logo by setting a chosen logo in \fI$DATA/logo\fP, or you may override this with LOGO=:-D in \fI$DATA/statusrc\fP
 
 \fBmail\fP \- system mail for the current user; the letter '[M]' is displayed in the lower bar toward the left in black text on a grey background
 
@@ -61,7 +61,7 @@ Options to \fBbyobu\fP are simply passed through \fBscreen\fP(1).
 
 \fBmenu\fP \- a simple indicator directing new users to use the F9 keybinding to access the byobu menu
 
-\fBnetwork\fP \- instantaneous upload/download bandwidth in [GMk]bps over the last 3 seconds; displayed in the lower bar toward the right in white text on a purple background with a leading '^' sign indicating 'up' and 'v' sign indicating 'down'; override the default interface by specifying an alternate interface with MONITORED_NETWORK=eth1, and override the default units (bits) with NETWORK_UNITS=bytes in \fI$HOME/.byobu/statusrc\fP
+\fBnetwork\fP \- instantaneous upload/download bandwidth in [GMk]bps over the last 3 seconds; displayed in the lower bar toward the right in white text on a purple background with a leading '^' sign indicating 'up' and 'v' sign indicating 'down'; override the default interface by specifying an alternate interface with MONITORED_NETWORK=eth1, and override the default units (bits) with NETWORK_UNITS=bytes in \fI$DATA/statusrc\fP
 
 \fBnotify_osd\fP \- Send on-screen notification messages to screen's notification buffer
 
@@ -69,7 +69,9 @@ Options to \fBbyobu\fP are simply passed through \fBscreen\fP(1).
 
 \fBreboot_required\fP \- symbol present if a reboot is required following a system update; displayed in the lower bar white text on a blue background by the symbol '(R)'; additionally, reboot_required will print '<F5>' in white text on a blue background, if Byobu requires you to reload your profile to affect some changes.
 
-\fBrelease\fP \- distribution and version information about the release running on the current system as reported by \fBlsb_release(1)\fP or \fI/etc/issue\fP; displayed in the lower bar in bold black text toward the left on a grey background; you may override the detected release with DISTRO=Whatever in \fI$HOME/.byobu/statusrc\fP
+\fBrelease\fP \- distribution and version information about the release running on the current system as reported by \fBlsb_release(1)\fP or \fI/etc/issue\fP; displayed in the lower bar in bold black text toward the left on a grey background; you may override the detected release with DISTRO=Whatever in \fI$DATA/statusrc\fP
+
+\fBservices\fP \- users can configure a list of services to monitor, define the SERVICES variable in \fI$DATA/status\fP, a whitespace separated of services, each service should include the init name of the service, then a pipe, and then an abbreviated name or symbol to display when running; displayed in the lower bar toward the center in cyan on a white background
 
 \fBtime\fP \- the system time in HH:MM:SS format; displayed in the lower bar on the far right in the default text and default background colors
 
@@ -89,12 +91,12 @@ Options to \fBbyobu\fP are simply passed through \fBscreen\fP(1).
 
 Each open window in the screen session is displayed in the upper bar toward the far left.  These are numbered, and include indicators as to activity in the window (see "activity" in \fBscreen\fP(1) for symbol definitions).  The current active window is highlighted by inverting the background/text from the rest of the window bar.
 
-Users can create a list of windows to launch at startup in \fI~/.byobu/windows\fP.  This file is the same syntax as \fI~/.screenrc\fP, each line specifying a window using the "screen" command, as described in \fBscreen\fP(1).
+Users can create a list of windows to launch at startup in \fI$DATA/windows\fP.  This file is the same syntax as \fI~/.screenrc\fP, each line specifying a window using the "screen" command, as described in \fBscreen\fP(1).
 
-User can also launch Byobu with unique window sets.  Users can store these as \fI~/.byobu/windows.[NAME]\fP, and launch Byobu with the environment variable \fBBYOBU_WINDOWS\fP.
+User can also launch Byobu with unique window sets.  Users can store these as \fI$DATA/windows.[NAME]\fP, and launch Byobu with the environment variable \fBBYOBU_WINDOWS\fP.
 
 For example:
-  $ cat ~/.byobu/windows.ssh_sessions
+  $ cat $DATA/windows.ssh_sessions
   screen \-t localhost bash
   screen \-t aussie ssh root@aussie
   screen \-t beagle ssh root@beagle

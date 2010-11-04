@@ -94,12 +94,12 @@ print_logo() {
 }
 
 if [ -n "$LOGO" ]; then
-	# Allow users to define their own logo in $HOME/.$PKG/status
+	# Allow users to define their own logo in $DATA/status
 	printf "%s" "$LOGO" && exit 0 || true
 fi
 
 if [ -n "$DISTRO" ]; then
-	# Allow manual override of distro in $HOME/.$PKG/status
+	# Allow manual override of distro in $DATA/status
 	print_logo "$DISTRO" && exit 0 || true
 fi
 

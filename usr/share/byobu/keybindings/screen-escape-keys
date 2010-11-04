@@ -37,7 +37,7 @@ bindkey -k F2
 # ctrl-a-p      Previous window                 F3
 # ctrl-a-n      Next window                     F4
 # ctrl-a-R      Reload profile                  F5
-register r "^a:source $HOME/.byobu/profile^M"
+register r "^a:source $HOME/.local/share/byobu/profile^M"
 bind R process r
 # ctrl-a-d      Detach from this session        F6
 # ctrl-a-[      Enter copy/scrollback mode      F7

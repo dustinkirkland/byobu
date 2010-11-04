@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
 color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" ]; then
@@ -27,11 +28,11 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-. "$HOME/.$PKG/status"
+. "$DATA/status"
 [ "$hostname" = "1" ] && space=" "
 [ "$whoami" = "1" ] && space=" "
 
-# Allow interface overrides in $HOME/.$PKG/statusrc
+# Allow interface overrides in $DATA/statusrc
 if [ -n "$MONITORED_NETWORK" ]; then
 	interface="$MONITORED_NETWORK"
 else

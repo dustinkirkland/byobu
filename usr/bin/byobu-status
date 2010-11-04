@@ -18,13 +18,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
 [ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
 export BYOBU_PREFIX
 
 find_script () {
 	# Allow for local status scripts
-	if [ -x "$HOME/.$PKG/bin/$1" ]; then
-		echo "$HOME/.$PKG/bin/$1"
+	if [ -x "$DATA/bin/$1" ]; then
+		echo "$DATA/bin/$1"
 	elif [ -x "$BYOBU_PREFIX/lib/$PKG/$1" ]; then
 		echo "$BYOBU_PREFIX/lib/$PKG/$1"
 	elif [ -x "$BYOBU_PREFIX/libexec/$PKG/$1" ]; then
@@ -56,10 +57,10 @@ color() {
 }
 
 # Source configurations
-[ -r "$HOME/.$PKG/color" ] && . "$HOME/.$PKG/color"
+[ -r "$DATA/color" ] && . "$DATA/color"
 [ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
-[ -r "$HOME/.$PKG/status" ] && . "$HOME/.$PKG/status"
-[ -r "$HOME/.$PKG/statusrc" ] && . "$HOME/.$PKG/statusrc"
+[ -r "$DATA/status" ] && . "$DATA/status"
+[ -r "$DATA/statusrc" ] && . "$DATA/statusrc"
 
 export P="$1"
 case "$P" in
@@ -69,7 +70,7 @@ case "$P" in
 			VER=$(set -- $(dpkg-query --show $PKG); echo "$2")
 		fi
 		printf "$PKG-$VER Detailed Status Navigation\n  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
-		for i in "$BYOBU_PREFIX/lib/$PKG"/* "$HOME/.$PKG/bin"/*; do
+		for i in "$BYOBU_PREFIX/lib/$PKG"/* "$DATA/bin"/*; do
 			i=${i##*/}
 			[ "$i" = "menu" ] && continue
 			script=`find_script $i`

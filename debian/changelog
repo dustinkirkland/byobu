@@ -30,6 +30,20 @@ byobu (3.7) unreleased; urgency=low
       launch byobu
   * usr/bin/byobu-select-session: enable byobu-select-session to list
     custom session names, LP: #630673
+  * debian/templates, etc/byobu/statusrc, usr/bin/byobu, usr/bin/byobu-
+    janitor, usr/bin/byobu-launcher, usr/bin/byobu-launcher-install,
+    usr/bin/byobu-launcher-uninstall, usr/bin/byobu-select-profile,
+    usr/bin/byobu-status, usr/lib/byobu/custom, usr/lib/byobu/disk_io,
+    usr/lib/byobu/ec2_cost, usr/lib/byobu/hostname,
+    usr/lib/byobu/ip_address, usr/lib/byobu/logo,
+    usr/lib/byobu/mem_available, usr/lib/byobu/menu,
+    usr/lib/byobu/network, usr/lib/byobu/.notify_osd,
+    usr/lib/byobu/reboot_required, usr/lib/byobu/services,
+    usr/lib/byobu/updates_available, usr/share/byobu/keybindings/f-keys,
+    usr/share/byobu/keybindings/screen-escape-keys,
+    usr/share/byobu/profiles/byoburc, usr/share/byobu/profiles/common,
+    usr/share/man/man1/byobu.1:
+    - xdg user dirs overhaul, LP: #553105
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 

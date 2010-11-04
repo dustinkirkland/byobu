@@ -19,6 +19,7 @@
 
 DETAIL=0
 PKG="byobu"
+[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
 [ -z "$BYOBU_PREFIX" ] && BYOBU_PREFIX="/usr"
 color 2>/dev/null || color() { true; }
 
@@ -31,8 +32,8 @@ for arg in $@; do
 done
 
 # Get the going rates
-[ -r "$HOME/.$PKG/ec2_rates" ] || ln -s $BYOBU_PREFIX/share/$PKG/ec2/rates.us_ca "$HOME/.$PKG/ec2_rates"
-. "$HOME/.$PKG/ec2_rates" || exit 1
+[ -r "$DATA/ec2_rates" ] || ln -s $BYOBU_PREFIX/share/$PKG/ec2/rates.us_ca "$DATA/ec2_rates"
+. "$DATA/ec2_rates" || exit 1
 
 # Count CPUs, Memory, Architecture
 cpu=$(grep -c "^processor.*:" /proc/cpuinfo) || cpu=1

@@ -19,6 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
 
 install_launcher() {
 	printf "%s\n" 'case "$-" in *i*) byobu-launcher && exit 0; esac;' >> "$1"
@@ -28,7 +29,7 @@ install_launcher() {
 $PKG-launcher-uninstall || true
 # Hush login, since we will handle motd printing
 touch "$HOME"/.hushlogin
-rm -f "$HOME/.$PKG/disable-autolaunch"
+rm -f "$DATA/disable-autolaunch"
 
 # Handle bourne shells, if not set globally in /etc/profile.d
 if [ ! -h "/etc/profile.d/Z98-$PKG.sh" ]; then

@@ -18,10 +18,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
 color 2>/dev/null || color() { true; }
 
 reboot="/var/run/reboot-required"
-[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$HOME/.byobu"
+[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$DATA"
 reload="$DIR/$PKG.reload-required"
 case "$1" in
 	--detail)

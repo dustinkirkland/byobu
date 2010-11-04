@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
+[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
 color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" -o "$1" = "--short" ]; then
@@ -80,7 +81,7 @@ PKG="byobu"
 # I would welcome contributions from other distros to make this
 # more distro-agnostic.
 
-[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$HOME/.byobu"
+[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$DATA"
 mycache="$DIR/$PKG.updates-available"
 
 # If mycache is present, use it

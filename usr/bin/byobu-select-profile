@@ -63,7 +63,7 @@ EOT
 
 # Initialize variables
 FILE="$HOME"/."$PKG"/color
-PROFILE="$HOME/.$PKG/profile"
+PROFILE="$DATA/profile"
 [ -r "$PROFILE" ] || ln -sf $BYOBU_PREFIX/share/$PKG/profiles/common "$PROFILE"
 selected=-1
 color=
@@ -77,9 +77,9 @@ assert_symlink() {
 	fi
 }
 
-mkdir -p "$HOME/.$PKG"
+mkdir -p "$DATA"
 # If these files exist, they must be a symlink
-assert_symlink "$HOME/.$PKG/profile"
+assert_symlink "$DATA/profile"
 
 listprofiles() {
 	# Display list of profiles, one per line
@@ -184,7 +184,7 @@ setcolor() {
 if [ $# -eq 0 ]; then
 	prompt "background"
 	prompt "foreground"
-	screen -X at 0 source "$HOME/.$PKG/profile"
+	screen -X at 0 source "$DATA/profile"
 else
 	while true; do
 		case "$1" in

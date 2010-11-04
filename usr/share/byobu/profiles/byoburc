@@ -19,6 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
-source $HOME/.byobu/profile
+source $HOME/.local/share/byobu/profile
 source $BYOBU_WINDOWS
 source $HOME/.screenrc

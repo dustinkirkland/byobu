@@ -19,15 +19,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-[ -d "$HOME/.$PKG/bin" ] || exit 0
+[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
+[ -d "$DATA/bin" ] || exit 0
 color 2>/dev/null || color() { true; }
 
-[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$HOME/.byobu"
+[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$DATA"
 NOW=$(date +%s)
 CACHE="$DIR/$PKG.custom"
 
 # Loop over custom scripts
-for i in "$HOME"/.$PKG/bin/[0-9]*_*; do
+for i in "$DATA/bin/[0-9]*_*; do
 	[ -x "$i" ] || continue
 	script=$(basename "$i")
 	freq=$(echo "$script" | awk -F_ '{print $1}')

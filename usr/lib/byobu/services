@@ -22,7 +22,7 @@
 PKG="byobu"
 color 2>/dev/null || color() { true; }
 
-# Users can define a list of SERVICES to monitor in $HOME/.byobu/status
+# Users can define a list of SERVICES to monitor in $DATA/status
 if [ -z "$SERVICES" ]; then
 	if [ -f "/etc/eucalyptus/eucalyptus.conf" ]; then
 		# If the user has not defined any SERVICES, but this system is a
