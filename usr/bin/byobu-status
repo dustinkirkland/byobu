@@ -75,7 +75,7 @@ case "$P" in
 			[ "$i" = "menu" ] && continue
 			script=`find_script $i`
 			short=`$script --short | sed -e 's/^\s*//' -e 's/\s*$//' -e 's/.{[^}]*}//g'` || true
-			detail=`$script --detail | sed -e '/^$/d' -e 's/^/\t/g'` || true
+			detail=`$script --detail 2>/dev/null | sed -e '/^$/d' -e 's/^/\t/g'` || true
 			printf "%s\n\t(%s)\n" "$short" "$i"
 			[ -n "$detail" ] && printf "%s\n" "$detail"
 		done

@@ -22,8 +22,11 @@ LOG="$HOME"/.cache/notify-osd.log
 [ -z "$BYOBU_PREFIX" ] && BYOBU_PREFIX="/usr"
 
 case "$1" in
+	--short)
+		exit 0
+	;;
 	--detail)
-		cat "$LOG"
+		cat "$LOG" || true
 		exit 0
 	;;
 esac
