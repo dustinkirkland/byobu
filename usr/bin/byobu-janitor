@@ -26,6 +26,9 @@ PKG="byobu"
 RUN="$SOCKETDIR/S-$USER"
 FLAG="$RUN/$PKG.reload-required"
 
+# Never hurts, always helps to do this
+[ -d "$DATA" ] || mkdir -p "$DATA"
+
 # Exit immediately, if we're not forced, and there is no reload flag
 if [ "$1" != "--force" ] && [ ! -e "$FLAG" ]; then
 	exit 0
@@ -57,7 +60,6 @@ fi
 
 # Affects: First runs with no configuration
 # Seed the configuration
-[ -d "$DATA" ] || mkdir -p "$DATA"
 [ -r "$DATA/color" ] || printf "BACKGROUND=k\nFOREGROUND=w\nMONOCHROME=0" > "$DATA/color"
 [ -r "$PROFILE" ] || ln -sf $BYOBU_PREFIX/share/$PKG/profiles/common "$PROFILE"
 
