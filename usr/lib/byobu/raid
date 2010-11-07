@@ -17,6 +17,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+[ -r /proc/mdstat ] || exit 0
+
 PKG="byobu"
 color 2>/dev/null || color() { true; }
 
@@ -33,11 +35,11 @@ if grep -qs " blocks \[.*_.*\]$" /proc/mdstat; then
 fi
 
 if grep -qs \% /proc/mdstat; then
-	p=$(grep \% /proc/mdstat | sed -e "s/\%.*//" -e "s/.* //")
-	sync=",$p%"
+	p=$(grep \% /proc/mdstat | sed -e "s/\%.*/%/" -e "s/.* //")
+	[ -z "$msg" ] && msg="RAID"
+	msg="$msg,$p"
 fi
 
 if [ -n "$msg" ]; then
-	printf "$(color B w r)%s%s$(color -) " "$msg" "$sync"
+	printf "$(color B w r)%s$(color -) " "$msg"
 fi
-
