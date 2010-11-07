@@ -50,6 +50,8 @@ byobu (3.7) unreleased; urgency=low
     - add a raid notification, LP: #669191
   * usr/bin/byobu-status, usr/lib/byobu/notify_osd:
     - fix all detail printing
+  * usr/bin/byobu:
+    - fix listing of sessions, LP: #672023
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 
