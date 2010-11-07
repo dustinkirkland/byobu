@@ -34,10 +34,10 @@ fi
 
 if grep -qs \% /proc/mdstat; then
 	p=$(grep \% /proc/mdstat | sed -e "s/\%.*//" -e "s/.* //")
-	sync=",$p%%"
+	sync=",$p%"
 fi
 
 if [ -n "$msg" ]; then
-	printf "$(color B w r)%s%s$(color -)" "$msg" "$sync"
+	printf "$(color B w r)%s%s$(color -) " "$msg" "$sync"
 fi
 
