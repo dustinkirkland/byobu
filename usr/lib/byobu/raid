@@ -1,7 +1,7 @@
 #!/bin/sh -e
 #
-#    mail: notify the user if they have system mail
-#    Copyright (C) 2009 Canonical Ltd.
+#    raid: notify raid events, failures and syncing
+#    Copyright (C) 2010 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@canonical.com>
 #
@@ -20,10 +20,24 @@
 PKG="byobu"
 color 2>/dev/null || color() { true; }
 
-mailfile="/var/spool/mail/$USER"
-if [ "$1" = "--detail" ]; then
-	ls -alF "$mailfile" 2>&1
-	exit 0
+case $1 in
+	--detail)
+		cat /proc/mdstat
+		exit 0
+	;;
+esac
+
+if grep -qs " blocks \[.*_.*\]$" /proc/mdstat; then
+	# Errors in your raid
+	msg="RAID"
 fi
 
-[ -s "$mailfile" ] && printf "$(color w k)[M]$(color -)" || exit 0
+if grep -qs \% /proc/mdstat; then
+	p=$(grep \% /proc/mdstat | sed -e "s/\%.*//" -e "s/.* //")
+	sync=",$p%%"
+fi
+
+if [ -n "$msg" ]; then
+	printf "$(color B w r)%s%s$(color -)" "$msg" "$sync"
+fi
+

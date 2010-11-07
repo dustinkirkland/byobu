@@ -314,6 +314,7 @@ def readstatus():
     status["network"]=0
     status["notify_osd"]=0
     status["processes"]=0
+    status["raid"]=1
     status["rcs_cost"]=0
     status["reboot_required"]=1
     status["release"]=1

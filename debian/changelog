@@ -44,6 +44,10 @@ byobu (3.7) unreleased; urgency=low
     usr/share/byobu/profiles/byoburc, usr/share/byobu/profiles/common,
     usr/share/man/man1/byobu.1:
     - xdg user dirs overhaul, LP: #553105
+  * etc/byobu/statusrc, usr/bin/byobu-config, usr/lib/byobu/mail,
+    usr/lib/byobu/Makefile.am, usr/lib/byobu/raid,
+    usr/share/byobu/profiles/common, usr/share/man/man1/byobu.1:
+    - add a raid notification, LP: #669191
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 
