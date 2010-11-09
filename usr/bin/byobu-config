@@ -204,6 +204,8 @@ def newwindow(screen, size):
     titlel=Label(_("Title: "))
     command=Entry(20, text="/bin/sh", returnExit=1)
     commandl=Label(_("Command: "))
+    path=Entry(20, text="~", returnExit=1)
+    pathl=Label(_("Path: "))
 
     rl=Label(_("Presets: "))
     if len(cmd) > 10:
@@ -223,15 +225,17 @@ def newwindow(screen, size):
 
     bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
 
-    g = GridForm(screen, _("Create new window(s):"), 2, 5 )
+    g = GridForm(screen, _("Create new window(s):"), 2, 6 )
     g.add(titlel, 0, 0, anchorLeft=1,padding=(4,1,0,1))
     g.add(title, 1, 0, anchorLeft=1)
     g.add(commandl, 0, 1, anchorLeft=1, anchorTop=1,padding=(4,0,0,1))
     g.add(command, 1, 1, anchorLeft=1)
-    g.add(rl, 0, 2, anchorLeft=1,padding=(4,0,0,1))
-    g.add(r, 1, 2)
-    g.add(cb, 1, 3, padding=(4,1,0,1))
-    g.add(bb, 1, 4, padding=(4,1,0,0))
+    g.add(pathl, 0, 2, anchorLeft=1, anchorTop=1,padding=(4,0,0,1))
+    g.add(path, 1, 2, anchorLeft=1)
+    g.add(rl, 0, 3, anchorLeft=1,padding=(4,0,0,1))
+    g.add(r, 1, 3)
+    g.add(cb, 1, 4, padding=(4,1,0,1))
+    g.add(bb, 1, 5, padding=(4,1,0,0))
 
     if bb.buttonPressed(g.runOnce()) != "cancel":
         sel=r.getSelection()
@@ -242,9 +246,14 @@ def newwindow(screen, size):
                 if cb.value():
                     appendwindow(win)
         else:
-            win='screen -t %s %s' % (title.value(), command.value())
+	    cpath='screen -X setenv newpath %s' % (path.value())
+            win='screen -X eval \'chdir $newpath\' \"screen -t %s %s\"' % (title.value(), command.value())
+	    commands.getoutput(cpath)
             commands.getoutput(win)
             if cb.value():
+	    	cpath='chdir %s' % (path.value())
+            	win='screen -t %s %s' % (title.value(), command.value())
+		appendwindow(cpath)
                 appendwindow(win)
 
     return 100

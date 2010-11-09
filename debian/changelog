@@ -1,5 +1,6 @@
 byobu (3.7) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/ec2_cost, usr/share/byobu/ec2/rates.eu_ie,
     usr/share/byobu/ec2/rates.us_ca, usr/share/byobu/ec2/rates.us_va:
     - add ec2_cost support for t1.micro instances, LP: #669190
@@ -54,6 +55,10 @@ byobu (3.7) unreleased; urgency=low
     - fix listing of sessions, LP: #672023
   * usr/lib/byobu/services:
     - drop max instance count from NC service reporting;  was inaccurate
+
+  [ Marcus Asshauer ]
+  * usr/bin/byobu-config: add directory option when creating new window,
+    LP: #623033
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 
