@@ -52,6 +52,8 @@ byobu (3.7) unreleased; urgency=low
     - fix all detail printing
   * usr/bin/byobu:
     - fix listing of sessions, LP: #672023
+  * usr/lib/byobu/services:
+    - drop max instance count from NC service reporting;  was inaccurate
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
 

@@ -59,13 +59,8 @@ for i in $SERVICES; do
 			if running $service; then
 				# This is a node controller, determine VM usage
 				. /etc/eucalyptus/eucalyptus.conf
-				if [ -z "$MAX_CORES" ]; then
-					max=$(grep -ci "^processor" /proc/cpuinfo)
-				else
-					max="$MAX_CORES"
-				fi
 				count=$(pgrep -c -f /usr/bin/kvm || true)
-				output="$output,NC $count/$max"
+				output="$output,NC:$count"
 			fi
 		;;
 		*)
