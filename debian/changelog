@@ -1,4 +1,4 @@
-byobu (3.7) unreleased; urgency=low
+byobu (3.7-0ubuntu1) natty; urgency=low
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/ec2_cost, usr/share/byobu/ec2/rates.eu_ie,
@@ -60,7 +60,7 @@ byobu (3.7) unreleased; urgency=low
   * usr/bin/byobu-config: add directory option when creating new window,
     LP: #623033
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 Oct 2010 12:09:14 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 08 Nov 2010 18:24:09 -0600
 
 byobu (3.6-0ubuntu1) natty; urgency=low
 
