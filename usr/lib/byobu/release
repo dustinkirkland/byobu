@@ -48,6 +48,8 @@ elif which lsb_release >/dev/null 2>&1; then
 			DISTRO="$i $r"
 		;;
 	esac
+elif [ -r "/etc/debian_version" ]; then
+	DISTRO="Debian $(cat /etc/debian_version)" # this
 elif [ -r "/etc/palm-build-info" ]; then
 	# Palm Pre hack
 	DISTRO=$(grep "^PRODUCT_VERSION_STRING=Palm " /etc/palm-build-info | sed "s/^.*=Palm //")
