@@ -36,7 +36,7 @@ if [ -d "$HOME/.$PKG" ]; then
 		ln -sf "$DATA" "$HOME/.$PKG"
 	elif [ -d "$DATA" ]; then
 		# Old and new dir exist; migrate files from old to new
-		mv -f "$HOME/.$PKG/"* "$DATA" 2>/dev/null
+		mv -f "$HOME/.$PKG/"* "$HOME/.$PKG/".* "$DATA" 2>/dev/null
 		rmdir "$HOME/.$PKG"
 		ln -sf "$DATA" "$HOME/.$PKG"
 	fi

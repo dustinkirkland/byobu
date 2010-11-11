@@ -1,6 +1,6 @@
 byobu (3.9) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-janitor: move hidden files too
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Nov 2010 18:29:06 -0600
 
