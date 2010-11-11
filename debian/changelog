@@ -1,3 +1,9 @@
+byobu (3.9) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Nov 2010 18:29:06 -0600
+
 byobu (3.8-0ubuntu1) natty; urgency=low
 
   * usr/bin/byobu-janitor: fix migration to XDG, LP: #673797, #673727
