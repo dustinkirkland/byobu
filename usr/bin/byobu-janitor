@@ -26,8 +26,23 @@ PKG="byobu"
 RUN="$SOCKETDIR/S-$USER"
 FLAG="$RUN/$PKG.reload-required"
 
-# Never hurts, always helps to do this
-[ -d "$DATA" ] || mkdir -p "$DATA"
+# Handle xdg migration
+if [ -d "$HOME/.$PKG" ]; then
+	# Old dir exists
+	if [ ! -e "$DATA" ]; then
+		# New dir does not; rename and link back
+		mkdir -p $(dirname "$DATA")
+		mv -f "$HOME/.$PKG" "$DATA"
+		ln -sf "$DATA" "$HOME/.$PKG"
+	elif [ -d "$DATA" ]; then
+		# Old and new dir exist; migrate files from old to new
+		mv -f "$HOME/.$PKG/"* "$DATA" 2>/dev/null
+		rmdir "$HOME/.$PKG"
+		ln -sf "$DATA" "$HOME/.$PKG"
+	fi
+fi
+# Make the directory just in case
+mkdir -p "$DATA"
 
 # Exit immediately, if we're not forced, and there is no reload flag
 if [ "$1" != "--force" ] && [ ! -e "$FLAG" ]; then
@@ -39,12 +54,6 @@ DEFAULT_PROFILE="light"
 PROFILE="$DATA/profile"
 # Use gsed on non-Linux OS's
 which gsed 2>/dev/null && SED="gsed" || SED="sed"
-
-# If the old dir exists, but the xdg one doesn't, migrate
-if [ -d "$HOME/.$PKG" ] && [ ! -e "$DATA" ]; then
-	mv -f "$HOME/.$PKG" "$DATA"
-	ln -sf "$DATA" "$HOME/.$PKG"
-fi
 
 # Create byobu-exchange buffer file, with secure permissions, if it doesn't exist
 if [ -w "$RUN" ] && [ ! -e "$RUN/$PKG-exchange" ]; then
