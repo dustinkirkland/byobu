@@ -1,4 +1,4 @@
-byobu (3.9) unreleased; urgency=low
+byobu (3.9-0ubuntu1) natty; urgency=low
 
   * debian/templates, etc/byobu/statusrc, usr/bin/byobu, usr/bin/byobu-
     config, usr/bin/byobu-janitor, usr/bin/byobu-launcher,
@@ -17,7 +17,7 @@ byobu (3.9) unreleased; urgency=low
   * usr/lib/byobu/release: use /etc/issue first, much, much faster,
     thanks to the suggestion from Daniel Hahler, LP: #674275
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Nov 2010 18:29:06 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 12 Nov 2010 22:45:16 -0600
 
 byobu (3.8-0ubuntu1) natty; urgency=low
 
