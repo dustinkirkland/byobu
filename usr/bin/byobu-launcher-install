@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
+DATA="$HOME/.$PKG"
 
 install_launcher() {
 	printf "%s\n" 'case "$-" in *i*) byobu-launcher && exit 0; esac;' >> "$1"

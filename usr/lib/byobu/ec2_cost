@@ -19,7 +19,7 @@
 
 DETAIL=0
 PKG="byobu"
-[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
+DATA="$HOME/.$PKG"
 [ -z "$BYOBU_PREFIX" ] && BYOBU_PREFIX="/usr"
 color 2>/dev/null || color() { true; }
 

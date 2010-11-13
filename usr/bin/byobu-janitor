@@ -20,29 +20,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
+DATA="$HOME/.$PKG"
+XDG="$HOME/.local/share/$PKG"
 [ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
 [ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir" || SOCKETDIR="/var/run/screen"
 RUN="$SOCKETDIR/S-$USER"
 FLAG="$RUN/$PKG.reload-required"
 
-# Handle xdg migration
-if [ -d "$HOME/.$PKG" ]; then
-	# Old dir exists
-	if [ ! -e "$DATA" ]; then
-		# New dir does not; rename and link back
-		mkdir -p $(dirname "$DATA")
-		mv -f "$HOME/.$PKG" "$DATA"
-		ln -sf "$DATA" "$HOME/.$PKG"
-	elif [ -d "$DATA" ]; then
-		# Old and new dir exist; migrate files from old to new
-		mv -f "$HOME/.$PKG/"* "$HOME/.$PKG/".* "$DATA" 2>/dev/null
-		rmdir "$HOME/.$PKG"
-		ln -sf "$DATA" "$HOME/.$PKG"
-	fi
+# Let's get prepped to switch over to XDG one day; maintain symlink for now
+mkdir -p "$XDG"
+if [ -d "$DATA" ] && [ ! -h "$DATA" ]; then
+	mv -f "$DATA"/* "$DATA"/.* "$XDG" 2>/dev/null
+	rmdir "$DATA"
 fi
-# Make the directory just in case
-mkdir -p "$DATA"
+ln -sf "$XDG" "$DATA"
 
 # Exit immediately, if we're not forced, and there is no reload flag
 if [ "$1" != "--force" ] && [ ! -e "$FLAG" ]; then

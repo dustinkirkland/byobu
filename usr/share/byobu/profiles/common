@@ -99,9 +99,9 @@ defmonitor on
 activity ""
 
 # Maintain SSH_AUTH_SOCK link
-setenv SSH_AUTH_SOCK $HOME/.local/share/byobu/.ssh-agent
+setenv SSH_AUTH_SOCK $HOME/.byobu/.ssh-agent
 
-source $HOME/.local/share/byobu/keybindings
+source $HOME/.byobu/keybindings
 
 # Window tabs, second to last line
 caption always "%12`%?%-Lw%50L>%?%{=r}%n*%f %t%?(%u)%?%{-}%12`%?%+Lw%?%11` %=%12`%110`%109`%122`%111`%10`%<"

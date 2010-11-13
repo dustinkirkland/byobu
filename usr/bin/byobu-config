@@ -35,10 +35,7 @@ else:
     PREFIX = "/usr"
 SHARE=PREFIX+'/share/'+PKG
 DOC=PREFIX+'/share/doc/'+PKG
-if os.getenv("XDG_DATA_HOME"):
-	DATA=os.getenv("XDG_DATA_HOME")+"/"+PKG
-else:
-	DATA=HOME+"/.local/share/"+PKG
+DATA=HOME+"/."+PKG
 if not os.path.exists(SHARE):
     SHARE = DATA+"/"+SHARE
 if not os.path.exists(DOC):

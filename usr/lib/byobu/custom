@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-[ -d "$XDG_DATA_HOME" ] && DATA="$XDG_DATA_HOME/$PKG" || DATA="$HOME/.local/share/$PKG"
+DATA="$HOME/.$PKG"
 [ -d "$DATA/bin" ] || exit 0
 color 2>/dev/null || color() { true; }
 

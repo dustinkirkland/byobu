@@ -20,6 +20,7 @@
 
 
 PKG="byobu"
+DATA="$HOME/.$PKG"
 color 2>/dev/null || color() { true; }
 
 # Users can define a list of SERVICES to monitor in $DATA/status

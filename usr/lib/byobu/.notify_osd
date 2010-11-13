@@ -24,7 +24,7 @@ $PKG = "byobu";
 while (<STDIN>) {
 	# Ensure that the notify_osd indicator is enabled
 	my $skip = 0;
-	open(F, "<$ENV{HOME}/.local/share/$PKG/status");
+	open(F, "<$ENV{HOME}/.$PKG/status");
 	foreach my $i (<F>) {
 		if ($i =~ /notify_osd=0/) {
 			$skip = 1;
