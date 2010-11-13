@@ -14,6 +14,8 @@ byobu (3.9) unreleased; urgency=low
     usr/share/byobu/profiles/byoburc, usr/share/byobu/profiles/common,
     usr/share/man/man1/byobu.1: clean up the broken xdg changes,
     maintain both the xdg dir and a symlink for now;  LP: #674217
+  * usr/lib/byobu/release: use /etc/issue first, much, much faster,
+    thanks to the suggestion from Daniel Hahler, LP: #674275
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Nov 2010 18:29:06 -0600
 

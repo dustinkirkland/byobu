@@ -26,8 +26,22 @@ if [ "$1" = "--detail" ]; then
 fi
 
 if [ -n "$DISTRO" ]; then
-	# skip down to the bottom
+	# user defined
 	true
+elif [ -r "/etc/issue" ]; then
+	# lsb_release is *really* slow;  try to use /etc/issue first
+	issue=$(grep -m1 "^[A-Za-z]" /etc/issue)
+	case "$issue" in
+		Ubuntu*)
+			DISTRO=$(echo "$issue" | sed "s/ \\\.*$//")
+		;;
+		Debian*)
+			DISTRO="Debian $(cat /etc/debian_version)"
+		;;
+		*)
+			DISTRO=$(echo "$issue" | sed "s/ [^0-9]* / /" | awk '{print $1 " " $2}')
+		;;
+	esac
 elif which lsb_release >/dev/null 2>&1; then
 	if [ "$1" = "--detail" ]; then
 		lsb_release -a 2>/dev/null
@@ -48,12 +62,6 @@ elif which lsb_release >/dev/null 2>&1; then
 			DISTRO="$i $r"
 		;;
 	esac
-elif [ -r "/etc/palm-build-info" ]; then
-	# Palm Pre hack
-	DISTRO=$(grep "^PRODUCT_VERSION_STRING=Palm " /etc/palm-build-info | sed "s/^.*=Palm //")
-elif [ -r "/etc/issue" ]; then
-	# Otherwise, grab part of /etc/issue, ideally the distro and version
-	DISTRO=$(grep -m1 "^[A-Za-z]" /etc/issue | sed "s/ [^0-9]* / /" | awk '{print $1 " " $2}')
 else
 	DISTRO="Byobu"
 fi
