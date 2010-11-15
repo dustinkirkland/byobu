@@ -1,6 +1,7 @@
 byobu (3.10) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/custom: fix typo in for loop, LP: #673728, thanks for
+    the triage Jorge E. Gómez
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 12 Nov 2010 22:45:25 -0600
 

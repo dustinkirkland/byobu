@@ -28,7 +28,7 @@ NOW=$(date +%s)
 CACHE="$DIR/$PKG.custom"
 
 # Loop over custom scripts
-for i in "$DATA/bin/[0-9]*_*; do
+for i in "$DATA/bin/"[0-9]*_*; do
 	[ -x "$i" ] || continue
 	script=$(basename "$i")
 	freq=$(echo "$script" | awk -F_ '{print $1}')
