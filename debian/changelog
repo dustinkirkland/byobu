@@ -1,3 +1,9 @@
+byobu (3.11) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 18 Nov 2010 21:44:32 -0600
+
 byobu (3.10-0ubuntu1) natty; urgency=low
 
   * usr/lib/byobu/custom: fix typo in for loop, LP: #673728, thanks for
