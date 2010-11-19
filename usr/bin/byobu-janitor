@@ -30,7 +30,7 @@ FLAG="$RUN/$PKG.reload-required"
 # Let's get prepped to switch over to XDG one day; maintain symlink for now
 mkdir -p "$XDG"
 if [ -d "$DATA" ] && [ ! -h "$DATA" ]; then
-	mv -f "$DATA"/* "$DATA"/.* "$XDG" 2>/dev/null
+	mv -f "$DATA"/* "$DATA"/.* "$XDG" 2>/dev/null || true
 	rmdir "$DATA"
 fi
 ln -sf "$XDG" "$DATA"
