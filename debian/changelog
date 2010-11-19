@@ -9,6 +9,7 @@ byobu (3.10-0ubuntu1) natty; urgency=low
     usr/lib/byobu/swap, usr/share/byobu/profiles/common,
     usr/share/man/man1/byobu.1: add a swap memory usage notification,
     LP: #677259
+  * usr/lib/byobu/release: fix the ubuntu devel release printing
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 12 Nov 2010 22:45:25 -0600
 
