@@ -48,6 +48,7 @@ rcs_cost=0
 reboot_required=1
 release=1
 services=1
+swap=0
 time=1
 time_utc=0
 users=0

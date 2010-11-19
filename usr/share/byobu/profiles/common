@@ -74,6 +74,7 @@ backtick 132 	11	11		byobu-status time_utc
 backtick 133 	3	3		byobu-status disk_io
 backtick 134 	613	613		byobu-status rcs_cost
 backtick 135 	7	7		byobu-status raid
+backtick 136 	19	19		byobu-status swap
 
 hardstatus alwayslastline
 
@@ -107,7 +108,7 @@ source $HOME/.byobu/keybindings
 caption always "%12`%?%-Lw%50L>%?%{=r}%n*%f %t%?(%u)%?%{-}%12`%?%+Lw%?%11` %=%12`%110`%109`%122`%111`%10`%<"
 
 # Status string, last line
-hardstatus string '%99`%{-}%{=r}%12` %100`%112`%= %130`%135`%102`%101`%129`%131`%127`%114`%115`%108`%134`%128`%125`%126`%113`%119`%133`%117`%116`%106`%104`%103`%105`%107`%123`%132`%120`%121`'
+hardstatus string '%99`%{-}%{=r}%12` %100`%112`%= %130`%135`%102`%101`%129`%131`%127`%114`%115`%108`%134`%128`%125`%126`%113`%119`%133`%117`%116`%106`%104`%103`%105`%107`%136`%123`%132`%120`%121`'
 
 # NOTE: Older version of screen have an arbitrary limit of only being able
 # to change colors 16 times in this 'hardstatus string'.

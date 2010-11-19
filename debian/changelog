@@ -1,10 +1,14 @@
-byobu (3.10) unreleased; urgency=low
+byobu (3.10-0ubuntu1) natty; urgency=low
 
   * usr/lib/byobu/custom: fix typo in for loop, LP: #673728, thanks for
     the triage Jorge E. Gómez
   * usr/bin/byobu-janitor: make sure this runs to completion, LP: #676605
   * usr/lib/byobu/cpu_freq: scale bogomips by number of processors, if
     using bogomips to estimate frequency, LP: #675442
+  * etc/byobu/statusrc, usr/bin/byobu-config, usr/lib/byobu/Makefile.am,
+    usr/lib/byobu/swap, usr/share/byobu/profiles/common,
+    usr/share/man/man1/byobu.1: add a swap memory usage notification,
+    LP: #677259
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 12 Nov 2010 22:45:25 -0600
 

@@ -325,6 +325,7 @@ def readstatus():
     status["reboot_required"]=1
     status["release"]=1
     status["services"]=1
+    status["swap"]=0
     status["time"]=1
     status["time_utc"]=0
     status["users"]=0

@@ -1,0 +1,40 @@
+#!/bin/sh -e
+#
+#    mem_swap: show the current swap available and used
+#    Copyright (C) 2010 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+PKG="byobu"
+color 2>/dev/null || color() { true; }
+
+if [ "$1" = "--detail" ]; then
+	cat /proc/meminfo
+	exit 0
+fi
+
+f=$(free | awk '/Swap:/ {printf "%.0f", 100*$3/($3 + $4)}' 2>/dev/null || echo 0)
+mem=$(free | awk '/Swap:/ {print $2}')
+if [ $mem -ge 1048576 ]; then
+	mem=$(echo "$mem" | awk '{ printf "%.1f", $1 / 1048576 }')
+	unit="GB"
+elif [ $mem -ge 1024 ]; then
+	mem=$(echo "$mem" | awk '{ printf "%.0f", $1 / 1024 }')
+	unit="MB"
+else
+	mem="$mem"
+	unit="KB"
+fi
+printf "$(color b G W)s%s$(color -)$(color G W)%s,$(color -)$(color b G W)%s$(color -)$(color G W)%%$(color -) " "$mem" "$unit" "$f"
