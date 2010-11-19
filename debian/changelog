@@ -11,7 +11,7 @@ byobu (3.10-0ubuntu1) natty; urgency=low
     LP: #677259
   * usr/lib/byobu/release: fix the ubuntu devel release printing
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 12 Nov 2010 22:45:25 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 18 Nov 2010 21:44:26 -0600
 
 byobu (3.9-0ubuntu1) natty; urgency=low
 
