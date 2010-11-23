@@ -1,8 +1,8 @@
 byobu (3.11) unreleased; urgency=low
 
-  * UNRELEASED
+  * README: minor edit to the instructions;  tested and working for me now
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 18 Nov 2010 21:44:32 -0600
+ -- Dustin Kirkland <kirkland@dustinkirkland.com>  Mon, 22 Nov 2010 18:39:14 -0600
 
 byobu (3.10-0ubuntu1) natty; urgency=low
 
