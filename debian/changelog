@@ -1,8 +1,12 @@
 byobu (3.11) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * README: minor edit to the instructions;  tested and working for me now
 
- -- Dustin Kirkland <kirkland@dustinkirkland.com>  Mon, 22 Nov 2010 18:39:14 -0600
+  [ Marcin Juszkiewicz ]
+  * usr/lib/byobu/cpu_freq: fix cpu frequency detection on ARM, LP: #675442
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 24 Nov 2010 12:43:03 -0600
 
 byobu (3.10-0ubuntu1) natty; urgency=low
 
