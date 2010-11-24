@@ -1,16 +1,16 @@
 byobu (3.11) unreleased; urgency=low
 
-  [ Dustin Kirkland ]
-  * README: minor edit to the instructions;  tested and working for me now
-
   [ Marcin Juszkiewicz ]
   * usr/lib/byobu/cpu_freq: fix cpu frequency detection on ARM, LP: #675442
 
   [ Dustin Kirkland ]
   * etc/update-motd.d/55-window-manager: fix a spelling error, allow for
     easy disabling of the motd message
+  * usr/share/byobu/keybindings/f-keys: resize on each window change,
+    LP: #680559
+  * README: minor edit to the instructions;  tested and working for me now
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 24 Nov 2010 12:51:38 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 24 Nov 2010 12:59:37 -0600
 
 byobu (3.10-0ubuntu1) natty; urgency=low
 
