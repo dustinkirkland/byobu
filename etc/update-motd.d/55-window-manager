@@ -1,9 +1,9 @@
 #!/bin/sh
 
-if [ ! -e /etc/profile.d/Z98-byobu.sh ]; then
+if [ ! -e /etc/profile.d/Z98-byobu.sh ] && [ ! -e /etc/byobu/disable-motd ]; then
 	cat <<EOF
 
-For a superior command line experience, enable our text-based window manger:
+For a superior command line experience, enable Ubuntu's text-based window manager:
   byobu-enable
 EOF
 fi
