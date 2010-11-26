@@ -1,8 +1,9 @@
-byobu (3.12) unreleased; urgency=low
+byobu (3.12-0ubuntu1) natty; urgency=low
 
-  * UNRELEASED
+  * etc/update-motd.d/55-window-manager: LP: #681616, fix printing of the
+    motd message
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 24 Nov 2010 13:04:42 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 25 Nov 2010 18:50:33 -0600
 
 byobu (3.11-0ubuntu1) natty; urgency=low
 
