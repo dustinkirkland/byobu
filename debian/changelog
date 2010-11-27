@@ -1,8 +1,9 @@
 byobu (3.13) unreleased; urgency=low
 
-  * UNRELEASED
+  * etc/update-motd.d/55-window-manager: print the MOTD appendage up to 3
+    times, LP: #680657
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 25 Nov 2010 18:50:39 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 27 Nov 2010 09:09:50 -0600
 
 byobu (3.12-0ubuntu1) natty; urgency=low
 

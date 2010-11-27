@@ -1,10 +1,16 @@
 #!/bin/sh
 
-# To disable this MOTD appendage:
-#  sudo touch /etc/byobu/disable-motd
+# This MOTD appendage will print 3 times, and then silence itself.
+# To silence immediately:
+#   echo 3 | sudo tee /etc/byobu/motd-count
 
-if [ ! -e /etc/profile.d/Z98-byobu.sh ] && [ ! -e /etc/byobu/disable-motd ]; then
-	echo
-	echo "For a premium command line experience, enable Ubuntu's text-based window manager:"
-	echo "  byobu-enable"
+if [ ! -e /etc/profile.d/Z98-byobu.sh ]; then
+	count=$(cat /etc/byobu/motd-count 2>/dev/null || echo 0)
+	if [ "$count" -lt 3 ]; then
+		echo
+		echo "For a premium command line experience, enable Ubuntu's text window manager:"
+		echo "  byobu-enable"
+		count=$(expr "$count" + 1)
+		echo "$count" > /etc/byobu/motd-count
+	fi
 fi
