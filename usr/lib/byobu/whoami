@@ -20,7 +20,7 @@
 color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" ]; then
-	grep "^$USER:" /etc/passwd
+	getent -- passwd "$USER"
 	exit 0
 fi
 

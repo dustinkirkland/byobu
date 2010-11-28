@@ -1,9 +1,14 @@
 byobu (3.13) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * etc/update-motd.d/55-window-manager: print the MOTD appendage up to 3
     times, LP: #680657
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 27 Nov 2010 09:09:50 -0600
+  [ Anders Kaseorg <andersk@mit.edu> ]
+  * usr/bin/byobu-launcher-install, usr/lib/byobu/whoami: Use getent instead
+    of reading /etc/passwd directly , LP: #682296
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Nov 2010 10:36:55 -0600
 
 byobu (3.12-0ubuntu1) natty; urgency=low
 

@@ -45,7 +45,9 @@ if [ ! -h "/etc/profile.d/Z98-$PKG.sh" ]; then
 fi
 
 # Install in zprofile if default shell is zsh
-if grep -qs "^$USER:.*zsh$" /etc/passwd; then
-	install_launcher "$HOME/.zprofile"
-fi
+case "$SHELL" in
+	*zsh)
+		install_launcher "$HOME/.zprofile"
+	;;
+esac
 
