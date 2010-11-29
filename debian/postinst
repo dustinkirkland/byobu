@@ -16,6 +16,9 @@ fi
 # the divert removal to fail; we don't want that to happen
 [ -e "/usr/bin/screen.real" ] && [ ! -e "/usr/bin/screen" ] && cp -a /usr/bin/screen.real /usr/bin/screen
 
+# Remove the short-lived MOTD message
+rm -f /etc/update-motd.d/55-window-manager
+
 # Notify users that they should reload their profile
 DIR="/var/run/screen"
 if [ -d "$DIR" ]; then
