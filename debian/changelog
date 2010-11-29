@@ -1,8 +1,11 @@
 byobu (3.14) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/install, etc/update-motd.d/55-window-manager, === removed
+    directory etc/update-motd.d: dropped motd message; unfortunately
+    annoyed some people;  we still need a way to expose byobu to people
+    who want it, but don't know what it's called, LP: #680657
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Nov 2010 10:41:15 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 29 Nov 2010 14:47:08 -0600
 
 byobu (3.13-0ubuntu1) natty; urgency=low
 

@@ -1,5 +1,4 @@
 /usr
-../../etc/update-motd.d/55-window-manager etc/update-motd.d
 ../../etc/byobu/socketdir etc/byobu/
 ../../etc/byobu/statusrc etc/byobu/
 ../../debian/source_byobu.py usr/share/apport/package-hooks
