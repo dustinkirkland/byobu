@@ -6,7 +6,7 @@ byobu (3.14-0ubuntu1) natty; urgency=low
     - we still need a way to enable people who don't know about byobu
       to actually find it
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 29 Nov 2010 14:54:31 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 29 Nov 2010 14:57:08 -0600
 
 byobu (3.13-0ubuntu1) natty; urgency=low
 
