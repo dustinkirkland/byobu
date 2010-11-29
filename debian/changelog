@@ -1,3 +1,9 @@
+byobu (3.15) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 29 Nov 2010 14:57:14 -0600
+
 byobu (3.14-0ubuntu1) natty; urgency=low
 
   * debian/install, etc/update-motd.d/55-window-manager, === removed
