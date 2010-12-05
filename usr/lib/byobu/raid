@@ -35,7 +35,7 @@ if grep -qs " blocks \[.*_.*\]$" /proc/mdstat; then
 fi
 
 if grep -qs \% /proc/mdstat; then
-	p=$(grep \% /proc/mdstat | sed -e "s/\%.*/%/" -e "s/.* //")
+	p=$(grep -m1 \% /proc/mdstat | sed -e "s/\%.*/%/" -e "s/.* //")
 	[ -z "$msg" ] && msg="RAID"
 	msg="$msg,$p"
 fi
