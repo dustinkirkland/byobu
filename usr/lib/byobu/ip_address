@@ -44,14 +44,14 @@ fi
 
 case "$IPV6" in
 	1|true|yes)
-		ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface")
+		ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global)
 		# Print 'None' if we have no global address
 		[ -z "$ipaddr" ] && ipaddr="None"
 		ipaddr=${ipaddr#* inet6 }
 		ipaddr=${ipaddr%%/*}
 	;;
 	*)
-		ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface")
+		ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global)
 		ipaddr=${ipaddr#* inet }
 		ipaddr=${ipaddr%%/*}
 	;;
