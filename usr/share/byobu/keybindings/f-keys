@@ -42,16 +42,16 @@ register s "^a[g G$>^h"					# Goes with ^a~ definition
 bind ~ eval 'process s' 'exec sed -i -e "/./,/^$/!d" /var/run/screen/S-$USER/byobu-exchange' 'echo "See: /var/run/screen/S-$USER/byobu-exchange"' # ctrl-a ~ | write the buffer to file
 
 # Hotkeys for splits
-bindkey -k "^[O1;2Q" split					# shift-F2 | horizontal split
-bindkey -k "^[O1;5Q" split -v				# ctrl-F2  | vertical split
-bindkey -k "^[O1;2R" focus up				# shift-F3 | focus up
-bindkey -k "^[O1;2S" focus down				# shift-F4 | focus down
-bindkey -k "^[[15;2~" only					# shift-F5 | kill all splits
-bindkey -k "^[[17;2~" remove				# shift-F6 | kill this split
+bindkey "^[O1;2Q" split					# shift-F2 | horizontal split
+bindkey "^[O1;5Q" split -v				# ctrl-F2  | vertical split
+bindkey "^[O1;2R" focus up				# shift-F3 | focus up
+bindkey "^[O1;2S" focus down				# shift-F4 | focus down
+bindkey "^[[15;2~" only					# shift-F5 | kill all splits
+bindkey "^[[17;2~" remove				# shift-F6 | kill this split
 
 # Make it more logical how to enter scrollback
-bindkey -k "^[[5;3~" copy					# alt-pageup | scrollback
-bindkey -k "^[[6;3~" copy					# alt-pageup | scrollback
+bindkey "^[[5;3~" copy					# alt-pageup | scrollback
+bindkey "^[[6;3~" copy					# alt-pageup | scrollback
 
 # toggle f-key keybindings off
 register d "^a:source $BYOBU_PREFIX/share/byobu/keybindings/screen-escape-keys^M"

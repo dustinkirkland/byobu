@@ -1,8 +1,10 @@
 byobu (3.16) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/keybindings/f-keys,
+    usr/share/byobu/keybindings/screen-escape-keys: drop the -k arg to
+    bindkey, doesn't seem to be working
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 Dec 2010 22:19:49 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 08 Dec 2010 08:55:57 -0600
 
 byobu (3.15-0ubuntu1) natty; urgency=low
 

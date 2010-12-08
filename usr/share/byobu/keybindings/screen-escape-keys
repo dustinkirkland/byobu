@@ -30,12 +30,12 @@ bindkey -k k7
 bindkey -k k8
 bindkey -k k9
 bindkey -k F2
-bindkey -k "^[O1;2Q"
-bindkey -k "^[O1;5Q"
-bindkey -k "^[O1;2R"
-bindkey -k "^[O1;2S"
-bindkey -k "^[[15;2~"
-bindkey -k "^[[17;2~"
+bindkey "^[O1;2Q"
+bindkey "^[O1;5Q"
+bindkey "^[O1;2R"
+bindkey "^[O1;2S"
+bindkey "^[[15;2~"
+bindkey "^[[17;2~"
 
 # Use the following sequences for byobu functionality
 # SEQUENCE      ACTION                          F-Key equivalent
