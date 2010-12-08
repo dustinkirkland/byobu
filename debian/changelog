@@ -1,3 +1,9 @@
+byobu (3.16) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 Dec 2010 22:19:49 -0600
+
 byobu (3.15-0ubuntu1) natty; urgency=low
 
   * usr/lib/byobu/raid: only match one raid rebuild (the first one)
