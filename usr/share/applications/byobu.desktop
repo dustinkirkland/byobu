@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Byobu Window Manager
 Comment=Text-based Window Manager using GNU Screen
-Icon=/usr/share/byobu/pixmaps/byobu.svg
+Icon=byobu
 Exec=byobu-launcher
 Type=Application
 Terminal=true

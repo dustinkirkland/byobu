@@ -1,8 +1,10 @@
 byobu (3.15) unreleased; urgency=low
 
   * usr/lib/byobu/raid: only match one raid rebuild (the first one)
+  * debian/rules, usr/share/applications/byobu.desktop: try to get
+    the icon working in Unity, LP: #683444
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 05 Dec 2010 11:11:06 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 Dec 2010 21:03:29 -0600
 
 byobu (3.14-0ubuntu1) natty; urgency=low
 
