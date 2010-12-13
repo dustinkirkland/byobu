@@ -31,7 +31,7 @@ if [ "$1" = "--detail" ] && [ -d "$DIR" ]; then
 	exit 0
 fi
 
-for i in $MONITORED_TEMP $DIR/*/temperature; do
+for i in $MONITORED_TEMP /proc/acpi/ibm/thermal $DIR/*/temperature; do
 	if [ "$TEMP" = "F" ]; then
 	        t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i" | awk '{printf "%.0f", $1 *9/5 + 32}')
 		unit="F"
