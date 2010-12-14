@@ -1,6 +1,8 @@
 byobu (3.17) unreleased; urgency=low
 
   * usr/lib/byobu/cpu_temp: add cpu temp path for modern (x201) thinkpads
+  * usr/share/byobu/windows/common: must set a target site for the sample
+    w3m window to work, LP: #689340
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 08 Dec 2010 08:57:51 -0600
 

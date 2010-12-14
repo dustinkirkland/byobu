@@ -1,5 +1,5 @@
 # Default windows examples
 #screen -t notify-osd -M tail -f $HOME/.cache/notify-osd.log
 #screen -t top top
-#screen -t web w3m
+#screen -t web w3m http://LinuxSearch.org
 #screen -t shell shell
