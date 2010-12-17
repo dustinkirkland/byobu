@@ -4,6 +4,7 @@ byobu (3.17) unreleased; urgency=low
   * usr/share/byobu/windows/common: must set a target site for the sample
     w3m window to work, LP: #689340
   * usr/bin/byobu: list all sessions, LP: #684926
+  * usr/share/applications/byobu.desktop: enable the desktop icon by default
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 08 Dec 2010 08:57:51 -0600
 

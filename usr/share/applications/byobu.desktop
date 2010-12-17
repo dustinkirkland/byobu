@@ -6,5 +6,4 @@ Exec=byobu-launcher
 Type=Application
 Terminal=true
 Categories=GNOME;GTK;Utility;
-NoDisplay=true
 X-GNOME-Gettext-Domain=byobu
