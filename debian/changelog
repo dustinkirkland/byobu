@@ -1,4 +1,4 @@
-byobu (3.17) unreleased; urgency=low
+byobu (3.17-0ubuntu1) natty; urgency=low
 
   * usr/lib/byobu/cpu_temp: add cpu temp path for modern (x201) thinkpads,
     LP: #693568
@@ -7,7 +7,7 @@ byobu (3.17) unreleased; urgency=low
   * usr/bin/byobu: list all sessions, LP: #684926
   * usr/share/applications/byobu.desktop: enable the desktop icon by default
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 08 Dec 2010 08:57:51 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 26 Dec 2010 17:22:18 -0600
 
 byobu (3.16-0ubuntu1) natty; urgency=low
 
