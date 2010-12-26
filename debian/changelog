@@ -1,6 +1,7 @@
 byobu (3.17) unreleased; urgency=low
 
-  * usr/lib/byobu/cpu_temp: add cpu temp path for modern (x201) thinkpads
+  * usr/lib/byobu/cpu_temp: add cpu temp path for modern (x201) thinkpads,
+    LP: #693568
   * usr/share/byobu/windows/common: must set a target site for the sample
     w3m window to work, LP: #689340
   * usr/bin/byobu: list all sessions, LP: #684926
