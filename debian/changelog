@@ -1,3 +1,9 @@
+byobu (3.18) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 26 Dec 2010 17:22:23 -0600
+
 byobu (3.17-0ubuntu1) natty; urgency=low
 
   * usr/lib/byobu/cpu_temp: add cpu temp path for modern (x201) thinkpads,
