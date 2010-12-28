@@ -1,9 +1,9 @@
-byobu (3.18) unreleased; urgency=low
+byobu (3.18-0ubuntu1) natty; urgency=low
 
   * usr/bin/byobu: LP: #684926, list byobu default sessions, plus named
     screen sessions
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 26 Dec 2010 17:22:23 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Dec 2010 23:44:00 -0600
 
 byobu (3.17-0ubuntu1) natty; urgency=low
 
