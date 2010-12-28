@@ -1,3 +1,9 @@
+byobu (3.20) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Dec 2010 00:05:13 -0600
+
 byobu (3.19-0ubuntu1) natty; urgency=low
 
   * usr/lib/byobu/network: ensure that up/down and units are always set
