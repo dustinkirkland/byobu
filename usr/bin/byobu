@@ -79,7 +79,7 @@ PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/byoburc"
 NAME="-S $PKG"
 # Zero out $NAME if user has specified a -S
 for i in $@; do
-	case $i in -S) NAME= ;; esac
+	case $i in -S|-ls|-list) NAME= ;; esac
 done
 # Now let's execute screen!
 if [ "$#" = "0" ]; then
