@@ -1,6 +1,6 @@
 byobu (3.20) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/network: drop unnecessary unit=kbps
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Dec 2010 00:05:13 -0600
 
