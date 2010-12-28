@@ -1,6 +1,6 @@
 byobu (3.19) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/network: ensure that up/down and units are always set
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Dec 2010 23:44:05 -0600
 

@@ -36,6 +36,11 @@ fi
 [ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$DATA"
 t2=`date +%s`
 for i in up down; do
+	unit="kbps"
+	case $i in
+		up) symbol="^" ;;
+		down) symbol="v" ;;
+	esac
 	cache="$DIR/$PKG.network_$i"
 	t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
 	if [ $t2 -le $t1 ]; then
@@ -43,10 +48,8 @@ for i in up down; do
 	else
 		x1=`cat "$cache"` 2>/dev/null || tx1=0
 		if [ "$i" = "up" ]; then
-			symbol="^"
 			x2=`grep -m1 "\b$interface:" /proc/net/dev | sed "s/^.*://" | awk '{print $9}'`
 		else
-			symbol="v"
 			x2=`grep -m1 "\b$interface:" /proc/net/dev | sed "s/^.*://" | awk '{print $1}'`
 		fi
 		echo "$x2" > "$cache"
