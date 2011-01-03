@@ -37,7 +37,7 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-for bat in /proc/acpi/battery/*; do
+for bat in $BATTERY /proc/acpi/battery/*; do
 	# make sure that this battery is present
 	infofile=$(cat "$bat/info")
 	present=$(search "$infofile" "present: *\(.*\)")
