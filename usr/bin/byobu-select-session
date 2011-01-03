@@ -34,7 +34,8 @@ output = commands.getoutput('screen -ls ')
 if output:
 	for s in output.split("\n"):
 		s = re.sub(r'\s+', ' ', s)
-		if s.find(" ") == 0 and len(s) > 1:
+		# Ignore hidden sessions (named sessions that start with a ".")
+		if s.find(" ") == 0 and len(s) > 1 and s.count("..") == 0:
 			text.append(s)
 			items = s.split(" ")
 			sessions.append(items[1])

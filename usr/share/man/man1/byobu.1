@@ -91,6 +91,12 @@ Note that DATA=\fI$HOME/.byobu\fP.
 
 \fBwifi_quality\fP \- the connection rate and signal quality of the wifi connection; displayed in the lower bar toward the right in black text on a cyan background; the connection rate is in 'Mb/s' and the signal quality is as a percentage with a trailing '%'
 
+.SH SESSIONS
+
+Byobu name screen sessions "byobu", if unspecified.  To hide sessions from \fBbyobu-select-session\fP(1), prepend a "." to the beginning of the session name, like:
+
+ byobu -S .hidden
+
 .SH WINDOWS
 
 Each open window in the screen session is displayed in the upper bar toward the far left.  These are numbered, and include indicators as to activity in the window (see "activity" in \fBscreen\fP(1) for symbol definitions).  The current active window is highlighted by inverting the background/text from the rest of the window bar.
