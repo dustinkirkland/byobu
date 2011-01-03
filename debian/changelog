@@ -1,4 +1,4 @@
-byobu (3.20) unreleased; urgency=low
+byobu (3.20-0ubuntu1) natty; urgency=low
 
   * usr/lib/byobu/network: drop unnecessary unit=kbps
   * usr/bin/byobu: allow for -xS or the like, LP: #684926
@@ -17,7 +17,7 @@ byobu (3.20) unreleased; urgency=low
   * usr/lib/byobu/cpu_temp: test that file exists, is readable, and has
     size > 0, LP: #696071
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Dec 2010 00:05:13 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 03 Jan 2011 11:44:12 -0600
 
 byobu (3.19-0ubuntu1) natty; urgency=low
 
