@@ -5,6 +5,7 @@ byobu (3.20) unreleased; urgency=low
   * usr/bin/byobu-select-session, usr/share/man/man1/byobu.1,
     usr/share/man/man1/byobu-select-session.1: support "hiding"
     sessions, by prepending a "." to the session name, LP: #599334
+  * usr/share/man/man1/byobu-launcher.1: update documentation
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Dec 2010 00:05:13 -0600
 
