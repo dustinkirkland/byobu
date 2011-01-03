@@ -31,14 +31,22 @@ if [ "$1" = "--detail" ] && [ -d "$DIR" ]; then
 	exit 0
 fi
 
-for i in $MONITORED_TEMP /proc/acpi/ibm/thermal $DIR/*/temperature; do
-	if [ "$TEMP" = "F" ]; then
-	        t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i" | awk '{printf "%.0f", $1 *9/5 + 32}')
-		unit="F"
-	else
-		t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i")
+for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/thermal $DIR/*/temperature; do
+	case "$i" in
+		*temp*_input)
+			t=$(awk '{printf "%0.f",$1/1000}' "$i")
+		;;
+		*)
+			t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i")
+		;;
+	esac
+	if [ -n "$t" ]; then
 		unit="C"
+		if [ "$TEMP" = "F" ]; then
+			t=$(echo "$t" | awk '{printf "%.0f", $1 *9/5 + 32}')
+			unit="F"
+		fi
+		printf "$(color b k Y)%s$(color -)$(color k Y)\260%s$(color -) " "$t" "$unit"
+		break
 	fi
-	printf "$(color b k Y)%s$(color -)$(color k Y)\260%s$(color -) " "$t" "$unit"
-	break
 done
