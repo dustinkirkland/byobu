@@ -2,8 +2,9 @@ byobu (3.20) unreleased; urgency=low
 
   * usr/lib/byobu/network: drop unnecessary unit=kbps
   * usr/bin/byobu: allow for -xS or the like, LP: #684926
-  * usr/bin/byobu-select-session, usr/share/man/man1/byobu.1: support
-    "hiding" sessions, by prepending a "." to the session name, LP: #599334
+  * usr/bin/byobu-select-session, usr/share/man/man1/byobu.1,
+    usr/share/man/man1/byobu-select-session.1: support "hiding"
+    sessions, by prepending a "." to the session name, LP: #599334
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Dec 2010 00:05:13 -0600
 
