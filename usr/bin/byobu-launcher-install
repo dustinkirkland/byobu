@@ -21,8 +21,21 @@
 PKG="byobu"
 DATA="$HOME/.$PKG"
 
+LOGOUT_ON_DETACH=1
+for i in $@; do
+	case "$i" in
+		-n|--no-logout)
+			LOGOUT_ON_DETACH=0
+		;;
+	esac
+done
+
 install_launcher() {
-	printf "%s\n" 'case "$-" in *i*) byobu-launcher && exit 0; esac;' >> "$1"
+	if [ "$LOGOUT_ON_DETACH" = "1" ]; then
+		printf "%s\n" 'case "$-" in *i*) byobu-launcher && exit 0; esac;' >> "$1"
+	else
+		printf "%s\n" 'case "$-" in *i*) byobu-launcher; esac;' >> "$1"
+	fi
 }
 
 # Sanitize the environment
