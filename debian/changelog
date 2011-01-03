@@ -14,6 +14,8 @@ byobu (3.20) unreleased; urgency=low
   * usr/lib/byobu/cpu_temp: find the temp monitor, LP: #676080
   * usr/lib/byobu/battery, usr/share/man/man1/byobu.1: allow for
     overriding detected BATTERY, LP: #693560
+  * usr/lib/byobu/cpu_temp: test that file exists, is readable, and has
+    size > 0, LP: #696071
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Dec 2010 00:05:13 -0600
 

@@ -34,10 +34,10 @@ fi
 for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/thermal $DIR/*/temperature; do
 	case "$i" in
 		*temp*_input)
-			t=$(awk '{printf "%0.f",$1/1000}' "$i")
+			[ -s "$i" ] && t=$(awk '{printf "%0.f",$1/1000}' "$i")
 		;;
 		*)
-			t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i")
+			[ -s "$i" ] && t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i")
 		;;
 	esac
 	if [ -n "$t" ]; then
