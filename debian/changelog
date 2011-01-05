@@ -4,6 +4,9 @@ byobu (3.21) unreleased; urgency=low
   * usr/bin/byobu, usr/bin/byobu-janitor: move the print for window
     title setting into byobu-janitor, which should ensure that it
     gets run on F5/refresh operations
+  * usr/share/byobu/keybindings/f-keys, usr/share/byobu/profiles/common:
+    move the "fit" statement to the common profile, which is sourced on
+    profile refresh
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 03 Jan 2011 11:44:19 -0600
 
