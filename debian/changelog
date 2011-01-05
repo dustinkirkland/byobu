@@ -1,6 +1,6 @@
 byobu (3.21) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-select-profile: ensure that $DATA exists, LP: #697724
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 03 Jan 2011 11:44:19 -0600
 

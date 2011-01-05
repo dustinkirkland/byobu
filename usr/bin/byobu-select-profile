@@ -24,6 +24,7 @@
 
 PKG="byobu"
 DATA="$HOME/.$PKG"
+mkdir -p "$DATA"
 [ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
 export BYOBU_PREFIX
 [ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir" || SOCKETDIR="/var/run/screen"
@@ -78,7 +79,6 @@ assert_symlink() {
 	fi
 }
 
-mkdir -p "$DATA"
 # If these files exist, they must be a symlink
 assert_symlink "$DATA/profile"
 
