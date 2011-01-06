@@ -42,20 +42,20 @@ register s "^a[g G$>^h"					# Goes with ^a~ definition
 bind ~ eval 'process s' 'exec sed -i -e "/./,/^$/!d" /var/run/screen/S-$USER/byobu-exchange' 'echo "See: /var/run/screen/S-$USER/byobu-exchange"' # ctrl-a ~ | write the buffer to file
 
 # Hotkeys for splits (gnome-terminal)
-bindkey "^[O1;2Q" split					# shift-F2 | horizontal split
-bindkey "^[O1;5Q" split -v				# ctrl-F2  | vertical split
-bindkey "^[O1;2R" focus up				# shift-F3 | focus up
-bindkey "^[O1;2S" focus down				# shift-F4 | focus down
-bindkey "^[[15;2~" only					# shift-F5 | kill all splits
-bindkey "^[[17;2~" remove				# shift-F6 | kill this split
+bindkey "^[O1;2Q" eval 'split' 'focus down' 'next' 'focus up'		# shift-F2 | horizontal split
+bindkey "^[O1;5Q" eval 'split -v' 'focus down' 'next' 'focus up'	# ctrl-F2  | vertical split
+bindkey "^[O1;2R" focus up						# shift-F3 | focus up
+bindkey "^[O1;2S" focus down						# shift-F4 | focus down
+bindkey "^[[15;2~" only							# shift-F5 | kill all splits
+bindkey "^[[17;2~" remove						# shift-F6 | kill this split
 
 # Hotkeys for splits (tty)
-bindkey "^[[26~" split					# shift-F2 | horizontal split
-							# ctrl-F2  | sadly, does not work in tty :-(
-bindkey "^[[28~" focus up				# shift-F3 | focus up
-bindkey "^[[29~" focus down				# shift-F4 | focus down
-bindkey "^[[31~" only					# shift-F5 | kill all splits
-bindkey "^[[32~" remove					# shift-F6 | kill this split
+bindkey "^[[26~" eval 'split' 'focus down' 'next' 'focus up'		# shift-F2 | horizontal split
+									# ctrl-F2  | sadly, does not work in tty :-(
+bindkey "^[[28~" focus up						# shift-F3 | focus up
+bindkey "^[[29~" focus down						# shift-F4 | focus down
+bindkey "^[[31~" only							# shift-F5 | kill all splits
+bindkey "^[[32~" remove							# shift-F6 | kill this split
 
 # Make it more logical how to enter scrollback
 bindkey "^[[5;3~" copy					# alt-pageup | scrollback

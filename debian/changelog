@@ -3,6 +3,9 @@ byobu (3.23) unreleased; urgency=low
   * README: put byobu dir on the front of the path, if doing a local
     install (just wanted to update to a newer version on a system that
     already has byobu, but I'm not an admin)
+  * usr/share/byobu/keybindings/f-keys: when splitting, move the focus
+    in the new split to the first window (rather than that annoying
+    blank screen)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 06 Jan 2011 12:34:52 -0600
 
