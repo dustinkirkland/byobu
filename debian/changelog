@@ -1,4 +1,4 @@
-byobu (3.21) unreleased; urgency=low
+byobu (3.21-0ubuntu1) natty; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-select-profile: ensure that $DATA exists, LP: #697724
@@ -30,7 +30,7 @@ byobu (3.21) unreleased; urgency=low
     - add a few missing manpages
     - add notes to the location of the GPL on Fedora
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 03 Jan 2011 11:44:19 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 06 Jan 2011 11:28:33 -0600
 
 byobu (3.20-0ubuntu1) natty; urgency=low
 
