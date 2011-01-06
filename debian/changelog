@@ -1,6 +1,6 @@
 byobu (3.22) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/windows/common: should not be executable
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 06 Jan 2011 11:28:39 -0600
 
