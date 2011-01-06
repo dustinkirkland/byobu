@@ -1,6 +1,8 @@
 byobu (3.23) unreleased; urgency=low
 
-  * UNRELEASED
+  * README: put byobu dir on the front of the path, if doing a local
+    install (just wanted to update to a newer version on a system that
+    already has byobu, but I'm not an admin)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 06 Jan 2011 12:34:52 -0600
 
