@@ -1,5 +1,6 @@
 byobu (3.21) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu-select-profile: ensure that $DATA exists, LP: #697724
   * usr/bin/byobu, usr/bin/byobu-janitor: move the print for window
     title setting into byobu-janitor, which should ensure that it
@@ -9,6 +10,11 @@ byobu (3.21) unreleased; urgency=low
     profile refresh
   * usr/share/byobu/keybindings/f-keys: add keybindings for splits in
     tty; sadly ctrl-f2 (vertical split) not working yet
+
+  [ Jan Klepek ]
+  * usr/share/man/man1/byobu.1, usr/share/man/man1/byobu-status.1,
+    usr/share/man/man1/Makefile.am: add a few missing manpages, and add
+    notes to the location of the GPL on Fedora
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 03 Jan 2011 11:44:19 -0600
 
