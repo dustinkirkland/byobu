@@ -19,6 +19,8 @@ byobu (3.21) unreleased; urgency=low
     select-session.1, usr/share/man/man1/byobu-status.1,
     usr/share/man/man1/byobu-status-detail.1,
     usr/share/man/man1/shell.1: add a url link to the GPL
+  * usr/share/man/man1/byobu.1, usr/share/man/man1/byobu-janitor.1:
+    - clean up the "SEE ALSO" section of a few manpages
 
   [ Jan Klepek ]
   * usr/share/man/man1/byobu.1, usr/share/man/man1/byobu-status.1,
