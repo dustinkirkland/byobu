@@ -7,6 +7,8 @@ byobu (3.21) unreleased; urgency=low
   * usr/share/byobu/keybindings/f-keys, usr/share/byobu/profiles/common:
     move the "fit" statement to the common profile, which is sourced on
     profile refresh
+  * usr/share/byobu/keybindings/f-keys: add keybindings for splits in
+    tty; sadly ctrl-f2 (vertical split) not working yet
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 03 Jan 2011 11:44:19 -0600
 
