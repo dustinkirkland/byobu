@@ -1,3 +1,9 @@
+byobu (3.23) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 06 Jan 2011 12:34:52 -0600
+
 byobu (3.22-0ubuntu1) natty; urgency=low
 
   * usr/share/byobu/windows/common: should not be executable
