@@ -3,6 +3,8 @@ byobu (3.22) unreleased; urgency=low
   * usr/share/byobu/windows/common: should not be executable
   * usr/share/man/man1/byobu.1, usr/share/man/man1/byobu-select-
     session.1: escape hyphens
+  * === added directory debian/source, debian/source/format:
+    - fix lintian info, add debian/source/format, 3.0 quilt
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 06 Jan 2011 11:28:39 -0600
 
