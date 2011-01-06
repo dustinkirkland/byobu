@@ -1,4 +1,4 @@
-byobu (3.22) unreleased; urgency=low
+byobu (3.22-0ubuntu1) natty; urgency=low
 
   * usr/share/byobu/windows/common: should not be executable
   * usr/share/man/man1/byobu.1, usr/share/man/man1/byobu-select-
@@ -8,7 +8,7 @@ byobu (3.22) unreleased; urgency=low
   * usr/bin/byobu, usr/bin/byobu-janitor: move the window title setting
     back to /usr/bin/byobu (didn't work well in byobu-janitor)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 06 Jan 2011 11:28:39 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 06 Jan 2011 12:34:38 -0600
 
 byobu (3.21-0ubuntu1) natty; urgency=low
 
