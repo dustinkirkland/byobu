@@ -27,9 +27,6 @@ XDG="$HOME/.local/share/$PKG"
 RUN="$SOCKETDIR/S-$USER"
 FLAG="$RUN/$PKG.reload-required"
 
-# Set the window title
-printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
-
 # Let's get prepped to switch over to XDG one day; maintain symlink for now
 mkdir -p "$XDG"
 if [ -d "$DATA" ] && [ ! -h "$DATA" ]; then
