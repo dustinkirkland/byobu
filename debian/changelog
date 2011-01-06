@@ -10,6 +10,15 @@ byobu (3.21) unreleased; urgency=low
     profile refresh
   * usr/share/byobu/keybindings/f-keys: add keybindings for splits in
     tty; sadly ctrl-f2 (vertical split) not working yet
+  * usr/share/man/man1/byobu.1, usr/share/man/man1/byobu-config.1,
+    usr/share/man/man1/byobu-export.1, usr/share/man/man1/byobu-
+    launcher.1, usr/share/man/man1/byobu-launcher-install.1,
+    usr/share/man/man1/byobu-launcher-uninstall.1,
+    usr/share/man/man1/byobu-reconnect-sockets.1,
+    usr/share/man/man1/byobu-select-profile.1, usr/share/man/man1/byobu-
+    select-session.1, usr/share/man/man1/byobu-status.1,
+    usr/share/man/man1/byobu-status-detail.1,
+    usr/share/man/man1/shell.1: add a url link to the GPL
 
   [ Jan Klepek ]
   * usr/share/man/man1/byobu.1, usr/share/man/man1/byobu-status.1,
