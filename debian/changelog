@@ -22,8 +22,11 @@ byobu (3.21) unreleased; urgency=low
 
   [ Jan Klepek ]
   * usr/share/man/man1/byobu.1, usr/share/man/man1/byobu-status.1,
-    usr/share/man/man1/Makefile.am: add a few missing manpages, and add
-    notes to the location of the GPL on Fedora
+    usr/share/man/man1/byobu-disable.1, usr/share/man/man1/byobu-
+    enable.1, usr/share/man/man1/byobu-janitor.1,
+    usr/share/man/man1/byobu-launch.1, usr/share/man/man1/Makefile.am:
+    - add a few missing manpages
+    - add notes to the location of the GPL on Fedora
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 03 Jan 2011 11:44:19 -0600
 
