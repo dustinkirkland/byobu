@@ -58,7 +58,7 @@ backtick 116 	7	7		byobu-status processes
 backtick 117 	3	3		byobu-status network
 backtick 118 	9999999	9999999		true
 backtick 119 	17	17		byobu-status wifi_quality
-backtick 120 	9999999	9999999		byobu-status date
+backtick 120 	28793	28793		byobu-status date
 backtick 121 	9999999	9999999		byobu-status time
 backtick 122 	127	127		byobu-status ip_address
 backtick 123 	13	13		byobu-status disk

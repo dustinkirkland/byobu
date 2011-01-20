@@ -46,7 +46,7 @@ for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/ther
 			t=$(echo "$t" | awk '{printf "%.0f", $1 *9/5 + 32}')
 			unit="F"
 		fi
-		printf "$(color b k Y)%s$(color -)$(color k Y)\260%s$(color -) " "$t" "$unit"
+		printf "$(color b k Y)%s$(color -)$(color k Y)%s$(color -) " "$t" "$unit"
 		break
 	fi
 done
