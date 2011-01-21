@@ -1,6 +1,9 @@
 byobu (3.24) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/cpu_temp, usr/lib/byobu/disk_io, usr/lib/byobu/mail,
+    usr/lib/byobu/network: very early, initial uft8-in-the-caption-and-
+    hardstatus support; requires a patched version of screen; use at
+    your own risk right now; should not affect older screen users
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 10 Jan 2011 11:04:37 -0600
 

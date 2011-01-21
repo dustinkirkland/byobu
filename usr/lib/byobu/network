@@ -20,6 +20,8 @@
 PKG="byobu"
 DATA="$HOME/.$PKG"
 color 2>/dev/null || color() { true; }
+[ "$UTF8" = "1" ] && ICON_UP="▲" || ICON_UP="^"
+[ "$UTF8" = "1" ] && ICON_DN="▼" || ICON_DN="v"
 
 # Allow interface overrides in $DATA/status
 if [ -n "$MONITORED_NETWORK" ]; then
@@ -38,8 +40,8 @@ t2=`date +%s`
 for i in up down; do
 	unit="kbps"
 	case $i in
-		up) symbol="^" ;;
-		down) symbol="v" ;;
+		up) symbol="$ICON_UP" ;;
+		down) symbol="$ICON_DN" ;;
 	esac
 	cache="$DIR/$PKG.network_$i"
 	t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
@@ -83,5 +85,5 @@ for i in up down; do
 			;;
 		esac
 	fi
-	printf "$symbol$(color b m w)$rate$(color -)$(color m w)$unit$(color -) "
+	printf "$(color b m w)$symbol$rate$(color -)$(color m w)$unit$(color -) "
 done

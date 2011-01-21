@@ -20,6 +20,8 @@
 
 PKG="byobu"
 color 2>/dev/null || color() { true; }
+[ "$UTF8" = "1" ] && ICON_C="℃" || ICON_C="C"
+[ "$UTF8" = "1" ] && ICON_F="℉" || ICON_F="F"
 
 DIR="/proc/acpi/thermal_zone"
 if [ "$1" = "--detail" ] && [ -d "$DIR" ]; then
@@ -41,12 +43,12 @@ for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/ther
 		;;
 	esac
 	if [ -n "$t" ]; then
-		unit="C"
+		unit="$ICON_C"
 		if [ "$TEMP" = "F" ]; then
 			t=$(echo "$t" | awk '{printf "%.0f", $1 *9/5 + 32}')
-			unit="F"
+			unit="$ICON_F"
 		fi
-		printf "$(color b k Y)%s$(color -)$(color k Y)%s$(color -) " "$t" "$unit"
+		printf "$(color b k Y)%s$(color -)$(color k Y)$ICON%s$(color -) " "$t" "$unit"
 		break
 	fi
 done

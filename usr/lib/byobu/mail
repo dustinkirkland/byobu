@@ -19,6 +19,7 @@
 
 PKG="byobu"
 color 2>/dev/null || color() { true; }
+[ "$UTF8" = "1" ] && ICON="⍌" || ICON="[M]"
 
 mailfile="/var/spool/mail/$USER"
 if [ "$1" = "--detail" ]; then
@@ -26,4 +27,4 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-[ -s "$mailfile" ] && printf "$(color w k)[M]$(color -) " || exit 0
+[ -s "$mailfile" ] && printf "$(color b)$ICON$(color -) " || exit 0
