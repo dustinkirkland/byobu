@@ -20,8 +20,8 @@
 PKG="byobu"
 DATA="$HOME/.$PKG"
 color 2>/dev/null || color() { true; }
-[ "$UTF8" = "1" ] && ICON_RD="◄" || ICON_RD="<"
-[ "$UTF8" = "1" ] && ICON_WR="►" || ICON_WR=">"
+[ "$UTF8" = "1" ] && ICON_RD="◀" || ICON_RD="<"
+[ "$UTF8" = "1" ] && ICON_WR="▶" || ICON_WR=">"
 
 # Default to disk providing /, but let users override with MONITORED_DISK
 [ -z "$MONITORED_DISK" ] && MP="/" ||  MP="$MONITORED_DISK"
