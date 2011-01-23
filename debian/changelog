@@ -1,3 +1,9 @@
+byobu (3.26) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 23 Jan 2011 16:28:45 -0600
+
 byobu (3.25-0ubuntu1) natty; urgency=low
 
   * usr/lib/byobu/disk_io: these look better
