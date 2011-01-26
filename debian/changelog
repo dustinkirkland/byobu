@@ -1,6 +1,9 @@
 byobu (3.26) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-reconnect-sockets, usr/lib/byobu/date,
+    usr/share/byobu/keybindings/f-keys,
+    usr/share/byobu/keybindings/screen-escape-keys:
+    - add a ctrl-f5 keybinding for reconnecting sockets
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 23 Jan 2011 16:28:45 -0600
 

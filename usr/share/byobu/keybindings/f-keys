@@ -61,6 +61,9 @@ bindkey "^[[32~" remove							# shift-F6 | kill this split
 bindkey "^[[5;3~" copy					# alt-pageup | scrollback
 bindkey "^[[6;3~" copy					# alt-pageup | scrollback
 
+# Make socket reconnection a little easier
+bindkey ";5~" eval 'process r' 'stuff "$BYOBU_PREFIX/bin/byobu-reconnect-sockets^M"' # ctrl-F5 | reconnect gpg/ssh sockets
+
 # toggle f-key keybindings off
 register d "^a:source $BYOBU_PREFIX/share/byobu/keybindings/screen-escape-keys^M"
 bind ! eval 'process d' 'backtick 111 9999999 9999999 byobu-status menu --disable-f-keys'	# ctrl-a-! | toggle on/off f-keys
