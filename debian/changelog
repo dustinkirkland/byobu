@@ -15,6 +15,8 @@ byobu (3.26) unreleased; urgency=low
 
   [ Dustin Kirkland + swalker <sdwalker@myrealbox.com> ]
   * usr/lib/byobu/wifi_quality: avoid potential divide by zero error
+  * usr/lib/byobu/fan_speed: add support for /proc/i8k for some other
+    systems' fan speeds (e.g. Dell Inspiron), LP: #700204
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 23 Jan 2011 16:28:45 -0600
 
