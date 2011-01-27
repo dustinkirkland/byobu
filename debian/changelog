@@ -1,3 +1,9 @@
+byobu (3.27) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 27 Jan 2011 10:24:10 -0600
+
 byobu (3.26-0ubuntu1) natty; urgency=low
 
   [ Dustin Kirkland ]
