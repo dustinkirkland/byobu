@@ -1,4 +1,4 @@
-byobu (3.26) unreleased; urgency=low
+byobu (3.26-0ubuntu1) natty; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-reconnect-sockets, usr/lib/byobu/date,
@@ -20,7 +20,7 @@ byobu (3.26) unreleased; urgency=low
   * usr/lib/byobu/fan_speed: add support for /proc/i8k for some other
     systems' fan speeds (e.g. Dell Inspiron), LP: #700204
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 23 Jan 2011 16:28:45 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 27 Jan 2011 10:24:07 -0600
 
 byobu (3.25-0ubuntu1) natty; urgency=low
 
