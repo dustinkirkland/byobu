@@ -5,6 +5,8 @@ byobu (3.26) unreleased; urgency=low
     usr/share/byobu/keybindings/f-keys,
     usr/share/byobu/keybindings/screen-escape-keys:
     - add a ctrl-f5 keybinding for reconnecting sockets
+  * usr/share/byobu/profiles/common: explicitly set deflogin on,
+    LP: #525552
 
   [ swalker <sdwalker@myrealbox.com> ]
   * A set of fixes for LP: #700911
