@@ -1,9 +1,20 @@
 byobu (3.26) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu-reconnect-sockets, usr/lib/byobu/date,
     usr/share/byobu/keybindings/f-keys,
     usr/share/byobu/keybindings/screen-escape-keys:
     - add a ctrl-f5 keybinding for reconnecting sockets
+
+  [ swalker <sdwalker@myrealbox.com> ]
+  * A set of fixes for LP: #700911
+  * usr/bin/byobu-status, usr/bin/byobu-status-detail:
+    - improve support for byobu-status-detail on systems without vim
+  * usr/lib/byobu/mail: test for mail dir, avoids errors
+  * usr/lib/byobu/reboot_required: test for file existence, avoids errors
+
+  [ Dustin Kirkland + swalker <sdwalker@myrealbox.com> ]
+  * usr/lib/byobu/wifi_quality: avoid potential divide by zero error
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 23 Jan 2011 16:28:45 -0600
 

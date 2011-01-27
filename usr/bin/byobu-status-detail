@@ -17,12 +17,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-case "$(vim --version)" in
-	*+folding*)
+if which vim >/dev/null && `vim --version | grep -q +folding`; then
 		exec byobu-status --detail | vim -c "set foldmethod=indent" -c "set foldminlines=0" -c "set foldnestmax=1"  -c "set foldcolumn=2" -R -
-	;;
-	*)
-		(which sensible-pager >/dev/null) && exec byobu-status --detail | sensible-pager
-		exec byobu-status --detail | less
-	;;
-esac
+else
+	(which sensible-pager >/dev/null) && PAGER=sensible-pager || PAGER=less
+	exec byobu-status --detail | $PAGER
+fi

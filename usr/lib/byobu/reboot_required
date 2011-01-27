@@ -26,7 +26,8 @@ reboot="/var/run/reboot-required"
 reload="$DIR/$PKG.reload-required"
 case "$1" in
 	--detail)
-		ls -alF "$reboot" "$reload" 2>&1
+		[ -e "$reboot" ] && ls -alF "$reboot" 2>&1
+		[ -e "$reload" ] && ls -alF "$reload" 2>&1
 	;;
 	--short)
 		[ -e "$reboot" ] && printf "Yes" || printf "No"
