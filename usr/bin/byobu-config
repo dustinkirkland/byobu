@@ -317,7 +317,7 @@ def readstatus():
     status["mem_available"]=1
     status["mem_used"]=1
     status["menu"]=1
-    status["network"]=0
+    status["network"]=1
     status["notify_osd"]=0
     status["processes"]=0
     status["raid"]=1
