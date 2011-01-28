@@ -1,6 +1,9 @@
 byobu (3.27) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu: -v|--version
+  * usr/lib/byobu/fan_speed: drop detail section, nothing interesting here
+  * usr/share/byobu/profiles/common: accommodate for powernap's off- and on-
+    lining of processors dynamically
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 27 Jan 2011 10:24:10 -0600
 

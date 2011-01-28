@@ -22,13 +22,9 @@ PKG="byobu"
 color 2>/dev/null || color() { true; }
 
 DIR="/sys/class/hwmon"
-if [ "$1" = "--detail" ]; then
-	for i in $DIR/* /proc/i8k; do
-		echo "$i:"
-		cat "$DIR/$i"/* 2>/dev/null
-	done
-	exit 0
-fi
+
+# Nothing interesting to say here about fan speed
+[ "$1" = "--detail" ] && exit 0
 
 # Let's check a few different probes for fan speed
 
