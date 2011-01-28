@@ -1,3 +1,9 @@
+byobu (3.28) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 28 Jan 2011 17:12:27 -0600
+
 byobu (3.27-0ubuntu1) natty; urgency=low
 
   * usr/bin/byobu: -v|--version
