@@ -1,4 +1,4 @@
-byobu (3.27) unreleased; urgency=low
+byobu (3.27-0ubuntu1) natty; urgency=low
 
   * usr/bin/byobu: -v|--version
   * usr/lib/byobu/fan_speed: drop detail section, nothing interesting here
@@ -13,7 +13,7 @@ byobu (3.27) unreleased; urgency=low
   * usr/share/byobu/profiles/common: move disk_io further left, so line
     does jump around so much
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 27 Jan 2011 10:24:10 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 28 Jan 2011 17:12:23 -0600
 
 byobu (3.26-0ubuntu1) natty; urgency=low
 
