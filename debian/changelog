@@ -1,6 +1,6 @@
 byobu (3.28) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/wifi_quality: don't show wifi-quality if connectivity == 0
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 28 Jan 2011 17:12:27 -0600
 

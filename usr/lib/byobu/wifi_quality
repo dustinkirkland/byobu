@@ -34,4 +34,5 @@ if [ -z "$quality" ] || [ "$quality" = "0" ]; then
 else
 	quality=`echo "$quality" | awk -F/ '{printf "%.0f", 100*$1/$2}'`
 fi
+[ "$quality" = "0" ] && exit 0
 printf "$(color b C k)%s$(color -)$(color C k)%s,$(color -)$(color b C k)%s$(color -)$(color C k)%%$(color -) " "$bitrate" "Mbps" "$quality"
