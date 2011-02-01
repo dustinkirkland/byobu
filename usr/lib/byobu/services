@@ -69,4 +69,5 @@ for i in $SERVICES; do
 		;;
 	esac
 done
+[ -n "$output" ] || exit 0
 printf "$(color w c)${output#,}$(color -) "
