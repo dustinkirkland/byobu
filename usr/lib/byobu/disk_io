@@ -66,5 +66,6 @@ for i in "read" "write"; do
 			unit="MB/s"
 		fi
 	fi
+	[ "$rate" != "0" ] || continue
 	printf "$(color b M W)$symbol$rate$(color -)$(color M W)$unit$(color -) "
 done
