@@ -1,8 +1,21 @@
 byobu (3.28) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/wifi_quality: don't show wifi-quality if connectivity == 0
   * usr/lib/byobu/disk_io: don't show disk_io if rate = 0
   * usr/lib/byobu/services: finally fix that nagging, mysterious whitespace
+
+  [ James Hunt <james.hunt@ubuntu.com> ]
+  * usr/lib/byobu/uclock: New UTF-8 notification showing time in binary
+    (requires bash) (LP: #705037).
+  * usr/lib/byobu/ugraph: New UTF-8 notification utility showing historical
+    ulevel data (required bash).
+  * usr/lib/byobu/ulevel: New UTF-8 notification utility which displays
+    some 'level' using various unicode characters (requires bash)
+    (LP: #705032).
+  * usr/lib/byobu/wastebasket: New ASCII+UTF-8 notification indicating
+    contents of wastebasket.
+  * usr/lib/byobu/wifi_quality: added UTF-8 icon.
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 28 Jan 2011 17:12:27 -0600
 

@@ -1,0 +1,481 @@
+#!/bin/bash
+#---------------------------------------------------------------------
+# Script to display unicode characters representing the level of
+# some indicator.
+#
+# Designed to work with the wonderful byoby(1) but can be run
+# stand-alone.
+#---------------------------------------------------------------------
+#
+# Copyright (C) 2011 Canonical Ltd.
+#
+# Author: James Hunt <james.hunt@canonical.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#---------------------------------------------------------------------
+
+#------------------------------
+# Themes with 2 values.
+#
+# Two-value themes are handled differently to other n-value types of
+# theme: the first array entry in each theme is generally some unfilled
+# glyph, denoting an "off" value and the second value is the filled
+# version of the unfilled glyph and denotes an "on" value.  Note that
+# you can always change the ordering of these values using the 'invert'
+# command-line option.
+
+circles_2=(○ ●)
+diamonds_2=(◇ ◆)
+flags_2=(⚐ ⚑)
+hearts_2=(♡ ♥)
+squares_2=(◻ ◼)
+squares_small_2=(◽ ◾)
+stars_2=(☆ ★)
+
+#------------------------------
+# Themes with 4 values.
+
+vdots_thick_4=(⣀ ⣤ ⣶ ⣿)
+vdots_thin_4=(⢀ ⢠ ⢰ ⢸)
+fractions_4=(¼ ½ ¾ ¹)
+quadrants_4=(◔ ◑ ◕ ●)
+shades_4=(░ ▒ ▓ █)
+
+#------------------------------
+# Themes with 5 values.
+
+circles_5=(◦ ○ ◎ ◉ ●)
+
+#------------------------------
+# Themes with 6 values.
+
+dice_6=(⚀ ⚁ ⚂ ⚃ ⚄ ⚅)
+
+#------------------------------
+# Themes with 8 values.
+
+hbars_8=(▏ ▎ ▍ ▌ ▋ ▊ ▉ █)
+vbars_8=(▁ ▂ ▃ ▄ ▅ ▆ ▇ █)
+
+#------------------------------
+# Themes with 10 values.
+
+circle_number_10=(➀ ➁ ➂ ➃ ➄ ➅ ➆ ➇ ➈ ➉)
+solid_numbers_a_10=(➊ ➋ ➌ ➍ ➎ ➏ ➐ ➑ ➒ ➓)
+solid_numbers_b_10=(❶ ❷ ❸ ❹ ❺ ❻ ❼ ❽ ❾ ❿)
+
+#------------------------------
+# XXX: remember to update if you add new themes above!
+
+theme_list=\
+(
+   'circles_2 diamonds_2 flags_2 hearts_2 squares_2 squares_small_2 stars_2'
+   'vdots_thick_4 vdots_thin_4 fractions_4 quadrants_4 shades_4'
+   'circles_5'
+   'dice_6'
+   'hbars_8 vbars_8'
+   'circle_number_10 solid_numbers_a_10 solid_numbers_b_10'
+)
+
+#------------------------------
+
+debug_enabled=n
+newline=
+list=n
+quiet=n
+invert=n
+reverse=n
+script_name=${0##*/}
+min_default=0
+max_default=100
+width_default=5
+zero_as_space=n
+theme_default=vbars_8
+
+debug()
+{
+  msg="$*"
+  [ $debug_enabled = y ] && echo "DEBUG: $msg"
+}
+
+error()
+{
+  msg="$*"
+  echo "ERROR: $msg" >&2
+}
+
+die()
+{
+  error "$*"
+  exit 1
+}
+
+bc_test()
+{
+  expr="$*"
+  echo $(echo "if ( $expr ) { print \"1\" }"|bc -l)
+}
+
+assert()
+{
+  expr="$1"
+  str="$2"
+
+  debug "assert: expr='$expr'"
+  ret=$(bc_test "$expr")
+
+  [ ! -z "$ret" ] && return
+
+  die "$str"
+}
+
+usage()
+{
+cat <<EOT
+Description: Display unicode characters representing the relative
+             level of some indicator value within a range.
+
+Usage: $script_name [options] -c <current_num>
+       $script_name [options] <current_num>
+       $script_name <current_num>
+
+Options:
+
+ -b         : Display current value as space if zero, rather than lowest
+              'value' of theme.
+ -c <num>   : Current value of your indicator.
+ -d         : Enable debug output.
+ -h         : Show this help.
+ -i         : Invert colour scheme (rating themes only).
+ -l         : List available themes. If '-t' also specified,
+              show all values for specified theme.
+ -m <num>   : Minimum value (default=$min_default).
+ -n         : Supress output of newline character.
+ -q         : Suppress messages (requires '-t').
+ -r         : Reverse 'direction' of display (rating theme only).
+ -t <theme> : Name of theme (default=$theme_default).
+ -u <chars> : Specify a user theme (2 or more values).
+ -w <int>   : Width of rating theme (default=$width_default).
+ -x <num>   : Maximum value (default=$max_default).
+
+
+Examples:
+
+  # Display character representing 27% using default theme.
+  $script_name 27
+
+  # As above.
+  $script_name -c 27
+
+  # Example showing floating-point and negative values.
+  $script_name -c 1.100001 -m -5.00234 -x 2.71828 -t dice_6
+
+  # Display value using a "rating theme" (displayed left-to-right).
+  $script_name -c 83 -t stars_2
+
+  # Display right-to-left inverted "rating theme".
+  $script_name -c 60 -t diamonds_2 -ri
+
+  # Display all glyphs in 'solid_numbers_a_10' theme.
+  $script_name -l -t solid_numbers_a_10
+
+  # Display a user-specified rating theme 10 glyphs wide.
+  $script_name -c 666.321 -m -273.15 -x 1370 -u "· ☢" -w 10
+
+  # A multi-element user theme (this prints 'e').
+  $script_name -c 50 -u "a b c d e f g h i j"
+
+
+Notes:
+
+  - Arguments of type "<int>" denote an integer value, whereas arguments
+    of type "<num>" denotes either an integer or a floating-point
+    number.
+  - The final '_<number>' in a theme name denotes the number of glyphs
+    in it.
+  - "Rating themes" are those with only 2 values.
+  - The <chars> argument to '-u' must contain space-delimited
+    characters.
+
+EOT
+}
+
+# this is horribly inefficient - we should probably do some clever
+# tricks using printf formats to avoid the silly while loop.
+# Additionally, it is rather similar to show_theme_entry() but was split
+# out from that in a vain attempt to make the overall logic clearer :)
+show_rating_theme()
+{
+  theme="$1"
+  min="$2"
+  max="$3"
+  current="$4"
+  quotient="$5"
+
+  if [ $invert = n ]
+  then
+    on=1
+    off=0
+  else
+    on=0
+    off=1
+  fi
+
+  percent=$(echo "$quotient * 100"|bc -l)
+  debug "width=$width"
+  debug "percent=$percent"
+
+  percent_per_glyph=$(echo "scale=4;100/${width}"|bc -l)
+  assert "$percent_per_glyph > 1.0" "width ($width) too great"
+  debug "percent_per_glyph=$percent_per_glyph"
+
+  debug "glyph_count=$glyph_count"
+
+  g=$percent_per_glyph
+  i=0
+  value=""
+  while [ $i -lt $width ]
+  do
+    if [ ! -z "$(bc_test "$g <= $percent")" ]
+    then
+      eval content="\${$theme[${on}]}"
+    else
+      eval content="\${$theme[${off}]}"
+    fi
+    if [ $reverse = n ]
+    then
+      value="${value}${content}"
+    else
+      value="${content}${value}"
+    fi
+    g=$(echo "$g + $percent_per_glyph"|bc -l)
+    i=$((i + 1))
+  done
+  echo $newline "$value"
+}
+
+show_theme_entry()
+{
+  theme="$1"
+  min="$2"
+  max="$3"
+  current="$4"
+
+  debug "theme=$theme"
+  debug "min=$min"
+  debug "max=$max"
+  debug "current=$current"
+
+  range=$(echo "($max - $min)"|bc -l)
+
+  quotient=$(echo "scale=4;((${current} - ${min})/${range})"|bc -l)
+
+  glyph_count=$(echo $theme|awk -F\_ '{print $NF}')
+
+  debug "range=$range"
+  debug "quotient=$quotient"
+  debug "glyph_count=$glyph_count"
+
+  if [ $glyph_count -eq 2 ]
+  then
+    show_rating_theme "$theme" "$min" "$max" "$current" "$quotient"
+    return
+  fi
+
+  percent_per_glyph=$(echo "100/$glyph_count"|bc -l)
+  debug "percent_per_glyph=$percent_per_glyph"
+
+  assert "$percent_per_glyph > 1.0" "width ($width) too great"
+
+  # with this scheme, assuming current value is 0-100 and theme has 10
+  # elements:
+  #
+  # current   glyph from theme
+  #
+  # 0-19      1st
+  # 20-29     2nd
+  # 30-39     3rd
+  #  :
+  # 90-99     9th
+  # 100       10th
+  i=$(echo|awk \
+    -v quotient=$quotient \
+    -v glyph_count=$glyph_count \
+    '{
+        x= int( (quotient * glyph_count) ) - 1;
+        x = (x > (glyph_count-1) ? (glyph_count-1) : x);
+        if ( x < 0 ) x = 0;
+        printf("%d", x);
+     }')
+
+  debug "index=$i"
+  eval content="\${$theme[$i]}"
+
+  [ ! -z "$(bc_test "$current == 0")" -a $zero_as_space = y ] && content=' '
+  echo $newline "$content"
+
+  return
+}
+
+list_theme()
+{
+  theme="$1"
+  eval content="\${$theme[@]}"
+  echo
+  for c in $content
+  do
+    echo -n "$c "
+  done
+  echo -e "\n"
+}
+
+list_themes()
+{
+  for entry in ${theme_list[@]}
+  do
+    for arg in "$entry"
+    do
+      echo "$arg"
+    done
+  done
+}
+
+theme_valid()
+{
+  theme="$1"
+  [ -z "`list_themes|grep "^${theme}$"`" ] && return 1
+  return 0
+}
+
+# XXX: the seemingly pointless 'tr' calls translate unicode dashes (look
+# closely!) into ASCII dashes. This is required since 'bc' borks on
+# unicode and it is easy to mistakenly pass unicode dashes if you paste
+# characters from another application, such as a web-browser.
+while getopts "bc:dhilm:nqrt:u:w:x:" opt
+do
+  case "$opt" in
+    b) 
+      zero_as_space=y
+    ;;
+
+    c) 
+      current=$(echo $OPTARG|tr '−' '-')
+    ;;
+
+    d) 
+      debug_enabled=y
+    ;;
+
+    h) 
+      usage
+      exit 0
+    ;;
+
+    i) 
+      invert=y
+    ;;
+
+    l) 
+      list=y
+    ;;
+
+    m) 
+      min=$(echo $OPTARG|tr '−' '-')
+    ;;
+
+    n) 
+      newline=-n
+    ;;
+
+    q) 
+      quiet=y
+    ;;
+
+    r) 
+      reverse=y
+    ;;
+
+    t) 
+      theme=$OPTARG
+    ;;
+
+    u) 
+      user_theme="$OPTARG"
+    ;;
+
+    w) 
+      width=$OPTARG
+    ;;
+
+    x) 
+      max=$(echo $OPTARG|tr '−' '-')
+    ;;
+  esac
+done
+
+shift $[$OPTIND-1]
+
+if [ ! -z "$user_theme" ]
+then
+  elements=$(echo "$user_theme"|awk '{print NF}')
+
+  assert "$elements >= 2" "user themes need >= 2 values"
+
+  # create new theme
+  name="_user_${elements}"
+  eval "$name=($user_theme)"
+
+  # add it to list
+  theme_list=("${theme_list[@]}" $name)
+
+  [ -z "$theme" ] && theme=$name
+fi
+
+if [ "$list" = y ]
+then
+  if [ -z "$theme" ]
+  then
+    list_themes && exit 0
+  else
+    theme_valid "$theme" || die "invalid theme: $theme"
+    [ "$quiet" = n ] && echo "Listing theme '$theme'"
+    list_theme $theme && exit 0
+  fi
+fi
+[ -z "$min" ]   && min=$min_default
+[ -z "$max" ]   && max=$max_default
+[ -z "$width" ] && width=$width_default
+
+assert "$min <= $max" "minimum ($min) > maximum ($max)"
+assert "$min != $max" "minimum ($min) == maximum"
+
+[ -z "$current" -a ! -z "$1" ] && current="$1"
+
+if [ -z "$current" ]
+then
+  error "must specify current value"
+  usage
+  exit 1
+fi
+
+assert "$current >= $min" "current ($current) < minimum ($min)"
+assert "$current <= $max" "current ($current) > maximum ($max)"
+
+[ -z "$theme" ] && theme=$theme_default
+
+theme_valid "$theme" || die "invalid theme: $theme"
+
+show_theme_entry $theme $min $max $current
+
+exit 0

@@ -1,0 +1,39 @@
+#!/bin/sh -e
+#
+#  wastebasket: show icon (and optionally count) if entries in wastebasket.
+#  Copyright (C) 2011 Canonical Ltd.
+#
+#  Authors: James Hunt <james.hunt@canonical.com>
+
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, version 3 of the License.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+PKG="byobu"
+color 2>/dev/null || color() { true; }
+
+[ "$UTF8" = "1" ] && ICON="♸" || ICON="W"
+
+dir=$HOME/.local/share/Trash/files
+
+[ ! -d $dir ] && exit 0
+count=$(ls $dir|wc -l)
+[ "$count" -eq 0 ] && exit 0
+
+if [ "$1" = "--detail" ]
+then
+  echo -n "${ICON}[$count]"
+else
+  echo -n $ICON
+fi
+
+exit 0
