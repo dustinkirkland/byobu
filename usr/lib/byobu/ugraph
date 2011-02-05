@@ -1,0 +1,212 @@
+#!/bin/bash
+#---------------------------------------------------------------------
+# Script to display a byobo notification "history graph".
+#
+# Designed to work with the wonderful byoby(1) but can be run
+# stand-alone.
+#---------------------------------------------------------------------
+#
+# Copyright (C) 2011 Canonical Ltd.
+#
+# Author: James Hunt <james.hunt@canonical.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#---------------------------------------------------------------------
+
+script_name=${0##*/}
+min_default=0
+max_default=100
+points_default=5
+theme_default=vbars_8
+newline="\n"
+rotate=y
+
+error()
+{
+  msg="$*"
+  echo "ERROR: $msg" >&2
+}
+
+die()
+{
+  error "$*"
+  exit 1
+}
+
+usage()
+{
+cat <<EOT
+Description: Display a graph of historical indicator values using
+             ulevel.
+
+Usage: $script_name [options] [command [args...]]
+
+Options:
+
+ -f <file>   : File to read data points from.
+               (only required if no command specified).
+ -h          : Show this help.
+ -m <num>    : Minimum value (default=$min_default).
+ -n          : Supress output of newline character.
+ -p <points> : Specify number of data points in graph
+               (default=$points_default).
+ -r          : Do not rotate file <file> (default is to rotate).
+               Option implies file <file> should not be written to
+               so a command cannot follow script options in this case.
+ -t <theme>  : 'ulevel' theme to use (default=$theme_default).
+ -x <num>    : Maximum value (default=$max_default).
+
+
+Examples:
+
+  Using $script_name to run a command, rotate log and display graph.
+
+  Here we specify a command to display available memory.
+  Trailing echo adds a required newline
+  Note no filename specified.
+
+    $script_name "(/usr/lib/byobu/mem_used |sed 's/% //g';echo)"
+
+
+  Using $script_name just to rotate log and display the graph
+
+    file=/tmp/load.dat
+    awk '{ print \$1}' /proc/loadavg >> \$file
+    $script_name -f \$file
+
+Notes:
+
+  - If you specify 'command', care must be taken with shell quoting to
+    avoid expansion prior to this script running the command.
+  - If '-r' is not specified, the file <file> will be rotated such that
+    at most <points> lines are retained on each invocation of this
+    script.
+
+EOT
+}
+
+get_data()
+{
+  needed_lines=$points
+
+  if [ ! -f $file ]
+  then
+    return
+  fi
+
+  lines=$(wc -l $file|awk '{print $1}')
+
+  if [ $lines -lt $needed_lines ]
+  then
+    # insufficient data
+    return
+  fi
+
+  bytes=$(<${file})
+  bytes=$(echo "$bytes"|tail -n ${needed_lines})
+  [ $lines -eq $needed_lines -o $rotate = n ] && echo "$bytes" && return
+
+  # rotate
+  tmp=`tempfile`
+  echo "$bytes" > $tmp
+  mv $tmp $file
+
+  echo "$bytes"
+}
+
+while getopts "f:hm:np:rt:x:" opt
+do
+  case "$opt" in
+    f) 
+      file="$OPTARG"
+    ;;
+
+    h) 
+      usage
+      exit 0
+    ;;
+
+    m) 
+      min=$OPTARG
+    ;;
+
+    n) 
+      newline=
+    ;;
+
+    p) 
+      points=$OPTARG
+    ;;
+
+    r) 
+      rotate=n
+    ;;
+
+    t) 
+      theme="$OPTARG"
+    ;;
+
+    x) 
+      max=$OPTARG
+    ;;
+  esac
+done
+
+shift $[$OPTIND-1]
+
+cmd="$@"
+
+[ -z "$theme" ] && theme=$theme_default
+
+if [ -z "$cmd" ]
+then
+  if [ -z "$file" ]
+  then
+    error "must specify file"
+    usage
+    exit 1
+  fi
+fi
+
+if [ -z "$file" ]
+then
+  # we could go cryptic+safe by calling tempfile(1), but that then
+  # makes it very difficult to find in case of need.
+  file=/tmp/${USER}-${script_name}-$$.dat
+fi
+
+[ -z "$min" ]    && min=$min_default
+[ -z "$max" ]    && max=$max_default
+[ -z "$points" ] && points=$points_default
+
+if [ ! -z "$cmd" ]
+then
+  if [ $rotate = n ]
+  then
+    error "cannot write to file if rotate disabled"
+    usage
+    exit 1
+  fi
+
+  eval "$cmd >>$file"
+fi
+
+data=$(get_data)
+
+[ -z "$data" ] && printf "%*.s${newline}" $points && exit 0
+
+for datum in $data
+do
+  ulevel.sh -n -m $min -x $max -c $datum -t $theme
+done

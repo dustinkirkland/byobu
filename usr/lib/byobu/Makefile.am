@@ -1,3 +1,3 @@
 libdirdir = $(prefix)/lib/@PACKAGE@
-libdir_SCRIPTS = apport  arch  battery  cpu_count  cpu_freq  cpu_temp  custom  date  disk  disk_io  ec2_cost  fan_speed  hostname  ip_address  load_average  logo  mail  mem_available  mem_used  menu  network  .notify_osd  notify_osd  processes  raid  rcs_cost  reboot_required  release  services  swap  time  time_utc  updates_available  uptime  users  whoami  wifi_quality
+libdir_SCRIPTS = apport  arch  battery  cpu_count  cpu_freq  cpu_temp  custom  date  disk  disk_io  ec2_cost  fan_speed  hostname  ip_address  load_average  logo  mail  mem_available  mem_used  menu  network  .notify_osd  notify_osd  processes  raid  rcs_cost  reboot_required  release  services  swap  time  time_utc  uclock ugraph ulevel updates_available  uptime  users  wastebasket whoami  wifi_quality
 

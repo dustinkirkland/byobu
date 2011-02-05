@@ -1,0 +1,173 @@
+#!/bin/bash -e
+#---------------------------------------------------------------------
+# Script to display a "binary clock" using unicode characters from the
+# braille block.
+#
+# Designed to work with the wonderful byoby(1) but can be run
+# stand-alone.
+#---------------------------------------------------------------------
+#
+# Copyright (C) 2011 Canonical Ltd.
+#
+# Author: James Hunt <james.hunt@canonical.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#---------------------------------------------------------------------
+
+script_name=${0##*/}
+
+# Selected Unicode Braille characters:
+#
+#  0x2800, 0x2880, 0x2820, 0x28a0, 0x2810, 0x2890, 0x2830, 0x28b0, 0x2808, 0x2888,
+#  0x2840, 0x28c0, 0x2860, 0x28e0, 0x2850, 0x28d0, 0x2870, 0x28f0, 0x2848, 0x28c8,
+#  0x2804, 0x2884, 0x2824, 0x28a4, 0x2814, 0x2894, 0x2834, 0x28b4, 0x280c, 0x288c,
+#  0x2844, 0x28c4, 0x2864, 0x28e4, 0x2854, 0x28d4, 0x287b, 0x28f4, 0x284c, 0x28cc,
+#  0x2802, 0x2882, 0x2822, 0x28a2, 0x2812, 0x2892, 0x2832, 0x28b2, 0x280a, 0x288a,
+#  0x2842, 0x28c2, 0x2862, 0x28e2, 0x2852, 0x28d2, 0x2872, 0x28f2, 0x284a, 0x28ca,
+#  0x2806, 0x2886
+#
+# Index of this array is 0-61 with character returned being
+# "two column" binary representation of a time segment.
+#
+binary=(⠀ ⢀ ⠠ ⢠ ⠐ ⢐ ⠰ ⢰ ⠈ ⢈ \
+         ⡀ ⣀ ⡠ ⣠ ⡐ ⣐ ⡰ ⣰ ⡈ ⣈ \
+         ⠄ ⢄ ⠤ ⢤ ⠔ ⢔ ⠴ ⢴ ⠌ ⢌ \
+         ⡄ ⣄ ⡤ ⣤ ⡔ ⣔ ⡻ ⣴ ⡌ ⣌ \
+         ⠂ ⢂ ⠢ ⢢ ⠒ ⢒ ⠲ ⢲ ⠊ ⢊ \
+         ⡂ ⣂ ⡢ ⣢ ⡒ ⣒ ⡲ ⣲ ⡊ ⣊ ⠆ ⢆)
+
+usage()
+{
+cat <<EOT
+Description: A clock that displays the time in binary.
+
+Usage: $script_name [options]
+
+
+Options:
+
+ -b         : Display binary clock (default)
+ -h         : Show this help.
+ -l         : Display leading zeros (hex and octal modes only).
+ -m         : Show time in 24-hour military format
+              (default: 12-hour format).
+ -n         : Suppress newline at end of time.
+ -o         : Display time in octal (base 8).
+ -s <sep>   : Specify separator between hours and minutes
+              (and seconds if not disabled).
+ -u         : Display alphabetics in upper-case (hex mode only).
+ -x         : Disable time in hexadecimal (base 16).
+ -z         : Disable display of seconds.
+
+EOT
+}
+
+suppress_seconds=n
+clock_type=binary
+format=std
+ending="\n"
+uppercase=n
+leading_zeros=n
+
+while getopts "bhlmnos:uxz" opt
+do
+  case "$opt" in
+    b) 
+      clock_type=binary
+    ;;
+
+    h) 
+      usage
+      exit 0
+    ;;
+
+    l) 
+      leading_zeros=y
+    ;;
+
+    m) 
+      format=mil
+    ;;
+
+    n) 
+      ending=
+    ;;
+
+    o) 
+      clock_type=oct
+    ;;
+
+    s) 
+      sep=$OPTARG
+    ;;
+
+    u)
+      uppercase=y
+    ;;
+
+    x) 
+      clock_type=hex
+    ;;
+
+    z) 
+      suppress_seconds=y
+    ;;
+  esac
+done
+
+if [ -z "$clock_type" ]
+then
+  echo "ERROR: must specify clock type"
+  exit 1
+fi
+
+shift $[$OPTIND-1]
+
+# get current time, handling 12-hour or 24-hour
+if [ $format = std ]
+then
+  hrs_format=%l
+else
+  hrs_format=%k
+fi
+
+time=($(date "+${hrs_format} %M %S"))
+h=$(printf ${time[0]})
+m=$(printf ${time[1]})
+s=$(printf ${time[2]})
+
+if [ $clock_type = binary ]
+then
+  [ $suppress_seconds = n ] && seconds="${sep}${binary[10#$s]}"
+  display_time="${binary[10#$h]}${sep}${binary[10#$m]}${seconds}${ending}"
+else
+  if [ $clock_type = hex ]
+  then
+    conversion=x
+    [ $uppercase = y ] && conversion=X
+  else
+    conversion=o
+  fi
+  precision=
+  [ $leading_zeros = y ] && precision=.2
+  base_format=%2${precision}${conversion}
+
+  hh=$(printf "$base_format" $h)
+  hm=$(printf "$base_format" $m)
+  [ "$suppress_seconds" = n ] && hs="${sep}$(printf "$base_format" $s)"
+  display_time="${hh}${sep}${hm}${hs}${ending}"
+fi
+
+echo -ne "$display_time"
+exit 0
