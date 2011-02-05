@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#  wastebasket: show icon (and optionally count) if entries in wastebasket.
+#  trash: show icon (and optionally count) if entries in trash.
 #  Copyright (C) 2011 Canonical Ltd.
 #
 #  Authors: James Hunt <james.hunt@canonical.com>
@@ -18,22 +18,12 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-PKG="byobu"
-color 2>/dev/null || color() { true; }
+[ "$UTF8" = "1" ] && ICON="♸" || ICON="T"
 
-[ "$UTF8" = "1" ] && ICON="♸" || ICON="W"
-
-dir=$HOME/.local/share/Trash/files
-
+dir="$HOME/.local/share/Trash/files"
 [ ! -d $dir ] && exit 0
+
 count=$(ls $dir|wc -l)
 [ "$count" -eq 0 ] && exit 0
 
-if [ "$1" = "--detail" ]
-then
-  echo -n "${ICON}[$count]"
-else
-  echo -n $ICON
-fi
-
-exit 0
+echo -n "$ICON[$count] "

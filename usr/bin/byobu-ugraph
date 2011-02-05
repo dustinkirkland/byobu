@@ -1,8 +1,8 @@
 #!/bin/bash
 #---------------------------------------------------------------------
-# Script to display a byobo notification "history graph".
+# Script to display a byobu notification "history graph".
 #
-# Designed to work with the wonderful byoby(1) but can be run
+# Designed to work with the wonderful byobu(1) but can be run
 # stand-alone.
 #---------------------------------------------------------------------
 #
@@ -48,7 +48,7 @@ usage()
 {
 cat <<EOT
 Description: Display a graph of historical indicator values using
-             ulevel.
+             byobu-ulevel.
 
 Usage: $script_name [options] [command [args...]]
 
@@ -64,7 +64,7 @@ Options:
  -r          : Do not rotate file <file> (default is to rotate).
                Option implies file <file> should not be written to
                so a command cannot follow script options in this case.
- -t <theme>  : 'ulevel' theme to use (default=$theme_default).
+ -t <theme>  : 'byobu-ulevel' theme to use (default=$theme_default).
  -x <num>    : Maximum value (default=$max_default).
 
 
@@ -208,5 +208,5 @@ data=$(get_data)
 
 for datum in $data
 do
-  ulevel.sh -n -m $min -x $max -c $datum -t $theme
+  byobu-ulevel -n -m $min -x $max -c $datum -t $theme
 done

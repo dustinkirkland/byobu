@@ -3,7 +3,7 @@
 # Script to display unicode characters representing the level of
 # some indicator.
 #
-# Designed to work with the wonderful byoby(1) but can be run
+# Designed to work with the wonderful byobu(1) but can be run
 # stand-alone.
 #---------------------------------------------------------------------
 #
