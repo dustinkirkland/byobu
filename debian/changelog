@@ -9,6 +9,9 @@ byobu (3.28) unreleased; urgency=low
     - uclock -> time_binary
     - ugraph -> /usr/bin/byobu-ugraph
     - ulevel -> /usr/bin/byobu-ulevel
+  * usr/share/applications/byobu.desktop: change the "window manager"
+    verbiage to "command line"; looks a little better on desktop
+    applications menu where "window manager" sounds quite different
 
   [ James Hunt <james.hunt@ubuntu.com> ]
   * usr/lib/byobu/time_binary: New UTF-8 notification showing time in binary

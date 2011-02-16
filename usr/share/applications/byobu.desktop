@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Byobu Window Manager
-Comment=Text-based Window Manager using GNU Screen
+Name=Byobu Command Line
+Comment=Advanced Command Line Window Manager
 Icon=byobu
 Exec=byobu-launcher
 Type=Application
