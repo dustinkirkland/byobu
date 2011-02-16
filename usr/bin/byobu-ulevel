@@ -90,6 +90,9 @@ theme_list=\
 
 #------------------------------
 
+default_decimal_places=2
+a11y=n
+a11y_variable=BYOBU_A11Y
 debug_enabled=n
 newline=
 list=n
@@ -102,6 +105,7 @@ max_default=100
 width_default=5
 zero_as_space=n
 theme_default=vbars_8
+permissive=n
 
 debug()
 {
@@ -121,6 +125,13 @@ die()
   exit 1
 }
 
+check_a11y()
+{
+  eval result="\$$a11y_variable"
+  [ ! -z "$result" ] && a11y=y
+}
+
+# return 1 if expression specified is true (no return if false)
 bc_test()
 {
   expr="$*"
@@ -152,16 +163,22 @@ Usage: $script_name [options] -c <current_num>
 
 Options:
 
+ -a         : Accessibility mode: only output ASCII.
+              (Also enabled if variable '$a11y_variable' set).
  -b         : Display current value as space if zero, rather than lowest
               'value' of theme.
  -c <num>   : Current value of your indicator.
  -d         : Enable debug output.
+ -e <int>   : Number of decimal places to use for accessibility mode
+              (default=$default_decimal_places).
  -h         : Show this help.
  -i         : Invert colour scheme (rating themes only).
  -l         : List available themes. If '-t' also specified,
               show all values for specified theme.
  -m <num>   : Minimum value (default=$min_default).
  -n         : Supress output of newline character.
+ -p         : Permissive mode - if current value out of bounds, set it
+              to the nearest bound (min or max).
  -q         : Suppress messages (requires '-t').
  -r         : Reverse 'direction' of display (rating theme only).
  -t <theme> : Name of theme (default=$theme_default).
@@ -180,6 +197,10 @@ Examples:
 
   # Example showing floating-point and negative values.
   $script_name -c 1.100001 -m -5.00234 -x 2.71828 -t dice_6
+
+  # Use accessibility mode to display a percentage value
+  # (rounded to nearest percentage)
+  $script_name -m -22.613 -x 5.00212 -c 0.10203 -a -e 0
 
   # Display value using a "rating theme" (displayed left-to-right).
   $script_name -c 83 -t stars_2
@@ -221,7 +242,7 @@ show_rating_theme()
   min="$2"
   max="$3"
   current="$4"
-  quotient="$5"
+  percent="$5"
 
   if [ $invert = n ]
   then
@@ -232,7 +253,6 @@ show_rating_theme()
     off=1
   fi
 
-  percent=$(echo "$quotient * 100"|bc -l)
   debug "width=$width"
   debug "percent=$percent"
 
@@ -280,16 +300,27 @@ show_theme_entry()
   range=$(echo "($max - $min)"|bc -l)
 
   quotient=$(echo "scale=4;((${current} - ${min})/${range})"|bc -l)
+  percent=$(echo "$quotient * 100"|bc -l)
 
   glyph_count=$(echo $theme|awk -F\_ '{print $NF}')
 
   debug "range=$range"
   debug "quotient=$quotient"
+  debug "percent=$percent"
   debug "glyph_count=$glyph_count"
+
+  # just ASCII please
+  if [ $a11y = y ]
+  then
+    [ -z "$decimal_places" ] && decimal_places=$default_decimal_places
+    val=$(echo|awk -v p=$percent -v dp=$decimal_places '{printf("%.*f", dp, p)}')
+    echo $newline "$val"
+    return
+  fi
 
   if [ $glyph_count -eq 2 ]
   then
-    show_rating_theme "$theme" "$min" "$max" "$current" "$quotient"
+    show_rating_theme "$theme" "$min" "$max" "$current" "$percent"
     return
   fi
 
@@ -358,67 +389,77 @@ theme_valid()
   return 0
 }
 
+check_a11y
+
 # XXX: the seemingly pointless 'tr' calls translate unicode dashes (look
 # closely!) into ASCII dashes. This is required since 'bc' borks on
 # unicode and it is easy to mistakenly pass unicode dashes if you paste
 # characters from another application, such as a web-browser.
-while getopts "bc:dhilm:nqrt:u:w:x:" opt
+while getopts "abc:de:hilm:npqrt:u:w:x:" opt
 do
   case "$opt" in
-    b) 
+    a)
+      a11y=y
+    ;;
+
+    b)
       zero_as_space=y
     ;;
 
-    c) 
+    c)
       current=$(echo $OPTARG|tr '−' '-')
     ;;
 
-    d) 
+    d)
       debug_enabled=y
     ;;
 
-    h) 
+    e)
+      decimal_places=$OPTARG
+    ;;
+      
+    h)
       usage
       exit 0
     ;;
 
-    i) 
+    i)
       invert=y
     ;;
 
-    l) 
+    l)
       list=y
     ;;
 
-    m) 
+    m)
       min=$(echo $OPTARG|tr '−' '-')
     ;;
 
-    n) 
+    n)
       newline=-n
     ;;
 
-    q) 
+    q)
       quiet=y
     ;;
 
-    r) 
+    r)
       reverse=y
     ;;
 
-    t) 
+    t)
       theme=$OPTARG
     ;;
 
-    u) 
+    u)
       user_theme="$OPTARG"
     ;;
 
-    w) 
+    w)
       width=$OPTARG
     ;;
 
-    x) 
+    x)
       max=$(echo $OPTARG|tr '−' '-')
     ;;
   esac
@@ -469,8 +510,14 @@ then
   exit 1
 fi
 
-assert "$current >= $min" "current ($current) < minimum ($min)"
-assert "$current <= $max" "current ($current) > maximum ($max)"
+if [ $permissive = n ]
+then
+  assert "$current >= $min" "current ($current) < minimum ($min)"
+  assert "$current <= $max" "current ($current) > maximum ($max)"
+else
+    [ ! -z "$(bc_test "$current < $min")" ] && current=$min
+    [ ! -z "$(bc_test "$current > $max")" ] && current=$max
+fi
 
 [ -z "$theme" ] && theme=$theme_default
 
