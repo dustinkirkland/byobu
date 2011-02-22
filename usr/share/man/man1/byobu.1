@@ -37,7 +37,7 @@ Note that DATA=\fI$HOME/.byobu\fP.
 
 \fBdisk\fP \- total disk space available and total used on / directory; displayed in the lower bar on the far right in white text on a light purple background; override the default directory by specifying an alternate mount point with MONITORED_DISK=/wherever in \fI$DATA/statusrc\fP
 
-\fBdisk_io\fP \- instantaneous read/write througput in kB/s or MB/s over the last 3 seconds; displayed in the lower bar toward the right in white text on a light purple background with a leading '<' sign indicating 'read speed' and '>' sign indicating 'write speed'; override the default monitored disk by specifying an alternate device with MONITORED_disk=/dev/sdb in \fI$DATA/statusrc\fP
+\fBdisk_io\fP \- instantaneous read/write througput in kB/s or MB/s over the last 3 seconds; displayed in the lower bar toward the right in white text on a light purple background with a leading '<' sign indicating 'read speed' and '>' sign indicating 'write speed'; override the default monitored disk by specifying an alternate device with MONITORED_DISK=/dev/sdb in \fI$DATA/statusrc\fP
 
 \fBec2_cost\fP \- an estimation of the cost of the current boot of the system in terms of the Amazon EC2 billing model; displayed in the lower bar toward the right in green text on a black background; there is a leading '~' to indicate that this is an estimation, and the monetary units are US Dollars '$'
 
@@ -169,6 +169,9 @@ byobu keybindings can be user defined in /usr/share/byobu/keybindings/ (or withi
 \fBCtrl-a ~\fP \- Write the current window's scrollback buffer to \fI/var/run/screen/S-$USER/byobu-exchange\fP
 
 .SH "BUGS"
+
+For Byobu colors to work properly, older versions of GNU Screen require a 1-line patch to adjust MAX_WINMSG_REND in screen.c.  The change is in GNU Screen's upstream source control system as of 2010-01-26, but GNU Screen has not released a new upstream version in several years.  You can disable colors entirely by setting MONOCHROME=1 in \fI~/.byobu/statusrc\fP.  For more information, see:
+ * http://savannah.gnu.org/bugs/?22146
 
 PuTTY users have reported that the F2, F3, and F4 shortcut keys are not working properly.  PuTTY sends the same escape sequences as the linux console for F1-F4 by default.  You can fix this problem in the PuTTY config, Terminal -> Keyboard -> Function keys: Xterm R6.  See: \fIhttp://www.mail-archive.com/screen-users@gnu.org/msg01525.html\fP
 

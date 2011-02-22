@@ -12,6 +12,8 @@ byobu (3.28) unreleased; urgency=low
   * usr/share/applications/byobu.desktop: change the "window manager"
     verbiage to "command line"; looks a little better on desktop
     applications menu where "window manager" sounds quite different
+  * usr/lib/byobu/date, usr/share/man/man1/byobu.1: fix issues from
+    Question #144881
 
   [ James Hunt <james.hunt@ubuntu.com> ]
   * usr/lib/byobu/time_binary: New UTF-8 notification showing time in binary

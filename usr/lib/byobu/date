@@ -25,7 +25,7 @@ case "$1" in
 		date +%Y-%m-%d
 	;;
 	*)
-		msg="$(echo SGFwcHkgQmlydGhkYXkgU2NyZWVuIC0tIGh0dHA6Ly9iaXQubHkvc2NyZWVuLWJkYXkK | base64 -d)"
+		msg="$(echo SGFwcHkgQmlydGhkYXkgU2NyZWVuIC0tIGh0dHA6Ly9iaXQubHkvc2NyZWVuLWJkYXkK | base64 -di)"
 		[ "$(date +%d)" = "20" ] && [ "$(date +%m)" = "03" ] && screen -X -S "byobu" at "*" echo "[$msg]"
 		printf "\005Y-\005m-\005d "
 	;;
