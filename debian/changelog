@@ -17,11 +17,13 @@ byobu (3.28) unreleased; urgency=low
 
   [ James Hunt <james.hunt@ubuntu.com> ]
   * usr/lib/byobu/time_binary: New UTF-8 notification showing time in binary
-    (requires bash) (LP: #705037).
-  * usr/lib/byobu/byobu-ugraph: New UTF-8 notification utility showing
-    historical byobu-ugraph data (required bash).
+    (requires bash for UTF-8 handling) (LP: #705037).
+  * usr/bin/byobu-ugraph: New UTF-8 notification utility showing
+    historical byobu-ugraph data (required bash for UTF-8 handling).
   * usr/bin/byobu-ulevel: New UTF-8 notification utility which displays
-    some 'level' using various unicode characters (requires bash)
+    some 'level' using various unicode characters (requires bash for
+    UTF-8 handling). Also has an accessibility mode using an option or
+    environment variable to display all values as percentages in ASCII.
     (LP: #705032).
   * usr/lib/byobu/trash: New ASCII+UTF-8 notification indicating
     contents of trash.

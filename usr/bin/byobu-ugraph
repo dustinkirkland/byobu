@@ -83,7 +83,8 @@ Examples:
 
     file=/tmp/load.dat
     awk '{ print \$1}' /proc/loadavg >> \$file
-    $script_name -f \$file
+    # Note: we need to specify what we consider to be a "reasonable" maximum load
+    $script_name -m 3.0 -f \$file
 
 Notes:
 
@@ -208,5 +209,5 @@ data=$(get_data)
 
 for datum in $data
 do
-  byobu-ulevel -n -m $min -x $max -c $datum -t $theme
+  byobu-ulevel -n -m $min -x $max -p -c $datum -t $theme
 done
