@@ -1,4 +1,4 @@
-byobu (3.28) unreleased; urgency=low
+byobu (3.28-0ubuntu1) natty; urgency=low
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/wifi_quality: don't show wifi-quality if connectivity == 0
@@ -29,7 +29,7 @@ byobu (3.28) unreleased; urgency=low
     contents of trash.
   * usr/lib/byobu/wifi_quality: added UTF-8 icon.
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 28 Jan 2011 17:12:27 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Feb 2011 16:24:26 -0600
 
 byobu (3.27-0ubuntu1) natty; urgency=low
 
