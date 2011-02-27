@@ -175,7 +175,10 @@ For Byobu colors to work properly, older versions of GNU Screen require a 1-line
 
 PuTTY users have reported that the F2, F3, and F4 shortcut keys are not working properly.  PuTTY sends the same escape sequences as the linux console for F1-F4 by default.  You can fix this problem in the PuTTY config, Terminal -> Keyboard -> Function keys: Xterm R6.  See: \fIhttp://www.mail-archive.com/screen-users@gnu.org/msg01525.html\fP
 
-Mac OSX terminal users have reported 'flashing text'.  You can fix this in the advanced settings of the terminal application, with 'Declare Terminal As: xterm-color'.
+Apple Mac OSX terminal users have reported 'flashing text'.  You can fix this in the advanced settings of the terminal application, with 'Declare Terminal As: xterm-color'.
+
+Apple Mac keyboard users may need to specify a vt100 terminal by adding this to your OSX profile, in order to get Byobu's function keys and colors to work:
+  alias ssh='TERM=vt100 ssh'
 
 Users of a non-UTF8 locale (such as cs_CZ charset ISO-8859-2), may need to add "defutf8 off" to \fI~/.screenrc\fP, if some characters are rendering as "?".
 

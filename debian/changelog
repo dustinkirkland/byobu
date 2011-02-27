@@ -5,6 +5,8 @@ byobu (3.29) unreleased; urgency=low
   * usr/share/man/man1/byobu.1: fix minor manpage typo, add SERVICES example
   * usr/lib/byobu/wifi_quality, usr/share/man/man1/byobu.1: support overriding
     the default wireless interface, LP: #723260
+  * usr/share/man/man1/byobu.1: document TERM=vt100 for Mac keyboard users,
+    LP: #482623
 
   [ Chow Loong Jin and Dustin Kirkland ]
   * usr/lib/byobu/disk_io: canonicalize symlinks so that disk_io works
