@@ -8,6 +8,9 @@ byobu (3.29) unreleased; urgency=low
   * usr/share/man/man1/byobu.1: document TERM=vt100 for Mac keyboard users,
     LP: #482623
   * usr/bin/byobu-janitor: use readlink, much more graceful
+  * usr/lib/byobu/time_binary, usr/share/byobu/profiles/common,
+    usr/share/man/man1/byobu.1: fixup a couple of minor issues with the binary
+    clock commit
 
   [ James Hunt ]
   * etc/byobu/statusrc, usr/bin/byobu-config, usr/lib/byobu/time_binary,

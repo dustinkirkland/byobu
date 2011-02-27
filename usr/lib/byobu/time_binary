@@ -169,5 +169,5 @@ else
   display_time="${hh}${sep}${hm}${hs}${ending}"
 fi
 
-echo -ne "$display_time"
+echo -ne "$display_time "
 exit 0
