@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 #
 #    byobu-status
 #    Copyright (C) 2008 Canonical Ltd.

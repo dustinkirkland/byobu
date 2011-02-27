@@ -11,6 +11,11 @@ byobu (3.29) unreleased; urgency=low
   * usr/lib/byobu/time_binary, usr/share/byobu/profiles/common,
     usr/share/man/man1/byobu.1: fixup a couple of minor issues with the binary
     clock commit
+  * usr/bin/byobu-status: switch the interpreter from sh to bash; this is
+    needed to support James' time_binary script, which is bash and cannot be
+    simply sourced by byobu-status; if significant performance regressions
+    occur, we will need to back this change out and approach it a different
+    way
 
   [ James Hunt ]
   * etc/byobu/statusrc, usr/bin/byobu-config, usr/lib/byobu/time_binary,
