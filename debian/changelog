@@ -9,6 +9,12 @@ byobu (3.29) unreleased; urgency=low
     LP: #482623
   * usr/bin/byobu-janitor: use readlink, much more graceful
 
+  [ James Hunt ]
+  * etc/byobu/statusrc, usr/bin/byobu-config, usr/lib/byobu/time_binary,
+    usr/share/byobu/profiles/common, usr/share/man/man1/byobu.1:
+    - add support for the super-geeky-but-fun binary clock; requires
+      UTF8 support in GNU Screen, LP: #705037
+
   [ Chow Loong Jin and Dustin Kirkland ]
   * usr/lib/byobu/disk_io: canonicalize symlinks so that disk_io works
     with raid, lvm, dm volumes, LP: #709224, #711373, #723187

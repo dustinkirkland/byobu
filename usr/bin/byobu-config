@@ -327,6 +327,7 @@ def readstatus():
     status["services"]=1
     status["swap"]=0
     status["time"]=1
+    status["time_binary"]=0
     status["time_utc"]=0
     status["users"]=0
     status["updates_available"]=1

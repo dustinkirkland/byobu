@@ -3,7 +3,7 @@
 # Script to display a "binary clock" using unicode characters from the
 # braille block.
 #
-# Designed to work with the wonderful byoby(1) but can be run
+# Designed to work with the wonderful byobu(1) but can be run
 # stand-alone.
 #---------------------------------------------------------------------
 #
