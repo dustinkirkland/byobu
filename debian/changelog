@@ -7,6 +7,7 @@ byobu (3.29) unreleased; urgency=low
     the default wireless interface, LP: #723260
   * usr/share/man/man1/byobu.1: document TERM=vt100 for Mac keyboard users,
     LP: #482623
+  * usr/bin/byobu-janitor: use readlink, much more graceful
 
   [ Chow Loong Jin and Dustin Kirkland ]
   * usr/lib/byobu/disk_io: canonicalize symlinks so that disk_io works

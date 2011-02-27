@@ -65,8 +65,8 @@ fi
 
 # Affects: Symlinks pointing to color profiles
 if [ -h "$PROFILE" ]; then
-	case "$(stat $PROFILE)" in
-		*File:*-\>*$BYOBU_PREFIX/share/byobu/profiles/*)
+	case "$(readlink -f $PROFILE)" in
+		$BYOBU_PREFIX/share/byobu/profiles/*)
 			# Set default colors
 			BG=W
 			FG=k
