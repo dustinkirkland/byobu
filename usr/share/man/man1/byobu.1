@@ -179,6 +179,8 @@ Mac OSX terminal users have reported 'flashing text'.  You can fix this in the a
 
 Users of a non-UTF8 locale (such as cs_CZ charset ISO-8859-2), may need to add "defutf8 off" to \fI~/.screenrc\fP, if some characters are rendering as "?".
 
+Users who customize their PS1 prompt need to put this setting in \fI~/.bashrc\fP, rather than \fI~/.profile\fP, in order for it to work correctly with Byobu.
+
 .SH SEE ALSO
 .PD 0
 .TP

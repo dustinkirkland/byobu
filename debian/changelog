@@ -1,6 +1,6 @@
 byobu (3.29) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/man/man1/byobu.1: document PS1 workaround, LP: #525552
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Feb 2011 16:24:38 -0600
 
