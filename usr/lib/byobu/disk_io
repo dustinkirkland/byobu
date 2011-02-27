@@ -29,7 +29,7 @@ case $MP in
 	/dev/*) disk="$MP" ;;
 	*) disk=$(grep -m 1 " $MP " /etc/mtab | sed -e "s: .*$::") ;;
 esac
-disk=$(echo "$disk" | sed -e "s: .*$::" -e "s:^.*/::" -e "s:\([hsv]d[a-z]\)[0-9]*$:\1:")
+disk=$(readlink "$disk" | sed -e "s: .*$::" -e "s:^.*/::" -e "s:\([hsv]d[a-z]\)[0-9]*$:\1:")
 
 if [ "$1" = "--detail" ]; then
 	if which iostat >/dev/null; then
