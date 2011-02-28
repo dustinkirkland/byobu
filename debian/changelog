@@ -1,6 +1,6 @@
 byobu (3.30) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/applications/byobu.desktop: enhance description
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 Feb 2011 10:29:53 -0600
 

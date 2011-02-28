@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Byobu Command Line
-Comment=Advanced Command Line Window Manager
+Comment=Advanced Command Line and Text Window Manager
 Icon=byobu
 Exec=byobu-launcher
 Type=Application
