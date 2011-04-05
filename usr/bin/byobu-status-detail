@@ -18,8 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 if which vim >/dev/null && `vim --version | grep -q +folding`; then
-		exec byobu-status --detail | vim -c "set foldmethod=indent" -c "set foldminlines=0" -c "set foldnestmax=1"  -c "set foldcolumn=2" -R -
+	byobu-status --detail | vim -c "set foldmethod=indent" -c "set foldminlines=0" -c "set foldnestmax=1"  -c "set foldcolumn=2" -R -
 else
 	(which sensible-pager >/dev/null) && PAGER=sensible-pager || PAGER=less
-	exec byobu-status --detail | $PAGER
+	byobu-status --detail | $PAGER
 fi
