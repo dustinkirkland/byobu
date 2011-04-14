@@ -26,6 +26,11 @@ byobu (3.30) unreleased; urgency=low
     - fix ctrl-f5
   * debian/source/format, === removed directory debian/source: remove these
     until bzr builddeb bug gets fixed
+  * usr/bin/byobu, usr/share/byobu/profiles/byoburc,
+    usr/share/byobu/profiles/Makefile.am,
+    usr/share/byobu/profiles/screenrc: support using ~/.byoburc, instead of
+    ~/.screenrc, if present; some users seem to want to use byobu and screen
+    separately, and keep their profiles separate, LP: #731529
 
   [ Chaskiel Grundman ]
   * debian/postinst: correctly fix old-school screen-profiles era diversions

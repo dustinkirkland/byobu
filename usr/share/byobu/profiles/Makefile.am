@@ -1,2 +1,2 @@
 profilesdir = $(datadir)/@PACKAGE@/profiles
-profiles_DATA = byoburc  common  NONE
+profiles_DATA = byoburc  screenrc  common  NONE

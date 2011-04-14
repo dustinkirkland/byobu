@@ -79,7 +79,13 @@ if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ]; then
 	ln -sf "$SSH_AUTH_SOCK" "$DATA/.ssh-agent"
 fi
 
-PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/byoburc"
+# Some users want to maintain a separate ~/.byoburc from ~/.screenrc,
+# if they use both screen and byobu on the same system
+if [ -r "$HOME/.byoburc" ]; then
+	PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/byoburc"
+else
+	PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/screenrc"
+fi
 NAME="-S $PKG"
 # Zero out $NAME if user has specified a -S
 for i in $@; do
