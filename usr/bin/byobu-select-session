@@ -76,7 +76,7 @@ if choice:
 		os.execv(PREFIX+"/bin/byobu", ["", SHELL])
 	else:
 	 	# Attach to the chosen session; must use the 'screen' binary
-		os.execv(PREFIX+"/bin/screen", ["", "-AOxRR", sessions[choice-1]])
+		os.execv("screen", ["", "-AOxRR", sessions[choice-1]])
 
 # No valid selection, default to the youngest session, create if necessary
 os.execv(PREFIX+"/bin/byobu", ["", "-AOxRR"])
