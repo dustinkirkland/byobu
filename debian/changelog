@@ -1,8 +1,10 @@
 byobu (3.30) unreleased; urgency=low
 
-  * usr/share/applications/byobu.desktop: enhance description
+  * usr/share/applications/byobu.desktop: fix description
   * usr/bin/byobu-status-detail: make a couple of minor modifications
     noticed while investigating the already-fixed LP: #750887
+  * usr/lib/byobu/raid: fix grep that changed recently in Linux's
+    md driver's printing to /proc/mdstat, LP: #760693
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 Feb 2011 10:29:53 -0600
 

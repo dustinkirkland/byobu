@@ -29,7 +29,7 @@ case $1 in
 	;;
 esac
 
-if grep -qs " blocks \[.*_.*\]$" /proc/mdstat; then
+if grep -qs " blocks .*\[.*_.*\]$" /proc/mdstat; then
 	# Errors in your raid
 	msg="RAID"
 fi
