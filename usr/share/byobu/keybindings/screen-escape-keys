@@ -36,7 +36,8 @@ bindkey "^[O1;2R"
 bindkey "^[O1;2S"
 bindkey "^[[15;2~"
 bindkey "^[[17;2~"
-bindkey ";5~"
+bindkey "^[[15;5~"
+bindkey "^[[17;2~"
 
 # Use the following sequences for byobu functionality
 # SEQUENCE      ACTION                          F-Key equivalent

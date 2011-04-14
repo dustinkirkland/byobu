@@ -27,7 +27,7 @@ which gsed 2>/dev/null && SED="gsed" || SED="sed"
 remove_launcher() {
 	dest=$1
 	if [ -w "$dest" ]; then
-		$SED -i -e "/ $PKG-launcher/d" -e "/ screen-launcher/d" "$dest"
+		$SED -i -e "/ $PKG-launch/d" -e "/ screen-launch/d" "$dest"
 	fi
 }
 

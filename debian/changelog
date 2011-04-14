@@ -14,6 +14,18 @@ byobu (3.30) unreleased; urgency=low
     of logout behavior, when dpkg-configured globally by the sysadmin,
     LP: #741281
   * usr/share/byobu/profiles/common: fix bold color intensity, LP: #727466
+  * usr/bin/byobu-janitor, usr/bin/byobu-launch, usr/bin/byobu-launcher-
+    install, usr/bin/byobu-launcher-uninstall,
+    usr/share/byobu/keybindings/f-keys,
+    usr/share/byobu/keybindings/screen-escape-keys,
+    usr/share/man/man1/byobu.1:
+    - add a more permanent fix for LP: #604931
+    - update documentation
+  * usr/share/byobu/keybindings/f-keys,
+    usr/share/byobu/keybindings/screen-escape-keys:
+    - fix ctrl-f5
+  * debian/source/format, === removed directory debian/source: remove these
+    until bzr builddeb bug gets fixed
 
   [ Chaskiel Grundman ]
   * debian/postinst: correctly fix old-school screen-profiles era diversions

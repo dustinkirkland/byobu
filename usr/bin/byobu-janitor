@@ -147,12 +147,12 @@ done
 # Affects: Upgrades from <= byobu-2.57 that autolaunch
 # If the global autolaunch is on, then remove duplicate entry in ~/.profile
 if [ -h "/etc/profile.d/Z98-$PKG.sh" ]; then
-	$SED -i -e "/ $PKG-launcher/d" "$HOME"/.profile || true
+	$SED -i -e "/ $PKG-launch/d" "$HOME"/.profile || true
 fi
 
 # Affects: Upgrades from <= byobu-2.70 that autolaunch
 # Update the byobu-launch line, if necessary
-if grep -qs " $PKG-launcher$" "$HOME"/.profile; then
+if grep -qs " $PKG-launch$" "$HOME"/.profile; then
 	$PKG-launcher-install
 fi
 

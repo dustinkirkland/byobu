@@ -40,11 +40,7 @@ update_flag() {
 }
 
 install_launcher() {
-	if [ "$LOGOUT_ON_DETACH" = "1" ]; then
-		printf "%s\n" 'case "$-" in *i*) byobu-launcher && exit 0; esac;' >> "$1"
-	else
-		printf "%s\n" 'case "$-" in *i*) byobu-launcher; esac;' >> "$1"
-	fi
+	printf ". \$(which byobu-launch)\n" >> "$1"
 }
 
 # Sanitize the environment

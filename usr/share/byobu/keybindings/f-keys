@@ -62,7 +62,10 @@ bindkey "^[[5;3~" copy					# alt-pageup | scrollback
 bindkey "^[[6;3~" copy					# alt-pageup | scrollback
 
 # Make socket reconnection a little easier
-bindkey ";5~" eval 'process r' 'stuff ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets^M"' # ctrl-F5 | reconnect gpg/ssh sockets
+bindkey "^[[15;5~" eval 'process r' 'stuff ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets^M"' # ctrl-F5 | reconnect gpg/ssh sockets
+
+# Detach from an auto-launched byobu, but don't log out of the shell
+bindkey "^[[17;2~" eval 'exec touch /var/run/screen/S-$USER/byobu.no-logout' 'detach'   # ctrl-F6 | detach, but don't logout
 
 # toggle f-key keybindings off
 register d "^a:source $BYOBU_PREFIX/share/byobu/keybindings/screen-escape-keys^M"
