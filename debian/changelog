@@ -5,6 +5,8 @@ byobu (3.30) unreleased; urgency=low
     noticed while investigating the already-fixed LP: #750887
   * usr/lib/byobu/raid: fix grep that changed recently in Linux's
     md driver's printing to /proc/mdstat, LP: #760693
+  * usr/share/byobu/profiles/common: preserve splits across detach/reattach,
+    LP: #760696
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 Feb 2011 10:29:53 -0600
 
