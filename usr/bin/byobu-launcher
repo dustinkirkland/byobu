@@ -26,37 +26,7 @@ if [ ! -e "$DATA/disable-autolaunch" ]; then
 	case "$TERM" in
 		*screen*)
 			# Handle nesting
-			printf "$(gettext 'Do you want to launch byobu in a nested session?') [y/N]: "
-			answer=$(head -n1)
-			case "$answer" in
-				y|Y)
-					# Prevent nasty launch recursion, if ssh'ing to localhost
-					if [ -n "$SSH_CONNECTION" ]; then
-						# This is an SSH session
-						from=$(echo "$SSH_CONNECTION" | awk '{print $1}')
-						to=$(echo "$SSH_CONNECTION" | awk '{print $3}')
-						if [ "$from" = "$to" ]; then
-							# We have ssh'd from this machine, to this machine
-							case "$(screen -ls)" in
-								*\(Attached\)*)
-									# And there is already an attached screen session, exit to prevent recursion
-									false
-								;;
-								*)
-									exec $BYOBU_PREFIX/bin/byobu "$@"
-								;;
-							esac
-						else
-							exec $BYOBU_PREFIX/bin/byobu "$@"
-						fi
-					else
-						exec $BYOBU_PREFIX/bin/byobu "$@"
-					fi
-				;;
-				*)
-					false
-				;;
-			esac
+			printf "$(gettext 'To launch in a nested screen session, run: byobu')\n"
 		;;
 		dumb)
 			# Dumb terminal, don't launch

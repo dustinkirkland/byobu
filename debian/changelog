@@ -8,6 +8,8 @@ byobu (3.30) unreleased; urgency=low
     md driver's printing to /proc/mdstat, LP: #760693
   * usr/share/byobu/profiles/common: preserve splits across detach/reattach,
     LP: #760696
+  * usr/bin/byobu-launcher: don't disrupt work flow, but rather inform
+    user about launching byobu in a nested screen session, LP: #747649
 
   [ Chaskiel Grundman ]
   * debian/postinst: correctly fix old-school screen-profiles era diversions
