@@ -13,6 +13,7 @@ byobu (3.30) unreleased; urgency=low
   * usr/bin/byobu-launch, usr/bin/byobu-launcher-install: fix handling
     of logout behavior, when dpkg-configured globally by the sysadmin,
     LP: #741281
+  * usr/share/byobu/profiles/common: fix bold color intensity, LP: #727466
 
   [ Chaskiel Grundman ]
   * debian/postinst: correctly fix old-school screen-profiles era diversions
