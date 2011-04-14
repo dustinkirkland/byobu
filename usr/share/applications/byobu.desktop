@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Byobu Command Line
+Name=Byobu Terminal
 Comment=Advanced Command Line and Text Window Manager
 Icon=byobu
 Exec=byobu-launcher

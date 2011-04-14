@@ -1,7 +1,8 @@
-byobu (3.30) unreleased; urgency=low
+byobu (3.30-0ubuntu1) natty; urgency=low
 
   [ Dustin Kirkland ]
-  * usr/share/applications/byobu.desktop: fix description
+  * usr/share/applications/byobu.desktop: shorten description
+    to work better in Unity
   * usr/bin/byobu-status-detail: make a couple of minor modifications
     noticed while investigating the already-fixed LP: #750887
   * usr/lib/byobu/raid: fix grep that changed recently in Linux's
