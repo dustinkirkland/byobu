@@ -40,7 +40,7 @@ byobu (3.30-0ubuntu1) natty; urgency=low
   * debian/postinst: correctly fix old-school screen-profiles era diversions
     of /usr/bin/screen, LP: #727738
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 Feb 2011 10:29:53 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 Apr 2011 18:11:27 -0500
 
 byobu (3.29-0ubuntu1) natty; urgency=low
 
