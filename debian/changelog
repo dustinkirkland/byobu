@@ -31,6 +31,7 @@ byobu (3.30) unreleased; urgency=low
     usr/share/byobu/profiles/screenrc: support using ~/.byoburc, instead of
     ~/.screenrc, if present; some users seem to want to use byobu and screen
     separately, and keep their profiles separate, LP: #731529
+  * usr/bin/byobu-janitor: use greadlink on Mac OSX, LP: #740370
 
   [ Chaskiel Grundman ]
   * debian/postinst: correctly fix old-school screen-profiles era diversions

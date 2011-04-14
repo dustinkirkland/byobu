@@ -45,6 +45,7 @@ DEFAULT_PROFILE="light"
 PROFILE="$DATA/profile"
 # Use gsed on non-Linux OS's
 which gsed 2>/dev/null && SED="gsed" || SED="sed"
+which greadlink 2>/dev/null && READLINK="greadlink" || READLINK="readlink"
 
 # Create byobu-exchange buffer file, with secure permissions, if it doesn't exist
 if [ -w "$RUN" ] && [ ! -e "$RUN/$PKG-exchange" ]; then
@@ -65,7 +66,7 @@ fi
 
 # Affects: Symlinks pointing to color profiles
 if [ -h "$PROFILE" ]; then
-	case "$(readlink -f $PROFILE)" in
+	case "$($READLINK -f $PROFILE)" in
 		$BYOBU_PREFIX/share/byobu/profiles/*)
 			# Set default colors
 			BG=W
