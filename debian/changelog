@@ -10,6 +10,9 @@ byobu (3.30) unreleased; urgency=low
     LP: #760696
   * usr/bin/byobu-launcher: don't disrupt work flow, but rather inform
     user about launching byobu in a nested screen session, LP: #747649
+  * usr/bin/byobu-launch, usr/bin/byobu-launcher-install: fix handling
+    of logout behavior, when dpkg-configured globally by the sysadmin,
+    LP: #741281
 
   [ Chaskiel Grundman ]
   * debian/postinst: correctly fix old-school screen-profiles era diversions
