@@ -1,5 +1,6 @@
 byobu (3.30) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/share/applications/byobu.desktop: fix description
   * usr/bin/byobu-status-detail: make a couple of minor modifications
     noticed while investigating the already-fixed LP: #750887
@@ -7,6 +8,10 @@ byobu (3.30) unreleased; urgency=low
     md driver's printing to /proc/mdstat, LP: #760693
   * usr/share/byobu/profiles/common: preserve splits across detach/reattach,
     LP: #760696
+
+  [ Chaskiel Grundman ]
+  * debian/postinst: correctly fix old-school screen-profiles era diversions
+    of /usr/bin/screen, LP: #727738
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 Feb 2011 10:29:53 -0600
 

@@ -12,9 +12,14 @@ else
 	rm -f /etc/profile.d/Z98-$PKG.sh
 fi
 
-# The target of the diversion somehow disappeared which will cause
-# the divert removal to fail; we don't want that to happen
-[ -e "/usr/bin/screen.real" ] && [ ! -e "/usr/bin/screen" ] && cp -a /usr/bin/screen.real /usr/bin/screen
+# Clean up any old-school screen-profiles diversions of /usr/bin/screen
+if [ -f /usr/bin/screen ] && [ -f /usr/bin/screen.real ]; then
+	divertpkg=$(dpkg-divert --listpackage /usr/bin/screen)
+	if [ "$divertpkg" = "screen-profiles" ]; then
+		rm -f /usr/bin/screen
+		dpkg-divert --package screen-profiles --rename --remove /usr/bin/screen
+	fi
+fi
 
 # Remove the short-lived MOTD message
 rm -f /etc/update-motd.d/55-window-manager
