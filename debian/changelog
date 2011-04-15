@@ -6,7 +6,7 @@ byobu (3.32) unreleased; urgency=low
 
 byobu (3.31-0ubuntu1) natty; urgency=low
 
-  * usr/bin/byobu-select-session:
+  * usr/bin/byobu-select-session: LP: #762031
     - fix path to screen binary, use os.execvp()
     - drop use of PREFIX here, rely on byobu being in your path
 
