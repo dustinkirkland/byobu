@@ -1,6 +1,8 @@
 byobu (3.32) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-launch, usr/bin/byobu-launcher:
+    - fix situation where the profile might exit 0,
+      and prevent a user from logging in
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 15 Apr 2011 13:40:31 -0500
 

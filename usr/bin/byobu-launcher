@@ -22,7 +22,9 @@ DATA="$HOME/.$PKG"
 [ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
 export BYOBU_PREFIX
 
-if [ ! -e "$DATA/disable-autolaunch" ]; then
+if [ -e "$DATA/disable-autolaunch" ]; then
+	false
+else
 	case "$TERM" in
 		*screen*)
 			# Handle nesting
