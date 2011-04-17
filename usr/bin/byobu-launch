@@ -34,3 +34,4 @@ case "$-" in
 		fi
 	;;
 esac
+true

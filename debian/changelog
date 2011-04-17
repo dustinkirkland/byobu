@@ -1,6 +1,6 @@
 byobu (3.33) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-launch: make sure this finishes with a true
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 17 Apr 2011 13:30:34 -0500
 
