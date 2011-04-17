@@ -1,10 +1,10 @@
-byobu (3.32) unreleased; urgency=low
+byobu (3.32-0ubuntu1) natty; urgency=low
 
   * usr/bin/byobu-launch, usr/bin/byobu-launcher:
     - fix situation where the profile might exit 0,
       and prevent a user from logging in
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 15 Apr 2011 13:40:31 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 17 Apr 2011 13:30:23 -0500
 
 byobu (3.31-0ubuntu1) natty; urgency=low
 
