@@ -1,9 +1,9 @@
-byobu (3.33) unreleased; urgency=low
+byobu (3.33-0ubuntu1) natty; urgency=low
 
   * usr/bin/byobu-launch: make sure this finishes with a true
   * usr/lib/byobu/disk_io: conditionally use readlink -f, LP: #764584
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 17 Apr 2011 13:30:34 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 19 Apr 2011 16:34:33 -0400
 
 byobu (3.32-0ubuntu1) natty; urgency=low
 
