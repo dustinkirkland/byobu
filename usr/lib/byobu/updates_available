@@ -72,14 +72,31 @@ update_cache() {
 		# If yum exists, use it
 		# TODO: We need a better way of counting updates available from a RH expert
 		yum list updates -q | grep -vc "Updated Packages" > $mycache &
+	elif which pacman >/dev/null; then
+		# If pacman (Archlinux) exists, use it
+		LC_ALL=C pacman -Sup | grep -vc "^\(::\| \)" > $mycache &
 	fi
 }
 
-PKG="byobu"
-
-# The following is somewhat Ubuntu and Debian specific (apt).
-# I would welcome contributions from other distros to make this
-# more distro-agnostic.
+# Checks if we need to update the cache.
+# TODO: add more distro
+update_needed() {
+	mycache=$1
+	# The cache doesn't exist: create it
+	[ ! -e "$mycache" ] && return 0
+	if which apt-get >/dev/null; then
+		# Debian/ubuntu
+		[ "/var/lib/apt" -nt "$mycache" ] || [ "/var/lib/apt/lists" -nt "$mycache" ]
+		return $?
+	elif which pacman >/dev/null; then
+		# Archlinux
+		for db in /var/lib/pacman/sync/*.db; do
+			[ "$db" -nt "$mycache" ] && return 0
+		done
+		return 1
+	fi
+	return 1
+}
 
 [ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$DATA"
 mycache="$DIR/$PKG.updates-available"
@@ -87,8 +104,6 @@ mycache="$DIR/$PKG.updates-available"
 # If mycache is present, use it
 [ -r $mycache ] && print_updates `grep "^[0-9]" $mycache | sed "s/ .*$//"`
 
-# Update the cache if necessary
-if [ ! -e "$mycache" ] || [ "/var/lib/apt" -nt "$mycache" ] || [ "/var/lib/apt/lists" -nt "$mycache" ]; then
-	# If apt is newer than mycache, background an update now
-	update_cache "$mycache"
-fi
+# If we really need to do so (mycache doesn't exist, or the package database has changed),
+# background an update now
+update_needed "$mycache" && update_cache "$mycache"
