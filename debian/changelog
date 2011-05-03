@@ -1,6 +1,6 @@
 byobu (3.34) unreleased; urgency=low
 
-  [ https://launchpad.net/~zorun-42 ]
+  [ Baptiste Jonglez ]
   * usr/lib/byobu/updates_available: add support for ArchLinux in the
     updates-available script, LP: #767546
 
