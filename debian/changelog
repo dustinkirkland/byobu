@@ -1,4 +1,4 @@
-byobu (3.34) unreleased; urgency=low
+byobu (3.34-0ubuntu1) oneiric; urgency=low
 
   [ Baptiste Jonglez ]
   * usr/lib/byobu/updates_available: add support for ArchLinux in the
@@ -7,7 +7,7 @@ byobu (3.34) unreleased; urgency=low
   [ Jeffrey William Edwards ]
   * usr/lib/byobu/.notify_osd: fix minor regex error, LP: #764813
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 19 Apr 2011 16:34:35 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:07 -0500
 
 byobu (3.33-0ubuntu1) natty; urgency=low
 
