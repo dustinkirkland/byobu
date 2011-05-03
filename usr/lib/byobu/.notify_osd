@@ -36,7 +36,7 @@ while (<STDIN>) {
 	}
 	$msg = $_;
 	$msg =~ s/\[[^,]*, //;		# strip the leading "[timestamp, "
-	$msg =~ s/ \] /: /;		# replace the " ] " following the indicator name, with ":"
+	$msg =~ s/\] /: /;		# replace the " ] " following the indicator name, with ":"
 	$msg =~ s/\s+/ /g;		# collapse multi-whitespace into one
 	$msg =~ s/\s+$//g;		# strip trailing whitespace
 	$msg =~ s/^\s+//g;		# strip leading whitespace
