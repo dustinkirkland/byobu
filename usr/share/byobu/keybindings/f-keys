@@ -63,8 +63,10 @@ bindkey "^[[31~" only							# shift-F5 | kill all splits
 bindkey "^[[32~" remove							# shift-F6 | kill this split
 
 # Make it more logical how to enter scrollback
-bindkey "^[[5;3~" copy					# alt-pageup | scrollback
-bindkey "^[[6;3~" copy					# alt-pageup | scrollback
+register p "^[[5~"
+bindkey "^[[5;3~" eval 'copy' 'process p'		# alt-pageup | scrollback
+register n "^[[6~"
+bindkey "^[[6;3~" eval 'copy' 'process n'		# alt-pagedn | scrollback
 
 # Make socket reconnection a little easier
 bindkey "^[[15;5~" eval 'process r' 'stuff ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets^M"' # ctrl-F5 | reconnect gpg/ssh sockets

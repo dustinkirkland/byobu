@@ -11,6 +11,8 @@ byobu (3.35) unreleased; urgency=low
     - the first time a user presses ctrl-a, prompt them with a choice
       as to their preference of behavior (emacs vs. screen)
     - preserve this choice
+  * usr/share/byobu/keybindings/f-keys: LP: #776740
+    - improve alt-pgup / alt-pgdown
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
 
