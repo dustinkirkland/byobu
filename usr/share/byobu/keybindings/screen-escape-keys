@@ -20,6 +20,9 @@
 # This file disables the f-key bindings, but retains the
 # keybindings that use screen's built-in escape sequence
 
+# Default screen escape
+escape ^Aa
+
 # Disable the f-key bindings
 bindkey -k k2
 bindkey -k k3

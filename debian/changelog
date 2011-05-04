@@ -1,6 +1,11 @@
 byobu (3.35) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-config, usr/share/byobu/keybindings/f-keys,
+    usr/share/byobu/keybindings/screen-escape-keys,
+    usr/share/doc/byobu/help.txt: LP: #776743
+    - use ASCII 16 (data link escape) as the escape character
+    - bind F12 to printing the escape character
+    - adjust everything accordingly
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
 

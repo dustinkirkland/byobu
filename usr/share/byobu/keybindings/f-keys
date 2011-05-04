@@ -19,27 +19,32 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
+# Byobu's escape key is ASCII Dec:16, Hex:10, Oct:020, Char:DLE -- Data link escape
+# which is bound to F12
+escape \020\020
+
 # F-keys seem to work well in both gnome-terminal and tty consoles
 bindkey -k k1 screen -t config 0 byobu-config		# F1  | Configuration (along with F9)
 							#     | since F1 = Help in gnome-terminal
 bindkey -k k2 screen					# F2  | Create new window
 bindkey -k k3 eval 'prev' 'fit'				# F3  | Previous Window
 bindkey -k k4 eval 'next' 'fit'				# F4  | Next Window
-register r "^a:source $HOME/.byobu/profile^M"		#     | Goes with F5 definition
+register r "\020:source $HOME/.byobu/profile^M"		#     | Goes with F5 definition
 bindkey -k k5 eval 'process r'				# F5  | Reload profile
 bindkey -k k6 detach					# F6  | Detach from this session
 bindkey -k k7 copy					# F7  | Enter copy/scrollback mode
-register t "^aA^aa^k^h"					#     | Goes with the F8 definition
+register t "\020A\020a^k^h"				#     | Goes with the F8 definition
 bindkey -k k8 process t 				# F8  | Re-title a window
 bindkey -k k9 screen -t config 0 byobu-config		# F9  | Configuration
 							# F10 | 'toolbar' in gnome-terminal
 							# F11 | 'fullscreen' in gnome-terminal
-bindkey -k F2 lockscreen				# F12 | Lock this terminal
-bind $ screen -t status 0 byobu-status-detail 		# ctrl-a $ | show detailed status
-bind @ screen -t config 0 byobu-config			# ctrl-a @ | Configuration
-bind R process r					# ctrl-a R | Reload profile
-register s "^a[g G$>^h"					# Goes with ^a~ definition
-bind ~ eval 'process s' 'exec sed -i -e "/./,/^$/!d" /var/run/screen/S-$USER/byobu-exchange' 'echo "See: /var/run/screen/S-$USER/byobu-exchange"' # ctrl-a ~ | write the buffer to file
+register x "\020"					#     | Goes with the F12 definition
+bindkey -k F2 process x					# F12 | Screen's escape key
+bind $ screen -t status 0 byobu-status-detail 		# F12 $ | show detailed status
+bind @ screen -t config 0 byobu-config			# F12 @ | Configuration
+bind R process r					# F12 R | Reload profile
+register s "\020[g G$>^h"					# Goes with \020~ definition
+bind ~ eval 'process s' 'exec sed -i -e "/./,/^$/!d" /var/run/screen/S-$USER/byobu-exchange' 'echo "See: /var/run/screen/S-$USER/byobu-exchange"' # F12 ~ | write the buffer to file
 
 # Hotkeys for splits (gnome-terminal)
 bindkey "^[O1;2Q" eval 'split' 'focus down' 'next' 'focus up'		# shift-F2 | horizontal split
@@ -68,5 +73,5 @@ bindkey "^[[15;5~" eval 'process r' 'stuff ". $BYOBU_PREFIX/bin/byobu-reconnect-
 bindkey "^[[17;2~" eval 'exec touch /var/run/screen/S-$USER/byobu.no-logout' 'detach'   # ctrl-F6 | detach, but don't logout
 
 # toggle f-key keybindings off
-register d "^a:source $BYOBU_PREFIX/share/byobu/keybindings/screen-escape-keys^M"
-bind ! eval 'process d' 'backtick 111 9999999 9999999 byobu-status menu --disable-f-keys'	# ctrl-a-! | toggle on/off f-keys
+register d "\020:source $BYOBU_PREFIX/share/byobu/keybindings/screen-escape-keys^M"
+bind ! eval 'process d' 'backtick 111 9999999 9999999 byobu-status menu --disable-f-keys'	# F12 ! | toggle on/off f-keys

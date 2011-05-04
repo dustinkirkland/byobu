@@ -484,7 +484,7 @@ def setesckey(key):
             out = commands.getoutput(SED+" -i -e 's/^register.*$//' "+path)
             out = commands.getoutput("grep -h ^register "+SHARE+"/keybindings/*keys")
             appendtofile(path, out+"\n")
-            out = commands.getoutput(SED+" -i -e 's/\"\^a/\"\^"+l+"/g' "+path)
+            out = commands.getoutput(SED+" -i -e 's/\"\\020/\"\^"+l+"/g' "+path)
             out = commands.getoutput(SED+" -i -e '/^$/d' "+path)
 
 def chgesc(screen, size):
