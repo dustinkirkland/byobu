@@ -13,6 +13,11 @@ byobu (3.35) unreleased; urgency=low
     - preserve this choice
   * usr/share/byobu/keybindings/f-keys: LP: #776740
     - improve alt-pgup / alt-pgdown
+  * usr/share/byobu/profiles/common: LP: #776742
+    - disable xterm/gnome-terminal's scrollback buffer
+    - it seems we should be able to do this, at this point since byobu
+      now has keybindings for alt-pgup and alt-pgdn
+    - note that this commit does, however, revert the fix for an older bug
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
 
