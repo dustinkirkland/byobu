@@ -1,8 +1,9 @@
-byobu (3.35) unreleased; urgency=low
+byobu (3.35c) unreleased; urgency=low
 
   * usr/bin/byobu-config, usr/share/byobu/keybindings/f-keys,
     usr/share/byobu/keybindings/screen-escape-keys,
-    usr/share/doc/byobu/help.txt, usr/bin/Makefile.am: LP: #776743
+    usr/share/doc/byobu/help.txt, usr/bin/Makefile.am,
+    usr/bin/byobu-ctrl-a: LP: #776743
     - use ASCII 16 (data link escape) as the escape character
     - bind F12 to printing the escape character
     - adjust everything accordingly

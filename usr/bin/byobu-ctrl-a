@@ -1,0 +1,55 @@
+#!/bin/sh
+#
+#    byobu-ctrl-a - set the ctrl-a behavior
+#    Copyright (C) 2011 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+PKG="byobu"
+keybindings="$HOME/.$PKG/keybindings"
+touch "$keybindings"
+
+while true; do
+	echo
+	echo "Configure Byobu's ctrl-a behavior..."
+	echo
+	echo "When you press ctrl-a in Byobu, do you want it to operate in:"
+	echo "    (1) Emacs mode  (go to beginning of line)"
+	echo "    (2) Screen mode (screen's default escape sequence)"
+	echo "Note that F12 also operates as Screen escape in Byobu!"
+	echo
+	echo -n "Select [1 or 2]: "
+	s=$(head -n1)
+	echo
+	case "$s" in
+		1)
+			sed -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" "$keybindings"
+			echo 'bindkey "^A"' >> "$keybindings"
+			echo "INFO: ctrl-a will now operate in emacs mode"
+			break
+		;;
+		2)
+			sed -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" "$keybindings"
+			echo 'register a "\\020"' >> "$keybindings"
+			echo 'bindkey "^A" process a' >> "$keybindings"
+			echo "INFO: ctrl-a will now operate in screen mode"
+			break
+		;;
+	esac
+done
+screen -X at 0 source "$HOME/.$PKG/profile"
+echo "To modify this behavior again later, run 'byobu-ctrl-a'"
+echo
