@@ -55,7 +55,6 @@ bind R process r
 # ctrl-a-A      Re-title a window               F8
 # ctrl-a-@      Configuration                   F9
 bind @ screen -t config 0 byobu-config
-# ctrl-a-x      Lock this terminal              F12
 # ctrl-a-$      Show detailed status
 bind $ screen -t status 0 byobu-status-detail
 # ctrl-a-!	Toggle f-key keybindings on

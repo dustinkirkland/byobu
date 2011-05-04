@@ -75,3 +75,5 @@ bindkey "^[[17;2~" eval 'exec touch /var/run/screen/S-$USER/byobu.no-logout' 'de
 # toggle f-key keybindings off
 register d "\020:source $BYOBU_PREFIX/share/byobu/keybindings/screen-escape-keys^M"
 bind ! eval 'process d' 'backtick 111 9999999 9999999 byobu-status menu --disable-f-keys'	# F12 ! | toggle on/off f-keys
+
+bindkey "^A" screen -t ctrl-a byobu-ctrl-a

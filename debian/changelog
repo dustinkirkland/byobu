@@ -6,6 +6,11 @@ byobu (3.35) unreleased; urgency=low
     - use ASCII 16 (data link escape) as the escape character
     - bind F12 to printing the escape character
     - adjust everything accordingly
+  * usr/share/byobu/keybindings/f-keys,
+    usr/share/byobu/keybindings/screen-escape-keys: LP: #776743
+    - the first time a user presses ctrl-a, prompt them with a choice
+      as to their preference of behavior (emacs vs. screen)
+    - preserve this choice
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
 
