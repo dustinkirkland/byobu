@@ -19,6 +19,8 @@ byobu (3.35c) unreleased; urgency=low
     - it seems we should be able to do this, at this point since byobu
       now has keybindings for alt-pgup and alt-pgdn
     - note that this commit does, however, revert the fix for an older bug
+  * usr/share/byobu/keybindings/f-keys:
+    - fix regression in rename F8 functionality, use <home> key
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
 

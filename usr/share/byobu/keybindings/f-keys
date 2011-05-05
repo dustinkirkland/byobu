@@ -33,7 +33,7 @@ register r "\020:source $HOME/.byobu/profile^M"		#     | Goes with F5 definition
 bindkey -k k5 eval 'process r'				# F5  | Reload profile
 bindkey -k k6 detach					# F6  | Detach from this session
 bindkey -k k7 copy					# F7  | Enter copy/scrollback mode
-register t "\020A\020a^k^h"				#     | Goes with the F8 definition
+register t "\020A^[OH^k^h"				#     | Goes with the F8 definition
 bindkey -k k8 process t 				# F8  | Re-title a window
 bindkey -k k9 screen -t config 0 byobu-config		# F9  | Configuration
 							# F10 | 'toolbar' in gnome-terminal
