@@ -19,8 +19,7 @@
 
 PKG="byobu"
 DATA="$HOME/.$PKG"
-[ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
-export BYOBU_PREFIX
+[ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 
 find_script () {
 	# Allow for local status scripts

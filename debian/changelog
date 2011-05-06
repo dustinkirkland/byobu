@@ -35,6 +35,8 @@ byobu (3.35c) unreleased; urgency=low
       those launching byobu detached from cron, e.g.)
   * usr/share/byobu/tests/byobu-time-notifications:
     - fixup notificationt testing
+  * usr/bin/byobu-status: minor performance improvement
+  * usr/share/doc/byobu/help.txt: rearrange and update documentation
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
 

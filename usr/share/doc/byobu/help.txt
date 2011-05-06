@@ -2,9 +2,9 @@ Byobu _VER_ is an enhancement to GNU Screen, a command line
 tool providing live system status, dynamic window management,
 and some convenient keybindings:
 
-F2    Create a new window    |  F6    Detach from the session
-F3    Go to the prev window  |  F7    Scrollback and search
-F4    Go to the next window  |  F8    Rename a window
-F5    Reload profile         |  F9    Configuration
-'screen -r'  - reattach      |  F12   Screen escape sequence
-'man screen' - screen's help | 'man byobu'  - byobu's help
+F2    Create a new window    |  F7    Scrollback and search
+F3    Go to the prev window  |  F8    Rename a window
+F4    Go to the next window  |  F9    Configuration
+F5    Reload profile         |  F12   Screen escape sequence
+F6    Detach from session    |  'man byobu'  - byobu's help
+'byobu'  - reattach session  |  'man screen' - screen's help
