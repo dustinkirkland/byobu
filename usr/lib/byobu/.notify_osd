@@ -21,6 +21,7 @@
 
 $/ = "\n\n";
 $PKG = "byobu";
+$sleep = 5;
 while (<STDIN>) {
 	# Ensure that the notify_osd indicator is enabled
 	my $skip = 0;
@@ -40,5 +41,8 @@ while (<STDIN>) {
 	$msg =~ s/\s+/ /g;		# collapse multi-whitespace into one
 	$msg =~ s/\s+$//g;		# strip trailing whitespace
 	$msg =~ s/^\s+//g;		# strip leading whitespace
+	system("/usr/bin/screen", "-X", "-S", "$ARGV[0]", "at", "*", "msgwait", "$sleep");
 	system("/usr/bin/screen", "-X", "-S", "$ARGV[0]", "at", "*", "echo", "[$msg]");
+	sleep($sleep);
+	system("/usr/bin/screen", "-X", "-S", "$ARGV[0]", "at", "*", "msgwait", "0");
 }

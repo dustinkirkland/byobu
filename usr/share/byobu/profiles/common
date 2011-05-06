@@ -23,7 +23,8 @@
 # Now, let's override with our customizations
 startup_message off
 vbell off
-msgwait 5
+msgwait 0
+msgminwait 0
 defutf8 on
 deflogin on
 

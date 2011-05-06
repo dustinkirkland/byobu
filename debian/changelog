@@ -21,6 +21,15 @@ byobu (3.35c) unreleased; urgency=low
     - note that this commit does, however, revert the fix for an older bug
   * usr/share/byobu/keybindings/f-keys:
     - fix regression in rename F8 functionality, use <home> key
+  * usr/lib/byobu/.notify_osd, usr/share/byobu/keybindings/f-keys,
+    usr/share/byobu/profiles/common: LP: #776742, #776740
+    - set msgwait and msginwait to both 0, to turn down the verbosity of
+      screen's messaging, and speed up some byobu operations
+    - improve scrollback (alt-pgup and alt-pgdn) by disabling screen's
+      status message updates about 'copy mode', etc.
+    - speed up the printscreen functionality
+    - when running printscreen, open the result with the user's default
+      viewer in a new window entitled PRINTSCREEN
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
 

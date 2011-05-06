@@ -44,7 +44,7 @@ bind $ screen -t status 0 byobu-status-detail 		# F12 $ | show detailed status
 bind @ screen -t config 0 byobu-config			# F12 @ | Configuration
 bind R process r					# F12 R | Reload profile
 register s "\020[g G$>^h"					# Goes with \020~ definition
-bind ~ eval 'process s' 'exec sed -i -e "/./,/^$/!d" /var/run/screen/S-$USER/byobu-exchange' 'echo "See: /var/run/screen/S-$USER/byobu-exchange"' # F12 ~ | write the buffer to file
+bind ~ eval 'process s' 'exec sed -i -e "/./,/^$/!d" /var/run/screen/S-$USER/printscreen' 'screen -t PRINTSCREEN view /var/run/screen/S-$USER/printscreen' # F12 ~ | write the buffer to file, open in a new window
 
 # Hotkeys for splits (gnome-terminal)
 bindkey "^[O1;2Q" eval 'split' 'focus down' 'next' 'focus up'		# shift-F2 | horizontal split
@@ -64,9 +64,9 @@ bindkey "^[[32~" remove							# shift-F6 | kill this split
 
 # Make it more logical how to enter scrollback
 register p "^[[5~"
-bindkey "^[[5;3~" eval 'copy' 'process p'		# alt-pageup | scrollback
+bindkey "^[[5;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process p'		# alt-pageup | scrollback
 register n "^[[6~"
-bindkey "^[[6;3~" eval 'copy' 'process n'		# alt-pagedn | scrollback
+bindkey "^[[6;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process n'		# alt-pagedn | scrollback
 
 # Make socket reconnection a little easier
 bindkey "^[[15;5~" eval 'process r' 'stuff ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets^M"' # ctrl-F5 | reconnect gpg/ssh sockets
