@@ -33,6 +33,8 @@ byobu (3.35c) unreleased; urgency=low
   * usr/bin/byobu:
     - enable users to disable the title printing at launch (helpful for
       those launching byobu detached from cron, e.g.)
+  * usr/share/byobu/tests/byobu-time-notifications:
+    - fixup notificationt testing
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
 

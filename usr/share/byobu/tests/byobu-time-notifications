@@ -26,7 +26,7 @@ export BYOBU_PREFIX
 
 loop() {
 	for j in $(seq 1 $RUNS); do
-		usr/lib/$PKG/$1 >/dev/null
+		usr/lib/$PKG/$1 >/dev/null 2>&1
 	done
 }
 
@@ -37,6 +37,11 @@ else
 	list=$(ls /usr/lib/$PKG/)
 fi
 for i in $list; do
+	case "$i" in
+		notify_osd)
+			continue
+		;;
+	esac
 	freq=`grep "byobu-status $i" /usr/share/$PKG/profiles/common | awk '{print $3}'`
 	echo -n "$i $freq "
 	time loop $i
