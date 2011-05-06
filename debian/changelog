@@ -30,7 +30,7 @@ byobu (3.35c) unreleased; urgency=low
     - speed up the printscreen functionality
     - when running printscreen, open the result with the user's default
       viewer in a new window entitled PRINTSCREEN
-  * usr/bin/byobu:
+  * usr/bin/byobu: LP: #777888
     - enable users to disable the title printing at launch (helpful for
       those launching byobu detached from cron, e.g.)
   * usr/share/byobu/tests/byobu-time-notifications:
