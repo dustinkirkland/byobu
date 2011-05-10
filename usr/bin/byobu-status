@@ -88,8 +88,10 @@ case "$P" in
 		printf "$ESC{= $BACKGROUND$FOREGROUND}"
 	;;
 	*)
+		[ -f "$HOME/.$PKG/status.disable" ] && exit 0
 		eval x="\$$P" || exit 1
 		[ "$x" = "1" ] || exit 0
 		shift
 		. $(find_script "$P") "$@"
+	;;
 esac
