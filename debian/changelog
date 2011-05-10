@@ -37,6 +37,8 @@ byobu (3.35c) unreleased; urgency=low
     - fixup notificationt testing
   * usr/bin/byobu-status: minor performance improvement
   * usr/share/doc/byobu/help.txt: rearrange and update documentation
+  * usr/bin/byobu-ctrl-a, usr/share/byobu/tests/byobu-time-
+    notifications: update doc message
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
 
