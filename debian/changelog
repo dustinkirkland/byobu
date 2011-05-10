@@ -1,4 +1,4 @@
-byobu (4.0) unreleased; urgency=low
+byobu (4.0-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu-config, usr/share/byobu/keybindings/f-keys,
     usr/share/byobu/keybindings/screen-escape-keys,
@@ -55,7 +55,7 @@ byobu (4.0) unreleased; urgency=low
   * usr/bin/byobu-config: ensure that escape key changing through byobu-config
     continues to work
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 May 2011 23:34:53 +0200
 
 byobu (3.34-0ubuntu1) oneiric; urgency=low
 
