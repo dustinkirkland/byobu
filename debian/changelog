@@ -44,6 +44,9 @@ byobu (3.35c) unreleased; urgency=low
     byobu on ssh logins (note that this will require whitelisting that
     variable on the ssh client and server)
   * usr/share/byobu/profiles/common: fix printscreen screen exchange file
+  * usr/share/byobu/keybindings/f-keys,
+    usr/share/byobu/keybindings/screen-escape-keys:
+    - simplify all calls to the screen escape key
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
 

@@ -3,8 +3,8 @@
 #      This configuration profile is intended to provide a useful
 #      keybindings using the keyboard's f-keys
 #
-#    Copyright (C) 2008  Nick Barcet <nick.barcet@canonical.com>
-#                        Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008-2011	Dustin Kirkland <kirkland@ubuntu.com>
+#				Nick Barcet <nick.barcet@canonical.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 # Byobu's escape key is ASCII Dec:94, Hex:5E, Oct:136, Char: ctrl-^ -- ctrl-caret
 # which is bound to F12
 escape ^^^^
+register x "^^"						#     | Goes with the F12 definition
 
 # F-keys seem to work well in both gnome-terminal and tty consoles
 bindkey -k k1 screen -t config 0 byobu-config		# F1  | Configuration (along with F9)
@@ -29,21 +30,20 @@ bindkey -k k1 screen -t config 0 byobu-config		# F1  | Configuration (along with
 bindkey -k k2 screen					# F2  | Create new window
 bindkey -k k3 eval 'prev' 'fit'				# F3  | Previous Window
 bindkey -k k4 eval 'next' 'fit'				# F4  | Next Window
-register r "^^:source $HOME/.byobu/profile^M"		#     | Goes with F5 definition
-bindkey -k k5 eval 'process r'				# F5  | Reload profile
+register r ":source $HOME/.byobu/profile^M"		#     | Goes with F5 definition
+bindkey -k k5 eval 'process x' 'process r'		# F5  | Reload profile
 bindkey -k k6 detach					# F6  | Detach from this session
 bindkey -k k7 copy					# F7  | Enter copy/scrollback mode
-register t "^^A^[OH^k^h"				#     | Goes with the F8 definition
-bindkey -k k8 process t 				# F8  | Re-title a window
+register t "A^[OH^k^h"					#     | Goes with the F8 definition
+bindkey -k k8 eval 'process x' 'process t'		# F8  | Re-title a window
 bindkey -k k9 screen -t config 0 byobu-config		# F9  | Configuration
 							# F10 | 'toolbar' in gnome-terminal
 							# F11 | 'fullscreen' in gnome-terminal
-register x "^^"						#     | Goes with the F12 definition
 bindkey -k F2 process x					# F12 | Screen's escape key
 bind $ screen -t status 0 byobu-status-detail 		# F12 $ | show detailed status
 bind @ screen -t config 0 byobu-config			# F12 @ | Configuration
 bind R process r					# F12 R | Reload profile
-register s "[g G$>^h"					# Goes with ^^ definition
+register s "[g G$>^h"					# Goes with F12 ~ definition
 bind ~ eval 'process x' 'process s' 'exec sed -i -e "/./,/^$/!d" /var/run/screen/S-$USER/printscreen' 'screen -t PRINTSCREEN view /var/run/screen/S-$USER/printscreen' # F12 ~ | write the buffer to file, open in a new window
 
 # Hotkeys for splits (gnome-terminal)
@@ -75,7 +75,7 @@ bindkey "^[[15;5~" eval 'process r' 'stuff ". $BYOBU_PREFIX/bin/byobu-reconnect-
 bindkey "^[[17;2~" eval 'exec touch /var/run/screen/S-$USER/byobu.no-logout' 'detach'   # ctrl-F6 | detach, but don't logout
 
 # toggle f-key keybindings off
-register d "^^:source $BYOBU_PREFIX/share/byobu/keybindings/screen-escape-keys^M"
-bind ! eval 'process d' 'backtick 111 9999999 9999999 byobu-status menu --disable-f-keys'	# F12 ! | toggle on/off f-keys
+register d ":source $BYOBU_PREFIX/share/byobu/keybindings/screen-escape-keys^M"
+bind ! eval 'process x' 'process d' 'backtick 111 9999999 9999999 byobu-status menu --disable-f-keys'	# F12 ! | toggle on/off f-keys
 
 bindkey "^A" screen -t ctrl-a byobu-ctrl-a
