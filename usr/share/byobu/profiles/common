@@ -97,7 +97,7 @@ defbce "on"
 defscrollback 10000
 
 # Set per-user screen-exchange
-bufferfile /var/run/screen/S-$USER/byobu-exchange
+bufferfile /var/run/screen/S-$USER/printscreen
 compacthist on
 
 # Monitor windows
