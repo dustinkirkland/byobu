@@ -50,6 +50,8 @@ byobu (3.35c) unreleased; urgency=low
   * usr/bin/byobu-quiet, usr/bin/byobu-status, usr/bin/Makefile.am,
     usr/share/byobu/profiles/common: LP: #780380
     - add a byobu-quiet utility, to silence eyecandy
+  * usr/share/man/man1/byobu-ctrl-a.1, usr/share/man/man1/byobu-quiet.1,
+    usr/share/man/man1/Makefile.am: document the new tools
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
 
