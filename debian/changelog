@@ -52,6 +52,8 @@ byobu (3.35c) unreleased; urgency=low
     - add a byobu-quiet utility, to silence eyecandy
   * usr/share/man/man1/byobu-ctrl-a.1, usr/share/man/man1/byobu-quiet.1,
     usr/share/man/man1/Makefile.am: document the new tools
+  * usr/bin/byobu-config: ensure that escape key changing through byobu-config
+    continues to work
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 May 2011 12:11:10 -0500
 
