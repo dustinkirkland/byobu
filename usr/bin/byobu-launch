@@ -21,7 +21,15 @@ PKG="byobu"
 DATA="$HOME/.$PKG"
 case "$-" in
 	*i*)
-		if byobu-launcher; then
+		# Respect a BYOBU_DISABLE environment variable
+		# To use over SSH, you must:
+		# 1) On your remote SSH server (might be handled by your distro):
+		#   /etc/ssh/sshd_config: AcceptEnv LANG LC_* BYOBU_DISABLE
+		# 2) On your local SSH client (might be handled by your distro):
+		#   /etc/ssh/ssh_config:  SendEnv LANG LC_* BYOBU_DISABLE
+		# 3) And in your local bashrc:
+		#   $HOME/.bashrc:  export BYOBU_DISABLE=1
+		if [ "$BYOBU_DISABLE" != "1" ] && byobu-launcher; then
 			# Wait very briefly for the no-logout flag to get written?
 			sleep 0.1
 			if [ -e "$DATA/no-logout-on-detach" ] || [ -e "/var/run/screen/S-$USER/byobu.no-logout" ]; then
