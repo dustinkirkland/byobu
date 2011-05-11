@@ -39,15 +39,16 @@ while true; do
 	echo
 	case "$s" in
 		1)
-			sed -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" "$keybindings"
+			sed -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
 			echo 'bindkey "^A"' >> "$keybindings"
 			echo "INFO: ctrl-a will now operate in emacs mode"
 			break
 		;;
 		2)
-			sed -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" "$keybindings"
-			echo 'register a "^^"' >> "$keybindings"
-			echo 'bindkey "^A" process a' >> "$keybindings"
+			sed -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
+			echo 'escape "^Aa"' >> "$keybindings"
+			echo 'register x "^A"' >> "$keybindings"
+			echo 'bindkey "^A"' >> "$keybindings"
 			echo "INFO: ctrl-a will now operate in screen mode"
 			break
 		;;

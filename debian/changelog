@@ -1,6 +1,6 @@
 byobu (4.1) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-ctrl-a: fix ctrl-a in screen-mode
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 May 2011 23:34:58 +0200
 
