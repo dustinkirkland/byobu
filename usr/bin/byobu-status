@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh -e
 #
 #    byobu-status
 #    Copyright (C) 2008 Canonical Ltd.
@@ -93,6 +93,6 @@ case "$P" in
 		eval x="\$$P" || exit 1
 		[ "$x" = "1" ] || exit 0
 		shift
-		find_script "$P" && . "${_RET}" "$@"
+		find_script "$P" && . "${_RET}"
 	;;
 esac

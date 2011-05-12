@@ -1,7 +1,11 @@
 byobu (4.1) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu-ctrl-a: fix ctrl-a in screen-mode
   * usr/share/byobu/keybindings/f-keys: minor comment update
+  * usr/bin/byobu-status:
+    - move byobu-status back to sh (dash?), for a 2x performance improvement
+    - note that we cannot pass arguments to sourced scripts
 
   [ Scott Moser ]
   * usr/bin/byobu-status:
