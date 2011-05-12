@@ -24,13 +24,13 @@ DATA="$HOME/.$PKG"
 find_script () {
 	# Allow for local status scripts
 	if [ -x "$DATA/bin/$1" ]; then
-		echo "$DATA/bin/$1"
+		_RET="$DATA/bin/$1"
 	elif [ -x "$BYOBU_PREFIX/lib/$PKG/$1" ]; then
-		echo "$BYOBU_PREFIX/lib/$PKG/$1"
+		_RET="$BYOBU_PREFIX/lib/$PKG/$1"
 	elif [ -x "$BYOBU_PREFIX/libexec/$PKG/$1" ]; then
-		echo "$BYOBU_PREFIX/libexec/$PKG/$1"
+		_RET="$BYOBU_PREFIX/libexec/$PKG/$1"
 	else
-		echo "/dev/null"
+		_RET="/dev/null"
 	fi
 }
 
@@ -65,17 +65,18 @@ export P="$1"
 case "$P" in
 	--detail)
 		VER=
-		if which dpkg-query >/dev/null; then
+		if command -v dpkg-query >/dev/null; then
 			VER=$(set -- $(dpkg-query --show $PKG); echo "$2")
 		fi
 		printf "$PKG-$VER Detailed Status Navigation\n"
-		if which vim >/dev/null && `vim --version | grep -q +folding`; then
+		if command -v vim >/dev/null && `vim --version | grep -q +folding`; then
 			printf "  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
 		fi
 		for i in "$BYOBU_PREFIX/lib/$PKG"/* "$DATA/bin"/*; do
 			i=${i##*/}
 			[ "$i" = "menu" ] && continue
-			script=`find_script $i`
+
+			find_script "$i" && script="${_RET}"
 			short=`$script --short | sed -e 's/^\s*//' -e 's/\s*$//' -e 's/.{[^}]*}//g'` || true
 			detail=`$script --detail 2>/dev/null | sed -e '/^$/d' -e 's/^/\t/g'` || true
 			printf "%s\n\t(%s)\n" "$short" "$i"
@@ -92,6 +93,6 @@ case "$P" in
 		eval x="\$$P" || exit 1
 		[ "$x" = "1" ] || exit 0
 		shift
-		. $(find_script "$P") "$@"
+		find_script "$P" && . "${_RET}" "$@"
 	;;
 esac
