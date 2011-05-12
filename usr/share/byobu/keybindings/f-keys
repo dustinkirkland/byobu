@@ -39,7 +39,7 @@ bindkey -k k8 eval 'process x' 'process t'		# F8  | Re-title a window
 bindkey -k k9 screen -t config 0 byobu-config		# F9  | Configuration
 							# F10 | 'toolbar' in gnome-terminal
 							# F11 | 'fullscreen' in gnome-terminal
-bindkey -k F2 process x					# F12 | Screen's escape key
+bindkey -k F2 process x					# F12 | Byobu's escape key
 bind $ screen -t status 0 byobu-status-detail 		# F12 $ | show detailed status
 bind @ screen -t config 0 byobu-config			# F12 @ | Configuration
 bind R process r					# F12 R | Reload profile

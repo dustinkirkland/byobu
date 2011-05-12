@@ -1,6 +1,7 @@
 byobu (4.1) unreleased; urgency=low
 
   * usr/bin/byobu-ctrl-a: fix ctrl-a in screen-mode
+  * usr/share/byobu/keybindings/f-keys: minor comment update
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 May 2011 23:34:58 +0200
 
