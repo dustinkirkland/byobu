@@ -23,6 +23,14 @@
 
 PKG="byobu"
 
+# newest(file,file,file..)
+# return the newest file in the list
+newest() {
+	local c="$1" i
+	for i in "$@"; do [ "$i" -nt "$c" ] && c="$i"; done
+	[ -e "$c" ] && _RET="$c"
+}
+
 case "$-" in
 	*i*)
 		# no-op
@@ -38,15 +46,8 @@ case "$-" in
 esac
 
 # Establish gpg-agent socket, helps when reconnecting to a detached session
-# Sorry, ls -t is needed here, to sort by time
-for i in $(ls -t "$HOME/.gnupg/"gpg-agent-info-* 2>/dev/null); do
-	. "$i" || continue
-	export GPG_AGENT_INFO && break
-done
+newest "$HOME/.gnupg/"gpg-agent-info-* && . "$_RET" && export GPG_AGENT_INFO
 
 # Reconnect dbus, source the most recently touched session-bus
 # Sorry, ls -t is needed here, to sort by time
-for i in $(ls -t "$HOME/.dbus/session-bus/" 2>/dev/null); do
-	. "$HOME/.dbus/session-bus/$i" || continue
-	export DBUS_SESSION_BUS_ADDRESS && break
-done
+newest "$HOME/.dbus/session-bus/*" && . "$_RET" && export DBUS_SESSION_DBUS_ADDRESS
