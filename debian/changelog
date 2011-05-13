@@ -6,6 +6,24 @@ byobu (4.1) unreleased; urgency=low
   * usr/bin/byobu-status:
     - move byobu-status back to sh (dash?), for a 2x performance improvement
     - note that we cannot pass arguments to sourced scripts
+  * usr/bin/byobu-status, usr/lib/byobu/apport, usr/lib/byobu/battery,
+    usr/lib/byobu/cpu_freq, usr/lib/byobu/cpu_temp,
+    usr/lib/byobu/custom, usr/lib/byobu/disk_io, usr/lib/byobu/ec2_cost,
+    usr/lib/byobu/fan_speed, usr/lib/byobu/hostname,
+    usr/lib/byobu/ip_address, usr/lib/byobu/load_average,
+    usr/lib/byobu/logo, usr/lib/byobu/mail, usr/lib/byobu/mem_available,
+    usr/lib/byobu/mem_used, usr/lib/byobu/menu, usr/lib/byobu/network,
+    usr/lib/byobu/processes, usr/lib/byobu/raid, usr/lib/byobu/rcs_cost,
+    usr/lib/byobu/reboot_required, usr/lib/byobu/release,
+    usr/lib/byobu/services, usr/lib/byobu/swap, usr/lib/byobu/time_utc,
+    usr/lib/byobu/updates_available, usr/lib/byobu/uptime,
+    usr/lib/byobu/users, usr/lib/byobu/whoami,
+    usr/lib/byobu/wifi_quality, usr/share/byobu/tests/byobu-time-
+    notifications:
+    - with advice from Scott Moser, almost all $(color ...) calls have
+      been updated to inline calls to the color() function, which does
+      the printf itself
+    - this provides some measurable performance improvements
 
   [ Scott Moser ]
   * usr/bin/byobu-status:

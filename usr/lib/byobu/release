@@ -66,4 +66,4 @@ else
 	DISTRO="Byobu"
 fi
 
-printf "$(color bold2)%s$(color -) " "$DISTRO"
+color bold2; printf "%s" "$DISTRO"; color --

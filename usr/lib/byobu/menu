@@ -33,4 +33,5 @@ else
 	key="F9"
 fi
 
-printf " $(color k w)%s:<$(color -)$(color b k w)$key$(color k w)>" `gettext "Menu"`
+text=$(gettext "Menu")
+color k w; printf "%s:<" "$text"; color -; color b k w; printf "%s" "$key"; color k w; printf ">"

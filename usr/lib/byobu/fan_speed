@@ -32,7 +32,7 @@ DIR="/sys/class/hwmon"
 for i in $(find $DIR/*/*/ -type f -name "fan1_input"); do
 	speed=$(cat "$i")
 	if [ "$speed" -gt 0 ]; then
-	        printf "$(color bold1)%s$(color -)$(color none)%s$(color -) " "$speed" "rpm"
+	        color bold1; printf "%s" "$speed"; color -; color none; printf "rpm"; color --
 		exit 0
 	fi
 done
@@ -45,7 +45,7 @@ if [ -r /proc/i8k ]; then
 			# use `modprobe i8k fan_mult=1` to disable if unneeded,
 			# resulting in nonsensical speeds
 			[ "$speed" -gt 10000 ] && speed=$((${speed} / 30))
-			printf "$(color bold1)%s$(color -)$(color none)%s$(color -) " "$speed" "rpm"
+			color bold1; printf "%s" "$speed"; color -; color none; printf "rpm"; color --
 			exit 0
 		fi
 	done

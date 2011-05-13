@@ -26,4 +26,4 @@ if [ "$1" = "--detail" ]; then
 fi
 
 f=$(free | awk '/buffers\/cache:/ {printf "%.0f", 100*$3/($3 + $4)}')
-printf "$(color b g W)%s$(color -)$(color g W)%%$(color -) " "$f"
+color b g W; printf "%s" "$f"; color -; color g W; printf "%%"; color --

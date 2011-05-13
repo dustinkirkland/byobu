@@ -37,4 +37,7 @@ else
 	mem="$mem"
 	unit="KB"
 fi
-printf "$(color b G W)s%s$(color -)$(color G W)%s,$(color -)$(color b G W)%s$(color -)$(color G W)%%$(color -) " "$mem" "$unit" "$f"
+
+[ "$f" = "0" ] && exit 0
+
+color b G W; printf "s%s" "$mem"; color -; color G W; printf "%s," "$unit"; color -; color b G W; printf "%s" "$f"; color -; color G W; printf "%%"; color --

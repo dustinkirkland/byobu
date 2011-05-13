@@ -68,5 +68,5 @@ for i in "read" "write"; do
 		fi
 	fi
 	[ "$rate" != "0" ] || continue
-	printf "$(color b M W)$symbol$rate$(color -)$(color M W)$unit$(color -) "
+	color b M W; printf "%s%s" "$symbol" "$rate"; color -; color M W; printf "%s" "$unit"; color --
 done

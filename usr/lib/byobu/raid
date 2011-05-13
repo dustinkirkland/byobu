@@ -41,5 +41,5 @@ if grep -qs \% /proc/mdstat; then
 fi
 
 if [ -n "$msg" ]; then
-	printf "$(color B w r)%s$(color -) " "$msg"
+	color B w r; printf "%s" "$msg"; color --
 fi

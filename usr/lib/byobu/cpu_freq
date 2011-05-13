@@ -37,4 +37,4 @@ else
 		freq=$(echo "$freq" "$count" | awk '{printf "%.1f\n", $1/$2/1000}')
 	fi
 fi
-printf "$(color b c W)%s$(color -)$(color c W)%s$(color -) " "$freq" "GHz"
+color b c W; printf "%s" "$freq"; color -; color c W; printf "%s" "GHz"; color --

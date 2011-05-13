@@ -40,6 +40,7 @@ color() {
 	case "$1" in
 		"") return 0 ;;
 		-)   printf "$ESC{-}" ;;
+		--)   printf "$ESC{-} " ;;
 		esc)    printf "$ESC" ;;
 		bold1)  printf "$ESC{=b }" ;;
 		bold2)  printf "$ESC{+b }" ;;

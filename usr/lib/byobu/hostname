@@ -27,6 +27,5 @@ if [ "$1" = "--detail" ]; then
 fi
 
 . "$DATA/status"
-[ "$whoami" = "1" ] && at="@"
 
-printf "$(color bold2)%s%s$(color -)" "$at" $(hostname -s 2>/dev/null || hostname)
+color bold2; printf "%s" "$(hostname -s 2>/dev/null || hostname)"; color --

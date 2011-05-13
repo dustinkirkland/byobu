@@ -36,4 +36,7 @@ if [ "$1" = "--detail" ]; then
 fi
 
 # Print {!} if a /var/crash/*.crash file exists
-ls /var/crash/*.crash >/dev/null 2>&1 && printf "$(color y k){!}$(color -) "
+for i in /var/crash/*.crash; do
+	color y k; printf "{!}"; color --
+	exit 0
+done

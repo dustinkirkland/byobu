@@ -27,4 +27,6 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-[ -s "$mailfile" ] && printf "$(color b)$ICON$(color -) " || exit 0
+if [ -s "$mailfile" ]; then
+	 color b; printf "%s" "$ICON"; color --
+fi
