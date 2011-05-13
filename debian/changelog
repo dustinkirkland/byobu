@@ -1,4 +1,4 @@
-byobu (4.1) unreleased; urgency=low
+byobu (4.1-0ubuntu1) oneiric; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-ctrl-a: fix ctrl-a in screen-mode
@@ -33,7 +33,7 @@ byobu (4.1) unreleased; urgency=low
   * usr/bin/byobu-janitor:
     - performance improvements, save a few forks
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 May 2011 23:34:58 +0200
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 May 2011 18:57:57 +0200
 
 byobu (4.0-0ubuntu1) oneiric; urgency=low
 
