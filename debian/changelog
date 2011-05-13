@@ -30,6 +30,8 @@ byobu (4.1) unreleased; urgency=low
     - performance improvements, save a few forks
   * usr/bin/byobu-reconnect-sockets:
     - performance improvements, save a few forks
+  * usr/bin/byobu-janitor:
+    - performance improvements, save a few forks
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 10 May 2011 23:34:58 +0200
 

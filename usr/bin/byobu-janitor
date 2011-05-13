@@ -29,7 +29,7 @@ FLAG="$RUN/$PKG.reload-required"
 
 # Let's get prepped to switch over to XDG one day; maintain symlink for now
 mkdir -p "$XDG"
-if [ -d "$DATA" ] && [ ! -h "$DATA" ]; then
+if [ ! -h "$DATA" ]; then
 	mv -f "$DATA"/* "$DATA"/.* "$XDG" 2>/dev/null || true
 	rmdir "$DATA"
 fi
@@ -44,8 +44,8 @@ fi
 DEFAULT_PROFILE="light"
 PROFILE="$DATA/profile"
 # Use gsed on non-Linux OS's
-which gsed 2>/dev/null && SED="gsed" || SED="sed"
-which greadlink 2>/dev/null && READLINK="greadlink" || READLINK="readlink"
+command -v gsed >/dev/null && SED="gsed" || SED="sed"
+command -v greadlink >/dev/null && READLINK="greadlink" || READLINK="readlink"
 
 # Create byobu-exchange buffer file, with secure permissions, if it doesn't exist
 if [ -w "$RUN" ] && [ ! -e "$RUN/$PKG-exchange" ]; then
@@ -66,13 +66,13 @@ fi
 
 # Affects: Symlinks pointing to color profiles
 if [ -h "$PROFILE" ]; then
-	case "$($READLINK -f $PROFILE)" in
+	PROFILE_FP=$($READLINK -f "$PROFILE")
+	case "${PROFILE_FP}" in
 		$BYOBU_PREFIX/share/byobu/profiles/*)
 			# Set default colors
 			BG=W
 			FG=k
-			color=$(ls -l "$PROFILE")
-			color=${color##*/}
+			color=${PROFILE_FP##*/}
 			case "$color" in
 				common)       BG=;  FG=;;
 				black|dark)   BG=k; FG=W;;
