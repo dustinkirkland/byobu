@@ -1,0 +1,25 @@
+# uncommented_lines(char=#)
+# does the standard input have lines that do not start with 'char'?
+uncommented_lines() {
+	local line chr="${1:-#}"
+	while read line; do
+		[ "${line#${chr}}" = "${line}" ] && return 0;
+	done
+	return 1
+}
+
+# newest(file,file,file..)
+# return the newest file in the list
+newest() {
+	local c="$1" i
+	for i in "$@"; do [ "$i" -nt "$c" ] && c="$i"; done
+	[ -e "$c" ] && _RET="$c"
+}
+
+error() {
+	echo "ERROR: " "$@" 1>&2
+}
+
+fail() {
+	[ $# -eq 0 ] || error "$@"; exit 1;
+}

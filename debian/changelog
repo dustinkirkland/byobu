@@ -1,6 +1,17 @@
 byobu (4.2) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu-config: remove debug output, LP: #782372
+
+  [ Scott Moser ]
+  * usr/bin/byobu, usr/bin/byobu-reconnect-sockets,
+    usr/lib/byobu/.shutil:
+    - source _shutil
+    - exec screen -v rather than waiting and exiting
+    - use HOSTNAME if set (it is set in bash), avoiding the fork for 'hostname'
+    - use 'uncommented_lines' function in _shutil rather than grep
+    - use 'command -v' (posix sh shell builtin) rather than 'which'
+    - mention that byobu-janitor should not be called every time
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 May 2011 18:58:03 +0200
 

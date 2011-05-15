@@ -23,13 +23,7 @@
 
 PKG="byobu"
 
-# newest(file,file,file..)
-# return the newest file in the list
-newest() {
-	local c="$1" i
-	for i in "$@"; do [ "$i" -nt "$c" ] && c="$i"; done
-	[ -e "$c" ] && _RET="$c"
-}
+. "${BYOBU_PREFIX}/usr/lib/${PKG}/.shutil"
 
 case "$-" in
 	*i*)

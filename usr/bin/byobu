@@ -25,9 +25,10 @@ export BYOBU_PREFIX
 RUN="$SOCKETDIR/S-$USER"
 DATA="$HOME/.$PKG"
 
+. "${BYOBU_PREFIX}/usr/lib/${PKG}/.shutil"
 if [ ! -x "$BYOBU_PREFIX/bin/$PKG" ]; then
-	echo "ERROR: Cannot find $BYOBU_PREFIX/bin/$PKG" 2>&1
-	echo "ERROR: If you have installed it elsewhere, export BYOBU_PREFIX in your shell" 2>&1
+	error "Cannot find $BYOBU_PREFIX/bin/$PKG"
+	error "If you have installed it elsewhere, export BYOBU_PREFIX in your shell"
 	exit 1
 fi
 
@@ -36,7 +37,7 @@ if [ "$#" = "1" ]; then
 	case "$1" in
 		-v|--version)
 			echo "$PKG version $VERSION"
-			screen -v
+			exec screen -v
 			exit 0
 		;;
 	esac
@@ -51,7 +52,7 @@ fi
 byobu-janitor --force
 
 # Set the window title
-[ -z "$BYOBU_NO_TITLE" ] || printf "\033]0;${USER}@$(hostname) - ${PKG}\007"
+[ -z "$BYOBU_NO_TITLE" ] || printf "\033]0;${USER}@${HOSTNAME:-$(hostname)} - ${PKG}\007"
 
 # Allow override of default window list, with BYOBU_WINDOWS environment variable
 CUSTOM_WINDOW_SET=0
@@ -68,14 +69,17 @@ fi
 export BYOBU_WINDOWS
 
 # Launch shell, unless the user has default windows set to launch
-grep -qs "^[^#]" "$BYOBU_WINDOWS" && DEFAULT_WINDOW= || DEFAULT_WINDOW="shell"
+uncommented_lines < "$BYOBU_WINDOWS" && DEFAULT_WINDOW= || DEFAULT_WINDOW="shell"
 
 # Check if our terminfo supports 256 colors
-$(which tput >/dev/null) && [ $(tput colors 2>/dev/null || echo 0) -eq 256 ] && SCREEN_TERM="-T screen-256color"
+if command -v tput >/dev/null; then
+	if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then
+		SCREEN_TERM="-T screen-256color"
+	fi
+fi
 
 # Drop a symlink to the ssh socket in $HOME, since we can ensure that exists
 if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ]; then
-	rm -f "$DATA/.ssh-agent"
 	ln -sf "$SSH_AUTH_SOCK" "$DATA/.ssh-agent"
 fi
 
@@ -88,7 +92,7 @@ else
 fi
 NAME="-S $PKG"
 # Zero out $NAME if user has specified a -S
-for i in $@; do
+for i in "$@"; do
 	case $i in -*S|-ls|-list) NAME= ;; esac
 done
 # Now let's execute screen!
