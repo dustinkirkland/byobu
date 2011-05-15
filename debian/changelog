@@ -1,6 +1,6 @@
 byobu (4.2) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-config: remove debug output, LP: #782372
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 May 2011 18:58:03 +0200
 

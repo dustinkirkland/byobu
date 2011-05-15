@@ -170,7 +170,6 @@ def select_color(screen, size, layer):
     g.add(bb, 0, 1, padding=(1,1,0,0))
 
     if bb.buttonPressed(g.runOnce()) != "cancel":
-        commands.getoutput("echo %s > /tmp/out" % layer)
         if layer == "foreground":
             commands.getoutput('byobu-select-profile --foreground %s' % li.current())
         else:
