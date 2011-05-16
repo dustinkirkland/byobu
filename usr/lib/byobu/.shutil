@@ -23,3 +23,16 @@ error() {
 fail() {
 	[ $# -eq 0 ] || error "$@"; exit 1;
 }
+
+find_script() {
+	# Allow for local status scripts
+	if [ -x "$DATA/bin/$1" ]; then
+		_RET="$DATA/bin/$1"
+	elif [ -x "$BYOBU_PREFIX/lib/$PKG/$1" ]; then
+		_RET="$BYOBU_PREFIX/lib/$PKG/$1"
+	elif [ -x "$BYOBU_PREFIX/libexec/$PKG/$1" ]; then
+		_RET="$BYOBU_PREFIX/libexec/$PKG/$1"
+	else
+		_RET="/dev/null"
+	fi
+}
