@@ -26,14 +26,22 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-iwconfig=`/sbin/iwconfig $MONITORED_NETWORK 2>/dev/null`
-bitrate=`echo "$iwconfig" | grep "Bit Rate." | sed -e "s/^.*Bit Rate.//" -e "s/ .*$//g"`
+# iwconfig is expected to output lines like:
+#    Bit Rate=54 Mb/s   Tx-Power=15 dBm
+#    Link Quality=60/70  Signal level=-50 dBm
+# the awk below tokenizes the output and prints shell evalable results
+out=`iwconfig $MONITORED_NETWORK 2>/dev/null |
+	awk '$0 ~ /[ ]*Link Quality./ {
+   sub(/.*=/,"",$2); split($2,a,"/");
+   printf "quality=%.0f\n", 100*a[1]/a[2] };
+   $0 ~ /[ ]*Bit Rate/ { sub(/.*=/,"",$2); printf("bitrate=%s\n", $2); }
+   '`
+eval "$out"
+
 [ -z "$bitrate" ] && bitrate="0"
-quality=`echo "$iwconfig" | grep "Link Quality." | sed -e "s/^.*Link Quality.//" -e "s/ .*$//g"`
+
 if [ -z "$quality" ] || [ "$quality" = "0" ]; then
 	quality="0"
-else
-	quality=`echo "$quality" | awk -F/ '{printf "%.0f", 100*$1/$2}'`
 fi
 [ "$quality" = "0" ] && exit 0
 

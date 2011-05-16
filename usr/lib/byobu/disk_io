@@ -20,26 +20,39 @@
 PKG="byobu"
 DATA="$HOME/.$PKG"
 color 2>/dev/null || color() { true; }
+getdisk() {
+	local t=""
+	if [ -L "${1}" ]; then
+		command -v greadlink >/dev/null && READLINK=greadlink || READLINK=readlink
+		t=$($READLINK -f "$1")
+	else
+		t="$1"
+	fi
+	t="${t##*/}";
+	rtrim "$t" "0-9"
+}
+
 [ "$UTF8" = "1" ] && ICON_RD="◀" || ICON_RD="<"
 [ "$UTF8" = "1" ] && ICON_WR="▶" || ICON_WR=">"
 
 # Default to disk providing /, but let users override with MONITORED_DISK
 [ -z "$MONITORED_DISK" ] && MP="/" ||  MP="$MONITORED_DISK"
-case $MP in
-	/dev/*) disk="$MP" ;;
-	*) disk=$(grep -m 1 " $MP " /etc/mtab | sed -e "s: .*$::") ;;
-esac
-which greadlink 2>/dev/null && READLINK="greadlink" || READLINK="readlink"
-disk=$($READLINK -f "$disk" | sed -e "s: .*$::" -e "s:^.*/::" -e "s:\([hsv]d[a-z]\)[0-9]*$:\1:")
 
 if [ "$1" = "--detail" ]; then
-	if which iostat >/dev/null; then
+	if command -v >/dev/null; then
 		iostat -d -m -h
 	else
 		echo "Please install iostat if you want detailed information on your disk throughput"
 	fi
 	exit 0
 fi
+
+case "$MP" in
+	/dev/*) part="${MP}";;
+	*) part=$(awk '$2 == mp { print $1 ; exit(0); }' "mp=$MP" /etc/mtab);;
+esac
+getdisk "$part"
+disk=${_RET}
 
 [ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$DATA"
 t2=`date +%s`
@@ -50,20 +63,21 @@ for i in "read" "write"; do
 	if [ $t2 -le $t1 ]; then
 		rate=0
 	else
-		x1=`cat "$cache"` 2>/dev/null || tx1=0
+		[ -r "$cache" ] && read x1 < "$cache" || x1=0
+		read a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 other < "/sys/block/$disk/stat"
 		if [ "$i" = "read" ]; then
 			symbol="$ICON_RD"
-			x2=`awk '{print $3}' /sys/block/$disk/stat`
+			x2="$a3"
 		else
 			symbol="$ICON_WR"
-			x2=`awk '{print $7}' /sys/block/$disk/stat`
+			x2="$a7"
 		fi
 		echo "$x2" > "$cache"
-		rate=`echo "$t1" "$t2" "$x1" "$x2" | awk '{printf "%.0f", ($4 - $3) / ($2 - $1) * 512 / 1024 }'`
+		rate=$((($x2-$x1) / ($t2 - $t1) * 512 / 1024))
 		if [ "$rate" -lt 0 ]; then
 			rate=0
 		elif [ "$rate" -gt 1024 ]; then
-			rate=`echo "$rate" | awk '{printf "%.1f", $1/1024}'`
+			fpdiv "$rate" 1024 1
 			unit="MB/s"
 		fi
 	fi

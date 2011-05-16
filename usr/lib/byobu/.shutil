@@ -36,3 +36,32 @@ find_script() {
 		_RET="/dev/null"
 	fi
 }
+
+# divide 2 integers and return a floating point number
+# third argument indicates how many digits after the decimal
+fpdiv() {
+	local a=$1 b=$2 pres=${3:-3}
+	local i=0 mp="10" whole="" part=""
+	while i=$(($i+1)) && [ $i -le $pres ]; do
+		mp="${mp}0"
+	done
+	whole=$(($a/$b))
+	part=$((((($a%$b)*${mp})/$b)))
+	if [ $part -eq 0 ]; then
+		part=$(($mp/10)); part=${part#1};
+	elif [ $((${part}%(${mp}/10))) -ge 5 ]; then
+		part=$(($part+5))
+	fi
+	_RET="${whole}.${part%?}"
+}
+
+# rtrim(string,chars)
+rtrim() {
+	local tab=' ' cr="
+"
+	local cur="${1}" set="[${2:- ${tab}${cr}}]" n=""
+	while n=${cur%${set}} && [ "$n" != "$cur" ]; do cur=${n}; done
+	_RET=${cur}
+}
+
+# vi: syntax=sh ts=4 noexpandtab

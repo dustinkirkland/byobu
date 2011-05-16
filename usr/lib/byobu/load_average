@@ -24,5 +24,5 @@ if [ "$1" = "--detail" ]; then
 	cat /proc/loadavg
 	exit 0
 fi
-
-color Y k; printf "%s" "$(awk '{print $1}' /proc/loadavg)"; color --
+read one five fifteen other < /proc/loadavg
+color Y k; printf "$one"; color --
