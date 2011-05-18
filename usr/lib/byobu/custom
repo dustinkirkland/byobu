@@ -30,15 +30,18 @@ CACHE="$DIR/$PKG.custom"
 # Loop over custom scripts
 for i in "$DATA/bin/"[0-9]*_*; do
 	[ -x "$i" ] || continue
-	script=$(basename "$i")
-	freq=$(echo "$script" | awk -F_ '{print $1}')
-	lastrun=$(stat -c %Y "$CACHE.$script") 2>/dev/null || lastrun=0
-	expiration=$(expr $lastrun + $freq)
+	script=${script##*/}
+	freq=${script%%_*}
+	freq=${freq#0}
+	[ -r "$CACHE.$script.last" ] && read lastrun "$CACHE.$script.last" ||
+		lastrun=0
+	expiration=$(($lastrun+$freq))
 	if [ $NOW -ge $expiration ]; then
-		# Update the cache
-		$i $@ > "$CACHE.$script" 2>/dev/null
+		"$i" "$@" > "$CACHE.$script" 2>/dev/null
+		echo "${NOW}" > "$CACHE.$script.last"
 	fi
-	output=$(cat "$CACHE.$script")
+	readfile < "$CACHE.$script"
+	output="${_RET}"
 	case "$output" in
 		*"$ESC{"*)
 			# User has formatted the colors

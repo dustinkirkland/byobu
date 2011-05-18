@@ -64,4 +64,16 @@ rtrim() {
 	_RET=${cur}
 }
 
+readfile() {
+	local c="" r="" cr="
+"
+	OIFS="$IFS"; IFS="";
+	while read c; do
+		r="$r${cr}$c"
+	done
+	IFS=$OIFS
+	_RET=${r}
+	return 0
+}
+
 # vi: syntax=sh ts=4 noexpandtab
