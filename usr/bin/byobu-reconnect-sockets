@@ -23,7 +23,7 @@
 
 PKG="byobu"
 
-. "${BYOBU_PREFIX}/usr/lib/${PKG}/.shutil"
+. "${BYOBU_PREFIX}/lib/${PKG}/.shutil"
 
 case "$-" in
 	*i*)

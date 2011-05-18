@@ -21,8 +21,8 @@ PKG="byobu"
 DATA="$HOME/.$PKG"
 [ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 
-if ! . "${BYOBU_PREFIX}/usr/lib/${PKG}/.shutil"; then
-	echo "failed to source ${BYOBU_PREFIX}/usr/lib/${PKG}/_shutil" 2>&1
+if ! . "${BYOBU_PREFIX}/lib/${PKG}/.shutil"; then
+	echo "failed to source ${BYOBU_PREFIX}/lib/${PKG}/.shutil" 2>&1
 	echo "If you have installed elsewhere, export BYOBU_PREFIX in your shell" 2>&1
 	exit 1
 fi
