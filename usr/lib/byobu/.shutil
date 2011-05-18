@@ -48,7 +48,7 @@ fpdiv() {
 	whole=$(($a/$b))
 	part=$((((($a%$b)*${mp})/$b)))
 	if [ $part -eq 0 ]; then
-		part=$(($mp/10)); part=${part#1};
+		part=${part#1};
 	elif [ $((${part}%(${mp}/10))) -ge 5 ]; then
 		part=$(($part+5))
 	fi
