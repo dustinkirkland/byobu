@@ -25,5 +25,41 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-f=$(free | awk '/buffers\/cache:/ {printf "%.0f", 100*$3/($3 + $4)}')
+meminfo_used() {
+	# originally, this script did:
+	# f=$(free | awk '/buffers\/cache:/ {printf "%.0f", 100*$3/($3 + $4)}')
+	# this method is more dependent on /proc/meminfo, but uses the same formula
+	# for deriving the output of 'free' that is used in procps 'free.c'
+
+	# kb_main_free, kb_main_total, kb_main_buffers, kb_main_cached
+	local free="" total="" buffers="" cached=""
+	local kb_main_used=0 buffers_plus_cached=0 fo_buffers=0 fo_cached=0
+	while read tok val unit; do
+		case "$tok" in
+			MemTotal:) total=${val};;
+			MemFree:) free=${val};;
+			Buffers:) buffers=${val};;
+			Cached:) cached=${val};;
+		esac
+		[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
+	done < /proc/meminfo
+
+	kb_main_used=$(($total-$free))
+	buffers_plus_cached=$(($buffers+$cached))
+
+	# "free output" buffers and cache (output from 'free')
+	fo_buffers=$(($kb_main_used - $buffers_plus_cached))
+	fo_cached=$(($kb_main_free + $buffers_plus_cached))
+
+	#fpdiv $((100*${fo_buffers})) "${total}" 0; _RET=${_RET%.}; return
+	_RET=$(((100*${fo_buffers}) / ${total}))
+}
+
+if [ -r /proc/meminfo ]; then
+	meminfo_used
+	f=${_RET}
+else
+	f=$(free | awk '/buffers\/cache:/ {printf "%.0f", 100*$3/($3 + $4)}')
+fi
+
 color b g W; printf "%s" "$f"; color -; color g W; printf "%%"; color --

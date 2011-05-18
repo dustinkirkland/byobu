@@ -28,25 +28,35 @@ DIR="/sys/class/hwmon"
 
 # Let's check a few different probes for fan speed
 
-# This seems to cover most of them:
-for i in $(find $DIR/*/*/ -type f -name "fan1_input"); do
-	speed=$(cat "$i")
-	if [ "$speed" -gt 0 ]; then
-	        color bold1; printf "%s" "$speed"; color -; color none; printf "rpm"; color --
-		exit 0
-	fi
-done
-
-# But others (e.g. Dell Inspirons) seem to be here:
-if [ -r /proc/i8k ]; then
-	for speed in $(awk '{ print $7, $8 }' /proc/i8k); do
+fan_speed_info() {
+	local i="" speed=0
+	# This seems to cover most of them:
+	for i in /sys/class/hwmon/*/*/fan1_input; do
+		[ -f "$i" ] || continue
+		read speed < "$i"
 		if [ "$speed" -gt 0 ]; then
-			# I8K_FAN_MULT defaults to 30 (buggy BIOS workaround?),
-			# use `modprobe i8k fan_mult=1` to disable if unneeded,
-			# resulting in nonsensical speeds
-			[ "$speed" -gt 10000 ] && speed=$((${speed} / 30))
 			color bold1; printf "%s" "$speed"; color -; color none; printf "rpm"; color --
-			exit 0
+			return 0
 		fi
 	done
-fi
+
+	# But others (e.g. Dell Inspirons) seem to be here:
+	if [ -r /proc/i8k ]; then
+		local line=""
+		read line < /proc/i8k
+		set -- $line
+		for speed in $7 $8; do
+			if [ "$speed" -gt 0 ]; then
+				# I8K_FAN_MULT defaults to 30 (buggy BIOS workaround?),
+				# use `modprobe i8k fan_mult=1` to disable if unneeded,
+				# resulting in nonsensical speeds
+				[ "$speed" -gt 10000 ] && speed=$((${speed} / 30))
+				color bold1; printf "%s" "$speed"; color -; color none; printf "rpm"; color --
+				return 0
+			fi
+		done
+	fi
+}
+
+fan_speed_info "$@"
+

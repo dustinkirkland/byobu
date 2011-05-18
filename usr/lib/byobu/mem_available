@@ -26,19 +26,26 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-. "$DATA/status"
-[ "$mem_used" = "1" ] && comma="," || whitespace=" "
+mem_available_info() {
+	local mem_used comma whitespace unit mem name
+	. "$DATA/status"
+	[ "$mem_used" = "1" ] && comma="," || whitespace=" "
 
-mem=`head -n1 /proc/meminfo  | awk '{print $2}'`
-if [ $mem -ge 1048576 ]; then
-	mem=$(echo "$mem" | awk '{ printf "%.1f", $1 / 1048576 }')
-	unit="GB"
-elif [ $mem -ge 1024 ]; then
-	mem=$(echo "$mem" | awk '{ printf "%.0f", $1 / 1024 }')
-	unit="MB"
-else
-	mem="$mem"
-	unit="KB"
-fi
+	read name mem unit < /proc/meminfo
+	if [ $mem -ge 1048576 ]; then
+		fpdiv "$mem" 1048567 1
+		mem=${_RET}
+		unit="GB"
+	elif [ $mem -ge 1024 ]; then
+		mem=$(echo "$mem" | awk '{ printf "%.0f", $1 / 1024 }')
+		fpdiv "$mem" 1024 1
+		mem=${_RET}
+		unit="MB"
+	else
+		mem="$mem"
+		unit="KB"
+	fi
+	color b g W; printf "%s" "$mem"; color -; color g W; printf "%s%s" "$unit" "$comma"; color -; printf "%s" "$whitespace"
+}
 
-color b g W; printf "%s" "$mem"; color -; color g W; printf "%s%s" "$unit" "$comma"; color -; printf "%s" "$whitespace"
+mem_available_info "$@"

@@ -22,12 +22,12 @@ DATA="$HOME/.$PKG"
 color 2>/dev/null || color() { true; }
 
 if [ "$1" = "--detail" -o "$1" = "--short" ]; then
-	if which apt-get >/dev/null; then
+	if command -v apt-get >/dev/null; then
 		detail=`apt-get -s -o Debug::NoLocking=true upgrade`
 		if [ "$1" = "--detail" ]; then
 			printf "$detail"
 		else
-			short=`printf "$detail" | grep -c ^Inst`
+			short=`printf "%s" "$detail" | grep -c ^Inst`
 			printf "$short"
 		fi
 	fi
@@ -61,18 +61,18 @@ update_cache() {
 	# and let the next cache check pick up the results.
 	if [ -x /usr/lib/update-notifier/apt-check ]; then
 		# If apt-check binary exists, use it
-		/usr/lib/update-notifier/apt-check 2>&1 | tail -n 1 | sed "s/;/ /" > $mycache &
-	elif which apt-get >/dev/null; then
+		/usr/lib/update-notifier/apt-check 2>&1 | awk '-F;' 'END { print $1, $2 }' > "$mycache" &
+	elif command -v apt-get >/dev/null; then
 		# If apt-get exists, use it
 		apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
-	elif which zypper >/dev/null; then
+	elif command -v zypper >/dev/null; then
 		# If zypper exists, use it
 		zypper --no-refresh lu --best-effort | grep -c 'v |' > $mycache &
-	elif which yum >/dev/null; then
+	elif command -v yum >/dev/null; then
 		# If yum exists, use it
 		# TODO: We need a better way of counting updates available from a RH expert
 		yum list updates -q | grep -vc "Updated Packages" > $mycache &
-	elif which pacman >/dev/null; then
+	elif command -v pacman >/dev/null; then
 		# If pacman (Archlinux) exists, use it
 		LC_ALL=C pacman -Sup | grep -vc "^\(::\| \)" > $mycache &
 	fi
@@ -84,11 +84,11 @@ update_needed() {
 	mycache=$1
 	# The cache doesn't exist: create it
 	[ ! -e "$mycache" ] && return 0
-	if which apt-get >/dev/null; then
+	if command -v apt-get >/dev/null; then
 		# Debian/ubuntu
 		[ "/var/lib/apt" -nt "$mycache" ] || [ "/var/lib/apt/lists" -nt "$mycache" ]
 		return $?
-	elif which pacman >/dev/null; then
+	elif command -v pacman >/dev/null; then
 		# Archlinux
 		for db in /var/lib/pacman/sync/*.db; do
 			[ "$db" -nt "$mycache" ] && return 0
@@ -102,7 +102,7 @@ update_needed() {
 mycache="$DIR/$PKG.updates-available"
 
 # If mycache is present, use it
-[ -r $mycache ] && print_updates `grep "^[0-9]" $mycache | sed "s/ .*$//"`
+[ -r $mycache ] && print_updates `sed -n '/[^0-9]/s/ .*$//p' $mycache`
 
 # If we really need to do so (mycache doesn't exist, or the package database has changed),
 # background an update now

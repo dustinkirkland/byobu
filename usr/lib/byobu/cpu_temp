@@ -36,7 +36,7 @@ fi
 for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/thermal $DIR/*/temperature; do
 	case "$i" in
 		*temp*_input)
-			[ -s "$i" ] && t=$(awk '{printf "%0.f",$1/1000}' "$i")
+			[ -s "$i" ] && read t < "$i" && t=$(($t/1000))
 		;;
 		*)
 			[ -s "$i" ] && t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i")
@@ -45,7 +45,7 @@ for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/ther
 	if [ -n "$t" ]; then
 		unit="$ICON_C"
 		if [ "$TEMP" = "F" ]; then
-			t=$(echo "$t" | awk '{printf "%.0f", $1 *9/5 + 32}')
+			t=$(($t*9/5 + 32))
 			unit="$ICON_F"
 		fi
 		color b k Y; printf "%s" "$t"; color -; color k Y; printf "%s%s" "$ICON" "$unit"; color --
