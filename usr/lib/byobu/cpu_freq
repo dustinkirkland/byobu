@@ -26,7 +26,9 @@ if [ "$1" = "--detail" ]; then
 fi
 
 if [ -r "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq" ]; then
-	freq=$(awk '{ printf "%.1f", $1 / 1000000 }' /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq)
+	read hz < /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+	fpdiv $hz "1000000" 1 # 1Ghz
+   freq="$_RET"
 else
 	if egrep -q -s -i -m 1 "^cpu MHz|^clock" /proc/cpuinfo; then
 		freq=$(egrep -i -m 1 "^cpu MHz|^clock" /proc/cpuinfo | awk -F"[:.]" '{ printf "%.1f", $2 / 1000 }')

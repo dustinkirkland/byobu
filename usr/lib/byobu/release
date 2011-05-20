@@ -25,45 +25,54 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-if [ -n "$DISTRO" ]; then
-	# user defined
-	true
-elif [ -r "/etc/issue" ]; then
-	# lsb_release is *really* slow;  try to use /etc/issue first
-	issue=$(grep -m1 "^[A-Za-z]" /etc/issue)
-	case "$issue" in
-		Ubuntu*)
-			DISTRO=$(head -n1 /etc/issue | awk '{print $1 " " $2}')
-		;;
-		Debian*)
-			DISTRO="Debian $(cat /etc/debian_version)"
-		;;
-		*)
-			DISTRO=$(echo "$issue" | sed "s/ [^0-9]* / /" | awk '{print $1 " " $2}')
-		;;
-	esac
-elif which lsb_release >/dev/null 2>&1; then
-	if [ "$1" = "--detail" ]; then
-		lsb_release -a 2>/dev/null
-		exit 0
+release_info() {
+	local DISTRO="${DISTRO}" issue ver r i
+	if [ -n "$DISTRO" ]; then
+		# user defined
+		true
+	elif [ -r "/etc/issue" ]; then
+		# lsb_release is *really* slow;  try to use /etc/issue first
+		read issue < /etc/issue
+		case "$issue" in
+			Ubuntu*)
+				set -- $issue;
+				DISTRO="$1 $2";
+			;;
+			Debian*)
+				read ver < /etc/debian_version
+				DISTRO="Debian $ver"
+			;;
+			*)
+				# assume first 2 fields are what we want
+				set -- $issue;
+				DISTRO="$1 $2";
+			;;
+		esac
+	elif command -v lsb_release >/dev/null 2>&1; then
+		if [ "$1" = "--detail" ]; then
+			lsb_release -a 2>/dev/null
+			exit 0
+		fi
+		# If lsb_release is available, use it
+		r=$(lsb_release -s -d)
+		case "$r" in
+			Ubuntu*.*.*)
+				# Use the -d if an Ubuntu LTS
+				DISTRO="$r"
+			;;
+			*)
+				# But for other distros the description
+				# is too long, so build from -i and -r
+				i=$(lsb_release -s -i)
+				r=$(lsb_release -s -r)
+				DISTRO="$i $r"
+			;;
+		esac
+	else
+		DISTRO="Byobu"
 	fi
-	# If lsb_release is available, use it
-	r=$(lsb_release -s -d)
-	case "$r" in
-		Ubuntu*.*.*)
-			# Use the -d if an Ubuntu LTS
-			DISTRO="$r"
-		;;
-		*)
-			# But for other distros the description
-			# is too long, so build from -i and -r
-			i=$(lsb_release -s -i)
-			r=$(lsb_release -s -r)
-			DISTRO="$i $r"
-		;;
-	esac
-else
-	DISTRO="Byobu"
-fi
 
-color bold2; printf "%s" "$DISTRO"; color --
+	color bold2; printf "%s" "$DISTRO"; color --
+}
+
+release_info "$@"

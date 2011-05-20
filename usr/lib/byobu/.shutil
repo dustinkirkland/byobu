@@ -23,3 +23,57 @@ error() {
 fail() {
 	[ $# -eq 0 ] || error "$@"; exit 1;
 }
+
+find_script() {
+	# Allow for local status scripts
+	if [ -x "$DATA/bin/$1" ]; then
+		_RET="$DATA/bin/$1"
+	elif [ -x "$BYOBU_PREFIX/lib/$PKG/$1" ]; then
+		_RET="$BYOBU_PREFIX/lib/$PKG/$1"
+	elif [ -x "$BYOBU_PREFIX/libexec/$PKG/$1" ]; then
+		_RET="$BYOBU_PREFIX/libexec/$PKG/$1"
+	else
+		_RET="/dev/null"
+	fi
+}
+
+# divide 2 integers and return a floating point number
+# third argument indicates how many digits after the decimal
+fpdiv() {
+	local a=$1 b=$2 pres=${3:-3}
+	local i=0 mp="10" whole="" part=""
+	while i=$(($i+1)) && [ $i -le $pres ]; do
+		mp="${mp}0"
+	done
+	whole=$(($a/$b))
+	part=$((((($a%$b)*${mp})/$b)))
+	if [ $part -eq 0 ]; then
+		part=${part#1};
+	elif [ $((${part}%(${mp}/10))) -ge 5 ]; then
+		part=$(($part+5))
+	fi
+	_RET="${whole}.${part%?}"
+}
+
+# rtrim(string,chars)
+rtrim() {
+	local tab=' ' cr="
+"
+	local cur="${1}" set="[${2:- ${tab}${cr}}]" n=""
+	while n=${cur%${set}} && [ "$n" != "$cur" ]; do cur=${n}; done
+	_RET=${cur}
+}
+
+readfile() {
+	local c="" r="" cr="
+"
+	OIFS="$IFS"; IFS="";
+	while read c; do
+		r="$r${cr}$c"
+	done
+	IFS=$OIFS
+	_RET=${r}
+	return 0
+}
+
+# vi: syntax=sh ts=4 noexpandtab

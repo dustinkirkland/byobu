@@ -27,7 +27,8 @@ color 2>/dev/null || color() { true; }
 if [ -n "$MONITORED_NETWORK" ]; then
 	interface="$MONITORED_NETWORK"
 else
-	interface=`tail -n1 /proc/net/route  | awk '{print $1}'`
+	# get the last interface listed in /proc/net/route
+	while read cn other; do interface=$cn; done < /proc/net/route
 fi
 
 if [ "$1" = "--detail" ]; then
@@ -48,24 +49,27 @@ for i in up down; do
 	if [ $t2 -le $t1 ]; then
 		rate=0
 	else
-		x1=`cat "$cache"` 2>/dev/null || tx1=0
-		if [ "$i" = "up" ]; then
-			x2=`grep -m1 "\b$interface:" /proc/net/dev | sed "s/^.*://" | awk '{print $9}'`
-		else
-			x2=`grep -m1 "\b$interface:" /proc/net/dev | sed "s/^.*://" | awk '{print $1}'`
-		fi
+		[ -r "$cache" ] && read x1 < "$cache" || tx1=0
+		while read iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed; do
+			if [ "$iface" = "${interface}:" ]; then
+				[ "$i" = "up" ] && x2=${tbytes} || x2=${rbytes}
+				break;
+			fi
+		done < /proc/net/dev
 		echo "$x2" > "$cache"
-		rate=`echo "$t1" "$t2" "$x1" "$x2" | awk '{printf "%.0f", ($4 - $3) / ($2 - $1) / 1024 }'`
+		rate=$((($x2 - $x1) / ($t2 - $t1) / 1024))
 		if [ "$rate" -lt 0 ]; then
 			rate=0
 		fi
 		case "$NETWORK_UNITS" in
 			bytes)
 				if [ "$rate" -gt 1048576 ]; then
-					rate=`echo "$rate" | awk '{printf "%.1f", $1/1048576}'`
+					fpdiv "$rate" 1048576 1
+					rate=${_RET}
 					unit="GB/s"
 				elif [ "$rate" -gt 1024 ]; then
-					rate=`echo "$rate" | awk '{printf "%.1f", $1/1024}'`
+					fpdiv "$rate" 1024 1
+					rate=${_RET}
 					unit="MB/s"
 				else
 					unit="kB/s"
@@ -73,13 +77,15 @@ for i in up down; do
 			;;
 			*)
 				# Default to bps
-				rate=`echo "$rate" | awk '{printf "%.0f", $1*8}'`
+				rate=$(($rate*8))
 				# Why 1000 and not 1024?  http://en.wikipedia.org/wiki/Data_rate_units
 				if [ "$rate" -gt 1000000 ]; then
-					rate=`echo "$rate" | awk '{printf "%.1f", $1/1000000}'`
+					fpdiv "$rate" 1000000 1
+					rate=${_RET}
 					unit="Gbps"
 				elif [ "$rate" -gt 1000 ]; then
-					rate=`echo "$rate" | awk '{printf "%.1f", $1/1000}'`
+					fpdiv "$rate" 1000 1
+					rate=${_RET}
 					unit="Mbps"
 				fi
 			;;

@@ -28,15 +28,17 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-u=$(sed "s/\..*$//" /proc/uptime)
+read u idle < /proc/uptime
+u=${u%.*}
 color w b
 if [ "$u" -gt 86400 ]; then
-	echo "$u" | awk '{printf "%dd%dh", $1 / 86400, ($1 % 86400)/3600 }'
+	str="$(($u / 86400))d%$((($u % 86400) / 3600))h"
 elif [ "$u" -gt 3600 ]; then
-	echo "$u" | awk '{printf "%dh%dm", $1 / 3600, ($1 % 3600 )/60}'
+	str="$(($u / 3600))h$((($u % 3600) / 60))m"
 elif [ "$u" -gt 60 ]; then
-	echo "$u" | awk '{printf "%dm", $1 / 60 }'
+	str="$(($u / 60))m"
 else
-	printf "%ds" "$u"
+	str="${u}s"
 fi
+printf "%s" "${str}"
 color --

@@ -35,8 +35,10 @@ if [ -n "$MONITORED_NETWORK" ]; then
 	interface="$MONITORED_NETWORK"
 else
 	case "$IPV6" in
-		1|true|yes) interface=$(grep -v "\Wlo$" /proc/net/ipv6_route | tail -n1 | awk '{print $10}') ;;
-		*) interface=$(tail -n1 /proc/net/route  | awk '{print $1}') ;;
+		1|true|yes)
+			interface=$(awk '$10 != "lo" { iface=$10 ; }; END { print iface; }' \
+				/proc/net/ipv6_route);;
+		*) interface=$(awk 'END {print $1}' /proc/net/route);;
 	esac
 fi
 

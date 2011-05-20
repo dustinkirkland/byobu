@@ -21,18 +21,11 @@ PKG="byobu"
 DATA="$HOME/.$PKG"
 [ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 
-find_script () {
-	# Allow for local status scripts
-	if [ -x "$DATA/bin/$1" ]; then
-		_RET="$DATA/bin/$1"
-	elif [ -x "$BYOBU_PREFIX/lib/$PKG/$1" ]; then
-		_RET="$BYOBU_PREFIX/lib/$PKG/$1"
-	elif [ -x "$BYOBU_PREFIX/libexec/$PKG/$1" ]; then
-		_RET="$BYOBU_PREFIX/libexec/$PKG/$1"
-	else
-		_RET="/dev/null"
-	fi
-}
+if ! . "${BYOBU_PREFIX}/lib/${PKG}/.shutil"; then
+	echo "failed to source ${BYOBU_PREFIX}/lib/${PKG}/.shutil" 2>&1
+	echo "If you have installed elsewhere, export BYOBU_PREFIX in your shell" 2>&1
+	exit 1
+fi
 
 # Define colors
 ESC="\005"

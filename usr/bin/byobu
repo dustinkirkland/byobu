@@ -25,7 +25,7 @@ export BYOBU_PREFIX
 RUN="$SOCKETDIR/S-$USER"
 DATA="$HOME/.$PKG"
 
-. "${BYOBU_PREFIX}/usr/lib/${PKG}/.shutil"
+. "${BYOBU_PREFIX}/lib/${PKG}/.shutil"
 if [ ! -x "$BYOBU_PREFIX/bin/$PKG" ]; then
 	error "Cannot find $BYOBU_PREFIX/bin/$PKG"
 	error "If you have installed it elsewhere, export BYOBU_PREFIX in your shell"

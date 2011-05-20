@@ -29,16 +29,18 @@ case $1 in
 	;;
 esac
 
-if grep -qs " blocks .*\[.*_.*\]$" /proc/mdstat; then
+pct="%"
+while read line; do
 	# Errors in your raid
-	msg="RAID"
-fi
-
-if grep -qs \% /proc/mdstat; then
-	p=$(grep -m1 \% /proc/mdstat | sed -e "s/\%.*/%/" -e "s/.* //")
-	[ -z "$msg" ] && msg="RAID"
-	msg="$msg,$p"
-fi
+	case "$line" in
+		*\ blocks\ *\[*_*\]$)
+			[ -z "${msg}" ] && msg="RAID";;
+		*%*)
+			p="${line%%${pct}*}${pct}"; p=${p##* };
+			[ -z "$msg" ] && msg="RAID"
+			msg="$msg,$p";;
+	esac
+done < /proc/mdstat
 
 if [ -n "$msg" ]; then
 	color B w r; printf "%s" "$msg"; color --
