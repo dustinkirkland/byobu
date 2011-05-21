@@ -6,6 +6,9 @@ byobu (4.2) unreleased; urgency=low
   * usr/lib/byobu/.shutil (properties changed: -x to +x): fix perm
   * usr/bin/byobu-janitor: fix regression, ensure we can run from
     a clean setup
+  * etc/byobu/statusrc:
+    - turn on battery, disk_io, users, wifi, as nothing is displayed
+      if we have none
 
   [ Scott Moser ]
   * usr/bin/byobu, usr/bin/byobu-reconnect-sockets,

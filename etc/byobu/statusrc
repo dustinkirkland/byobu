@@ -22,14 +22,14 @@
 # Toggle status notifications
 apport=0
 arch=0
-battery=0
+battery=1
 cpu_count=1
 cpu_freq=1
 cpu_temp=0
 custom=1
 date=1
 disk=0
-disk_io=0
+disk_io=1
 ec2_cost=0
 fan_speed=0
 hostname=1
@@ -52,11 +52,11 @@ swap=0
 time=1
 time_binary=0
 time_utc=0
-users=0
+users=1
 updates_available=1
 uptime=1
 whoami=1
-wifi_quality=0
+wifi_quality=1
 
 # Configurations that you can override; if you leave these commented out,
 # Byobu will auto-detect them.
