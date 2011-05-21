@@ -50,4 +50,4 @@ get_size_pct() {
 get_size_pct "${MP}"
 
 color b M W; echo -n "$_SIZE"; color -; color M W; echo -n "${_UNIT}B,"; color -;
-color b M W; echo -n "$_PCT";  color -; color M W; echo -n "%"        ; color -;
+color b M W; echo -n "$_PCT";  color -; color M W; echo -n "%"        ; color --;

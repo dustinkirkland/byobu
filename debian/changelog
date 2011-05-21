@@ -9,6 +9,7 @@ byobu (4.2) unreleased; urgency=low
   * etc/byobu/statusrc:
     - turn on battery, disk_io, users, wifi, as nothing is displayed
       if we have none
+  * usr/lib/byobu/disk: add trailing whitespace
 
   [ Scott Moser ]
   * usr/bin/byobu, usr/bin/byobu-reconnect-sockets,
