@@ -39,7 +39,7 @@ getdisk() {
 [ -z "$MONITORED_DISK" ] && MP="/" ||  MP="$MONITORED_DISK"
 
 if [ "$1" = "--detail" ]; then
-	if command -v >/dev/null; then
+	if command -v iostat >/dev/null; then
 		iostat -d -m -h
 	else
 		echo "Please install iostat if you want detailed information on your disk throughput"

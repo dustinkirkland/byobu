@@ -2,6 +2,7 @@ byobu (4.2) unreleased; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-config: remove debug output, LP: #782372
+  * usr/lib/byobu/disk_io: fix minor bug in 'command' call
 
   [ Scott Moser ]
   * usr/bin/byobu, usr/bin/byobu-reconnect-sockets,
@@ -28,7 +29,6 @@ byobu (4.2) unreleased; urgency=low
     - define a few helpers
     - use 'read' for obtaining input from file
     - use built-in math functions for computation
-
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 May 2011 18:58:03 +0200
 
