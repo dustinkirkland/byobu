@@ -31,7 +31,7 @@ FLAG="$RUN/$PKG.reload-required"
 mkdir -p "$XDG"
 if [ ! -h "$DATA" ]; then
 	mv -f "$DATA"/* "$DATA"/.* "$XDG" 2>/dev/null || true
-	rmdir "$DATA"
+	rmdir "$DATA" 2>/dev/null || true
 fi
 ln -sf "$XDG" "$DATA"
 
