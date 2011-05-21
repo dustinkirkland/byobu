@@ -12,6 +12,23 @@ byobu (4.2) unreleased; urgency=low
     - use 'uncommented_lines' function in _shutil rather than grep
     - use 'command -v' (posix sh shell builtin) rather than 'which'
     - mention that byobu-janitor should not be called every time
+  * usr/bin/byobu, usr/bin/byobu-reconnect-sockets,
+    usr/bin/byobu-status, usr/lib/byobu/.shutil,
+    usr/lib/byobu/battery, usr/lib/byobu/cpu_freq,
+    usr/lib/byobu/cpu_temp, usr/lib/byobu/custom,
+    usr/lib/byobu/date, usr/lib/byobu/disk,
+    usr/lib/byobu/disk_io, usr/lib/byobu/fan_speed,
+    usr/lib/byobu/ip_address, usr/lib/byobu/load_average,
+    usr/lib/byobu/mem_available, usr/lib/byobu/mem_used,
+    usr/lib/byobu/network, usr/lib/byobu/raid,
+    usr/lib/byobu/release, usr/lib/byobu/swap,
+    usr/lib/byobu/updates_available, usr/lib/byobu/uptime,
+    usr/lib/byobu/wifi_quality:
+    - lots of performance improvements
+    - define a few helpers
+    - use 'read' for obtaining input from file
+    - use built-in math functions for computation
+
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 13 May 2011 18:58:03 +0200
 
