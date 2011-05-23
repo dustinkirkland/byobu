@@ -76,6 +76,9 @@ for i in "read" "write"; do
 		rate=$((($x2-$x1) / ($t2 - $t1) * 512 / 1024))
 		if [ "$rate" -lt 0 ]; then
 			rate=0
+		elif [ "$rate" -gt 1048576 ]; then
+			fpdiv "$rate" 1048576 1
+			unit="GB/s"
 		elif [ "$rate" -gt 1024 ]; then
 			fpdiv "$rate" 1024 1
 			unit="MB/s"

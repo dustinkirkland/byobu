@@ -14,6 +14,8 @@ byobu (4.2) unreleased; urgency=low
     mode for Byobu
   * usr/share/man/man1/byobu-quiet.1, usr/share/man/man1/byobu-silent.1:
     - add a manpage for byobu-silent.1, and update byobu-silent.1
+  * usr/lib/byobu/disk_io:
+    - support super fast next generation SSD hard drives
 
   [ Scott Moser ]
   * usr/bin/byobu, usr/bin/byobu-reconnect-sockets,
