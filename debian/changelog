@@ -1,6 +1,7 @@
 byobu (4.3) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/uptime: fix string bug in uptime introduced by smoser's
+    changes
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 May 2011 19:21:36 -0500
 
