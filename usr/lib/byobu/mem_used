@@ -51,8 +51,7 @@ meminfo_used() {
 	fo_buffers=$(($kb_main_used - $buffers_plus_cached))
 	fo_cached=$(($kb_main_free + $buffers_plus_cached))
 
-	#fpdiv $((100*${fo_buffers})) "${total}" 0; _RET=${_RET%.}; return
-	_RET=$(((100*${fo_buffers}) / ${total}))
+	fpdiv $((100*${fo_buffers})) "${total}" 0;
 }
 
 if [ -r /proc/meminfo ]; then

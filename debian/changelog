@@ -7,6 +7,7 @@ byobu (4.3) unreleased; urgency=low
   [ Scott Moser ]
   * usr/lib/byobu/.shutil: fix rounding across a decimal point in fpdiv()
   * usr/lib/byobu/swap: update to address fix in fpdiv
+  * usr/lib/byobu/mem_used: use fpdiv to round free memory properly
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 May 2011 19:21:36 -0500
 
