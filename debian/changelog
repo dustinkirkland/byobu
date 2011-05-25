@@ -1,7 +1,11 @@
 byobu (4.3) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/uptime: fix string bug in uptime introduced by smoser's
     changes
+
+  [ Scott Moser ]
+  * usr/lib/byobu/.shutil: fix rounding across a decimal point in fpdiv()
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 May 2011 19:21:36 -0500
 
