@@ -1,15 +1,15 @@
 # 2011-05-25: Approximate Instance Cost Basis per hour from
 # http://aws.amazon.com/ec2/instance-types/
 # http://aws.amazon.com/ec2/pricing/
-# for US - N. Virginia
-M1_SMALL="0.085"
-M1_LARGE="0.34"
-M1_XLARGE="0.68"
-T1_MICRO="0.02"
-M2_XLARGE="0.50"
-M2_2XLARGE="1.00"
-M2_4XLARGE="2.00"
-C1_MEDIUM="0.17"
-C1_XLARGE="0.68"
+# for AP - Singapore
+M1_SMALL="0.095"
+M1_LARGE="0.38"
+M1_XLARGE="0.76"
+T1_MICRO="0.025"
+M2_XLARGE="0.57"
+M2_2XLARGE="1.14"
+M2_4XLARGE="2.28"
+C1_MEDIUM="0.19"
+C1_XLARGE="0.76"
 CC1_4XLARGE="1.60"
 CG1_4XLARGE="2.10"

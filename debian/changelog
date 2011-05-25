@@ -19,6 +19,10 @@ byobu (4.3) unreleased; urgency=low
   * usr/bin/byobu-janitor:
     - on initial setup, if it looks like we're running in ec2, enable
       ec2_cost monitor
+  * usr/share/byobu/ec2/Makefile.am, usr/share/byobu/ec2/rates.ap_si,
+    usr/share/byobu/ec2/rates.ap_to, usr/share/byobu/ec2/rates.eu_ie,
+    usr/share/byobu/ec2/rates.us_ca, usr/share/byobu/ec2/rates.us_va:
+    - update AWS prices, add the two new AP zones
 
   [ Scott Moser ]
   * usr/lib/byobu/.shutil: fix rounding across a decimal point in fpdiv()
