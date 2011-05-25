@@ -298,7 +298,7 @@ def readstatus():
     status={}
     status["apport"]=0
     status["arch"]=0
-    status["battery"]=0
+    status["battery"]=1
     status["cpu_count"]=1
     status["cpu_freq"]=1
     status["cpu_temp"]=0
@@ -328,11 +328,11 @@ def readstatus():
     status["time"]=1
     status["time_binary"]=0
     status["time_utc"]=0
-    status["users"]=0
+    status["users"]=1
     status["updates_available"]=1
     status["uptime"]=1
     status["whoami"]=1
-    status["wifi_quality"]=0
+    status["wifi_quality"]=1
     if os.path.exists(DATA+'/status'):
         f=open(DATA+'/status', 'r')
         for line in f.readlines():
