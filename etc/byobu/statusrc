@@ -63,6 +63,7 @@ wifi_quality=1
 #LOGO="\o/"
 #MONITORED_DISK=/
 #MONITORED_INTERFACE=eth0
+#NETWORK_THRESHOLD=20
 #MONITORED_TEMP=/proc/acpi/thermal_zone/THM0/temperature
 #TEMP=F
 #DISTRO=Ubuntu

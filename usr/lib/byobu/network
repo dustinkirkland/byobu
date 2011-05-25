@@ -31,6 +31,10 @@ else
 	while read cn other; do interface=$cn; done < /proc/net/route
 fi
 
+# By default, we won't bug the user with the display of network traffic
+# below NETWORK_THRESHOLD in kbps; override in $DATA/status
+[ -n "$NETWORK_THRESHOLD" ] || NETWORK_THRESHOLD=20
+
 if [ "$1" = "--detail" ]; then
 	LC_ALL=C /sbin/ifconfig "$interface" | sed 's/\s*$//'
 	exit 0
@@ -91,7 +95,7 @@ for i in up down; do
 			;;
 		esac
 	fi
-	if [ "$rate" != "0" ]; then
+	if [ "$rate" -gt $NETWORK_THRESHOLD ]; then
 		color b m w; printf "%s%s" "$symbol" "$rate"; color -; color m w; printf "%s" "$unit"; color --
 	fi
 done
