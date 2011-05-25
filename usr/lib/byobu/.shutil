@@ -41,18 +41,23 @@ find_script() {
 # third argument indicates how many digits after the decimal
 fpdiv() {
 	local a=$1 b=$2 pres=${3:-3}
-	local i=0 mp="10" whole="" part=""
+	local i=0 mp="10" whole="" part="" chunk="" n=0
 	while i=$(($i+1)) && [ $i -le $pres ]; do
 		mp="${mp}0"
+		chunk="${chunk}?"
 	done
-	whole=$(($a/$b))
-	part=$((((($a%$b)*${mp})/$b)))
-	if [ $part -eq 0 ]; then
-		part=${part#1};
-	elif [ $((${part}%(${mp}/10))) -ge 5 ]; then
-		part=$(($part+5))
-	fi
-	_RET="${whole}.${part%?}"
+
+	n=$(((${mp}*${a})/${b}))
+
+	# round up if necessary
+	[ $(($n%${mp})) -ge $((${mp}/2)) ] && n=$(($n+5))
+
+	# drop the last digit, which was only there for rounding
+	n=${n%?}
+	whole=${n%${chunk}}
+	part=${n#${whole}}
+	_RET=${whole}${part:+.${part}}
+	return
 }
 
 # rtrim(string,chars)

@@ -49,7 +49,7 @@ swap_info() {
 		unit="GB"
 	elif [ $mem -ge 1024 ]; then
 		fpdiv "${mem}" 1024 0
-		mem=${_RET%.}
+		mem=${_RET}
 		unit="MB"
 	else
 		mem="$mem"
