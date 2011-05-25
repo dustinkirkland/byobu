@@ -171,5 +171,8 @@ if [ -h "$RUN/$PKG.ssh-agent" ]; then
 	mv -f "$RUN/$PKG.ssh-agent" "$DATA/.ssh-agent"
 fi
 
+# Affects: Upgrades from <= byobu 4.3, remove ec2_rates
+rm -f "$DATA/ec2_rates"
+
 # Clean up flag
 rm -f "$FLAG"

@@ -30,7 +30,7 @@ byobu (4.3) unreleased; urgency=low
     usr/share/byobu/ec2/rates.eu_ie => usr/share/byobu/ec2/rates.eu-
     west-1, usr/share/byobu/ec2/rates.us_ca => usr/share/byobu/ec2/us-
     west-1, usr/share/byobu/ec2/rates.us_va =>
-    usr/share/byobu/ec2/rates.us-east-1:
+    usr/share/byobu/ec2/rates.us-east-1, usr/bin/byobu-janitor:
     - rework ec2_cost entirely, using metaservice; much more accurate
 
   [ Scott Moser ]

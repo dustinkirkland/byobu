@@ -33,9 +33,9 @@ done
 
 # Try to use metadata service
 zone=$(wget -q -O - http://169.254.169.254/latest/meta-data/placement/availability-zone || echo "us-east-1")
-. "$BYOBU_PREFIX/share/$PKG/ec2/rates.$zone"
-if type=$(wget -q -O - http://169.254.169.254/latest/meta-data/instance-type); then
-	RATE=$(eval ${type/./_})
+. "$BYOBU_PREFIX/share/$PKG/ec2/rates.${zone%?}"
+if type=$(wget -q -O - http://169.254.169.254/latest/meta-data/instance-type | sed -e "s/\./_/g"); then
+	eval RATE="\$$type"
 else
 	# Count CPUs, Memory, Architecture
 	cpu=$(grep -c "^processor.*:" /proc/cpuinfo) || cpu=1
