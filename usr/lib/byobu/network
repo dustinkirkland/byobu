@@ -61,10 +61,9 @@ for i in up down; do
 			fi
 		done < /proc/net/dev
 		echo "$x2" > "$cache"
-		rate=$(8 * (($x2 - $x1) / ($t2 - $t1) / 1024))  # in kbps
+		rate=$((8*($x2 - $x1) / ($t2 - $t1) / 1024))  # in kbps
 		[ "$rate" -lt 0 ] && rate=0
-		fi
-		if [ $rate -lt $NETWORK_THRESHOLD ];
+		if [ $rate -lt $NETWORK_THRESHOLD ]; then
 			# Below threshold, exit immediately!
 			exit 0
 		fi
