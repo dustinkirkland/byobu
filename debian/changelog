@@ -23,6 +23,15 @@ byobu (4.3) unreleased; urgency=low
     usr/share/byobu/ec2/rates.ap_to, usr/share/byobu/ec2/rates.eu_ie,
     usr/share/byobu/ec2/rates.us_ca, usr/share/byobu/ec2/rates.us_va:
     - update AWS prices, add the two new AP zones
+  * usr/lib/byobu/ec2_cost, usr/share/byobu/ec2/Makefile.am,
+    usr/share/byobu/ec2/rates.ap_si => usr/share/byobu/ec2/rates.ap-
+    southeast-1, usr/share/byobu/ec2/rates.ap_to =>
+    usr/share/byobu/ec2/rates.ap-northeast-1,
+    usr/share/byobu/ec2/rates.eu_ie => usr/share/byobu/ec2/rates.eu-
+    west-1, usr/share/byobu/ec2/rates.us_ca => usr/share/byobu/ec2/us-
+    west-1, usr/share/byobu/ec2/rates.us_va =>
+    usr/share/byobu/ec2/rates.us-east-1:
+    - rework ec2_cost entirely, using metaservice; much more accurate
 
   [ Scott Moser ]
   * usr/lib/byobu/.shutil: fix rounding across a decimal point in fpdiv()

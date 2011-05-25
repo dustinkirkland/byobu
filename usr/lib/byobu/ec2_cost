@@ -31,30 +31,32 @@ for arg in $@; do
 	esac
 done
 
-# Get the going rates
-[ -r "$DATA/ec2_rates" ] || ln -s $BYOBU_PREFIX/share/$PKG/ec2/rates.us_ca "$DATA/ec2_rates"
-. "$DATA/ec2_rates" || exit 1
-
-# Count CPUs, Memory, Architecture
-cpu=$(grep -c "^processor.*:" /proc/cpuinfo) || cpu=1
-mem=$(grep ^MemTotal /proc/meminfo | awk '{print $2}')
-
-# Guess this system's going rate, based on mem available (m* types)
-if [ $mem -lt 700000 ]; then
-	RATE=$T1_MICRO
-elif [ $mem -gt 64000000 ]; then
-	RATE=$M2_4XLARGE
-elif [ $mem -gt 32000000 ]; then
-	RATE=$M2_2XLARGE
-elif [ $mem -gt 16000000 ]; then
-	RATE=$M2_XLARGE
-elif [ $mem -gt 14000000 ]; then
-	RATE=$M1_XLARGE
-elif [ $mem -gt 7000000 ]; then
-	RATE=$M1_LARGE
+# Try to use metadata service
+zone=$(wget -q -O - http://169.254.169.254/latest/meta-data/placement/availability-zone || echo "us-east-1")
+. "$BYOBU_PREFIX/share/$PKG/ec2/rates.$zone"
+if type=$(wget -q -O - http://169.254.169.254/latest/meta-data/instance-type); then
+	RATE=$(eval ${type/./_})
 else
-	# Otherwise, scale based on number of cpu's (c* types)
-	RATE=$(echo "$cpu" "$M1_SMALL" | awk '{printf "%f", $1*$2}')
+	# Count CPUs, Memory, Architecture
+	cpu=$(grep -c "^processor.*:" /proc/cpuinfo) || cpu=1
+	mem=$(grep ^MemTotal /proc/meminfo | awk '{print $2}')
+	# Guess this system's going rate, based on mem available (m* types)
+	if [ $mem -lt 700000 ]; then
+		RATE=$T1_MICRO
+	elif [ $mem -gt 64000000 ]; then
+		RATE=$M2_4XLARGE
+	elif [ $mem -gt 32000000 ]; then
+		RATE=$M2_2XLARGE
+	elif [ $mem -gt 16000000 ]; then
+		RATE=$M2_XLARGE
+	elif [ $mem -gt 14000000 ]; then
+		RATE=$M1_XLARGE
+	elif [ $mem -gt 7000000 ]; then
+		RATE=$M1_LARGE
+	else
+		# Otherwise, scale based on number of cpu's (c* types)
+		RATE=$(echo "$cpu" "$M1_SMALL" | awk '{printf "%f", $1*$2}')
+	fi
 fi
 
 # Data Transfer Cost Basis

@@ -1,0 +1,15 @@
+# 2011-05-25: Approximate Instance Cost Basis per hour from
+# http://aws.amazon.com/ec2/instance-types/
+# http://aws.amazon.com/ec2/pricing/
+# for US - N. Virginia
+m1_small="0.085"
+m1_large="0.34"
+m1_xlarge="0.68"
+t1_micro="0.02"
+m2_xlarge="0.50"
+m2_2xlarge="1.00"
+m2_4xlarge="2.00"
+c1_medium="0.17"
+c1_xlarge="0.68"
+cc1_4xlarge="1.60"
+cg1_4xlarge="2.10"

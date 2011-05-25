@@ -1,0 +1,15 @@
+# 2011-05-25: Approximate Instance Cost Basis per hour from
+# http://aws.amazon.com/ec2/instance-types/
+# http://aws.amazon.com/ec2/pricing/
+# for AP - Tokyo
+m1_small="0.10"
+m1_large="0.40"
+m1_xlarge="0.80"
+t1_micro="0.027"
+m2_xlarge="0.60"
+m2_2xlarge="1.20"
+m2_4xlarge="2.39"
+c1_medium="0.20"
+c1_xlarge="0.80"
+cc1_4xlarge="1.60"
+cg1_4xlarge="2.10"

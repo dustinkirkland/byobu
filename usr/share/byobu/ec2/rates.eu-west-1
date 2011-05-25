@@ -1,0 +1,15 @@
+# 2011-05-25: Approximate Instance Cost Basis per hour from
+# http://aws.amazon.com/ec2/instance-types/
+# http://aws.amazon.com/ec2/pricing/
+# for EU - Ireland
+m1_small="0.095"
+m1_large="0.38"
+m1_xlarge="0.76"
+t1_micro="0.025"
+m2_xlarge="0.57"
+m2_2xlarge="1.14"
+m2_4xlarge="2.28"
+c1_medium="0.19"
+c1_xlarge="0.76"
+cc1_4xlarge="1.60"
+cg1_4xlarge="2.10"
