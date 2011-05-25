@@ -10,9 +10,12 @@ byobu (4.3) unreleased; urgency=low
     - fix the motd display at auto launch, which was broken recently
   * usr/lib/byobu/mem_available:
     - fix MB display bug
-  * etc/byobu/statusrc, usr/lib/byobu/network:
+  * etc/byobu/statusrc, usr/lib/byobu/disk_io, usr/lib/byobu/network,
+    usr/share/man/man1/byobu.1:
     - add support for a network threshold setting; set to 20kbps by default,
-      ignore network traffic less than 20kbps; less busy status
+      ignore network traffic less than threshold, less busy status
+    - add support for a disk threshold setting; set to 50kB/s by default,
+      ignore disk traffic less than threshold, less busy status
 
   [ Scott Moser ]
   * usr/lib/byobu/.shutil: fix rounding across a decimal point in fpdiv()

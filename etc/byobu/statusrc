@@ -62,6 +62,7 @@ wifi_quality=1
 # Byobu will auto-detect them.
 #LOGO="\o/"
 #MONITORED_DISK=/
+#DISK_IO_THRESHOLD=50
 #MONITORED_INTERFACE=eth0
 #NETWORK_THRESHOLD=20
 #MONITORED_TEMP=/proc/acpi/thermal_zone/THM0/temperature

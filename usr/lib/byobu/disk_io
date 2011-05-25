@@ -29,7 +29,7 @@ getdisk() {
 		t="$1"
 	fi
 	t="${t##*/}";
-	rtrim "$t" "0-9"
+	[ -h "/sys/block/$t" ] && _RET="$t" || rtrim "$t" "0-9"
 }
 
 [ "$UTF8" = "1" ] && ICON_RD="◀" || ICON_RD="<"
@@ -37,6 +37,10 @@ getdisk() {
 
 # Default to disk providing /, but let users override with MONITORED_DISK
 [ -z "$MONITORED_DISK" ] && MP="/" ||  MP="$MONITORED_DISK"
+
+# By default, we won't bug the user with the display of network traffic
+# below DISK_IO_THRESHOLD in kB/s; override in $DATA/status
+[ -n "$DISK_IO_THRESHOLD" ] || DISK_IO_THRESHOLD=50
 
 if [ "$1" = "--detail" ]; then
 	if command -v iostat >/dev/null; then
@@ -74,7 +78,10 @@ for i in "read" "write"; do
 		fi
 		echo "$x2" > "$cache"
 		rate=$((($x2 - $x1) / ($t2 - $t1) * 512 / 1024))
-		if [ "$rate" -lt 0 ]; then
+		if [ $rate -lt $DISK_IO_THRESHOLD ]; then
+			# Below threshold, exit immediately!
+			exit 0
+		elif [ "$rate" -lt 0 ]; then
 			rate=0
 		elif [ "$rate" -gt 1048576 ]; then
 			unit="GB/s"
