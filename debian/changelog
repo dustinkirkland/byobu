@@ -1,4 +1,4 @@
-byobu (4.3-0ubuntu1) oneiric; urgency=low
+byobu (4.3) unreleased; urgency=low
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/uptime: fix string bug in uptime introduced by smoser's
