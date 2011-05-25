@@ -1,10 +1,10 @@
-byobu (4.3) unreleased; urgency=low
+byobu (4.3-0ubuntu1) oneiric; urgency=low
 
   * usr/lib/byobu/uptime: fix string bug in uptime introduced by smoser's
     changes
   * usr/lib/byobu/disk_io: fix scaling, LP: #787773
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 May 2011 19:21:36 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 24 May 2011 22:29:00 -0500
 
 byobu (4.2-0ubuntu1) oneiric; urgency=low
 
