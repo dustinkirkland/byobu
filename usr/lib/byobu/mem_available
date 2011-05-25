@@ -37,8 +37,7 @@ mem_available_info() {
 		mem=${_RET}
 		unit="GB"
 	elif [ $mem -ge 1024 ]; then
-		mem=$(echo "$mem" | awk '{ printf "%.0f", $1 / 1024 }')
-		fpdiv "$mem" 1024 1
+		fpdiv "$mem" 1024 0
 		mem=${_RET}
 		unit="MB"
 	else

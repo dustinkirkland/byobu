@@ -1,4 +1,4 @@
-byobu (4.3) unreleased; urgency=low
+byobu (4.3-0ubuntu1) oneiric; urgency=low
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/uptime: fix string bug in uptime introduced by smoser's
@@ -8,6 +8,8 @@ byobu (4.3) unreleased; urgency=low
     - fix some of the messaging
     - add a welcome message with the toggle on/off info
     - fix the motd display at auto launch, which was broken recently
+  * usr/lib/byobu/mem_available:
+    - fix MB display bug
 
   [ Scott Moser ]
   * usr/lib/byobu/.shutil: fix rounding across a decimal point in fpdiv()
