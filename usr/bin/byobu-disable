@@ -20,8 +20,15 @@
 byobu-launcher-uninstall
 
 echo
-echo "The Byobu window manager will no longer be launched automatically at each text login."
+echo "The Byobu window manager will no longer be launched automatically at login."
 echo
 echo "To re-enable this behavior later, just run:"
 echo "  byobu-enable"
 echo
+
+# If we're in a byobu session, let's exit that too
+case "$STY" in
+	*byobu)
+		screen -X at 0 quit
+	;;
+esac

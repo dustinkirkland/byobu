@@ -1,22 +1,13 @@
-byobu (4.4) unreleased; urgency=low
-
-  * UNRELEASED
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 24 May 2011 22:29:05 -0500
-
-byobu (4.3-0ubuntu1) oneiric; urgency=low
-
-  * usr/lib/byobu/uptime: fix string bug in uptime introduced by smoser's
-    changes
-  * usr/lib/byobu/disk_io: fix scaling, LP: #787773
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 24 May 2011 22:29:00 -0500
-
 byobu (4.3) unreleased; urgency=low
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/uptime: fix string bug in uptime introduced by smoser's
     changes
+  * usr/lib/byobu/disk_io: fix scaling, LP: #787773
+  * usr/bin/byobu-disable, usr/bin/byobu-select-session, usr/bin/shell:
+    - fix some of the messaging
+    - add a welcome message with the toggle on/off info
+    - fix the motd display at auto launch, which was broken recently
 
   [ Scott Moser ]
   * usr/lib/byobu/.shutil: fix rounding across a decimal point in fpdiv()

@@ -65,6 +65,8 @@ if i > 1:
 			tries += 1
 			choice = ""
 			sys.stderr.write("\nERROR: Invalid input\n");
+else:
+	os.execvp("byobu", ["", "shell"])
 
 if choice:
 	if choice == i-1:

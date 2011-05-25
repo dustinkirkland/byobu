@@ -17,8 +17,21 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ -r /etc/motd ]; then
-	# Prune the byobu advert, if you're already running within byobu
-	grep -v "^For a superior command line experience, enable our text-based window manger" /etc/motd | grep -v "^  byobu-enable"
+PKG="byobu"
+FLAG="$HOME/.$PKG/.welcome-displayed"
+
+[ -r /etc/motd ] && cat /etc/motd
+
+if [ ! -e "$FLAG" ]; then
+	echo
+	echo "Welcome to Ubuntu's powerful, text-based window manager, Byobu."
+	echo "You can toggle the launch of Byobu at login with:"
+	echo "  'byobu-disable' and 'byobu-enable'"
+	echo
+	echo "For tips, tricks, and more information, see:"
+	echo " * https://help.ubuntu.com/community/Byobu"
+	echo
+	touch "$FLAG"
 fi
+
 [ -n "$SHELL" -a -x "$SHELL" ] && exec "$SHELL" || exec /bin/sh
