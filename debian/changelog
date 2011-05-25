@@ -16,6 +16,9 @@ byobu (4.3) unreleased; urgency=low
       ignore network traffic less than threshold, less busy status
     - add support for a disk threshold setting; set to 50kB/s by default,
       ignore disk traffic less than threshold, less busy status
+  * usr/bin/byobu-janitor:
+    - on initial setup, if it looks like we're running in ec2, enable
+      ec2_cost monitor
 
   [ Scott Moser ]
   * usr/lib/byobu/.shutil: fix rounding across a decimal point in fpdiv()

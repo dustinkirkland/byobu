@@ -109,6 +109,8 @@ if [ ! -r "$DATA/status" ]; then
 		skel=/dev/null
 	fi
 	grep -A 999999 BEGIN_CUT_HERE $skel | grep -B 999999 END_CUT_HERE | grep -v CUT > "$DATA/status"
+	# If it looks like we're running in ec2, enable ec2_cost by default
+	[ -x /usr/sbin/update-grub-legacy-ec2 ] && sed -i "s/ec2_cost=.*/ec2_cost=1/" "$DATA/status"
 fi
 [ -r "$DATA/windows" ] || touch "$DATA/windows"
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
