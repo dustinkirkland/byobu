@@ -1,4 +1,4 @@
-byobu (4.3) unreleased; urgency=low
+byobu (4.3-0ubuntu1) oneiric; urgency=low
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/uptime: fix string bug in uptime introduced by smoser's
@@ -41,7 +41,7 @@ byobu (4.3) unreleased; urgency=low
   * usr/lib/byobu/swap: update to address fix in fpdiv
   * usr/lib/byobu/mem_used: use fpdiv to round free memory properly
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 May 2011 19:21:36 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 25 May 2011 19:34:47 -0500
 
 byobu (4.2-0ubuntu1) oneiric; urgency=low
 
