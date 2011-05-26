@@ -107,10 +107,6 @@ activity ""
 # Fit to the current window size, useful with F5/reloads of the profile
 fit
 
-# Preserve splits; requires a pretty recent screen version (works on Debian/Ubuntu)
-layout save byobu
-layout autosave
-
 # Maintain SSH_AUTH_SOCK link
 setenv SSH_AUTH_SOCK $HOME/.byobu/.ssh-agent
 

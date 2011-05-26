@@ -3,6 +3,9 @@ byobu (4.5) unreleased; urgency=low
   * usr/lib/byobu/custom, usr/share/byobu/keybindings/f-keys:
     - fix regression in custom scripts
     - get ctrl-F5 working correctly again
+  * usr/share/byobu/keybindings/f-keys, usr/share/byobu/profiles/common:
+    - avoid some screen crashes associated with buggy 'layout' saving
+      feature; only save layouts if user is splitting screens, LP: #788670
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 25 May 2011 19:37:18 -0500
 

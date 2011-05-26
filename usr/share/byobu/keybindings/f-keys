@@ -47,8 +47,8 @@ register s "[g G$>^h"					# Goes with F12 ~ definition
 bind ~ eval 'process x' 'process s' 'exec sed -i -e "/./,/^$/!d" /var/run/screen/S-$USER/printscreen' 'screen -t PRINTSCREEN view /var/run/screen/S-$USER/printscreen' # F12 ~ | write the buffer to file, open in a new window
 
 # Hotkeys for splits (gnome-terminal)
-bindkey "^[O1;2Q" eval 'split' 'focus down' 'next' 'focus up'		# shift-F2 | horizontal split
-bindkey "^[O1;5Q" eval 'split -v' 'focus down' 'next' 'focus up'	# ctrl-F2  | vertical split
+bindkey "^[O1;2Q" eval 'split' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave'	# shift-F2 | horizontal split
+bindkey "^[O1;5Q" eval 'split -v' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave'	# ctrl-F2  | vertical split
 bindkey "^[O1;2R" focus up						# shift-F3 | focus up
 bindkey "^[O1;2S" focus down						# shift-F4 | focus down
 bindkey "^[[15;2~" only							# shift-F5 | kill all splits
