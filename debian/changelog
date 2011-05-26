@@ -1,6 +1,8 @@
 byobu (4.5) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/custom, usr/share/byobu/keybindings/f-keys:
+    - fix regression in custom scripts
+    - get ctrl-F5 working correctly again
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 25 May 2011 19:37:18 -0500
 

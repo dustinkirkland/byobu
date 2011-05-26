@@ -30,11 +30,10 @@ CACHE="$DIR/$PKG.custom"
 # Loop over custom scripts
 for i in "$DATA/bin/"[0-9]*_*; do
 	[ -x "$i" ] || continue
-	script=${script##*/}
+	script=${i##*/}
 	freq=${script%%_*}
 	freq=${freq#0}
-	[ -r "$CACHE.$script.last" ] && read lastrun "$CACHE.$script.last" ||
-		lastrun=0
+	[ -r "$CACHE.$script.last" ] && read lastrun < "$CACHE.$script.last" || lastrun=0
 	expiration=$(($lastrun+$freq))
 	if [ $NOW -ge $expiration ]; then
 		"$i" "$@" > "$CACHE.$script" 2>/dev/null
