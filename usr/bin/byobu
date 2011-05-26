@@ -52,7 +52,7 @@ fi
 byobu-janitor --force
 
 # Set the window title
-[ -z "$BYOBU_NO_TITLE" ] || printf "\033]0;${USER}@${HOSTNAME:-$(hostname)} - ${PKG}\007"
+[ -n "$BYOBU_NO_TITLE" ] || printf "\033]0;${USER}@${HOSTNAME:-$(hostname)} - ${PKG}\007"
 
 # Allow override of default window list, with BYOBU_WINDOWS environment variable
 CUSTOM_WINDOW_SET=0
