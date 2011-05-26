@@ -32,6 +32,9 @@ byobu (4.3) unreleased; urgency=low
     west-1, usr/share/byobu/ec2/rates.us_va =>
     usr/share/byobu/ec2/rates.us-east-1, usr/bin/byobu-janitor:
     - rework ec2_cost entirely, using metaservice; much more accurate
+  * usr/lib/byobu/ec2_cost, usr/share/byobu/ec2/Makefile.am,
+    usr/share/byobu/ec2/us-west-1 => usr/share/byobu/ec2/rates.us-west-
+    1: fix a couple of bugs
 
   [ Scott Moser ]
   * usr/lib/byobu/.shutil: fix rounding across a decimal point in fpdiv()
