@@ -5,6 +5,8 @@ byobu (4.6) unreleased; urgency=low
   * usr/share/byobu/keybindings/f-keys:
     - use shift-F6 (in both ssh and tty) for detach, but don't logout
     - seems that ctrl-F6 doesn't work in tty right now
+  * usr/bin/byobu-launch:
+    - merge history
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 26 May 2011 15:14:52 -0500
 

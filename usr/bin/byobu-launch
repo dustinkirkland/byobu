@@ -21,6 +21,9 @@ PKG="byobu"
 DATA="$HOME/.$PKG"
 case "$-" in
 	*i*)
+		# Attempt to merge history across screen sessions/windows (works with a few exceptions)
+		shopt -s histappend || true
+		[ -n "$PROMPT_COMMAND" ] && PROMPT_COMMAND="$PROMPT_COMMAND;history -a" || PROMPT_COMMAND="history -a"
 		# Respect a BYOBU_DISABLE environment variable
 		# To use over SSH, you must:
 		# 1) On your remote SSH server (might be handled by your distro):
