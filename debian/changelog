@@ -1,4 +1,4 @@
-byobu (4.6) unreleased; urgency=low
+byobu (4.6-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu-select-session:
     - fix select session, when there is only 1 session to attach to
@@ -9,8 +9,15 @@ byobu (4.6) unreleased; urgency=low
     - merge history
   * usr/bin/byobu-launch:
     - move the location of the BYOBU_DISABLE test
+  * debian/rules, usr/bin/byobu, usr/bin/byobu-janitor,
+    usr/bin/Makefile.am, usr/bin/shell => usr/bin/byobu-shell,
+    usr/share/byobu/windows/common, usr/share/man/man1/Makefile.am,
+    usr/share/man/man1/shell.1 => usr/share/man/man1/byobu-shell.1:
+    - byobu installing "/usr/bin/shell" might be a little egregious from
+      a namespace perspective;  so call it "byobu-shell" and just update
+      the window title when calling it
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 26 May 2011 15:14:52 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 May 2011 12:57:58 -0500
 
 byobu (4.5-0ubuntu1) oneiric; urgency=low
 

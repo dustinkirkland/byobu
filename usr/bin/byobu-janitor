@@ -174,5 +174,10 @@ fi
 # Affects: Upgrades from <= byobu 4.3, remove ec2_rates
 rm -f "$DATA/ec2_rates"
 
+# Affects: Upgrades from <= byobu 4.4, update "shell" -> "byobu-shell"
+if grep -qs " shell$" "$DATA/windows"; then
+	$SED -i -e "s/ shell$/ $PKG-shell/g" "$DATA/windows" || true
+fi
+
 # Clean up flag
 rm -f "$FLAG"

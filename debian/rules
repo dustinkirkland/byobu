@@ -49,7 +49,6 @@ install: build install-po
 	dh_testroot
 	$(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
 	dh_link usr/share/byobu/keybindings/f-keys usr/share/byobu/keybindings/common
-	dh_link usr/bin/shell usr/bin/motd+shell
 	dh_link usr/share/byobu/pixmaps/byobu.svg usr/share/icons/hicolor/scalable/apps/byobu.svg
 
 # Build architecture-independent files here.

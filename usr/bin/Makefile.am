@@ -1,2 +1,2 @@
-bin_SCRIPTS = byobu  byobu-config  byobu-ctrl-a  byobu-disable  byobu-enable  byobu-export  byobu-janitor  byobu-launch  byobu-launcher  byobu-launcher-install  byobu-launcher-uninstall  byobu-quiet  byobu-reconnect-sockets  byobu-select-profile  byobu-select-session  byobu-silent  byobu-status  byobu-status-detail  shell
+bin_SCRIPTS = byobu  byobu-config  byobu-ctrl-a  byobu-disable  byobu-enable  byobu-export  byobu-janitor  byobu-launch  byobu-launcher  byobu-launcher-install  byobu-launcher-uninstall  byobu-quiet  byobu-reconnect-sockets  byobu-select-profile  byobu-select-session  byobu-silent  byobu-status  byobu-status-detail  byobu-shell
 
