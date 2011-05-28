@@ -7,6 +7,8 @@ byobu (4.6) unreleased; urgency=low
     - seems that ctrl-F6 doesn't work in tty right now
   * usr/bin/byobu-launch:
     - merge history
+  * usr/bin/byobu-launch:
+    - move the location of the BYOBU_DISABLE test
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 26 May 2011 15:14:52 -0500
 
