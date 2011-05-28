@@ -52,7 +52,6 @@ bindkey "^[O1;5Q" eval 'split -v' 'focus down' 'next' 'focus up' 'layout save by
 bindkey "^[O1;2R" focus up						# shift-F3 | focus up
 bindkey "^[O1;2S" focus down						# shift-F4 | focus down
 bindkey "^[[15;2~" only							# shift-F5 | kill all splits
-bindkey "^[[17;2~" remove						# shift-F6 | kill this split
 
 # Hotkeys for splits (tty)
 bindkey "^[[26~" eval 'split' 'focus down' 'next' 'focus up'		# shift-F2 | horizontal split
@@ -60,7 +59,6 @@ bindkey "^[[26~" eval 'split' 'focus down' 'next' 'focus up'		# shift-F2 | horiz
 bindkey "^[[28~" focus up						# shift-F3 | focus up
 bindkey "^[[29~" focus down						# shift-F4 | focus down
 bindkey "^[[31~" only							# shift-F5 | kill all splits
-bindkey "^[[32~" remove							# shift-F6 | kill this split
 
 # Make it more logical how to enter scrollback
 register p "^[[5~"
@@ -72,7 +70,8 @@ bindkey "^[[6;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process n'		# alt-page
 bindkey "^[[15;5~" eval 'process x' 'process r' 'stuff ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets^M"' # ctrl-F5 | reconnect gpg/ssh/x sockets
 
 # Detach from an auto-launched byobu, but don't log out of the shell
-bindkey "^[[17;2~" eval 'exec touch /var/run/screen/S-$USER/byobu.no-logout' 'detach'   # ctrl-F6 | detach, but don't logout
+bindkey "^[[17;2~" eval 'exec touch /var/run/screen/S-$USER/byobu.no-logout' 'detach'   # shift-F6 | detach, but don't logout
+bindkey "^[[32~" eval 'exec touch /var/run/screen/S-$USER/byobu.no-logout' 'detach'	# shift-F6 | detach, but don't logout
 
 # toggle f-key keybindings off
 register d ":source $BYOBU_PREFIX/share/byobu/keybindings/screen-escape-keys^M"
