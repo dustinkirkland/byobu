@@ -22,7 +22,6 @@ DATA="$HOME/.$PKG"
 color 2>/dev/null || color() { true; }
 [ "$UTF8" = "1" ] && ICON_UP="▲" || ICON_UP="^"
 [ "$UTF8" = "1" ] && ICON_DN="▼" || ICON_DN="v"
-. /usr/lib/byobu/.shutil
 
 # Allow interface overrides in $DATA/status
 if [ -n "$MONITORED_NETWORK" ]; then
