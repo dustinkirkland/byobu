@@ -1,4 +1,4 @@
-byobu (4.7) unreleased; urgency=low
+byobu (4.7-0ubuntu1) oneiric; urgency=low
 
   * usr/lib/byobu/network:
     - fix shell comparator bug when number has decimal
@@ -8,7 +8,7 @@ byobu (4.7) unreleased; urgency=low
   * usr/lib/byobu/custom:
     - ensure that you can run more than one custom script, LP: #789647
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 May 2011 12:58:05 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 May 2011 22:22:28 -0500
 
 byobu (4.6-0ubuntu1) oneiric; urgency=low
 
