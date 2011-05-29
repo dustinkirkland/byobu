@@ -44,11 +44,13 @@ for i in "$DATA/bin/"[0-9]*_*; do
 	case "$output" in
 		*"$ESC{"*)
 			# User has formatted the colors
-			printf "$output"
+			OUTPUT="$OUTPUT$(printf "$output")"
 		;;
 		*)
 			# Default to inverted coloring
-			color invert; printf "%s" "$output"; color --
+			OUTPUT="$OUTPUT$(color invert; printf "%s" "$output"; color --)"
 		;;
 	esac
 done
+
+echo "$OUTPUT" | sed ':a;N;$!ba;s/\n//g'

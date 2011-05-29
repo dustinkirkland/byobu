@@ -5,6 +5,8 @@ byobu (4.7) unreleased; urgency=low
   * etc/byobu/statusrc:
     - revert recent change which enabled disk_io by default
   * close bug LP: #789408, which was fixed in the previous release
+  * usr/lib/byobu/custom:
+    - ensure that you can run more than one custom script, LP: #789647
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 May 2011 12:58:05 -0500
 
