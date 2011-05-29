@@ -2,6 +2,8 @@ byobu (4.7) unreleased; urgency=low
 
   * usr/lib/byobu/network:
     - fix shell comparator bug when number has decimal
+  * etc/byobu/statusrc:
+    - revert recent change which enabled disk_io by default
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 May 2011 12:58:05 -0500
 
