@@ -1,4 +1,4 @@
-byobu (4.8) unreleased; urgency=low
+byobu (4.8-0ubuntu1) oneiric; urgency=low
 
   [ Scott Moser and Dustin Kirkland ]
   * usr/bin/byobu-select-session:
@@ -9,7 +9,7 @@ byobu (4.8) unreleased; urgency=low
     session.1:
     - updated to document the .always-select configuration
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 May 2011 22:22:35 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Jun 2011 09:24:43 -0500
 
 byobu (4.7-0ubuntu1) oneiric; urgency=low
 
