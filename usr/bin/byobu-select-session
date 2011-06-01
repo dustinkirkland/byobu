@@ -22,22 +22,31 @@ import commands, os, re, sys
 
 PKG = "byobu"
 SHELL = os.getenv("SHELL", "/bin/bash")
+HOME=os.getenv("HOME")
 choice = ""
 sessions = []
 text = []
 i = 0
+
 output = commands.getoutput('screen -ls ')
 if output:
 	for s in output.split("\n"):
 		s = re.sub(r'\s+', ' ', s)
 		# Ignore hidden sessions (named sessions that start with a ".")
 		if s.find(" ") == 0 and len(s) > 1 and s.count("..") == 0:
-			text.append(s)
+			text.append("Select %s" % s.strip())
 			items = s.split(" ")
 			sessions.append(items[1])
 			i += 1
 
-if i > 1:
+show_shell = os.path.exists("%s/.%s/.always-select" % (HOME, PKG))
+if i>1 or show_shell:
+	sessions.append("NEW")
+	text.append("Create a new Byobu session")
+	sessions.append("SHELL")
+	text.append("Run a shell without Byobu (%s)" % SHELL)
+
+if len(sessions) > 1:
 	sys.stdout.write("\nByobu sessions...\n\n")
 	tries = 0
 	while tries < 3:
@@ -45,8 +54,6 @@ if i > 1:
 		for s in text:
 			sys.stdout.write("  %d. %s\n" % (i, s))
 			i += 1
-		sys.stdout.write("  %d.  Create a new session\n" % i)
-		i += 1
 		try:
 			choice = input("\nChoose 1-%d [1]: " % (i-1))
 			if choice >= 1 and choice < i:
@@ -65,13 +72,15 @@ if i > 1:
 			tries += 1
 			choice = ""
 			sys.stderr.write("\nERROR: Invalid input\n");
-elif i == 1:
+elif len(sessions) == 1:
 	os.execvp("byobu", ["", "-AOxRR"])
 
 if choice:
-	if choice == i-1:
+	if sessions[choice-1] == "NEW":
 		# Create a new session
 		os.execvp("byobu", ["", SHELL])
+	elif sessions[choice-1] == "SHELL":
+		os.execvp(SHELL, [SHELL])
 	else:
 	 	# Attach to the chosen session; must use the 'screen' binary
 		os.execvp("screen", ["", "-AOxRR", sessions[choice-1]])

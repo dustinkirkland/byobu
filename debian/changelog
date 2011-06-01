@@ -1,6 +1,13 @@
 byobu (4.8) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Scott Moser and Dustin Kirkland ]
+  * usr/bin/byobu-select-session:
+    - add an option to select-session for running a shell without byobu
+
+  [ Dustin Kirkland ]
+  * usr/bin/byobu-select-session, usr/share/man/man1/byobu-select-
+    session.1:
+    - updated to document the .always-select configuration
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 May 2011 22:22:35 -0500
 
