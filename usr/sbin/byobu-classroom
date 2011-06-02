@@ -1,0 +1,160 @@
+#!/bin/sh -e
+#
+#    byobu-classroom - set up a byobu-classroom shared screen session,
+#                      with one writer and many guest readers
+#
+#    Copyright (C) 2011 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+PKG="byobu"
+
+. "/usr/lib/$PKG/.shutil"
+
+usage() {
+	echo
+	echo "Usage: $0 [HOSTUSER [GUESTUSER]]"
+	echo
+	echo "If HOSTUSER is unspecified, \$SUDO_USER [$SUDO_USER] is used."
+	echo "If GUESTUSER is unspecified, 'guest' is used."
+	echo
+}
+
+[ -n "${1}" ] && HOSTUSER="${1}" || HOSTUSER="$SUDO_USER"
+[ -n "${2}" ] && GUESTUSER="${2}" || GUESTUSER="guest"
+
+# Ensure that our host user exists
+while ! id "$HOSTUSER" >/dev/null 2>&1; do
+	error "Host user does not exist"
+	id "$HOSTUSER"
+	usage
+	exit 1
+done
+
+# Ensure that there is not already a guest user
+while id "$GUESTUSER" >/dev/null 2>&1; do
+	echo
+	info "To operate in classroom mode, we must create the [$GUESTUSER] user."
+	info "There is already a [$GUESTUSER] user on this system."
+	echo
+	echo "Do you want to permanently delete the [$GUESTUSER] user now?  [y/N]: "
+	c=$(head -n1)
+	case "$c" in
+		y|Y)
+			deluser --force --remove-home "$GUESTUSER"
+			info "[$GUESTUSER] user deleted"
+		;;
+		*)
+			error "[$GUESTUSER] user still exists"
+			id "$GUESTUSER"
+		;;
+	esac
+done
+
+# Ensure that our new guest exists
+while ! id "$GUESTUSER" >/dev/null 2>&1; do
+	echo
+	info "To operate in classroom mode, we must create the [$GUESTUSER] user."
+	echo
+	echo "Do you want to create the [$GUESTUSER] user now?  [y/N]: "
+	c=$(head -n1)
+	case "$c" in
+		y|Y)
+			# Hardcode password to "guest"
+			cryptpw="ubXWbZ4Ffn.mg"
+			useradd -m -s /bin/bash -p "$cryptpw" "$GUESTUSER"
+			touch "/home/$GUESTUSER/.screenrc"
+			chown -R root:root /home/$GUESTUSER
+			info "Guest user created"
+		;;
+		*)
+			error "[$GUESTUSER] user does not exist"
+			id "$GUESTUSER"
+		;;
+	esac
+done
+
+# Ensure the correct permissions on screen binary
+screen=$(which screen)
+while [ $(stat -c%a "$screen") != "6755" ]; do
+	echo
+	ls -alF "$screen"
+	info "To operate in classroom mode, $screen must have 6755 permissions."
+	echo -n "Do you want to set this now?  [y/N]: "
+	c=$(head -n1)
+	case "$c" in
+		y|Y)
+			dpkg-statoverride --add root root 6755 "$screen"
+			info "Updated $screen"
+			echo
+			info "To revert this later, run:"
+			info "  sudo dpkg-statoverride --remove $screen"
+		;;
+		*)
+			error "Incorrect permissions on $screen"
+			ls -alF "$screen"
+		;;
+	esac
+done
+
+# Ensure correct permissions on screen's run directory
+service restart screen-cleanup
+
+# Ensure that SSH configuration is correct
+while [ $(grep -c "#byobu-classrom" /etc/ssh/sshd_config) != "4" ]; do
+	echo
+	info "To operate in classroom mode, SSH must:"
+	info " a) have password authentication enabled"
+	info " b) disable TCP Forwarding"
+	info " c) force the guest user's login command"
+	echo
+	echo -n "Do you want to set these now?  [y/N]: "
+	c=$(head -n1)
+	case "$c" in
+		y|Y)
+			sed -i -e '/#byobu-classroom/d' /etc/ssh/sshd_config || true
+			echo "
+PasswordAuthentication yes				#byobu-classroom
+AllowTcpForwarding no					#byobu-classroom
+Match User $GUESTUSER					#byobu-classroom
+  ForceCommand exec screen -x $HOSTUSER/byobu-classroom	#byobu-classroom
+" >> /etc/ssh/sshd_config
+			echo
+			info "To revert this later, run:"
+			info "  sudo sed -i -e '/#byobu-classroom/d' /etc/ssh/sshd_config"
+		;;
+		*)
+			error "Incorrect sshd configuration"
+		;;
+	esac
+done
+service ssh restart
+
+
+# Launch the session detached
+su -l $HOSTUSER -c 'byobu -c /usr/share/byobu/profiles/classroom -d -m -S byobu-classroom -t shell bash'
+
+info "Byobu classroom setup successfully!"
+echo
+info "Please tell your guests to:"
+info "  ssh -C $GUESTUSER@$(hostname)"
+info "with password=guest"
+echo
+info "As the host, you should connect with:"
+info "  ssh -C $HOSTUSER@$(hostname)"
+info "to control the session"
+echo
+

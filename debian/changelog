@@ -1,6 +1,10 @@
 byobu (4.9) unreleased; urgency=low
 
-  * UNRELEASED
+  * === added directory usr/sbin, usr/sbin/byobu-classroom,
+    usr/share/byobu/profiles/classroom:
+    - added to the byobu repository for source control, but not yet
+      QA'd for release, so they're not yet installed by the makefiles
+      or documented;  will get to this eventually
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Jun 2011 09:24:50 -0500
 
