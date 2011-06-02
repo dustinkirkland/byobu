@@ -1,5 +1,6 @@
 byobu (4.9) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * === added directory usr/sbin, usr/sbin/byobu-classroom,
     usr/share/byobu/profiles/classroom:
     - added to the byobu repository for source control, but not yet
@@ -9,6 +10,10 @@ byobu (4.9) unreleased; urgency=low
     - fix "byobu -r session", zero out NAME if user has a -r
   * Close LP: #789647
   * Close LP: #789408
+
+  [ Emanuele Rocca ]
+  * usr/bin/byobu-config: LP: #789274
+    - fix autodetection of byobu launch
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Jun 2011 09:24:50 -0500
 
