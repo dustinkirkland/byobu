@@ -5,6 +5,8 @@ byobu (4.9) unreleased; urgency=low
     - added to the byobu repository for source control, but not yet
       QA'd for release, so they're not yet installed by the makefiles
       or documented;  will get to this eventually
+  * usr/bin/byobu: LP: #791617
+    - fix "byobu -r session", zero out NAME if user has a -r
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Jun 2011 09:24:50 -0500
 

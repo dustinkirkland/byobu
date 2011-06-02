@@ -91,9 +91,9 @@ else
 	PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/screenrc"
 fi
 NAME="-S $PKG"
-# Zero out $NAME if user has specified a -S
+# Zero out $NAME if user has specified a screen session name
 for i in "$@"; do
-	case $i in -*S|-ls|-list) NAME= ;; esac
+	case $i in -r|-*S|-ls|-list) NAME= ;; esac
 done
 # Now let's execute screen!
 if [ "$#" = "0" ]; then
