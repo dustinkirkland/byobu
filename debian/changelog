@@ -1,4 +1,4 @@
-byobu (4.9) unreleased; urgency=low
+byobu (4.9-0ubuntu1) oneiric; urgency=low
 
   [ Dustin Kirkland ]
   * === added directory usr/sbin, usr/sbin/byobu-classroom,
@@ -15,7 +15,7 @@ byobu (4.9) unreleased; urgency=low
   * usr/bin/byobu-config: LP: #789274
     - fix autodetection of byobu launch
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Jun 2011 09:24:50 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 02 Jun 2011 15:22:08 -0400
 
 byobu (4.8-0ubuntu1) oneiric; urgency=low
 
