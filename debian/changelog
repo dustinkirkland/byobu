@@ -7,6 +7,8 @@ byobu (4.9) unreleased; urgency=low
       or documented;  will get to this eventually
   * usr/bin/byobu: LP: #791617
     - fix "byobu -r session", zero out NAME if user has a -r
+  * Close LP: #789647
+  * Close LP: #789408
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 01 Jun 2011 09:24:50 -0500
 
