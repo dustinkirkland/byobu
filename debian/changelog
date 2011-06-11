@@ -1,3 +1,9 @@
+byobu (4.11) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 11 Jun 2011 09:42:07 -0400
+
 byobu (4.10-0ubuntu1) oneiric; urgency=low
 
   * debian/postinst:
