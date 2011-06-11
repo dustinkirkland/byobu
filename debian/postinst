@@ -14,7 +14,7 @@ fi
 
 # Clean up any old-school screen-profiles diversions of /usr/bin/screen
 if [ -f /usr/bin/screen ] && [ -f /usr/bin/screen.real ]; then
-	divertpkg=$(dpkg-divert --listpackage /usr/bin/screen)
+	divertpkg=$(dpkg-divert --listpackage /usr/bin/screen || true)
 	if [ "$divertpkg" = "screen-profiles" ]; then
 		rm -f /usr/bin/screen
 		dpkg-divert --package screen-profiles --rename --remove /usr/bin/screen

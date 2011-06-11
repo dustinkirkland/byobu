@@ -1,8 +1,9 @@
-byobu (4.10) unreleased; urgency=low
+byobu (4.10-0ubuntu1) oneiric; urgency=low
 
-  * UNRELEASED
+  * debian/postinst:
+    - re-enable postinst to succeed on hardy
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 02 Jun 2011 15:22:15 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 11 Jun 2011 09:42:03 -0400
 
 byobu (4.9-0ubuntu1) oneiric; urgency=low
 
