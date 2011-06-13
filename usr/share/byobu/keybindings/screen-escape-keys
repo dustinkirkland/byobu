@@ -50,7 +50,7 @@ bindkey "^[[17;2~"
 # ctrl-a-n      Next window                     F4
 # ctrl-a-R      Reload profile                  F5
 register r ":source $HOME/.byobu/profile^M"
-bind R 'process x' 'process r'
+bind R eval 'process x' 'process r'
 # ctrl-a-d      Detach from this session        F6
 # ctrl-a-[      Enter copy/scrollback mode      F7
 # ctrl-a-A      Re-title a window               F8
