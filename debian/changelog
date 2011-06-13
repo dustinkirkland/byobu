@@ -1,6 +1,9 @@
 byobu (4.12) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-launch:
+    - switch the disable environment variable to LC_BYOBU=0, since
+      LC_* are passed over SSH by default in Debian/Ubuntu, and it's
+      a bit more brief
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Jun 2011 23:37:24 -0500
 

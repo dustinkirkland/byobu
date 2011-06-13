@@ -20,17 +20,17 @@
 PKG="byobu"
 DATA="$HOME/.$PKG"
 
-# Respect a BYOBU_DISABLE environment variable
-# To use over SSH, you must:
-# 1) On your remote SSH server (might be handled by your distro):
-#   /etc/ssh/sshd_config:
-#     AcceptEnv LANG LC_* BYOBU_DISABLE
-# 2) On your local SSH client (might be handled by your distro):
-#   /etc/ssh/ssh_config:
-#     SendEnv LANG LC_* BYOBU_DISABLE
-# 3) And in your local bashrc:
-#   $HOME/.bashrc:  export BYOBU_DISABLE=1
-if [ "$BYOBU_DISABLE" != 1 ]; then
+# Respect an environment variable passable over SSH to disable
+# Byobu launch.  This put that configurability on the SSH client,
+# in addition to the server.
+# To use over SSH, your /etc/ssh/sshd_config and /etc/ssh/ssh_config
+# must pass this variable with AcceptEnv and SendEnv.
+# Note that LC_* are passed by default on Debian/Ubuntu.
+#  - So we're going to use a variable name that's not already used (LC_BYOBU):
+#    http://pubs.opengroup.org/onlinepubs/007908799/xbd/envvar.html
+# And in your local bashrc:
+#   $HOME/.bashrc:  export LC_BYOBU=0
+if [ "$LC_BYOBU" != 0 ]; then
 	case "$-" in
 		*i*)
 			# Attempt to merge shell history across sessions/windows (works with a few exceptions)
