@@ -30,8 +30,7 @@ if [ -d "$DIR" ]; then
 	for d in "$DIR"/*; do
 		[ -d "$d" ] || continue
 		touch "$d/$PKG.reload-required"
-		u=$(echo "$d" | sed "s:^.*/S-::")
-		chown $u "$d/$PKG.reload-required"
+		chown --reference "$d" "$d/$PKG.reload-required" || true
 		chmod 700 "$d/$PKG.reload-required"
 	done
 fi
