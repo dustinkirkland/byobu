@@ -93,9 +93,7 @@ for i in up down; do
 					fi
 				;;
 			esac
+			color b m w; printf "%s%s" "$symbol" "$rate"; color -; color m w; printf "%s" "$unit"; color --
 		fi
-	fi
-	if [ "$rate" != "0" ]; then
-		color b m w; printf "%s%s" "$symbol" "$rate"; color -; color m w; printf "%s" "$unit"; color --
 	fi
 done
