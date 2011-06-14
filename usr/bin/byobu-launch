@@ -25,12 +25,13 @@ DATA="$HOME/.$PKG"
 # in addition to the server.
 # To use over SSH, your /etc/ssh/sshd_config and /etc/ssh/ssh_config
 # must pass this variable with AcceptEnv and SendEnv.
-# Note that LC_* are passed by default on Debian/Ubuntu.
-#  - So we're going to use a variable name that's not already used (LC_BYOBU):
-#    http://pubs.opengroup.org/onlinepubs/007908799/xbd/envvar.html
+# Note that LC_* are passed by default on Debian/Ubuntu, we'll optionally
+# support LC_BYOBU=0
 # And in your local bashrc:
 #   $HOME/.bashrc:  export LC_BYOBU=0
-if [ "$LC_BYOBU" != 0 ]; then
+# or edit your sshd_config, ssh_config, and set:
+#   $HOME/.bashrc:  export BYOBU_DISABLE=1
+if [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1"]; then
 	case "$-" in
 		*i*)
 			# Attempt to merge shell history across sessions/windows (works with a few exceptions)
