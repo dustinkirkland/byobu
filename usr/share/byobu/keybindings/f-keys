@@ -52,6 +52,7 @@ bindkey "^[O1;5Q" eval 'split -v' 'focus down' 'next' 'focus up' 'layout save by
 bindkey "^[O1;2R" focus up						# shift-F3 | focus up
 bindkey "^[O1;2S" focus down						# shift-F4 | focus down
 bindkey "^[[15;2~" only							# shift-F5 | kill all splits
+bindkey "^[[17;5~" remove						# ctrl-F6  | kill this split
 
 # Hotkeys for splits (tty)
 bindkey "^[[26~" eval 'split' 'focus down' 'next' 'focus up'		# shift-F2 | horizontal split
@@ -59,6 +60,7 @@ bindkey "^[[26~" eval 'split' 'focus down' 'next' 'focus up'		# shift-F2 | horiz
 bindkey "^[[28~" focus up						# shift-F3 | focus up
 bindkey "^[[29~" focus down						# shift-F4 | focus down
 bindkey "^[[31~" only							# shift-F5 | kill all splits
+									# ctrl-F6  | sadly, does not work in tty :-(
 
 # Make it more logical how to enter scrollback
 register p "^[[5~"

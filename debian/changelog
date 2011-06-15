@@ -5,6 +5,10 @@ byobu (4.12) unreleased; urgency=low
       LC_* are passed over SSH by default in Debian/Ubuntu
   * usr/lib/byobu/network:
     - fix network threshold handling, which was not working properly
+  * usr/share/byobu/keybindings/f-keys, usr/share/man/man1/byobu.1:
+    - LP: #797442
+    - ctrl-F6 kills this split
+    - update docs to reflect reality
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Jun 2011 23:37:24 -0500
 
