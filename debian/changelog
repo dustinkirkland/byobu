@@ -9,6 +9,8 @@ byobu (4.12) unreleased; urgency=low
     - LP: #797442
     - ctrl-F6 kills this split
     - update docs to reflect reality
+  * usr/share/byobu/profiles/tmux:
+    - added an early draft of a tmux profile
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Jun 2011 23:37:24 -0500
 

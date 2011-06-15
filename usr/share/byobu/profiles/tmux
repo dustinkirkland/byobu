@@ -1,0 +1,41 @@
+###############################################################################
+#    tmux common profile
+#      This tmux configuration profile is intended to correspond to Byobu's
+#      traditional GNU Screen profile
+#
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###############################################################################
+
+set-option -g prefix C-a
+
+bind-key -n F2 new-window
+bind-key -n F3 previous-window
+bind-key -n F4 next-window
+bind-key -n F5 source ~/.tmux.conf
+bind-key -n F6 detach
+bind-key -n F7 copy-mode
+bind-key -n S-F2 split-window -v
+bind-key -n C-F2 split-window -h
+
+set-window-option -g window-status-current-bg red
+set-window-option -g automatic-rename on
+
+set -g status-bg black
+set -g status-fg white
+set -g status-interval 1
+set -g status-left '#[fg=white,bold,bg=magenta] U '
+set -g status-right '%Y-%m-%d %H:%M:%S'
