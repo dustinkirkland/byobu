@@ -1,9 +1,9 @@
 #!/bin/sh -e
 #
 #    ip_address - report a host's ip address
-#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2008-2011 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -51,9 +51,14 @@ case "$IPV6" in
 		ipaddr=${ipaddr%%/*}
 	;;
 	*)
-		ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global)
-		ipaddr=${ipaddr#* inet }
-		ipaddr=${ipaddr%%/*}
+		if host 169.254.169.254 >/dev/null 2>&1; then
+			# We're in EC2, so get our public IP address
+			ipaddr=$(wget -q -O- http://169.254.169.254/latest/meta-data/public-ipv4)
+		else
+			ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global)
+			ipaddr=${ipaddr#* inet }
+			ipaddr=${ipaddr%%/*}
+		fi
 	;;
 esac
 

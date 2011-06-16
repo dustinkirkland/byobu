@@ -11,6 +11,9 @@ byobu (4.12) unreleased; urgency=low
     - update docs to reflect reality
   * usr/share/byobu/profiles/tmux:
     - added an early draft of a tmux profile
+  * usr/lib/byobu/hostname, usr/lib/byobu/ip_address:
+    - in EC2, use metadata for ip and hostname, far more useful
+      in that environment
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Jun 2011 23:37:24 -0500
 
