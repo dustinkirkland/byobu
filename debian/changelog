@@ -1,4 +1,4 @@
-byobu (4.13) unreleased; urgency=low
+byobu (4.13-0ubuntu1) oneiric; urgency=low
 
   [ Scott Moser ]
   * usr/lib/byobu/network:
@@ -36,7 +36,7 @@ byobu (4.13) unreleased; urgency=low
   * usr/bin/byobu-launch:
     - fix typo, missing whitespace
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jun 2011 11:37:56 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jun 2011 16:16:27 -0500
 
 byobu (4.12-0ubuntu1) oneiric; urgency=low
 
