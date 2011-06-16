@@ -31,7 +31,7 @@ DATA="$HOME/.$PKG"
 #   $HOME/.bashrc:  export LC_BYOBU=0
 # or edit your sshd_config, ssh_config, and set:
 #   $HOME/.bashrc:  export BYOBU_DISABLE=1
-if [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1"]; then
+if [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1" ]; then
 	case "$-" in
 		*i*)
 			# Attempt to merge shell history across sessions/windows (works with a few exceptions)

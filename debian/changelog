@@ -33,6 +33,8 @@ byobu (4.13) unreleased; urgency=low
     - add vi modelines
   * usr/lib/byobu/hostname:
     - whitespace handled elsewhere
+  * usr/bin/byobu-launch:
+    - fix typo, missing whitespace
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jun 2011 11:37:56 -0500
 
