@@ -38,3 +38,5 @@ mkdir -p "$DATA"
 touch "$DATA/disable-autolaunch"
 # install disabled motd printing; re-enable
 rm -f "$HOME"/.hushlogin
+
+# vi: syntax=sh ts=4 noexpandtab

@@ -40,3 +40,5 @@ for i in /var/crash/*.crash; do
 	color y k; printf "{!}"; color --
 	exit 0
 done
+
+# vi: syntax=sh ts=4 noexpandtab

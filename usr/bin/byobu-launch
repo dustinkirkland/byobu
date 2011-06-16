@@ -52,3 +52,5 @@ if [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1"]; then
 	esac
 fi
 true
+
+# vi: syntax=sh ts=4 noexpandtab

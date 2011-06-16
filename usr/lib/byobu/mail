@@ -30,3 +30,5 @@ fi
 if [ -s "$mailfile" ]; then
 	 color b; printf "%s" "$ICON"; color --
 fi
+
+# vi: syntax=sh ts=4 noexpandtab

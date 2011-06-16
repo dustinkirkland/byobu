@@ -36,3 +36,5 @@ if [ -d "$DIR" ]; then
 fi
 
 #DEBHELPER#
+
+# vi: syntax=sh ts=4 noexpandtab

@@ -52,3 +52,5 @@ for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/ther
 		break
 	fi
 done
+
+# vi: syntax=sh ts=4 noexpandtab

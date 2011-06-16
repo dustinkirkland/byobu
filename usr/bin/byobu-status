@@ -90,3 +90,5 @@ case "$P" in
 		find_script "$P" && . "${_RET}"
 	;;
 esac
+
+# vi: syntax=sh ts=4 noexpandtab

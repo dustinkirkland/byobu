@@ -7,3 +7,5 @@ db_input medium byobu/launch-by-default || true
 db_go
 
 exit 0
+
+# vi: syntax=sh ts=4 noexpandtab

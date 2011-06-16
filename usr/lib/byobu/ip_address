@@ -63,3 +63,5 @@ case "$IPV6" in
 esac
 
 color bold2; printf "%s" "$ipaddr"; color --
+
+# vi: syntax=sh ts=4 noexpandtab

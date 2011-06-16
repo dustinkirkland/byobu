@@ -23,3 +23,5 @@ if [ "$1" = "--detail" ]; then
 fi
 
 printf "%s " $(uname -m)
+
+# vi: syntax=sh ts=4 noexpandtab

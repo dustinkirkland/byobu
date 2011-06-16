@@ -27,3 +27,5 @@ fi
 
 count=$(ls -d /proc/[0-9]* 2>/dev/null| wc -l)
 color b y w; printf "%s" "$count"; color -; color y w; printf "&"; color --
+
+# vi: syntax=sh ts=4 noexpandtab

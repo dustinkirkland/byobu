@@ -70,3 +70,5 @@ done
 
 # Print
 sed -e ':a;N;$!ba;s/\n//g' "$RUN/$PKG/"*.status > "$RUN/$PKG.status"
+
+# vi: syntax=sh ts=4 noexpandtab

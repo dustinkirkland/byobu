@@ -40,3 +40,5 @@ else
 	esac
 fi
 false
+
+# vi: syntax=sh ts=4 noexpandtab

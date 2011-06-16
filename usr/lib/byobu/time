@@ -29,3 +29,5 @@ case "$1" in
 	;;
 esac
 
+
+# vi: syntax=sh ts=4 noexpandtab

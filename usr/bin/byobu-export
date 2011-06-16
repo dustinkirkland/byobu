@@ -27,3 +27,5 @@ where you are not the root user, simply:
  * And follow the instructions in the README
 
 "
+
+# vi: syntax=sh ts=4 noexpandtab

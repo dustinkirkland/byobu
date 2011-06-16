@@ -57,3 +57,5 @@ done
 screen -X at 0 source "$HOME/.$PKG/profile"
 echo "To modify this behavior again later, run 'byobu-ctrl-a'"
 echo
+
+# vi: syntax=sh ts=4 noexpandtab

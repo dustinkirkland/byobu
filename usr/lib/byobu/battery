@@ -82,3 +82,5 @@ battery_info() {
 }
 
 battery_info "$@"
+
+# vi: syntax=sh ts=4 noexpandtab

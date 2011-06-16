@@ -72,3 +72,5 @@ done
 [ -n "$output" ] || exit 0
 
 color w c; printf "%s" ${output#,}; color --
+
+# vi: syntax=sh ts=4 noexpandtab

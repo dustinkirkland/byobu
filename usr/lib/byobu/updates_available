@@ -107,3 +107,5 @@ mycache="$DIR/$PKG.updates-available"
 # If we really need to do so (mycache doesn't exist, or the package database has changed),
 # background an update now
 update_needed "$mycache" && update_cache "$mycache"
+
+# vi: syntax=sh ts=4 noexpandtab

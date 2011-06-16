@@ -23,3 +23,5 @@ else
 	(which sensible-pager >/dev/null) && PAGER=sensible-pager || PAGER=less
 	byobu-status --detail | $PAGER
 fi
+
+# vi: syntax=sh ts=4 noexpandtab

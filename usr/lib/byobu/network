@@ -100,3 +100,5 @@ for i in up down; do
 		fi
 	fi
 done
+
+# vi: syntax=sh ts=4 noexpandtab

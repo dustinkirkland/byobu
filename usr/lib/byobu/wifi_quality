@@ -46,3 +46,5 @@ fi
 [ "$quality" = "0" ] && exit 0
 
 printf "${ICON}"; color b C k; printf "%s" "$bitrate"; color -; color C k; printf "%s," "Mbps"; color -; color b C k; printf "%s" "$quality"; color -; color C k; printf "%%"; color --
+
+# vi: syntax=sh ts=4 noexpandtab

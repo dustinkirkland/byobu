@@ -48,3 +48,5 @@ mem_available_info() {
 }
 
 mem_available_info "$@"
+
+# vi: syntax=sh ts=4 noexpandtab

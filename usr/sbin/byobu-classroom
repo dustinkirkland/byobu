@@ -158,3 +158,5 @@ info "  ssh -C $HOSTUSER@$(hostname)"
 info "to control the session"
 echo
 
+
+# vi: syntax=sh ts=4 noexpandtab

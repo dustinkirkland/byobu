@@ -41,3 +41,5 @@ case "$1" in
 		fi
 	;;
 esac
+
+# vi: syntax=sh ts=4 noexpandtab

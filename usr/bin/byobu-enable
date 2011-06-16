@@ -29,3 +29,5 @@ echo -n "Press <enter> to continue..."
 $(head -n1)
 
 exec byobu
+
+# vi: syntax=sh ts=4 noexpandtab

@@ -98,3 +98,5 @@ for i in "read" "write"; do
 	[ "$rate" != "0" ] || continue
 	color b M W; printf "%s%s" "$symbol" "$rate"; color -; color M W; printf "%s" "$unit"; color --
 done
+
+# vi: syntax=sh ts=4 noexpandtab

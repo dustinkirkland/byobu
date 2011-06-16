@@ -60,3 +60,5 @@ fan_speed_info() {
 
 fan_speed_info "$@"
 
+
+# vi: syntax=sh ts=4 noexpandtab

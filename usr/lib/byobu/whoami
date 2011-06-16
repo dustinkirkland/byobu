@@ -25,3 +25,5 @@ if [ "$1" = "--detail" ]; then
 fi
 
 color bold2; printf "%s@" "$(whoami)"; color -
+
+# vi: syntax=sh ts=4 noexpandtab

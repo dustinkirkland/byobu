@@ -181,3 +181,5 @@ fi
 
 # Clean up flag
 rm -f "$FLAG"
+
+# vi: syntax=sh ts=4 noexpandtab

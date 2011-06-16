@@ -27,3 +27,5 @@ count=$(ls $dir|wc -l)
 [ "$count" -eq 0 ] && exit 0
 
 echo -n "$ICON[$count] "
+
+# vi: syntax=sh ts=4 noexpandtab

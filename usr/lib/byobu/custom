@@ -54,3 +54,5 @@ for i in "$DATA/bin/"[0-9]*_*; do
 done
 
 echo "$OUTPUT" | sed ':a;N;$!ba;s/\n//g'
+
+# vi: syntax=sh ts=4 noexpandtab

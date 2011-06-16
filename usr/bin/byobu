@@ -117,3 +117,5 @@ else
 	# Launch with command line args
 	exec screen $SCREEN_TERM $NAME $PROFILE "$@"
 fi
+
+# vi: syntax=sh ts=4 noexpandtab

@@ -30,3 +30,5 @@ else
 	echo "caption splitonly ''" >> "$HOME/.$PKG/keybindings"
 fi
 exec byobu-quiet "$@"
+
+# vi: syntax=sh ts=4 noexpandtab

@@ -32,3 +32,5 @@ case "$1" in
 		printf "\005Y-\005m-\005d "
 	;;
 esac
+
+# vi: syntax=sh ts=4 noexpandtab

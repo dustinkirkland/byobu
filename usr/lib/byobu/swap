@@ -62,3 +62,5 @@ swap_info() {
 }
 
 swap_info "$@"
+
+# vi: syntax=sh ts=4 noexpandtab

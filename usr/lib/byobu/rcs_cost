@@ -97,3 +97,5 @@ if [ "$DETAIL" = "1" ]; then
 fi
 
 color K G; printf "R\$%s"; color -; color b K G; printf "%s" "$total_cost"; color --
+
+# vi: syntax=sh ts=4 noexpandtab

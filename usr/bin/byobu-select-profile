@@ -216,3 +216,5 @@ else
 fi
 
 exit 0
+
+# vi: syntax=sh ts=4 noexpandtab

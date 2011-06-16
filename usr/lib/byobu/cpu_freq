@@ -40,3 +40,5 @@ else
 	fi
 fi
 color b c W; printf "%s" "$freq"; color -; color c W; printf "%s" "GHz"; color --
+
+# vi: syntax=sh ts=4 noexpandtab

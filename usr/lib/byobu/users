@@ -35,3 +35,5 @@ count=`pgrep -f "sshd:.*@" | wc -l` || exit 0
 if [ $count -gt 0 ]; then
 	color b w r; printf "%d" "$count"; color -; color w r; printf "#"; color --
 fi
+
+# vi: syntax=sh ts=4 noexpandtab

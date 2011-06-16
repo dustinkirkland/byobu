@@ -45,3 +45,5 @@ newest "$HOME/.gnupg/"gpg-agent-info-* && . "$_RET" && export GPG_AGENT_INFO
 # Reconnect dbus, source the most recently touched session-bus
 # Sorry, ls -t is needed here, to sort by time
 newest "$HOME/.dbus/session-bus/*" && . "$_RET" && export DBUS_SESSION_DBUS_ADDRESS
+
+# vi: syntax=sh ts=4 noexpandtab
