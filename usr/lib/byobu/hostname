@@ -33,6 +33,6 @@ else
 	h=$(hostname -s 2>/dev/null || hostname)
 fi
 
-color bold2; printf "%s" "$h "; color --
+color bold2; printf "%s" "$h"; color --
 
 # vi: syntax=sh ts=4 noexpandtab

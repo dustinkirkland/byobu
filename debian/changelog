@@ -31,6 +31,8 @@ byobu (4.13) unreleased; urgency=low
     usr/lib/byobu/users, usr/lib/byobu/whoami,
     usr/lib/byobu/wifi_quality, usr/sbin/byobu-classroom:
     - add vi modelines
+  * usr/lib/byobu/hostname:
+    - whitespace handled elsewhere
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jun 2011 11:37:56 -0500
 
