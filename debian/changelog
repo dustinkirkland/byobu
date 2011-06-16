@@ -1,4 +1,4 @@
-byobu (4.12) unreleased; urgency=low
+byobu (4.12-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu-launch:
     - support users who chose to set LC_BYOBU=0, since
@@ -18,7 +18,7 @@ byobu (4.12) unreleased; urgency=low
     status:
     - working on an experimental status aggregator
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Jun 2011 23:37:24 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jun 2011 11:37:53 -0500
 
 byobu (4.11-0ubuntu1) oneiric; urgency=low
 
