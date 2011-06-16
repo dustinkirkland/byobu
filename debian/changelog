@@ -14,6 +14,9 @@ byobu (4.12) unreleased; urgency=low
   * usr/lib/byobu/hostname, usr/lib/byobu/ip_address:
     - in EC2, use metadata for ip and hostname, far more useful
       in that environment
+  * === added directory experimental, experimental/byobu-aggregate-
+    status:
+    - working on an experimental status aggregator
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Jun 2011 23:37:24 -0500
 

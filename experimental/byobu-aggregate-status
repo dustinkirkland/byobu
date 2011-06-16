@@ -1,0 +1,72 @@
+#!/bin/sh
+
+PKG="byobu"
+RUN="/var/run/screen/S-$USER"
+mkdir -p "$RUN/$PKG"
+
+hput() {
+    eval "$1""$2"='$3'
+}
+
+hget() {
+    eval echo '${'"$1$2"'#hash}'
+}
+
+
+hput freq apport 67
+hput freq arch 9999999
+hput freq battery 61
+hput freq color 9999999
+hput freq cpu_count 5
+hput freq cpu_freq 2
+hput freq cpu_temp 19
+hput freq custom 5
+hput freq date 28793
+hput freq disk 13
+hput freq disk_io 3
+hput freq ec2_cost 601
+hput freq fan_speed 23
+hput freq hostname 607
+hput freq ip_address 127
+hput freq load_average 2
+hput freq logo 9999999
+hput freq mail 5
+hput freq mem_available 47
+hput freq mem_used 13
+hput freq menu 9999999
+hput freq network 3
+hput freq notify_osd 0
+hput freq processes 7
+hput freq raid 7
+hput freq rcs_cost 613
+hput freq reboot_required 5
+hput freq release 599
+hput freq services 53
+hput freq swap 19
+hput freq time 9999999
+hput freq time_binary 23
+hput freq time_utc 11
+hput freq trash 9999999
+hput freq updates_available 7
+hput freq uptime 29
+hput freq users 11
+hput freq whoami 86029
+hput freq wifi_quality 17
+
+# Update
+NOW=$(date +%s)
+for i in /usr/lib/$PKG/*; do
+	j=${i##*/}
+	#byobu-status "$j" > "$RUN/$PKG/$j.status"
+	CACHE="$RUN/$PKG/$j.status"
+        [ -r "$CACHE.last" ] && read lastrun < "$CACHE.last" || lastrun=0
+	freq=$(hget freq $j)
+        expiration=$(($lastrun+$freq))
+        if [ $NOW -ge $expiration ]; then
+                byobu-status "$j" > "$CACHE" 2>/dev/null
+                echo "${NOW}" > "$CACHE.last"
+        fi
+done
+
+# Print
+sed -e ':a;N;$!ba;s/\n//g' "$RUN/$PKG/"*.status > "$RUN/$PKG.status"
