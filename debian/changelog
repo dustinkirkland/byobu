@@ -1,6 +1,9 @@
 byobu (4.13) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Scott Moser ]
+  * usr/lib/byobu/network:
+    - fix but where /proc/net/dev has so much traffic that integers
+      run up against colons with no whitespace
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jun 2011 11:37:56 -0500
 
