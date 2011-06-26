@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
 #    arch: print the machine architecture
-#    Copyright (C) 2008 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,11 +19,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$1" = "--detail" ]; then
+__arch_detail() {
 	uname -a
-	exit 0
-fi
+}
 
-printf "%s " $(uname -m)
+__arch() {
+	printf "%s" $(uname -m)
+}
 
 # vi: syntax=sh ts=4 noexpandtab

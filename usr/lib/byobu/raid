@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
 #    raid: notify raid events, failures and syncing
-#    Copyright (C) 2010 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2010 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,33 +19,24 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-[ -r /proc/mdstat ] || exit 0
+__raid_detail() {
+	[ -r /proc/mdstat ] && cat /proc/mdstat || true
+}
 
-PKG="byobu"
-color 2>/dev/null || color() { true; }
-
-case $1 in
-	--detail)
-		cat /proc/mdstat
-		exit 0
-	;;
-esac
-
-pct="%"
-while read line; do
-	# Errors in your raid
-	case "$line" in
-		*\ blocks\ *\[*_*\]$)
-			[ -z "${msg}" ] && msg="RAID";;
-		*%*)
-			p="${line%%${pct}*}${pct}"; p=${p##* };
-			[ -z "$msg" ] && msg="RAID"
-			msg="$msg,$p";;
-	esac
-done < /proc/mdstat
-
-if [ -n "$msg" ]; then
-	color B w r; printf "%s" "$msg"; color --
-fi
+__raid() {
+	while read line; do
+		local pct="%" p msg
+		# Errors in your raid
+		case "$line" in
+			*\ blocks\ *\[*_*\]$)
+				[ -z "${msg}" ] && msg="RAID";;
+			*%*)
+				p="${line%%${pct}*}${pct}"; p=${p##* };
+				[ -z "$msg" ] && msg="RAID"
+				msg="$msg,$p";;
+		esac
+	done < /proc/mdstat
+	[ -z "$msg" ] || color B w r; printf "%s" "$msg"; color --
+}
 
 # vi: syntax=sh ts=4 noexpandtab

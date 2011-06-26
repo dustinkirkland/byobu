@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
 #    notify_osd: print notify-osd messages in screen's notification buffer
-#    Copyright (C) 2010 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2010 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #             with help from Mathias Gug <mathias.gug@canonical.com>
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,23 +20,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-LOG="$HOME"/.cache/notify-osd.log
-[ -z "$BYOBU_PREFIX" ] && BYOBU_PREFIX="/usr"
+NOTIFY_OSD_LOG="$HOME"/.cache/notify-osd.log
 
-case "$1" in
-	--short)
-		exit 0
-	;;
-	--detail)
-		cat "$LOG" || true
-		exit 0
-	;;
-esac
+__notify_osd_detail() {
+	cat "$NOTIFY_OSD_LOG" || true
+}
 
-# This line operates basically as a daemon, watching the notify-osd log file,
-# processing new messages and sending them to screen
-CMD="tail --pid $PPID -n 0 -F $LOG"
-pkill -f "$CMD" || true
-$CMD | $BYOBU_PREFIX/lib/byobu/.notify_osd "$PPID"
+__notify_osd() {
+	# This line operates basically as a daemon, watching the notify-osd log file,
+	# processing new messages and sending them to screen
+	CMD="tail --pid $PPID -n 0 -F $NOTIFY_OSD_LOG"
+	pkill -f "$CMD" || true
+	$CMD | $BYOBU_PREFIX/lib/byobu/.notify_osd "$PPID" &
+}
 
 # vi: syntax=sh ts=4 noexpandtab

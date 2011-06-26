@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
-#    time_utc - print UTC time in HH:MM
-#    Copyright (C) 2010 Canonical Ltd.
+#    time_utc: print UTC time in HH:MM
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2010 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,17 +19,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-color 2>/dev/null || color() { true; }
+__time_utc_detail() {
+	date -u
+}
 
-case "$1" in
-	--detail)
-		date -u
-	;;
-	*)
-		d=$(date -u +%H:%M)
-		color invert; printf "%s UTC" "$d"; color --
-	;;
-esac
-
+__time_utc() {
+	d=$(date -u +%H:%M)
+	color invert; printf "%s UTC" "$d"; color --
+}
 
 # vi: syntax=sh ts=4 noexpandtab

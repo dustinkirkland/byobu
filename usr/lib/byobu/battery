@@ -1,39 +1,37 @@
 #!/bin/sh -e
 #
-#  battery: print the state of the battery
-#  Copyright (C) 2009 Raphaël Pinson.
+#    battery: print the state of the battery
 #
-#  Authors: Raphaël Pinson <raphink@ubuntu.com>
-#           Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2009 Raphaël Pinson.
+#    Copyright (C) 2011 Dustin Kirkland
 #
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, version 3 of the License.
+#    Authors: Raphaël Pinson <raphink@ubuntu.com>
+#             Dustin Kirkland <kirkland@ubuntu.com>
 #
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
 #
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-color 2>/dev/null || color() { true; }
-
-if [ "$1" = "--detail" ]; then
+__battery_detail() {
+	local bat
 	for bat in /proc/acpi/battery/*; do
 		cat "$bat/info"
 		cat "$bat/state"
 	done
-	exit 0
-fi
+}
 
-battery_info() {
+__battery() {
 	local bat line present sign state percent full rem color bcolor
 	for bat in $BATTERY /proc/acpi/battery/*; do
 		[ -f "$bat/info" ] || continue
-
 		present=""; full=""; rem=""; state=""
 		while read line; do
 			set -- ${line}
@@ -46,7 +44,6 @@ battery_info() {
 			esac
 			[ -n "$present" -a -n "$full" ] && break
 		done < "${bat}/info"
-
 		while read line; do
 			set -- ${line}
 			case "$line" in
@@ -55,9 +52,7 @@ battery_info() {
 			esac
 			[ -n "$rem" -a -n "$state" ] && break
 		done < "$bat/state"
-
 		percent=$(((100*$rem)/$full))
-
 		if [ "$percent" -lt 33 ]; then
 			color="R k"
 			bcolor="b R k"
@@ -69,7 +64,6 @@ battery_info() {
 			bcolor="b G k"
 		fi
 		percent="$percent%"
-
 		case $state in
 			charging) sign="+" ;;
 			discharging) sign="-" ;;
@@ -80,7 +74,5 @@ battery_info() {
 		break
 	done
 }
-
-battery_info "$@"
 
 # vi: syntax=sh ts=4 noexpandtab

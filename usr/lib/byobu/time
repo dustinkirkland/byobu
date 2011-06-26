@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
-#    time - print the time in HH:MM:SS format
-#    Copyright (C) 2008 Canonical Ltd.
+#    time: print the time in HH:MM:SS format
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,17 +19,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-case "$1" in
-	--detail)
-		date
-	;;
-	--short)
-        	date +%H:%M:%S
-	;;
-	*)
-		printf "\0050c:\005s"
-	;;
-esac
+__time_detail() {
+	date
+}
 
+__time() {
+	printf "\0050c:\005s"
+}
 
 # vi: syntax=sh ts=4 noexpandtab

@@ -1,7 +1,9 @@
 #!/bin/sh -e
 #
-#    hostname - report a host's name
+#    hostname: report a host's name
+#
 #    Copyright (C) 2008-2011 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
@@ -17,22 +19,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-DATA="$HOME/.$PKG"
-color 2>/dev/null || color() { true; }
-
-if [ "$1" = "--detail" ]; then
+__hostname_detail() {
 	hostname -f
-	exit 0
-fi
+}
 
-if host 169.254.169.254 >/dev/null 2>&1; then
-	# We're in EC2, so get our public hostname
-	h=$(wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname)
-else
-	h=$(hostname -s 2>/dev/null || hostname)
-fi
-
-color bold2; printf "%s" "$h"; color --
+__hostname() {
+	if metadata_available; then
+		# We're in EC2, so get our public hostname
+		h=$(wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname)
+	else
+		h=$(hostname -s 2>/dev/null || hostname)
+	fi
+	color bold2; printf "%s" "$h"; color --
+}
 
 # vi: syntax=sh ts=4 noexpandtab

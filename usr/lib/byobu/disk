@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
 #    disk: print the current disk space and usage
-#    Copyright (C) 2008 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,39 +19,28 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-color 2>/dev/null || color() { true; }
-
-if [ "$1" = "--detail" ]; then
+__disk_detail() {
 	df -h -P
-	exit 0
-fi
+}
 
-# Default to /, but let users override
-[ -z "$MONITORED_DISK" ] && MP="/" || MP="$MONITORED_DISK"
-case $MP in
-	/dev/*) MP=$(awk '$1 == m { print $2; exit(0); }' "m=$MP" /proc/mounts);;
-esac
-
-get_size_pct() {
+__disk() {
+	local out="" MP="" size="" pct="" unit=""
+	# Default to /, but let users override
+	[ -z "$MONITORED_DISK" ] && MP="/" || MP="$MONITORED_DISK"
+	case $MP in
+		/dev/*) MP=$(awk '$1 == m { print $2; exit(0); }' "m=$MP" /proc/mounts);;
+	esac
 	# this could be done faster with 'stat --file-system --format'
 	# but then we'd have to do blocks -> human units ourselves
-	local out="" MP=$1 size="" pct="" unit=""
-	out=$({ df -h -P "$MP" 2>/dev/null || df -h "$MP"; } |
-		awk 'END { printf("%s %s", $2, $5); }')
+	out=$({ df -h -P "$MP" 2>/dev/null || df -h "$MP"; } | awk 'END { printf("%s %s", $2, $5); }')
 	set -- ${out}
 	size=${1}; pct=${2};
-
 	unit=${size#${size%?}} # get the unit (last char)
 	size=${size%?}; # take the unit off
 	pct=${pct%?}; # take off the '%'
-
 	_UNIT=${unit}; _SIZE=${size}; _PCT=${pct};
+	color b M W; echo -n "$_SIZE"; color -; color M W; echo -n "${_UNIT}B,"; color -;
+	color b M W; echo -n "$_PCT";  color -; color M W; echo -n "%"        ; color --;
 }
-
-get_size_pct "${MP}"
-
-color b M W; echo -n "$_SIZE"; color -; color M W; echo -n "${_UNIT}B,"; color -;
-color b M W; echo -n "$_PCT";  color -; color M W; echo -n "%"        ; color --;
 
 # vi: syntax=sh ts=4 noexpandtab

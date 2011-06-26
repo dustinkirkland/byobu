@@ -3,8 +3,9 @@
 #    custom: run the user's custom status scripts
 #
 #    Copyright (C) 2009 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,41 +19,41 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-DATA="$HOME/.$PKG"
-[ -d "$DATA/bin" ] || exit 0
-color 2>/dev/null || color() { true; }
+__custom_detail() {
+	return
+}
 
-[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$DATA"
-NOW=$(date +%s)
-CACHE="$DIR/$PKG.custom"
-
-# Loop over custom scripts
-for i in "$DATA/bin/"[0-9]*_*; do
-	[ -x "$i" ] || continue
-	script=${i##*/}
-	freq=${script%%_*}
-	freq=${freq#0}
-	[ -r "$CACHE.$script.last" ] && read lastrun < "$CACHE.$script.last" || lastrun=0
-	expiration=$(($lastrun+$freq))
-	if [ $NOW -ge $expiration ]; then
-		"$i" "$@" > "$CACHE.$script" 2>/dev/null
-		echo "${NOW}" > "$CACHE.$script.last"
-	fi
-	readfile < "$CACHE.$script"
-	output="${_RET}"
-	case "$output" in
-		*"$ESC{"*)
-			# User has formatted the colors
-			OUTPUT="$OUTPUT$(printf "$output")"
-		;;
-		*)
-			# Default to inverted coloring
-			OUTPUT="$OUTPUT$(color invert; printf "%s" "$output"; color --)"
-		;;
-	esac
-done
-
-echo "$OUTPUT" | sed ':a;N;$!ba;s/\n//g'
+__custom() {
+	local cache="$CACHE_DIR/custom"
+	local i= output=
+	for i in "$HOME/.$PKG/bin/"[0-9]*_*; do
+		# Loop over custom scripts
+		[ -x "$i" ] || continue
+		local now="$(date +%s)"
+		local script=${i##*/}
+		local freq=${script%%_*}
+		freq=${freq#0}
+		local lastrun=
+		[ -r "$cache.$script.last" ] && read lastrun < "$cache.$script.last" || lastrun=0
+		local expiration=$(($lastrun+$freq))
+		if [ $now -ge $expiration ]; then
+			"$i" > "$cache.$script" 2>/dev/null
+			echo "${now}" > "$cache.$script.last"
+		fi
+		readfile < "$cache.$script"
+		local str="${_RET}"
+		case "$str" in
+			*"$ESC{"*)
+				# User has formatted the colors
+				output="$output$(printf "$str")"
+			;;
+			*)
+				# Default to inverted coloring
+				output="$output$(color invert; printf "%s" "$str"; color --)"
+			;;
+		esac
+	done
+	echo -n "$output" | sed ':a;N;$!ba;s/\n//g'
+}
 
 # vi: syntax=sh ts=4 noexpandtab

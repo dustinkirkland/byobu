@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
-#    date - print the date in YYYY-MM-DD format
-#    Copyright (C) 2008 Canonical Ltd.
+#    date: print the date in YYYY-MM-DD format
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,20 +19,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-case "$1" in
-	--detail)
-		date
-	;;
-	--short)
-		date +%Y-%m-%d
-	;;
-	*)
-		bd=$(date "+%m%d")
-		[ "$bd" = "0320" ] &&
-			msg="$(echo SGFwcHkgQmlydGhkYXkgU2NyZWVuIC0tIGh0dHA6Ly9iaXQubHkvc2NyZWVuLWJkYXkK | base64 -di)" &&
-			screen -X -S "byobu" at "*" echo "[$msg]"
-		printf "\005Y-\005m-\005d "
-	;;
-esac
+__date_detail() {
+	date
+}
+
+__date() {
+	bd=$(date "+%m%d")
+	[ "$bd" = "0320" ] && msg="$(echo SGFwcHkgQmlydGhkYXkgU2NyZWVuIC0tIGh0dHA6Ly9iaXQubHkvc2NyZWVuLWJkYXkK | base64 -di)" && screen -X -S "byobu" at "*" echo "[$msg]"
+	printf "\005Y-\005m-\005d"
+}
 
 # vi: syntax=sh ts=4 noexpandtab

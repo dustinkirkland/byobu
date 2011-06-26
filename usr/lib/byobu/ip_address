@@ -1,7 +1,9 @@
 #!/bin/sh -e
 #
-#    ip_address - report a host's ip address
+#    ip_address: report a host's ip address
+#
 #    Copyright (C) 2008-2011 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
@@ -17,51 +19,43 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-DATA="$HOME/.$PKG"
-color 2>/dev/null || color() { true; }
-
-if [ "$1" = "--detail" ]; then
+__ip_address_detail() {
 	[ -x /sbin/ifconfig ] && /sbin/ifconfig
 	/sbin/ip -4 addr list
 	/sbin/ip -6 addr list
-	exit 0
-fi
+}
 
-. "$DATA/status"
-
-# Allow interface overrides in $DATA/statusrc
-if [ -n "$MONITORED_NETWORK" ]; then
-	interface="$MONITORED_NETWORK"
-else
+__ip_address() {
+	local interface ipaddr
+	# Allow interface overrides in $CONFIG_DIR/statusrc
+	if [ -n "$MONITORED_NETWORK" ]; then
+		interface="$MONITORED_NETWORK"
+	else
+		case "$IPV6" in
+			1|true|yes) interface=$(awk '$10 != "lo" { iface=$10 ; }; END { print iface; }' /proc/net/ipv6_route);;
+			*) interface=$(awk 'END {print $1}' /proc/net/route);;
+		esac
+	fi
 	case "$IPV6" in
 		1|true|yes)
-			interface=$(awk '$10 != "lo" { iface=$10 ; }; END { print iface; }' \
-				/proc/net/ipv6_route);;
-		*) interface=$(awk 'END {print $1}' /proc/net/route);;
-	esac
-fi
-
-case "$IPV6" in
-	1|true|yes)
-		ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global)
-		# Print 'None' if we have no global address
-		[ -z "$ipaddr" ] && ipaddr="None"
-		ipaddr=${ipaddr#* inet6 }
-		ipaddr=${ipaddr%%/*}
-	;;
-	*)
-		if host 169.254.169.254 >/dev/null 2>&1; then
-			# We're in EC2, so get our public IP address
-			ipaddr=$(wget -q -O- http://169.254.169.254/latest/meta-data/public-ipv4)
-		else
-			ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global)
-			ipaddr=${ipaddr#* inet }
+			ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global)
+			# Print 'None' if we have no global address
+			[ -z "$ipaddr" ] && ipaddr="None"
+			ipaddr=${ipaddr#* inet6 }
 			ipaddr=${ipaddr%%/*}
-		fi
-	;;
-esac
-
-color bold2; printf "%s" "$ipaddr"; color --
+		;;
+		*)
+			if metadata_available; then
+				# We're in EC2, so get our public IP address
+				ipaddr=$(wget -q -O- http://169.254.169.254/latest/meta-data/public-ipv4)
+			else
+				ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global)
+				ipaddr=${ipaddr#* inet }
+				ipaddr=${ipaddr%%/*}
+			fi
+		;;
+	esac
+	color bold2; printf "%s" "$ipaddr"; color --
+}
 
 # vi: syntax=sh ts=4 noexpandtab

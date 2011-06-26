@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
 #    cpu_count: count cpu's on a systems
-#    Copyright (C) 2008 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,11 +19,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if [ "$1" = "--detail" ]; then
+__cpu_count_detail() {
 	grep -i "^model name" /proc/cpuinfo
-	exit 0
-fi
-count=$(getconf _NPROCESSORS_ONLN 2>/dev/null || grep -ci "^processor" /proc/cpuinfo)
-[ "$count" = "1" ] || printf "%sx" "$count"
+}
+
+__cpu_count() {
+	local c
+	c=$(getconf _NPROCESSORS_ONLN 2>/dev/null || grep -ci "^processor" /proc/cpuinfo)
+	[ "$c" = "1" ] || printf "%sx" "$c"
+}
 
 # vi: syntax=sh ts=4 noexpandtab

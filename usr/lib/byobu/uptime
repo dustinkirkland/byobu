@@ -1,46 +1,44 @@
 #!/bin/sh -e
 #
-#  uptime: condensed uptime of the machine
-#  Copyright (C) 2009 Raphaël Pinson.
-#  Copyright (C) 2009 Canonical Ltd.
+#    uptime: condensed uptime of the machine
 #
-#  Authors: Raphaël Pinson <raphink@ubuntu.com>
-#           Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2009 Raphaël Pinson.
+#    Copyright (C) 2009 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
 #
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, version 3 of the License.
+#    Authors: Raphaël Pinson <raphink@ubuntu.com>
+#             Dustin Kirkland <kirkland@ubuntu.com>
 #
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
 #
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
 #
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-color 2>/dev/null || color() { true; }
-
-if [ "$1" = "--detail" ]; then
+__uptime_detail() {
 	uptime
-	exit 0
-fi
+}
 
-read u idle < /proc/uptime
-u=${u%.*}
-color w b
-if [ "$u" -gt 86400 ]; then
-	str="$(($u / 86400))d$((($u % 86400) / 3600))h"
-elif [ "$u" -gt 3600 ]; then
-	str="$(($u / 3600))h$((($u % 3600) / 60))m"
-elif [ "$u" -gt 60 ]; then
-	str="$(($u / 60))m"
-else
-	str="${u}s"
-fi
-printf "%s" "${str}"
-color --
+__uptime() {
+	local u idle str
+	read u idle < /proc/uptime
+	u=${u%.*}
+	if [ "$u" -gt 86400 ]; then
+		str="$(($u / 86400))d$((($u % 86400) / 3600))h"
+	elif [ "$u" -gt 3600 ]; then
+		str="$(($u / 3600))h$((($u % 3600) / 60))m"
+	elif [ "$u" -gt 60 ]; then
+		str="$(($u / 60))m"
+	else
+		str="${u}s"
+	fi
+	color w b; printf "%s" "${str}"; color --
+}
 
 # vi: syntax=sh ts=4 noexpandtab

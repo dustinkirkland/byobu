@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
 #    network: calculate the network up/down rates
-#    Copyright (C) 2008 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,88 +19,86 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-DATA="$HOME/.$PKG"
-color 2>/dev/null || color() { true; }
-[ "$UTF8" = "1" ] && ICON_UP="▲" || ICON_UP="^"
-[ "$UTF8" = "1" ] && ICON_DN="▼" || ICON_DN="v"
-
-# Allow interface overrides in $DATA/status
-if [ -n "$MONITORED_NETWORK" ]; then
-	interface="$MONITORED_NETWORK"
-else
-	# get the last interface listed in /proc/net/route
-	while read cn other; do interface=$cn; done < /proc/net/route
-fi
-
-# By default, we won't bug the user with the display of network traffic
-# below NETWORK_THRESHOLD in kbps; override in $DATA/status
-[ -n "$NETWORK_THRESHOLD" ] || NETWORK_THRESHOLD=20
-
-if [ "$1" = "--detail" ]; then
-	LC_ALL=C /sbin/ifconfig "$interface" | sed 's/\s*$//'
-	exit 0
-fi
-
-[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$DATA"
-t2=`date +%s`
-OIFS=$IFS
-for i in up down; do
-	unit="kbps"
-	case $i in
-		up) symbol="$ICON_UP" ;;
-		down) symbol="$ICON_DN" ;;
-	esac
-	cache="$DIR/$PKG.network_$i"
-	t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
-	if [ $t2 -le $t1 ]; then
-		rate=0
+get_interface() {
+	_RET=
+	# Allow interface overrides in $CONFIG_DIR/status
+	if [ -n "$MONITORED_NETWORK" ]; then
+		_RET="$MONITORED_NETWORK"
 	else
-		[ -r "$cache" ] && read x1 < "$cache" || tx1=0
-		IFS="$OIFS:"
-		while read iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed; do
-			if [ "$iface" = "${interface}" ]; then
-				[ "$i" = "up" ] && x2=${tbytes} || x2=${rbytes}
-				break;
-			fi
-		done < /proc/net/dev
-		IFS=$OIFS
-		echo "$x2" > "$cache"
-		rate=$((8*($x2 - $x1) / ($t2 - $t1) / 1024))  # in kbps
-		[ "$rate" -lt 0 ] && rate=0
-		if [ $rate -gt $NETWORK_THRESHOLD ]; then
-			case "$NETWORK_UNITS" in
-				bytes)
-					rate=$(($rate/8))
-					if [ "$rate" -gt 1048576 ]; then
-						fpdiv "$rate" 1048576 1
-						rate=${_RET}
-						unit="GB/s"
-					elif [ "$rate" -gt 1024 ]; then
-						fpdiv "$rate" 1024 1
-						rate=${_RET}
-						unit="MB/s"
-					else
-						unit="kB/s"
-					fi
-				;;
-				*)
-					# Default to bps
-					# Why 1000 and not 1024?  http://en.wikipedia.org/wiki/Data_rate_units
-					if [ "$rate" -gt 1000000 ]; then
-						fpdiv "$rate" 1000000 1
-						rate=${_RET}
-						unit="Gbps"
-					elif [ "$rate" -gt 1000 ]; then
-						fpdiv "$rate" 1000 1
-						rate=${_RET}
-						unit="Mbps"
-					fi
-				;;
-			esac
-			color b m w; printf "%s%s" "$symbol" "$rate"; color -; color m w; printf "%s" "$unit"; color --
-		fi
+		# get the last interface listed in /proc/net/route
+		while read cn other; do _RET=$cn; done < /proc/net/route
 	fi
-done
+}
+
+__network_detail() {
+	get_interface; local interface="$_RET"
+	LC_ALL=C /sbin/ifconfig "$interface" | sed 's/\s*$//'
+}
+
+__network() {
+	get_interface; local interface="$_RET"
+	# By default, we won't bug the user with the display of network traffic
+	# below NETWORK_THRESHOLD in kbps; override in $CONFIG_DIR/status
+	[ -n "$NETWORK_THRESHOLD" ] || NETWORK_THRESHOLD=20
+	t2=`date +%s`
+	OIFS=$IFS
+	for i in up down; do
+		unit="kbps"
+		case $i in
+			up) symbol="$ICON_UP" ;;
+			down) symbol="$ICON_DN" ;;
+		esac
+		cache="$CACHE_DIR/network.$i"
+		t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
+		if [ $t2 -le $t1 ]; then
+			rate=0
+		else
+			[ -r "$cache" ] && read x1 < "$cache" || tx1=0
+			IFS="$OIFS:"
+			while read iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed; do
+				if [ "$iface" = "${interface}" ]; then
+					[ "$i" = "up" ] && x2=${tbytes} || x2=${rbytes}
+					break;
+				fi
+			done < /proc/net/dev
+			IFS=$OIFS
+			echo "$x2" > "$cache"
+			rate=$((8*($x2 - $x1) / ($t2 - $t1) / 1024))  # in kbps
+			[ "$rate" -lt 0 ] && rate=0
+			if [ $rate -gt $NETWORK_THRESHOLD ]; then
+				case "$NETWORK_UNITS" in
+					bytes)
+						rate=$(($rate/8))
+						if [ "$rate" -gt 1048576 ]; then
+							fpdiv "$rate" 1048576 1
+							rate=${_RET}
+							unit="GB/s"
+						elif [ "$rate" -gt 1024 ]; then
+							fpdiv "$rate" 1024 1
+							rate=${_RET}
+							unit="MB/s"
+						else
+							unit="kB/s"
+						fi
+					;;
+					*)
+						# Default to bps
+						# Why 1000 and not 1024?  http://en.wikipedia.org/wiki/Data_rate_units
+						if [ "$rate" -gt 1000000 ]; then
+							fpdiv "$rate" 1000000 1
+							rate=${_RET}
+							unit="Gbps"
+						elif [ "$rate" -gt 1000 ]; then
+							fpdiv "$rate" 1000 1
+							rate=${_RET}
+							unit="Mbps"
+						fi
+					;;
+				esac
+				color b m w; printf "%s%s" "$symbol" "$rate"; color -; color m w; printf "%s" "$unit"; color --
+			fi
+		fi
+	done
+}
 
 # vi: syntax=sh ts=4 noexpandtab

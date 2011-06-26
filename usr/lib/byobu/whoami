@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
-#    whoami - report current logged in user
-#    Copyright (C) 2008 Canonical Ltd.
+#    whoami: report current logged in user
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,13 +19,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-color 2>/dev/null || color() { true; }
-
-if [ "$1" = "--detail" ]; then
+__whoami_detail() {
 	getent -- passwd "$USER"
-	exit 0
-fi
+}
 
-color bold2; printf "%s@" "$(whoami)"; color -
+__whoami() {
+	color bold2; printf "%s@" "$(whoami)"; color -
+}
 
 # vi: syntax=sh ts=4 noexpandtab

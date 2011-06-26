@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
 #    disk_io: calculate the disk io rate
-#    Copyright (C) 2010 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2010 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,9 +19,15 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-DATA="$HOME/.$PKG"
-color 2>/dev/null || color() { true; }
+__disk_io_detail() {
+	if command -v iostat >/dev/null; then
+		iostat -d -m -h
+	else
+		echo "Please install iostat if you want detailed information on your disk throughput"
+	fi
+}
+
+
 getdisk() {
 	local t=""
 	if [ -L "${1}" ]; then
@@ -32,71 +40,60 @@ getdisk() {
 	[ -h "/sys/block/$t" ] && _RET="$t" || rtrim "$t" "0-9"
 }
 
-[ "$UTF8" = "1" ] && ICON_RD="◀" || ICON_RD="<"
-[ "$UTF8" = "1" ] && ICON_WR="▶" || ICON_WR=">"
-
-# Default to disk providing /, but let users override with MONITORED_DISK
-[ -z "$MONITORED_DISK" ] && MP="/" ||  MP="$MONITORED_DISK"
-
-# By default, we won't bug the user with the display of network traffic
-# below DISK_IO_THRESHOLD in kB/s; override in $DATA/status
-[ -n "$DISK_IO_THRESHOLD" ] || DISK_IO_THRESHOLD=50
-
-if [ "$1" = "--detail" ]; then
-	if command -v iostat >/dev/null; then
-		iostat -d -m -h
-	else
-		echo "Please install iostat if you want detailed information on your disk throughput"
-	fi
-	exit 0
-fi
-
-case "$MP" in
-	/dev/*) part="${MP}";;
-	*) part=$(awk '$2 == mp { print $1 ; exit(0); }' "mp=$MP" /etc/mtab);;
-esac
-getdisk "$part"
-disk=${_RET}
-
-[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$DATA"
-t2=`date +%s`
-for i in "read" "write"; do
-	cache="$DIR/$PKG.disk_$i"
-	t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
-	unit="kB/s"
-	if [ $t2 -le $t1 ]; then
-		rate=0
-	else
-		[ -r "$cache" ] && read x1 < "$cache" || x1=0
-		read a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 other < "/sys/block/$disk/stat"
-		if [ "$i" = "read" ]; then
-			symbol="$ICON_RD"
-			x2="$a3"
-		else
-			symbol="$ICON_WR"
-			x2="$a7"
-		fi
-		echo "$x2" > "$cache"
-		rate=$((($x2 - $x1) / ($t2 - $t1) * 512 / 1024))
-		if [ $rate -lt $DISK_IO_THRESHOLD ]; then
-			# Below threshold, exit immediately!
-			exit 0
-		elif [ "$rate" -lt 0 ]; then
+__disk_io() {
+	local part= i=
+	# Default to disk providing /, but let users override with MONITORED_DISK
+	[ -z "$MONITORED_DISK" ] && mount_point="/" ||  mount_point="$MONITORED_DISK"
+	# By default, we won't bug the user with the display of network traffic
+	# below DISK_IO_THRESHOLD in kB/s; override in $CONFIG_DIR/status
+	[ -n "$DISK_IO_THRESHOLD" ] || DISK_IO_THRESHOLD=50
+	case "$mount_point" in
+		/dev/*) part="${mount_point}";;
+		*) part=$(awk '$2 == mp { print $1 ; exit(0); }' "mp=$mount_point" /etc/mtab);;
+	esac
+	getdisk "$part"
+	local disk=${_RET}
+	local t2=`date +%s` t1=
+	for i in "read" "write"; do
+		local cache="$CACHE_DIR/disk.$i"
+		t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
+		local unit="kB/s"
+		local rate= x1= x2= symbol= unit=
+		if [ $t2 -le $t1 ]; then
 			rate=0
-		elif [ "$rate" -gt 1048576 ]; then
-			unit="GB/s"
-			fpdiv "$rate" 1048576 0
-			rate=${_RET}
-		elif [ "$rate" -gt 1024 ]; then
-			unit="MB/s"
-			fpdiv "$rate" 1024 0
-			rate=${_RET}
 		else
-			unit="kB/s"
+			[ -r "$cache" ] && read x1 < "$cache" || x1=0
+			local a1= a2= a3= a4= a5= a6= a7= a8= a9= a10=
+			read a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 other < "/sys/block/$disk/stat"
+			if [ "$i" = "read" ]; then
+				symbol="$ICON_RD"
+				x2="$a3"
+			else
+				symbol="$ICON_WR"
+				x2="$a7"
+			fi
+			echo "$x2" > "$cache"
+			rate=$((($x2 - $x1) / ($t2 - $t1) * 512 / 1024))
+			if [ $rate -lt $DISK_IO_THRESHOLD ]; then
+				# Below threshold, don't print
+				continue
+			elif [ "$rate" -lt 0 ]; then
+				rate=0
+			elif [ "$rate" -gt 1048576 ]; then
+				unit="GB/s"
+				fpdiv "$rate" 1048576 0
+				rate=${_RET}
+			elif [ "$rate" -gt 1024 ]; then
+				unit="MB/s"
+				fpdiv "$rate" 1024 0
+				rate=${_RET}
+			else
+				unit="kB/s"
+			fi
 		fi
-	fi
-	[ "$rate" != "0" ] || continue
-	color b M W; printf "%s%s" "$symbol" "$rate"; color -; color M W; printf "%s" "$unit"; color --
-done
+		[ "$rate" != "0" ] || continue
+		color b M W; printf "%s%s" "$symbol" "$rate"; color -; color M W; printf "%s" "$unit"; color --
+	done
+}
 
 # vi: syntax=sh ts=4 noexpandtab

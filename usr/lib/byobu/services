@@ -3,8 +3,9 @@
 #    services: show what services are running on this server (configurable)
 #
 #    Copyright (C) 2009 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,21 +19,11 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+__services_detail() {
+	return
+}
 
-PKG="byobu"
-DATA="$HOME/.$PKG"
-color 2>/dev/null || color() { true; }
-
-# Users can define a list of SERVICES to monitor in $DATA/status
-if [ -z "$SERVICES" ]; then
-	if [ -f "/etc/eucalyptus/eucalyptus.conf" ]; then
-		# If the user has not defined any SERVICES, but this system is a
-		# UEC system, default to the list of Ubuntu Enterprise Cloud Services
-		SERVICES="eucalyptus-cloud|CLC eucalyptus-walrus|WC eucalyptus-cc|CC eucalyptus-sc|SC eucalyptus-nc|NC"
-	fi
-fi
-
-running() {
+service_running() {
 	if [ -f "/etc/init/$1.conf" ]; then
 		# Use upstart
 		case "$(status $1 2>/dev/null)" in
@@ -51,26 +42,36 @@ running() {
 	fi
 }
 
-output=
-for i in $SERVICES; do
-	service=${i%|*}
-	nick=${i#*|}
-	case "$service" in
-		eucalyptus-nc)
-			if running $service; then
-				# This is a node controller, determine VM usage
-				. /etc/eucalyptus/eucalyptus.conf
-				count=$(pgrep -c -f /usr/bin/kvm || true)
-				output="$output,NC:$count"
-			fi
-		;;
-		*)
-			running $service && output="$output,$nick"
-		;;
-	esac
-done
-[ -n "$output" ] || exit 0
-
-color w c; printf "%s" ${output#,}; color --
+__services() {
+	local services=
+	# Users can define a list of services to monitor in $CONFIG_DIR/status
+	if [ -z "$services" ]; then
+		if [ -f "/etc/eucalyptus/eucalyptus.conf" ]; then
+			# If the user has not defined any services, but this system is a
+			# UEC system, default to the list of Ubuntu Enterprise Cloud Services
+			services="eucalyptus-cloud|CLC eucalyptus-walrus|WC eucalyptus-cc|CC eucalyptus-sc|SC eucalyptus-nc|NC"
+		fi
+	fi
+	output=
+	for i in $services; do
+		service=${i%|*}
+		nick=${i#*|}
+		case "$service" in
+			eucalyptus-nc)
+				if service_running $service; then
+					# This is a node controller, determine VM usage
+					. /etc/eucalyptus/eucalyptus.conf
+					count=$(pgrep -c -f /usr/bin/kvm || true)
+					output="$output,NC:$count"
+				fi
+			;;
+			*)
+				service_running $service && output="$output,$nick"
+			;;
+		esac
+	done
+	[ -n "$output" ] || return
+	color w c; printf "%s" ${output#,}; color --
+}
 
 # vi: syntax=sh ts=4 noexpandtab

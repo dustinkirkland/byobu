@@ -20,6 +20,7 @@
 PKG="byobu"
 DATA="$HOME/.$PKG"
 [ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+[ -d "/var/run/screen/S-$USER" ] && RUNDIR="/var/run/screen/S-$USER" || RUNDIR="$DATA"
 
 if ! . "${BYOBU_PREFIX}/lib/${PKG}/.shutil"; then
 	echo "failed to source ${BYOBU_PREFIX}/lib/${PKG}/.shutil" 2>&1

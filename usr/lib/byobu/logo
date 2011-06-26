@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
 #    logo: determine which logo to use
-#    Copyright (C) 2008 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,19 +19,38 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-DATA="$HOME/.$PKG"
-color 2>/dev/null || color() { true; }
+get_distro() {
+	_RET=
+	if [ -n "$DISTRO" ]; then
+		# Allow manual override of distro in $CONFIG_DIR/status
+		_RET="$DISTRO"
+	elif [ -r "/etc/issue" ]; then
+		# Otherwise, check /etc/issue
+		_RET=`grep -m1 "^[A-Za-z]" /etc/issue`
+	elif which lsb_release >/dev/null 2>&1; then
+		# This can be a very expensive operation, do it only
+		# if all other methods fail
+		_RET=`lsb_release -s -a 2>/dev/null`
+	else
+		# No idea!
+		printf "[B]"
+	fi
+}
 
-if [ "$1" = "--detail" ]; then
+__logo_detail() {
 	MARKUP="false"
-	exit 0
-else
-	MARKUP="true"
-fi
+	__logo
+}
 
-print_logo() {
-	distro=`echo "$1" | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/' `
+__logo() {
+	local logo=
+	if [ -n "$LOGO" ]; then
+		# Allow users to define their own logo in $CONFIG_DIR/status
+		printf "%s" "$LOGO"
+		return
+	fi
+	get_distro
+	local distro="$(echo "$_RET" | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
 	case "$distro" in
 		*ubuntu*)
 			if $MARKUP; then
@@ -96,31 +117,5 @@ print_logo() {
 		;;
 	esac
 }
-
-if [ -n "$LOGO" ]; then
-	# Allow users to define their own logo in $DATA/status
-	printf "%s" "$LOGO" && exit 0 || true
-fi
-
-if [ -n "$DISTRO" ]; then
-	# Allow manual override of distro in $DATA/status
-	print_logo "$DISTRO" && exit 0 || true
-fi
-
-if [ -r "/etc/issue" ]; then
-	# Otherwise, check /etc/issue
-	distro=`grep -m1 "^[A-Za-z]" /etc/issue`
-	print_logo "$distro" && exit 0 || true
-fi
-
-# This can be a very expensive operation, do it only
-# if all other methods fail
-if which lsb_release >/dev/null 2>&1; then
-	distro=`lsb_release -s -a 2>/dev/null`
-	print_logo "$distro" && exit 0 || true
-fi
-
-# No idea!
-printf "|B|"
 
 # vi: syntax=sh ts=4 noexpandtab

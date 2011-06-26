@@ -1,0 +1,34 @@
+#!/bin/sh
+
+PKG="byobu"
+CONFIG_DIR="$HOME/.$PKG"
+mkdir -p "$CONFIG_DIR"
+if mkdir -p "/var/run/screen/S-$USER/$PKG/cache" 2>/dev/null; then
+	CACHE_DIR="/var/run/screen/S-$USER/$PKG/cache"
+else
+	mkdir -p "$CONFIG_DIR/cache"
+	CACHE_DIR="$CONFIG_DIR/cache"
+fi
+[ -n "$BYOBU_PREFIX" ] || BYOBU_PREFIX="/usr"
+
+if [ "$UTF8" = "1" ]; then
+	ICON_C="℃"
+	ICON_F="℉"
+	ICON_RD="◀"
+	ICON_WR="▶"
+	ICON_MAIL="⍌"
+	ICON_UP="▲"
+	ICON_DN="▼"
+	ICON_TRASH="♸"
+	ICON_WIFI=ICON="⚚"
+else
+	ICON_C="C"
+	ICON_F="F"
+	ICON_RD="<"
+	ICON_WR=">"
+	ICON_MAIL="[M]"
+	ICON_UP="^"
+	ICON_DN="v"
+	ICON_TRASH="T"
+	ICON_WIFI=
+fi

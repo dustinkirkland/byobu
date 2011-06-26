@@ -1,35 +1,32 @@
 #!/bin/sh -e
 #
-#  fan_speed: speed of the cpu or case fan
-#  Copyright (C) 2009 Canonical Ltd.
+#    fan_speed: speed of the cpu or case fan
 #
-#  Authors: Dustin Kirkland <kirkland@canonical.com>
-
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, version 3 of the License.
+#    Copyright (C) 2009 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
 #
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
 #
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-color 2>/dev/null || color() { true; }
+__fan_speed_detail() {
+	# Nothing interesting to say here about fan speed
+	return
+}
 
-DIR="/sys/class/hwmon"
-
-# Nothing interesting to say here about fan speed
-[ "$1" = "--detail" ] && exit 0
-
-# Let's check a few different probes for fan speed
-
-fan_speed_info() {
+__fan_speed() {
 	local i="" speed=0
+	# Let's check a few different probes for fan speed
 	# This seems to cover most of them:
 	for i in /sys/class/hwmon/*/*/fan1_input; do
 		[ -f "$i" ] || continue
@@ -57,8 +54,5 @@ fan_speed_info() {
 		done
 	fi
 }
-
-fan_speed_info "$@"
-
 
 # vi: syntax=sh ts=4 noexpandtab

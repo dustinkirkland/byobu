@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
 #    mail: notify the user if they have system mail
-#    Copyright (C) 2009 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2009 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,18 +19,16 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-color 2>/dev/null || color() { true; }
-[ "$UTF8" = "1" ] && ICON="⍌" || ICON="[M]"
+MAILFILE="/var/spool/mail/$USER"
 
-mailfile="/var/spool/mail/$USER"
-if [ "$1" = "--detail" ]; then
-	[ -s "$mailfile" ] && ls -alF "$mailfile" 2>&1
-	exit 0
-fi
+__mail_detail() {
+	[ -s "$MAILFILE" ] && ls -alF "$MAILFILE" 2>&1
+}
 
-if [ -s "$mailfile" ]; then
-	 color b; printf "%s" "$ICON"; color --
-fi
+__mail() {
+	if [ -s "$MAILFILE" ]; then
+		 color b; printf "%s" "$ICON_MAIL"; color --
+	fi
+}
 
 # vi: syntax=sh ts=4 noexpandtab

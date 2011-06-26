@@ -1,56 +1,56 @@
 #!/bin/sh -e
 #
-#  cpu_temp: cpu temperature
-#  Copyright (C) 2008 Canonical Ltd.
+#    cpu_temp: cpu temperature
 #
-#  Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, version 3 of the License.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+CPU_TEMP_DIR="/proc/acpi/thermal_zone"
 
-PKG="byobu"
-color 2>/dev/null || color() { true; }
-[ "$UTF8" = "1" ] && ICON_C="℃" || ICON_C="C"
-[ "$UTF8" = "1" ] && ICON_F="℉" || ICON_F="F"
-
-DIR="/proc/acpi/thermal_zone"
-if [ "$1" = "--detail" ] && [ -d "$DIR" ]; then
-	for i in "$DIR"/*; do
+__cpu_temp_detail() {
+	local i
+	for i in "$CPU_TEMP_DIR"/*; do
 		[ -r "$i" ] || continue
 		echo "$i:"
 		cat "$i"/*
 	done
-	exit 0
-fi
+}
 
-for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/thermal $DIR/*/temperature; do
-	case "$i" in
-		*temp*_input)
-			[ -s "$i" ] && read t < "$i" && t=$(($t/1000))
-		;;
-		*)
-			[ -s "$i" ] && t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i")
-		;;
-	esac
-	if [ -n "$t" ]; then
-		unit="$ICON_C"
-		if [ "$TEMP" = "F" ]; then
-			t=$(($t*9/5 + 32))
-			unit="$ICON_F"
+__cpu_temp() {
+	local i t unit
+	for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/thermal "$CPU_TEMP_DIR"/*/temperature; do
+		case "$i" in
+			*temp*_input)
+				[ -s "$i" ] && read t < "$i" && t=$(($t/1000))
+			;;
+			*)
+				[ -s "$i" ] && t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i")
+			;;
+		esac
+		if [ -n "$t" ]; then
+			unit="$ICON_C"
+			if [ "$TEMP" = "F" ]; then
+				t=$(($t*9/5 + 32))
+				unit="$ICON_F"
+			fi
+			color b k Y; printf "%s" "$t"; color -; color k Y; printf "%s" "$unit"; color --
+			break
 		fi
-		color b k Y; printf "%s" "$t"; color -; color k Y; printf "%s%s" "$ICON" "$unit"; color --
-		break
-	fi
-done
+	done
+}
 
 # vi: syntax=sh ts=4 noexpandtab

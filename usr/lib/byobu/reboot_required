@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
 #    reboot_required: determine if a reboot is required
-#    Copyright (C) 2008 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,29 +19,21 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-DATA="$HOME/.$PKG"
-color 2>/dev/null || color() { true; }
+REBOOT_FLAG="/var/run/reboot-required"
+RELOAD_FLAG="$CACHE_DIR/reload-required"
 
-reboot="/var/run/reboot-required"
-[ -d "/var/run/screen/S-$USER" ] && DIR="/var/run/screen/S-$USER" || DIR="$DATA"
-reload="$DIR/$PKG.reload-required"
-case "$1" in
-	--detail)
-		[ -e "$reboot" ] && ls -alF "$reboot" 2>&1
-		[ -e "$reload" ] && ls -alF "$reload" 2>&1
-	;;
-	--short)
-		[ -e "$reboot" ] && printf "Yes" || printf "No"
-	;;
-	*)
-		if [ -e "$reboot" ]; then
-			color b W; printf "("; color -; color b b W; printf "R"; color -; color b W; printf ")"; color --
-		fi
-		if [ -e "$reload" ]; then
-			color b W; printf "<"; color -; color b b W; printf "F5"; color -; color b W; printf ">"; color -; printf " "
-		fi
-	;;
-esac
+__reboot_required_detail() {
+		[ -e "$REBOOT_FLAG" ] && ls -alF "$REBOOT_FLAG" 2>&1
+		[ -e "$RELOAD_FLAG" ] && ls -alF "$RELOAD_FLAG" 2>&1
+}
+
+__reboot_required() {
+	if [ -e "$REBOOT_FLAG" ]; then
+		color b W; printf "("; color -; color b b W; printf "R"; color -; color b W; printf ")"; color --
+	fi
+	if [ -e "$RELOAD_FLAG" ]; then
+		color b W; printf "<"; color -; color b b W; printf "F5"; color -; color b W; printf ">"; color -; printf " "
+	fi
+}
 
 # vi: syntax=sh ts=4 noexpandtab

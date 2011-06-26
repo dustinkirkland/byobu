@@ -1,9 +1,11 @@
 #!/bin/sh -e
 #
-#    mem: grab the current memory and usage
-#    Copyright (C) 2008 Canonical Ltd.
+#    mem_available: grab the current memory and usage
 #
-#    Authors: Dustin Kirkland <kirkland@canonical.com>
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,20 +19,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-DATA="$HOME/.$PKG"
-color 2>/dev/null || color() { true; }
-
-if [ "$1" = "--detail" ]; then
+__mem_available_detail() {
 	free
-	exit 0
-fi
+}
 
-mem_available_info() {
+__mem_available() {
 	local mem_used comma whitespace unit mem name
-	. "$DATA/status"
+	. "$CONFIG_DIR/status"
 	[ "$mem_used" = "1" ] && comma="," || whitespace=" "
-
 	read name mem unit < /proc/meminfo
 	if [ $mem -ge 1048576 ]; then
 		fpdiv "$mem" 1048567 1
@@ -46,7 +42,5 @@ mem_available_info() {
 	fi
 	color b g W; printf "%s" "$mem"; color -; color g W; printf "%s%s" "$unit" "$comma"; color -; printf "%s" "$whitespace"
 }
-
-mem_available_info "$@"
 
 # vi: syntax=sh ts=4 noexpandtab
