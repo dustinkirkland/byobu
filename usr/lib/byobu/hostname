@@ -26,7 +26,7 @@ if [ "$1" = "--detail" ]; then
 	exit 0
 fi
 
-if host 169.254.169.254 >/dev/null 2>&1; then
+if wget -q -O- --timeout=1 http://169.254.169.254 2>&1; then
 	# We're in EC2, so get our public hostname
 	h=$(wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname)
 else
