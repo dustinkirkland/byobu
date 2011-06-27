@@ -34,6 +34,8 @@ byobu (4.14) unreleased; urgency=low
     - add trailing whitespace back
   * usr/lib/byobu/.shutil:
     - fix slow/lag associated with testing for metadata server
+  * usr/lib/byobu/raid:
+    - fix coloring, needed grouping around colored print
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jun 2011 16:16:29 -0500
 
