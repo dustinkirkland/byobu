@@ -21,6 +21,8 @@ byobu (4.14) unreleased; urgency=low
     usr/lib/byobu/wifi_quality:
     - rework status scripts into sourcable functions
     - update copyright info, update email address, standardize headers
+  * usr/lib/byobu/.shutil:
+    - add frequencies
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jun 2011 16:16:29 -0500
 

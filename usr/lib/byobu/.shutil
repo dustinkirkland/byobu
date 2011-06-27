@@ -1,3 +1,5 @@
+#!/bin/sh
+
 color 2>/dev/null || color() { true; }
 
 # uncommented_lines(char=#)
@@ -85,6 +87,51 @@ readfile() {
 
 metadata_available() {
 	wget -q -O- --timeout=1 http://169.254.169.254
+}
+
+status_freq() {
+	case "$1" in
+		apport)_RET=67 ;;
+		arch)_RET=9999999 ;;
+		battery)_RET=61 ;;
+		color)_RET=9999999 ;;
+		cpu_count) _RET=5 ;;
+		cpu_freq) _RET=2 ;;
+		cpu_temp) _RET=19 ;;
+		custom) _RET=5 ;;
+		date) _RET=28793 ;;
+		disk) _RET=13 ;;
+		disk_io) _RET=3 ;;
+		ec2_cost) _RET=601 ;;
+		fan_speed) _RET=23 ;;
+		hostname) _RET=607 ;;
+		ip_address) _RET=127 ;;
+		load_average) _RET=2 ;;
+		logo) _RET=9999999 ;;
+		mail) _RET=5 ;;
+		mem_available) _RET=47 ;;
+		mem_used) _RET=13 ;;
+		menu) _RET=9999999 ;;
+		network) _RET=3 ;;
+		notify_osd) _RET=0 ;;
+		processes) _RET=7 ;;
+		raid) _RET=7 ;;
+		rcs_cost) _RET=613 ;;
+		reboot_required) _RET=5 ;;
+		release) _RET=599 ;;
+		services) _RET=53 ;;
+		swap) _RET=19 ;;
+		time) _RET=9999999 ;;
+		time_binary) _RET=23 ;;
+		time_utc) _RET=11 ;;
+		trash) _RET=9999999 ;;
+		updates_available) _RET=7 ;;
+		uptime) _RET=29 ;;
+		users) _RET=11 ;;
+		whoami) _RET=86029 ;;
+		wifi_quality) _RET=17 ;;
+		*) _RET=9999999 ;;
+	esac
 }
 
 # vi: syntax=sh ts=4 noexpandtab
