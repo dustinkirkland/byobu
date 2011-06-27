@@ -28,6 +28,12 @@ if ! . "${BYOBU_PREFIX}/lib/${PKG}/.shutil"; then
 	exit 1
 fi
 
+if ! . "${BYOBU_PREFIX}/lib/${PKG}/.constants"; then
+	echo "failed to source ${BYOBU_PREFIX}/lib/${PKG}/.constants" 2>&1
+	echo "If you have installed elsewhere, export BYOBU_PREFIX in your shell" 2>&1
+	exit 1
+fi
+
 # Define colors
 ESC="\005"
 color() {
