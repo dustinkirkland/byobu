@@ -1,10 +1,4 @@
-byobu (4.15) unreleased; urgency=low
-
-  * UNRELEASED
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:06:01 +0000
-
-byobu (4.14-0ubuntu1) oneiric; urgency=low
+byobu (4.16-0ubuntu1) oneiric; urgency=low
 
   * usr/share/byobu/profiles/tmux:
     - getting tmux keybindings much closer!
@@ -45,7 +39,7 @@ byobu (4.14-0ubuntu1) oneiric; urgency=low
   * usr/bin/byobu-status:
     - get detail working again
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:05:58 +0000
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:14:14 +0000
 
 byobu (4.13-0ubuntu1) oneiric; urgency=low
 
