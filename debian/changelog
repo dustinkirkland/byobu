@@ -25,6 +25,9 @@ byobu (4.14) unreleased; urgency=low
     - add frequencies
   * experimental/byobu-status-all:
     - intermediate commit, helper tool with some of the new logic
+  * usr/bin/byobu-status, usr/lib/byobu/.constants,
+    usr/lib/byobu/Makefile.am, usr/lib/byobu/.shutil:
+    - add copyright headers, install constants
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jun 2011 16:16:29 -0500
 

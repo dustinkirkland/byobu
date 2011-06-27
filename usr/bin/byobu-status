@@ -89,6 +89,8 @@ case "$P" in
 		[ "$x" = "1" ] || exit 0
 		shift
 		find_script "$P" && . "${_RET}"
+		local s=${_RET##*/}
+		eval "__$s"
 	;;
 esac
 
