@@ -23,6 +23,8 @@ byobu (4.14) unreleased; urgency=low
     - update copyright info, update email address, standardize headers
   * usr/lib/byobu/.shutil:
     - add frequencies
+  * experimental/byobu-status-all:
+    - intermediate commit, helper tool with some of the new logic
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jun 2011 16:16:29 -0500
 

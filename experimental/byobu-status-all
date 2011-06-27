@@ -1,0 +1,29 @@
+#!/bin/sh
+
+LIBDIR=/home/kirkland/src/byobu/byobu/usr/lib/byobu
+. "$LIBDIR/.constants"
+. "$LIBDIR/.shutil"
+
+mkdir -p "$CACHE_DIR/status"
+for i in "$LIBDIR/"*; do
+	case "$i" in
+		*/Makefile.am)
+			true
+		;;
+		*time_binary)
+			true
+		;;
+		*)
+			#printf "Sourcing [$i]...\n"
+			. "$i"
+			j=${i##*/}
+			#printf "Running [__$j]...["
+			eval "__$j" > "$CACHE_DIR/status/$j"
+			#printf "]\n"
+		;;
+	esac
+done
+exit 0
+
+
+[ -n "$2" ] && eval "__${1}_detail" || eval "__$1"
