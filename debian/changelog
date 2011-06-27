@@ -1,4 +1,4 @@
-byobu (4.14) unreleased; urgency=low
+byobu (4.14-0ubuntu1) oneiric; urgency=low
 
   * usr/share/byobu/profiles/tmux:
     - getting tmux keybindings much closer!
@@ -6,7 +6,7 @@ byobu (4.14) unreleased; urgency=low
     usr/lib/byobu/ip_address:
     - use wget instead of host to check for metadata
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jun 2011 16:16:29 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 04:41:19 -0400
 
 byobu (4.13-0ubuntu1) oneiric; urgency=low
 
