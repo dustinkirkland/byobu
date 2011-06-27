@@ -73,13 +73,14 @@ case "$P" in
 		if command -v vim >/dev/null && `vim --version | grep -q +folding`; then
 			printf "  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
 		fi
-		for i in "$BYOBU_PREFIX/lib/$PKG"/* "$DATA/bin"/*; do
+		for i in "$BYOBU_PREFIX/lib/$PKG"/*; do
 			i=${i##*/}
-			[ "$i" = "menu" ] && continue
-
-			find_script "$i" && script="${_RET}"
-			short=`$script --short | sed -e 's/^\s*//' -e 's/\s*$//' -e 's/.{[^}]*}//g'` || true
-			detail=`$script --detail 2>/dev/null | sed -e '/^$/d' -e 's/^/\t/g'` || true
+			case "$i" in
+				menu|notify_osd|time_binary) continue ;;
+			esac
+			find_script "$i" && . "${_RET}"
+			short=$(eval "__${i}" | sed -e 's/^\s*//' -e 's/\s*$//' -e 's/.{[^}]*}//g')
+			detail=$(eval "__${i}_detail" 2>/dev/null | sed -e '/^$/d' -e 's/^/\t/g')
 			printf "%s\n\t(%s)\n" "$short" "$i"
 			[ -n "$detail" ] && printf "%s\n" "$detail"
 		done
@@ -95,8 +96,7 @@ case "$P" in
 		[ "$x" = "1" ] || exit 0
 		shift
 		find_script "$P" && . "${_RET}"
-		local s=${_RET##*/}
-		eval "__$s"
+		eval "__${P}"
 	;;
 esac
 
