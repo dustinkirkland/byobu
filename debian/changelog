@@ -47,6 +47,22 @@ byobu (4.16-0ubuntu1) oneiric; urgency=low
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:14:14 +0000
 
+byobu (4.15-0ubuntu1) oneiric; urgency=low
+
+  * There was no 4.15 release
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>   Thu, 16 Jun 2011 16:16:29 -0500
+
+byobu (4.14-0ubuntu1) oneiric; urgency=low
+
+  * usr/share/byobu/profiles/tmux:
+    - getting tmux keybindings much closer!
+  * usr/lib/byobu/ec2_cost, usr/lib/byobu/hostname,
+    usr/lib/byobu/ip_address:
+    - use wget instead of host to check for metadata
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>   Thu, 16 Jun 2011 16:16:29 -0500
+
 byobu (4.13-0ubuntu1) oneiric; urgency=low
 
   [ Scott Moser ]
