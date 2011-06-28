@@ -5,6 +5,8 @@ byobu (4.17) unreleased; urgency=low
       but also make sure that we won't recurse!
   * usr/lib/byobu/cpu_temp: LP: #799237, #802819
     - fix temperature on Atom D510
+  * usr/bin/byobu-status:
+    - deprecated RUNDIR
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:14:17 +0000
 
