@@ -19,11 +19,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-CPU_TEMP_DIR="/proc/acpi/thermal_zone"
-
 __cpu_temp_detail() {
 	local i
-	for i in "$CPU_TEMP_DIR"/*; do
+	for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /sys/class/hwmon/hwmon*/device/temp*_input /proc/acpi/ibm/thermal /proc/acpi/thermal_zone/*/temperature; do
 		[ -r "$i" ] || continue
 		echo "$i:"
 		cat "$i"/*
@@ -32,7 +30,7 @@ __cpu_temp_detail() {
 
 __cpu_temp() {
 	local i t unit
-	for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/thermal "$CPU_TEMP_DIR"/*/temperature; do
+	for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /sys/class/hwmon/hwmon*/device/temp*_input /proc/acpi/ibm/thermal /proc/acpi/thermal_zone/*/temperature; do
 		case "$i" in
 			*temp*_input)
 				[ -s "$i" ] && read t < "$i" && t=$(($t/1000))
@@ -41,7 +39,7 @@ __cpu_temp() {
 				[ -s "$i" ] && t=$(sed -e "s/^[^0-9]\+//" -e "s/\s.*$//" "$i")
 			;;
 		esac
-		if [ -n "$t" ]; then
+		if [ -n "$t" ] && [ "$t" -gt 0 ]; then
 			unit="$ICON_C"
 			if [ "$TEMP" = "F" ]; then
 				t=$(($t*9/5 + 32))
