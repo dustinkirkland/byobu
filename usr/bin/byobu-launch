@@ -37,6 +37,10 @@ if [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1" ]; then
 			# Attempt to merge shell history across sessions/windows (works with a few exceptions)
 			shopt -s histappend || true
 			[ -n "$PROMPT_COMMAND" ] && PROMPT_COMMAND="$PROMPT_COMMAND;history -a" || PROMPT_COMMAND="history -a"
+			# Source profile, as long as we won't recurse
+			if [ -r "$HOME/.profile" ]; then
+				(sed -e "s/#.*//" "$HOME/.profile" | grep -qs "$PKG-launch") || . "$HOME/.profile"
+			fi
 			if byobu-launcher; then
 				# Wait very briefly for the no-logout flag to get written?
 				sleep 0.1
