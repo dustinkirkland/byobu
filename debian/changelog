@@ -1,4 +1,4 @@
-byobu (4.17) unreleased; urgency=low
+byobu (4.17-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu-launch: LP: #802646
     - ensure that .profile gets sourced if launching byobu by default,
@@ -46,6 +46,8 @@ byobu (4.17) unreleased; urgency=low
     profile, usr/bin/byobu-select-session, usr/bin/byobu-silent,
     usr/bin/byobu-status:
     - fix up a few more $HOME/.$PKG refs to $BYOBU_CONFIG_DIR
+  * usr/bin/byobu-janitor, usr/lib/byobu/.constants:
+    - LP: #553105, #780081: support XDG user dirs
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:14:17 +0000
 

@@ -21,19 +21,23 @@
 PKG="byobu"
 
 # Create and set the user configuration directory
-export BYOBU_CONFIG_DIR="$HOME/.$PKG"
-mkdir -p "$BYOBU_CONFIG_DIR"
+if [ -d "$XDG_CONFIG_HOME" ] && mkdir -p "$XDG_CONFIG_HOME/$PKG"; then
+	export BYOBU_CONFIG_DIR="$XDG_CONFIG_HOME/$PKG"
+elif mkdir -p "$HOME/.$PKG"; then
+	export BYOBU_CONFIG_DIR="$HOME/.$PKG"
+fi
 
 # Grab the global, then local socket directory
 [ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir"
 [ -r "$BYOBU_CONFIG_DIR/socketdir" ] && . "$BYOBU_CONFIG_DIR/socketdir"
 
 # Hopefully, we can make a runtime data directory in a tmpfs
-if mkdir -p "$SOCKETDIR/S-$USER/$PKG" 2>/dev/null; then
+if [ -d "$XDG_CACHE_HOME" ] && mkdir -p "$XDG_CACHE_HOME/$PKG"; then
+	export BYOBU_RUN_DIR="$XDG_CACHE_HOME/$PKG"
+elif mkdir -p "$SOCKETDIR/S-$USER/$PKG" 2>/dev/null; then
 	export BYOBU_RUN_DIR="$SOCKETDIR/S-$USER/$PKG"
-else
-	# But if not, we'll use a cache direcotry
-	mkdir -p "$HOME/.cache/$PKG"
+elif mkdir -p "$HOME/.cache/$PKG"; then
+	# But if not, we'll use a cache directory
 	export BYOBU_RUN_DIR="$HOME/.cache/$PKG"
 fi
 

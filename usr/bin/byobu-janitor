@@ -23,16 +23,7 @@ PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/.common"
 
-XDG="$HOME/.local/share/$PKG"
 FLAG="$BYOBU_RUN_DIR/reload-required"
-
-# Let's get prepped to switch over to XDG one day; maintain symlink for now
-mkdir -p "$XDG"
-if [ ! -h "$BYOBU_CONFIG_DIR" ]; then
-	mv -f "$BYOBU_CONFIG_DIR"/* "$BYOBU_CONFIG_DIR"/.* "$XDG" 2>/dev/null || true
-	rmdir "$BYOBU_CONFIG_DIR" 2>/dev/null || true
-fi
-ln -sf "$XDG" "$BYOBU_CONFIG_DIR"
 
 # Exit immediately, if we're not forced, and there is no reload flag
 if [ "$1" != "--force" ] && [ ! -e "$FLAG" ]; then
