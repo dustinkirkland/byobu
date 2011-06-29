@@ -81,8 +81,8 @@ backtick 137 	23	23		byobu-status time_binary
 
 hardstatus alwayslastline
 
-# The following line would turn off alternate screen switching in xterms,
-# so that text in screen will go into the xterm's scrollback buffer.
+# The following line would turn off alternate Screen switching in xterms,
+# so that text in Screen will go into the xterm's scrollback buffer.
 # However, we are disabling this at this point, since byobu's
 # alt-pgup and alt-pgdn keybindings now exist.
 #termcapinfo xterm* ti@:te@
@@ -96,7 +96,7 @@ defbce "on"
 # Log 10000 lines
 defscrollback 10000
 
-# Set per-user screen-exchange
+# Set per-user exchange
 bufferfile $BYOBU_RUN_DIR/printscreen
 compacthist on
 
@@ -116,7 +116,7 @@ caption always "%12`%?%-Lw%50L>%?%{=r}%n*%f %t%?(%u)%?%{-}%12`%?%+Lw%?%11` %=%12
 # Status string, last line
 hardstatus string '%99`%{-}%{=r}%12` %100`%112`%=%117`%133`%130`%135`%102`%101`%129`%131`%127`%114`%115`%108`%134`%128`%125`%126`%113`%119`%116`%106`%104`%103`%105`%107`%136`%123`%137`%132`%120`%121`'
 
-# NOTE: Older version of screen have an arbitrary limit of only being able
+# NOTE: Older version of Screen have an arbitrary limit of only being able
 # to change colors 16 times in this 'hardstatus string'.
 # Ubuntu (fixed in Jaunty):
 #  * https://bugs.launchpad.net/bugs/315871

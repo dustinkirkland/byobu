@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    notify_osd: print notify-osd messages in screen's notification buffer
+#    notify_osd: print notify-osd messages in the notification buffer
 #
 #    Copyright (C) 2010 Canonical Ltd.
 #    Copyright (C) 2011 Dustin Kirkland
@@ -28,7 +28,7 @@ __notify_osd_detail() {
 
 __notify_osd() {
 	# This line operates basically as a daemon, watching the notify-osd log file,
-	# processing new messages and sending them to screen
+	# processing new messages and sending them to the session
 	CMD="tail --pid $PPID -n 0 -F $NOTIFY_OSD_LOG"
 	pkill -f "$CMD" || true
 	$CMD | $BYOBU_PREFIX/lib/byobu/.notify_osd "$PPID" &

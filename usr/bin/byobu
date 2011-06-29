@@ -75,7 +75,7 @@ if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ]; then
 fi
 
 # Some users want to maintain separate configurations
-# if they use both screen and byobu on the same system
+# if they use both GNU Screen and byobu on the same system
 if [ -r "$HOME/.byoburc" ]; then
 	PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/byoburc"
 else

@@ -20,7 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
-# Change to screen's ctrl-a escape sequence
+# Change to Screen's ctrl-a escape sequence
 set-option -g prefix C-a
 unbind-key C-b
 bind-key C-a send-prefix

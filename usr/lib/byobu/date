@@ -25,7 +25,7 @@ __date_detail() {
 
 __date() {
 	bd=$(date "+%m%d")
-	[ "$bd" = "0320" ] && msg="$(echo SGFwcHkgQmlydGhkYXkgU2NyZWVuIC0tIGh0dHA6Ly9iaXQubHkvc2NyZWVuLWJkYXkK | base64 -di)" && screen -X -S "byobu" at "*" echo "[$msg]"
+	[ "$bd" = "0320" ] && msg="$(echo SGFwcHkgQmlydGhkYXkgU2NyZWVuIC0tIGh0dHA6Ly9iaXQubHkvc2NyZWVuLWJkYXkK | base64 -di)" && $BYOBU_BACKEND -X -S "byobu" at "*" echo "[$msg]"
 	color none; printf "\005Y-\005m-\005d"; color --
 }
 

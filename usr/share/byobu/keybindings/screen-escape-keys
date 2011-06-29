@@ -1,5 +1,5 @@
 ###############################################################################
-#    Disable Byobu's f-key keybindings, define a set using screen's escape
+#    Disable Byobu's f-key keybindings, define a set using Screen's escape
 #    sequence.
 #
 #    Copyright (C) 2009  Dustin Kirkland <kirkland@ubuntu.com>
@@ -18,9 +18,9 @@
 ###############################################################################
 
 # This file disables the f-key bindings, but retains the
-# keybindings that use screen's built-in escape sequence
+# keybindings that use Screen's built-in escape sequence
 
-# Default screen escape
+# Default Screen escape
 escape ^Aa
 register x "^A"
 
@@ -55,9 +55,9 @@ bind R eval 'process x' 'process r'
 # ctrl-a-[      Enter copy/scrollback mode      F7
 # ctrl-a-A      Re-title a window               F8
 # ctrl-a-@      Configuration                   F9
-bind @ screen -t config 0 byobu-config
+bind @ $BYOBU_BACKEND -t config 0 byobu-config
 # ctrl-a-$      Show detailed status
-bind $ screen -t status 0 byobu-status-detail
+bind $ $BYOBU_BACKEND -t status 0 byobu-status-detail
 # ctrl-a-!	Toggle f-key keybindings on
 register e ":source $BYOBU_PREFIX/share/byobu/keybindings/f-keys^M"
 bind ! eval 'process x' 'process e' 'backtick 111 9999999 9999999 byobu-status menu'

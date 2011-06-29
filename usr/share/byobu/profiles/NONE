@@ -1,7 +1,7 @@
 ###############################################################################
 #    NONE
 #      This configuration profile is the most basic, plain profile,
-#      (the default one that ships with screen).
+#      (the default one that ships with Screen).
 #      To clarify that this *disables* byobu, let's call this profile
 #      "NONE".
 #
