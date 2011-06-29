@@ -2,7 +2,7 @@ byobu (4.17) unreleased; urgency=low
 
   * usr/bin/byobu-launch: LP: #802646
     - ensure that .profile gets sourced if launching byobu by default,
-      but also make sure that we won't recurse!
+      but also make sure that we won't recurse, using a variable flag
   * usr/lib/byobu/cpu_temp: LP: #799237, #802819
     - fix temperature on Atom D510
   * usr/bin/byobu-status:

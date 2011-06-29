@@ -39,8 +39,9 @@ if [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1" ]; then
 			shopt -s histappend || true
 			[ -n "$PROMPT_COMMAND" ] && PROMPT_COMMAND="$PROMPT_COMMAND;history -a" || PROMPT_COMMAND="history -a"
 			# Source profile, as long as we won't recurse
-			if [ -r "$HOME/.profile" ]; then
-				(sed -e "s/#.*//" "$HOME/.profile" | grep -qs "$PKG-launch") || . "$HOME/.profile"
+			if [ -r "$HOME/.profile" ] && [ "$BYOBU_SOURCED_PROFILE" = "0" ]; then
+				BYOBU_SOURCED_PROFILE=1
+				. "$HOME/.profile"
 			fi
 			if byobu-launcher; then
 				# Wait very briefly for the no-logout flag to get written?
