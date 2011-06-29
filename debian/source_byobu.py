@@ -1,7 +1,7 @@
 '''apport package hook for byobu
 
 (c) 2009 Canonical Ltd.
-Author: Dustin Kirkland <kirkland@canonical.com>
+Author: Dustin Kirkland <kirkland@ubuntu.com>
 '''
 
 from apport.hookutils import *
