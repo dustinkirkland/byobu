@@ -19,10 +19,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-BYOBU_VERSION="4.17"
 
 # Create and set the user configuration directory
-BYOBU_CONFIG_DIR="$HOME/.$PKG"
+export BYOBU_CONFIG_DIR="$HOME/.$PKG"
 mkdir -p "$BYOBU_CONFIG_DIR"
 
 # Grab the global, then local socket directory
@@ -31,11 +30,11 @@ mkdir -p "$BYOBU_CONFIG_DIR"
 
 # Hopefully, we can make a runtime data directory in a tmpfs
 if mkdir -p "$SOCKETDIR/S-$USER/$PKG" 2>/dev/null; then
-	BYOBU_RUN_DIR="$SOCKETDIR/S-$USER/$PKG"
+	export BYOBU_RUN_DIR="$SOCKETDIR/S-$USER/$PKG"
 else
 	# But if not, we'll use a cache direcotry
 	mkdir -p "$HOME/.cache/$PKG"
-	BYOBU_RUN_DIR="$HOME/.cache/$PKG"
+	export BYOBU_RUN_DIR="$HOME/.cache/$PKG"
 fi
 
 # Some users build and install byobu themselves, rather than from a distro

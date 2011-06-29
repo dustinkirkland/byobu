@@ -33,6 +33,8 @@ byobu (4.17) unreleased; urgency=low
       + BYOBU_CONFIG_DIR, which is typically $HOME/.byobu
     - this rework should more easily allow us to support users who's
       SOCKETDIR is not /var/run/screen, and XDG_USER_DIRS users
+  * usr/lib/byobu/.constants:
+    - should probably export those
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:14:17 +0000
 
