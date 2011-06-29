@@ -74,7 +74,8 @@ if len(sessions) > 1:
 			choice = ""
 			sys.stderr.write("\nERROR: Invalid input\n");
 elif len(sessions) == 1:
-	os.execvp("byobu", ["", "-AOxRR"])
+ 	# Attach to the chosen session; must use the 'screen' binary
+	os.execvp("screen", ["", "-AOxRR"])
 
 if choice:
 	if sessions[choice-1] == "NEW":
