@@ -19,16 +19,29 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-CONFIG_DIR="$HOME/.$PKG"
-mkdir -p "$CONFIG_DIR"
-if mkdir -p "/var/run/screen/S-$USER/$PKG/cache" 2>/dev/null; then
-	CACHE_DIR="/var/run/screen/S-$USER/$PKG/cache"
+BYOBU_VERSION="4.17"
+
+# Create and set the user configuration directory
+BYOBU_CONFIG_DIR="$HOME/.$PKG"
+mkdir -p "$BYOBU_CONFIG_DIR"
+
+# Grab the global, then local socket directory
+[ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir"
+[ -r "$BYOBU_CONFIG_DIR/socketdir" ] && . "$BYOBU_CONFIG_DIR/socketdir"
+
+# Hopefully, we can make a runtime data directory in a tmpfs
+if mkdir -p "$SOCKETDIR/S-$USER/$PKG" 2>/dev/null; then
+	BYOBU_RUN_DIR="$SOCKETDIR/S-$USER/$PKG"
 else
-	mkdir -p "$CONFIG_DIR/cache"
-	CACHE_DIR="$CONFIG_DIR/cache"
+	# But if not, we'll use a cache direcotry
+	mkdir -p "$HOME/.cache/$PKG"
+	BYOBU_RUN_DIR="$HOME/.cache/$PKG"
 fi
+
+# Some users build and install byobu themselves, rather than from a distro
 [ -n "$BYOBU_PREFIX" ] || BYOBU_PREFIX="/usr"
 
+# UTF8 support in the hardstatus is coming one day in screen
 if [ "$UTF8" = "1" ]; then
 	ICON_C="℃"
 	ICON_F="℉"

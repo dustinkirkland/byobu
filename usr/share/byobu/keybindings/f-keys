@@ -44,7 +44,7 @@ bind $ screen -t status 0 byobu-status-detail 		# F12 $ | show detailed status
 bind @ screen -t config 0 byobu-config			# F12 @ | Configuration
 bind R process r					# F12 R | Reload profile
 register s "[g G$>^h"					# Goes with F12 ~ definition
-bind ~ eval 'process x' 'process s' 'exec sed -i -e "/./,/^$/!d" /var/run/screen/S-$USER/printscreen' 'screen -t PRINTSCREEN view /var/run/screen/S-$USER/printscreen' # F12 ~ | write the buffer to file, open in a new window
+bind ~ eval 'process x' 'process s' 'exec sed -i -e "/./,/^$/!d" $BYOBU_RUN_DIR/printscreen' 'screen -t PRINTSCREEN view $BYOBU_RUN_DIR/printscreen' # F12 ~ | write the buffer to file, open in a new window
 
 # Hotkeys for splits (gnome-terminal)
 bindkey "^[O1;2Q" eval 'split' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave'	# shift-F2 | horizontal split
@@ -72,8 +72,8 @@ bindkey "^[[6;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process n'		# alt-page
 bindkey "^[[15;5~" eval 'process x' 'process r' 'stuff ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets^M"' # ctrl-F5 | reconnect gpg/ssh/x sockets
 
 # Detach from an auto-launched byobu, but don't log out of the shell
-bindkey "^[[17;2~" eval 'exec touch /var/run/screen/S-$USER/byobu.no-logout' 'detach'   # shift-F6 | detach, but don't logout
-bindkey "^[[32~" eval 'exec touch /var/run/screen/S-$USER/byobu.no-logout' 'detach'	# shift-F6 | detach, but don't logout
+bindkey "^[[17;2~" eval 'exec touch $BYOBU_RUN_DIR/no-logout' 'detach'   # shift-F6 | detach, but don't logout
+bindkey "^[[32~" eval 'exec touch $BYOBU_RUN_DIR/no-logout' 'detach'	# shift-F6 | detach, but don't logout
 
 # toggle f-key keybindings off
 register d ":source $BYOBU_PREFIX/share/byobu/keybindings/screen-escape-keys^M"

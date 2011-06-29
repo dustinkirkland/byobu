@@ -27,7 +27,7 @@ __ip_address_detail() {
 
 __ip_address() {
 	local interface ipaddr
-	# Allow interface overrides in $CONFIG_DIR/statusrc
+	# Allow interface overrides in $BYOBU_CONFIG_DIR/statusrc
 	if [ -n "$MONITORED_NETWORK" ]; then
 		interface="$MONITORED_NETWORK"
 	else

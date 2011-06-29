@@ -19,7 +19,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-DATA="$HOME/.$PKG"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/.common"
 
 # Use gsed on non-Linux OS's
 which gsed 2>/dev/null && SED="gsed" || SED="sed"
@@ -34,8 +35,8 @@ remove_launcher() {
 for i in ".profile" ".bashrc" ".bash_profile" ".zprofile"; do
 	remove_launcher "$HOME/$i"
 done
-mkdir -p "$DATA"
-touch "$DATA/disable-autolaunch"
+mkdir -p "$BYOBU_CONFIG_DIR"
+touch "$BYOBU_CONFIG_DIR/disable-autolaunch"
 # install disabled motd printing; re-enable
 rm -f "$HOME"/.hushlogin
 

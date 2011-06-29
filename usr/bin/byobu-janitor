@@ -20,20 +20,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-DATA="$HOME/.$PKG"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/.common"
+
 XDG="$HOME/.local/share/$PKG"
-[ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
-[ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir" || SOCKETDIR="/var/run/screen"
-RUN="$SOCKETDIR/S-$USER"
-FLAG="$RUN/$PKG.reload-required"
+FLAG="$BYOBU_RUN_DIR/reload-required"
 
 # Let's get prepped to switch over to XDG one day; maintain symlink for now
 mkdir -p "$XDG"
-if [ ! -h "$DATA" ]; then
-	mv -f "$DATA"/* "$DATA"/.* "$XDG" 2>/dev/null || true
-	rmdir "$DATA" 2>/dev/null || true
+if [ ! -h "$BYOBU_CONFIG_DIR" ]; then
+	mv -f "$BYOBU_CONFIG_DIR"/* "$BYOBU_CONFIG_DIR"/.* "$XDG" 2>/dev/null || true
+	rmdir "$BYOBU_CONFIG_DIR" 2>/dev/null || true
 fi
-ln -sf "$XDG" "$DATA"
+ln -sf "$XDG" "$BYOBU_CONFIG_DIR"
 
 # Exit immediately, if we're not forced, and there is no reload flag
 if [ "$1" != "--force" ] && [ ! -e "$FLAG" ]; then
@@ -42,26 +41,24 @@ fi
 
 # Set the rest of the variables
 DEFAULT_PROFILE="light"
-PROFILE="$DATA/profile"
+PROFILE="$BYOBU_CONFIG_DIR/profile"
 # Use gsed on non-Linux OS's
 command -v gsed >/dev/null && SED="gsed" || SED="sed"
 command -v greadlink >/dev/null && READLINK="greadlink" || READLINK="readlink"
 
 # Create byobu-exchange buffer file, with secure permissions, if it doesn't exist
-if [ -w "$RUN" ] && [ ! -e "$RUN/$PKG-exchange" ]; then
-	install -m 600 /dev/null "$RUN/$PKG-exchange"
-fi
+[ -e "$BYOBU_RUN_DIR/printscreen" ] || install -m 600 /dev/null "$BYOBU_RUN_DIR/printscreen"
 
 # Affects: users who launched using sudo, such that their config dir
 # is not writable by them
-if [ -d "$DATA" ] && [ ! -w "$DATA" ]; then
-	echo "ERROR: [$DATA] is not writable by the current user" 1>&2
+if [ -d "$BYOBU_CONFIG_DIR" ] && [ ! -w "$BYOBU_CONFIG_DIR" ]; then
+	echo "ERROR: [$BYOBU_CONFIG_DIR] is not writable by the current user" 1>&2
 	exit 1
 fi
 
 # Affects: First runs with no configuration
 # Seed the configuration
-[ -r "$DATA/color" ] || printf "BACKGROUND=k\nFOREGROUND=w\nMONOCHROME=0" > "$DATA/color"
+[ -r "$BYOBU_CONFIG_DIR/color" ] || printf "BACKGROUND=k\nFOREGROUND=w\nMONOCHROME=0" > "$BYOBU_CONFIG_DIR/color"
 [ -r "$PROFILE" ] || ln -sf $BYOBU_PREFIX/share/$PKG/profiles/common "$PROFILE"
 
 # Affects: Symlinks pointing to color profiles
@@ -99,8 +96,8 @@ if [ -h "$PROFILE" ]; then
 	esac
 fi
 
-[ -s "$DATA/keybindings" ] || echo "source $BYOBU_PREFIX/share/$PKG/keybindings/common" > "$DATA/keybindings"
-if [ ! -r "$DATA/status" ]; then
+[ -s "$BYOBU_CONFIG_DIR/keybindings" ] || echo "source $BYOBU_PREFIX/share/$PKG/keybindings/common" > "$BYOBU_CONFIG_DIR/keybindings"
+if [ ! -r "$BYOBU_CONFIG_DIR/status" ]; then
 	if [ -r /etc/$PKG/statusrc ]; then
 		skel=/etc/$PKG/statusrc
 	elif [ -r "$BYOBU_PREFIX/share/$PKG/profiles/statusrc" ]; then
@@ -108,20 +105,20 @@ if [ ! -r "$DATA/status" ]; then
 	else
 		skel=/dev/null
 	fi
-	grep -A 999999 BEGIN_CUT_HERE $skel | grep -B 999999 END_CUT_HERE | grep -v CUT > "$DATA/status"
+	grep -A 999999 BEGIN_CUT_HERE $skel | grep -B 999999 END_CUT_HERE | grep -v CUT > "$BYOBU_CONFIG_DIR/status"
 	# If it looks like we're running in ec2, enable ec2_cost by default
-	[ -x /usr/sbin/update-grub-legacy-ec2 ] && sed -i "s/ec2_cost=.*/ec2_cost=1/" "$DATA/status"
+	[ -x /usr/sbin/update-grub-legacy-ec2 ] && sed -i "s/ec2_cost=.*/ec2_cost=1/" "$BYOBU_CONFIG_DIR/status"
 fi
-[ -r "$DATA/windows" ] || touch "$DATA/windows"
+[ -r "$BYOBU_CONFIG_DIR/windows" ] || touch "$BYOBU_CONFIG_DIR/windows"
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
 
 # Affects: Upgrades from <= byobu-2.11
 # The status scripts used to have hyphens in their name, but now use
 # underscores such that we can source the file as a shell snippet;
 # fix existing status configuration.
-$SED -i -e "s/\([^=]+\)-\([^=]+\)=/\1_\2=/g" "$DATA/status"
-$SED -i -e "s/^disk-.*=/disk=/" "$DATA/status"
-$SED -i -e "s/^network-.*=/network=/" "$DATA/status"
+$SED -i -e "s/\([^=]+\)-\([^=]+\)=/\1_\2=/g" "$BYOBU_CONFIG_DIR/status"
+$SED -i -e "s/^disk-.*=/disk=/" "$BYOBU_CONFIG_DIR/status"
+$SED -i -e "s/^network-.*=/network=/" "$BYOBU_CONFIG_DIR/status"
 
 # Affects: Upgrades from <= byobu-2.16
 # screen-launcher was renamed byobu-launcher; if the user has byobu
@@ -133,8 +130,8 @@ fi
 # Affects: Upgrades from <= byobu-2.25
 # Collapse separate status config files into the sourced config
 for i in disk network distro logo; do
-	if [ -r "$DATA/$i" ]; then
-		val=`cat $DATA/$i`
+	if [ -r "$BYOBU_CONFIG_DIR/$i" ]; then
+		val=`cat $BYOBU_CONFIG_DIR/$i`
 		uc=`echo "$i" | tr "[:lower:]" "[:upper:]"`
 		case $i in
 			disk|network)
@@ -142,8 +139,8 @@ for i in disk network distro logo; do
 			distro|logo)
 				key="$uc" ;;
 		esac
-		echo "$key=\"$val\"" >> "$DATA/statusrc"
-		rm "$DATA/$i"
+		echo "$key=\"$val\"" >> "$BYOBU_CONFIG_DIR/statusrc"
+		rm "$BYOBU_CONFIG_DIR/$i"
 	fi
 done
 
@@ -161,22 +158,16 @@ fi
 
 # Affects: Upgrades from <= byobu-2.78 which might have "motd+shell"
 # in their window list; update this to just "shell"
-if grep -qs "motd+shell" "$DATA/windows"; then
-	$SED -i -e "s/motd+shell/shell/g" "$DATA/windows" || true
-fi
-
-# Affects: Upgrades from <= byobu-3.6, change location of $SSH_AUTH_SOCK
-if [ -h "$RUN/$PKG.ssh-agent" ]; then
-	rm -f "$DATA/.ssh-agent"
-	mv -f "$RUN/$PKG.ssh-agent" "$DATA/.ssh-agent"
+if grep -qs "motd+shell" "$BYOBU_CONFIG_DIR/windows"; then
+	$SED -i -e "s/motd+shell/shell/g" "$BYOBU_CONFIG_DIR/windows" || true
 fi
 
 # Affects: Upgrades from <= byobu 4.3, remove ec2_rates
-rm -f "$DATA/ec2_rates"
+rm -f "$BYOBU_CONFIG_DIR/ec2_rates"
 
 # Affects: Upgrades from <= byobu 4.4, update "shell" -> "byobu-shell"
-if grep -qs " shell$" "$DATA/windows"; then
-	$SED -i -e "s/ shell$/ $PKG-shell/g" "$DATA/windows" || true
+if grep -qs " shell$" "$BYOBU_CONFIG_DIR/windows"; then
+	$SED -i -e "s/ shell$/ $PKG-shell/g" "$BYOBU_CONFIG_DIR/windows" || true
 fi
 
 # Clean up flag

@@ -96,7 +96,7 @@ __updates_available_detail() {
 }
 
 __updates_available() {
-	local mycache="$CACHE_DIR/updates-available"
+	local mycache="$BYOBU_RUN_DIR/updates-available"
 	# If mycache is present, use it
 	[ -r $mycache ] && ___print_updates `sed -n '/[^0-9]/s/ .*$//p' $mycache`
 	# If we really need to do so (mycache doesn't exist, or the package database has changed),

@@ -17,20 +17,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
 VERSION=4.17
-[ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
-export BYOBU_PREFIX
-[ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir" || SOCKETDIR="/var/run/screen"
-RUN="$SOCKETDIR/S-$USER"
-DATA="$HOME/.$PKG"
 
+PKG="byobu"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/.shutil"
-if [ ! -x "$BYOBU_PREFIX/bin/$PKG" ]; then
-	error "Cannot find $BYOBU_PREFIX/bin/$PKG"
-	error "If you have installed it elsewhere, export BYOBU_PREFIX in your shell"
-	exit 1
-fi
+. "${BYOBU_PREFIX}/lib/${PKG}/.constants"
+
 
 # Add a version argument for debugging purposes
 if [ "$#" = "1" ]; then
@@ -44,7 +37,7 @@ if [ "$#" = "1" ]; then
 fi
 
 # Check if we're being autolaunched, and this user explicitly does not want it.
-if [ "$0" = "/etc/profile.d/Z98-$PKG.sh" ] && [ -r "$DATA/disable-autolaunch" ]; then
+if [ "$0" = "/etc/profile.d/Z98-$PKG.sh" ] && [ -r "$BYOBU_CONFIG_DIR/disable-autolaunch" ]; then
 	exit 0
 fi
 
@@ -58,11 +51,11 @@ byobu-janitor --force
 CUSTOM_WINDOW_SET=0
 if [ -r "$BYOBU_WINDOWS" ]; then
 	CUSTOM_WINDOW_SET=1
-elif [ -r "$DATA/windows.$BYOBU_WINDOWS" ]; then
+elif [ -r "$BYOBU_CONFIG_DIR/windows.$BYOBU_WINDOWS" ]; then
 	CUSTOM_WINDOW_SET=1
-	BYOBU_WINDOWS="$DATA/windows.$BYOBU_WINDOWS"
+	BYOBU_WINDOWS="$BYOBU_CONFIG_DIR/windows.$BYOBU_WINDOWS"
 elif [ "$#" = "0" ]; then
-	BYOBU_WINDOWS="$DATA/windows"
+	BYOBU_WINDOWS="$BYOBU_CONFIG_DIR/windows"
 else
 	BYOBU_WINDOWS="/dev/null"
 fi
@@ -80,7 +73,7 @@ fi
 
 # Drop a symlink to the ssh socket in $HOME, since we can ensure that exists
 if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ]; then
-	ln -sf "$SSH_AUTH_SOCK" "$DATA/.ssh-agent"
+	ln -sf "$SSH_AUTH_SOCK" "$BYOBU_CONFIG_DIR/.ssh-agent"
 fi
 
 # Some users want to maintain a separate ~/.byoburc from ~/.screenrc,

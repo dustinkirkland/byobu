@@ -7,15 +7,15 @@ byobu\-select\-session \- select and connect to a byobu session
 
 If an invalid selection is chosen 3 times in a row, the user is connected to the youngest session.
 
-By default, if only one session exists, the user is connected to that session, and if no sessions exist, a new session is created -- such that there is no interactive prompt in the normal behavior.  However, some users may choose to always be prompted, by touching the file $DATA/.always-select.
+By default, if only one session exists, the user is connected to that session, and if no sessions exist, a new session is created -- such that there is no interactive prompt in the normal behavior.  However, some users may choose to always be prompted, by touching the file $BYOBU_CONFIG_DIR/.always-select.
 
-Note that DATA=$HOME/.byobu.
+Note that BYOBU_CONFIG_DIR=$HOME/.byobu.
 
 Named sessions that begin with a "." are "hidden" from \fBbyobu\-select\-session\fP(1).  This is useful, for instance, if you do not want a session to be automatically selected at login.  Example:
   byobu \-S .hidden
 
 .SH "FILES"
-\fI$DATA/.always-select\fP
+\fI$BYOBU_CONFIG_DIR/.always-select\fP
 
 .SH "SEE ALSO"
 .PD 0

@@ -1,8 +1,7 @@
-#!/bin/sh -e
+#!/bin/sh
 #
-#    mem_available: grab the current memory and usage
+#    .common: common stuff sourced by all scripts
 #
-#    Copyright (C) 2008 Canonical Ltd.
 #    Copyright (C) 2011 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@ubuntu.com>
@@ -19,28 +18,5 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__mem_available_detail() {
-	free
-}
-
-__mem_available() {
-	local mem_used comma whitespace unit mem name
-	. "$BYOBU_CONFIG_DIR/status"
-	[ "$mem_used" = "1" ] && comma="," || whitespace=" "
-	read name mem unit < /proc/meminfo
-	if [ $mem -ge 1048576 ]; then
-		fpdiv "$mem" 1048567 1
-		mem=${_RET}
-		unit="GB"
-	elif [ $mem -ge 1024 ]; then
-		fpdiv "$mem" 1024 0
-		mem=${_RET}
-		unit="MB"
-	else
-		mem="$mem"
-		unit="KB"
-	fi
-	color b g W; printf "%s" "$mem"; color -; color g W; printf "%s%s" "$unit" "$comma"; color -; printf "%s" "$whitespace"
-}
-
-# vi: syntax=sh ts=4 noexpandtab
+. "${BYOBU_PREFIX}/lib/${PKG}/.shutil"
+. "${BYOBU_PREFIX}/lib/${PKG}/.constants"

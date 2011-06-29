@@ -25,7 +25,7 @@ $sleep = 5;
 while (<STDIN>) {
 	# Ensure that the notify_osd indicator is enabled
 	my $skip = 0;
-	open(F, "<$ENV{HOME}/.$PKG/status");
+	open(F, "<$ENV{BYOBU_CONFIG_DIR}/status");
 	foreach my $i (<F>) {
 		if ($i =~ /notify_osd=0/) {
 			$skip = 1;

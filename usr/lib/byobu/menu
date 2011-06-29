@@ -25,7 +25,7 @@ __menu_detail() {
 
 __menu() {
 	local bindings esc key text
-	[ -r "$CONFIG_DIR/keybindings" ] && bindings="$CONFIG_DIR/keybindings" || bindings="$HOME/.screenrc"
+	[ -r "$BYOBU_CONFIG_DIR/keybindings" ] && bindings="$BYOBU_CONFIG_DIR/keybindings" || bindings="$HOME/.screenrc"
 	if grep -qs "^source.*screen-escape-keys$" $bindings 2>/dev/null || [ "$1" = "--disable-f-keys" ]; then
 		esc=`grep "^escape" $bindings | sed "s/^.*\(.\)$/\1/"`
 		[ -n "$esc" ] && key="^$esc-@" || key="^a-@"

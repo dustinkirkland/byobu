@@ -35,6 +35,10 @@
 # you can always change the ordering of these values using the 'invert'
 # command-line option.
 
+PKG="byobu"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/.common"
+
 circles_2=(○ ●)
 diamonds_2=(◇ ◆)
 flags_2=(⚐ ⚑)

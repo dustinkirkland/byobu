@@ -24,9 +24,9 @@ __custom_detail() {
 }
 
 __custom() {
-	local cache="$CACHE_DIR/custom"
+	local cache="$BYOBU_RUN_DIR/custom"
 	local i= output=
-	for i in "$HOME/.$PKG/bin/"[0-9]*_*; do
+	for i in "$BYOBU_CONFIG_DIR/bin/"[0-9]*_*; do
 		# Loop over custom scripts
 		[ -x "$i" ] || continue
 		local now="$(date +%s)"

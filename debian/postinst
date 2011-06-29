@@ -25,13 +25,14 @@ fi
 rm -f /etc/update-motd.d/55-window-manager
 
 # Notify users that they should reload their profile
-DIR="/var/run/screen"
-if [ -d "$DIR" ]; then
-	for d in "$DIR"/*; do
+[ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir"
+if [ -d "$SOCKETDIR" ]; then
+	for d in "$DIR"/*/"$PKG"; do
 		[ -d "$d" ] || continue
-		touch "$d/$PKG.reload-required"
-		chown --reference "$d" "$d/$PKG.reload-required" || true
-		chmod 700 "$d/$PKG.reload-required"
+		flag="$d/reload-required"
+		touch "$flag"
+		chown --reference "$d" "$flag" || true
+		chmod 700 "$flag"
 	done
 fi
 

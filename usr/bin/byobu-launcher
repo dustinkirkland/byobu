@@ -18,11 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-DATA="$HOME/.$PKG"
-[ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
-export BYOBU_PREFIX
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/.common"
 
-if [ -e "$DATA/disable-autolaunch" ]; then
+if [ -e "$BYOBU_CONFIG_DIR/disable-autolaunch" ]; then
 	false
 else
 	case "$TERM" in

@@ -7,6 +7,32 @@ byobu (4.17) unreleased; urgency=low
     - fix temperature on Atom D510
   * usr/bin/byobu-status:
     - deprecated RUNDIR
+  * debian/postinst, etc/byobu/socketdir, experimental/byobu-aggregate-
+    status, experimental/byobu-status-all, === modified symlink
+    usr/share/byobu/keybindings/common, === target was uf-keys,
+    usr/bin/byobu, usr/bin/byobu-config, usr/bin/byobu-ctrl-a,
+    usr/bin/byobu-disable, usr/bin/byobu-enable, usr/bin/byobu-export,
+    usr/bin/byobu-janitor, usr/bin/byobu-launch, usr/bin/byobu-launcher,
+    usr/bin/byobu-launcher-install, usr/bin/byobu-launcher-uninstall,
+    usr/bin/byobu-quiet, usr/bin/byobu-reconnect-sockets, usr/bin/byobu-
+    select-profile, usr/bin/byobu-shell, usr/bin/byobu-silent,
+    usr/bin/byobu-status, usr/bin/byobu-status-detail, usr/bin/byobu-
+    ugraph, usr/bin/byobu-ulevel, usr/lib/byobu/.common,
+    usr/lib/byobu/.constants, usr/lib/byobu/custom,
+    usr/lib/byobu/disk_io, usr/lib/byobu/ec2_cost,
+    usr/lib/byobu/ip_address, usr/lib/byobu/logo,
+    usr/lib/byobu/Makefile.am, usr/lib/byobu/mem_available,
+    usr/lib/byobu/menu, usr/lib/byobu/network,
+    usr/lib/byobu/.notify_osd, usr/lib/byobu/reboot_required,
+    usr/lib/byobu/services, usr/lib/byobu/.shutil,
+    usr/lib/byobu/updates_available, usr/share/byobu/keybindings/f-keys,
+    usr/share/byobu/profiles/common, usr/share/man/man1/byobu.1,
+    usr/share/man/man1/byobu-select-session.1: LP: #802122
+    - massive reworking to globalize and standardize the use of
+      + BYOBU_RUN_DIR, which is typically /var/run/screen/S-$USER/byobu
+      + BYOBU_CONFIG_DIR, which is typically $HOME/.byobu
+    - this rework should more easily allow us to support users who's
+      SOCKETDIR is not /var/run/screen, and XDG_USER_DIRS users
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:14:17 +0000
 

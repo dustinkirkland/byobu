@@ -45,7 +45,7 @@ __disk_io() {
 	# Default to disk providing /, but let users override with MONITORED_DISK
 	[ -z "$MONITORED_DISK" ] && mount_point="/" ||  mount_point="$MONITORED_DISK"
 	# By default, we won't bug the user with the display of network traffic
-	# below DISK_IO_THRESHOLD in kB/s; override in $CONFIG_DIR/status
+	# below DISK_IO_THRESHOLD in kB/s; override in $BYOBU_CONFIG_DIR/status
 	[ -n "$DISK_IO_THRESHOLD" ] || DISK_IO_THRESHOLD=50
 	case "$mount_point" in
 		/dev/*) part="${mount_point}";;
@@ -55,7 +55,7 @@ __disk_io() {
 	local disk=${_RET}
 	local t2=`date +%s` t1=
 	for i in "read" "write"; do
-		local cache="$CACHE_DIR/disk.$i"
+		local cache="$BYOBU_RUN_DIR/disk.$i"
 		t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
 		local unit="kB/s"
 		local rate= x1= x2= symbol= unit=

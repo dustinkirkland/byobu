@@ -19,8 +19,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-DATA="$HOME/.$PKG"
-FLAG="$DATA/no-logout-on-detach"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/.common"
+
+FLAG="$BYOBU_CONFIG_DIR/no-logout-on-detach"
 
 LOGOUT_ON_DETACH=1
 for i in $@; do
@@ -47,7 +49,7 @@ install_launcher() {
 $PKG-launcher-uninstall || true
 # Hush login, since we will handle motd printing
 touch "$HOME"/.hushlogin
-rm -f "$DATA/disable-autolaunch"
+rm -f "$BYOBU_CONFIG_DIR/disable-autolaunch"
 
 # Update the logout/nologout flag
 update_flag

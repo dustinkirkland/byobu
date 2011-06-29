@@ -22,7 +22,7 @@
 get_distro() {
 	_RET=
 	if [ -n "$DISTRO" ]; then
-		# Allow manual override of distro in $CONFIG_DIR/status
+		# Allow manual override of distro in $BYOBU_CONFIG_DIR/status
 		_RET="$DISTRO"
 	elif [ -r "/etc/issue" ]; then
 		# Otherwise, check /etc/issue
@@ -45,7 +45,7 @@ __logo_detail() {
 __logo() {
 	local logo=
 	if [ -n "$LOGO" ]; then
-		# Allow users to define their own logo in $CONFIG_DIR/status
+		# Allow users to define their own logo in $BYOBU_CONFIG_DIR/status
 		printf "%s" "$LOGO"
 		return
 	fi

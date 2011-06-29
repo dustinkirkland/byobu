@@ -1,8 +1,6 @@
 #!/bin/sh
 
 PKG="byobu"
-RUN="/var/run/screen/S-$USER"
-mkdir -p "$RUN/$PKG"
 
 hput() {
     eval "$1""$2"='$3'
@@ -57,8 +55,8 @@ hput freq wifi_quality 17
 NOW=$(date +%s)
 for i in /usr/lib/$PKG/*; do
 	j=${i##*/}
-	#byobu-status "$j" > "$RUN/$PKG/$j.status"
-	CACHE="$RUN/$PKG/$j.status"
+	#byobu-status "$j" > "$BYOBU_RUN_DIR/$j.status"
+	CACHE="$BYOBU_RUN_DIR/$j.status"
         [ -r "$CACHE.last" ] && read lastrun < "$CACHE.last" || lastrun=0
 	freq=$(hget freq $j)
         expiration=$(($lastrun+$freq))
@@ -69,6 +67,6 @@ for i in /usr/lib/$PKG/*; do
 done
 
 # Print
-sed -e ':a;N;$!ba;s/\n//g' "$RUN/$PKG/"*.status > "$RUN/$PKG.status"
+sed -e ':a;N;$!ba;s/\n//g' "$BYOBU_RUN_DIR/"*.status > "$BYOBU_RUN_DIR/status"
 
 # vi: syntax=sh ts=4 noexpandtab

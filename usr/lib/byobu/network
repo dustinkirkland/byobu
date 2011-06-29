@@ -21,7 +21,7 @@
 
 get_interface() {
 	_RET=
-	# Allow interface overrides in $CONFIG_DIR/status
+	# Allow interface overrides in $BYOBU_CONFIG_DIR/status
 	if [ -n "$MONITORED_NETWORK" ]; then
 		_RET="$MONITORED_NETWORK"
 	else
@@ -38,7 +38,7 @@ __network_detail() {
 __network() {
 	get_interface; local interface="$_RET"
 	# By default, we won't bug the user with the display of network traffic
-	# below NETWORK_THRESHOLD in kbps; override in $CONFIG_DIR/status
+	# below NETWORK_THRESHOLD in kbps; override in $BYOBU_CONFIG_DIR/status
 	[ -n "$NETWORK_THRESHOLD" ] || NETWORK_THRESHOLD=20
 	t2=`date +%s`
 	OIFS=$IFS
@@ -48,7 +48,7 @@ __network() {
 			up) symbol="$ICON_UP" ;;
 			down) symbol="$ICON_DN" ;;
 		esac
-		cache="$CACHE_DIR/network.$i"
+		cache="$BYOBU_RUN_DIR/network.$i"
 		t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
 		if [ $t2 -le $t1 ]; then
 			rate=0

@@ -24,6 +24,10 @@
 #
 #---------------------------------------------------------------------
 
+PKG="byobu"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/.common"
+
 script_name=${0##*/}
 min_default=0
 max_default=100

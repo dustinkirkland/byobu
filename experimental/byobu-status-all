@@ -4,7 +4,7 @@ LIBDIR=/home/kirkland/src/byobu/byobu/usr/lib/byobu
 . "$LIBDIR/.constants"
 . "$LIBDIR/.shutil"
 
-mkdir -p "$CACHE_DIR/status"
+mkdir -p "$BYOBU_RUN_DIR/status"
 for i in "$LIBDIR/"*; do
 	case "$i" in
 		*/Makefile.am)
@@ -18,7 +18,7 @@ for i in "$LIBDIR/"*; do
 			. "$i"
 			j=${i##*/}
 			#printf "Running [__$j]...["
-			eval "__$j" > "$CACHE_DIR/status/$j"
+			eval "__$j" > "$BYOBU_RUN_DIR/status/$j"
 			#printf "]\n"
 		;;
 	esac

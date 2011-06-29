@@ -18,7 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-FLAG="$HOME/.$PKG/.welcome-displayed"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/.common"
+
+FLAG="$BYOBU_CONFIG_DIR/.welcome-displayed"
 
 [ -r /etc/motd ] && cat /etc/motd
 

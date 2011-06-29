@@ -23,11 +23,8 @@
 #	./debian/rules get-po
 
 PKG="byobu"
-DATA="$HOME/.$PKG"
-mkdir -p "$DATA"
-[ -z "$BYOBU_PREFIX" ] && export BYOBU_PREFIX="/usr"
-export BYOBU_PREFIX
-[ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir" || SOCKETDIR="/var/run/screen"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/.common"
 
 TEXTDOMAIN="$PKG"
 
@@ -65,7 +62,7 @@ EOT
 
 # Initialize variables
 FILE="$HOME"/."$PKG"/color
-PROFILE="$DATA/profile"
+PROFILE="$BYOBU_CONFIG_DIR/profile"
 [ -r "$PROFILE" ] || ln -sf $BYOBU_PREFIX/share/$PKG/profiles/common "$PROFILE"
 selected=-1
 color=
@@ -80,7 +77,7 @@ assert_symlink() {
 }
 
 # If these files exist, they must be a symlink
-assert_symlink "$DATA/profile"
+assert_symlink "$BYOBU_CONFIG_DIR/profile"
 
 listprofiles() {
 	# Display list of profiles, one per line
@@ -179,13 +176,13 @@ setcolor() {
 	fi
 	[ "$MONOCHROME" = "1" ] || MONOCHROME=0
 	printf "FOREGROUND=$FOREGROUND\nBACKGROUND=$BACKGROUND\nMONOCHROME=$MONOCHROME" > $FILE
-	touch "$SOCKETDIR/S-$USER/$PKG.reload-required"
+	touch "$BYOBU_RUN_DIR/reload-required"
 }
 
 if [ $# -eq 0 ]; then
 	prompt "background"
 	prompt "foreground"
-	screen -X at 0 source "$DATA/profile"
+	screen -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 else
 	while true; do
 		case "$1" in

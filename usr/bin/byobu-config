@@ -29,17 +29,17 @@ from snack import *
 PKG="byobu"
 HOME=os.getenv("HOME")
 USER=os.getenv("USER")
+BYOBU_CONFIG_DIR=os.getenv("BYOBU_CONFIG_DIR")
 if os.getenv("BYOBU_PREFIX"):
     PREFIX = os.getenv("BYOBU_PREFIX")
 else:
     PREFIX = "/usr"
 SHARE=PREFIX+'/share/'+PKG
 DOC=PREFIX+'/share/doc/'+PKG
-DATA=HOME+"/."+PKG
 if not os.path.exists(SHARE):
-    SHARE = DATA+"/"+SHARE
+    SHARE = BYOBU_CONFIG_DIR+"/"+SHARE
 if not os.path.exists(DOC):
-    DOC = DATA+"/"+DOC
+    DOC = BYOBU_CONFIG_DIR+"/"+DOC
 DEF_ESC="A"
 RELOAD = "If you are using the default set of keybindings, press\n<F5> or <ctrl-a-R> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
 SOCKETDIR="/var/run/screen"
@@ -48,8 +48,8 @@ if os.path.exists("/etc/%s/socketdir" % PKG):
 	execfile(i)
     except:
 	SOCKETDIR="/var/run/screen"
-RELOAD_FLAG="%s/S-%s/%s.reload-required" % (SOCKETDIR, USER, PKG)
-RELOAD_CMD="screen -X at 0 source "+DATA+"/profile"
+RELOAD_FLAG="%s/reload-required" % (BYOBU_CONFIG_DIR)
+RELOAD_CMD="screen -X at 0 source "+BYOBU_CONFIG_DIR+"/profile"
 ESC = ''
 snack.hotkeys[ESC] = ord(ESC)
 snack.hotkeys[ord(ESC)] = ESC
@@ -193,7 +193,7 @@ def keybindings(screen, size):
     return 100
 
 def switch_keybindings(set):
-    commands.getoutput(SED + " -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+DATA+"/keybindings")
+    commands.getoutput(SED + " -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+BYOBU_CONFIG_DIR+"/keybindings")
 
 def newwindow(screen, size):
     title=Entry(8, text="shell", returnExit=1)
@@ -255,7 +255,7 @@ def newwindow(screen, size):
     return 100
 
 def appendwindow(win):
-    f=open(DATA+'/windows', 'a')
+    f=open(BYOBU_CONFIG_DIR+'/windows', 'a')
     try:
         f.write(win+"\n")
 
@@ -266,12 +266,12 @@ def appendwindow(win):
     f.close()
 
 def readwindows():
-    if not os.path.isfile(DATA+'/windows'):
+    if not os.path.isfile(BYOBU_CONFIG_DIR+'/windows'):
         windowsfile=SHARE+'/windows/common'
-    elif os.path.getsize(DATA+'/windows') == 0:
+    elif os.path.getsize(BYOBU_CONFIG_DIR+'/windows') == 0:
         windowsfile=SHARE+'/windows/common'
     else:
-        windowsfile=DATA+'/windows'
+        windowsfile=BYOBU_CONFIG_DIR+'/windows'
     f=open(windowsfile)
     try:
         li=[]
@@ -333,8 +333,8 @@ def readstatus():
     status["uptime"]=1
     status["whoami"]=1
     status["wifi_quality"]=1
-    if os.path.exists(DATA+'/status'):
-        f=open(DATA+'/status', 'r')
+    if os.path.exists(BYOBU_CONFIG_DIR+'/status'):
+        f=open(BYOBU_CONFIG_DIR+'/status', 'r')
         for line in f.readlines():
            try:
                line = line.rstrip()
@@ -353,7 +353,7 @@ def readstatus():
     return li
 
 def writestatus(items):
-    f=open(DATA+'/status', 'w')
+    f=open(BYOBU_CONFIG_DIR+'/status', 'w')
     try:
         for i in items:
             if i[0] == 1:
@@ -390,7 +390,7 @@ def togglestatus(screen, size):
     return 100
 
 def writewindows(winlist):
-    f=open(DATA+'/windows', 'w')
+    f=open(BYOBU_CONFIG_DIR+'/windows', 'w')
     try:
         for win in winlist:
             if win[0] == -1:
@@ -459,7 +459,7 @@ def appendtofile(p, s):
 
 
 def getesckey():
-    path=DATA+'/keybindings'
+    path=BYOBU_CONFIG_DIR+'/keybindings'
     if not os.path.exists(path):
         return DEF_ESC
     line = commands.getoutput("grep ^escape "+path)
@@ -471,7 +471,7 @@ def getesckey():
     return esc
 
 def setesckey(key):
-    path = DATA+'/keybindings'
+    path = BYOBU_CONFIG_DIR+'/keybindings'
     if key != "":
         if key == " ":
             key = "`"
@@ -525,7 +525,7 @@ def chgesc(screen, size):
     return 100
 
 def autolaunch():
-    if os.path.exists(DATA+"/disable-autolaunch"):
+    if os.path.exists(BYOBU_CONFIG_DIR+"/disable-autolaunch"):
 	return 0
     if commands.getstatusoutput('grep -qs byobu-launch %s/.profile' % HOME)[0] == 0:
 	return 1
