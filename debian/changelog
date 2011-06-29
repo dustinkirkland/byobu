@@ -42,6 +42,10 @@ byobu (4.17) unreleased; urgency=low
     usr/share/byobu/profiles/byoburc, usr/share/byobu/profiles/common,
     usr/share/byobu/profiles/screenrc, usr/share/man/man1/byobu.1:
     - fix up a few more references to BYOBU_CONFIG_DIR
+  * usr/bin/byobu-ctrl-a, usr/bin/byobu-quiet, usr/bin/byobu-select-
+    profile, usr/bin/byobu-select-session, usr/bin/byobu-silent,
+    usr/bin/byobu-status:
+    - fix up a few more $HOME/.$PKG refs to $BYOBU_CONFIG_DIR
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:14:17 +0000
 

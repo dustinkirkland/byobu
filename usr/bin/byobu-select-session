@@ -23,6 +23,7 @@ import commands, os, re, sys
 PKG = "byobu"
 SHELL = os.getenv("SHELL", "/bin/bash")
 HOME=os.getenv("HOME")
+BYOBU_CONFIG_DIR=os.getenv("BYOBU_CONFIG_DIR")
 choice = ""
 sessions = []
 text = []
@@ -39,7 +40,7 @@ if output:
 			sessions.append(items[1])
 			i += 1
 
-show_shell = os.path.exists("%s/.%s/.always-select" % (HOME, PKG))
+show_shell = os.path.exists("%s/.always-select" % (BYOBU_CONFIG_DIR))
 if i>1 or show_shell:
 	sessions.append("NEW")
 	text.append("Create a new Byobu session")

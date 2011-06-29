@@ -21,7 +21,7 @@ PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/.common"
 
-keybindings="$HOME/.$PKG/keybindings"
+keybindings="$BYOBU_CONFIG_DIR/keybindings"
 touch "$keybindings"
 
 while true; do
@@ -57,7 +57,7 @@ while true; do
 		;;
 	esac
 done
-screen -X at 0 source "$HOME/.$PKG/profile"
+screen -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 echo "To modify this behavior again later, run 'byobu-ctrl-a'"
 echo
 

@@ -24,15 +24,15 @@ PKG="byobu"
 FLAG="$BYOBU_CONFIG_DIR/status.disable"
 
 # Clean up environment
-sed -i "/hardstatus/d" "$HOME/.$PKG/keybindings" || true
+sed -i "/hardstatus/d" "$BYOBU_CONFIG_DIR/keybindings" || true
 if [ "$1" = "--undo" ]; then
 	rm -f "$FLAG"
 else
 	touch "$FLAG"
 	# BUG: Need to make this dynamic and following
 	status="$USER@$(hostname)"
-	echo "hardstatus lastline '$status'" >> "$HOME/.$PKG/keybindings"
+	echo "hardstatus lastline '$status'" >> "$BYOBU_CONFIG_DIR/keybindings"
 fi
-screen -X at 0 source "$HOME/.$PKG/profile"
+screen -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 
 # vi: syntax=sh ts=4 noexpandtab

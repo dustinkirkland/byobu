@@ -61,7 +61,7 @@ EOT
 }
 
 # Initialize variables
-FILE="$HOME"/."$PKG"/color
+FILE="$BYOBU_CONFIG_DIR/color"
 PROFILE="$BYOBU_CONFIG_DIR/profile"
 [ -r "$PROFILE" ] || ln -sf $BYOBU_PREFIX/share/$PKG/profiles/common "$PROFILE"
 selected=-1

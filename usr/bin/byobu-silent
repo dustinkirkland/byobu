@@ -24,12 +24,12 @@ PKG="byobu"
 FLAG="$BYOBU_CONFIG_DIR/status.disable"
 
 # Clean up environment
-sed -i "/caption/d" "$HOME/.$PKG/keybindings" || true
+sed -i "/caption/d" "$BYOBU_CONFIG_DIR/keybindings" || true
 if [ "$1" = "--undo" ]; then
 	rm -f "$FLAG"
 else
 	touch "$FLAG"
-	echo "caption splitonly ''" >> "$HOME/.$PKG/keybindings"
+	echo "caption splitonly ''" >> "$BYOBU_CONFIG_DIR/keybindings"
 fi
 exec byobu-quiet "$@"
 
