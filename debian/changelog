@@ -1,4 +1,4 @@
-byobu (4.17-0ubuntu1) oneiric; urgency=low
+byobu (4.17) unreleased; urgency=low
 
   * usr/bin/byobu-launch: LP: #802646
     - ensure that .profile gets sourced if launching byobu by default,
@@ -52,6 +52,8 @@ byobu (4.17-0ubuntu1) oneiric; urgency=low
     - quiet printing of metadata service test
   * usr/bin/byobu-select-session:
     - need to use the screen binary, LP: #800496
+  * debian/control:
+    - modernized description
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:14:17 +0000
 
@@ -97,12 +99,6 @@ byobu (4.16-0ubuntu1) oneiric; urgency=low
     - get detail working again
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:14:14 +0000
-
-byobu (4.15-0ubuntu1) oneiric; urgency=low
-
-  * There was no 4.15 release
-
- -- Dustin Kirkland <kirkland@ubuntu.com>   Thu, 16 Jun 2011 16:16:29 -0500
 
 byobu (4.14-0ubuntu1) oneiric; urgency=low
 

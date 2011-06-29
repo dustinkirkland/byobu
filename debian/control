@@ -15,11 +15,9 @@ Provides: screen-profiles, screen-profiles-extras, byobu-extras
 Replaces: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0), byobu-extras (<< 2.17)
 Breaks: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0), byobu-extras (<< 2.17)
 Enhances: screen
-Description: a set of useful profiles and a profile-switcher for GNU screen
- byobu includes a set of profiles for the GNU screen window manager.
- These profiles are quite useful on server machines which are not running
- a graphical desktop.  The 'screen' command provides a number of advanced
- features are not necessarily exposed in the default profile.  These profiles
- provide features such as status bars, clocks, notifiers (reboot required,
- updates available), etc.  The profile-switcher allows users to quickly switch
- their .screenrc to any of the available profiles.
+Description: powerful, text based window manager and shell multiplexer
+ Byobu is Ubuntu's text-based window manager based on GNU Screen.
+ Using Byobu, you can quickly create and move between different windows
+ over a single SSH connection or TTY terminal, monitor dozens of important
+ statistics about your system, detach and reattach to sessions later
+ while your programs continue to run in the background.
