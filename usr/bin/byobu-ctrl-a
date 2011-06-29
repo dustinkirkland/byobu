@@ -31,6 +31,7 @@ while true; do
 	echo "When you press ctrl-a in Byobu, do you want it to operate in:"
 	echo "    (1) Emacs mode  (go to beginning of line)"
 	echo "    (2) Screen mode (screen's default escape sequence)"
+	echo
 	echo "Note that:"
 	echo "  - F12 also operates as Screen escape in Byobu"
 	echo "  - You can press F9 and choose your escape character"
