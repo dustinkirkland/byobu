@@ -27,7 +27,7 @@ rm -f /etc/update-motd.d/55-window-manager
 # Notify users that they should reload their profile
 [ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir"
 if [ -d "$SOCKETDIR" ]; then
-	for d in "$DIR"/*/"$PKG"; do
+	for d in "$SOCKETDIR"/*/"$PKG"; do
 		[ -d "$d" ] || continue
 		flag="$d/reload-required"
 		touch "$flag"
