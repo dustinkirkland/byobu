@@ -1,6 +1,7 @@
 byobu (4.18) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu, usr/bin/byobu-status:
+    - remove some redundancies
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Jun 2011 02:26:28 +0000
 

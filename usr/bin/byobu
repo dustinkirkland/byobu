@@ -21,9 +21,7 @@ VERSION=4.18
 
 PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
-. "${BYOBU_PREFIX}/lib/${PKG}/.shutil"
-. "${BYOBU_PREFIX}/lib/${PKG}/.constants"
-
+. "${BYOBU_PREFIX}/lib/${PKG}/.common"
 
 # Add a version argument for debugging purposes
 if [ "$#" = "1" ]; then
