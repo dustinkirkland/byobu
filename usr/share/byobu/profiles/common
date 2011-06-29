@@ -108,7 +108,7 @@ activity ""
 fit
 
 # Maintain SSH_AUTH_SOCK link
-setenv SSH_AUTH_SOCK $HOME/.byobu/.ssh-agent
+setenv SSH_AUTH_SOCK $BYOBU_CONFIG_DIR/.ssh-agent
 
 # Window tabs, second to last line
 caption always "%12`%?%-Lw%50L>%?%{=r}%n*%f %t%?(%u)%?%{-}%12`%?%+Lw%?%11` %=%12`%110`%109`%122`%111`%10`%<"
@@ -123,4 +123,4 @@ hardstatus string '%99`%{-}%{=r}%12` %100`%112`%=%117`%133`%130`%135`%102`%101`%
 # Upstream:
 #  * http://savannah.gnu.org/bugs/?22146
 
-source $HOME/.byobu/keybindings
+source $BYOBU_CONFIG_DIR/keybindings

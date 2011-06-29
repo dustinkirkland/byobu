@@ -49,7 +49,7 @@ bindkey "^[[17;2~"
 # ctrl-a-p      Previous window                 F3
 # ctrl-a-n      Next window                     F4
 # ctrl-a-R      Reload profile                  F5
-register r ":source $HOME/.byobu/profile^M"
+register r ":source $BYOBU_CONFIG_DIR/profile^M"
 bind R eval 'process x' 'process r'
 # ctrl-a-d      Detach from this session        F6
 # ctrl-a-[      Enter copy/scrollback mode      F7

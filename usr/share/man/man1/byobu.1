@@ -176,7 +176,7 @@ byobu keybindings can be user defined in /usr/share/byobu/keybindings/ (or withi
 
 .SH "BUGS"
 
-For Byobu colors to work properly, older versions of GNU Screen require a 1-line patch to adjust MAX_WINMSG_REND in screen.c.  The change is in GNU Screen's upstream source control system as of 2010-01-26, but GNU Screen has not released a new upstream version in several years.  You can disable colors entirely by setting MONOCHROME=1 in \fI~/.byobu/statusrc\fP.  For more information, see:
+For Byobu colors to work properly, older versions of GNU Screen require a 1-line patch to adjust MAX_WINMSG_REND in screen.c.  The change is in GNU Screen's upstream source control system as of 2010-01-26, but GNU Screen has not released a new upstream version in several years.  You can disable colors entirely by setting MONOCHROME=1 in \fI$BYOBU_CONFIG_DIR/statusrc\fP.  For more information, see:
  * http://savannah.gnu.org/bugs/?22146
 
 PuTTY users have reported that the F2, F3, and F4 shortcut keys are not working properly.  PuTTY sends the same escape sequences as the linux console for F1-F4 by default.  You can fix this problem in the PuTTY config, Terminal -> Keyboard -> Function keys: Xterm R6.  See: \fIhttp://www.mail-archive.com/screen-users@gnu.org/msg01525.html\fP

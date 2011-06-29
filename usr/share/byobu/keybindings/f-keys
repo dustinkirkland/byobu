@@ -30,7 +30,7 @@ bindkey -k k1 screen -t config 0 byobu-config		# F1  | Configuration (along with
 bindkey -k k2 screen					# F2  | Create new window
 bindkey -k k3 eval 'prev' 'fit'				# F3  | Previous Window
 bindkey -k k4 eval 'next' 'fit'				# F4  | Next Window
-register r ":source $HOME/.byobu/profile^M"		#     | Goes with F5 definition
+register r ":source $BYOBU_CONFIG_DIR/profile^M"	#     | Goes with F5 definition
 bindkey -k k5 eval 'process x' 'process r'		# F5  | Reload profile
 bindkey -k k6 detach					# F6  | Detach from this session
 bindkey -k k7 copy					# F7  | Enter copy/scrollback mode
