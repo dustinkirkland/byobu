@@ -20,6 +20,9 @@
 
 PKG="byobu"
 
+# Support two different backends (screen/tmux)
+[ -z "$BYOBU_BACKEND" ] && export BYOBU_BACKEND="screen" || export BYOBU_BACKEND
+
 # Create and set the user configuration directory
 if [ -d "$XDG_CONFIG_HOME" ] && mkdir -p "$XDG_CONFIG_HOME/$PKG"; then
 	export BYOBU_CONFIG_DIR="$XDG_CONFIG_HOME/$PKG"

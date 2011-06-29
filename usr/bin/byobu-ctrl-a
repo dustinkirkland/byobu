@@ -30,7 +30,7 @@ while true; do
 	echo
 	echo "When you press ctrl-a in Byobu, do you want it to operate in:"
 	echo "    (1) Emacs mode  (go to beginning of line)"
-	echo "    (2) Screen mode (screen's default escape sequence)"
+	echo "    (2) Screen mode (GNU Screen's default escape sequence)"
 	echo
 	echo "Note that:"
 	echo "  - F12 also operates as Screen escape in Byobu"
@@ -52,12 +52,12 @@ while true; do
 			echo 'escape "^Aa"' >> "$keybindings"
 			echo 'register x "^A"' >> "$keybindings"
 			echo 'bindkey "^A"' >> "$keybindings"
-			echo "INFO: ctrl-a will now operate in screen mode"
+			echo "INFO: ctrl-a will now operate in GNU Screen mode"
 			break
 		;;
 	esac
 done
-screen -X at 0 source "$BYOBU_CONFIG_DIR/profile"
+$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 echo "To modify this behavior again later, run 'byobu-ctrl-a'"
 echo
 

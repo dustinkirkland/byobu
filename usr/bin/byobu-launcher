@@ -27,7 +27,7 @@ else
 	case "$TERM" in
 		*screen*)
 			# Handle nesting
-			printf "$(gettext 'To launch in a nested screen session, run: byobu')\n"
+			printf "$(gettext 'To launch in a nested session, run: byobu')\n"
 		;;
 		dumb)
 			# Dumb terminal, don't launch

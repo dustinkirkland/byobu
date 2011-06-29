@@ -30,6 +30,8 @@ PKG="byobu"
 HOME=os.getenv("HOME")
 USER=os.getenv("USER")
 BYOBU_CONFIG_DIR=os.getenv("BYOBU_CONFIG_DIR")
+BYOBU_BACKEND=os.getenv("BYOBU_BACKEND")
+SOCKETDIR=os.getenv("SOCKETDIR")
 if os.getenv("BYOBU_PREFIX"):
     PREFIX = os.getenv("BYOBU_PREFIX")
 else:
@@ -41,15 +43,9 @@ if not os.path.exists(SHARE):
 if not os.path.exists(DOC):
     DOC = BYOBU_CONFIG_DIR+"/"+DOC
 DEF_ESC="A"
-RELOAD = "If you are using the default set of keybindings, press\n<F5> or <ctrl-a-R> to activate these changes.\n\nOtherwise, exit this screen session and start a new one."
-SOCKETDIR="/var/run/screen"
-if os.path.exists("/etc/%s/socketdir" % PKG):
-    try:
-	execfile(i)
-    except:
-	SOCKETDIR="/var/run/screen"
+RELOAD = "If you are using the default set of keybindings, press\n<F5> or <ctrl-a-R> to activate these changes.\n\nOtherwise, exit this session and start a new one."
 RELOAD_FLAG="%s/reload-required" % (BYOBU_CONFIG_DIR)
-RELOAD_CMD="screen -X at 0 source "+BYOBU_CONFIG_DIR+"/profile"
+RELOAD_CMD="%s -X at 0 source %s/profile" % (BYOBU_BACKEND, BYOBU_CONFIG_DIR)
 ESC = ''
 snack.hotkeys[ESC] = ord(ESC)
 snack.hotkeys[ord(ESC)] = ESC
@@ -96,7 +92,7 @@ def terminal_size():                    ### decide on *some* terminal size
             cr = (25, 80)
     return int(cr[1]-5), int(cr[0]-5)         # reverse rows, cols
 
-def menu(screen, size, isInstalled):
+def menu(snackScreen, size, isInstalled):
     if isInstalled:
         installtext=_("Byobu currently launches at login (toggle off)")
     else:
@@ -113,9 +109,9 @@ def menu(screen, size, isInstalled):
     li.append(_("Create new windows"), 7)
     li.append(_("Manage default windows"), 8)
     li.append(installtext, 9)
-    bb = ButtonBar(screen, (("Exit", "exit", ESC),), compact=1)
+    bb = ButtonBar(snackScreen, (("Exit", "exit", ESC),), compact=1)
 
-    g = GridForm(screen, _(" Byobu Configuration Menu"), 1, 2)
+    g = GridForm(snackScreen, _(" Byobu Configuration Menu"), 1, 2)
     g.add(li, 0, 0, padding=(4,2,4,2))
     g.add(bb, 0, 1, padding=(1,1,0,0))
 
@@ -124,18 +120,18 @@ def menu(screen, size, isInstalled):
     else:
         return li.current()
 
-def messagebox(screen, width, height, title, text, scroll=0, \
+def messagebox(snackScreen, width, height, title, text, scroll=0, \
     buttons=((_("Okay"), "okay"),(_("Cancel"), "cancel", ESC)) ):
 
     t = Textbox(width, height, text, scroll=scroll )
-    bb = ButtonBar(screen, buttons, compact = 1)
-    g = GridForm(screen, title, 1, 2)
+    bb = ButtonBar(snackScreen, buttons, compact = 1)
+    g = GridForm(snackScreen, title, 1, 2)
     g.add(t, 0, 0, padding=(0,0,0,0))
     g.add(bb, 0, 1, padding=(1,1,0,0))
 
     return bb.buttonPressed(g.runOnce())
 
-def help(screen, size, config):
+def help(snackScreen, size, config):
     f=file(DOC+'/help.txt')
     text=f.read()
     f.close()
@@ -144,8 +140,8 @@ def help(screen, size, config):
     text=text.replace("_VER_", commands.getoutput("byobu -v | head -n1 | " + SED + " 's/.* //'"), 1)
 
     t = Textbox(70, 14, text, scroll=0)
-    bb = ButtonBar(screen, ((_("Menu"), "menu", ESC),), compact = 1)
-    g = GridForm(screen, _("Byobu Help"), 1, 3)
+    bb = ButtonBar(snackScreen, ((_("Menu"), "menu", ESC),), compact = 1)
+    g = GridForm(snackScreen, _("Byobu Help"), 1, 3)
     g.add(t, 0, 0, padding=(0,0,0,0))
     g.add(bb, 0, 2, padding=(1,1,0,0))
 
@@ -153,18 +149,18 @@ def help(screen, size, config):
 
     return 100
 
-def select_color(screen, size, layer):
+def select_color(snackScreen, size, layer):
     li = Listbox(height = 8, width = 60, scroll = 1, returnExit = 1)
 
     for choice in commands.getoutput('byobu-select-profile -l').splitlines():
         li.append(choice, choice)
 
-    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
+    bb = ButtonBar(snackScreen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
 
     if layer == "foreground":
-        g = GridForm(screen, _("Choose a foreground color:"), 1, 2)
+        g = GridForm(snackScreen, _("Choose a foreground color:"), 1, 2)
     else:
-        g = GridForm(screen, _("Choose a background color:"), 1, 2)
+        g = GridForm(snackScreen, _("Choose a background color:"), 1, 2)
 
     g.add(li, 0, 0, padding=(4,2,4,2))
     g.add(bb, 0, 1, padding=(1,1,0,0))
@@ -177,14 +173,14 @@ def select_color(screen, size, layer):
 	reload_required()
     return 100
 
-def keybindings(screen, size):
+def keybindings(snackScreen, size):
     li = Listbox(height = 6, width = 60, returnExit = 1)
     for choice in commands.getoutput('ls '+SHARE+'/keybindings').splitlines():
         if choice != "common" and choice != "none":
             li.append(choice, choice)
     li.append("none", "none")
-    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
-    g = GridForm(screen, _("Which set of keybindings would you like to use?"), 1, 2)
+    bb = ButtonBar(snackScreen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
+    g = GridForm(snackScreen, _("Which set of keybindings would you like to use?"), 1, 2)
     g.add(li, 0, 0, padding=(4,2,4,2))
     g.add(bb, 0, 1, padding=(1,1,0,0))
     if bb.buttonPressed(g.runOnce()) != "cancel":
@@ -195,7 +191,7 @@ def keybindings(screen, size):
 def switch_keybindings(set):
     commands.getoutput(SED + " -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+BYOBU_CONFIG_DIR+"/keybindings")
 
-def newwindow(screen, size):
+def newwindow(snackScreen, size):
     title=Entry(8, text="shell", returnExit=1)
     titlel=Label(_("Title: "))
     command=Entry(20, text="/bin/sh", returnExit=1)
@@ -219,9 +215,9 @@ def newwindow(screen, size):
 
     cb=Checkbox(_("Add to default windows"))
 
-    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
+    bb = ButtonBar(snackScreen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
 
-    g = GridForm(screen, _("Create new window(s):"), 2, 6 )
+    g = GridForm(snackScreen, _("Create new window(s):"), 2, 6 )
     g.add(titlel, 0, 0, anchorLeft=1,padding=(4,1,0,1))
     g.add(title, 1, 0, anchorLeft=1)
     g.add(commandl, 0, 1, anchorLeft=1, anchorTop=1,padding=(4,0,0,1))
@@ -237,18 +233,18 @@ def newwindow(screen, size):
         sel=r.getSelection()
         if sel:
             for s in sel:
-                win='screen -t %s %s' % (cmd[s][1], cmd[s][2])
+                win='%s -t %s %s' % (BYOBU_BACKEND, cmd[s][1], cmd[s][2])
                 commands.getoutput(win)
                 if cb.value():
                     appendwindow(win)
         else:
-	    cpath='screen -X setenv newpath %s' % (path.value())
-            win='screen -X eval \'chdir $newpath\' \"screen -t %s %s\"' % (title.value(), command.value())
+	    cpath='%s -X setenv newpath %s' % (BYOBU_BACKEND, path.value())
+            win='%s -X eval \'chdir $newpath\' \"%s -t %s %s\"' % (BYOBU_BACKEND, BYOBU_BACKEND, title.value(), command.value())
 	    commands.getoutput(cpath)
             commands.getoutput(win)
             if cb.value():
 	    	cpath='chdir %s' % (path.value())
-            	win='screen -t %s %s' % (title.value(), command.value())
+            	win='%s -t %s %s' % (BYOBU_BACKEND, title.value(), command.value())
 		appendwindow(cpath)
                 appendwindow(win)
 
@@ -365,7 +361,7 @@ def writestatus(items):
         return None
     f.close()
 
-def togglestatus(screen, size):
+def togglestatus(snackScreen, size):
     itemlist=readstatus()
     rl=Label("")
     r=CheckboxTree(12, scroll=1)
@@ -374,8 +370,8 @@ def togglestatus(screen, size):
        if item[0] != -1:
             r.append(item[1],count,selected=item[0])
        count=count+1
-    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
-    g = GridForm(screen, _("Toggle status notifications:"), 2, 4 )
+    bb = ButtonBar(snackScreen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
+    g = GridForm(snackScreen, _("Toggle status notifications:"), 2, 4 )
     g.add(rl, 0, 0, anchorLeft=1, anchorTop=1, padding=(4,0,0,1))
     g.add(r, 1, 0)
     g.add(bb, 1, 1, padding=(4,1,0,0))
@@ -404,7 +400,7 @@ def writewindows(winlist):
         return None
     f.close()
 
-def defaultwindows(screen, size):
+def defaultwindows(snackScreen, size):
     winlist=readwindows()
 
     rl=Label(_("Windows:"))
@@ -415,9 +411,9 @@ def defaultwindows(screen, size):
             r.append(win[1],count,selected=win[0])
        count=count+1
 
-    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
+    bb = ButtonBar(snackScreen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
 
-    g = GridForm(screen, _("Select window(s) to create by default:"), 2, 4 )
+    g = GridForm(snackScreen, _("Select window(s) to create by default:"), 2, 4 )
     g.add(rl, 0, 0, anchorLeft=1, anchorTop=1, padding=(4,0,0,1))
     g.add(r, 1, 0)
     g.add(bb, 1, 1, padding=(4,1,0,0))
@@ -433,18 +429,18 @@ def defaultwindows(screen, size):
 
     return 100
 
-def install(screen, size, isInstalled):
+def install(snackScreen, size, isInstalled):
     if isInstalled:
         out = commands.getoutput("byobu-launcher-uninstall")
         if out == "":
             out = _("Byobu will not be used next time you login.")
-        button = messagebox(screen, 60, 2, _("Message"), out, buttons=((_("Menu"), )))
+        button = messagebox(snackScreen, 60, 2, _("Message"), out, buttons=((_("Menu"), )))
         return 101
     else:
         out = commands.getoutput("byobu-launcher-install")
         if out == "":
             out = _("Byobu will be launched automatically next time you login.")
-        button = messagebox(screen, 60, 2, "Message", out, buttons=((_("Menu"), )))
+        button = messagebox(snackScreen, 60, 2, "Message", out, buttons=((_("Menu"), )))
         return 100
 
 def appendtofile(p, s):
@@ -486,12 +482,12 @@ def setesckey(key):
             out = commands.getoutput(SED+" -i -e 's/\"^^/\"\^"+l+"/g' "+path)
             out = commands.getoutput(SED+" -i -e '/^$/d' "+path)
 
-def chgesc(screen, size):
+def chgesc(snackScreen, size):
     esc=Entry(2, text=getesckey(), returnExit=1)
     escl=Label(_("Escape key: ctrl-"))
-    bb = ButtonBar(screen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
+    bb = ButtonBar(snackScreen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
 
-    g = GridForm(screen, _("Change escape sequence:"), 2, 4 )
+    g = GridForm(snackScreen, _("Change escape sequence:"), 2, 4 )
     g.add(escl, 0, 0, anchorLeft=1, padding=(1,0,0,1))
     g.add(esc, 1, 0, anchorLeft=1)
     g.add(bb, 1, 1)
@@ -515,7 +511,7 @@ def chgesc(screen, size):
                dummy = "foo"
         else:
             loop=0
-    screen.popWindow()
+    snackScreen.popWindow()
     button = bb.buttonPressed(which)
     if button != "cancel":
         setesckey(esc.value())
@@ -539,9 +535,9 @@ def main():
     """
 
     size = terminal_size()
-    screen = SnackScreen()
-    screen.drawRootText(1,0,_(' Byobu Configuration Menu'))
-    screen.pushHelpLine(_('<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits'))
+    snackScreen = SnackScreen()
+    snackScreen.drawRootText(1,0,_(' Byobu Configuration Menu'))
+    snackScreen.pushHelpLine(_('<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits'))
 
     config = SafeConfigParser()
 
@@ -550,28 +546,28 @@ def main():
     tag = 100
 
     while tag > 0 :
-        tag = menu(screen, size, isInstalled)
+        tag = menu(snackScreen, size, isInstalled)
         if tag == 1:
-            tag = help(screen, size, config)
+            tag = help(snackScreen, size, config)
         elif tag == 2:
-            tag = select_color(screen, size, "background")
+            tag = select_color(snackScreen, size, "background")
         elif tag == 3:
-            tag = select_color(screen, size, "foreground")
+            tag = select_color(snackScreen, size, "foreground")
         elif tag == 4:
-            tag = togglestatus(screen, size)
+            tag = togglestatus(snackScreen, size)
         elif tag == 5:
-            tag = keybindings(screen, size)
+            tag = keybindings(snackScreen, size)
 	elif tag == 6:
-            tag = chgesc(screen, size)
+            tag = chgesc(snackScreen, size)
         elif tag == 7:
-            tag = newwindow(screen, size)
+            tag = newwindow(snackScreen, size)
         elif tag == 8:
-            tag = defaultwindows(screen, size)
+            tag = defaultwindows(snackScreen, size)
         elif tag == 9:
-            tag = install(screen, size, isInstalled)
+            tag = install(snackScreen, size, isInstalled)
             isInstalled = autolaunch()
 
-    screen.finish()
+    snackScreen.finish()
     sys.exit(0)
 
 

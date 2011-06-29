@@ -182,7 +182,7 @@ setcolor() {
 if [ $# -eq 0 ]; then
 	prompt "background"
 	prompt "foreground"
-	screen -X at 0 source "$BYOBU_CONFIG_DIR/profile"
+	$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 else
 	while true; do
 		case "$1" in

@@ -33,7 +33,7 @@ echo
 # If we're in a byobu session, let's exit that too
 case "$STY" in
 	*byobu)
-		screen -X at 0 quit
+		$BYOBU_BACKEND -X at 0 quit
 	;;
 esac
 

@@ -2,6 +2,12 @@ byobu (4.18) unreleased; urgency=low
 
   * usr/bin/byobu, usr/bin/byobu-status:
     - remove some redundancies
+  * usr/bin/byobu, usr/bin/byobu-config, usr/bin/byobu-ctrl-a,
+    usr/bin/byobu-disable, usr/bin/byobu-launcher, usr/bin/byobu-quiet,
+    usr/bin/byobu-reconnect-sockets, usr/bin/byobu-select-profile,
+    usr/bin/byobu-select-session, usr/lib/byobu/.constants:
+    - use a BYOBU_BACKEND environment variable, to support both screen
+      and tmux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Jun 2011 02:26:28 +0000
 

@@ -30,7 +30,6 @@ case "$-" in
 		# no-op
 	;;
 	*)
-		# screen -X -S "$PKG" at "$USER*" stuff ". $0"; then
 		echo 2>&1
 		echo "ERROR: You must source this file, rather than execute it." 2>&1
 		echo "  . $0" 2>&1
