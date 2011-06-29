@@ -1,4 +1,4 @@
-byobu (4.17) unreleased; urgency=low
+byobu (4.17-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu-launch: LP: #802646
     - ensure that .profile gets sourced if launching byobu by default,
@@ -55,7 +55,7 @@ byobu (4.17) unreleased; urgency=low
   * debian/control:
     - modernized description
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:14:17 +0000
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Jun 2011 02:26:23 +0000
 
 byobu (4.16-0ubuntu1) oneiric; urgency=low
 
