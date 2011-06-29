@@ -48,6 +48,8 @@ byobu (4.17-0ubuntu1) oneiric; urgency=low
     - fix up a few more $HOME/.$PKG refs to $BYOBU_CONFIG_DIR
   * usr/bin/byobu-janitor, usr/lib/byobu/.constants:
     - LP: #553105, #780081: support XDG user dirs
+  * usr/lib/byobu/.shutil:
+    - quiet printing of metadata service test
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Jun 2011 14:14:17 +0000
 
