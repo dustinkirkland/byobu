@@ -1,0 +1,2 @@
+# BYOBU_BACKEND can currently be "screen" or "tmux"
+BYOBU_BACKEND="screen"
