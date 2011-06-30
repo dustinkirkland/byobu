@@ -28,7 +28,7 @@ if [ "$#" = "1" ]; then
 	case "$1" in
 		-v|--version)
 			echo "$PKG version $VERSION"
-			exec $BYOBU_BACKEND -v
+			exec $BYOBU_BACKEND $BYOBU_ARG_VERSION
 			exit 0
 		;;
 	esac

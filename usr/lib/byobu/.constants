@@ -26,8 +26,14 @@ if [ -z "$BYOBU_BACKEND" ];
 	[ -r "$BYOBU_CONFIG_DIR/backend" ] && . "$BYOBU_CONFIG_DIR/backend"
 fi
 case "$BYOBU_BACKEND" in
-	screen|tmux) export BYOBU_BACKEND ;;
-	*) export BYOBU_BACKEND="screen" ;;
+	tmux)
+		export BYOBU_BACKEND
+		BYOBU_ARG_VERSION="-V"
+	;;
+	*)
+		export BYOBU_BACKEND="screen"
+		BYOBU_ARG_VERSION="-v"
+	;;
 esac
 
 # Create and set the user configuration directory
