@@ -18,5 +18,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-. "${BYOBU_PREFIX}/lib/${PKG}/.shutil"
-. "${BYOBU_PREFIX}/lib/${PKG}/.constants"
+if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
+	. "${BYOBU_PREFIX}/lib/${PKG}/.shutil"
+	. "${BYOBU_PREFIX}/lib/${PKG}/.constants"
+	BYOBU_INCLUDED_LIBS=1
+fi
