@@ -25,6 +25,8 @@ byobu (4.18) unreleased; urgency=low
   * debian/control: start suggesting tmux
   * usr/bin/byobu, usr/lib/byobu/.constants:
     - support tmux -V version
+  * usr/lib/byobu/.shutil:
+    - update ec2 detection method
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Jun 2011 02:26:28 +0000
 
