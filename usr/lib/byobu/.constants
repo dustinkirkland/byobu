@@ -21,7 +21,7 @@
 PKG="byobu"
 
 # Support two different backends (screen/tmux)
-if [ -z "$BYOBU_BACKEND" ];
+if [ -z "$BYOBU_BACKEND" ]; then
 	[ -r "/etc/byobu/backend" ] && . "/etc/byobu/backend"
 	[ -r "$BYOBU_CONFIG_DIR/backend" ] && . "$BYOBU_CONFIG_DIR/backend"
 fi
