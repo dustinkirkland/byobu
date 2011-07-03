@@ -84,7 +84,7 @@ fi
 NAME="-S $PKG"
 # Zero out $NAME if user has specified a session name
 for i in "$@"; do
-	case $i in -r|-*S|-ls|-list) NAME= ;; esac
+	case $i in -*r*|-*d*|-*D*|-*S*|-ls|-list) NAME= ;; esac
 done
 # Now let's execute the backend!
 if [ "$#" = "0" ]; then
