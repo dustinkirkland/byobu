@@ -28,6 +28,10 @@ byobu (4.18) unreleased; urgency=low
   * usr/lib/byobu/.shutil:
     - update ec2 detection method
 
+  [ James Spencer ]
+  * usr/lib/byobu/.constants:
+    - fix syntax error
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 29 Jun 2011 02:26:28 +0000
 
 byobu (4.17-0ubuntu1) oneiric; urgency=low
