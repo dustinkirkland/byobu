@@ -20,16 +20,16 @@
 
 PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
-. "${BYOBU_PREFIX}/lib/${PKG}/.constants"
+. "${BYOBU_PREFIX}/lib/${PKG}/.dirs"
 
-for i in $(cat "$BYOBU_CONFIG_DIR/status.$1"); do
+while read i; do
 	cache="$BYOBU_RUN_DIR/status/$i"
 	if [ -s "$cache" ]; then
 		read c < "$cache"
 		printf "%s" "$c"
 		case "$i" in
-			color|time) true ;;
+			color|menu|time) true ;;
 			*) printf " " ;;
 		esac
 	fi
-done
+done < "$BYOBU_CONFIG_DIR/status.$1"

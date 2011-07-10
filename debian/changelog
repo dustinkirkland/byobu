@@ -59,6 +59,8 @@ byobu (4.18) unreleased; urgency=low
     - re-add a couple of necessary backticks
     - update caption line to use new statusd cache
     - significantly reduce the number of mkdir -p commands
+  * usr/bin/byobu-status-print:
+    - save a few forks
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:
