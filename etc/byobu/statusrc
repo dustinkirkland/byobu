@@ -23,6 +23,7 @@
 apport=0
 arch=0
 battery=1
+color=1
 cpu_count=1
 cpu_freq=1
 cpu_temp=0

@@ -28,6 +28,29 @@ byobu (4.18) unreleased; urgency=low
     - support tmux -V version
   * usr/lib/byobu/.shutil:
     - update ec2 detection method
+  * === added directory usr/share/byobu/status, configure.ac,
+    etc/byobu/statusrc, experimental/byobu-status-all => usr/bin/byobu-
+    statusd, Makefile.am, usr/bin/byobu-janitor, usr/bin/byobu-status-
+    print, usr/bin/Makefile.am, usr/lib/byobu/color,
+    usr/lib/byobu/.constants, usr/lib/byobu/Makefile.am,
+    usr/lib/byobu/.shutil, usr/share/byobu/profiles/common,
+    usr/share/byobu/status/1, usr/share/byobu/status/2,
+    usr/share/byobu/status/3, usr/share/byobu/status/4,
+    usr/share/byobu/status/Makefile.am:
+    - add shared configurations for status ordering
+    - install symlinks to status ordering
+    - add status script for status colors
+    - move color function to shared utils
+    - add stub for tmux color support
+    - add byobu-statusd, daemon to cache and update status information in the
+      run directory as the information expires
+    - add byobu-status-print, script to concatenate status per ordered
+      configuration
+    - move byobu backend support below BYOBU_CONFIG_DIR determination
+    - move status frequencies to a shared utility function
+    - drop the backtick commands for all the individual status functions
+    - add the backtick commands for the 4 quadrants of status
+    - update the hardstatus line accordingly
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:

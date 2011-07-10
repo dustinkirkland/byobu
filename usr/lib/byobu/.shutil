@@ -19,7 +19,42 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-color 2>/dev/null || color() { true; }
+# Define colors
+color_screen() {
+	ESC="\005"
+	case "$1" in
+		"") return 0 ;;
+		-)   printf "$ESC{-}" ;;
+		--)   printf "$ESC{-} " ;;
+		esc)    printf "$ESC" ;;
+		bold1)  printf "$ESC{=b }" ;;
+		bold2)  printf "$ESC{+b }" ;;
+		none)   printf "$ESC{= }" ;;
+		invert) printf "$ESC{=r }" ;;
+		*)
+			if [ "$#" = "2" ]; then
+				[ "$MONOCHROME" = "1" ] && printf "$ESC{= }"   || printf "$ESC{= $1$2}"
+			else
+				[ "$MONOCHROME" = "1" ] && printf "$ESC{=$1 }" || printf "$ESC{=$1 $2$3}"
+			fi
+		;;
+	esac
+}
+
+color_tmux() {
+	true
+}
+
+color() {
+	case "$BYOBU_BACKEND" in
+		tmux)
+			color_tmux "$@"
+		;;
+		*)
+			color_screen "$@"
+		;;
+	esac
+}
 
 # uncommented_lines(char=#)
 # does the standard input have lines that do not start with 'char'?
@@ -116,47 +151,54 @@ metadata_available() {
 }
 
 status_freq() {
+# Define status frequencies
+#   Use prime number intervals, to decrease collisions, which
+#   yields some less expensive status updates.
+#   ~86000 ~1 day
+#   ~600   ~10 minutes
+#   ~180   ~3 minutes
+#   ~60    ~1 minute
 	case "$1" in
-		apport)_RET=67 ;;
-		arch)_RET=9999999 ;;
-		battery)_RET=61 ;;
-		color)_RET=9999999 ;;
-		cpu_count) _RET=5 ;;
-		cpu_freq) _RET=2 ;;
-		cpu_temp) _RET=19 ;;
-		custom) _RET=5 ;;
-		date) _RET=28793 ;;
-		disk) _RET=13 ;;
-		disk_io) _RET=3 ;;
-		ec2_cost) _RET=601 ;;
-		fan_speed) _RET=23 ;;
-		hostname) _RET=607 ;;
-		ip_address) _RET=127 ;;
-		load_average) _RET=2 ;;
-		logo) _RET=9999999 ;;
-		mail) _RET=5 ;;
-		mem_available) _RET=47 ;;
-		mem_used) _RET=13 ;;
-		menu) _RET=9999999 ;;
-		network) _RET=3 ;;
-		notify_osd) _RET=0 ;;
-		processes) _RET=7 ;;
-		raid) _RET=7 ;;
-		rcs_cost) _RET=613 ;;
+		apport)		_RET=67 ;;
+		arch)		_RET=9999999 ;;
+		battery)	_RET=61 ;;
+		color)		_RET=9999999 ;;
+		cpu_count)	_RET=5 ;;
+		cpu_freq)	_RET=2 ;;
+		cpu_temp)	_RET=19 ;;
+		custom)		_RET=5 ;;
+		date)		_RET=28793 ;;
+		disk)		_RET=13 ;;
+		disk_io)	_RET=3 ;;
+		ec2_cost)	_RET=601 ;;
+		fan_speed)	_RET=23 ;;
+		hostname)	_RET=607 ;;
+		ip_address)	_RET=127 ;;
+		load_average)	_RET=2 ;;
+		logo)		_RET=9999999 ;;
+		mail)		_RET=5 ;;
+		mem_available)	_RET=47 ;;
+		mem_used)	_RET=13 ;;
+		menu)		_RET=9999999 ;;
+		network)	_RET=3 ;;
+		notify_osd)	_RET=9999999 ;;
+		processes)	_RET=7 ;;
+		raid)		_RET=7 ;;
+		rcs_cost)	_RET=613 ;;
 		reboot_required) _RET=5 ;;
-		release) _RET=599 ;;
-		services) _RET=53 ;;
-		swap) _RET=19 ;;
-		time) _RET=9999999 ;;
-		time_binary) _RET=23 ;;
-		time_utc) _RET=11 ;;
-		trash) _RET=9999999 ;;
+		release)	_RET=599 ;;
+		services)	_RET=53 ;;
+		swap)		_RET=19 ;;
+		time)		_RET=9999999 ;;
+		time_binary)	_RET=23 ;;
+		time_utc)	_RET=11 ;;
+		trash)		_RET=9999999 ;;
 		updates_available) _RET=7 ;;
-		uptime) _RET=29 ;;
-		users) _RET=11 ;;
-		whoami) _RET=86029 ;;
-		wifi_quality) _RET=17 ;;
-		*) _RET=9999999 ;;
+		uptime)		_RET=29 ;;
+		users)		_RET=11 ;;
+		whoami)		_RET=86029 ;;
+		wifi_quality)	_RET=17 ;;
+		*)		_RET=9999999 ;;
 	esac
 }
 

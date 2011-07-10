@@ -40,6 +40,11 @@ command -v greadlink >/dev/null && READLINK="greadlink" || READLINK="readlink"
 # Create byobu-exchange buffer file, with secure permissions, if it doesn't exist
 [ -e "$BYOBU_RUN_DIR/printscreen" ] || install -m 600 /dev/null "$BYOBU_RUN_DIR/printscreen"
 
+# Set up status ordering symlinks
+for i in 1 2 3 4; do
+	[ -e "$BYOBU_CONFIG_DIR/status.$i" ] || ln -s "${BYOBU_PREFIX}/share/${PKG}/status/$i" "$BYOBU_CONFIG_DIR/status.$i"
+done
+
 # Affects: users who launched using sudo, such that their config dir
 # is not writable by them
 if [ -d "$BYOBU_CONFIG_DIR" ] && [ ! -w "$BYOBU_CONFIG_DIR" ]; then

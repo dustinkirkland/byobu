@@ -22,6 +22,7 @@ AC_OUTPUT(Makefile \
 	usr/share/byobu/keybindings/Makefile \
 	usr/share/byobu/pixmaps/Makefile \
 	usr/share/byobu/profiles/Makefile \
+	usr/share/byobu/status/Makefile \
 	usr/share/byobu/tests/Makefile \
 	usr/share/byobu/windows/Makefile \
 	usr/share/doc/byobu/Makefile \

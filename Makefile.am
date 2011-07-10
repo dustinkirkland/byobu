@@ -4,6 +4,7 @@ SUBDIRS = etc/byobu \
 	usr/share/byobu/keybindings \
 	usr/share/byobu/pixmaps \
 	usr/share/byobu/profiles \
+	usr/share/byobu/status \
 	usr/share/byobu/tests \
 	usr/share/byobu/windows \
 	usr/share/doc/byobu \
