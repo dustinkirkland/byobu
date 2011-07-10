@@ -41,8 +41,63 @@ color_screen() {
 	esac
 }
 
+color_map() {
+	case "$1" in
+		k) _RET=black ;;
+		r) _RET=red ;;
+		g) _RET=green ;;
+		y) _RET=yellow ;;
+		b) _RET=blue ;;
+		m) _RET=magenta ;;
+		c) _RET=cyan ;;
+		w) _RET=white ;;
+		d) _RET=color0 ;;
+		K) _RET=black,bold ;;
+		R) _RET=red,bold ;;
+		G) _RET=green,bold ;;
+		Y) _RET=yellow,bold ;;
+		B) _RET=blue,bold ;;
+		M) _RET=magenta,bold ;;
+		C) _RET=cyan,bold ;;
+		W) _RET=white,bold ;;
+		*) _RET= ;;
+	esac
+}
+
+attr_map() {
+	case "$1" in
+		d)	_RET=,dim ;;
+		u)	_RET=,underline ;;
+		b)	_RET=,bold ;;
+		r)	_RET=,reverse ;;
+		s)	_RET=,standout ;;
+		B)	_RET=,blinking ;;
+		*)	_RET= ;;
+	esac
+}
+
 color_tmux() {
-	true
+	ESC="\005"
+	case "$1" in
+		"") return 0 ;;
+		-)   printf "#[default]" ;;
+		--)   printf "#[default] " ;;
+		esc)    printf "" ;;
+		bold*)  printf "#[fg=bold]" ;;
+		none)   printf "#[default]" ;;
+		invert) printf "#[reverse]" ;;
+		*)
+			if [ "$#" = "2" ]; then
+				color_map "$1"; back="$_RET"
+				color_map "$2"; fore="$_RET"
+			else
+				attr_map "$1";  attr="$_RET"
+				color_map "$2"; back="$_RET"
+				color_map "$3"; fore="$_RET"
+			fi
+			[ "$MONOCHROME" = "1" ] && printf "#[default]" || printf "#[fg=$fore$attr,bg=$back]"
+		;;
+	esac
 }
 
 color() {
@@ -167,7 +222,7 @@ status_freq() {
 		cpu_freq)	_RET=2 ;;
 		cpu_temp)	_RET=19 ;;
 		custom)		_RET=5 ;;
-		date)		_RET=28793 ;;
+		date)		[ "$BYOBU_BACKEND" = "tmux" ] && _RET=1 || _RET=28793 ;;
 		disk)		_RET=13 ;;
 		disk_io)	_RET=3 ;;
 		ec2_cost)	_RET=601 ;;
@@ -189,7 +244,7 @@ status_freq() {
 		release)	_RET=599 ;;
 		services)	_RET=53 ;;
 		swap)		_RET=19 ;;
-		time)		_RET=9999999 ;;
+		time)		[ "$BYOBU_BACKEND" = "tmux" ] && _RET=1 || _RET=9999999 ;;
 		time_binary)	_RET=23 ;;
 		time_utc)	_RET=11 ;;
 		trash)		_RET=9999999 ;;

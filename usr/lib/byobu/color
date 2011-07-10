@@ -23,9 +23,16 @@ __color_detail() {
 }
 
 __color() {
-	[ -z "$FOREGROUND" ] && FOREGROUND="w"
-	[ -z "$BACKGROUND" ] && BACKGROUND="k"
-	printf "\005{= $BACKGROUND$FOREGROUND}"
+	case "$BYOBU_BACKEND" in
+		tmux)
+			true
+		;;
+		*)
+			[ -z "$FOREGROUND" ] && FOREGROUND="w"
+			[ -z "$BACKGROUND" ] && BACKGROUND="k"
+			printf "\005{= $BACKGROUND$FOREGROUND}"
+		;;
+	esac
 }
 
 # vi: syntax=sh ts=4 noexpandtab

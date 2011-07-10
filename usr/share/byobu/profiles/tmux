@@ -47,9 +47,11 @@ bind-key -n S-F4 select-pane -R
 bind-key -n C-F6 kill-pane
 
 set-option -g set-titles on
-set-option -g set-titles-string '#(whoami)@#H - #S'
+set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
 
-set-window-option -g window-status-current-bg red
+set-window-option -g window-status-attr bold
+set-window-option -g window-status-current-bg white
+set-window-option -g window-status-current-fg black
 set-window-option -g automatic-rename on
 set-window-option -g aggressive-resize on
 #set-window-option -g xterm-keys on
@@ -61,5 +63,9 @@ set -g default-command /bin/bash
 set -g status-bg black
 set -g status-fg white
 set -g status-interval 1
-set -g status-left '#[fg=white,bold,bg=magenta] U '
-set -g status-right '%Y-%m-%d %H:%M:%S'
+set -g status-left-length 256
+set -g status-right-length 256
+set -g status-left '#(byobu-status-print 3)['
+set -g status-right ']#(byobu-status-print 4)'
+set -g message-bg magenta
+set -g message-fg white

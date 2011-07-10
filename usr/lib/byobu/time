@@ -24,7 +24,14 @@ __time_detail() {
 }
 
 __time() {
-	printf "\0050c:\005s"
+	case "$BYOBU_BACKEND" in
+		tmux)
+			date +"%H:%M:%S"
+		;;
+		*)
+			printf "\0050c:\005s"
+		;;
+	esac
 }
 
 # vi: syntax=sh ts=4 noexpandtab

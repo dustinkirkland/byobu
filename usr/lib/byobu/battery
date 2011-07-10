@@ -54,14 +54,14 @@ __battery() {
 		done < "$bat/state"
 		percent=$(((100*$rem)/$full))
 		if [ "$percent" -lt 33 ]; then
-			color="R k"
-			bcolor="b R k"
+			color="R w"
+			bcolor="b R w"
 		elif [ "$percent" -lt 67 ]; then
-			color="Y k"
-			bcolor="b Y k"
+			color="Y w"
+			bcolor="b Y w"
 		else
-			color="G k"
-			bcolor="b G k"
+			color="G w"
+			bcolor="b G w"
 		fi
 		percent="$percent%"
 		case $state in

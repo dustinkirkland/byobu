@@ -61,6 +61,14 @@ byobu (4.18) unreleased; urgency=low
     - significantly reduce the number of mkdir -p commands
   * usr/bin/byobu-status-print:
     - save a few forks
+  * usr/lib/byobu/battery, usr/lib/byobu/color, usr/lib/byobu/date,
+    usr/lib/byobu/.shutil, usr/lib/byobu/time,
+    usr/share/byobu/profiles/Makefile.am, usr/share/byobu/profiles/tmux:
+    - create tmux color mappings and functions
+    - get date/time working in tmux (need to figure out how to get
+      tmux to interpret the time format sequence)
+    - install the tmux profile
+    - get the tmux profile using the new status print methodology
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:
