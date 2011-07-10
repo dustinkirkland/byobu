@@ -173,7 +173,7 @@ byobu (4.14-0ubuntu1) oneiric; urgency=low
     usr/lib/byobu/ip_address:
     - use wget instead of host to check for metadata
 
- -- Dustin Kirkland <kirkland@ubuntu.com>   Thu, 16 Jun 2011 16:16:29 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jun 2011 16:16:29 -0500
 
 byobu (4.13-0ubuntu1) oneiric; urgency=low
 
