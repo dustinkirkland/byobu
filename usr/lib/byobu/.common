@@ -19,6 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
+	. "${BYOBU_PREFIX}/lib/${PKG}/.dirs"
 	. "${BYOBU_PREFIX}/lib/${PKG}/.shutil"
 	. "${BYOBU_PREFIX}/lib/${PKG}/.constants"
 	BYOBU_INCLUDED_LIBS=1

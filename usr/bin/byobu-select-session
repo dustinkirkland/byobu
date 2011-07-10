@@ -30,7 +30,7 @@ sessions = []
 text = []
 i = 0
 
-output = commands.getoutput('%s -ls ', BYOBU_BACKEND)
+output = commands.getoutput('%s -ls ' % BYOBU_BACKEND)
 if output:
 	for s in output.split("\n"):
 		s = re.sub(r'\s+', ' ', s)

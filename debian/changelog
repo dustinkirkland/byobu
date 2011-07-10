@@ -51,6 +51,14 @@ byobu (4.18) unreleased; urgency=low
     - drop the backtick commands for all the individual status functions
     - add the backtick commands for the 4 quadrants of status
     - update the hardstatus line accordingly
+  * usr/bin/byobu-select-session, usr/lib/byobu/.common,
+    usr/lib/byobu/.constants, usr/lib/byobu/.dirs,
+    usr/lib/byobu/Makefile.am, usr/share/byobu/profiles/common,
+    usr/share/byobu/status/1, usr/share/byobu/status/2:
+    - fix string bug in select session
+    - re-add a couple of necessary backticks
+    - update caption line to use new statusd cache
+    - significantly reduce the number of mkdir -p commands
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:

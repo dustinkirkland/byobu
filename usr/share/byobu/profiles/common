@@ -29,6 +29,10 @@ defutf8 on
 deflogin on
 
 backtick 10	9999999	9999999	byobu-janitor
+backtick 11	9999999 9999999	printf "\005-1="
+backtick 12	9999999 9999999	byobu-status color
+backtick 13	0       0	byobu-status notify_osd
+backtick 1000	0	0	run-this-one byobu-statusd
 backtick 1001	1	1	byobu-status-print 1
 backtick 1002	1	1	byobu-status-print 2
 backtick 1003	1	1	byobu-status-print 3
@@ -64,7 +68,7 @@ fit
 setenv SSH_AUTH_SOCK $BYOBU_CONFIG_DIR/.ssh-agent
 
 # Window tabs, second to last line
-caption always "%12`%?%-Lw%50L>%?%{=r}%n*%f %t%?(%u)%?%{-}%12`%?%+Lw%?%11` %=%12`%110`%109`%122`%111`%10`%<"
+caption always "%12`%1001`%?%-Lw%50L>%?%{=r}%n*%f %t%?(%u)%?%{-}%12`%?%+Lw%?%11` %=%12`%1002`%10`%<"
 
 # Status string, last line
 hardstatus alwayslastline

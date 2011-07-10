@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+#    .dirs: some dirs needed by all library status scripts
+#
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+PKG="byobu"
+
+# Some users build and install byobu themselves, rather than from a distro
+[ -n "$BYOBU_PREFIX" ] || BYOBU_PREFIX="/usr"
+
+# Create and export the user configuration directory
+if [ -d "$XDG_CONFIG_HOME" ]; then
+	# Use XDG, as some users insist on such nonsense :-)
+	export BYOBU_CONFIG_DIR="$XDG_CONFIG_HOME/$PKG"
+else
+	# But fall back to classic config dir location
+	export BYOBU_CONFIG_DIR="$HOME/.$PKG"
+fi
+[ -d "$BYOBU_CONFIG_DIR" ] || mkdir -p "$BYOBU_CONFIG_DIR"
+
+# Grab the global, then local socket directory
+[ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir"
+[ -r "$BYOBU_CONFIG_DIR/socketdir" ] && . "$BYOBU_CONFIG_DIR/socketdir"
+
+# Create and export the runtime cache directory
+if [ -d "$XDG_CACHE_HOME" ]; then
+	# Use XDG, as some users insist on such nonsense :-)
+	export BYOBU_RUN_DIR="$XDG_CACHE_HOME/$PKG"
+elif [ -d "$SOCKETDIR/S-$USER" ]; then
+	# But for FAR better performance, use a tmpfs if available
+	export BYOBU_RUN_DIR="$SOCKETDIR/S-$USER/$PKG"
+else
+	# But if not, we'll use a cache directory
+	export BYOBU_RUN_DIR="$HOME/.cache/$PKG"
+fi
+[ -d "$BYOBU_RUN_DIR" ] || mkdir -p "$BYOBU_RUN_DIR"
