@@ -46,6 +46,7 @@ hearts_2=(♡ ♥)
 squares_2=(◻ ◼)
 squares_small_2=(◽ ◾)
 stars_2=(☆ ★)
+faces_2=(☹ ☺)
 
 #------------------------------
 # Themes with 4 values.
@@ -441,6 +442,10 @@ do
 
     n)
       newline=-n
+    ;;
+
+    p)
+      permissive=y
     ;;
 
     q)
