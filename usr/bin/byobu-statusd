@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#    byobu-status-print: concatenate the status cache
+#    byobu-statusd: byobu's status gathering daemon
 #
 #    Copyright (C) 2011 Dustin Kirkland
 #

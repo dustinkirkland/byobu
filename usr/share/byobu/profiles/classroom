@@ -20,9 +20,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
-source /usr/share/byobu/profiles/byoburc
-
 aclumask guest+r guest-w guest-x
 aclchg guest +r-w-x '#?'
-aclchg guest +x 'prev,next,select,detach'
+aclchg guest +x 'detach'
 multiuser on
+escape "^Bb"

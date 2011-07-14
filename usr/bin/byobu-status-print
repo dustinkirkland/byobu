@@ -25,11 +25,8 @@ PKG="byobu"
 while read i; do
 	cache="$BYOBU_RUN_DIR/status/$i"
 	if [ -s "$cache" ]; then
+		IFS=
 		read c < "$cache"
 		printf "%s" "$c"
-		case "$i" in
-			color|menu|time) true ;;
-			*) printf " " ;;
-		esac
 	fi
 done < "$BYOBU_CONFIG_DIR/status.$1"

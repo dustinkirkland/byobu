@@ -69,6 +69,11 @@ byobu (4.18) unreleased; urgency=low
       tmux to interpret the time format sequence)
     - install the tmux profile
     - get the tmux profile using the new status print methodology
+  * experimental/byobu-classroom, usr/bin/byobu-statusd, usr/bin/byobu-
+    status-print, usr/lib/byobu/battery,
+    usr/share/byobu/profiles/classroom:
+    - fixup byobu-classroom
+    - fix whitespace printing in byobu-status-print
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:
