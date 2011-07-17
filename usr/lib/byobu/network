@@ -37,6 +37,7 @@ __network_detail() {
 
 __network() {
 	get_interface; local interface="$_RET"
+	local t1=0 t2=0 x1=0 x2=0
 	# By default, we won't bug the user with the display of network traffic
 	# below NETWORK_THRESHOLD in kbps; override in $BYOBU_CONFIG_DIR/status
 	[ -n "$NETWORK_THRESHOLD" ] || NETWORK_THRESHOLD=20

@@ -116,6 +116,7 @@ __logo() {
 			$MARKUP && printf "$(color b k W)%s$(color -)" "$logo" || printf " $logo "
 		;;
 	esac
+	printf " "
 }
 
 # vi: syntax=sh ts=4 noexpandtab

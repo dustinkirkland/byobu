@@ -74,6 +74,12 @@ byobu (4.18) unreleased; urgency=low
     usr/share/byobu/profiles/classroom:
     - fixup byobu-classroom
     - fix whitespace printing in byobu-status-print
+  * usr/lib/byobu/logo:
+    - print trailing whitespace
+  * usr/lib/byobu/network
+    - initialize and localize variables
+  * usr/share/byobu/profiles/common:
+    - drop run-this-one (was not working quite as desired
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:
