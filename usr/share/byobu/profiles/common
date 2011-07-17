@@ -32,7 +32,7 @@ backtick 10	9999999	9999999	byobu-janitor
 backtick 11	9999999 9999999	printf "\005-1="
 backtick 12	9999999 9999999	byobu-status color
 backtick 13	0       0	byobu-status notify_osd
-backtick 1000	0	0	byobu-statusd
+backtick 1000	0	0	run-one byobu-statusd
 backtick 1001	1	1	byobu-status-print 1
 backtick 1002	1	1	byobu-status-print 2
 backtick 1003	1	1	byobu-status-print 3

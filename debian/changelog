@@ -79,7 +79,8 @@ byobu (4.18) unreleased; urgency=low
   * usr/lib/byobu/network
     - initialize and localize variables
   * usr/share/byobu/profiles/common:
-    - drop run-this-one (was not working quite as desired
+    - switch to run-one, from run-this-one
+  * usr/share/byobu/profiles/common:
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:
