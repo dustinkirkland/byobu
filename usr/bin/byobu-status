@@ -44,10 +44,9 @@ color() {
 }
 
 # Source configurations
-[ -r "$BYOBU_CONFIG_DIR/color" ] && . "$BYOBU_CONFIG_DIR/color"
-[ -r "/etc/$PKG/statusrc" ] && . "/etc/$PKG/statusrc"
-[ -r "$BYOBU_CONFIG_DIR/status" ] && . "$BYOBU_CONFIG_DIR/status"
-[ -r "$BYOBU_CONFIG_DIR/statusrc" ] && . "$BYOBU_CONFIG_DIR/statusrc"
+for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/status/statusrc" "$BYOBU_CONFIG_DIR/status" "$BYOBU_CONFIG_DIR/statusrc" "$BYOBU_CONFIG_DIR/color"; do
+	[ -r "$i" ] && . "$i"
+do
 
 export P="$1"
 case "$P" in

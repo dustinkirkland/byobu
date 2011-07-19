@@ -1,0 +1,60 @@
+#    status - Byobu's default status enabled/disabled settings
+#
+#      Override these in $BYOBU_CONFIG_DIR/status
+#      where BYOBU_CONFIG_DIR is XDG_CONFIG_HOME if defined,
+#      and $HOME/.byobu otherwise.
+#
+#    Copyright (C) 2009-2011 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+apport=0
+arch=0
+battery=1
+color=1
+cpu_count=1
+cpu_freq=1
+cpu_temp=0
+custom=1
+date=1
+disk=0
+disk_io=0
+ec2_cost=0
+fan_speed=0
+hostname=1
+ip_address=1
+load_average=1
+logo=1
+mail=0
+mem_available=1
+mem_used=1
+menu=1
+network=1
+notify_osd=0
+processes=0
+raid=1
+rcs_cost=0
+reboot_required=1
+release=1
+services=1
+swap=0
+time=1
+time_binary=0
+time_utc=0
+users=1
+updates_available=1
+uptime=1
+whoami=1
+wifi_quality=1

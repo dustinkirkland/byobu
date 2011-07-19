@@ -1,2 +1,2 @@
 etcdir = $(datadir)/@PACKAGE@/profiles
-etc_DATA = statusrc socketdir
+etc_DATA = socketdir

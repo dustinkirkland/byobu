@@ -51,59 +51,20 @@ fi
 
 # Affects: First runs with no configuration
 # Seed the configuration
+# Setup initial local user configuration
 [ -r "$BYOBU_CONFIG_DIR/color" ] || printf "BACKGROUND=k\nFOREGROUND=w\nMONOCHROME=0" > "$BYOBU_CONFIG_DIR/color"
-[ -r "$PROFILE" ] || ln -sf $BYOBU_PREFIX/share/$PKG/profiles/common "$PROFILE"
-
-# Affects: Symlinks pointing to color profiles
-if [ -h "$PROFILE" ]; then
-	PROFILE_FP=$($READLINK -f "$PROFILE")
-	case "${PROFILE_FP}" in
-		$BYOBU_PREFIX/share/byobu/profiles/*)
-			# Set default colors
-			BG=W
-			FG=k
-			color=${PROFILE_FP##*/}
-			case "$color" in
-				common)       BG=;  FG=;;
-				black|dark)   BG=k; FG=W;;
-				dark_blue)    BG=b; FG=W;;
-				dark_cyan)    BG=c; FG=W;;
-				dark_green)   BG=g; FG=W;;
-				dark_purple)  BG=m; FG=W;;
-				dark_red)     BG=r; FG=W;;
-				dark_yellow)  BG=y; FG=W;;
-				light)        BG=W; FG=k;;
-				light_blue)   BG=B; FG=k;;
-				light_cyan)   BG=C; FG=k;;
-				light_green)  BG=G; FG=k;;
-				light_purple) BG=M; FG=k;;
-				light_red)    BG=R; FG=k;;
-				light_yellow) BG=Y; FG=k;;
-				*)            BG=W; FG=k;;
-			esac
-			if [ -n "$BG" ] && [ -n "$FG" ]; then
-				rm -f "$PROFILE" 2>/dev/null
-				byobu-select-profile -b $BG -f $FG >/dev/null 2>&1
-			fi
-		;;
-	esac
-fi
-
-[ -s "$BYOBU_CONFIG_DIR/keybindings" ] || echo "source $BYOBU_PREFIX/share/$PKG/keybindings/common" > "$BYOBU_CONFIG_DIR/keybindings"
-if [ ! -r "$BYOBU_CONFIG_DIR/status" ]; then
-	if [ -r /etc/$PKG/statusrc ]; then
-		skel=/etc/$PKG/statusrc
-	elif [ -r "$BYOBU_PREFIX/share/$PKG/profiles/statusrc" ]; then
-		skel="$BYOBU_PREFIX/share/$PKG/profiles/statusrc"
-	else
-		skel=/dev/null
-	fi
-	grep -A 999999 BEGIN_CUT_HERE $skel | grep -B 999999 END_CUT_HERE | grep -v CUT > "$BYOBU_CONFIG_DIR/status"
-	# If it looks like we're running in ec2, enable ec2_cost by default
-	[ -x /usr/sbin/update-grub-legacy-ec2 ] && $SED -i "s/ec2_cost=.*/ec2_cost=1/" "$BYOBU_CONFIG_DIR/status"
-fi
+[ -r "$BYOBU_CONFIG_DIR/profile" ] || echo "source $BYOBU_PREFIX/share/$PKG/profiles/common" > "$BYOBU_CONFIG_DIR/profile"
+[ -r "$BYOBU_CONFIG_DIR/keybindings" ] || echo "source $BYOBU_PREFIX/share/$PKG/keybindings/common" > "$BYOBU_CONFIG_DIR/keybindings"
 [ -r "$BYOBU_CONFIG_DIR/windows" ] || touch "$BYOBU_CONFIG_DIR/windows"
+[ -r "$BYOBU_CONFIG_DIR/status" ] || touch "$BYOBU_CONFIG_DIR/status"
+[ -r "$BYOBU_CONFIG_DIR/statusrc" ] || touch "$BYOBU_CONFIG_DIR/statusrc"
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
+for f in status statusrc; do
+	if [ ! -r "$BYOBU_CONFIG_DIR/$f" ]; then
+		# Copy from skeleton, if possible
+		[ -r "/etc/$PKG/$f" ] && cp -f /etc/$PKG/$f "$BYOBU_CONFIG_DIR/$f"
+	fi
+done
 
 # Affects: Upgrades from <= byobu-2.11
 # The status scripts used to have hyphens in their name, but now use
