@@ -33,7 +33,7 @@ get_distro() {
 		_RET=`lsb_release -s -a 2>/dev/null`
 	else
 		# No idea!
-		printf "[B]"
+		_RET="[B]"
 	fi
 }
 

@@ -107,10 +107,12 @@ byobu (4.18) unreleased; urgency=low
     - LP: #803509
     - rework usage of status and statusrc
     - status now contains the enable/disable bits for each status item
-    - statusrc contains auxilliary configuration information
+    - statusrc contains auxiliary configuration information
     - remove this stuff from /etc/byobu/statusrc altogether, and move
       it to /usr/share
     - standardize the seeding of the local user's configuration
+  * usr/bin/byobu-status, usr/bin/byobu-statusd, usr/lib/byobu/logo:
+    - re-source constants in case of upgrades
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:

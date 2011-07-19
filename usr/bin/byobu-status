@@ -46,7 +46,7 @@ color() {
 # Source configurations
 for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/status/statusrc" "$BYOBU_CONFIG_DIR/status" "$BYOBU_CONFIG_DIR/statusrc" "$BYOBU_CONFIG_DIR/color"; do
 	[ -r "$i" ] && . "$i"
-do
+done
 
 export P="$1"
 case "$P" in
