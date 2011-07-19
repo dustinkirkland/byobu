@@ -40,7 +40,7 @@ while true; do
 	fi
 	now=$(date +%s)
 	# Re-source configuration, if changed since last run
-	for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/status/statusrc" "$BYOBU_CONFIG_DIR/status" "$BYOBU_CONFIG_DIR/statusrc" "$BYOBU_CONFIG_DIR/color" "${BYOBU_PREFIX}/lib/$PKG/."*; do
+	for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/status/statusrc" "$BYOBU_CONFIG_DIR/status" "$BYOBU_CONFIG_DIR/statusrc"; do
 		[ -r "$i" ] && [ "$i" -nt "$BYOBU_RUN_DIR/status" ] && . "$i"
 	done
 	for i in "$BYOBU_PREFIX/lib/$PKG/"*; do
