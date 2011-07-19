@@ -28,6 +28,8 @@ msgminwait 0
 defutf8 on
 deflogin on
 
+# We don't need/want more than one byobu-statusd running per user
+exec killall -u $USER byobu-statusd
 backtick 10	9999999	9999999	byobu-janitor
 backtick 11	9999999 9999999	printf "\005-1="
 backtick 12	9999999 9999999	byobu-status color

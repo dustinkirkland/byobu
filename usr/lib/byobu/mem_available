@@ -25,7 +25,6 @@ __mem_available_detail() {
 
 __mem_available() {
 	local mem_used comma whitespace unit mem name
-	. "$BYOBU_CONFIG_DIR/status"
 	[ "$mem_used" = "1" ] && comma="," || whitespace=" "
 	read name mem unit < /proc/meminfo
 	if [ $mem -ge 1048576 ]; then

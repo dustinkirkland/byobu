@@ -117,6 +117,13 @@ byobu (4.18) unreleased; urgency=low
     usr/share/byobu/profiles/byoburc, usr/share/byobu/profiles/common,
     usr/share/byobu/profiles/screenrc:
     - killall byobu-statusd owned by user before refreshing
+  * usr/bin/byobu-statusd:
+    - check that file is readable before sourcing
+  * usr/lib/byobu/mem_available:
+    - no need to source status here any more
+  * usr/share/byobu/keybindings/f-keys, usr/share/byobu/profiles/common:
+    - move the kill of statusd to the profile, near the launching of
+      statusd
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:
