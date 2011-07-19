@@ -31,7 +31,6 @@ __disk_io_detail() {
 getdisk() {
 	local t=""
 	if [ -L "${1}" ]; then
-		command -v greadlink >/dev/null && READLINK=greadlink || READLINK=readlink
 		t=$($READLINK -f "$1")
 	else
 		t="$1"

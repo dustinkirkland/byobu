@@ -33,9 +33,6 @@ fi
 # Set the rest of the variables
 DEFAULT_PROFILE="light"
 PROFILE="$BYOBU_CONFIG_DIR/profile"
-# Use gsed on non-Linux OS's
-command -v gsed >/dev/null && SED="gsed" || SED="sed"
-command -v greadlink >/dev/null && READLINK="greadlink" || READLINK="readlink"
 
 # Create byobu-exchange buffer file, with secure permissions, if it doesn't exist
 [ -e "$BYOBU_RUN_DIR/printscreen" ] || install -m 600 /dev/null "$BYOBU_RUN_DIR/printscreen"

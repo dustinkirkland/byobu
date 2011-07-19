@@ -85,6 +85,9 @@ byobu (4.18) unreleased; urgency=low
     usr/share/byobu/profiles/screenrc:
     - move byobu-statusd to the rc profiles, as we don't want to run again
       on profile reload
+  * usr/bin/byobu-janitor, usr/bin/byobu-launcher-uninstall,
+    usr/lib/byobu/.constants, usr/lib/byobu/disk_io:
+    - move the MacOSX support to constants
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:

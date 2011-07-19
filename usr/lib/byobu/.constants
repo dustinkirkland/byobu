@@ -58,3 +58,7 @@ case "$BYOBU_BACKEND" in
 		BYOBU_ARG_VERSION="-v"
 	;;
 esac
+
+# MacOS Support
+command -v gsed >/dev/null && SED="gsed" || SED="sed"
+command -v greadlink >/dev/null && READLINK="greadlink" || READLINK="readlink"
