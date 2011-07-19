@@ -25,4 +25,3 @@
 source $BYOBU_CONFIG_DIR/profile
 source $BYOBU_WINDOWS
 source $HOME/.screenrc
-backtick 1000   0       0       byobu-statusd
