@@ -17,32 +17,30 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
-. "${BYOBU_PREFIX}/lib/${PKG}/.common"
-
-# Respect an environment variable passable over SSH to disable
-# Byobu launch.  This put that configurability on the SSH client,
-# in addition to the server.
-# To use over SSH, your /etc/ssh/sshd_config and /etc/ssh/ssh_config
-# must pass this variable with AcceptEnv and SendEnv.
-# Note that LC_* are passed by default on Debian/Ubuntu, we'll optionally
-# support LC_BYOBU=0
-# And in your local bashrc:
-#   $HOME/.bashrc:  export LC_BYOBU=0
-# or edit your sshd_config, ssh_config, and set:
-#   $HOME/.bashrc:  export BYOBU_DISABLE=1
-if [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1" ]; then
+# 1) Prevent recursion, and multiple sourcing of profiles with the BYOBU_SOURCED_PROFILE environment variable.
+# 2) Respect environment variables (LC_BYOBU and BYOBU_DISABLE) passable over SSH to disable
+#    Byobu launch.  This puts that configurability on the SSH client,
+#    in addition to the server.
+#    To use over SSH, your /etc/ssh/sshd_config and /etc/ssh/ssh_config
+#    must pass this variable with AcceptEnv and SendEnv.
+#    Note that LC_* are passed by default on Debian/Ubuntu, we'll optionally
+#    support LC_BYOBU=0
+#    And in your local bashrc:
+#      $HOME/.bashrc:  export LC_BYOBU=0
+#    or edit your sshd_config, ssh_config, and set:
+#      $HOME/.bashrc:  export BYOBU_DISABLE=1
+if [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1" ]; then
+	BYOBU_SOURCED_PROFILE=1
+	PKG="byobu"
+	[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+	. "${BYOBU_PREFIX}/lib/${PKG}/.common"
 	case "$-" in
 		*i*)
 			# Attempt to merge shell history across sessions/windows (works with a few exceptions)
 			shopt -s histappend || true
 			[ -n "$PROMPT_COMMAND" ] && PROMPT_COMMAND="$PROMPT_COMMAND;history -a" || PROMPT_COMMAND="history -a"
-			# Source profile, as long as we won't recurse
-			if [ -r "$HOME/.profile" ] && [ "$BYOBU_SOURCED_PROFILE" != "1" ]; then
-				BYOBU_SOURCED_PROFILE=1
-				. "$HOME/.profile"
-			fi
+			# Source profile
+			[ -r "$HOME/.profile" ] && . "$HOME/.profile"
 			if byobu-launcher; then
 				# Wait very briefly for the no-logout flag to get written?
 				sleep 0.1
@@ -58,5 +56,4 @@ if [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1" ]; then
 	esac
 fi
 true
-
 # vi: syntax=sh ts=4 noexpandtab

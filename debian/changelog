@@ -94,6 +94,10 @@ byobu (4.18) unreleased; urgency=low
     usr/lib/byobu/menu, usr/lib/byobu/network,
     usr/lib/byobu/updates_available, usr/share/byobu/keybindings/f-keys:
     - comprehensively use $SED for MacOSX compatibility, LP: #812973
+  * usr/bin/byobu-launch: LP: #809525
+    - no need to search path on sourcing (thanks, Scott Moser)
+  * usr/bin/byobu-launcher-install: LP: #809525
+    - prevent profile from getting sourced twice (thanks, Scott Moser)
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:
