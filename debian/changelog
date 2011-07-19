@@ -98,6 +98,8 @@ byobu (4.18) unreleased; urgency=low
     - no need to search path on sourcing (thanks, Scott Moser)
   * usr/bin/byobu-launcher-install: LP: #809525
     - prevent profile from getting sourced twice (thanks, Scott Moser)
+  * usr/bin/byobu-launch: LP: #806609
+    - support zsh history append
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:

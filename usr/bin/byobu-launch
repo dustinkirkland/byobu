@@ -37,7 +37,12 @@ if [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DI
 	case "$-" in
 		*i*)
 			# Attempt to merge shell history across sessions/windows (works with a few exceptions)
-			shopt -s histappend || true
+			if command -v shopt >/dev/null; then
+				shopt -s histappend || true
+			elif command -v setopt >/dev/null; then
+				# Support zsh too
+				setopt appendhistory
+			fi
 			[ -n "$PROMPT_COMMAND" ] && PROMPT_COMMAND="$PROMPT_COMMAND;history -a" || PROMPT_COMMAND="history -a"
 			# Source profile
 			[ -r "$HOME/.profile" ] && . "$HOME/.profile"
