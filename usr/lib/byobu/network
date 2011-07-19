@@ -32,7 +32,7 @@ get_interface() {
 
 __network_detail() {
 	get_interface; local interface="$_RET"
-	LC_ALL=C /sbin/ifconfig "$interface" | sed 's/\s*$//'
+	LC_ALL=C /sbin/ifconfig "$interface" | $SED 's/\s*$//'
 }
 
 __network() {

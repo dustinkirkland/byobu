@@ -88,6 +88,12 @@ byobu (4.18) unreleased; urgency=low
   * usr/bin/byobu-janitor, usr/bin/byobu-launcher-uninstall,
     usr/lib/byobu/.constants, usr/lib/byobu/disk_io:
     - move the MacOSX support to constants
+  * usr/bin/byobu-ctrl-a, usr/bin/byobu-janitor, usr/bin/byobu-quiet,
+    usr/bin/byobu-silent, usr/bin/byobu-status, usr/lib/byobu/cpu_temp,
+    usr/lib/byobu/custom, usr/lib/byobu/ec2_cost, usr/lib/byobu/logo,
+    usr/lib/byobu/menu, usr/lib/byobu/network,
+    usr/lib/byobu/updates_available, usr/share/byobu/keybindings/f-keys:
+    - comprehensively use $SED for MacOSX compatibility, LP: #812973
 
   [ James Spencer ]
   * usr/lib/byobu/.constants:

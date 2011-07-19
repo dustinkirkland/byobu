@@ -66,8 +66,8 @@ case "$P" in
 				menu|notify_osd|time_binary) continue ;;
 			esac
 			find_script "$i" && . "${_RET}"
-			short=$(eval "__${i}" | sed -e 's/^\s*//' -e 's/\s*$//' -e 's/.{[^}]*}//g')
-			detail=$(eval "__${i}_detail" 2>/dev/null | sed -e '/^$/d' -e 's/^/\t/g')
+			short=$(eval "__${i}" | $SED -e 's/^\s*//' -e 's/\s*$//' -e 's/.{[^}]*}//g')
+			detail=$(eval "__${i}_detail" 2>/dev/null | $SED -e '/^$/d' -e 's/^/\t/g')
 			printf "%s\n\t(%s)\n" "$short" "$i"
 			[ -n "$detail" ] && printf "%s\n" "$detail"
 		done

@@ -100,7 +100,7 @@ if [ ! -r "$BYOBU_CONFIG_DIR/status" ]; then
 	fi
 	grep -A 999999 BEGIN_CUT_HERE $skel | grep -B 999999 END_CUT_HERE | grep -v CUT > "$BYOBU_CONFIG_DIR/status"
 	# If it looks like we're running in ec2, enable ec2_cost by default
-	[ -x /usr/sbin/update-grub-legacy-ec2 ] && sed -i "s/ec2_cost=.*/ec2_cost=1/" "$BYOBU_CONFIG_DIR/status"
+	[ -x /usr/sbin/update-grub-legacy-ec2 ] && $SED -i "s/ec2_cost=.*/ec2_cost=1/" "$BYOBU_CONFIG_DIR/status"
 fi
 [ -r "$BYOBU_CONFIG_DIR/windows" ] || touch "$BYOBU_CONFIG_DIR/windows"
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
