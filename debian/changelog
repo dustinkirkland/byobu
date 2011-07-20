@@ -1,6 +1,7 @@
 byobu (4.19) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/.constants:
+    - need to export a couple of values for use in the profile
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 19 Jul 2011 18:12:57 -0500
 
