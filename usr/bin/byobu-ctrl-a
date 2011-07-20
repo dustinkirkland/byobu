@@ -17,14 +17,31 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Usage() {
+	cat <<EOF
+Usage: ${0##*/} [mode]
+   mode is one of 'screen' or 'emacs'
+   if not specified, prompt the user
+EOF
+}
+
 PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/.common"
 
+bind_to=""
 keybindings="$BYOBU_CONFIG_DIR/keybindings"
 touch "$keybindings"
 
-while true; do
+case "${1}" in
+	-h|--help) Usage; exit 0;;
+	screen) bind_to="screen";;
+	emacs) bind_to="emacs";;
+	"") :;;
+	*) { Usage echo "bad argument $1"; } 1>&2; exit 1;;
+esac
+
+while [ -z "$bind_to" ]; do
 	echo
 	echo "Configure Byobu's ctrl-a behavior..."
 	echo
@@ -41,13 +58,18 @@ while true; do
 	s=$(head -n1)
 	echo
 	case "$s" in
-		1)
+		1) bind_to="emacs"; break;;
+		2) bind_to="screen"; break;;
+	esac
+done
+
+case "$bind_to" in
+	emacs)
 			$SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
 			echo 'bindkey "^A"' >> "$keybindings"
 			echo "INFO: ctrl-a will now operate in emacs mode"
-			break
-		;;
-		2)
+			;;
+	screen)
 			$SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
 			echo 'escape "^Aa"' >> "$keybindings"
 			echo 'register x "^A"' >> "$keybindings"
@@ -55,8 +77,9 @@ while true; do
 			echo "INFO: ctrl-a will now operate in GNU Screen mode"
 			break
 		;;
-	esac
-done
+	*) echo "Error: bad value for binding: $bind_to";;
+esac
+
 $BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 echo "To modify this behavior again later, run 'byobu-ctrl-a'"
 echo
