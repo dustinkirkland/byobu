@@ -1,3 +1,9 @@
+byobu (4.20) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 20 Jul 2011 08:47:50 -0500
+
 byobu (4.19-0ubuntu1) oneiric; urgency=low
 
   * usr/lib/byobu/.constants:
