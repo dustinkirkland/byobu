@@ -57,6 +57,11 @@ while true; do
 			continue
 		fi
 		[ -r "$last" ] && read lastrun < "$last" || lastrun=0
+
+		# if, for any reason the lastrun has a value greater that
+		# current time, we should run again
+		[ $lastrun -le $now ] || lastrun=0
+
 		status_freq "$i"
 		expiry=$(($lastrun+$_RET))
 		find_script "$i" && path="$_RET" || path=/dev/null
