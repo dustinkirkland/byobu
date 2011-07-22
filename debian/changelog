@@ -1,4 +1,4 @@
-byobu (4.21) unreleased; urgency=low
+byobu (4.21-0ubuntu1) oneiric; urgency=low
 
   [ Scott Moser ]
   * usr/bin/byobu-ctrl-a:
@@ -6,7 +6,7 @@ byobu (4.21) unreleased; urgency=low
   * usr/bin/byobu-statusd, usr/lib/byobu/.shutil:
     - avoid forks on the $(date) command
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 20 Jul 2011 08:57:52 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 22 Jul 2011 11:14:34 -0500
 
 byobu (4.20-0ubuntu1) oneiric; urgency=low
 
