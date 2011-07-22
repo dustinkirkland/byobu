@@ -38,7 +38,7 @@ while true; do
 		rm -f "$BYOBU_RUN_DIR/status"/* "$BYOBU_RUN_DIR/.last"/*
 		exit 0
 	fi
-	now=$(date +%s)
+	getnow; now=${_RET}
 	# Re-source configuration, if changed since last run
 	for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/status/statusrc" "$BYOBU_CONFIG_DIR/status" "$BYOBU_CONFIG_DIR/statusrc"; do
 		[ -r "$i" ] && [ "$i" -nt "$BYOBU_RUN_DIR/status" ] && . "$i"
@@ -57,6 +57,11 @@ while true; do
 			continue
 		fi
 		[ -r "$last" ] && read lastrun < "$last" || lastrun=0
+
+		# if, for any reason the lastrun has a value greater that
+		# current time, we should run again
+		[ $lastrun -le $now ] || lastrun=0
+
 		status_freq "$i"
 		expiry=$(($lastrun+$_RET))
 		find_script "$i" && path="$_RET" || path=/dev/null
@@ -65,7 +70,7 @@ while true; do
 			if [ "$path" -nt "$last" ] || [ ! -e "$last" ]; then
 				. "$path"
 			fi
-			eval "__$i" > "$cache"
+			"__$i" > "$cache"
 			echo "$now" > "$last"
 		fi
 	done

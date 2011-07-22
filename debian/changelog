@@ -3,6 +3,8 @@ byobu (4.21) unreleased; urgency=low
   [ Scott Moser ]
   * usr/bin/byobu-ctrl-a:
     - support taking an argument screen|emacs on the command line
+  * usr/bin/byobu-statusd, usr/lib/byobu/.shutil:
+    - avoid forks on the $(date) command
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 20 Jul 2011 08:57:52 -0500
 
