@@ -1,3 +1,9 @@
+byobu (4.23) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jul 2011 14:23:38 -0500
+
 byobu (4.22-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu-statusd, usr/lib/byobu/.shutil:
