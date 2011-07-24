@@ -1,6 +1,8 @@
 byobu (4.22) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-statusd, usr/lib/byobu/.shutil:
+    - clean up a regression caused by Scott's last patch (for the once
+      run 99999999 notifications)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 22 Jul 2011 11:14:37 -0500
 
