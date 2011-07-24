@@ -1,10 +1,10 @@
-byobu (4.22) unreleased; urgency=low
+byobu (4.22-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu-statusd, usr/lib/byobu/.shutil:
     - clean up a regression caused by Scott's last patch (for the once
       run 99999999 notifications)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 22 Jul 2011 11:14:37 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jul 2011 14:23:35 -0500
 
 byobu (4.21-0ubuntu1) oneiric; urgency=low
 
