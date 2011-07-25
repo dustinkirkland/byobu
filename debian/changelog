@@ -1,6 +1,7 @@
 byobu (4.23) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-shell:
+    - MOTD message does not need to be Ubuntu-specific
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jul 2011 14:23:38 -0500
 
