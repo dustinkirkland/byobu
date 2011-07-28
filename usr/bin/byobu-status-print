@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 #    byobu-status-print: concatenate the status cache
+#    - this script must be *extremely* fast
 #
 #    Copyright (C) 2011 Dustin Kirkland
 #
