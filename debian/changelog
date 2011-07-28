@@ -17,6 +17,8 @@ byobu (4.23) unreleased; urgency=low
   * usr/lib/byobu/ip_address, usr/lib/byobu/network,
     usr/lib/byobu/.shutil:
     - reuse the get_network_interface function across network operations
+  * usr/lib/byobu/updates_available:
+    - support package kit, LP: #815579
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jul 2011 14:23:38 -0500
 

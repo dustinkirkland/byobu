@@ -50,6 +50,9 @@ ___update_cache() {
 	elif command -v apt-get >/dev/null; then
 		# If apt-get exists, use it
 		apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
+	elif command -v pkcon >/dev/null; then
+		# use packagekit to show list of packages
+		pkcon get-updates -p | grep -c '^Package' > "$mycache" &
 	elif command -v zypper >/dev/null; then
 		# If zypper exists, use it
 		zypper --no-refresh lu --best-effort | grep -c 'v |' > $mycache &
@@ -72,6 +75,9 @@ ___update_needed() {
 	if command -v apt-get >/dev/null; then
 		# Debian/ubuntu
 		[ "/var/lib/apt" -nt "$mycache" ] || [ "/var/lib/apt/lists" -nt "$mycache" ]
+		return $?
+	elif [ -e "/var/lib/PackageKit/transactions.db" ]; then
+		[ "/var/lib/PackageKit/transactions.db" -nt "$mycache" ]
 		return $?
 	elif command -v pacman >/dev/null; then
 		# Archlinux
