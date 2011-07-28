@@ -33,7 +33,7 @@ __ip_address() {
 	else
 		case "$IPV6" in
 			1|true|yes) interface=$(awk '$10 != "lo" { iface=$10 ; }; END { print iface; }' /proc/net/ipv6_route);;
-			*) interface=$(awk 'END {print $1}' /proc/net/route);;
+			*) get_default_interface; interface="$_RET";;
 		esac
 	fi
 	case "$IPV6" in

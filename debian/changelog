@@ -10,6 +10,10 @@ byobu (4.23) unreleased; urgency=low
     - kill lingering byobu-statusd processes
   * usr/lib/byobu/logo:
     - revert whitespace required by statusd
+  * usr/lib/byobu/ip_address, usr/lib/byobu/.shutil:
+    - add a get_default_interface function
+    - something seems to have changed around the linux 3.0 kernel,
+      in the order of /proc/net/dev; now test for 0.0.0.0 mask
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jul 2011 14:23:38 -0500
 
