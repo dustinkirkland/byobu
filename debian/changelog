@@ -2,6 +2,10 @@ byobu (4.23) unreleased; urgency=low
 
   * usr/bin/byobu-shell:
     - MOTD message does not need to be Ubuntu-specific
+  * usr/bin/byobu-janitor, usr/share/byobu/profiles/common:
+    - revert the byobu-statusd changes in the profile
+    - it's just not ready yet
+    - LP: #814264, #816871
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jul 2011 14:23:38 -0500
 
