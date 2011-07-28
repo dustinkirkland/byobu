@@ -8,6 +8,8 @@ byobu (4.23) unreleased; urgency=low
     - LP: #814264, #816871
   * usr/bin/byobu-janitor:
     - kill lingering byobu-statusd processes
+  * usr/lib/byobu/logo:
+    - revert whitespace required by statusd
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jul 2011 14:23:38 -0500
 
