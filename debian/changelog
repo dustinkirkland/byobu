@@ -19,6 +19,8 @@ byobu (4.23) unreleased; urgency=low
     - reuse the get_network_interface function across network operations
   * usr/lib/byobu/updates_available:
     - support package kit, LP: #815579
+  * usr/bin/byobu-config, usr/bin/byobu-select-session:
+    - use python's default parameter for os.getenv(), LP: #816026
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jul 2011 14:23:38 -0500
 
