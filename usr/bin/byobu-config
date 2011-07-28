@@ -31,10 +31,10 @@ HOME=os.getenv("HOME")
 USER=os.getenv("USER")
 BYOBU_CONFIG_DIR=os.getenv("BYOBU_CONFIG_DIR", HOME+"/.byobu")
 BYOBU_BACKEND=os.getenv("BYOBU_BACKEND", "screen")
-SOCKETDIR=os.getenv("SOCKETDIR", "/var/run/screen")
-PREFIX = os.getenv("BYOBU_PREFIX", "/usr")
-SHARE=PREFIX+'/share/'+PKG
-DOC=PREFIX+'/share/doc/'+PKG
+BYOBU_SOCKETDIR=os.getenv("SOCKETDIR", "/var/run/screen")
+BYOBU_PREFIX = os.getenv("BYOBU_PREFIX", "/usr")
+SHARE=BYOBU_PREFIX+'/share/'+PKG
+DOC=BYOBU_PREFIX+'/share/doc/'+PKG
 if not os.path.exists(SHARE):
     SHARE = BYOBU_CONFIG_DIR+"/"+SHARE
 if not os.path.exists(DOC):

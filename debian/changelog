@@ -21,6 +21,8 @@ byobu (4.23) unreleased; urgency=low
     - support package kit, LP: #815579
   * usr/bin/byobu-config, usr/bin/byobu-select-session:
     - use python's default parameter for os.getenv(), LP: #816026
+  * usr/bin/byobu-config:
+    - simple var name updates
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jul 2011 14:23:38 -0500
 
