@@ -62,10 +62,10 @@ set -g terminal-overrides 'xterm*:smcup@:rmcup@'
 set -g default-command /bin/bash
 set -g status-bg black
 set -g status-fg white
-set -g status-interval 1
+set -g status-interval 10
 set -g status-left-length 256
 set -g status-right-length 256
-set -g status-left '#(byobu-status-print 3)['
-set -g status-right ']#(byobu-status-print 4)'
+set -g status-left '#(byobu-status logo)#(byobu-status release)['
+set -g status-right ']#(byobu-status date)#(byobu-status time)'
 set -g message-bg magenta
 set -g message-fg white

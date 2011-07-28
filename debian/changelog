@@ -23,6 +23,10 @@ byobu (4.23) unreleased; urgency=low
     - use python's default parameter for os.getenv(), LP: #816026
   * usr/bin/byobu-config:
     - simple var name updates
+  * usr/bin/byobu-janitor, usr/bin/byobu-status,
+    usr/lib/byobu/.constants, usr/share/byobu/profiles/tmux:
+    - use new color methods, better tmux support
+    - quiet killing of statusd
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jul 2011 14:23:38 -0500
 
