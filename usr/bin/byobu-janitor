@@ -119,6 +119,9 @@ if grep -qs " shell$" "$BYOBU_CONFIG_DIR/windows"; then
 	$SED -i -e "s/ shell$/ $PKG-shell/g" "$BYOBU_CONFIG_DIR/windows" || true
 fi
 
+# Affects: Upgrades from <= byobu 4.22
+killall -u $USER byobu-statusd || true
+
 # Clean up flag
 rm -f "$FLAG"
 

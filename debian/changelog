@@ -6,6 +6,8 @@ byobu (4.23) unreleased; urgency=low
     - revert the byobu-statusd changes in the profile
     - it's just not ready yet
     - LP: #814264, #816871
+  * usr/bin/byobu-janitor:
+    - kill lingering byobu-statusd processes
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jul 2011 14:23:38 -0500
 
