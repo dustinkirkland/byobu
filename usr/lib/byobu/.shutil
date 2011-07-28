@@ -270,12 +270,16 @@ get_now() {
 	fi
 }
 
-get_default_interface() {
-	local Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT
-	while read Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT; do
-		[ "$Mask" = "00000000" ] && break
-	done < /proc/net/route
-	_RET="$Iface"
+get_network_interface() {
+        if [ -n "$MONITORED_NETWORK" ]; then
+                _RET="$MONITORED_NETWORK"
+        else
+		local Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT
+		while read Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT; do
+			[ "$Mask" = "00000000" ] && break
+		done < /proc/net/route
+		_RET="$Iface"
+	fi
 }
 
 # vi: syntax=sh ts=4 noexpandtab
