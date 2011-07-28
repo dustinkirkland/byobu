@@ -27,6 +27,8 @@ byobu (4.23) unreleased; urgency=low
     usr/lib/byobu/.constants, usr/share/byobu/profiles/tmux:
     - use new color methods, better tmux support
     - quiet killing of statusd
+  * usr/lib/byobu/date:
+    - need a whitespace
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jul 2011 14:23:38 -0500
 
