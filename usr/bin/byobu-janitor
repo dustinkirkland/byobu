@@ -58,6 +58,10 @@ for f in status statusrc; do
 	if [ ! -r "$BYOBU_CONFIG_DIR/$f" ]; then
 		# Copy from skeleton, if possible
 		[ -r "/etc/$PKG/$f" ] && cp -f /etc/$PKG/$f "$BYOBU_CONFIG_DIR/$f"
+		if [ "$f" = "status" ] && metadata_available; then
+			# Enable ec2_cost if we're in ec2
+			$SED -i -e "s/ec2_cost=.*/ec2_cost=1/" "$BYOBU_CONFIG_DIR/$f"
+		fi
 	fi
 done
 

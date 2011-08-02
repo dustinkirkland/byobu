@@ -1,6 +1,7 @@
 byobu (4.24) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-janitor, usr/lib/byobu/.shutil:
+    - get ec2 cost automatically working again in ec2 instances
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 28 Jul 2011 01:17:54 -0500
 

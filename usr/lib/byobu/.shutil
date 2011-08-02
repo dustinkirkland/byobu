@@ -198,7 +198,7 @@ metadata_available() {
 	# This is really ugly.  We need a reliable, fast way of determining
 	# if a metadata service is available, that does NOT slow down non-ec2
 	# machines.
-	if [ -e /etc/ec2_version ]; then
+	if [ -e /etc/ec2_version ] || [ -e /usr/sbin/update-grub-legacy-ec2 ]; then
 		wget -q -O- --timeout=1 http://169.254.169.254 >/dev/null 2>&1
 	else
 		false
