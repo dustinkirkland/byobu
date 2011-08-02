@@ -45,7 +45,7 @@ Note that BYOBU_CONFIG_DIR=\fI$HOME/.byobu\fP.
 
 \fBrcs_cost\fP \- an estimation of the cost of the current boot of the system in terms of the Rackspace Cloud Server billing model; displayed in the lower bar toward the right in green text on a black background; there is a leading '~' to indicate that this is an estimation, and the monetary units are US Dollars '$'
 
-\fBfan_speed\fP \- cpu or system fan speed as reported by lm-sensors; displayed in the lower bar toward the right in black text on a grey background; there is a trailing 'rpm' for units
+\fBfan_speed\fP \- cpu or system fan speed as reported by lm-sensors; displayed in the lower bar toward the right in black text on a grey background; there is a trailing 'rpm' for units; you may override the detected fan by setting FAN=/sys/path/to/your/fan1_input in \fI$BYOBU_CONFIG_DIR/statusrc\fP
 
 \fBhostname\fP \- the hostname of the system; displayed in the upper bar on the far right in bold black text on a grey background; there is a leading '@' symbol if the username status is also enabled
 

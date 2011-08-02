@@ -31,3 +31,4 @@
 #TEMP=F
 #DISTRO=Ubuntu
 #SERVICES="eucalyptus-nc|NC eucalyptus-cloud|CLC eucalyptus-walrus eucalyptus-cc|CC eucalyptus-sc|SC"
+#FAN=$(find /sys -type f -name fan1_input | head -n1)

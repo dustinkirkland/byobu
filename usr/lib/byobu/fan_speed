@@ -28,7 +28,7 @@ __fan_speed() {
 	local i="" speed=0
 	# Let's check a few different probes for fan speed
 	# This seems to cover most of them:
-	for i in /sys/class/hwmon/*/*/fan1_input; do
+	for i in $FAN /sys/class/hwmon/*/*/fan1_input /sys/class/hwmon/*/device/hwmon/*/fan1_input; do
 		[ -f "$i" ] || continue
 		read speed < "$i"
 		if [ "$speed" -gt 0 ]; then

@@ -1,6 +1,8 @@
 byobu (4.25) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/fan_speed, usr/share/byobu/status/statusrc,
+    usr/share/man/man1/byobu.1:
+    - fix fan speed detection for a few models
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 01 Aug 2011 23:46:43 -0500
 
