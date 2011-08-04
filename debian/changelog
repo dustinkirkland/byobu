@@ -1,3 +1,9 @@
+byobu (4.26) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 04 Aug 2011 17:57:12 -0500
+
 byobu (4.25-0ubuntu1) oneiric; urgency=low
 
   * usr/lib/byobu/fan_speed, usr/share/byobu/status/statusrc,
