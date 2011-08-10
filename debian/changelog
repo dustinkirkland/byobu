@@ -6,6 +6,9 @@ byobu (4.26) unreleased; urgency=low
     usr/share/byobu/profiles/Makefile.am, usr/share/byobu/profiles/tmux,
     usr/share/byobu/profiles/tmuxrc:
     - initial support for launching tmux
+  * usr/bin/byobu-janitor:
+    - get the status/statusrc seeding working again, and ec2_cost enabled
+      on ec2 systems by default again
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 04 Aug 2011 17:57:12 -0500
 
