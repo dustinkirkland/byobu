@@ -1,4 +1,4 @@
-byobu (4.28) unreleased; urgency=low
+byobu (4.28-0ubuntu1) oneiric; urgency=low
 
   * usr/share/byobu/profiles/tmux:
     - purple for pane borders
@@ -6,7 +6,7 @@ byobu (4.28) unreleased; urgency=low
     usr/share/man/man1/Makefile.am:
     - add manpages
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Aug 2011 17:59:48 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Aug 2011 18:24:24 -0500
 
 byobu (4.27-0ubuntu1) oneiric; urgency=low
 
