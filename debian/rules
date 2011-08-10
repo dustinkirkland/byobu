@@ -50,6 +50,8 @@ install: build install-po
 	$(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
 	dh_link usr/share/byobu/keybindings/f-keys usr/share/byobu/keybindings/common
 	dh_link usr/share/byobu/pixmaps/byobu.svg usr/share/icons/hicolor/scalable/apps/byobu.svg
+	dh_link usr/bin/byobu usr/bin/byobu-screen
+	dh_link usr/bin/byobu usr/bin/byobu-tmux
 
 # Build architecture-independent files here.
 binary-indep: build install
