@@ -1,4 +1,4 @@
-byobu (4.27) unreleased; urgency=low
+byobu (4.27-0ubuntu1) oneiric; urgency=low
 
   * usr/share/byobu/profiles/tmux:
     - get motion between panes working, kill all, and profile reload
@@ -6,7 +6,7 @@ byobu (4.27) unreleased; urgency=low
   * debian/rules, usr/bin/byobu:
     - add byobu-tmux and byobu-screen symlinks
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Aug 2011 16:52:37 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Aug 2011 17:59:44 -0500
 
 byobu (4.26-0ubuntu1) oneiric; urgency=low
 
