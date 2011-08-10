@@ -2,6 +2,10 @@ byobu (4.26) unreleased; urgency=low
 
   * usr/bin/byobu:
     - test that there is something in the windows files
+  * usr/bin/byobu, usr/bin/byobu-janitor,
+    usr/share/byobu/profiles/Makefile.am, usr/share/byobu/profiles/tmux,
+    usr/share/byobu/profiles/tmuxrc:
+    - initial support for launching tmux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 04 Aug 2011 17:57:12 -0500
 
