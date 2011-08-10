@@ -20,6 +20,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
+set-environment -g BYOBU_BACKEND tmux
+
 # Change to Screen's ctrl-a escape sequence
 set-option -g prefix C-a
 unbind-key C-b
@@ -33,17 +35,20 @@ bind-key -n F3 previous-window
 bind-key -n S-left previous-window
 bind-key -n F4 next-window
 bind-key -n S-right next-window
-bind-key -n F5 source ~/.tmux.conf
+bind-key -n F5 source /usr/share/byobu/profiles/tmuxrc
 bind-key -n F6 detach
 bind-key -n F7 copy-mode
 bind-key -n M-NPage copy-mode \; send-keys NPage
 bind-key -n M-PPage copy-mode -u
 bind-key -n F8 command-prompt -p "(rename-window)" "rename-window %%"
 bind-key -n F9 new-window -a byobu-config
-bind-key -n S-F2 split-window -v
 bind-key -n C-F2 split-window -h
-bind-key -n S-F3 select-pane -L
-bind-key -n S-F4 select-pane -R
+bind-key -n C-F3 select-pane -L
+bind-key -n C-F4 select-pane -R
+bind-key -n S-F2 split-window -v
+bind-key -n S-F3 select-pane -D
+bind-key -n S-F4 select-pane -U
+bind-key -n S-F5 kill-pane -a
 bind-key -n C-F6 kill-pane
 
 set-option -g set-titles on
@@ -54,6 +59,7 @@ set-window-option -g window-status-current-bg white
 set-window-option -g window-status-current-fg black
 set-window-option -g automatic-rename on
 set-window-option -g aggressive-resize on
+set-window-option -g monitor-activity on
 #set-window-option -g xterm-keys on
 
 # Must set default-command to $SHELL, in order to not source ~/.profile

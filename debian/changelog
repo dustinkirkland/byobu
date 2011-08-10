@@ -1,6 +1,8 @@
 byobu (4.27) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/profiles/tmux:
+    - get motion between panes working, kill all, and profile reload
+      (profile reload needs some work)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Aug 2011 16:52:37 -0500
 
