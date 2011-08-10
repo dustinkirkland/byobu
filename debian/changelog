@@ -1,4 +1,4 @@
-byobu (4.26) unreleased; urgency=low
+byobu (4.26-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu:
     - test that there is something in the windows files
@@ -10,7 +10,7 @@ byobu (4.26) unreleased; urgency=low
     - get the status/statusrc seeding working again, and ec2_cost enabled
       on ec2 systems by default again
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 04 Aug 2011 17:57:12 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Aug 2011 16:52:34 -0500
 
 byobu (4.25-0ubuntu1) oneiric; urgency=low
 
