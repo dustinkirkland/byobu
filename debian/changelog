@@ -1,6 +1,7 @@
 byobu (4.28) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/profiles/tmux:
+    - purple for pane borders
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Aug 2011 17:59:48 -0500
 

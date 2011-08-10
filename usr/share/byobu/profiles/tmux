@@ -53,6 +53,8 @@ bind-key -n C-F6 kill-pane
 
 set-option -g set-titles on
 set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
+set-option -g pane-active-border-fg magenta
+set-option -g pane-border-fg magenta
 
 set-window-option -g window-status-attr bold
 set-window-option -g window-status-current-bg white
