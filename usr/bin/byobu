@@ -47,9 +47,9 @@ byobu-janitor --force
 
 # Allow override of default window list, with BYOBU_WINDOWS environment variable
 CUSTOM_WINDOW_SET=0
-if [ -r "$BYOBU_WINDOWS" ]; then
+if [ -s "$BYOBU_WINDOWS" ]; then
 	CUSTOM_WINDOW_SET=1
-elif [ -r "$BYOBU_CONFIG_DIR/windows.$BYOBU_WINDOWS" ]; then
+elif [ -s "$BYOBU_CONFIG_DIR/windows.$BYOBU_WINDOWS" ]; then
 	CUSTOM_WINDOW_SET=1
 	BYOBU_WINDOWS="$BYOBU_CONFIG_DIR/windows.$BYOBU_WINDOWS"
 elif [ "$#" = "0" ]; then

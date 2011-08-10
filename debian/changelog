@@ -1,6 +1,7 @@
 byobu (4.26) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu:
+    - test that there is something in the windows files
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 04 Aug 2011 17:57:12 -0500
 
