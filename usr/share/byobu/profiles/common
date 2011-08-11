@@ -124,3 +124,4 @@ hardstatus string '%99`%{-}%{=r}%12` %100`%112`%=%117`%133`%130`%135`%102`%101`%
 #  * http://savannah.gnu.org/bugs/?22146
 
 source $BYOBU_CONFIG_DIR/keybindings
+source $BYOBU_CONFIG_DIR/backticks

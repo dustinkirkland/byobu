@@ -10,6 +10,10 @@ byobu (4.29) unreleased; urgency=low
     - back and forth, back and forth on this color issue;
       the previous version looked terrible (too bold) on stock
       Ubuntu/gnome-terminal
+  * usr/bin/byobu-janitor, usr/share/byobu/profiles/common: LP: #823581
+    - when a status item is disabled, remove the backtick command entirely
+      from the current screen configuration;  this *drastically* reduces
+      the number of no-op byobu-status calls (60+ per minute, per session)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Aug 2011 18:24:27 -0500
 
