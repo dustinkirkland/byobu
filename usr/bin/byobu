@@ -34,21 +34,16 @@ if [ "$#" = "1" ]; then
 	esac
 fi
 
-case "$0" in
-	*byobu-screen)
-		export BYOBU_BACKEND="screen"
-		exec $PKG "$@"
-	;;
-	*byobu-tmux)
-		export BYOBU_BACKEND="tmux"
-		exec $PKG "$@"
-	;;
-esac
-
 # Check if we're being autolaunched, and this user explicitly does not want it.
 if [ "$0" = "/etc/profile.d/Z98-$PKG.sh" ] && [ -r "$BYOBU_CONFIG_DIR/disable-autolaunch" ]; then
 	exit 0
 fi
+
+# Determine backend
+case "$0" in
+	*byobu-screen) export BYOBU_BACKEND="screen" ;;
+	*byobu-tmux) export BYOBU_BACKEND="tmux" ;;
+esac
 
 # Sanitize the environment
 byobu-janitor --force

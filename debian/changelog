@@ -1,6 +1,7 @@
 byobu (4.29) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu:
+    - clean up the backend determination a little
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Aug 2011 18:24:27 -0500
 
