@@ -1,4 +1,4 @@
-byobu (4.29) unreleased; urgency=low
+byobu (4.29-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu:
     - clean up the backend determination a little
@@ -15,7 +15,7 @@ byobu (4.29) unreleased; urgency=low
       from the current screen configuration;  this *drastically* reduces
       the number of no-op byobu-status calls (60+ per minute, per session)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Aug 2011 18:24:27 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:27 -0500
 
 byobu (4.28-0ubuntu1) oneiric; urgency=low
 
