@@ -2,6 +2,8 @@ byobu (4.29) unreleased; urgency=low
 
   * usr/bin/byobu:
     - clean up the backend determination a little
+  * usr/share/man/man1/Makefile.am:
+    - install some missing manpages
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Aug 2011 18:24:27 -0500
 
