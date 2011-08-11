@@ -56,12 +56,12 @@ set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
 set-option -g pane-active-border-fg magenta
 set-option -g pane-border-fg magenta
 
-set-window-option -g window-status-attr bold
 set-window-option -g window-status-current-bg white
 set-window-option -g window-status-current-fg black
 set-window-option -g automatic-rename on
 set-window-option -g aggressive-resize on
 set-window-option -g monitor-activity on
+set-window-option -g window-status-alert-attr bold
 #set-window-option -g xterm-keys on
 
 # Must set default-command to $SHELL, in order to not source ~/.profile

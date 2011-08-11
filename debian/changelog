@@ -1,6 +1,7 @@
 byobu (4.30) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/profiles/tmux:
+    - go bold on window activity
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 
