@@ -6,6 +6,10 @@ byobu (4.29) unreleased; urgency=low
     - install some missing manpages
   * usr/share/byobu/profiles/common:
     - check raid once per minute
+  * usr/share/byobu/profiles/common:
+    - back and forth, back and forth on this color issue;
+      the previous version looked terrible (too bold) on stock
+      Ubuntu/gnome-terminal
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 10 Aug 2011 18:24:27 -0500
 
