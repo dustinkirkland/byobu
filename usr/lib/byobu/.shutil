@@ -232,13 +232,12 @@ status_freq() {
 		load_average)	_RET=2 ;;
 		logo)		_RET=9999999 ;;
 		mail)		_RET=5 ;;
-		mem_available)	_RET=47 ;;
-		mem_used)	_RET=13 ;;
+		memory)		_RET=13 ;;
 		menu)		_RET=9999999 ;;
 		network)	_RET=3 ;;
 		notify_osd)	_RET=9999999 ;;
 		processes)	_RET=7 ;;
-		raid)		_RET=7 ;;
+		raid)		_RET=59 ;;
 		rcs_cost)	_RET=613 ;;
 		reboot_required) _RET=5 ;;
 		release)	_RET=599 ;;

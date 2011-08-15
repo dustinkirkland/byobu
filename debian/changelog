@@ -37,6 +37,16 @@ byobu (4.30) unreleased; urgency=low
   * usr/bin/byobu-config:
     - migrate to toggling on/off the list of status items
     - fix initial seeding of status config
+  * experimental/byobu-aggregate-status, usr/bin/byobu-status,
+    usr/lib/byobu/logo, usr/lib/byobu/Makefile.am,
+    usr/lib/byobu/mem_available => usr/lib/byobu/memory,
+    usr/lib/byobu/mem_used, usr/lib/byobu/.shutil,
+    usr/share/byobu/status/status, usr/share/man/man1/byobu.1:
+    - drop experimental code, no longer necessary
+    - test non-zero cache file
+    - combine mem_* to memory
+    - decrease raid status frequency
+    - add trailing space to logo
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 

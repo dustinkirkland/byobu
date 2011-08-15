@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    mem_used: grab the current memory usage
+#    mem_available: grab the current memory and usage
 #
 #    Copyright (C) 2008 Canonical Ltd.
 #    Copyright (C) 2011 Dustin Kirkland
@@ -19,16 +19,11 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__mem_used_detail() {
-	cat /proc/meminfo
+__memory() {
+	free
 }
 
-__mem_used() {
-	# originally, this script did:
-	# f=$(free | awk '/buffers\/cache:/ {printf "%.0f", 100*$3/($3 + $4)}')
-	# this method is more dependent on /proc/meminfo, but uses the same formula
-	# for deriving the output of 'free' that is used in procps 'free.c'
-	# kb_main_free, kb_main_total, kb_main_buffers, kb_main_cached
+__memory() {
 	local free="" total="" buffers="" cached=""
 	local kb_main_used=0 buffers_plus_cached=0 fo_buffers=0 fo_cached=0
 	while read tok val unit; do
@@ -40,14 +35,25 @@ __mem_used() {
 		esac
 		[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
 	done < /proc/meminfo
-	kb_main_used=$(($total-$free))
-	buffers_plus_cached=$(($buffers+$cached))
-	# "free output" buffers and cache (output from 'free')
-	fo_buffers=$(($kb_main_used - $buffers_plus_cached))
-	fo_cached=$(($kb_main_free + $buffers_plus_cached))
-	fpdiv $((100*${fo_buffers})) "${total}" 0;
-	f=${_RET}
-	color b g W; printf "%s" "$f"; color -; color g W; printf "%s" "$PCT"; color --
+        kb_main_used=$(($total-$free))
+        buffers_plus_cached=$(($buffers+$cached))
+        # "free output" buffers and cache (output from 'free')
+        fo_buffers=$(($kb_main_used - $buffers_plus_cached))
+        fo_cached=$(($kb_main_free + $buffers_plus_cached))
+        fpdiv $((100*${fo_buffers})) "${total}" 0;
+        f=${_RET}
+	if [ $total -ge 1048576 ]; then
+		fpdiv "$total" 1048567 1
+		total=${_RET}
+		unit="GB"
+	elif [ $total -ge 1024 ]; then
+		fpdiv "$total" 1024 0
+		total=${_RET}
+		unit="MB"
+	else
+		unit="KB"
+	fi
+	color b g W; printf "%s" "$total"; color -; color g W; printf "%s," "$unit"; color -; color b g W; printf "%s" "$f"; color -; color g W; printf "%s" "$PCT"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab

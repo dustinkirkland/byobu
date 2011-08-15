@@ -49,7 +49,9 @@ get_status() {
 		"__$1" > "$cachepath"
 		echo "$NOW" > "$lastpath"
 	fi
-	IFS= read line < "$cachepath"; printf "$line"
+	if [ -s "$cachepath" ]; then
+		IFS= read line < "$cachepath"; printf "$line"
+	fi
 }
 
 case "$1" in
