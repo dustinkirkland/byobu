@@ -38,46 +38,6 @@ deflogin on
 backtick 10 	9999999	9999999		byobu-janitor
 backtick 11	9999999	9999999		printf "\005-1="
 backtick 12	9999999	9999999		byobu-status color
-backtick 13	0	0		byobu-status notify_osd
-backtick 99  	9999999	9999999		byobu-status logo
-backtick 100	599	599		byobu-status release
-backtick 101 	7	7		byobu-status updates_available
-backtick 102 	5	5		byobu-status reboot_required
-backtick 103 	2	2		byobu-status cpu_freq
-backtick 104 	5	5		byobu-status cpu_count
-backtick 105 	47	47		byobu-status mem_available
-backtick 106 	2	2		byobu-status load_average
-backtick 107 	13	13		byobu-status mem_used
-backtick 108 	601	601		byobu-status ec2_cost
-backtick 109 	607	607		byobu-status hostname
-backtick 110 	86029	86029		byobu-status whoami
-backtick 111 	9999999	9999999		byobu-status menu
-backtick 112 	9999999	9999999		byobu-status arch
-backtick 113 	61	61		byobu-status battery
-backtick 114 	11	11		byobu-status users
-backtick 115 	29	29		byobu-status uptime
-backtick 116 	7	7		byobu-status processes
-backtick 117 	3	3		byobu-status network
-backtick 118 	9999999	9999999		true
-backtick 119 	17	17		byobu-status wifi_quality
-backtick 120 	28793	28793		byobu-status date
-backtick 121 	9999999	9999999		byobu-status time
-backtick 122 	127	127		byobu-status ip_address
-backtick 123 	13	13		byobu-status disk
-backtick 124 	9999999	9999999		true
-backtick 125 	19	19		byobu-status cpu_temp
-backtick 126 	9999999	9999999		true
-backtick 127 	5	5		byobu-status mail
-backtick 128 	23	23		byobu-status fan_speed
-backtick 129 	67	67		byobu-status apport
-backtick 130 	5	5		byobu-status custom
-backtick 131 	53	53		byobu-status services
-backtick 132 	11	11		byobu-status time_utc
-backtick 133 	3	3		byobu-status disk_io
-backtick 134 	613	613		byobu-status rcs_cost
-backtick 135 	59	59		byobu-status raid
-backtick 136 	19	19		byobu-status swap
-backtick 137 	23	23		byobu-status time_binary
 
 backtick 1001 	9999999	9999999		byobu-status-tmux screen_upper_left
 backtick 1002 	127	127		byobu-status-tmux screen_upper_right

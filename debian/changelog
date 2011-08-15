@@ -27,6 +27,8 @@ byobu (4.30) unreleased; urgency=low
     - PCT="%%" for both
     - update backticks and caption/hardstatus
     - fix default status
+  * usr/share/byobu/profiles/common, usr/share/byobu/profiles/tmux:
+    - drop backticks and double printing of date/time in tmux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 
