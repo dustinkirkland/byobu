@@ -39,10 +39,10 @@ backtick 10 	9999999	9999999		byobu-janitor
 backtick 11	9999999	9999999		printf "\005-1="
 backtick 12	9999999	9999999		byobu-status color
 
-backtick 1001 	9999999	9999999		byobu-status-tmux screen_upper_left
-backtick 1002 	127	127		byobu-status-tmux screen_upper_right
-backtick 1003 	599	599		byobu-status-tmux screen_lower_left
-backtick 1004 	2	2		byobu-status-tmux screen_lower_right
+backtick 1001 	9999999	9999999		byobu-status screen_upper_left
+backtick 1002 	127	127		byobu-status screen_upper_right
+backtick 1003 	599	599		byobu-status screen_lower_left
+backtick 1004 	2	2		byobu-status screen_lower_right
 
 hardstatus alwayslastline
 

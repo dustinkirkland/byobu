@@ -1,9 +1,9 @@
-.TH byobu-status 1 "21 Apr 2009" byobu "byobu"
+.TH byobu-status 1 "15 Aug 2011" byobu "byobu"
 .SH NAME
-byobu\-status \- Common starting point for running byobu status commands
+byobu\-status \- displays status suitable for printing by the BYOBU_BACKEND
 
 .SH DESCRIPTION
-\fBbyobu\-status\fP is a simple script that takes a single argument: a script defined in //usr/libexec/byobu.  This wrapper is useful for doing some common functionality, like setting the cpu and/or io priority, determining sane defaults, pre/post processing.
+\fBbyobu\-status\fP is a program periodically called by the BYOBU_BACKEND to gather the formatted status strings displayed in to lower status bar(s).
 
 .TP
 \fIhttp://launchpad.net/byobu\fP

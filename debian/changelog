@@ -29,6 +29,11 @@ byobu (4.30) unreleased; urgency=low
     - fix default status
   * usr/share/byobu/profiles/common, usr/share/byobu/profiles/tmux:
     - drop backticks and double printing of date/time in tmux
+  * usr/bin/byobu-status, usr/bin/byobu-status-tmux => usr/bin/byobu-
+    status, usr/bin/Makefile.am, usr/share/byobu/profiles/common,
+    usr/share/byobu/profiles/tmux, usr/share/man/man1/byobu-status.1:
+    - transition to the new, faster, less-resource intensive status
+      gathering method
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 
