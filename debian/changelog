@@ -36,6 +36,7 @@ byobu (4.30) unreleased; urgency=low
       gathering method
   * usr/bin/byobu-config:
     - migrate to toggling on/off the list of status items
+    - fix initial seeding of status config
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 

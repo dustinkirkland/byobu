@@ -334,15 +334,17 @@ def writestatus(items):
     path = BYOBU_CONFIG_DIR+'/status'
     for i in items:
         status[i[1]] = i[0]
-    # SED is hacky here, but damn effective
+    # SED is hacky here, but effective
     if BYOBU_BACKEND == "tmux":
 	for key in ["tmux_left", "tmux_right"]:
             val = genstatusstring(key, status)
-            commands.getoutput("%s -i -e 's/^%s=.*$/%s=\"%s\"/' %s" % (SED, key, key, val, path))
+            commands.getoutput("%s -i -e '/^%s=/d' %s" % (SED, key, path))
+            commands.getoutput("echo '%s=\"%s\"' >> %s" % (key, val, path))
     else:
 	for key in ["screen_upper_left", "screen_upper_right", "screen_lower_left", "screen_lower_right"]:
             val = genstatusstring(key, status)
-            commands.getoutput("%s -i -e 's/^%s=.*$/%s=\"%s\"/' %s" % (SED, key, key, val, path))
+            commands.getoutput("%s -i -e '/^%s=/d' %s" % (SED, key, path))
+            commands.getoutput("echo '%s=\"%s\"' >> %s" % (key, val, path))
 
 def togglestatus(snackScreen, size):
     itemlist=readstatus()
