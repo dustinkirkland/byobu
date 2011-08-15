@@ -2,6 +2,7 @@ byobu (4.30) unreleased; urgency=low
 
   * usr/share/byobu/profiles/tmux:
     - go bold on window activity
+    - clean up and make window colorings more consistent
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 
