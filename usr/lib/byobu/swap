@@ -52,7 +52,7 @@ __swap() {
 		unit="KB"
 	fi
 	color b G W; printf "s%s" "$mem"; color -; color G W; printf "%s," "$unit"; color -;
-	color b G W; printf "%s" "$f"; color -; color G W; printf "%%"; color --
+	color b G W; printf "%s" "$f"; color -; color G W; printf "%s" "$PCT"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab

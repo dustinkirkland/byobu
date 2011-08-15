@@ -40,7 +40,7 @@ __disk() {
 	pct=${pct%?}; # take off the '%'
 	_UNIT=${unit}; _SIZE=${size}; _PCT=${pct};
 	color b M W; echo -n "$_SIZE"; color -; color M W; echo -n "${_UNIT}B,"; color -;
-	color b M W; echo -n "$_PCT";  color -; color M W; echo -n "%"        ; color --;
+	color b M W; echo -n "$_PCT";  color -; color M W; echo -n "$PCT"        ; color --;
 }
 
 # vi: syntax=sh ts=4 noexpandtab

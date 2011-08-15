@@ -260,7 +260,7 @@ status_freq() {
 get_now() {
 	if [ -n "${BASH_VERSION}" ] && [ -n "${SECONDS}" ]; then
 		_RET=${SECONDS}
-	elif [ -r /proc/cpuinfo ]; then
+	elif [ -r /proc/uptime ]; then
 		# return the integer part of the first item in /proc/uptime
 		local s c
 		read s c < /proc/uptime

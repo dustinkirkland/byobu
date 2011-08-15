@@ -25,13 +25,13 @@ __raid_detail() {
 
 __raid() {
 	while read line; do
-		local pct="%" p msg
+		local p msg
 		# Errors in your raid
 		case "$line" in
 			*\ blocks\ *\[*_*\]$)
 				[ -z "${msg}" ] && msg="RAID";;
 			*%*)
-				p="${line%%${pct}*}${pct}"; p=${p##* };
+				p="${line%%${PCT}*}${PCT}"; p=${p##* };
 				[ -z "$msg" ] && msg="RAID"
 				msg="$msg,$p";;
 		esac

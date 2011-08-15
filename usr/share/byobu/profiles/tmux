@@ -79,7 +79,7 @@ set -g status-fg white
 set -g status-interval 1
 set -g status-left-length 256
 set -g status-right-length 256
-set -g status-left '#(byobu-status logo)'
-set -g status-right '%Y-%m-%d %H:%M:%S'
+set -g status-left '#(byobu-status-tmux left)['
+set -g status-right ']#(byobu-status-tmux right)#[default]%Y-%m-%d %H:%M:%S'
 set -g message-bg magenta
 set -g message-fg white

@@ -41,7 +41,7 @@ __wifi_quality() {
 		quality="0"
 	fi
 	[ "$quality" = "0" ] && return
-	printf "${ICON_WIFI}"; color b C k; printf "%s" "$bitrate"; color -; color C k; printf "%s," "Mbps"; color -; color b C k; printf "%s" "$quality"; color -; color C k; printf "%%"; color --
+	printf "${ICON_WIFI}"; color b C k; printf "%s" "$bitrate"; color -; color C k; printf "%s," "Mbps"; color -; color b C k; printf "%s" "$quality"; color -; color C k; printf "%s" "$PCT"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab

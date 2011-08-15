@@ -5,6 +5,18 @@ byobu (4.30) unreleased; urgency=low
     - clean up and make window colorings more consistent
   * usr/bin/byobu-status:
     - speed up disabled status runs
+  * usr/bin/byobu-statusd, usr/bin/byobu-status-print, usr/bin/byobu-
+    status-tmux, usr/bin/Makefile.am, usr/lib/byobu/battery,
+    usr/lib/byobu/.constants, usr/lib/byobu/disk,
+    usr/lib/byobu/mem_used, usr/lib/byobu/raid, usr/lib/byobu/.shutil,
+    usr/lib/byobu/swap, usr/lib/byobu/wifi_quality,
+    usr/share/byobu/profiles/tmux:
+    - support tmux status, using a cached print mechanism and a list of
+      left and right status items
+    - drop the failed byobu-statusd experiment and its byobu-status-print
+      helper
+    - add a PCT constant, required to support both screen and tmux
+    - fix a bug/typo in shutil (should be /proc/uptime)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 

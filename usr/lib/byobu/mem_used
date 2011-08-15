@@ -47,7 +47,7 @@ __mem_used() {
 	fo_cached=$(($kb_main_free + $buffers_plus_cached))
 	fpdiv $((100*${fo_buffers})) "${total}" 0;
 	f=${_RET}
-	color b g W; printf "%s" "$f"; color -; color g W; printf "%%"; color --
+	color b g W; printf "%s" "$f"; color -; color g W; printf "%s" "$PCT"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab

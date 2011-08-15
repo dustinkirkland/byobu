@@ -63,7 +63,7 @@ __battery() {
 			color="G k"
 			bcolor="b G k"
 		fi
-		percent="$percent%"
+		percent="$percent$PCT"
 		case $state in
 			charging) sign="+" ;;
 			discharging) sign="-" ;;
