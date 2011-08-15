@@ -17,6 +17,16 @@ byobu (4.30) unreleased; urgency=low
       helper
     - add a PCT constant, required to support both screen and tmux
     - fix a bug/typo in shutil (should be /proc/uptime)
+  * usr/bin/byobu-status-tmux, usr/lib/byobu/.constants,
+    usr/share/byobu/profiles/common, usr/share/byobu/profiles/tmux,
+    usr/share/byobu/status/1, usr/share/byobu/status/2,
+    usr/share/byobu/status/3, usr/share/byobu/status/4,
+    usr/share/byobu/status/Makefile.am, usr/share/byobu/status/status:
+    - separate status cache between screen and tmux (different formatting)
+    - make byobu-status-tmux support screen
+    - PCT="%%" for both
+    - update backticks and caption/hardstatus
+    - fix default status
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 

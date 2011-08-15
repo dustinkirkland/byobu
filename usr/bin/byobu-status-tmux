@@ -26,10 +26,10 @@ PKG="byobu"
 [ -f "$BYOBU_CONFIG_DIR/status.disable" ] && exit 0
 
 # Clean and create cache directories
-mkdir -p "$BYOBU_RUN_DIR/status" "$BYOBU_RUN_DIR/.last"
+mkdir -p "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND" "$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND"
 
 # Source configurations
-for i in "${BYOBU_PREFIX}/share/$PKG/status/statusrc" "$BYOBU_CONFIG_DIR/statusrc"; do
+for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/status/statusrc" "$BYOBU_CONFIG_DIR/status" "$BYOBU_CONFIG_DIR/statusrc" "$BYOBU_CONFIG_DIR/color"; do
 	[ -r "$i" ] && . "$i"
 done
 
@@ -37,8 +37,8 @@ done
 get_now; NOW=${_RET}
 
 get_status() {
-	local cachepath="$BYOBU_RUN_DIR/status/$1"
-	local lastpath="$BYOBU_RUN_DIR/.last/$1"
+	local cachepath="$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/$1"
+	local lastpath="$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND/$1"
 	local lastrun
 	[ -r "$lastpath" ] && read lastrun < "$lastpath" || lastrun=0
 	status_freq "$1"
@@ -53,17 +53,11 @@ get_status() {
 }
 
 case "$1" in
-	left)
-		IFS= read items < "$BYOBU_CONFIG_DIR/status.tmux.left"
+	*left|*right)
+		eval items="\$$1"
 		for i in $items; do
+			case "$i" in \#*) continue ;; esac
 			get_status "$i"
 		done
-	;;
-	right)
-		IFS= read items < "$BYOBU_CONFIG_DIR/status.tmux.right"
-		for i in $items; do
-			get_status "$i"
-		done
-
 	;;
 esac

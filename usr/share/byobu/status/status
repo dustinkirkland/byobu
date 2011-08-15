@@ -20,41 +20,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-apport=0
-arch=0
-battery=1
-color=1
-cpu_count=1
-cpu_freq=1
-cpu_temp=0
-custom=1
-date=1
-disk=0
-disk_io=0
-ec2_cost=0
-fan_speed=0
-hostname=1
-ip_address=1
-load_average=1
-logo=1
-mail=0
-mem_available=1
-mem_used=1
-menu=1
-network=1
-notify_osd=0
-processes=0
-raid=1
-rcs_cost=0
-reboot_required=1
-release=1
-services=1
-swap=0
-time=1
-time_binary=0
-time_utc=0
-users=1
-updates_available=1
-uptime=1
-whoami=1
-wifi_quality=1
+# Screen has two status lines, with 4 quadrants for status
+screen_upper_left="color"
+screen_upper_right="color whoami hostname ip_address menu"
+screen_lower_left="color logo release #arch"
+screen_lower_right="color network #disk_io custom raid reboot_required updates_available #apport #services #mail users uptime #ec2_cost #rcs_cost #fan_speed #cpu_temp battery wifi_quality #processes load_average cpu_count cpu_freq mem_available mem_used #swap #disk #time_utc date time"
+
+# Tmux has one status line, with 2 halves for status
+tmux_left="logo release #arch"
+tmux_right="network #disk_io custom raid reboot_required updates_available #apport #services #mail users uptime #ec2_cost #rcs_cost #fan_speed #cpu_temp battery wifi_quality #processes load_average cpu_count cpu_freq mem_available mem_used #swap #disk #whoami #hostname #ip_address #time_utc date time"

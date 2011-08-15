@@ -42,6 +42,7 @@ else
 	ICON_TRASH="T"
 	ICON_WIFI=
 fi
+PCT="%%"
 
 # Support two different backends (screen/tmux)
 if [ -z "$BYOBU_BACKEND" ]; then
@@ -53,13 +54,11 @@ case "$BYOBU_BACKEND" in
 		export BYOBU_BACKEND
 		BYOBU_ARG_VERSION="-V"
 		ESC=
-		PCT="%%"
 	;;
 	*)
 		export BYOBU_BACKEND="screen"
 		BYOBU_ARG_VERSION="-v"
 		ESC="\005"
-		PCT="%"
 	;;
 esac
 

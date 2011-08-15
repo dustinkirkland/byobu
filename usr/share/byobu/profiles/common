@@ -79,6 +79,11 @@ backtick 135 	59	59		byobu-status raid
 backtick 136 	19	19		byobu-status swap
 backtick 137 	23	23		byobu-status time_binary
 
+backtick 1001 	9999999	9999999		byobu-status-tmux screen_upper_left
+backtick 1002 	127	127		byobu-status-tmux screen_upper_right
+backtick 1003 	599	599		byobu-status-tmux screen_lower_left
+backtick 1004 	2	2		byobu-status-tmux screen_lower_right
+
 hardstatus alwayslastline
 
 # The following line would turn off alternate Screen switching in xterms,
@@ -111,10 +116,10 @@ fit
 setenv SSH_AUTH_SOCK $BYOBU_CONFIG_DIR/.ssh-agent
 
 # Window tabs, second to last line
-caption always "%12`%?%-Lw%50L>%?%{=r}%n*%f %t%?(%u)%?%{-}%12`%?%+Lw%?%11` %=%12`%110`%109`%122`%111`%10`%<"
+caption always "%1001`%?%-Lw%50L>%?%{=r}%n*%f %t%?(%u)%?%{-}%12`%?%+Lw%?%11` %=%12`%1002`%10`%<"
 
 # Status string, last line
-hardstatus string '%99`%{-}%{=r}%12` %100`%112`%=%117`%133`%130`%135`%102`%101`%129`%131`%127`%114`%115`%108`%134`%128`%125`%126`%113`%119`%116`%106`%104`%103`%105`%107`%136`%123`%137`%132`%120`%121`'
+hardstatus string '%1003`%=%1004`'
 
 # NOTE: Older version of Screen have an arbitrary limit of only being able
 # to change colors 16 times in this 'hardstatus string'.
