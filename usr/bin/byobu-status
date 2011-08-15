@@ -21,6 +21,8 @@ PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/.common"
 
+[ -f "$BYOBU_CONFIG_DIR/status.disable" ] && exit 0
+
 # Source configurations
 for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/status/statusrc" "$BYOBU_CONFIG_DIR/status" "$BYOBU_CONFIG_DIR/statusrc" "$BYOBU_CONFIG_DIR/color"; do
 	[ -r "$i" ] && . "$i"
@@ -55,7 +57,6 @@ case "$P" in
 		printf "$ESC{= $BACKGROUND$FOREGROUND}"
 	;;
 	*)
-		[ -f "$BYOBU_CONFIG_DIR/status.disable" ] && exit 0
 		eval x="\$$P" || exit 1
 		[ "$x" = "1" ] || exit 0
 		shift
