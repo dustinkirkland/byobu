@@ -289,54 +289,24 @@ def readwindows():
 
 def readstatus():
     status={}
-    status["apport"]=0
-    status["arch"]=0
-    status["battery"]=1
-    status["cpu_count"]=1
-    status["cpu_freq"]=1
-    status["cpu_temp"]=0
-    status["custom"]=1
-    status["date"]=1
-    status["disk"]=0
-    status["disk_io"]=0
-    status["ec2_cost"]=0
-    status["fan_speed"]=0
-    status["hostname"]=1
-    status["ip_address"]=1
-    status["load_average"]=1
-    status["logo"]=1
-    status["mail"]=0
-    status["mem_available"]=1
-    status["mem_used"]=1
-    status["menu"]=1
-    status["network"]=1
-    status["notify_osd"]=0
-    status["processes"]=0
-    status["raid"]=1
-    status["rcs_cost"]=0
-    status["reboot_required"]=1
-    status["release"]=1
-    status["services"]=1
-    status["swap"]=0
-    status["time"]=1
-    status["time_binary"]=0
-    status["time_utc"]=0
-    status["users"]=1
-    status["updates_available"]=1
-    status["uptime"]=1
-    status["whoami"]=1
-    status["wifi_quality"]=1
-    if os.path.exists(BYOBU_CONFIG_DIR+'/status'):
-        f=open(BYOBU_CONFIG_DIR+'/status', 'r')
-        for line in f.readlines():
-           try:
-               line = line.rstrip()
-               (key, val) = line.split("=", 2)
-               if status.has_key(key) and (val == "1" or val == "0"):
-                   status[key] = val
-           except:
-               continue
-        f.close()
+    glo = {}
+    loc = {}
+    for f in [SHARE+'/status/status', BYOBU_CONFIG_DIR+'/status']:
+        if os.path.exists(f):
+            try:
+                execfile(f, glo, loc)
+            except:
+                error("Invalid configuration [%s]" % f)
+            if BYOBU_BACKEND == "tmux":
+                items = "%s %s" % (loc["tmux_left"], loc["tmux_right"])
+            else:
+                items = "%s %s %s %s" % (loc["screen_upper_left"], loc["screen_upper_right"], loc["screen_lower_left"], loc["screen_lower_right"])
+            for i in items.split():
+                if i.startswith("#"):
+                    i = i.replace("#", "")
+                    status[i] = "0"
+                else:
+                    status[i] = "1"
     li=[]
     keys = status.keys()
     keys.sort()
@@ -345,18 +315,34 @@ def readstatus():
         li.append(window)
     return li
 
+def genstatusstring(s, status):
+    new = ""
+    glo = {}
+    loc = {}
+    execfile(SHARE+'/status/status', glo, loc)
+    for i in loc[s].split():
+        if i.startswith("#"):
+                i = i.replace("#", "")
+        if status[i] == 1:
+            new += " " + i
+        else:
+            new += " #" + i
+    return new
+
 def writestatus(items):
-    f=open(BYOBU_CONFIG_DIR+'/status', 'w')
-    try:
-        for i in items:
-            if i[0] == 1:
-                f.write(i[1]+"=1\n")
-            elif i[0] == 0:
-                f.write(i[1]+"=0\n")
-    except IOError:
-        f.close()
-        return None
-    f.close()
+    status={}
+    path = BYOBU_CONFIG_DIR+'/status'
+    for i in items:
+        status[i[1]] = i[0]
+    # SED is hacky here, but damn effective
+    if BYOBU_BACKEND == "tmux":
+	for key in ["tmux_left", "tmux_right"]:
+            val = genstatusstring(key, status)
+            commands.getoutput("%s -i -e 's/^%s=.*$/%s=\"%s\"/' %s" % (SED, key, key, val, path))
+    else:
+	for key in ["screen_upper_left", "screen_upper_right", "screen_lower_left", "screen_lower_right"]:
+            val = genstatusstring(key, status)
+            commands.getoutput("%s -i -e 's/^%s=.*$/%s=\"%s\"/' %s" % (SED, key, key, val, path))
 
 def togglestatus(snackScreen, size):
     itemlist=readstatus()

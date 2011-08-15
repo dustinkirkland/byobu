@@ -34,6 +34,8 @@ byobu (4.30) unreleased; urgency=low
     usr/share/byobu/profiles/tmux, usr/share/man/man1/byobu-status.1:
     - transition to the new, faster, less-resource intensive status
       gathering method
+  * usr/bin/byobu-config:
+    - migrate to toggling on/off the list of status items
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 
