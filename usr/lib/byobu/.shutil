@@ -43,23 +43,23 @@ color_screen() {
 
 color_map() {
 	case "$1" in
-		k) _RET=black ;;
-		r) _RET=red ;;
-		g) _RET=green ;;
-		y) _RET=yellow ;;
-		b) _RET=blue ;;
-		m) _RET=magenta ;;
-		c) _RET=cyan ;;
-		w) _RET=white ;;
-		d) _RET=color0 ;;
-		K) _RET=black,bold ;;
-		R) _RET=red,bold ;;
-		G) _RET=green,bold ;;
-		Y) _RET=yellow,bold ;;
-		B) _RET=blue,bold ;;
-		M) _RET=magenta,bold ;;
-		C) _RET=cyan,bold ;;
-		W) _RET=white,bold ;;
+		k) _RET=black,dim ;;
+		r) _RET=red,dim ;;
+		g) _RET=green,dim ;;
+		y) _RET=yellow,dim ;;
+		b) _RET=blue,dim ;;
+		m) _RET=magenta,dim ;;
+		c) _RET=cyan,dim ;;
+		w) _RET=white,dim ;;
+		d) _RET=color0,dim ;;
+		K) _RET=black ;;
+		R) _RET=red ;;
+		G) _RET=green ;;
+		Y) _RET=yellow ;;
+		B) _RET=blue ;;
+		M) _RET=magenta ;;
+		C) _RET=cyan ;;
+		W) _RET=white ;;
 		*) _RET= ;;
 	esac
 }
@@ -77,7 +77,7 @@ attr_map() {
 }
 
 color_tmux() {
-	ESC="\005"
+	local back fore attr
 	case "$1" in
 		"") return 0 ;;
 		-)   printf "#[default]" ;;

@@ -60,6 +60,8 @@ byobu (4.30) unreleased; urgency=low
       otherwise, calculated rates are off
   * usr/lib/byobu/.constants:
     - fix wireless utf8 icon bug, default to utf8 for tmux
+  * usr/lib/byobu/.shutil:
+    - fix tmux color rendering
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 
