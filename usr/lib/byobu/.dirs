@@ -48,4 +48,4 @@ else
 	# But if not, we'll use a cache directory
 	export BYOBU_RUN_DIR="$HOME/.cache/$PKG"
 fi
-[ -d "$BYOBU_RUN_DIR" ] || mkdir -p "$BYOBU_RUN_DIR"
+[ -d "$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND" ] || mkdir -p "$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND"
