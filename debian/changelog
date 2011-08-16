@@ -62,6 +62,7 @@ byobu (4.30) unreleased; urgency=low
     - fix wireless utf8 icon bug, default to utf8 for tmux
   * usr/lib/byobu/.shutil:
     - fix tmux color rendering
+    - fix underscore, italics, hidden
   * usr/lib/byobu/.dirs:
     - ensure that the cache dir gets created
 

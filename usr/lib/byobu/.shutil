@@ -67,11 +67,13 @@ color_map() {
 attr_map() {
 	case "$1" in
 		d)	_RET=,dim ;;
-		u)	_RET=,underline ;;
+		u)	_RET=,underscore ;;
 		b)	_RET=,bold ;;
 		r)	_RET=,reverse ;;
 		s)	_RET=,standout ;;
 		B)	_RET=,blinking ;;
+		h)	_RET=,hidden ;;
+		i)	_RET=,italics ;;
 		*)	_RET= ;;
 	esac
 }
