@@ -58,6 +58,8 @@ byobu (4.30) unreleased; urgency=low
     usr/lib/byobu/updates_available:
     - must separate run dirs for tmux/screen run status scripts;
       otherwise, calculated rates are off
+  * usr/lib/byobu/.constants:
+    - fix wireless utf8 icon bug, default to utf8 for tmux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 

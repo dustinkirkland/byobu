@@ -21,7 +21,7 @@
 PKG="byobu"
 
 # UTF8 support in the hardstatus is coming one day in Screen
-if [ "$UTF8" = "1" ]; then
+if [ "$UTF8" = "1" ] || [ "$BYOBU_BACKEND" = "tmux" ]; then
 	ICON_C="℃"
 	ICON_F="℉"
 	ICON_RD="◀"
@@ -30,7 +30,7 @@ if [ "$UTF8" = "1" ]; then
 	ICON_UP="▲"
 	ICON_DN="▼"
 	ICON_TRASH="♸"
-	ICON_WIFI=ICON="⚚"
+	ICON_WIFI="⚚"
 else
 	ICON_C="C"
 	ICON_F="F"
