@@ -51,6 +51,8 @@ byobu (4.30) unreleased; urgency=low
   * usr/lib/byobu/network:
     - make network calculations drastically cheaper, by using status_freq
       rather than a file stat
+  * usr/share/byobu/profiles/tmux:
+    - ensure that byobu-janitor runs on reload
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 

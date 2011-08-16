@@ -21,6 +21,7 @@
 ###############################################################################
 
 set-environment -g BYOBU_BACKEND tmux
+new-window -d byobu-janitor
 
 # Change to Screen's ctrl-a escape sequence
 set-option -g prefix C-a
