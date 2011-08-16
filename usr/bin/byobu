@@ -42,7 +42,7 @@ fi
 # Determine backend
 case "$0" in
 	*byobu-screen) export BYOBU_BACKEND="screen" ;;
-	*byobu-tmux) export BYOBU_BACKEND="tmux" ;;
+	*byobu-tmux) export BYOBU_BACKEND="tmux" TERM="screen-256color" ;;
 esac
 
 # Sanitize the environment

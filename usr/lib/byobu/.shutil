@@ -52,14 +52,14 @@ color_map() {
 		c) _RET=cyan,dim ;;
 		w) _RET=white,dim ;;
 		d) _RET=color0,dim ;;
-		K) _RET=black ;;
-		R) _RET=red ;;
-		G) _RET=green ;;
-		Y) _RET=yellow ;;
-		B) _RET=blue ;;
-		M) _RET=magenta ;;
-		C) _RET=cyan ;;
-		W) _RET=white ;;
+		K) _RET="#555555" ;;
+		R) _RET="#FF0000" ;;
+		G) _RET="#00FF00" ;;
+		Y) _RET="#FFFF00" ;;
+		B) _RET="#0000FF" ;;
+		M) _RET="#FF00FF" ;;
+		C) _RET="#00FFFF" ;;
+		W) _RET="#FFFFFF" ;;
 		*) _RET= ;;
 	esac
 }
