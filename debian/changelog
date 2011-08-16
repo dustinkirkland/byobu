@@ -1,5 +1,6 @@
 byobu (4.30) unreleased; urgency=low
 
+  * This release fixes two large bugs: LP: #827093, #823581
   * usr/share/byobu/profiles/tmux:
     - go bold on window activity
     - clean up and make window colorings more consistent
