@@ -53,6 +53,11 @@ byobu (4.30) unreleased; urgency=low
       rather than a file stat
   * usr/share/byobu/profiles/tmux:
     - ensure that byobu-janitor runs on reload
+  * usr/lib/byobu/custom, usr/lib/byobu/disk_io, usr/lib/byobu/ec2_cost,
+    usr/lib/byobu/network, usr/lib/byobu/reboot_required,
+    usr/lib/byobu/updates_available:
+    - must separate run dirs for tmux/screen run status scripts;
+      otherwise, calculated rates are off
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 

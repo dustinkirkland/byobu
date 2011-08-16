@@ -39,7 +39,7 @@ __network() {
 			up) symbol="$ICON_UP" ;;
 			down) symbol="$ICON_DN" ;;
 		esac
-		cache="$BYOBU_RUN_DIR/network.$i"
+		cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/network.$i"
 		[ -r "$cache" ] && read x1 < "$cache" || tx1=0
 		IFS="$OIFS:"
 		while read iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed; do

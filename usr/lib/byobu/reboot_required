@@ -20,7 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 REBOOT_FLAG="/var/run/reboot-required"
-RELOAD_FLAG="$BYOBU_RUN_DIR/reload-required"
+RELOAD_FLAG="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/reload-required"
 
 __reboot_required_detail() {
 		[ -e "$REBOOT_FLAG" ] && ls -alF "$REBOOT_FLAG" 2>&1

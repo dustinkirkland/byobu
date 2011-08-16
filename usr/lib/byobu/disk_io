@@ -54,7 +54,7 @@ __disk_io() {
 	local disk=${_RET}
 	local t2=`date +%s` t1=
 	for i in "read" "write"; do
-		local cache="$BYOBU_RUN_DIR/disk.$i"
+		local cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/disk.$i"
 		t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
 		local unit="kB/s"
 		local rate= x1= x2= symbol= unit=
