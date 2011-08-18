@@ -67,6 +67,9 @@ byobu (4.30) unreleased; urgency=low
     - ensure that the cache dir gets created
   * usr/bin/byobu, usr/lib/byobu/.shutil, usr/share/byobu/profiles/tmux:
     - get 256 colors working in tmux
+  * usr/lib/byobu/reboot_required, usr/share/man/man1/byobu.1:
+    - add .zZ symbol for powernap state, per feedback at LinuxConNA in
+      Vancouver
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 
