@@ -70,6 +70,8 @@ byobu (4.30) unreleased; urgency=low
   * usr/lib/byobu/reboot_required, usr/share/man/man1/byobu.1:
     - add .zZ symbol for powernap state, per feedback at LinuxConNA in
       Vancouver
+    - fix flag path; simplify coloring
+  * usr/lib/byobu/reboot_required:
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 

@@ -21,7 +21,7 @@
 
 REBOOT_FLAG="/var/run/reboot-required"
 RELOAD_FLAG="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/reload-required"
-POWERNAP_FLAG="/var/run/powernap.state"
+POWERNAP_FLAG="/var/run/powernap/powersave"
 
 __reboot_required_detail() {
 		[ -e "$REBOOT_FLAG" ] && ls -alF "$REBOOT_FLAG" 2>&1
@@ -38,7 +38,7 @@ __reboot_required() {
 		color b W; printf "<"; color -; color b b W; printf "F5"; color -; color b W; printf ">"; color -; printf " "
 	fi
 	if [ -e "$POWERNAP_FLAG" ]; then
-		color b W; printf ".zZ"; color -; printf " "
+		color b W; printf ".zZ"; color --
 	fi
 }
 
