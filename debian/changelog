@@ -83,6 +83,8 @@ byobu (4.30) unreleased; urgency=low
     - check exist status of session listing
   * usr/lib/byobu/.dirs:
     - fix stray directory creation
+  * usr/lib/byobu/.dirs:
+    - fall back to the tmux tmpdir
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 
