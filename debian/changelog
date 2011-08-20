@@ -72,6 +72,8 @@ byobu (4.30) unreleased; urgency=low
       Vancouver
     - fix flag path; simplify coloring
   * usr/lib/byobu/reboot_required:
+  * usr/bin/byobu-select-session:
+    - add session selection support for tmux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 

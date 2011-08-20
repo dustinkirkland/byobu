@@ -28,23 +28,45 @@ BYOBU_BACKEND=os.getenv("BYOBU_BACKEND", "screen")
 choice = ""
 sessions = []
 text = []
-i = 0
 
-output = commands.getoutput('%s -ls ' % BYOBU_BACKEND)
-if output:
-	for s in output.split("\n"):
-		s = re.sub(r'\s+', ' ', s)
-		# Ignore hidden sessions (named sessions that start with a ".")
-		if s.find(" ") == 0 and len(s) > 1 and s.count("..") == 0:
-			text.append("Select %s" % s.strip())
-			items = s.split(" ")
-			sessions.append(items[1])
-			i += 1
+def get_sessions():
+	sessions = []
+	i = 0
+	if commands.getstatusoutput("command -v screen")[0] == 0:
+		output = commands.getoutput("screen -ls")
+	 	if output:
+			for s in output.split("\n"):
+				s = re.sub(r'\s+', ' ', s)
+				# Ignore hidden sessions (named sessions that start with a ".")
+				if (s.find(" ") == 0 and len(s) > 1 and s.count("..") == 0):
+					text.append("screen: %s" % s.strip())
+					items = s.split(" ")
+					sessions.append("screen____%s" % items[1])
+					i += 1
+	if commands.getstatusoutput("command -v tmux")[0] == 0:
+		output = commands.getoutput("tmux list-sessions")
+	 	if output:
+			for s in output.split("\n"):
+				text.append("tmux: %s" % s.strip())
+				items = s.split(":")
+				sessions.append("tmux____%s" % items[0])
+				i += 1
+	return sessions
+
+def attach_session(session):
+	print("Attaching: [%s]\n" % session)
+	items = session.split("____", 2)
+	if items[0] == "tmux":
+		os.execvp("tmux", ["", "attach", "-t", items[1]])
+	else:
+		os.execvp("screen", ["", "-AOxRR", items[1]])
+
+sessions = get_sessions()
 
 show_shell = os.path.exists("%s/.always-select" % (BYOBU_CONFIG_DIR))
-if i>1 or show_shell:
+if len(sessions) > 1 or show_shell:
 	sessions.append("NEW")
-	text.append("Create a new Byobu session")
+	text.append("Create a new Byobu session (%s)" % BYOBU_BACKEND)
 	sessions.append("SHELL")
 	text.append("Run a shell without Byobu (%s)" % SHELL)
 
@@ -75,18 +97,28 @@ if len(sessions) > 1:
 			choice = ""
 			sys.stderr.write("\nERROR: Invalid input\n");
 elif len(sessions) == 1:
- 	# Attach to the chosen session; must use the binary, not the wrapper!
-	os.execvp(BYOBU_BACKEND, ["", "-AOxRR"])
+ 	# Attach to the only session; must use the binary, not the wrapper!
+	if BYOBU_BACKEND == "tmux":
+		os.execvp("tmux", ["", "attach"])
+	else:
+		os.execvp("screen", ["", "-AOxRR"])
 
 if choice:
 	if sessions[choice-1] == "NEW":
 		# Create a new session
-		os.execvp("byobu", ["", SHELL])
+		if BYOBU_BACKEND == "tmux":
+			os.execvp("byobu", ["", "new-session", SHELL])
+		else:
+			os.execvp("byobu", ["", SHELL])
 	elif sessions[choice-1] == "SHELL":
 		os.execvp(SHELL, [SHELL])
 	else:
 	 	# Attach to the chosen session; must use the binary, not the wrapper!
-		os.execvp(BYOBU_BACKEND, ["", "-AOxRR", sessions[choice-1]])
+		attach_session(sessions[choice-1])
 
 # No valid selection, default to the youngest session, create if necessary
-os.execvp("byobu", ["", "-AOxRR"])
+if BYOBU_BACKEND == "tmux":
+	args = ""
+else:
+	args = "-AOxRR"
+os.execvp("byobu", ["", args])
