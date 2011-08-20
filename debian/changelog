@@ -81,6 +81,8 @@ byobu (4.30) unreleased; urgency=low
     - fix bold printing
   * usr/bin/byobu-select-session:
     - check exist status of session listing
+  * usr/lib/byobu/.dirs:
+    - fix stray directory creation
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 
