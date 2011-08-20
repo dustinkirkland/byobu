@@ -36,6 +36,8 @@ for i in "$BYOBU_PREFIX/lib/$PKG/"*; do
 		[ -n "$num" ] && echo "backtick $num # $i" >> "$BYOBU_CONFIG_DIR/backticks"
 	fi
 done
+# Ensure that all updates get run immediately
+rm -rf "$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND"
 
 # Exit immediately, if we're not forced, and there is no reload flag
 FLAG="$BYOBU_RUN_DIR/reload-required"

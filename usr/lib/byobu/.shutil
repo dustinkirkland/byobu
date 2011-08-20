@@ -27,31 +27,40 @@ color_screen() {
 		-)   printf "$ESC{-}" ;;
 		--)   printf "$ESC{-} " ;;
 		esc)    printf "$ESC" ;;
-		bold1)  printf "$ESC{=b }" ;;
-		bold2)  printf "$ESC{+b }" ;;
+		bold1)  [ -n "$SCREEN_TERM" ] && printf "$ESC{=b }" ;;
+		bold2)  [ -n "$SCREEN_TERM" ] && printf "$ESC{+b }" ;;
 		none)   printf "$ESC{= }" ;;
 		invert) printf "$ESC{=r }" ;;
 		*)
-			if [ "$#" = "2" ]; then
-				[ "$MONOCHROME" = "1" ] && printf "$ESC{= }"   || printf "$ESC{= $1$2}"
-			else
-				[ "$MONOCHROME" = "1" ] && printf "$ESC{=$1 }" || printf "$ESC{=$1 $2$3}"
-			fi
+			local attr fg bg
+			case $# in
+				2)
+					attr= ; fg=$1 ; bg=$2
+				;;
+				3)
+					attr= ; fg=$2 ; bg=$3
+				;;
+			esac
+			[ "$MONOCHROME" = "1" ] && (fg= ; bg= )
+			[ -n "$SCREEN_TERM" ] || attr=
+			printf "$ESC{=$attr $fg$bg}"
 		;;
 	esac
 }
 
 color_map() {
+	local mod
+	[ -n "$SCREEN_TERM" ] && mod=",dim"
 	case "$1" in
-		k) _RET=black,dim ;;
-		r) _RET=red,dim ;;
-		g) _RET=green,dim ;;
-		y) _RET=yellow,dim ;;
-		b) _RET=blue,dim ;;
-		m) _RET=magenta,dim ;;
-		c) _RET=cyan,dim ;;
-		w) _RET=white,dim ;;
-		d) _RET=color0,dim ;;
+		k) _RET="black$mod" ;;
+		r) _RET="red$mod" ;;
+		g) _RET="green$mod" ;;
+		y) _RET="yellow$mod" ;;
+		b) _RET="blue$mod" ;;
+		m) _RET="magenta$mod" ;;
+		c) _RET="cyan$mod" ;;
+		w) _RET="white$mod" ;;
+		d) _RET="color0$mod" ;;
 		K) _RET="#555555" ;;
 		R) _RET="#FF0000" ;;
 		G) _RET="#00FF00" ;;
@@ -66,16 +75,17 @@ color_map() {
 
 attr_map() {
 	case "$1" in
-		d)	_RET=,dim ;;
-		u)	_RET=,underscore ;;
-		b)	_RET=,bold ;;
-		r)	_RET=,reverse ;;
-		s)	_RET=,standout ;;
-		B)	_RET=,blinking ;;
-		h)	_RET=,hidden ;;
-		i)	_RET=,italics ;;
-		*)	_RET= ;;
+		d) _RET=,dim ;;
+		u) _RET=,underscore ;;
+		b) _RET=,bold ;;
+		r) _RET=,reverse ;;
+		s) _RET=,standout ;;
+		B) _RET=,blinking ;;
+		h) _RET=,hidden ;;
+		i) _RET=,italics ;;
+		*) _RET= ;;
 	esac
+	[ -n "$SCREEN_TERM" ] || _RET=
 }
 
 color_tmux() {
@@ -85,7 +95,7 @@ color_tmux() {
 		-)   printf "#[default]" ;;
 		--)   printf "#[default] " ;;
 		esc)    printf "" ;;
-		bold*)  printf "#[fg=bold]" ;;
+		bold*)  [ -n "$SCREEN_TERM" ] && printf "#[fg=bold]" ;;
 		none)   printf "#[default]" ;;
 		invert) printf "#[reverse]" ;;
 		*)
