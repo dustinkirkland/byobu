@@ -27,8 +27,8 @@ color_screen() {
 		-)   printf "$ESC{-}" ;;
 		--)   printf "$ESC{-} " ;;
 		esc)    printf "$ESC" ;;
-		bold1)  [ -n "$SCREEN_TERM" ] && printf "$ESC{=b }" ;;
-		bold2)  [ -n "$SCREEN_TERM" ] && printf "$ESC{+b }" ;;
+		bold1)  [ -n "$SCREEN_TERM" ] && printf "$ESC{=b }" || printf "$ESC{= }" ;;
+		bold2)  [ -n "$SCREEN_TERM" ] && printf "$ESC{+b }" || printf "$ESC{= }" ;;
 		none)   printf "$ESC{= }" ;;
 		invert) printf "$ESC{=r }" ;;
 		*)
@@ -49,7 +49,7 @@ color_screen() {
 }
 
 color_map() {
-	local mod
+	local mod=
 	[ -n "$SCREEN_TERM" ] && mod=",dim"
 	case "$1" in
 		k) _RET="black$mod" ;;

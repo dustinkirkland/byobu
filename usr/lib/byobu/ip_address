@@ -55,7 +55,9 @@ __ip_address() {
 			fi
 		;;
 	esac
-	color bold2; printf "%s" "$ipaddr"; color --
+	if [ -n "$ipaddr" ]; then
+		color bold2; printf "%s" "$ipaddr"; color --
+	fi
 }
 
 # vi: syntax=sh ts=4 noexpandtab

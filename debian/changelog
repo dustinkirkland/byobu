@@ -76,6 +76,9 @@ byobu (4.30) unreleased; urgency=low
     - add session selection support for tmux
   * usr/bin/byobu, usr/bin/byobu-janitor, usr/lib/byobu/.shutil:
     - flatten bold/dim/bright modifiers when in 8-color mode
+  * usr/lib/byobu/ip_address, usr/lib/byobu/.shutil,
+    usr/share/byobu/profiles/common:
+    - fix bold printing
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 

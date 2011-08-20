@@ -79,7 +79,7 @@ setenv SSH_AUTH_SOCK $BYOBU_CONFIG_DIR/.ssh-agent
 caption always "%1001`%?%-Lw%50L>%?%{=r}%n*%f %t%?(%u)%?%{-}%12`%?%+Lw%?%11` %=%12`%1002`%10`%<"
 
 # Status string, last line
-hardstatus string '%1003`%=%1004`'
+hardstatus string '%12`%1003`%=%1004`'
 
 # NOTE: Older version of Screen have an arbitrary limit of only being able
 # to change colors 16 times in this 'hardstatus string'.
