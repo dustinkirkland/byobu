@@ -42,7 +42,7 @@ fi
 # Determine backend
 case "$0" in
 	*byobu-screen) export BYOBU_BACKEND="screen" ;;
-	*byobu-tmux) export BYOBU_BACKEND="tmux" TERM="screen-256color" ;;
+	*byobu-tmux) export BYOBU_BACKEND="tmux" ;;
 esac
 
 # Sanitize the environment
@@ -58,6 +58,12 @@ fi
 
 case $BYOBU_BACKEND in
 	tmux)
+		# Check if our terminfo supports 256 colors
+		if command -v tput >/dev/null; then
+			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then
+				export TERM="screen-256color" BYOBU_COLOR=256
+			fi
+		fi
 		PROFILE="-f $BYOBU_PREFIX/share/$PKG/profiles/tmuxrc"
 	;;
 	*)
@@ -79,7 +85,7 @@ case $BYOBU_BACKEND in
 		# Check if our terminfo supports 256 colors
 		if command -v tput >/dev/null; then
 			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then
-				export SCREEN_TERM="-T screen-256color"
+				export SCREEN_TERM="-T screen-256color" BYOBU_COLOR=256
 			fi
 		fi
 		# Some users want to maintain separate configurations

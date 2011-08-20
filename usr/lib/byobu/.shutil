@@ -27,8 +27,8 @@ color_screen() {
 		-)   printf "$ESC{-}" ;;
 		--)   printf "$ESC{-} " ;;
 		esc)    printf "$ESC" ;;
-		bold1)  [ -n "$SCREEN_TERM" ] && printf "$ESC{=b }" || printf "$ESC{= }" ;;
-		bold2)  [ -n "$SCREEN_TERM" ] && printf "$ESC{+b }" || printf "$ESC{= }" ;;
+		bold1)  [ -n "$BYOBU_COLOR" ] && printf "$ESC{=b }" || printf "$ESC{= }" ;;
+		bold2)  [ -n "$BYOBU_COLOR" ] && printf "$ESC{+b }" || printf "$ESC{= }" ;;
 		none)   printf "$ESC{= }" ;;
 		invert) printf "$ESC{=r }" ;;
 		*)
@@ -42,7 +42,7 @@ color_screen() {
 				;;
 			esac
 			[ "$MONOCHROME" = "1" ] && (fg= ; bg= )
-			[ -n "$SCREEN_TERM" ] || attr=
+			[ -n "$BYOBU_COLOR" ] || attr=
 			printf "$ESC{=$attr $fg$bg}"
 		;;
 	esac
@@ -50,7 +50,7 @@ color_screen() {
 
 color_map() {
 	local mod=
-	[ -n "$SCREEN_TERM" ] && mod=",dim"
+	[ -n "$BYOBU_COLOR" ] && mod=",dim"
 	case "$1" in
 		k) _RET="black$mod" ;;
 		r) _RET="red$mod" ;;
@@ -85,7 +85,7 @@ attr_map() {
 		i) _RET=,italics ;;
 		*) _RET= ;;
 	esac
-	[ -n "$SCREEN_TERM" ] || _RET=
+	[ -n "$BYOBU_COLOR" ] || _RET=
 }
 
 color_tmux() {
@@ -95,7 +95,7 @@ color_tmux() {
 		-)   printf "#[default]" ;;
 		--)   printf "#[default] " ;;
 		esc)    printf "" ;;
-		bold*)  [ -n "$SCREEN_TERM" ] && printf "#[fg=bold]" ;;
+		bold*)  [ -n "$BYOBU_COLOR" ] && printf "#[fg=bold]" ;;
 		none)   printf "#[default]" ;;
 		invert) printf "#[reverse]" ;;
 		*)
