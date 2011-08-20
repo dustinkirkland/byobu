@@ -33,9 +33,9 @@ def get_sessions():
 	sessions = []
 	i = 0
 	if commands.getstatusoutput("command -v screen")[0] == 0:
-		output = commands.getoutput("screen -ls")
-	 	if output:
-			for s in output.split("\n"):
+		output = commands.getstatusoutput("screen -ls")
+	 	if output[0] == 0:
+			for s in output[1].split("\n"):
 				s = re.sub(r'\s+', ' ', s)
 				# Ignore hidden sessions (named sessions that start with a ".")
 				if (s.find(" ") == 0 and len(s) > 1 and s.count("..") == 0):
@@ -44,9 +44,9 @@ def get_sessions():
 					sessions.append("screen____%s" % items[1])
 					i += 1
 	if commands.getstatusoutput("command -v tmux")[0] == 0:
-		output = commands.getoutput("tmux list-sessions")
-	 	if output:
-			for s in output.split("\n"):
+		output = commands.getstatusoutput("tmux list-sessions")
+	 	if output[0] == 0:
+			for s in output[1].split("\n"):
 				text.append("tmux: %s" % s.strip())
 				items = s.split(":")
 				sessions.append("tmux____%s" % items[0])

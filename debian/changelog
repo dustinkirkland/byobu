@@ -79,6 +79,8 @@ byobu (4.30) unreleased; urgency=low
   * usr/lib/byobu/ip_address, usr/lib/byobu/.shutil,
     usr/share/byobu/profiles/common, usr/bin/byobu:
     - fix bold printing
+  * usr/bin/byobu-select-session:
+    - check exist status of session listing
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
 
