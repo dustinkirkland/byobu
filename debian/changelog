@@ -1,4 +1,4 @@
-byobu (4.30) unreleased; urgency=low
+byobu (4.30-0ubuntu1) oneiric; urgency=low
 
   * This release fixes two large bugs: LP: #827093, #823581
   * usr/share/byobu/profiles/tmux:
@@ -86,7 +86,7 @@ byobu (4.30) unreleased; urgency=low
   * usr/lib/byobu/.dirs:
     - fall back to the tmux tmpdir
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Aug 2011 10:31:31 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Aug 2011 21:12:39 -0700
 
 byobu (4.29-0ubuntu1) oneiric; urgency=low
 
