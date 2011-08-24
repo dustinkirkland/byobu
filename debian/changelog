@@ -4,6 +4,8 @@ byobu (4.31) unreleased; urgency=low
     - fix bold color printing
   * usr/bin/byobu-janitor, usr/share/byobu/profiles/common:
     - deprecate backticks file, no longer needed
+  * usr/lib/byobu/.dirs:
+    - fix breakage when $TMUX is undefined
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Aug 2011 21:12:43 -0700
 
