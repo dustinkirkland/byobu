@@ -23,19 +23,6 @@ PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/.common"
 
-# Source configurations and disable unused backticks
-for i in "$BYOBU_PREFIX/share/$PKG/status/status" "$BYOBU_CONFIG_DIR/status"; do
-        [ -r "$i" ] && . "$i"
-done
-rm -f "$BYOBU_CONFIG_DIR/backticks"
-for i in "$BYOBU_PREFIX/lib/$PKG/"*; do
-	i=${i##*/}
-	eval x="\$$i" || true
-	if [ "$x" != "1" ]; then
-		num=$(grep "^backtick.*byobu-status $i$" "$BYOBU_PREFIX/share/$PKG/profiles/common" | awk '{print $2}')
-		[ -n "$num" ] && echo "backtick $num # $i" >> "$BYOBU_CONFIG_DIR/backticks"
-	fi
-done
 # Ensure that all updates get run immediately
 rm -rf "$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND"
 
@@ -67,7 +54,6 @@ fi
 [ -r "$BYOBU_CONFIG_DIR/profile.tmux" ] || echo "source-file $BYOBU_PREFIX/share/$PKG/profiles/tmux" > "$BYOBU_CONFIG_DIR/profile.tmux"
 [ -r "$BYOBU_CONFIG_DIR/keybindings" ] || echo "source $BYOBU_PREFIX/share/$PKG/keybindings/common" > "$BYOBU_CONFIG_DIR/keybindings"
 [ -r "$BYOBU_CONFIG_DIR/windows" ] || touch "$BYOBU_CONFIG_DIR/windows"
-[ -r "$BYOBU_CONFIG_DIR/backticks" ] || touch "$BYOBU_CONFIG_DIR/backticks"
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
 for f in status statusrc; do
 	if [ ! -r "$BYOBU_CONFIG_DIR/$f" ]; then
