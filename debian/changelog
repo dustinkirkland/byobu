@@ -1,4 +1,4 @@
-byobu (4.31) unreleased; urgency=low
+byobu (4.31-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu, usr/lib/byobu/.shutil:
     - fix bold color printing
@@ -7,7 +7,7 @@ byobu (4.31) unreleased; urgency=low
   * usr/lib/byobu/.dirs:
     - fix breakage when $TMUX is undefined
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Aug 2011 21:12:43 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Aug 2011 23:23:46 -0500
 
 byobu (4.30-0ubuntu1) oneiric; urgency=low
 
