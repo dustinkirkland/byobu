@@ -27,8 +27,8 @@ color_screen() {
 		-)   printf "$ESC{-}" ;;
 		--)   printf "$ESC{-} " ;;
 		esc)    printf "$ESC" ;;
-		bold1)  [ -n "$BYOBU_COLOR" ] && printf "$ESC{=b }" || printf "$ESC{= }" ;;
-		bold2)  [ -n "$BYOBU_COLOR" ] && printf "$ESC{+b }" || printf "$ESC{= }" ;;
+		bold1)  printf "$ESC{=b }" || printf "$ESC{= }" ;;
+		bold2)  printf "$ESC{+b }" || printf "$ESC{= }" ;;
 		none)   printf "$ESC{= }" ;;
 		invert) printf "$ESC{=r }" ;;
 		*)
@@ -38,29 +38,26 @@ color_screen() {
 					attr= ; fg=$1 ; bg=$2
 				;;
 				3)
-					attr= ; fg=$2 ; bg=$3
+					attr=$1 ; fg=$2 ; bg=$3
 				;;
 			esac
 			[ "$MONOCHROME" = "1" ] && (fg= ; bg= )
-			[ -n "$BYOBU_COLOR" ] || attr=
 			printf "$ESC{=$attr $fg$bg}"
 		;;
 	esac
 }
 
 color_map() {
-	local mod=
-	[ -n "$BYOBU_COLOR" ] && mod=",dim"
 	case "$1" in
-		k) _RET="black$mod" ;;
-		r) _RET="red$mod" ;;
-		g) _RET="green$mod" ;;
-		y) _RET="yellow$mod" ;;
-		b) _RET="blue$mod" ;;
-		m) _RET="magenta$mod" ;;
-		c) _RET="cyan$mod" ;;
-		w) _RET="white$mod" ;;
-		d) _RET="color0$mod" ;;
+		k) _RET="black" ;;
+		r) _RET="red" ;;
+		g) _RET="green" ;;
+		y) _RET="yellow" ;;
+		b) _RET="blue" ;;
+		m) _RET="magenta" ;;
+		c) _RET="cyan" ;;
+		w) _RET="white" ;;
+		d) _RET="color0" ;;
 		K) _RET="#555555" ;;
 		R) _RET="#FF0000" ;;
 		G) _RET="#00FF00" ;;
@@ -85,7 +82,6 @@ attr_map() {
 		i) _RET=,italics ;;
 		*) _RET= ;;
 	esac
-	[ -n "$BYOBU_COLOR" ] || _RET=
 }
 
 color_tmux() {
@@ -95,7 +91,7 @@ color_tmux() {
 		-)   printf "#[default]" ;;
 		--)   printf "#[default] " ;;
 		esc)    printf "" ;;
-		bold*)  [ -n "$BYOBU_COLOR" ] && printf "#[fg=bold]" ;;
+		bold*)  printf "#[fg=bold]" ;;
 		none)   printf "#[default]" ;;
 		invert) printf "#[reverse]" ;;
 		*)

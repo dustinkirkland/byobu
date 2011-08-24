@@ -61,7 +61,7 @@ case $BYOBU_BACKEND in
 		# Check if our terminfo supports 256 colors
 		if command -v tput >/dev/null; then
 			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then
-				export TERM="screen-256color" BYOBU_COLOR=256
+				export TERM="screen-256color"
 			fi
 		fi
 		PROFILE="-f $BYOBU_PREFIX/share/$PKG/profiles/tmuxrc"
@@ -85,7 +85,7 @@ case $BYOBU_BACKEND in
 		# Check if our terminfo supports 256 colors
 		if command -v tput >/dev/null; then
 			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then
-				export SCREEN_TERM="-T screen-256color" BYOBU_COLOR=256
+				export SCREEN_TERM="-T screen-256color"
 			fi
 		fi
 		# Some users want to maintain separate configurations

@@ -1,6 +1,7 @@
 byobu (4.31) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu, usr/lib/byobu/.shutil:
+    - fix bold color printing
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Aug 2011 21:12:43 -0700
 
