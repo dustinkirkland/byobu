@@ -18,8 +18,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 VERSION=4.32
-
 PKG="byobu"
+
+# All sorts of things go wrong if you don't own your $HOME dir.
+# This happens under sudo, if you don't use the -H option; Byobu will
+# create a bunch of files in your $HOME which will be owned by root.
+if [ ! -O "$HOME" ]; then
+	echo "Cannot run $PKG because [$USER] does not own [$HOME]" 1>&2
+	if [ -n "$SUDO_USER" ]; then
+		echo "To run $PKG under sudo, you MUST use 'sudo -H'" 1>&2
+	fi
+	exit 1
+fi
+
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/.common"
 

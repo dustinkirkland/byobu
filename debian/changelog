@@ -2,6 +2,11 @@ byobu (4.32) unreleased; urgency=low
 
   * usr/bin/byobu-launcher: LP: #835130
     - silence message that some users found noisy
+  * usr/bin/byobu, usr/bin/byobu-launch, usr/bin/byobu-launcher,
+    usr/share/man/man1/byobu.1: LP: #835152
+    - fix a suite of support issues around launching byobu under sudo,
+      where files/dirs would be created under the $SUDO_USER's $HOME,
+      but would be owned by root
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Aug 2011 23:23:49 -0500
 

@@ -18,26 +18,29 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PKG="byobu"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
-. "${BYOBU_PREFIX}/lib/${PKG}/.common"
-
-if [ -e "$BYOBU_CONFIG_DIR/disable-autolaunch" ]; then
-	false
-else
-	case "$TERM" in
-		*screen*)
-			# Handle nesting (silence this message, as some users found it noisy?)
-			# printf "$(gettext 'To launch in a nested session, run: byobu')\n"
-			true
-		;;
-		dumb)
-			# Dumb terminal, don't launch
-			false
-		;;
-		*)
-			exec $BYOBU_PREFIX/bin/byobu "$@"
-		;;
-	esac
+# Bad things happen if you run byobu, but you don't own your $HOME
+# ie, rather than "sudo byobu", you must run "sudo -H byobu"
+if [ -O "$HOME" ]; then
+	[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+	. "${BYOBU_PREFIX}/lib/${PKG}/.common"
+	if [ -e "$BYOBU_CONFIG_DIR/disable-autolaunch" ]; then
+		false
+	else
+		case "$TERM" in
+			*screen*)
+				# Handle nesting (silence this message, as some users found it noisy?)
+				# printf "$(gettext 'To launch in a nested session, run: byobu')\n"
+				true
+			;;
+			dumb)
+				# Dumb terminal, don't launch
+				false
+			;;
+			*)
+				exec $BYOBU_PREFIX/bin/byobu "$@"
+			;;
+		esac
+	fi
 fi
 false
 

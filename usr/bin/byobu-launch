@@ -29,7 +29,7 @@
 #      $HOME/.bashrc:  export LC_BYOBU=0
 #    or edit your sshd_config, ssh_config, and set:
 #      $HOME/.bashrc:  export BYOBU_DISABLE=1
-if [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1" ]; then
+if [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1" ] && [ -O "$HOME" ]; then
 	BYOBU_SOURCED_PROFILE=1
 	PKG="byobu"
 	[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
