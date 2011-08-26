@@ -11,7 +11,7 @@ byobu (4.31-0ubuntu1) oneiric; urgency=low
     - fix bold color printing
   * usr/bin/byobu-janitor, usr/share/byobu/profiles/common:
     - deprecate backticks file, no longer needed
-  * usr/lib/byobu/.dirs:
+  * usr/lib/byobu/.dirs: LP: #833780
     - fix breakage when $TMUX is undefined
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Aug 2011 23:23:46 -0500
