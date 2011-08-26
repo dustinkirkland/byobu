@@ -1,6 +1,7 @@
 byobu (4.32) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-launcher: LP: #835130
+    - silence message that some users found noisy
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Aug 2011 23:23:49 -0500
 
