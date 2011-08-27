@@ -1,4 +1,4 @@
-byobu (4.32) unreleased; urgency=low
+byobu (4.32-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu-launcher: LP: #835130
     - silence message that some users found noisy
@@ -10,7 +10,7 @@ byobu (4.32) unreleased; urgency=low
   * usr/lib/byobu/.dirs: LP: #833780
     - save a fork
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Aug 2011 23:23:49 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Aug 2011 19:07:29 -0500
 
 byobu (4.31-0ubuntu1) oneiric; urgency=low
 
