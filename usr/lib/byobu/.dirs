@@ -44,9 +44,10 @@ if [ -d "$XDG_CACHE_HOME" ]; then
 elif [ -d "$SOCKETDIR/S-$USER" ]; then
 	# But for FAR better performance, use a tmpfs if available
 	export BYOBU_RUN_DIR="$SOCKETDIR/S-$USER/$PKG"
-elif [ -n "$TMUX" ] && [ -d "$(dirname $TMUX)" ]; then
+elif [ -n "$TMUX" ] && [ d=$(dirname "$TMUX") ] && [ -d "$d" ]; then
 	# Or perhaps try the tmux tmpdir
-	export BYOBU_RUN_DIR="$(dirname $TMUX)/$PKG"
+	export BYOBU_RUN_DIR="$d"
+	d=
 else
 	# But if not, we'll use a cache directory
 	export BYOBU_RUN_DIR="$HOME/.cache/$PKG"

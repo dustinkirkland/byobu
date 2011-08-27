@@ -7,6 +7,8 @@ byobu (4.32) unreleased; urgency=low
     - fix a suite of support issues around launching byobu under sudo,
       where files/dirs would be created under the $SUDO_USER's $HOME,
       but would be owned by root
+  * usr/lib/byobu/.dirs: LP: #833780
+    - save a fork
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Aug 2011 23:23:49 -0500
 
