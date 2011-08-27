@@ -1,3 +1,9 @@
+byobu (4.33) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Aug 2011 19:07:32 -0500
+
 byobu (4.32-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu-launcher: LP: #835130
