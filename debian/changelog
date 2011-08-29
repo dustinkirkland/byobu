@@ -1,6 +1,10 @@
 byobu (4.33) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/updates_available:
+    - localize variables
+    - save a fork
+    - fix detection of updates, which only worked when there were security
+      updates
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Aug 2011 19:07:32 -0500
 

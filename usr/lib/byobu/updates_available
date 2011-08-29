@@ -20,8 +20,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ___print_updates() {
-	u=$1
-	s=$2
+	local u= s=
+	read u s < "$1"
 	if [ -n "$u" ]; then
 		if [ "$u" -gt 0 ]; then
 			color b r W; printf "%d" "$u"; color -; color r W; printf "!"
@@ -36,7 +36,7 @@ ___print_updates() {
 }
 
 ___update_cache() {
-	mycache=$1
+	local mycache=$1
 	# Now we actually have to do hard computational work to calculate updates.
 	# Let's try to be "nice" about it:
 	renice 10 $$ >/dev/null 2>&1 || true
@@ -69,7 +69,7 @@ ___update_cache() {
 ___update_needed() {
 	# Checks if we need to update the cache.
 	# TODO: add more distro
-	mycache=$1
+	local mycache=$1
 	# The cache doesn't exist: create it
 	[ ! -e "$mycache" ] && return 0
 	if command -v apt-get >/dev/null; then
@@ -81,6 +81,7 @@ ___update_needed() {
 		return $?
 	elif command -v pacman >/dev/null; then
 		# Archlinux
+		local db
 		for db in /var/lib/pacman/sync/*.db; do
 			[ "$db" -nt "$mycache" ] && return 0
 		done
@@ -91,11 +92,11 @@ ___update_needed() {
 
 __updates_available_detail() {
 	if command -v apt-get >/dev/null; then
-		detail=`apt-get -s -o Debug::NoLocking=true upgrade`
+		local detail=`apt-get -s -o Debug::NoLocking=true upgrade`
 		if [ "$1" = "--detail" ]; then
 			printf "$detail"
 		else
-			short=`printf "%s" "$detail" | grep -c ^Inst`
+			local short=`printf "%s" "$detail" | grep -c ^Inst`
 			printf "$short"
 		fi
 	fi
@@ -104,7 +105,7 @@ __updates_available_detail() {
 __updates_available() {
 	local mycache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/updates-available"
 	# If mycache is present, use it
-	[ -r $mycache ] && ___print_updates `$SED -n '/[^0-9]/s/ .*$//p' $mycache`
+	[ -r $mycache ] && ___print_updates "$mycache"
 	# If we really need to do so (mycache doesn't exist, or the package database has changed),
 	# background an update now
 	___update_needed "$mycache" && ___update_cache "$mycache"
