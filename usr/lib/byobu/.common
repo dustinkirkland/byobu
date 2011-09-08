@@ -19,7 +19,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
+	# Needed to set up $BYOBU_CONFIG_DIR
 	. "${BYOBU_PREFIX}/lib/${PKG}/.dirs"
+
+	# If the backend is already set (eg. running `byobu-tmux`), do nothing.
+	if [ -z "${BYOBU_BACKEND}" ]; then
+		[ -r "/etc/$PKG/backend" ] && . "/etc/$PKG/backend"
+		[ -r "$BYOBU_CONFIG_DIR/backend" ] && . "$BYOBU_CONFIG_DIR/backend"
+		# Just in case there's no config file at all
+		[ -z "${BYOBU_BACKEND}" ] && BYOBU_BACKEND=screen
+  	fi
+
+	# Creating backend cache
+	[ -d "$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND" ] || mkdir -p "$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND"
+
 	. "${BYOBU_PREFIX}/lib/${PKG}/.shutil"
 	. "${BYOBU_PREFIX}/lib/${PKG}/.constants"
 	BYOBU_INCLUDED_LIBS=1

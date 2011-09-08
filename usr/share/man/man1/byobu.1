@@ -10,7 +10,7 @@ Options to \fBbyobu\fP are simply passed through \fBscreen\fP(1).
 .SH DESCRIPTION
 \fBbyobu\fP is a script that launches GNU screen in the byobu configuration.  This enables the display of system information and status notifications within two lines at the bottom of the screen session. It also enables multiple tabbed terminal sessions, accessible through simple keystrokes.
 
-Note that BYOBU_CONFIG_DIR=\fI$HOME/.byobu\fP.
+Note that BYOBU_CONFIG_DIR=\fI$XDG_CONFIG_HOME/byobu\fP if defined, and \fI$HOME/.byobu\fP otherwise.
 
 .SH STATUS NOTIFICATIONS
 

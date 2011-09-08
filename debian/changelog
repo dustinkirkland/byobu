@@ -14,6 +14,11 @@ byobu (4.33) unreleased; urgency=low
   * usr/lib/byobu/apport: LP: #842113
     - fix broken detection of apport bug reports, thanks to lp:~masterpatricko
       for the suggested fix
+  * etc/byobu/backend, usr/bin/byobu, usr/lib/byobu/.common,
+    usr/lib/byobu/.dirs, usr/share/byobu/status/status,
+    usr/share/man/man1/byobu.1: LP: #836090
+    - fix handling of byobu backend (screen|tmux) handling; thanks to
+      lp:~zorun-42 for the fix
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Aug 2011 19:07:32 -0500
 

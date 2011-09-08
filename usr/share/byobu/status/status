@@ -20,6 +20,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Status beginning with '#' are disabled.
+
 # Screen has two status lines, with 4 quadrants for status
 screen_upper_left="color"
 screen_upper_right="color whoami hostname ip_address menu"
