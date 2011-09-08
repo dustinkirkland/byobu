@@ -38,7 +38,6 @@ __swap() {
 	[ "${stotal:-0}" = "0" ] && return 0
 	mem=${stotal}
 	f=$(((100*($stotal-$sfree))/$stotal))
-	[ "$f" = "0" ] && return 0
 	if [ $mem -ge 1048576 ]; then
 	fpdiv "${mem}" 1048576 1
 		mem=${_RET}
