@@ -1,4 +1,4 @@
-byobu (4.33) unreleased; urgency=low
+byobu (4.33-0ubuntu1) oneiric; urgency=low
 
   * usr/lib/byobu/updates_available:
     - localize variables
@@ -23,7 +23,7 @@ byobu (4.33) unreleased; urgency=low
     - make swap status behave like disk and memory (display usage even if
       zero)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Aug 2011 19:07:32 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 08 Sep 2011 14:26:38 -0700
 
 byobu (4.32-0ubuntu1) oneiric; urgency=low
 
