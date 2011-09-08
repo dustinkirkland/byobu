@@ -5,6 +5,12 @@ byobu (4.33) unreleased; urgency=low
     - save a fork
     - fix detection of updates, which only worked when there were security
       updates
+  * usr/lib/byobu/.shutil: LP: #844994
+    - the wget --timeout=1 was not working as desired, without the --tries=1
+      option too; so local boots of ubuntu ec2 images that don't have a
+      working metadata service might take several minutes for byobu to start
+      while that wget tries repeatedly to reach the metadata service;
+      big thanks to Ben Howard for helping triage and fix ;-)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Aug 2011 19:07:32 -0500
 
