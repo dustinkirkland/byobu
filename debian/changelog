@@ -1,6 +1,8 @@
 byobu (4.34) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Theodore Campbell ]
+  * usr/lib/byobu/.constants: LP: #846576
+    - silence errors
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 08 Sep 2011 14:26:43 -0700
 

@@ -63,5 +63,5 @@ case "$BYOBU_BACKEND" in
 esac
 
 # MacOS Support
-command -v gsed >/dev/null && export SED="gsed" || export SED="sed"
-command -v greadlink >/dev/null && export READLINK="greadlink" || export READLINK="readlink"
+command -v gsed >/dev/null 2>&1 && export SED="gsed" || export SED="sed"
+command -v greadlink >/dev/null 2>&1 && export READLINK="greadlink" || export READLINK="readlink"
