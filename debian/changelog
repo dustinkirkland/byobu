@@ -4,6 +4,10 @@ byobu (4.34) unreleased; urgency=low
   * usr/lib/byobu/.constants: LP: #846576
     - silence errors
 
+  [ Dustin Kirkland ]
+  * usr/lib/byobu/.shutil: LP: #854262
+    - fix regressed monochrome support
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 08 Sep 2011 14:26:43 -0700
 
 byobu (4.33-0ubuntu1) oneiric; urgency=low

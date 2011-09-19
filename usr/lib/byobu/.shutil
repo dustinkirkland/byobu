@@ -41,7 +41,10 @@ color_screen() {
 					attr=$1 ; fg=$2 ; bg=$3
 				;;
 			esac
-			[ "$MONOCHROME" = "1" ] && (fg= ; bg= )
+			if [ "$MONOCHROME" = "1" ]; then
+				fg=
+				bg=
+			fi
 			printf "$ESC{=$attr $fg$bg}"
 		;;
 	esac
