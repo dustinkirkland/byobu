@@ -7,6 +7,8 @@ byobu (4.34) unreleased; urgency=low
   [ Dustin Kirkland ]
   * usr/lib/byobu/.shutil: LP: #854262
     - fix regressed monochrome support
+  * usr/bin/byobu-janitor, usr/share/byobu/status/status:
+    - proper fix for ec2 by default in cloud instances
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 08 Sep 2011 14:26:43 -0700
 
