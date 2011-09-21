@@ -1,3 +1,9 @@
+byobu (4.35) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Sep 2011 18:49:00 -0500
+
 byobu (4.34-0ubuntu1) oneiric; urgency=low
 
   [ Theodore Campbell ]
