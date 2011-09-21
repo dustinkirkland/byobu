@@ -3,29 +3,34 @@ For more information about this package, please see:
 
 If Byobu is not packaged for your Linux or UNIX OS, or if you do not have
 administrative privileges in order to install Byobu, you may be able to
-install locally by:
+install locally, using the following instructions...
 
- 1) Download the latest version (>= 3.0) from:
-    https://launchpad.net/byobu/+download
+ 0) If you have pulled the source from the upstream bzr repository
+    (bzr branch lp:byobu) then you first need to run:
+      aclocal
+      automake --add-missing --copy
+      autoconf
+ 1) Or download the latest version (>= 3.0) from:
+      https://launchpad.net/byobu/+download
  2) Extract:
-    tar zxvf byobu*.tar.gz
+      tar zxvf byobu*.tar.gz
  3) Configure:
-    cd byobu*
-    ./configure --prefix="$HOME/byobu"
+      cd byobu*
+      ./configure --prefix="$HOME/byobu"
  4) Build:
-    make
+      make
  5) Install:
-    make install
+      make install
  6) Update your PATH environment variable
-    echo "export PATH=$HOME/byobu/bin:$PATH" >> $HOME/.bashrc
-    . $HOME/.bashrc
+      echo "export PATH=$HOME/byobu/bin:$PATH" >> $HOME/.bashrc
+      . $HOME/.bashrc
  7) Run:
-    byobu
+      byobu
 
 Note that you will need to have a few dependencies installed:
- * screen
+ * screen and/or tmux
  * python-newt (if you want to use Byobu's configuration utility)
  * gsed (if your sed implementation doesn't support -i)
 
 Dustin Kirkland <dustin.kirkland@gmail.com>
-2010-07-28
+2011-09-21

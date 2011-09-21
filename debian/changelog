@@ -21,6 +21,8 @@ byobu (4.34) unreleased; urgency=low
     - ensure that disabled auto launch is respected, too, and does not
       double-source profile
     - handle both system-wide autolaunch, and per-user autolaunch
+  * README: LP: #854868
+    - document automake steps
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 08 Sep 2011 14:26:43 -0700
 
