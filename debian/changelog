@@ -11,6 +11,11 @@ byobu (4.34) unreleased; urgency=low
     - proper fix for ec2 by default in cloud instances
   * usr/bin/byobu-select-session: LP: #855795
     - fix broken select-session support; screen -ls exits 1
+  * usr/share/byobu/keybindings/f-keys: LP: #839783
+    - Disable screen messages while entering and scrolling around in
+      copy/scrollback mode, but re-enable them afterward; print a
+      message about Byobu scrollback mode to "eat" the unnecessary
+      and misleading screen messages when using alt-pgup and alt-pgdown
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 08 Sep 2011 14:26:43 -0700
 

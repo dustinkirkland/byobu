@@ -64,9 +64,9 @@ bindkey "^[[31~" only							# shift-F5 | kill all splits
 
 # Make it more logical how to enter scrollback
 register p "^[[5~"
-bindkey "^[[5;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process p'		# alt-pageup | scrollback
+bindkey "^[[5;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process p' 'msgwait 1' 'echo "Byobu scrollback mode (alt-pgup / alt-pgdown)"' # alt-pageup | scrollback
 register n "^[[6~"
-bindkey "^[[6;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process n'		# alt-pagedn | scrollback
+bindkey "^[[6;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process n' 'msgwait 1' 'echo "Byobu scrollback mode (alt-pgup / alt-pgdown)"' # alt-pagedn | scrollback
 
 # Make socket reconnection a little easier
 bindkey "^[[15;5~" eval 'process x' 'process r' 'stuff ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets^M"' # ctrl-F5 | reconnect gpg/ssh/x sockets
