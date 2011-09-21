@@ -34,31 +34,34 @@ if [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DI
 	PKG="byobu"
 	[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 	. "${BYOBU_PREFIX}/lib/${PKG}/.common"
-	case "$-" in
-		*i*)
-			# Attempt to merge shell history across sessions/windows (works with a few exceptions)
-			if command -v shopt >/dev/null; then
-				shopt -s histappend || true
-			elif command -v setopt >/dev/null; then
-				# Support zsh too
-				setopt appendhistory
-			fi
-			[ -n "$PROMPT_COMMAND" ] && PROMPT_COMMAND="$PROMPT_COMMAND;history -a" || PROMPT_COMMAND="history -a"
-			# Source profile
-			[ -r "$HOME/.profile" ] && . "$HOME/.profile"
-			if byobu-launcher; then
-				# Wait very briefly for the no-logout flag to get written?
-				sleep 0.1
-				if [ -e "$BYOBU_CONFIG_DIR/no-logout-on-detach" ] || [ -e "$BYOBU_RUN_DIR/no-logout" ]; then
-					# The user does not want to logout on byobu detach
-					rm -f "$BYOBU_RUN_DIR/no-logout"	# Remove one-time no-logout flag, if it exists
-					true
-				else
-					exit 0
+	# Ensure that autolaunch is not explicitly disabled
+	if [ ! -r "$BYOBU_CONFIG_DIR/disable-autolaunch" ]; then
+		case "$-" in
+			*i*)
+				# Attempt to merge shell history across sessions/windows (works with a few exceptions)
+				if command -v shopt >/dev/null; then
+					shopt -s histappend || true
+				elif command -v setopt >/dev/null; then
+					# Support zsh too
+					setopt appendhistory
 				fi
-			fi
-		;;
-	esac
+				[ -n "$PROMPT_COMMAND" ] && PROMPT_COMMAND="$PROMPT_COMMAND;history -a" || PROMPT_COMMAND="history -a"
+				# Source profile, if necessary
+				[ -z "$sourced" ] && [ -r "$HOME/.profile" ] && . "$HOME/.profile"
+				if byobu-launcher; then
+					# Wait very briefly for the no-logout flag to get written?
+					sleep 0.1
+					if [ -e "$BYOBU_CONFIG_DIR/no-logout-on-detach" ] || [ -e "$BYOBU_RUN_DIR/no-logout" ]; then
+						# The user does not want to logout on byobu detach
+						rm -f "$BYOBU_RUN_DIR/no-logout"	# Remove one-time no-logout flag, if it exists
+						true
+					else
+						exit 0
+					fi
+				fi
+			;;
+		esac
+	fi
 fi
 true
 # vi: syntax=sh ts=4 noexpandtab
