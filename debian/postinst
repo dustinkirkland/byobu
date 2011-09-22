@@ -43,19 +43,6 @@ if [ -d "$SOCKETDIR" ]; then
 	done
 fi
 
-# Reload byobu sessions
-for p in /var/run/screen/S-*/*.$PKG; do
-	pid=$(echo "$p" | sed -e "s:.*/::" -e "s:\..*::")
-	if [ -p "$p" ] && (ps -o cmd "$pid"  | grep -qs "^SCREEN -S $PKG -c "); then
-		u=$(stat -c %U "$p")
-		h=$(getent passwd "$u" | awk -F: '{print $6}')
-		if [ -f "$h/.$PKG/profile" ]; then
-			s=$(basename "$p")
-			su -l "$u" -c "screen -S $s -X at 0 source '$h/.$PKG/profile'" >/dev/null 2>&1 || true
-		fi
-	fi
-done
-
 #DEBHELPER#
 
 # vi: syntax=sh ts=4 noexpandtab

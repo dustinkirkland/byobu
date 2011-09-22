@@ -5,9 +5,9 @@ byobu (4.35) unreleased; urgency=low
       previous fix just enabled it everywhere
   * debian/postinst, usr/bin/byobu-janitor:
     - smooth upgrades from older byobu (<= 4.0)
-    - automatically reload default byobu launched sessions on upgrade
   * usr/lib/byobu/reboot_required:
     - fix path
+  * debian/postinst:
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Sep 2011 18:49:00 -0500
 
