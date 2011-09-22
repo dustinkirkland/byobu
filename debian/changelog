@@ -7,7 +7,6 @@ byobu (4.35) unreleased; urgency=low
     - smooth upgrades from older byobu (<= 4.0)
   * usr/lib/byobu/reboot_required:
     - fix path
-  * debian/postinst:
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Sep 2011 18:49:00 -0500
 
