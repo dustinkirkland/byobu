@@ -3,6 +3,8 @@ byobu (4.35) unreleased; urgency=low
   * usr/bin/byobu-janitor, usr/share/byobu/status/status: LP: #856467
     - cleaner fix for ensuring ec2_cost is enabled in ec2 instances;
       previous fix just enabled it everywhere
+  * debian/postinst, usr/bin/byobu-janitor:
+    - smooth upgrades from older byobu (<= 4.0)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Sep 2011 18:49:00 -0500
 

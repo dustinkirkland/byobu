@@ -46,6 +46,12 @@ if [ -d "$BYOBU_CONFIG_DIR" ] && [ ! -w "$BYOBU_CONFIG_DIR" ]; then
 	exit 1
 fi
 
+# Affects: Upgrades from <= byobu 4.30
+# Clear out old style status configuration
+if ! grep -qs "^screen_upper_left=" "$BYOBU_CONFIG_DIR/status"; then
+	rm -f "$BYOBU_CONFIG_DIR/status" "$BYOBU_CONFIG_DIR/statusrc"
+fi
+
 # Affects: First runs with no configuration
 # Seed the configuration
 # Setup initial local user configuration
@@ -127,7 +133,7 @@ fi
 # Affects: Upgrades from <= byobu 4.22
 killall -u $USER byobu-statusd >/dev/null 2>&1 || true
 
-# Clean up flag
-rm -f "$FLAG"
+# Clean up flag (new and old)
+rm -f "$FLAG" "/var/run/screen/S-$USER/$PKG.reload-required"
 
 # vi: syntax=sh ts=4 noexpandtab
