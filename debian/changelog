@@ -5,6 +5,8 @@ byobu (4.35) unreleased; urgency=low
       previous fix just enabled it everywhere
   * debian/postinst, usr/bin/byobu-janitor:
     - smooth upgrades from older byobu (<= 4.0)
+  * usr/lib/byobu/reboot_required:
+    - fix path
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Sep 2011 18:49:00 -0500
 
