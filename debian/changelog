@@ -1,4 +1,4 @@
-byobu (4.35) unreleased; urgency=low
+byobu (4.35-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu-janitor, usr/share/byobu/status/status: LP: #856467
     - cleaner fix for ensuring ec2_cost is enabled in ec2 instances;
@@ -10,7 +10,7 @@ byobu (4.35) unreleased; urgency=low
   * usr/bin/byobu-launch, usr/bin/byobu-launcher-install:
     - clean up the variable name used to prevent double sourcing of profile
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Sep 2011 18:49:00 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 23 Sep 2011 11:09:03 -0500
 
 byobu (4.34-0ubuntu1) oneiric; urgency=low
 
