@@ -7,6 +7,8 @@ byobu (4.35) unreleased; urgency=low
     - smooth upgrades from older byobu (<= 4.0)
   * usr/lib/byobu/reboot_required:
     - fix path
+  * usr/bin/byobu-launch, usr/bin/byobu-launcher-install:
+    - clean up the variable name used to prevent double sourcing of profile
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 21 Sep 2011 18:49:00 -0500
 

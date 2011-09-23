@@ -47,7 +47,7 @@ if [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DI
 				fi
 				[ -n "$PROMPT_COMMAND" ] && PROMPT_COMMAND="$PROMPT_COMMAND;history -a" || PROMPT_COMMAND="history -a"
 				# Source profile, if necessary
-				[ -z "$sourced" ] && [ -r "$HOME/.profile" ] && . "$HOME/.profile"
+				[ -z "$_byobu_sourced" ] && [ -r "$HOME/.profile" ] && . "$HOME/.profile"
 				if byobu-launcher; then
 					# Wait very briefly for the no-logout flag to get written?
 					sleep 0.1
