@@ -33,6 +33,14 @@ for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/
 	[ -r "$i" ] && . "$i"
 done
 
+# Reload profile, if necessary
+if [ -e "/var/run/screen/S-$USER/$PKG.reload-required" ] || [ -e "$BYOBU_RUN_DIR/reload-required" ]; then
+	if [ "$BYOBU_BACKEND" = "screen" ] && [ -r "$BYOBU_CONFIG_DIR/profile" ]; then
+		# If the forced janitorial steps succeed, try a profile reload
+		byobu-janitor --force && screen -X at 0 source "$BYOBU_CONFIG_DIR/profile" >/dev/null 2>&1
+	fi
+fi
+
 # Get the current timestamp
 get_now; NOW=${_RET}
 
