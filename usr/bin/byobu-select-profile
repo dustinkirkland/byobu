@@ -67,18 +67,6 @@ PROFILE="$BYOBU_CONFIG_DIR/profile"
 selected=-1
 color=
 
-assert_symlink() {
-	if [ -e "$1" ]; then
-		if [ ! -L "$1" ]; then
-			echo `gettext 'Error:'` $1 `gettext ' file exists, but is not a symlink'`
-			exit 1
-		fi
-	fi
-}
-
-# If these files exist, they must be a symlink
-assert_symlink "$BYOBU_CONFIG_DIR/profile"
-
 listprofiles() {
 	# Display list of profiles, one per line
 	for x in $COLORS; do

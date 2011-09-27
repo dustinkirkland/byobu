@@ -1,6 +1,7 @@
 byobu (4.36) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-select-profile: LP: #860574
+    - fix color selection;  profile is no longer a symlink
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 23 Sep 2011 11:09:07 -0500
 
