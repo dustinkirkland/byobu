@@ -1,11 +1,11 @@
-byobu (4.36) unreleased; urgency=low
+byobu (4.36-0ubuntu1) oneiric; urgency=low
 
   * usr/bin/byobu-select-profile: LP: #860574
     - fix color selection;  profile is no longer a symlink
   * usr/bin/byobu-launch: LP: #860634
     - disable auto launch of byobu, when a serial console is detected
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 23 Sep 2011 11:09:07 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 27 Sep 2011 10:59:02 -0400
 
 byobu (4.35-0ubuntu1) oneiric; urgency=low
 
