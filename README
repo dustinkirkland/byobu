@@ -7,9 +7,7 @@ install locally, using the following instructions...
 
  0) If you have pulled the source from the upstream bzr repository
     (bzr branch lp:byobu) then you first need to run:
-      aclocal
-      automake --add-missing --copy
-      autoconf
+      ./debian/rules autoconf
  1) Or download the latest version (>= 3.0) from:
       https://launchpad.net/byobu/+download
  2) Extract:
