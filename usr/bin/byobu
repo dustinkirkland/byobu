@@ -95,7 +95,7 @@ case $BYOBU_BACKEND in
 		fi
 		export BYOBU_WINDOWS
 		# Launch shell, unless the user has default windows set to launch
-		uncommented_lines < "$BYOBU_WINDOWS" && DEFAULT_WINDOW= || DEFAULT_WINDOW="-t ${SHELL##*/} byobu-shell"
+		uncommented_lines < "$BYOBU_WINDOWS" && DEFAULT_WINDOW= || DEFAULT_WINDOW="-t ${SHELL##*/} ${BYOBU_PREFIX}/bin/byobu-shell"
 		# Check if our terminfo supports 256 colors
 		if command -v tput >/dev/null; then
 			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then

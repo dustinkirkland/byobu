@@ -42,7 +42,7 @@ update_flag() {
 }
 
 install_launcher() {
-	printf "_byobu_sourced=1 . byobu-launch\n" >> "$1"
+	printf "_byobu_sourced=1 . ${BYOBU_PREFIX}/bin/byobu-launch\n" >> "$1"
 }
 
 # Sanitize the environment
