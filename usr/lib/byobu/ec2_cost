@@ -36,12 +36,16 @@ __ec2_cost() {
 	# Try to use metadata service
 	if metadata_available; then
 		zone=$(wget -q -O - http://169.254.169.254/latest/meta-data/placement/availability-zone)
+		if [ ! -r "$BYOBU_PREFIX/share/$PKG/ec2/rates.${zone%?}" ]; then
+			zone="us-east-1d"
+		fi
 		. "$BYOBU_PREFIX/share/$PKG/ec2/rates.${zone%?}"
 		type=$(wget -q -O - http://169.254.169.254/latest/meta-data/instance-type | $SED -e "s/\./_/g")
 		eval rate="\$$type"
 		file_to_stat="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/ec2_cost.instance_type"
 		[ -f "$file_to_stat" ] || wget -q -O "$file_to_stat" http://169.254.169.254/latest/meta-data/instance-type
-	else
+	fi
+	if [ -z "$rate" ]; then
 		. "$BYOBU_PREFIX/share/$PKG/ec2/rates."*
 		# Count CPUs, Memory, Architecture, hours
 		cpu=$(grep -c "^processor.*:" /proc/cpuinfo) || cpu=1

@@ -1,6 +1,8 @@
 byobu (4.37) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/ec2_cost: LP: #862655
+    - fix ec2 cost estimator on OpenStack instances by falling back to
+      the approximation calculator
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 27 Sep 2011 10:59:05 -0400
 
