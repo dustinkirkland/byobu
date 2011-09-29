@@ -25,8 +25,8 @@ PKG="byobu"
 remove_launcher() {
 	dest=$1
 	if [ -w "$dest" ]; then
-		# print any comments, and remove lines invoking byobu:
-		$SED -i -e '/^\s*#/p' -e "/\b$PKG-launch\$/d" -e "/ screen-launch/d" "$dest"
+		# keep any comments, and remove lines invoking byobu:
+		$SED -i -e '/^\s*#/n' -e "/\b$PKG-launch\$/d" -e "/ screen-launch/d" "$dest"
 	fi
 }
 
