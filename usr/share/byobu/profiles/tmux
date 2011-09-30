@@ -64,6 +64,8 @@ set-option -g history-limit 10000
 set-option -g display-panes-time 150
 set-option -g display-panes-colour gray
 set-option -g display-panes-active-colour magenta
+set-option -g clock-mode-colour magenta
+set-option -g clock-mode-style 24
 
 set-window-option -g window-status-attr default
 set-window-option -g window-status-bg black

@@ -7,6 +7,7 @@ byobu (4.38) unreleased; urgency=low
     - display pane numbers for 150ms when moving between panes
     - set the pane listing colors
     - set the inactive pane to light grey/white
+    - set the clock color
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Sep 2011 14:46:58 -0400
 
