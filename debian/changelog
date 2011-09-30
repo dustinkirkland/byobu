@@ -2,6 +2,7 @@ byobu (4.38) unreleased; urgency=low
 
   * usr/share/byobu/profiles/tmux:
     - add window resizing keybindings
+    - get scrollback alt-pageup working \o/
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Sep 2011 14:46:58 -0400
 
