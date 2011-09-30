@@ -43,7 +43,7 @@ bind-key -n M-NPage copy-mode \; send-keys NPage
 bind-key -n M-PPage copy-mode \; send-keys PPage
 bind-key -n F8 command-prompt -p "(rename-window)" "rename-window %%"
 bind-key -n F9 new-window -a byobu-config
-bind-key -n C-F2 split-window -h
+bind-key -n C-F2 display-panes \; split-window -h
 bind-key -n C-F3 display-panes \; select-pane -L
 bind-key -n C-F4 display-panes \; select-pane -R
 bind-key -n S-F2 display-panes \; split-window -v
