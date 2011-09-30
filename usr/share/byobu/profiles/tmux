@@ -44,15 +44,13 @@ bind-key -n M-PPage copy-mode \; send-keys PPage
 bind-key -n F8 command-prompt -p "(rename-window)" "rename-window %%"
 bind-key -n F9 new-window -a byobu-config
 bind-key -n C-F2 split-window -h
-bind-key -n C-F3 select-pane -L
-bind-key -n C-F4 select-pane -R
-bind-key -n S-F2 split-window -v
-bind-key -n S-F3 select-pane -U
-bind-key -n S-F4 select-pane -D
-#bind-key -n S-F3 select-pane -t:-1
-#bind-key -n S-F4 select-pane -t:+1
+bind-key -n C-F3 display-panes \; select-pane -L
+bind-key -n C-F4 display-panes \; select-pane -R
+bind-key -n S-F2 display-panes \; split-window -v
+bind-key -n S-F3 display-panes \; select-pane -U
+bind-key -n S-F4 display-panes \; select-pane -D
 bind-key -n S-F5 kill-pane -a
-bind-key -n C-F6 kill-pane
+bind-key -n C-F5 kill-pane
 bind-key -n C-Up resize-pane -U
 bind-key -n C-Down resize-pane -D
 bind-key -n C-Left resize-pane -L
@@ -63,6 +61,7 @@ set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
 set-option -g pane-active-border-fg magenta
 set-option -g pane-border-fg magenta
 set-option -g history-limit 10000
+set-option -g display-panes-time 100
 
 set-window-option -g window-status-attr default
 set-window-option -g window-status-bg black
