@@ -51,6 +51,10 @@ bind-key -n S-F3 select-pane -D
 bind-key -n S-F4 select-pane -U
 bind-key -n S-F5 kill-pane -a
 bind-key -n C-F6 kill-pane
+bind-key -n C-Up resize-pane -U
+bind-key -n C-Down resize-pane -D
+bind-key -n C-Left resize-pane -L
+bind-key -n C-Right resize-pane -R
 
 set-option -g set-titles on
 set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
