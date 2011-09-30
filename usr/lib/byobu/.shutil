@@ -236,6 +236,7 @@ status_freq() {
 		date)		[ "$BYOBU_BACKEND" = "tmux" ] && _RET=1 || _RET=28793 ;;
 		disk)		_RET=13 ;;
 		disk_io)	_RET=3 ;;
+		distro)		_RET=9999999 ;;
 		ec2_cost)	_RET=601 ;;
 		fan_speed)	_RET=23 ;;
 		hostname)	_RET=607 ;;

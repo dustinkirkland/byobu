@@ -39,6 +39,8 @@ Note that BYOBU_CONFIG_DIR=\fI$XDG_CONFIG_HOME/byobu\fP if defined, and \fI$HOME
 
 \fBdisk_io\fP \- instantaneous read/write througput in kB/s or MB/s over the last 3 seconds; displayed in the lower bar toward the right in white text on a light purple background with a leading '<' sign indicating 'read speed' and '>' sign indicating 'write speed'; override the default monitored disk by specifying an alternate device with MONITORED_DISK=/dev/sdb, and override the default DISK_IO_THRESHOLD=50 (kB/s) in \fI$BYOBU_CONFIG_DIR/statusrc\fP
 
+\fBdistro\fP \- OS/distribution name of the release running on the current system as reported by \fBlsb_release(1)\fP or \fI/etc/issue\fP; displayed in the lower bar in bold black text toward the left on a grey background; you may override the detected release with DISTRO=Whatever in \fI$BYOBU_CONFIG_DIR/statusrc\fP
+
 \fBec2_cost\fP \- an estimation of the cost of the current boot of the system in terms of the Amazon EC2 billing model; displayed in the lower bar toward the right in green text on a black background; there is a leading '~' to indicate that this is an estimation, and the monetary units are US Dollars '$'
 
 \fBraid\fP \- note very prominently if there is a RAID failure detected, in red blinking text on a white background; the term 'RAID' notes that there is something wrong with the RAID, and if there is a rebuild/resync in progress, the percent complete is also shown
@@ -69,7 +71,7 @@ Note that BYOBU_CONFIG_DIR=\fI$XDG_CONFIG_HOME/byobu\fP if defined, and \fI$HOME
 
 \fBreboot_required\fP \- symbol present if a reboot is required following a system update; displayed in the lower bar white text on a blue background by the symbol '(R)'; additionally, reboot_required will print '<F5>' in white text on a blue background, if Byobu requires you to reload your profile to affect some changes; it will also detect if your system is currently in \fBpowernap\fP(8) state and if so print '.zZ'.
 
-\fBrelease\fP \- distribution and version information about the release running on the current system as reported by \fBlsb_release(1)\fP or \fI/etc/issue\fP; displayed in the lower bar in bold black text toward the left on a grey background; you may override the detected release with DISTRO=Whatever in \fI$BYOBU_CONFIG_DIR/statusrc\fP
+\fBrelease\fP \- OS/distribution name of the release running on the current system as reported by \fBlsb_release(1)\fP or \fI/etc/issue\fP; displayed in the lower bar in bold black text toward the left on a grey background; you may override the detected release with RELEASE=Whatever in \fI$BYOBU_CONFIG_DIR/statusrc\fP
 
 \fBservices\fP \- users can configure a list of services to monitor, define the SERVICES variable in \fI$BYOBU_CONFIG_DIR/statusrc\fP, a whitespace separated of services, each service should include the init name of the service, then a pipe, and then an abbreviated name or symbol to display when running (e.g. SERVICES="ssh|ssh apache2|http"); displayed in the lower bar toward the center in cyan on a white background
 

@@ -8,6 +8,12 @@ byobu (4.38) unreleased; urgency=low
     - set the pane listing colors
     - set the inactive pane to light grey/white
     - set the clock color
+  * usr/lib/byobu/distro, usr/lib/byobu/Makefile.am,
+    usr/lib/byobu/release, usr/lib/byobu/.shutil,
+    usr/share/byobu/status/status, usr/share/man/man1/byobu.1:
+    - split the OS distribution name and version to two separate status
+      items;  enable the version (but not the name) in the compact tmux
+      status line
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Sep 2011 14:46:58 -0400
 

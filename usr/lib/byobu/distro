@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    release: grab the os/distro release version
+#    distro: grab the distro/os
 #
 #    Copyright (C) 2008 Canonical Ltd.
 #    Copyright (C) 2011 Dustin Kirkland
@@ -19,13 +19,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__release_detail() {
+__distro_detail() {
 	lsb_release -a 2>/dev/null
 }
 
-__release() {
-	local RELEASE="${RELEASE}"
-	if [ -n "$RELEASE" ]; then
+__distro() {
+	local DISTRO="${DISTRO}"
+	if [ -n "$DISTRO" ]; then
 		# user defined
 		true
 	elif [ -r "/etc/issue" ]; then
@@ -34,34 +34,34 @@ __release() {
 		read issue < /etc/issue
 		case "$issue" in
 			Ubuntu*)
-				set -- $issue;
-				RELEASE="$2";
+				DISTRO="Ubuntu";
 			;;
 			Debian*)
-				local ver
-				read ver < /etc/debian_version
-				RELEASE="$ver"
+				DISTRO="Debian"
+			;;
+			*)
+				# assume first field is what we want
+				DISTRO="${issue%% *}";
 			;;
 		esac
-	fi
-	if [ -z "$RELEASE" ] && command -v lsb_release >/dev/null 2>&1; then
+	elif command -v lsb_release >/dev/null 2>&1; then
 		# If lsb_release is available, use it
 		local r=$(lsb_release -s -d)
 		case "$r" in
 			Ubuntu*)
 				# Use the -d if an Ubuntu LTS
-				RELEASE="$r"
+				DISTRO="Ubuntu"
 			;;
 			*)
 				# But for other distros the description
 				# is too long, so build from -i and -r
-				local i=$(lsb_release -s -i)
-				r=$(lsb_release -s -r)
-				RELEASE="$i $r"
+				DISTRO=$(lsb_release -s -i)
 			;;
 		esac
+	else
+		DISTRO="Byobu"
 	fi
-	color bold2; printf "%s" "$RELEASE"; color --
+	color bold2; printf "%s" "$DISTRO"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab
