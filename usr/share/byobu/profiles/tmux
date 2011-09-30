@@ -61,7 +61,9 @@ set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
 set-option -g pane-active-border-fg magenta
 set-option -g pane-border-fg magenta
 set-option -g history-limit 10000
-set-option -g display-panes-time 100
+set-option -g display-panes-time 200
+set-option -g display-panes-colour gray
+set-option -g display-panes-active-colour magenta
 
 set-window-option -g window-status-attr default
 set-window-option -g window-status-bg black

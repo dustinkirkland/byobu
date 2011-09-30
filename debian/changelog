@@ -4,7 +4,8 @@ byobu (4.38) unreleased; urgency=low
     - add window resizing keybindings
     - get scrollback alt-pageup working \o/
     - set history limit to match byobu/screen
-    - display pane numbers for 100ms when moving between panes
+    - display pane numbers for 200ms when moving between panes
+    - set the pane listing colors
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Sep 2011 14:46:58 -0400
 
