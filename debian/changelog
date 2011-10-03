@@ -14,6 +14,8 @@ byobu (4.38) unreleased; urgency=low
     - split the OS distribution name and version to two separate status
       items;  enable the version (but not the name) in the compact tmux
       status line
+  * usr/lib/byobu/raid:
+    - fix raid rebuild percentage formatting
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Sep 2011 14:46:58 -0400
 
