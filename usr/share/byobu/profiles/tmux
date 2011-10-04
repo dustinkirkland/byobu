@@ -38,6 +38,8 @@ bind-key -n F4 next-window
 bind-key -n S-right next-window
 bind-key -n F5 source /usr/share/byobu/profiles/tmuxrc
 bind-key -n F6 detach
+bind-key -n S-F6 run-shell 'exec touch $BYOBU_RUN_DIR/no-logout' \; detach
+bind-key -n C-F6 kill-pane
 bind-key -n F7 copy-mode
 bind-key -n M-NPage copy-mode \; send-keys NPage
 bind-key -n M-PPage copy-mode \; send-keys PPage
@@ -49,8 +51,7 @@ bind-key -n S-F3 display-panes \; select-pane -t :.-
 bind-key -n S-F4 display-panes \; select-pane -t :.+
 bind-key -n C-F3 display-panes \; swap-pane -s :. -t :.- \; select-pane -t :.-
 bind-key -n C-F4 display-panes \; swap-pane -s :. -t :.+ \; select-pane -t :.+
-bind-key -n S-F5 kill-pane -a
-bind-key -n C-F5 kill-pane
+bind-key -n S-F5 next-layout
 bind-key -n C-Up resize-pane -U
 bind-key -n C-Down resize-pane -D
 bind-key -n C-Left resize-pane -L
