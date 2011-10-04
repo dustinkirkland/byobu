@@ -59,12 +59,12 @@ bind-key -n C-Right resize-pane -R
 
 set-option -g set-titles on
 set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
-set-option -g pane-active-border-bg white
+set-option -g pane-active-border-bg magenta
 set-option -g pane-active-border-fg magenta
 set-option -g pane-border-fg white
 set-option -g history-limit 10000
 set-option -g display-panes-time 150
-set-option -g display-panes-colour white
+set-option -g display-panes-colour magenta
 set-option -g display-panes-active-colour red
 set-option -g clock-mode-colour magenta
 set-option -g clock-mode-style 24
