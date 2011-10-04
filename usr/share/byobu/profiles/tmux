@@ -47,8 +47,8 @@ bind-key -n C-F2 display-panes \; split-window -h
 bind-key -n S-F2 display-panes \; split-window -v
 bind-key -n S-F3 display-panes \; select-pane -t :.-
 bind-key -n S-F4 display-panes \; select-pane -t :.+
-bind-key -n C-F3 display-panes \; select-pane -t :.-
-bind-key -n C-F4 display-panes \; select-pane -t :.+
+bind-key -n C-F3 display-panes \; swap-pane -s :. -t :.- \; select-pane -t :.-
+bind-key -n C-F4 display-panes \; swap-pane -s :. -t :.+ \; select-pane -t :.+
 bind-key -n S-F5 kill-pane -a
 bind-key -n C-F5 kill-pane
 bind-key -n C-Up resize-pane -U

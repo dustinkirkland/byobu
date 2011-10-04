@@ -12,6 +12,7 @@ byobu (4.38) unreleased; urgency=low
     - default mode keys to vi (to match screen/byobu)
     - explicitly set a couple of colors, highlight active pane a bit
     - fix broken 256-color detection, use it by default, allow override
+    - swap panes around slightly more sensibly
   * usr/lib/byobu/distro, usr/lib/byobu/Makefile.am,
     usr/lib/byobu/release, usr/lib/byobu/.shutil,
     usr/share/byobu/status/status, usr/share/man/man1/byobu.1:
@@ -22,6 +23,7 @@ byobu (4.38) unreleased; urgency=low
     - fix raid rebuild percentage formatting
   * usr/share/byobu/profiles/tmux:
   * usr/bin/byobu:
+  * usr/share/byobu/profiles/tmux:
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Sep 2011 14:46:58 -0400
 
