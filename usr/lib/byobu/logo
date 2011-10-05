@@ -54,7 +54,11 @@ __logo() {
 	case "$distro" in
 		*ubuntu*)
 			if $MARKUP; then
-				color m W; printf " U "; color -
+				if [ "$UTF8" = "1" ] || [ "$BYOBU_BACKEND" = "tmux" ]; then
+					color m W; printf " u "; color -
+				else
+					color m W; printf " U "; color -
+				fi
 			else
 				printf "\\o/"
 			fi

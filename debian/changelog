@@ -1,6 +1,7 @@
 byobu (4.39) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/logo:
+    - use the new Ubuntu unicode logo where possible
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Oct 2011 17:43:03 -0400
 
