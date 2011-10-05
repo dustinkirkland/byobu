@@ -1,9 +1,9 @@
-byobu (4.39) unreleased; urgency=low
+byobu (4.39-0ubuntu1) oneiric; urgency=low
 
   * usr/lib/byobu/logo:
     - use the new Ubuntu unicode logo where possible
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Oct 2011 17:43:03 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Oct 2011 18:05:28 -0400
 
 byobu (4.38-0ubuntu1) oneiric; urgency=low
 
