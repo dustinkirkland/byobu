@@ -1,3 +1,9 @@
+byobu (4.40) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Oct 2011 18:05:32 -0400
+
 byobu (4.39-0ubuntu1) oneiric; urgency=low
 
   * usr/lib/byobu/logo:
