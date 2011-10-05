@@ -52,6 +52,8 @@ bind-key -n S-F4 display-panes \; select-pane -t :.+
 bind-key -n C-F3 display-panes \; swap-pane -s :. -t :.- \; select-pane -t :.-
 bind-key -n C-F4 display-panes \; swap-pane -s :. -t :.+ \; select-pane -t :.+
 bind-key -n S-F5 next-layout
+bind-key -n S-Up display-panes \; select-pane -t :.-
+bind-key -n S-Down display-panes \; select-pane -t :.+
 bind-key -n C-Up resize-pane -U
 bind-key -n C-Down resize-pane -D
 bind-key -n C-Left resize-pane -L

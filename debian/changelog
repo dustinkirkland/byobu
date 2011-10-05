@@ -17,6 +17,7 @@ byobu (4.38) unreleased; urgency=low
     - shift-f5 rotate through preset layouts
     - ctrl-f6 kill a pane
     - use magenta/magenta for focused pane
+    - s-up -> prev pane; s-down -> next pane
   * usr/lib/byobu/distro, usr/lib/byobu/Makefile.am,
     usr/lib/byobu/release, usr/lib/byobu/.shutil,
     usr/share/byobu/status/status, usr/share/man/man1/byobu.1:
@@ -27,6 +28,7 @@ byobu (4.38) unreleased; urgency=low
     - fix raid rebuild percentage formatting
   * usr/share/byobu/profiles/tmux:
   * usr/bin/byobu:
+  * usr/share/byobu/profiles/tmux:
   * usr/share/byobu/profiles/tmux:
   * usr/share/byobu/profiles/tmux:
   * usr/share/byobu/profiles/tmux:
