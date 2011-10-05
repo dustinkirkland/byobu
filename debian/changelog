@@ -1,4 +1,4 @@
-byobu (4.38) unreleased; urgency=low
+byobu (4.38-0ubuntu1) oneiric; urgency=low
 
   * usr/share/byobu/profiles/tmux:
     - add window resizing keybindings
@@ -33,7 +33,7 @@ byobu (4.38) unreleased; urgency=low
   * usr/share/byobu/profiles/tmux:
   * usr/share/byobu/profiles/tmux:
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Sep 2011 14:46:58 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Oct 2011 17:42:57 -0400
 
 byobu (4.37-0ubuntu1) oneiric; urgency=low
 
