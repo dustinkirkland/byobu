@@ -20,16 +20,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
+# Initialize environment, clean up
 set-environment -g BYOBU_BACKEND tmux
 new-window -d byobu-janitor
-
-# Change to Screen's ctrl-a escape sequence
-set-option -g prefix C-a
-unbind-key C-b
-bind-key C-a send-prefix
-bind-key a send-prefix
 set -s escape-time 0
 
+# Change to Screen's ctrl-a escape sequence
+source /usr/share/doc/tmux/examples/screen-keys.conf
+
+# Byobu's Keybindings
 bind-key -n F1 new-window -k -t config byobu-config
 bind-key -n F2 new-window
 bind-key -n F3 previous-window
@@ -102,3 +101,6 @@ set -g status-left '#(byobu-status tmux_left)['
 set -g status-right ']#(byobu-status tmux_right)'
 set -g message-bg magenta
 set -g message-fg white
+
+# Allow local overrides
+source $BYOBU_CONFIG_DIR/.tmux.conf

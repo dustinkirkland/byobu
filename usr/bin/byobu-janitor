@@ -61,6 +61,7 @@ fi
 [ -r "$BYOBU_CONFIG_DIR/keybindings" ] || echo "source $BYOBU_PREFIX/share/$PKG/keybindings/common" > "$BYOBU_CONFIG_DIR/keybindings"
 [ -r "$BYOBU_CONFIG_DIR/windows" ] || touch "$BYOBU_CONFIG_DIR/windows"
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
+[ -r "$BYOBU_CONFIG_DIR/.tmux.conf" ] || touch "$BYOBU_CONFIG_DIR/.tmux.conf"
 for f in status statusrc; do
 	if [ ! -r "$BYOBU_CONFIG_DIR/$f" ]; then
 		# Copy from skeleton, if possible
