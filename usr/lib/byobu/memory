@@ -45,13 +45,13 @@ __memory() {
 	if [ $total -ge 1048576 ]; then
 		fpdiv "$total" 1048567 1
 		total=${_RET}
-		unit="GB"
+		unit="G"
 	elif [ $total -ge 1024 ]; then
 		fpdiv "$total" 1024 0
 		total=${_RET}
-		unit="MB"
+		unit="M"
 	else
-		unit="KB"
+		unit="K"
 	fi
 	color b g W; printf "%s" "$total"; color -; color g W; printf "%s," "$unit"; color -; color b g W; printf "%s" "$f"; color -; color g W; printf "%s" "$PCT"; color --
 }

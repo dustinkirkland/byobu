@@ -3,6 +3,9 @@ byobu (4.40) unreleased; urgency=low
   * usr/bin/byobu-janitor, usr/share/byobu/profiles/tmux:
     - use screen keys by default (should probably make this configurable)
     - allow local overrides in local tmux.conf
+  * usr/lib/byobu/battery, usr/lib/byobu/cpu_freq, usr/lib/byobu/disk,
+    usr/lib/byobu/memory, usr/share/man/man1/byobu.1:
+    - save a few characters on the status line
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Oct 2011 18:05:32 -0400
 
