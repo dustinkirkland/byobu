@@ -75,6 +75,7 @@ case $BYOBU_BACKEND in
 		# Use 256 colors, unless the user has overridden
 		[ -z "$SCREEN_TERM" ] && SCREEN_TERM="-2"
 		PROFILE="-f $BYOBU_PREFIX/share/$PKG/profiles/tmuxrc"
+		sessions=$($BYOBU_BACKEND list-sessions) || true
 	;;
 	*)
 		# Allow override of default window list, with BYOBU_WINDOWS environment variable
@@ -110,17 +111,17 @@ case $BYOBU_BACKEND in
 		for i in "$@"; do
 			case $i in -*r*|-*d*|-*D*|-*S*|-ls|-list) NAME= ;; esac
 		done
+		sessions=$($BYOBU_BACKEND -wipe 2>/dev/null) || true
 	;;
 esac
 
 # Now let's execute the backend!
 if [ "$#" = "0" ]; then
-	out=$($BYOBU_BACKEND -wipe 2>/dev/null) || true
 	if [ "$CUSTOM_WINDOW_SET" = "1" ]; then
 		# Start new custom window set session
 		exec $BYOBU_BACKEND $SCREEN_TERM $NAME $PROFILE
 	else
-		case "$out" in
+		case "$sessions" in
 			*\(*\)*)
 				# Select and attach to an existing session
 				exec byobu-select-session

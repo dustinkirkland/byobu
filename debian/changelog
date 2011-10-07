@@ -6,6 +6,8 @@ byobu (4.40) unreleased; urgency=low
   * usr/lib/byobu/battery, usr/lib/byobu/cpu_freq, usr/lib/byobu/disk,
     usr/lib/byobu/memory, usr/share/man/man1/byobu.1:
     - save a few characters on the status line
+  * usr/bin/byobu:
+    - support detection of tmux sessions
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Oct 2011 18:05:32 -0400
 
