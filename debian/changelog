@@ -1,4 +1,4 @@
-byobu (4.40) unreleased; urgency=low
+byobu (4.40-0ubuntu1) precise; urgency=low
 
   * usr/bin/byobu-janitor, usr/share/byobu/profiles/tmux:
     - use screen keys by default (should probably make this configurable)
@@ -11,7 +11,7 @@ byobu (4.40) unreleased; urgency=low
   * usr/bin/byobu-select-session: LP: #869390
     - fix select session to obey BYOBU_BACKEND
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 05 Oct 2011 18:05:32 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 10 Oct 2011 09:01:45 -0500
 
 byobu (4.39-0ubuntu1) oneiric; urgency=low
 
