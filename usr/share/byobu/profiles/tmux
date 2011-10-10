@@ -32,9 +32,7 @@ source /usr/share/doc/tmux/examples/screen-keys.conf
 bind-key -n F1 new-window -k -t config byobu-config
 bind-key -n F2 new-window
 bind-key -n F3 previous-window
-bind-key -n S-left previous-window
 bind-key -n F4 next-window
-bind-key -n S-right next-window
 bind-key -n F5 source /usr/share/byobu/profiles/tmuxrc
 bind-key -n F6 detach
 bind-key -n S-F6 run-shell 'exec touch $BYOBU_RUN_DIR/no-logout' \; detach
@@ -51,12 +49,18 @@ bind-key -n S-F4 display-panes \; select-pane -t :.+
 bind-key -n C-F3 display-panes \; swap-pane -s :. -t :.- \; select-pane -t :.-
 bind-key -n C-F4 display-panes \; swap-pane -s :. -t :.+ \; select-pane -t :.+
 bind-key -n S-F5 next-layout
-bind-key -n S-Up display-panes \; select-pane -t :.-
-bind-key -n S-Down display-panes \; select-pane -t :.+
+bind-key -n S-Up display-panes \; select-pane -U
+bind-key -n S-Down display-panes \; select-pane -D
+bind-key -n S-left display-panes \; select-pane -L
+bind-key -n S-right display-panes \; select-pane -R
 bind-key -n C-Up resize-pane -U
 bind-key -n C-Down resize-pane -D
 bind-key -n C-Left resize-pane -L
 bind-key -n C-Right resize-pane -R
+bind-key -n M-left previous-window
+bind-key -n M-right next-window
+bind-key -n M-Up choose-session \; send-keys Up \; send-keys Enter
+bind-key -n M-Down choose-session \; send-keys Down \; send-keys Enter
 
 set-option -g set-titles on
 set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
