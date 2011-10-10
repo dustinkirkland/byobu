@@ -1,3 +1,9 @@
+byobu (4.41) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 10 Oct 2011 09:01:48 -0500
+
 byobu (4.40-0ubuntu1) precise; urgency=low
 
   * usr/bin/byobu-janitor, usr/share/byobu/profiles/tmux:
