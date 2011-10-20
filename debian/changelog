@@ -11,6 +11,8 @@ byobu (4.42) unreleased; urgency=low
     usr/lib/byobu/disk, usr/lib/byobu/memory, usr/lib/byobu/swap,
     usr/lib/byobu/wifi_quality:
     - add unicode characters for KB/MB/GB/GHz
+  * usr/lib/byobu/wifi_quality:
+    - drop comma, save a char
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Oct 2011 14:53:51 -0500
 
