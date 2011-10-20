@@ -42,7 +42,7 @@ if [ "$UTF8" = "1" ] || [ "$BYOBU_BACKEND" = "tmux" ]; then
 	ICON_MHz="㎒"
 	ICON_GHz="㎓"
 	#ICON_MBPS="㏔㎰"
-	ICON_MBPS="Mbps"
+	ICON_MBPS="Mb"
 else
 	ICON_C="C"
 	ICON_F="F"

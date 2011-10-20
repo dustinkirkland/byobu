@@ -13,6 +13,8 @@ byobu (4.42) unreleased; urgency=low
     - add unicode characters for KB/MB/GB/GHz
   * usr/lib/byobu/wifi_quality:
     - drop comma, save a char
+  * usr/lib/byobu/.constants, usr/lib/byobu/network:
+    - save a few more chars, drop the "ps" per second
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Oct 2011 14:53:51 -0500
 
