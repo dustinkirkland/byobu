@@ -55,7 +55,7 @@ elif [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_
 					# Support zsh too
 					setopt appendhistory
 				fi
-				[ -n "$PROMPT_COMMAND" ] && PROMPT_COMMAND="$PROMPT_COMMAND;history -a" || PROMPT_COMMAND="history -a"
+				[ -n "$PROMPT_COMMAND" ] && PROMPT_COMMAND="$PROMPT_COMMAND;history -a;history -r" || PROMPT_COMMAND="history -a;history -r"
 				# Source profile, if necessary
 				[ -z "$_byobu_sourced" ] && [ -r "$HOME/.profile" ] && . "$HOME/.profile"
 				if byobu-launcher; then
