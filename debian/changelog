@@ -7,6 +7,10 @@ byobu (4.42) unreleased; urgency=low
     - enhance shell history syncronization across shells
   * usr/lib/byobu/.constants, usr/lib/byobu/updates_available:
     - use unicode double-bang for security updates where possible
+  * usr/lib/byobu/.constants, usr/lib/byobu/cpu_freq,
+    usr/lib/byobu/disk, usr/lib/byobu/memory, usr/lib/byobu/swap,
+    usr/lib/byobu/wifi_quality:
+    - add unicode characters for KB/MB/GB/GHz
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Oct 2011 14:53:51 -0500
 

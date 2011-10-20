@@ -41,16 +41,16 @@ __swap() {
 	if [ $mem -ge 1048576 ]; then
 	fpdiv "${mem}" 1048576 1
 		mem=${_RET}
-		unit="GB"
+		unit="$ICON_GB"
 	elif [ $mem -ge 1024 ]; then
 		fpdiv "${mem}" 1024 0
 		mem=${_RET}
-		unit="MB"
+		unit="$ICON_MB"
 	else
 		mem="$mem"
-		unit="KB"
+		unit="$ICON_KB"
 	fi
-	color b G W; printf "s%s" "$mem"; color -; color G W; printf "%s," "$unit"; color -;
+	color b G W; printf "s%s" "$mem"; color -; color G W; printf "%s" "$unit"; color -;
 	color b G W; printf "%s" "$f"; color -; color G W; printf "%s" "$PCT"; color --
 }
 
