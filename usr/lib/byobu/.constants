@@ -32,6 +32,8 @@ if [ "$UTF8" = "1" ] || [ "$BYOBU_BACKEND" = "tmux" ]; then
 	ICON_TRASH="♸"
 	ICON_WIFI="⚚"
 	ICON_REBOOT="⟳"
+	ICON_UPDATES="!"
+	ICON_SECURITY="‼"
 else
 	ICON_C="C"
 	ICON_F="F"
@@ -43,6 +45,8 @@ else
 	ICON_TRASH="T"
 	ICON_WIFI=
 	ICON_REBOOT="(R)"
+	ICON_UPDATES="!"
+	ICON_SECURITY="!!"
 fi
 PCT="%%"
 

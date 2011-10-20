@@ -24,11 +24,11 @@ ___print_updates() {
 	read u s < "$1"
 	if [ -n "$u" ]; then
 		if [ "$u" -gt 0 ]; then
-			color b r W; printf "%d" "$u"; color -; color r W; printf "!"
-			if [ -n "$s" ]; then
-				if [ "$s" -gt 0 ]; then
-					printf "!"
-				fi
+			color b r W; printf "%d" "$u"; color -; color r W
+			if [ -n "$s" ] && [ "$s" -gt 0 ]; then
+				printf "$ICON_SECURITY"
+			else
+				printf "$ICON_UPDATES"
 			fi
 			color --
 		fi
