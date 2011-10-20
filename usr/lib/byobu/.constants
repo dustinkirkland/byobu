@@ -24,13 +24,14 @@ PKG="byobu"
 if [ "$UTF8" = "1" ] || [ "$BYOBU_BACKEND" = "tmux" ]; then
 	ICON_C="℃"
 	ICON_F="℉"
-	ICON_RD="◀"
-	ICON_WR="▶"
+	ICON_RD="◂"
+	ICON_WR="▸"
 	ICON_MAIL="⍌"
-	ICON_UP="▲"
-	ICON_DN="▼"
+	ICON_UP="▴"
+	ICON_DN="▾"
 	ICON_TRASH="♸"
 	ICON_WIFI="⚚"
+	ICON_REBOOT="⟳"
 else
 	ICON_C="C"
 	ICON_F="F"
@@ -41,6 +42,7 @@ else
 	ICON_DN="v"
 	ICON_TRASH="T"
 	ICON_WIFI=
+	ICON_REBOOT="(R)"
 fi
 PCT="%%"
 

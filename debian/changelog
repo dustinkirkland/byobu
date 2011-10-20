@@ -1,6 +1,8 @@
 byobu (4.42) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/.constants, usr/lib/byobu/reboot_required:
+    - fix arrows to work better with ubuntu mono font
+    - add reboot symbol
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Oct 2011 14:53:51 -0500
 
