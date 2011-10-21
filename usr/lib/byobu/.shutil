@@ -174,7 +174,7 @@ fpdiv() {
 	n=$(((${mp}*${a})/${b}))
 
 	# round up if necessary
-	[ $(($n%${mp})) -ge $((${mp}/2)) ] && n=$(($n+5))
+	[ $((($n-5)/10)) = $(($n/10)) ] && n=$(($n+5))
 
 	# drop the last digit, which was only there for rounding
 	n=${n%?}
