@@ -1,4 +1,4 @@
-byobu (4.42) unreleased; urgency=low
+byobu (4.42-0ubuntu1) precise; urgency=low
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/.constants, usr/lib/byobu/reboot_required:
@@ -20,7 +20,7 @@ byobu (4.42) unreleased; urgency=low
   [Scott Moser]
   * usr/lib/byobu/.shutil: fix rounding error in fpdiv
 
- -- Scott Moser <smoser@brickies>  Fri, 21 Oct 2011 13:31:59 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 21 Oct 2011 13:43:53 -0500
 
 byobu (4.41-0ubuntu1) precise; urgency=low
 
