@@ -23,6 +23,8 @@ byobu (4.43) unreleased; urgency=low
   [ Daniel Hahler ]
   * usr/bin/byobu, usr/bin/byobu-launcher-install, usr/bin/byobu-
     launcher-uninstall: Use BYOBU_PREFIX explicitly, LP: #861302
+  * debian/rules, README: LP: #854868
+    - refactor autoconf into debian/rules
 
   [Scott Moser]
   * usr/lib/byobu/.shutil: fix rounding error in fpdiv, LP: #869282

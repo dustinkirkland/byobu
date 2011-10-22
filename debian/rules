@@ -22,12 +22,14 @@ update-pot:
 		msgmerge $${po} po/${PKG}.pot -o $${po} ; \
 	done
 
-prebuild: clean
+autoconf: clean
 	dh_testdir
 	cp debian/changelog ChangeLog
 	aclocal
-	automake --add-missing
+	automake --add-missing --copy
 	autoconf
+
+prebuild: autoconf
 	./configure --prefix=/usr
 
 build: prebuild
