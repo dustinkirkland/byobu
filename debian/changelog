@@ -1,11 +1,16 @@
 byobu (4.43) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu, usr/lib/byobu/ip_address, usr/share/man/man1/byobu.1:
     - support IP_EXTERNAL fetching, LP: #873736
     - put ip address in the terminal title bar, since we ran out of room
       for it in tmux
   * usr/bin/byobu-select-session: LP: #869390
     - fix select session to obey BYOBU_BACKEND
+
+  [ Daniel Hahler ]
+  * usr/bin/byobu, usr/bin/byobu-launcher-install, usr/bin/byobu-
+    launcher-uninstall: Use BYOBU_PREFIX explicitly, LP: #861302
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 21 Oct 2011 13:43:57 -0500
 
