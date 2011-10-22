@@ -30,49 +30,62 @@ __battery_detail() {
 
 __battery() {
 	local bat line present sign state percent full rem color bcolor
-	for bat in $BATTERY /proc/acpi/battery/*; do
-		[ -f "$bat/info" ] || continue
+	for bat in $BATTERY /sys/class/power_supply/* /proc/acpi/battery/*; do
 		present=""; full=""; rem=""; state=""
-		while read line; do
-			set -- ${line}
-			case "$line" in
-				present:*)
-					# make sure that this battery is present
-					[ "$2" = "no" ] && continue 2
-					present="$2";;
-		   	last\ full\ capacity:*) full="$4";;
-			esac
-			[ -n "$present" -a -n "$full" ] && break
-		done < "${bat}/info"
-		while read line; do
-			set -- ${line}
-			case "$line" in
-				remaining\ capacity:*) rem="$3";;
-				charging\ state:*) state="$3";;
-			esac
-			[ -n "$rem" -a -n "$state" ] && break
-		done < "$bat/state"
-		percent=$(((100*$rem)/$full))
-		if [ "$percent" -lt 33 ]; then
-			color="R k"
-			bcolor="b R k"
-		elif [ "$percent" -lt 67 ]; then
-			color="Y k"
-			bcolor="b Y k"
-		else
-			color="G k"
-			bcolor="b G k"
-		fi
-		percent="$percent$PCT"
-		case $state in
-			charging) sign="+" ;;
-			discharging) sign="-" ;;
-			charged) sign="="; percent="" ;;
-			*) sign="$state" ;;
+		case "$bat" in
+			/sys/*)
+				if [ -r "$bat/uevent" ]; then
+					. "$bat/uevent"
+					present="$POWER_SUPPLY_PRESENT"
+					full="$POWER_SUPPLY_CHARGE_FULL"
+					rem="$POWER_SUPPLY_CHARGE_NOW"
+					state="$POWER_SUPPLY_STATUS"
+					[ -n "$present" ] && [ -n "$full" ] && [ -n "$rem" ] && [ "$state" ] && break
+				fi
+			;;
+			/proc/*)
+				[ -f "$bat/info" ] || continue
+				while read line; do
+					set -- ${line}
+					case "$line" in
+						present:*)
+							# make sure that this battery is present
+							[ "$2" = "no" ] && continue 2
+							present="$2";;
+					   	last\ full\ capacity:*) full="$4";;
+					esac
+					[ -n "$present" -a -n "$full" ] && break
+				done < "${bat}/info"
+				while read line; do
+					set -- ${line}
+					case "$line" in
+						remaining\ capacity:*) rem="$3";;
+						charging\ state:*) state="$3";;
+					esac
+					[ -n "$rem" -a -n "$state" ] && break
+				done < "$bat/state"
+			;;
 		esac
-		color $bcolor; printf "%s" "$percent"; color -; color $color; printf "%s" "$sign"; color --
-		break
 	done
+	percent=$(((100*$rem)/$full))
+	if [ "$percent" -lt 33 ]; then
+		color="R k"
+		bcolor="b R k"
+	elif [ "$percent" -lt 67 ]; then
+		color="Y k"
+		bcolor="b Y k"
+	else
+		color="G k"
+		bcolor="b G k"
+	fi
+	percent="$percent$PCT"
+	case $state in
+		charging|Charging|Unknown) sign="+" ;;
+		discharging|Discharging) sign="-" ;;
+		charged|Unknown) sign="="; percent="" ;;
+		*) sign="$state" ;;
+	esac
+	color $bcolor; printf "%s" "$percent"; color -; color $color; printf "%s" "$sign"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab

@@ -19,6 +19,8 @@ byobu (4.43) unreleased; urgency=low
   * usr/lib/byobu/.dirs:
     - use /dev/shm for cache, LP: #872551, #869279
     - search and use a shared dir when possible
+  * usr/lib/byobu/battery: LP: #851100
+    - rework the battery logic to use /sys instead of /proc
 
   [ Daniel Hahler ]
   * usr/bin/byobu, usr/bin/byobu-launcher-install, usr/bin/byobu-
