@@ -4,6 +4,7 @@
 AC_PREREQ([2.61])
 AC_INIT(byobu, 3.0, http://bugs.launchpad.net/byobu)
 AM_INIT_AUTOMAKE(byobu, 3.0)
+AC_PROG_LN_S
 
 # Checks for programs.
 

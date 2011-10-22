@@ -7,6 +7,8 @@ byobu (4.43) unreleased; urgency=low
       for it in tmux
   * usr/bin/byobu-select-session: LP: #869390
     - fix select session to obey BYOBU_BACKEND
+  * configure.ac, usr/bin/Makefile.am: LP: #869377
+    - provide byobu-tmux and byobu-screen symlinks
 
   [ Daniel Hahler ]
   * usr/bin/byobu, usr/bin/byobu-launcher-install, usr/bin/byobu-
