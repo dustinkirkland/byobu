@@ -24,6 +24,9 @@ byobu (4.43) unreleased; urgency=low
   * usr/bin/byobu, usr/bin/byobu-launcher-install, usr/bin/byobu-
     launcher-uninstall: Use BYOBU_PREFIX explicitly, LP: #861302
 
+  [Scott Moser]
+  * usr/lib/byobu/.shutil: fix rounding error in fpdiv, LP: #869282
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 21 Oct 2011 13:43:57 -0500
 
 byobu (4.42-0ubuntu1) precise; urgency=low
