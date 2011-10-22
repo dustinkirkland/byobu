@@ -1,4 +1,4 @@
-byobu (4.43) unreleased; urgency=low
+byobu (4.43-0ubuntu1) precise; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu, usr/lib/byobu/ip_address, usr/share/man/man1/byobu.1:
@@ -33,7 +33,7 @@ byobu (4.43) unreleased; urgency=low
   [Scott Moser]
   * usr/lib/byobu/.shutil: fix rounding error in fpdiv, LP: #869282
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 21 Oct 2011 13:43:57 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 22 Oct 2011 03:21:43 -0500
 
 byobu (4.42-0ubuntu1) precise; urgency=low
 
