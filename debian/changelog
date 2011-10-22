@@ -21,6 +21,8 @@ byobu (4.43) unreleased; urgency=low
     - search and use a shared dir when possible
   * usr/lib/byobu/battery: LP: #851100
     - rework the battery logic to use /sys instead of /proc
+  * usr/share/man/man1/byobu.1: LP: #713879
+    - note too many files open ulimit error in documentation
 
   [ Daniel Hahler ]
   * usr/bin/byobu, usr/bin/byobu-launcher-install, usr/bin/byobu-
