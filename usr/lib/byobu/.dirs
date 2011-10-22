@@ -38,17 +38,27 @@ fi
 [ -r "$BYOBU_CONFIG_DIR/socketdir" ] && . "$BYOBU_CONFIG_DIR/socketdir"
 
 # Create and export the runtime cache directory
-if [ -d "$XDG_CACHE_HOME" ]; then
-	# Use XDG, as some users insist on such nonsense :-)
-	export BYOBU_RUN_DIR="$XDG_CACHE_HOME/$PKG"
-elif [ -d "$SOCKETDIR/S-$USER" ]; then
-	# But for FAR better performance, use a tmpfs if available
-	export BYOBU_RUN_DIR="$SOCKETDIR/S-$USER/$PKG"
-elif [ -n "$TMUX" ] && [ d=$(dirname "$TMUX") ] && [ -d "$d" ]; then
-	# Or perhaps try the tmux tmpdir
-	export BYOBU_RUN_DIR="$d"
-	d=
+if [ -w /dev/shm ]; then
+	# Use shm for performance, if possible
+	if [ -z "$BYOBU_RUN_DIR" ]; then
+		for i in /dev/shm/$PKG-$USER-*; do
+			if [ -d "$i" ] && [ -O "$i" ]; then
+				export BYOBU_RUN_DIR="$i"
+				break
+			fi
+		done
+	fi
+	# Still empty, make a new one
+	if [ ! -d "$BYOBU_RUN_DIR" ] || [ ! -O "$BYOBU_RUN_DIR" ]; then
+		export BYOBU_RUN_DIR=$(mktemp -d /dev/shm/$PKG-$USER-XXXXXXXX)
+	fi
 else
-	# But if not, we'll use a cache directory
-	export BYOBU_RUN_DIR="$HOME/.cache/$PKG"
+	# For distros that don't have a /dev/shm, use local disk
+	if [ -d "$XDG_CACHE_HOME" ]; then
+		# Use XDG, as some users insist on such nonsense :-)
+		export BYOBU_RUN_DIR="$XDG_CACHE_HOME/$PKG"
+	else
+		# But if not, we'll use a cache directory
+		export BYOBU_RUN_DIR="$HOME/.cache/$PKG"
+	fi
 fi
