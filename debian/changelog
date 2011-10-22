@@ -13,6 +13,9 @@ byobu (4.43) unreleased; urgency=low
     - configure should not change files under vcs control
     - compiling users need to ensure that BYOBU_PREFIX is set in
       their environment
+  * usr/bin/byobu-launcher-install, usr/bin/byobu-launcher-uninstall:
+    - LP: #861534
+    - ensure launcher command removed from each file before installing
 
   [ Daniel Hahler ]
   * usr/bin/byobu, usr/bin/byobu-launcher-install, usr/bin/byobu-

@@ -42,17 +42,12 @@ update_flag() {
 }
 
 install_launcher() {
+	$PKG-launcher-uninstall "$1" || true
 	printf "_byobu_sourced=1 . ${BYOBU_PREFIX}/bin/byobu-launch\n" >> "$1"
 }
 
 # Sanitize the environment
 $PKG-launcher-uninstall || true
-# Hush login, since we will handle motd printing
-touch "$HOME"/.hushlogin
-rm -f "$BYOBU_CONFIG_DIR/disable-autolaunch"
-
-# Update the logout/nologout flag
-update_flag
 
 # Handle bourne shells, if not set globally in /etc/profile.d
 if [ ! -h "/etc/profile.d/Z98-$PKG.sh" ]; then
@@ -74,5 +69,11 @@ case "$SHELL" in
 	;;
 esac
 
+# Hush login, since we will handle motd printing
+touch "$HOME"/.hushlogin
+rm -f "$BYOBU_CONFIG_DIR/disable-autolaunch"
+
+# Update the logout/nologout flag
+update_flag
 
 # vi: syntax=sh ts=4 noexpandtab
