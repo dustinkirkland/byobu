@@ -63,7 +63,9 @@ fi
 byobu-janitor --force
 
 # Set the window title
-[ -n "$BYOBU_NO_TITLE" ] || printf "\033]0;${USER}@${HOSTNAME:-$(hostname)} - ${PKG}\007"
+[ -r "$BYOBU_CONFIG_DIR/statusrc" ] && . "$BYOBU_CONFIG_DIR/statusrc"
+. $BYOBU_PREFIX/lib/$PKG/ip_address
+[ -n "$BYOBU_NO_TITLE" ] || printf "\033]0;${USER}@${HOSTNAME:-$(hostname)} ($(__ip_address t)) - ${PKG}\007"
 
 # Drop a symlink to the ssh socket in $HOME, since we can ensure that exists
 if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ]; then

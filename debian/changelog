@@ -1,6 +1,9 @@
 byobu (4.43) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu, usr/lib/byobu/ip_address, usr/share/man/man1/byobu.1:
+    - support IP_EXTERNAL fetching, LP: #873736
+    - put ip address in the terminal title bar, since we ran out of room
+      for it in tmux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 21 Oct 2011 13:43:57 -0500
 

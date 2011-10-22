@@ -38,14 +38,20 @@ __ip_address() {
 	fi
 	case "$IPV6" in
 		1|true|yes)
-			ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global)
-			# Print 'None' if we have no global address
-			[ -z "$ipaddr" ] && ipaddr="None"
-			ipaddr=${ipaddr#* inet6 }
-			ipaddr=${ipaddr%%/*}
+			if [ "$IP_EXTERNAL" = "1" ]; then
+				ipaddr=$(wget -O- -q http://v6.ipv6-test.com/api/myip.php)
+			else
+				ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global)
+				# Print 'None' if we have no global address
+				[ -z "$ipaddr" ] && ipaddr="None"
+				ipaddr=${ipaddr#* inet6 }
+				ipaddr=${ipaddr%%/*}
+			fi
 		;;
 		*)
-			if metadata_available; then
+			if [ "$IP_EXTERNAL" = "1" ]; then
+				ipaddr=$(wget -O- -q http://v4.ipv6-test.com/api/myip.php)
+			elif metadata_available; then
 				# We're in EC2, so get our public IP address
 				ipaddr=$(wget -q -O- http://169.254.169.254/latest/meta-data/public-ipv4)
 			else
@@ -56,7 +62,11 @@ __ip_address() {
 		;;
 	esac
 	if [ -n "$ipaddr" ]; then
-		color bold2; printf "%s" "$ipaddr"; color --
+		if [ "$1" = "t" ]; then
+			printf "%s" "$ipaddr"
+		else
+			color bold2; printf "%s" "$ipaddr"; color --
+		fi
 	fi
 }
 
