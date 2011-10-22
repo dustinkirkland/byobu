@@ -9,6 +9,10 @@ byobu (4.43) unreleased; urgency=low
     - fix select session to obey BYOBU_BACKEND
   * configure.ac, usr/bin/Makefile.am: LP: #869377
     - provide byobu-tmux and byobu-screen symlinks
+  * configure.ac, README: LP: #861291
+    - configure should not change files under vcs control
+    - compiling users need to ensure that BYOBU_PREFIX is set in
+      their environment
 
   [ Daniel Hahler ]
   * usr/bin/byobu, usr/bin/byobu-launcher-install, usr/bin/byobu-
