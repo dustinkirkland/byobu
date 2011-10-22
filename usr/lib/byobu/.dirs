@@ -40,14 +40,12 @@ fi
 # Create and export the runtime cache directory
 if [ -w /dev/shm ]; then
 	# Use shm for performance, if possible
-	if [ -z "$BYOBU_RUN_DIR" ]; then
-		for i in /dev/shm/$PKG-$USER-*; do
-			if [ -d "$i" ] && [ -O "$i" ]; then
-				export BYOBU_RUN_DIR="$i"
-				break
-			fi
-		done
-	fi
+	for i in /dev/shm/$PKG-$USER-*; do
+		if [ -d "$i" ] && [ -O "$i" ]; then
+			export BYOBU_RUN_DIR="$i"
+			break
+		fi
+	done
 	# Still empty, make a new one
 	if [ ! -d "$BYOBU_RUN_DIR" ] || [ ! -O "$BYOBU_RUN_DIR" ]; then
 		export BYOBU_RUN_DIR=$(mktemp -d /dev/shm/$PKG-$USER-XXXXXXXX)

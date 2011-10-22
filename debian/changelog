@@ -18,6 +18,7 @@ byobu (4.43) unreleased; urgency=low
     - ensure launcher command removed from each file before installing
   * usr/lib/byobu/.dirs:
     - use /dev/shm for cache, LP: #872551
+    - search and use a shared dir when possible
 
   [ Daniel Hahler ]
   * usr/bin/byobu, usr/bin/byobu-launcher-install, usr/bin/byobu-
