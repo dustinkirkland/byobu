@@ -26,10 +26,12 @@ __battery_detail() {
 		cat "$bat/info"
 		cat "$bat/state"
 	done
+	# FIXME: do the same thing with the /sys interface
 }
 
 __battery() {
-	local bat line present sign state percent full rem color bcolor
+	local bat has_bat line present sign state percent full rem color bcolor
+	has_bat=""
 	for bat in $BATTERY /sys/class/power_supply/* /proc/acpi/battery/*; do
 		present=""; full=""; rem=""; state=""
 		case "$bat" in
@@ -40,7 +42,7 @@ __battery() {
 					full="$POWER_SUPPLY_CHARGE_FULL"
 					rem="$POWER_SUPPLY_CHARGE_NOW"
 					state="$POWER_SUPPLY_STATUS"
-					[ -n "$present" ] && [ -n "$full" ] && [ -n "$rem" ] && [ "$state" ] && break
+					[ "$present" = "1" ] && [ -n "$full" ] && [ -n "$rem" ] && [ -n "$state" ] && has_bat=1 && break
 				fi
 			;;
 			/proc/*)
@@ -64,28 +66,31 @@ __battery() {
 					esac
 					[ -n "$rem" -a -n "$state" ] && break
 				done < "$bat/state"
+				[ -n "$full" ] && [ -n "$rem" ] && [ -n "$state" ] && has_bat=1 && break
 			;;
 		esac
 	done
-	percent=$(((100*$rem)/$full))
-	if [ "$percent" -lt 33 ]; then
-		color="R k"
-		bcolor="b R k"
-	elif [ "$percent" -lt 67 ]; then
-		color="Y k"
-		bcolor="b Y k"
-	else
-		color="G k"
-		bcolor="b G k"
+	if [ "$has_bat" = "1" ]; then
+		percent=$(((100*$rem)/$full))
+		if [ "$percent" -lt 33 ]; then
+			color="R k"
+			bcolor="b R k"
+		elif [ "$percent" -lt 67 ]; then
+			color="Y k"
+			bcolor="b Y k"
+		else
+			color="G k"
+			bcolor="b G k"
+		fi
+		percent="$percent$PCT"
+		case $state in
+			charging|Charging|Unknown) sign="+" ;;
+			discharging|Discharging) sign="-" ;;
+			charged|Unknown|Full) sign="="; percent="" ;;
+			*) sign="$state" ;;
+		esac
+		color $bcolor; printf "%s" "$percent"; color -; color $color; printf "%s" "$sign"; color --
 	fi
-	percent="$percent$PCT"
-	case $state in
-		charging|Charging|Unknown) sign="+" ;;
-		discharging|Discharging) sign="-" ;;
-		charged|Unknown) sign="="; percent="" ;;
-		*) sign="$state" ;;
-	esac
-	color $bcolor; printf "%s" "$percent"; color -; color $color; printf "%s" "$sign"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab
