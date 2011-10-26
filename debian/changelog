@@ -1,4 +1,4 @@
-byobu (4.44) unreleased; urgency=low
+byobu (4.44-0ubuntu1) precise; urgency=low
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/battery:
@@ -9,7 +9,7 @@ byobu (4.44) unreleased; urgency=low
     usr/share/byobu/profiles/tmux, usr/share/byobu/status/statusrc:
     - various fixes and documentation enhancements
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 22 Oct 2011 03:21:46 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 26 Oct 2011 10:04:58 -0500
 
 byobu (4.43-0ubuntu1) precise; urgency=low
 
