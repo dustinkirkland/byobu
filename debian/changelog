@@ -4,6 +4,11 @@ byobu (4.44) unreleased; urgency=low
   * usr/lib/byobu/battery:
     - protect against division by zero
 
+  [ Daniel Hahler ]
+  * usr/lib/byobu/battery, usr/lib/byobu/.shutil,
+    usr/share/byobu/profiles/tmux, usr/share/byobu/status/statusrc:
+    - various fixes and documentation enhancements
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 22 Oct 2011 03:21:46 -0500
 
 byobu (4.43-0ubuntu1) precise; urgency=low

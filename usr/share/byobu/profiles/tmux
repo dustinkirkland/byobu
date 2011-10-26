@@ -27,6 +27,8 @@ set -s escape-time 0
 
 # Change to Screen's ctrl-a escape sequence
 source /usr/share/doc/tmux/examples/screen-keys.conf
+# On Archlinux, this file is not under the same directory
+source /usr/share/tmux/screen-keys.conf
 
 # Byobu's Keybindings
 bind-key -n F1 new-window -k -t config byobu-config

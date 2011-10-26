@@ -22,13 +22,39 @@
 
 # Configurations that you can override; if you leave these commented out,
 # Byobu will try to auto-detect them.
-#LOGO="\o/"
-#MONITORED_DISK=/
-#DISK_IO_THRESHOLD=50
-#MONITORED_INTERFACE=eth0
-#NETWORK_THRESHOLD=20
-#MONITORED_TEMP=/proc/acpi/thermal_zone/THM0/temperature
-#TEMP=F
+
+# This should be auto-detected for most distro, but setting it here will save
+# some call to lsb_release and the like.
 #DISTRO=Ubuntu
+
+# Default: depends on the distro (which is either auto-detected, either set
+# via $DISTRO)
+#LOGO="\o/"
+
+# Default: /
+#MONITORED_DISK=/
+
+# Minimum disk throughput that triggers the notification (in kB/s)
+# Default: 50
+#DISK_IO_THRESHOLD=50
+
+# Default: eth0
+#MONITORED_INTERFACE=eth0
+
+# Unit used for network throughput (either bits per second or bytes per second)
+# Default: bits
+#NETWORK_UNITS=bytes
+
+# Minimum network throughput that triggers the notification (in kbit/s)
+# Default: 20
+#NETWORK_THRESHOLD=20
+
+# You can add an additional source of temperature here
+#MONITORED_TEMP=/proc/acpi/thermal_zone/THM0/temperature
+
+# Default: C
+#TEMP=F
+
 #SERVICES="eucalyptus-nc|NC eucalyptus-cloud|CLC eucalyptus-walrus eucalyptus-cc|CC eucalyptus-sc|SC"
+
 #FAN=$(find /sys -type f -name fan1_input | head -n1)
