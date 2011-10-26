@@ -1,6 +1,8 @@
 byobu (4.44) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Dustin Kirkland ]
+  * usr/lib/byobu/battery:
+    - protect against division by zero
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 22 Oct 2011 03:21:46 -0500
 
