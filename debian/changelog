@@ -1,8 +1,11 @@
 byobu (4.44) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Daniel Hahler ]
+  * usr/lib/menu:
+    - Fix extraction of escape key for screen-escape-keys keybindings,
+      LP: #881993
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 22 Oct 2011 03:21:46 -0500
+ -- Daniel Hahler <ubuntu@thequod.de>  Wed, 26 Oct 2011 14:58:03 +0200
 
 byobu (4.43-0ubuntu1) precise; urgency=low
 
