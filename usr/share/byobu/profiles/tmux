@@ -63,6 +63,7 @@ bind-key -n M-left previous-window
 bind-key -n M-right next-window
 bind-key -n M-Up choose-session \; send-keys Up \; send-keys Enter
 bind-key -n M-Down choose-session \; send-keys Down \; send-keys Enter
+bind-key -n S-F11 break-pane
 
 set-option -g set-titles on
 set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'

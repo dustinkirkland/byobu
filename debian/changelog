@@ -1,6 +1,7 @@
 byobu (4.45) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/profiles/tmux:
+    - shift-F11 -> breaks pane out to its own window
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 26 Oct 2011 10:05:01 -0500
 
