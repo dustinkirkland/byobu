@@ -1,0 +1,62 @@
+#!/bin/sh -e
+#
+#    byobu-select-backend
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+PKG="byobu"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/.common"
+
+usage () {
+	cat <<EOT
+Usage: $0 [screen|tmux]
+
+    Without any parameters, it runs interactively.
+EOT
+	exit 1
+}
+
+prompt() {
+	local choice
+	echo
+	echo "Select the byobu backend:"
+	echo "  1. screen"
+	echo "  2. tmux"
+	echo
+	echo -n "Choose 1-2 [2]: "
+	choice=$(head -n1)
+	case $choice in
+		1) _RET="screen" ;;
+		2|"") _RET="tmux" ;;
+		*) prompt ;;
+	esac
+}
+
+case $1 in
+	"")
+		prompt
+		choice="$_RET"
+	;;
+	screen|tmux)
+		choice="$1"
+	;;
+	*)
+		usage
+	;;
+esac
+echo "BYOBU_BACKEND=$choice" > "$BYOBU_CONFIG_DIR/backend"

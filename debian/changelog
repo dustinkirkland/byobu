@@ -4,6 +4,10 @@ byobu (4.45) unreleased; urgency=low
     - shift-F11 -> breaks pane out to its own window
   * usr/lib/byobu/.constants:
     - comment out utf8 characters that don't look very good
+  * usr/bin/byobu-select-backend, usr/bin/Makefile.am,
+    usr/share/man/man1/byobu-select-backend.1,
+    usr/share/man/man1/Makefile.am:
+    - add a utility to select default byobu backend (screen or tmux)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 26 Oct 2011 10:05:01 -0500
 
