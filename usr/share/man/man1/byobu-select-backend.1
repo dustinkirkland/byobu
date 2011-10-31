@@ -3,17 +3,22 @@
 byobu\-select\-backend \- select your default Byobu backend window manager
 
 .SH SYNOPSIS
-byobu\-select\-backend [screen|tmux]
+\fBbyobu\-select\-backend\fP [screen|tmux]
 
 .SH DESCRIPTION
 \fBbyobu\-select\-backend\fP is an application that lists the available Byobu backends and allows you to select your default.
 
 You can select one of either \fBscreen\fP(1) or \fBtmux\fP(1) on the command line, or giving no command line parameters, the utility will run interactively.
 
+This utility will only affect which backend is used by default when simply running, \fBbyobu\fP(1).  Note that at any time, you can force the backend of a particular session by running the helpers, \fBbyobu-screen\fP(1) or \fBbyobu-tmux\fP(1).
+
+.SH FILES
+\fI~/.byobu/backend\fP
+
 .SH "SEE ALSO"
 .PD 0
 .TP
-\fBbyobu\fP(1), \fBscreen\fP(1), \fBtmux\fP(1)
+\fBbyobu\fP(1), \fBbyobu-screen\fP(1), \fBbyobu-tmux\fP(1), \fBscreen\fP(1), \fBtmux\fP(1)
 
 .TP
 \fIhttp://launchpad.net/byobu\fP

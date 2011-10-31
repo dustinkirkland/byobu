@@ -8,6 +8,9 @@ byobu (4.45) unreleased; urgency=low
     usr/share/man/man1/byobu-select-backend.1,
     usr/share/man/man1/Makefile.am:
     - add a utility to select default byobu backend (screen or tmux)
+  * usr/share/man/man1/byobu.1, usr/share/man/man1/byobu-select-
+    backend.1:
+    - document backend selection
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 26 Oct 2011 10:05:01 -0500
 
