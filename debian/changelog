@@ -1,3 +1,9 @@
+byobu (4.46) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Oct 2011 09:46:46 -0400
+
 byobu (4.45-0ubuntu1) precise; urgency=low
 
   * usr/share/byobu/profiles/tmux:
