@@ -1,4 +1,4 @@
-byobu (4.45) unreleased; urgency=low
+byobu (4.45-0ubuntu1) precise; urgency=low
 
   * usr/share/byobu/profiles/tmux:
     - shift-F11 -> breaks pane out to its own window
@@ -12,7 +12,7 @@ byobu (4.45) unreleased; urgency=low
     backend.1:
     - document backend selection
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 26 Oct 2011 10:05:01 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Oct 2011 09:46:41 -0400
 
 byobu (4.44-0ubuntu1) precise; urgency=low
 
