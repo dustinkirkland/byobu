@@ -8,6 +8,9 @@ byobu (4.46) unreleased; urgency=low
     - Enable any user to remotely opt into launching byobu by default,
       using an LC_BYOBU=1 environment variable, which is transmitted over
       SSH
+  * configure.ac, debian/install, etc/byobu/Makefile.am,
+    etc/profile.d/Makefile.am:
+    - fix installations to /etc
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Oct 2011 09:46:46 -0400
 

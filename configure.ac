@@ -18,6 +18,7 @@ AC_PROG_LN_S
 
 AC_OUTPUT(Makefile \
 	etc/byobu/Makefile \
+	etc/profile.d/Makefile \
 	usr/share/applications/Makefile \
 	usr/share/byobu/ec2/Makefile \
 	usr/share/byobu/keybindings/Makefile \
