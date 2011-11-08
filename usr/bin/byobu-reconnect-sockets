@@ -43,6 +43,10 @@ newest "$HOME/.gnupg/"gpg-agent-info-* && . "$_RET" && export GPG_AGENT_INFO
 
 # Reconnect dbus, source the most recently touched session-bus
 # Sorry, ls -t is needed here, to sort by time
-newest "$HOME/.dbus/session-bus/*" && . "$_RET" && export DBUS_SESSION_DBUS_ADDRESS
+newest "$HOME/.dbus/session-bus/*" && . "$_RET"
+
+[ -r "$BYOBU_RUN_DIR/sockets" ] && . "$BYOBU_RUN_DIR/sockets"
+export DBUS_SESSION_DBUS_ADDRESS
+export SESSION_MANAGER
 
 # vi: syntax=sh ts=4 noexpandtab
