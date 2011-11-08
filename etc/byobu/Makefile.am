@@ -1,2 +1,2 @@
-etcdir = $(datadir)/@PACKAGE@/profiles
-etc_DATA = socketdir
+etcdir = $(datadir)/@PACKAGE@/
+etc_DATA = backend socketdir
