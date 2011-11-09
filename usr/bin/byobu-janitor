@@ -56,9 +56,9 @@ fi
 # Seed the configuration
 # Setup initial local user configuration
 [ -r "$BYOBU_CONFIG_DIR/color" ] || printf "BACKGROUND=k\nFOREGROUND=w\nMONOCHROME=0" > "$BYOBU_CONFIG_DIR/color"
-[ -r "$BYOBU_CONFIG_DIR/profile" ] || echo "source $BYOBU_PREFIX/share/$PKG/profiles/common" > "$BYOBU_CONFIG_DIR/profile"
-[ -r "$BYOBU_CONFIG_DIR/profile.tmux" ] || echo "source-file $BYOBU_PREFIX/share/$PKG/profiles/tmux" > "$BYOBU_CONFIG_DIR/profile.tmux"
-[ -r "$BYOBU_CONFIG_DIR/keybindings" ] || echo "source $BYOBU_PREFIX/share/$PKG/keybindings/common" > "$BYOBU_CONFIG_DIR/keybindings"
+[ -r "$BYOBU_CONFIG_DIR/profile" ] || echo "source \$BYOBU_PREFIX/share/$PKG/profiles/common" > "$BYOBU_CONFIG_DIR/profile"
+[ -r "$BYOBU_CONFIG_DIR/profile.tmux" ] || echo "source \$BYOBU_PREFIX/share/$PKG/profiles/tmux" > "$BYOBU_CONFIG_DIR/profile.tmux"
+[ -r "$BYOBU_CONFIG_DIR/keybindings" ] || echo "source \$BYOBU_PREFIX/share/$PKG/keybindings/common" > "$BYOBU_CONFIG_DIR/keybindings"
 [ -r "$BYOBU_CONFIG_DIR/windows" ] || touch "$BYOBU_CONFIG_DIR/windows"
 [ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
 [ -r "$BYOBU_CONFIG_DIR/.tmux.conf" ] || touch "$BYOBU_CONFIG_DIR/.tmux.conf"

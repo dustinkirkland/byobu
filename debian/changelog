@@ -81,6 +81,8 @@ byobu (4.47) unreleased; urgency=low
     - use printf instead of "echo -n" for portability to Mac OSX
   * experimental/byobu-classroom: LP: #882813
     - fix minor use $SED
+  * usr/bin/byobu-ctrl-a, usr/bin/byobu-janitor: LP: #882435
+    - use BYOBU_PREFIX in a couple of places to allow better portability
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 
