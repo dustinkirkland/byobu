@@ -54,7 +54,7 @@ while [ -z "$bind_to" ]; do
 	echo "  - You can press F9 and choose your escape character"
 	echo "  - You can run 'byobu-ctrl-a' at any time to change your selection"
 	echo
-	echo -n "Select [1 or 2]: "
+	printf "Select [1 or 2]: "
 	s=$(head -n1)
 	echo
 	case "$s" in

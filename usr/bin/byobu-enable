@@ -29,7 +29,7 @@ echo
 echo "To disable this behavior later, just run:"
 echo "  byobu-disable"
 echo
-echo -n "Press <enter> to continue..."
+printf "Press <enter> to continue..."
 $(head -n1)
 
 exec byobu

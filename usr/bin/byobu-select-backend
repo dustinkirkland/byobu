@@ -38,7 +38,7 @@ prompt() {
 	echo "  1. screen"
 	echo "  2. tmux"
 	echo
-	echo -n "Choose 1-2 [2]: "
+	printf "Choose 1-2 [2]: "
 	choice=$(head -n1)
 	case $choice in
 		1) _RET="screen" ;;

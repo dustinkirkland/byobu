@@ -93,7 +93,7 @@ while [ $(stat -c%a "$screen") != "6755" ]; do
 	echo
 	ls -alF "$screen"
 	info "To operate in classroom mode, $screen must have 6755 permissions."
-	echo -n "Do you want to set this now?  [y/N]: "
+	printf "Do you want to set this now?  [y/N]: "
 	c=$(head -n1)
 	case "$c" in
 		y|Y)
@@ -121,7 +121,7 @@ while [ $(grep -c "#byobu-classrom" /etc/ssh/sshd_config) != "4" ]; do
 	info " b) disable TCP Forwarding"
 	info " c) force the guest user's login command"
 	echo
-	echo -n "Do you want to set these now?  [y/N]: "
+	printf "Do you want to set these now?  [y/N]: "
 	c=$(head -n1)
 	case "$c" in
 		y|Y)

@@ -53,7 +53,7 @@ __custom() {
 			;;
 		esac
 	done
-	echo -n "$output" | $SED ':a;N;$!ba;s/\n//g'
+	printf "$output" | $SED ':a;N;$!ba;s/\n//g'
 }
 
 # vi: syntax=sh ts=4 noexpandtab

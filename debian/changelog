@@ -74,6 +74,11 @@ byobu (4.47) unreleased; urgency=low
     usr/share/doc/byobu/help.txt => usr/share/doc/byobu/help.screen.txt,
     usr/share/doc/byobu/Makefile.am:
     - show tmux help in tmux, screen help in screen
+  * experimental/byobu-classroom, usr/bin/byobu-ctrl-a, usr/bin/byobu-
+    enable, usr/bin/byobu-select-backend, usr/bin/byobu-select-profile,
+    usr/bin/byobu-ulevel, usr/lib/byobu/custom, usr/lib/byobu/disk,
+    usr/share/byobu/tests/byobu-time-notifications: LP: #882814
+    - use printf instead of "echo -n" for portability to Mac OSX
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 

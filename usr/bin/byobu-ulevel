@@ -371,7 +371,7 @@ list_theme()
   echo
   for c in $content
   do
-    echo -n "$c "
+    printf "$c "
   done
   echo -e "\n"
 }

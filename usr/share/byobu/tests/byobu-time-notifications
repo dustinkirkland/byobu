@@ -43,6 +43,6 @@ for i in $list; do
 		;;
 	esac
 	freq=`grep "byobu-status $i$" /usr/share/$PKG/profiles/common | awk '{print $3}'`
-	echo -n "$i $freq "
+	printf "%s" "$i $freq "
 	time loop $i
 done

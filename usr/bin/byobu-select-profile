@@ -94,7 +94,7 @@ prompt() {
 		fi
 		i=1
 		for x in $COLORS; do
-			test $i -lt 10 2>/dev/null && echo -n "  " || echo -n " "
+			test $i -lt 10 2>/dev/null && printf "  " || printf " "
 			echo "$i. $x"
 			i=$(expr $i + 1)
 			[ "$simple" = "$x" ] && simple=$i
@@ -103,10 +103,10 @@ prompt() {
 		if [ -z "$selected" -a -n "$simple" ]; then
 			selected="$simple"
 		elif ! test $selected -gt 0 2>/dev/null; then
-			echo -n "`gettext 'Choose'` 1-$i [$simple]: "
+			printf "`gettext 'Choose'` 1-$i [$simple]: "
 			selected=`head -n1`
 		elif ! test $selected -le $i 2>/dev/null; then
-			echo -n "`gettext 'Choose'` 1-$i [$simple]: "
+			printf "`gettext 'Choose'` 1-$i [$simple]: "
 			selected=`head -n1`
 		else
 			i=1
