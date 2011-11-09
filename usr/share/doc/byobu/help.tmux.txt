@@ -1,4 +1,4 @@
-Byobu is a suite of enhancements to Tmux, as a command line
+Byobu is a suite of enhancements to tmux, as a command line
 tool providing live system status, dynamic window management,
 and some convenient keybindings:
 
