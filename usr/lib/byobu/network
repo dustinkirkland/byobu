@@ -26,7 +26,7 @@ __network_detail() {
 
 __network() {
 	get_network_interface; local interface="$_RET"
-	local x1=0 x2=0
+	local x1=0 x2=0 tx1=0 i= t= unit= symbol= cache= rate=
 	status_freq network
 	t="$_RET"
 	# By default, we won't bug the user with the display of network traffic
@@ -42,6 +42,7 @@ __network() {
 		cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/network.$i"
 		[ -r "$cache" ] && read x1 < "$cache" || tx1=0
 		IFS="$OIFS:"
+		local iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed
 		while read iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed; do
 			if [ "$iface" = "${interface}" ]; then
 				[ "$i" = "up" ] && x2=${tbytes} || x2=${rbytes}

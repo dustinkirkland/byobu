@@ -24,6 +24,8 @@ byobu (4.46) unreleased; urgency=low
     - add ulimit checks to byobu -v
   * usr/lib/byobu/.constants:
     - don't use UTF8 C an F for now
+  * usr/lib/byobu/network: LP: #880410
+    - localize some variables, fix variable colision with cpu_temp
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Oct 2011 09:46:46 -0400
 
