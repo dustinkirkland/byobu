@@ -1,3 +1,9 @@
+byobu (4.47) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
+
 byobu (4.46-0ubuntu1) precise; urgency=low
 
   * debian/control: LP: #887344
