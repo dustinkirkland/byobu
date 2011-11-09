@@ -1,2 +1,2 @@
 docdir = $(datadir)/doc/@PACKAGE@
-doc_DATA = help.txt
+doc_DATA = help.txt help.tmux.txt
