@@ -2,6 +2,12 @@ byobu (4.47) unreleased; urgency=low
 
   * etc/profile.d/Z97-byobu.sh:
     - remove unnecessary 'true'
+  * usr/share/byobu/ec2/Makefile.am, usr/share/byobu/ec2/rates.ap-
+    northeast-1, usr/share/byobu/ec2/rates.ap-southeast-1,
+    usr/share/byobu/ec2/rates.eu-west-1, usr/share/byobu/ec2/rates.us-
+    east-1, usr/share/byobu/ec2/rates.us-west-1,
+    usr/share/byobu/ec2/rates.us-west-2:
+    - added new us-west-2 (Oregon) pricing region
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 
