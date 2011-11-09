@@ -27,6 +27,7 @@ byobu (4.47) unreleased; urgency=low
     usr/share/byobu/keybindings/f-keys.tmux.disable,
     usr/share/byobu/keybindings/Makefile.am,
     usr/share/byobu/profiles/tmux, usr/share/doc/byobu/help.tmux.txt:
+    - LP: #888247
     - Add Shift-F12 to toggle keybindings on/off
     - Split tmux keybindings to separate file to source
   * usr/bin/byobu-status-detail, usr/lib/byobu/.constants,
@@ -57,6 +58,10 @@ byobu (4.47) unreleased; urgency=low
     - reorder some documentation
   * usr/bin/byobu-launcher-install:
     - close LP: #854764, which was recently fixed
+  * usr/bin/byobu-config: LP: #888247
+    - deprecate the keybinding set selection from the config menu
+    - no additional keybindg sets ever showed up, so this option
+      is not worth having
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 

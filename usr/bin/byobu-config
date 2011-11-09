@@ -101,11 +101,10 @@ def menu(snackScreen, size, isInstalled):
     li.append(_("Change Byobu's background color"), 2)
     li.append(_("Change Byobu's foreground color"), 3)
     li.append(_("Toggle status notifications"), 4)
-    li.append(_("Change keybinding set"), 5)
-    li.append(_("Change escape sequence"), 6)
-    li.append(_("Create new windows"), 7)
-    li.append(_("Manage default windows"), 8)
-    li.append(installtext, 9)
+    li.append(_("Change escape sequence"), 5)
+    li.append(_("Create new windows"), 6)
+    li.append(_("Manage default windows"), 7)
+    li.append(installtext, 8)
     bb = ButtonBar(snackScreen, (("Exit", "exit", ESC),), compact=1)
 
     g = GridForm(snackScreen, _(" Byobu Configuration Menu"), 1, 2)
@@ -169,24 +168,6 @@ def select_color(snackScreen, size, layer):
             commands.getoutput('byobu-select-profile --background %s' % li.current())
 	reload_required()
     return 100
-
-def keybindings(snackScreen, size):
-    li = Listbox(height = 6, width = 60, returnExit = 1)
-    for choice in commands.getoutput('ls '+SHARE+'/keybindings').splitlines():
-        if choice != "common" and choice != "none":
-            li.append(choice, choice)
-    li.append("none", "none")
-    bb = ButtonBar(snackScreen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
-    g = GridForm(snackScreen, _("Which set of keybindings would you like to use?"), 1, 2)
-    g.add(li, 0, 0, padding=(4,2,4,2))
-    g.add(bb, 0, 1, padding=(1,1,0,0))
-    if bb.buttonPressed(g.runOnce()) != "cancel":
-        switch_keybindings(li.current())
-	reload_required()
-    return 100
-
-def switch_keybindings(set):
-    commands.getoutput(SED + " -i -e 's:^source .*$:source "+SHARE+"/keybindings/"+set+":' "+BYOBU_CONFIG_DIR+"/keybindings")
 
 def newwindow(snackScreen, size):
     title=Entry(8, text="shell", returnExit=1)
@@ -540,15 +521,13 @@ def main():
             tag = select_color(snackScreen, size, "foreground")
         elif tag == 4:
             tag = togglestatus(snackScreen, size)
-        elif tag == 5:
-            tag = keybindings(snackScreen, size)
-	elif tag == 6:
+	elif tag == 5:
             tag = chgesc(snackScreen, size)
-        elif tag == 7:
+        elif tag == 6:
             tag = newwindow(snackScreen, size)
-        elif tag == 8:
+        elif tag == 7:
             tag = defaultwindows(snackScreen, size)
-        elif tag == 9:
+        elif tag == 8:
             tag = install(snackScreen, size, isInstalled)
             isInstalled = autolaunch()
 
