@@ -29,4 +29,5 @@ AC_OUTPUT(Makefile \
 	usr/share/byobu/windows/Makefile \
 	usr/share/doc/byobu/Makefile \
 	usr/lib/byobu/Makefile \
+	usr/lib/byobu/include/Makefile \
 	usr/share/man/man1/Makefile usr/bin/Makefile)

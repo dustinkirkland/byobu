@@ -48,7 +48,9 @@ byobu (4.47) unreleased; urgency=low
     usr/lib/byobu/include/dirs, usr/lib/byobu/Makefile.am,
     usr/lib/byobu/notify_osd, usr/lib/byobu/.notify_osd =>
     usr/lib/byobu/include/notify_osd, usr/lib/byobu/.shutil =>
-    usr/lib/byobu/include/shutil: LP: #833768
+    usr/lib/byobu/include/shutil, configure.ac, Makefile.am,
+    usr/lib/byobu/include/Makefile.am:
+    - LP: #833768
     - move dotfiles out of usr/lib/byobu and into usr/lib/byobu/include
     - this was triggering some chrootkit warnings
 

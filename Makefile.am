@@ -10,5 +10,6 @@ SUBDIRS = etc/byobu \
 	usr/share/byobu/windows \
 	usr/share/doc/byobu \
 	usr/lib/byobu \
+	usr/lib/byobu/include \
 	usr/share/man/man1 \
 	usr/bin
