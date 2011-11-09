@@ -98,13 +98,11 @@ def menu(snackScreen, size, isInstalled):
 
     li = Listbox(height = 9, width = 60, returnExit = 1)
     li.append(_("Help -- Quick Start Guide"), 1)
-    li.append(_("Change Byobu's background color"), 2)
-    li.append(_("Change Byobu's foreground color"), 3)
-    li.append(_("Toggle status notifications"), 4)
-    li.append(_("Change escape sequence"), 5)
-    li.append(_("Create new windows"), 6)
-    li.append(_("Manage default windows"), 7)
-    li.append(installtext, 8)
+    li.append(_("Toggle status notifications"), 2)
+    li.append(_("Change escape sequence"), 3)
+    li.append(_("Create new windows"), 4)
+    li.append(_("Manage default windows"), 5)
+    li.append(installtext, 6)
     bb = ButtonBar(snackScreen, (("Exit", "exit", ESC),), compact=1)
 
     g = GridForm(snackScreen, _(" Byobu Configuration Menu"), 1, 2)
@@ -143,30 +141,6 @@ def help(snackScreen, size, config):
 
     button = bb.buttonPressed(g.runOnce())
 
-    return 100
-
-def select_color(snackScreen, size, layer):
-    li = Listbox(height = 8, width = 60, scroll = 1, returnExit = 1)
-
-    for choice in commands.getoutput('byobu-select-profile -l').splitlines():
-        li.append(choice, choice)
-
-    bb = ButtonBar(snackScreen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
-
-    if layer == "foreground":
-        g = GridForm(snackScreen, _("Choose a foreground color:"), 1, 2)
-    else:
-        g = GridForm(snackScreen, _("Choose a background color:"), 1, 2)
-
-    g.add(li, 0, 0, padding=(4,2,4,2))
-    g.add(bb, 0, 1, padding=(1,1,0,0))
-
-    if bb.buttonPressed(g.runOnce()) != "cancel":
-        if layer == "foreground":
-            commands.getoutput('byobu-select-profile --foreground %s' % li.current())
-        else:
-            commands.getoutput('byobu-select-profile --background %s' % li.current())
-	reload_required()
     return 100
 
 def newwindow(snackScreen, size):
@@ -516,18 +490,14 @@ def main():
         if tag == 1:
             tag = help(snackScreen, size, config)
         elif tag == 2:
-            tag = select_color(snackScreen, size, "background")
-        elif tag == 3:
-            tag = select_color(snackScreen, size, "foreground")
-        elif tag == 4:
             tag = togglestatus(snackScreen, size)
-	elif tag == 5:
+	elif tag == 3:
             tag = chgesc(snackScreen, size)
-        elif tag == 6:
+        elif tag == 4:
             tag = newwindow(snackScreen, size)
-        elif tag == 7:
+        elif tag == 5:
             tag = defaultwindows(snackScreen, size)
-        elif tag == 8:
+        elif tag == 6:
             tag = install(snackScreen, size, isInstalled)
             isInstalled = autolaunch()
 
