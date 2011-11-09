@@ -20,6 +20,8 @@ byobu (4.46) unreleased; urgency=low
     - reorder byobu-ctrl-a to offer screen first, then emacs mode
     - make byobu-ctrl-a slighty more compatible with tmux (not quite
       there yet...)
+  * usr/bin/byobu: LP: #713879
+    - add ulimit checks to byobu -v
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Oct 2011 09:46:46 -0400
 
