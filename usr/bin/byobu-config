@@ -112,16 +112,16 @@ def messagebox(snackScreen, width, height, title, text, scroll=0, \
     return bb.buttonPressed(g.runOnce())
 
 def help(snackScreen, size, config):
-    f=file(DOC+'/help.txt')
+    f=file(DOC+'/help.'+BYOBU_BACKEND+'.txt')
     text=f.read()
     f.close()
     text=text.replace("<esckey>", getesckey(), 1)
     text=text.replace("_VER_", commands.getoutput("byobu -v | head -n1 | " + SED + " 's/.* //'"), 1)
-    t = Textbox(70, 14, text, scroll=0)
+    t = Textbox(67, 16, text, scroll=1, wrap=1)
     bb = ButtonBar(snackScreen, ((_("Menu"), "menu", ESC),), compact = 1)
-    g = GridForm(snackScreen, _("Byobu Help"), 1, 3)
-    g.add(t, 0, 0, padding=(0,0,0,0))
-    g.add(bb, 0, 2, padding=(1,1,0,0))
+    g = GridForm(snackScreen, _("Byobu Help"), 2, 4)
+    g.add(t, 1, 0)
+    g.add(bb, 1, 1, padding=(1,1,0,0))
     button = bb.buttonPressed(g.runOnce())
     return 100
 

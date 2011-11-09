@@ -70,6 +70,10 @@ byobu (4.47) unreleased; urgency=low
       is any longer one of byobu's main features (?)
     - standardize title formatting
     - clean up some whitespace and text
+  * usr/bin/byobu-config, usr/share/doc/byobu/help.tmux.txt,
+    usr/share/doc/byobu/help.txt => usr/share/doc/byobu/help.screen.txt,
+    usr/share/doc/byobu/Makefile.am:
+    - show tmux help in tmux, screen help in screen
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 
