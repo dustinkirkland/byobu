@@ -79,6 +79,8 @@ byobu (4.47) unreleased; urgency=low
     usr/bin/byobu-ulevel, usr/lib/byobu/custom, usr/lib/byobu/disk,
     usr/share/byobu/tests/byobu-time-notifications: LP: #882814
     - use printf instead of "echo -n" for portability to Mac OSX
+  * experimental/byobu-classroom: LP: #882813
+    - fix minor use $SED
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 

@@ -125,7 +125,7 @@ while [ $(grep -c "#byobu-classrom" /etc/ssh/sshd_config) != "4" ]; do
 	c=$(head -n1)
 	case "$c" in
 		y|Y)
-			sed -i -e '/#byobu-classroom/d' /etc/ssh/sshd_config || true
+			$SED -i -e '/#byobu-classroom/d' /etc/ssh/sshd_config || true
 			echo "
 PasswordAuthentication yes				#byobu-classroom
 AllowTcpForwarding no					#byobu-classroom
