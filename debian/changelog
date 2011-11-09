@@ -15,6 +15,11 @@ byobu (4.46) unreleased; urgency=low
     usr/share/byobu/profiles/tmux: LP: #883637
     - fix reconnection to SESSION_MANAGER and DBUS_SESSION_BUS_ADDRESS
     - add C-F5 key to tmux profile
+  * usr/bin/byobu-ctrl-a, usr/share/byobu/profiles/tmux: LP: #887387
+    - support F12 as escape key in tmux mode
+    - reorder byobu-ctrl-a to offer screen first, then emacs mode
+    - make byobu-ctrl-a slighty more compatible with tmux (not quite
+      there yet...)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Oct 2011 09:46:46 -0400
 

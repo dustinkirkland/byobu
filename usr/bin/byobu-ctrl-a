@@ -46,8 +46,8 @@ while [ -z "$bind_to" ]; do
 	echo "Configure Byobu's ctrl-a behavior..."
 	echo
 	echo "When you press ctrl-a in Byobu, do you want it to operate in:"
-	echo "    (1) Emacs mode  (go to beginning of line)"
-	echo "    (2) Screen mode (GNU Screen's default escape sequence)"
+	echo "    (1) Screen mode (GNU Screen's default escape sequence)"
+	echo "    (2) Emacs mode  (go to beginning of line)"
 	echo
 	echo "Note that:"
 	echo "  - F12 also operates as Screen escape in Byobu"
@@ -58,29 +58,38 @@ while [ -z "$bind_to" ]; do
 	s=$(head -n1)
 	echo
 	case "$s" in
-		1) bind_to="emacs"; break;;
-		2) bind_to="screen"; break;;
+		1) bind_to="screen"; break;;
+		2) bind_to="emacs"; break;;
 	esac
 done
 
 case "$bind_to" in
 	emacs)
-			$SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
-			echo 'bindkey "^A"' >> "$keybindings"
-			echo "INFO: ctrl-a will now operate in emacs mode"
-			;;
+		$SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
+		echo 'bindkey "^A"' >> "$keybindings"
+		echo "INFO: ctrl-a will now operate in emacs mode"
+		echo > "$keybindings.tmux"
+	;;
 	screen)
-			$SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
-			echo 'escape "^Aa"' >> "$keybindings"
-			echo 'register x "^A"' >> "$keybindings"
-			echo 'bindkey "^A"' >> "$keybindings"
-			echo "INFO: ctrl-a will now operate in GNU Screen mode"
-			break
-		;;
-	*) echo "Error: bad value for binding: $bind_to";;
+		$SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
+		echo 'escape "^Aa"' >> "$keybindings"
+		echo 'register x "^A"' >> "$keybindings"
+		echo 'bindkey "^A"' >> "$keybindings"
+		echo 'source /usr/share/doc/tmux/examples/screen-keys.conf' > "$keybindings.tmux"
+		echo "INFO: ctrl-a will now operate in GNU Screen mode"
+		break
+	;;
+	*)
+		echo "Error: bad value for binding: $bind_to"
+	;;
 esac
 
-$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
+case "$BYOBU_BACKEND" in
+	screen)
+		$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
+	;;
+esac
+
 echo "To modify this behavior again later, run 'byobu-ctrl-a'"
 echo
 

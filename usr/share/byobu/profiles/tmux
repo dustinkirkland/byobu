@@ -30,6 +30,9 @@ source /usr/share/doc/tmux/examples/screen-keys.conf
 # On Archlinux, this file is not under the same directory
 source /usr/share/tmux/screen-keys.conf
 
+# Add F12 to the prefix list
+set -g prefix ^A,F12
+
 # Byobu's Keybindings
 bind-key -n F1 new-window -k -t config byobu-config
 bind-key -n F2 new-window
