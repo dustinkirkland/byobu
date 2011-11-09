@@ -1,4 +1,4 @@
-byobu (4.46) unreleased; urgency=low
+byobu (4.46-0ubuntu1) precise; urgency=low
 
   * debian/control: LP: #887344
     - promote tmux to a 'recommends';  will 'depend' on it soon
@@ -32,7 +32,7 @@ byobu (4.46) unreleased; urgency=low
     etc/profile.d/Makefile.am:
     - fighting with autoconf to get shtuff installing in /etc, argh
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Oct 2011 09:46:46 -0400
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:13 -0600
 
 byobu (4.45-0ubuntu1) precise; urgency=low
 
