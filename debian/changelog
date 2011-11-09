@@ -6,7 +6,7 @@ byobu (4.47) unreleased; urgency=low
     northeast-1, usr/share/byobu/ec2/rates.ap-southeast-1,
     usr/share/byobu/ec2/rates.eu-west-1, usr/share/byobu/ec2/rates.us-
     east-1, usr/share/byobu/ec2/rates.us-west-1,
-    usr/share/byobu/ec2/rates.us-west-2:
+    usr/share/byobu/ec2/rates.us-west-2: LP: #888196
     - added new us-west-2 (Oregon) pricing region
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
