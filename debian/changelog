@@ -23,6 +23,12 @@ byobu (4.47) unreleased; urgency=low
     - Ctrl-F11 puts window into a vertical split in previous window
   * usr/share/doc/byobu/help.tmux.txt:
     - fix typo
+  * usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/byobu/keybindings/Makefile.am,
+    usr/share/byobu/profiles/tmux, usr/share/doc/byobu/help.tmux.txt:
+    - Add Shift-F12 to toggle keybindings on/off
+    - Split tmux keybindings to separate file to source
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 

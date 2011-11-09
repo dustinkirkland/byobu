@@ -1,0 +1,60 @@
+###############################################################################
+#    disable byobu's tmux f-key keybindings
+#
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###############################################################################
+
+# Undo Byobu's Keybindings
+unbind-key -n F1
+unbind-key -n S-F1
+unbind-key -n F2
+unbind-key -n C-F2
+unbind-key -n S-F2
+unbind-key -n C-S-F2
+unbind-key -n F3
+unbind-key -n F4
+unbind-key -n M-Left
+unbind-key -n M-Right
+unbind-key -n M-Up
+unbind-key -n M-Down
+unbind-key -n S-F3
+unbind-key -n S-F4
+unbind-key -n S-Up
+unbind-key -n S-Down
+unbind-key -n S-Left
+unbind-key -n S-Right
+unbind-key -n C-F3
+unbind-key -n C-F4
+unbind-key -n C-Up
+unbind-key -n C-Down
+unbind-key -n C-Left
+unbind-key -n C-Right
+unbind-key -n F5
+unbind-key -n S-F5
+unbind-key -n C-F5
+unbind-key -n F6
+unbind-key -n S-F6
+unbind-key -n C-F6
+unbind-key -n F7
+unbind-key -n M-NPage
+unbind-key -n M-PPage
+unbind-key -n F8
+unbind-key -n F9
+unbind-key -n M-F11
+unbind-key -n C-F11
+unbind-key -n S-F11
+bind-key -n S-F12 source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux
