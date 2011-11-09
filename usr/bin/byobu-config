@@ -54,12 +54,6 @@ gettext.bindtextdomain(PKG, SHARE+'/po')
 gettext.textdomain(PKG)
 _ = gettext.gettext
 
-# Command presets for windows creation
-cmd=(   ("System activity", "top", "top"),
-        ("System log", "log", "watch -n 10 tail -n 5 /var/log/syslog /var/log/auth.log /var/log/dmesg"),
-        ("Disk and ram usage", "mem", 'watch -n 30 "df -h; echo ""; free -mt"'))
-
-
 def ioctl_GWINSZ(fd):                  #### TABULATION FUNCTIONS
     try:                                ### Discover terminal width
         import fcntl, termios, struct, os
@@ -100,9 +94,7 @@ def menu(snackScreen, size, isInstalled):
     li.append(_("Help -- Quick Start Guide"), 1)
     li.append(_("Toggle status notifications"), 2)
     li.append(_("Change escape sequence"), 3)
-    li.append(_("Create new windows"), 4)
-    li.append(_("Manage default windows"), 5)
-    li.append(installtext, 6)
+    li.append(installtext, 4)
     bb = ButtonBar(snackScreen, (("Exit", "exit", ESC),), compact=1)
 
     g = GridForm(snackScreen, _(" Byobu Configuration Menu"), 1, 2)
@@ -142,105 +134,6 @@ def help(snackScreen, size, config):
     button = bb.buttonPressed(g.runOnce())
 
     return 100
-
-def newwindow(snackScreen, size):
-    title=Entry(8, text="shell", returnExit=1)
-    titlel=Label(_("Title: "))
-    command=Entry(20, text="/bin/sh", returnExit=1)
-    commandl=Label(_("Command: "))
-    path=Entry(20, text="~", returnExit=1)
-    pathl=Label(_("Path: "))
-
-    rl=Label(_("Presets: "))
-    if len(cmd) > 10:
-        scroll=1
-        size=10
-    else:
-        scroll=0
-        size = len(cmd)
-
-    r=CheckboxTree(size, scroll=scroll)
-    count=0
-    for cur in cmd:
-        r.append(cur[0], count)
-        count=count+1
-
-    cb=Checkbox(_("Add to default windows"))
-
-    bb = ButtonBar(snackScreen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
-
-    g = GridForm(snackScreen, _("Create new window(s):"), 2, 6 )
-    g.add(titlel, 0, 0, anchorLeft=1,padding=(4,1,0,1))
-    g.add(title, 1, 0, anchorLeft=1)
-    g.add(commandl, 0, 1, anchorLeft=1, anchorTop=1,padding=(4,0,0,1))
-    g.add(command, 1, 1, anchorLeft=1)
-    g.add(pathl, 0, 2, anchorLeft=1, anchorTop=1,padding=(4,0,0,1))
-    g.add(path, 1, 2, anchorLeft=1)
-    g.add(rl, 0, 3, anchorLeft=1,padding=(4,0,0,1))
-    g.add(r, 1, 3)
-    g.add(cb, 1, 4, padding=(4,1,0,1))
-    g.add(bb, 1, 5, padding=(4,1,0,0))
-
-    if bb.buttonPressed(g.runOnce()) != "cancel":
-        sel=r.getSelection()
-        if sel:
-            for s in sel:
-                win='%s -t %s %s' % (BYOBU_BACKEND, cmd[s][1], cmd[s][2])
-                commands.getoutput(win)
-                if cb.value():
-                    appendwindow(win)
-        else:
-	    cpath='%s -X setenv newpath %s' % (BYOBU_BACKEND, path.value())
-            win='%s -X eval \'chdir $newpath\' \"%s -t %s %s\"' % (BYOBU_BACKEND, BYOBU_BACKEND, title.value(), command.value())
-	    commands.getoutput(cpath)
-            commands.getoutput(win)
-            if cb.value():
-	    	cpath='chdir %s' % (path.value())
-            	win='%s -t %s %s' % (BYOBU_BACKEND, title.value(), command.value())
-		appendwindow(cpath)
-                appendwindow(win)
-
-    return 100
-
-def appendwindow(win):
-    f=open(BYOBU_CONFIG_DIR+'/windows', 'a')
-    try:
-        f.write(win+"\n")
-
-    except IOError:
-        f.close()
-        return None
-
-    f.close()
-
-def readwindows():
-    if not os.path.isfile(BYOBU_CONFIG_DIR+'/windows'):
-        windowsfile=SHARE+'/windows/common'
-    elif os.path.getsize(BYOBU_CONFIG_DIR+'/windows') == 0:
-        windowsfile=SHARE+'/windows/common'
-    else:
-        windowsfile=BYOBU_CONFIG_DIR+'/windows'
-    f=open(windowsfile)
-    try:
-        li=[]
-        for line in f.readlines():
-            if line.startswith("# "):
-               # this is a comment
-               window=[-1, line]
-            elif line.startswith("#"):
-               # this is an inactive window
-               window=[0, line.lstrip("#")]
-            else:
-               window=[1, line]
-            li.append(window)
-
-        return li
-
-    except IOError:
-        f.close()
-        return None
-
-    f.close()
 
 def readstatus():
     status={}
@@ -325,55 +218,11 @@ def togglestatus(snackScreen, size):
 	reload_required()
     return 100
 
-def writewindows(winlist):
-    f=open(BYOBU_CONFIG_DIR+'/windows', 'w')
-    try:
-        for win in winlist:
-            if win[0] == -1:
-                f.write(win[1])
-            elif win[0] == 0:
-                f.write("#"+win[1])
-            else:
-                f.write(win[1])
-    except IOError:
-        f.close()
-        return None
-    f.close()
-
-def defaultwindows(snackScreen, size):
-    winlist=readwindows()
-
-    rl=Label(_("Windows:"))
-    r=CheckboxTree(10, scroll=1)
-    count=0
-    for win in winlist:
-       if win[0] != -1:
-            r.append(win[1],count,selected=win[0])
-       count=count+1
-
-    bb = ButtonBar(snackScreen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
-
-    g = GridForm(snackScreen, _("Select window(s) to create by default:"), 2, 4 )
-    g.add(rl, 0, 0, anchorLeft=1, anchorTop=1, padding=(4,0,0,1))
-    g.add(r, 1, 0)
-    g.add(bb, 1, 1, padding=(4,1,0,0))
-
-    if bb.buttonPressed(g.runOnce()) != "cancel":
-        count=0
-        for win in winlist:
-            if win[0] != -1:
-                win[0] = r.getEntryValue(count)[1]
-            count=count+1
-
-        writewindows(winlist)
-
-    return 100
-
 def install(snackScreen, size, isInstalled):
     if isInstalled:
         out = commands.getoutput("byobu-launcher-uninstall")
         if out == "":
-            out = _("Byobu will not be used next time you login.")
+            out = _("Byobu will not be launched next time you login.")
         button = messagebox(snackScreen, 60, 2, _("Message"), out, buttons=((_("Menu"), )))
         return 101
     else:
@@ -494,10 +343,6 @@ def main():
 	elif tag == 3:
             tag = chgesc(snackScreen, size)
         elif tag == 4:
-            tag = newwindow(snackScreen, size)
-        elif tag == 5:
-            tag = defaultwindows(snackScreen, size)
-        elif tag == 6:
             tag = install(snackScreen, size, isInstalled)
             isInstalled = autolaunch()
 

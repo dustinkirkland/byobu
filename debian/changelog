@@ -62,9 +62,12 @@ byobu (4.47) unreleased; urgency=low
     - deprecate the keybinding set selection from the config menu
     - no additional keybindg sets ever showed up, so this option
       is not worth having
-    - remove background/foreground color selection; once, this was a
+    - deprecate background/foreground color selection; once, this was a
       primary feature of byobu :-)  It's not really any more;  it's
       trivial to change these in ~/.byobu/color now
+    - deprecate window management from byobu-config; hard to get this
+      right for both screen and tmux;  and I don't perceive that this
+      is any longer one of byobu's main features (?)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 
