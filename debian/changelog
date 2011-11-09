@@ -28,6 +28,9 @@ byobu (4.46) unreleased; urgency=low
     - localize some variables, fix variable colision with cpu_temp
   * debian/control:
     - bump standards version
+  * debian/install, debian/rules, etc/byobu/Makefile.am,
+    etc/profile.d/Makefile.am:
+    - fighting with autoconf to get shtuff installing in /etc, argh
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Oct 2011 09:46:46 -0400
 

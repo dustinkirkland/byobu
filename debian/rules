@@ -30,7 +30,7 @@ autoconf: clean
 	autoconf
 
 prebuild: autoconf
-	./configure --prefix=/usr
+	./configure --prefix=/usr --sysconfdir=/etc
 
 build: prebuild
 	dh_testdir
