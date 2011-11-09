@@ -1,4 +1,4 @@
-byobu (4.47) unreleased; urgency=low
+byobu (4.47-0ubuntu1) precise; urgency=low
 
   * etc/profile.d/Z97-byobu.sh:
     - remove unnecessary 'true'
@@ -84,7 +84,7 @@ byobu (4.47) unreleased; urgency=low
   * usr/bin/byobu-ctrl-a, usr/bin/byobu-janitor: LP: #882435
     - use BYOBU_PREFIX in a couple of places to allow better portability
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Nov 2011 17:54:07 -0600
 
 byobu (4.46-0ubuntu1) precise; urgency=low
 
