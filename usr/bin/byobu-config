@@ -89,7 +89,6 @@ def menu(snackScreen, size, isInstalled):
     else:
         installtext=_("Byobu currently does not launch at login (toggle on)")
 
-
     li = Listbox(height = 9, width = 60, returnExit = 1)
     li.append(_("Help -- Quick Start Guide"), 1)
     li.append(_("Toggle status notifications"), 2)
@@ -204,7 +203,7 @@ def togglestatus(snackScreen, size):
             r.append(item[1],count,selected=item[0])
        count=count+1
     bb = ButtonBar(snackScreen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
-    g = GridForm(snackScreen, _("Toggle status notifications:"), 2, 4 )
+    g = GridForm(snackScreen, _("Toggle status notifications"), 2, 4 )
     g.add(rl, 0, 0, anchorLeft=1, anchorTop=1, padding=(4,0,0,1))
     g.add(r, 1, 0)
     g.add(bb, 1, 1, padding=(4,1,0,0))
@@ -276,7 +275,7 @@ def chgesc(snackScreen, size):
     escl=Label(_("Escape key: ctrl-"))
     bb = ButtonBar(snackScreen, ((_("Apply"), "apply"), (_("Cancel"), "cancel", ESC)), compact = 1)
 
-    g = GridForm(snackScreen, _("Change escape sequence:"), 2, 4 )
+    g = GridForm(snackScreen, _("Change escape sequence"), 2, 4 )
     g.add(escl, 0, 0, anchorLeft=1, padding=(1,0,0,1))
     g.add(esc, 1, 0, anchorLeft=1)
     g.add(bb, 1, 1)
