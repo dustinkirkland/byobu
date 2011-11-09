@@ -8,6 +8,7 @@ byobu (4.47) unreleased; urgency=low
     east-1, usr/share/byobu/ec2/rates.us-west-1,
     usr/share/byobu/ec2/rates.us-west-2: LP: #888196
     - added new us-west-2 (Oregon) pricing region
+  * close LP: #888106, fixed in last release
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 
@@ -17,7 +18,7 @@ byobu (4.46-0ubuntu1) precise; urgency=low
     - promote tmux to a 'recommends';  will 'depend' on it soon
   * === added directory etc/profile.d, etc/byobu/Makefile.am,
     etc/profile.d/Makefile.am, etc/profile.d/Z97-byobu.sh, Makefile.am:
-    - LP: #586546
+    - LP: #586546, #888106
     - Enable any user to remotely opt into launching byobu by default,
       using an LC_BYOBU=1 environment variable, which is transmitted over
       SSH
