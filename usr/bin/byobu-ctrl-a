@@ -27,7 +27,7 @@ EOF
 
 PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
-. "${BYOBU_PREFIX}/lib/${PKG}/.common"
+. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
 bind_to=""
 keybindings="$BYOBU_CONFIG_DIR/keybindings"

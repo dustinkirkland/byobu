@@ -33,6 +33,24 @@ byobu (4.47) unreleased; urgency=low
     usr/share/byobu/keybindings/f-keys.tmux:
     - set a BYOBU_PAGER environment variable
     - use BYOBU_PAGER in places we need a pager
+  * === added directory usr/lib/byobu/include, experimental/byobu-
+    classroom, usr/bin/byobu, usr/bin/byobu-ctrl-a, usr/bin/byobu-
+    disable, usr/bin/byobu-enable, usr/bin/byobu-export, usr/bin/byobu-
+    janitor, usr/bin/byobu-launch, usr/bin/byobu-launcher,
+    usr/bin/byobu-launcher-install, usr/bin/byobu-launcher-uninstall,
+    usr/bin/byobu-quiet, usr/bin/byobu-reconnect-sockets, usr/bin/byobu-
+    select-backend, usr/bin/byobu-select-profile, usr/bin/byobu-shell,
+    usr/bin/byobu-silent, usr/bin/byobu-status, usr/bin/byobu-status-
+    detail, usr/bin/byobu-ugraph, usr/bin/byobu-ulevel,
+    usr/lib/byobu/.common => usr/lib/byobu/include/common (properties
+    changed: -x to +x), usr/lib/byobu/.constants =>
+    usr/lib/byobu/include/constants, usr/lib/byobu/.dirs =>
+    usr/lib/byobu/include/dirs, usr/lib/byobu/Makefile.am,
+    usr/lib/byobu/notify_osd, usr/lib/byobu/.notify_osd =>
+    usr/lib/byobu/include/notify_osd, usr/lib/byobu/.shutil =>
+    usr/lib/byobu/include/shutil: LP: #833768
+    - move dotfiles out of usr/lib/byobu and into usr/lib/byobu/include
+    - this was triggering some chrootkit warnings
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 

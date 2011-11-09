@@ -21,7 +21,7 @@
 
 PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
-. "${BYOBU_PREFIX}/lib/${PKG}/.common"
+. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
 # Ensure that all updates get run immediately
 rm -rf "$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND"

@@ -31,7 +31,7 @@ __notify_osd() {
 	# processing new messages and sending them to the session
 	CMD="tail --pid $PPID -n 0 -F $NOTIFY_OSD_LOG"
 	pkill -f "$CMD" || true
-	$CMD | $BYOBU_PREFIX/lib/byobu/.notify_osd "$PPID" &
+	$CMD | $BYOBU_PREFIX/lib/byobu/include/notify_osd "$PPID" &
 }
 
 # vi: syntax=sh ts=4 noexpandtab

@@ -38,7 +38,7 @@ case "$0" in
 esac
 
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
-. "${BYOBU_PREFIX}/lib/${PKG}/.common"
+. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
 # At this point, we're sure BYOBU_BACKEND is properly defined
 export BYOBU_BACKEND

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#    .shutil: some shared utilities used by all status scripts
+#    shutil: some shared utilities used by all status scripts
 #
 #    Copyright (C) 2011 Dustin Kirkland
 #

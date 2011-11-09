@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#    .dirs: some dirs needed by all library status scripts
+#    dirs: some dirs needed by all library status scripts
 #
 #    Copyright (C) 2011 Dustin Kirkland
 #

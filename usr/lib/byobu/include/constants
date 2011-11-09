@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#    .constants: some constant values needed by all library status scripts
+#    constants: some constant values needed by all library status scripts
 #
 #    Copyright (C) 2011 Dustin Kirkland
 #

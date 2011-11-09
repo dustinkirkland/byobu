@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-#    .notify_osd: perform some string manipulation on notify-osd messages
+#    notify_osd: perform some string manipulation on notify-osd messages
 #                 and then send to the screen message window
 #    Copyright (C) 2010 Canonical Ltd.
 #

@@ -19,7 +19,7 @@
 
 PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
-. "${BYOBU_PREFIX}/lib/${PKG}/.common"
+. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
 if which vim >/dev/null && `vim --version | grep -q +folding`; then
 	byobu-status --detail | vim -c "set foldmethod=indent" -c "set foldminlines=0" -c "set foldnestmax=1"  -c "set foldcolumn=2" -R -

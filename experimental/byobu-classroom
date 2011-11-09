@@ -22,7 +22,7 @@
 
 PKG="byobu"
 
-. "/usr/lib/$PKG/.shutil"
+. "/usr/lib/$PKG/include/shutil"
 
 usage() {
 	echo
@@ -98,8 +98,6 @@ while [ $(stat -c%a "$screen") != "6755" ]; do
 	case "$c" in
 		y|Y)
 			dpkg-statoverride --add root root 6755 "$screen"
-			chmod 6755 "$screen"
-			chmod 755 /var/run/screen
 			info "Updated $screen"
 			echo
 			info "To revert this later, run:"

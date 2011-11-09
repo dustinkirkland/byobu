@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#    .common: common stuff sourced by all scripts
+#    common: common stuff sourced by all scripts
 #
 #    Copyright (C) 2011 Dustin Kirkland
 #
@@ -20,7 +20,7 @@
 
 if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 	# Needed to set up $BYOBU_CONFIG_DIR
-	. "${BYOBU_PREFIX}/lib/${PKG}/.dirs"
+	. "${BYOBU_PREFIX}/lib/${PKG}/include/dirs"
 
 	# If the backend is already set (eg. running `byobu-tmux`), do nothing.
 	if [ -z "${BYOBU_BACKEND}" ]; then
@@ -33,7 +33,7 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 	# Creating backend cache
 	[ -d "$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND" ] || mkdir -p "$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND"
 
-	. "${BYOBU_PREFIX}/lib/${PKG}/.shutil"
-	. "${BYOBU_PREFIX}/lib/${PKG}/.constants"
+	. "${BYOBU_PREFIX}/lib/${PKG}/include/shutil"
+	. "${BYOBU_PREFIX}/lib/${PKG}/include/constants"
 	BYOBU_INCLUDED_LIBS=1
 fi
