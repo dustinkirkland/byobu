@@ -1,6 +1,7 @@
 byobu (4.47) unreleased; urgency=low
 
-  * UNRELEASED
+  * etc/profile.d/Z97-byobu.sh:
+    - remove unnecessary 'true'
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 

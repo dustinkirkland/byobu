@@ -23,6 +23,5 @@
 if [ "$LC_BYOBU" = "1" ] && [ -r "/usr/bin/byobu-launch" ]; then
 	. /usr/bin/byobu-launch
 fi
-true
 
 # vi: syntax=sh ts=4 noexpandtab
