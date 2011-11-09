@@ -69,6 +69,7 @@ byobu (4.47) unreleased; urgency=low
       right for both screen and tmux;  and I don't perceive that this
       is any longer one of byobu's main features (?)
     - standardize title formatting
+    - clean up some whitespace and text
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 
