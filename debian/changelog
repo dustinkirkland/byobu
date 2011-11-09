@@ -55,6 +55,8 @@ byobu (4.47) unreleased; urgency=low
     - this was triggering some chrootkit warnings
   * usr/share/doc/byobu/help.tmux.txt:
     - reorder some documentation
+  * usr/bin/byobu-launcher-install:
+    - close LP: #854764, which was recently fixed
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 
