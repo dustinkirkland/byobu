@@ -7,6 +7,7 @@ and some convenient keybindings:
   F2				Create a new window
     Ctrl-F2			Create a vertical split
     Shift-F2			Create a horizontal split
+    Ctrl-Shift-F2		Create a new session
   F3/F4				Move focus among windows
     Shift-F3/F4			Move focus among splits
     Ctrl-F3/F4			Move a split

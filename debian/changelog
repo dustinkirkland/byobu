@@ -12,6 +12,8 @@ byobu (4.47) unreleased; urgency=low
   * usr/share/byobu/profiles/tmux, usr/share/doc/byobu/help.tmux.txt,
     usr/share/doc/byobu/Makefile.am:
     - add a tmux keybinding help screen, bind to Shift-F1
+  * usr/share/byobu/profiles/tmux, usr/share/doc/byobu/help.tmux.txt:
+    - add a keybinding Ctrl-Shift-F2 to create a new session
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 

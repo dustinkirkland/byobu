@@ -69,6 +69,7 @@ bind-key -n M-Up choose-session \; send-keys Up \; send-keys Enter
 bind-key -n M-Down choose-session \; send-keys Down \; send-keys Enter
 bind-key -n S-F11 break-pane
 bind-key -n C-F5 send-keys ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets" \; send-keys Enter
+bind-key -n C-S-F2 new-session
 
 set-option -g set-titles on
 set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
