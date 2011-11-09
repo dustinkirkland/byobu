@@ -53,6 +53,8 @@ byobu (4.47) unreleased; urgency=low
     - LP: #833768
     - move dotfiles out of usr/lib/byobu and into usr/lib/byobu/include
     - this was triggering some chrootkit warnings
+  * usr/share/doc/byobu/help.tmux.txt:
+    - reorder some documentation
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 
