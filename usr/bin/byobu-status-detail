@@ -24,8 +24,7 @@ PKG="byobu"
 if which vim >/dev/null && `vim --version | grep -q +folding`; then
 	byobu-status --detail | vim -c "set foldmethod=indent" -c "set foldminlines=0" -c "set foldnestmax=1"  -c "set foldcolumn=2" -R -
 else
-	(which sensible-pager >/dev/null) && PAGER=sensible-pager || PAGER=less
-	byobu-status --detail | $PAGER
+	byobu-status --detail | $BYOBU_PAGER
 fi
 
 # vi: syntax=sh ts=4 noexpandtab

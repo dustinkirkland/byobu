@@ -24,7 +24,7 @@ set -g prefix ^A,F12
 # Byobu's Keybindings
 # Documented in: /usr/share/doc/byobu/help.tmux.txt
 bind-key -n F1 new-window -k -n config byobu-config
-bind-key -n S-F1 new-window -k -n help 'sensible-pager /usr/share/doc/byobu/help.tmux.txt'
+bind-key -n S-F1 new-window -k -n help '$BYOBU_PAGER /usr/share/doc/byobu/help.tmux.txt'
 bind-key -n F2 new-window
 bind-key -n C-F2 display-panes \; split-window -h
 bind-key -n S-F2 display-panes \; split-window -v

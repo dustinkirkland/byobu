@@ -29,6 +29,10 @@ byobu (4.47) unreleased; urgency=low
     usr/share/byobu/profiles/tmux, usr/share/doc/byobu/help.tmux.txt:
     - Add Shift-F12 to toggle keybindings on/off
     - Split tmux keybindings to separate file to source
+  * usr/bin/byobu-status-detail, usr/lib/byobu/.constants,
+    usr/share/byobu/keybindings/f-keys.tmux:
+    - set a BYOBU_PAGER environment variable
+    - use BYOBU_PAGER in places we need a pager
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 
