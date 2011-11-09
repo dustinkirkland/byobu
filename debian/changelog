@@ -17,6 +17,10 @@ byobu (4.47) unreleased; urgency=low
   * usr/share/byobu/profiles/tmux:
     - rearrange to match help text;  would be good to keep these
       coordinated
+  * usr/share/byobu/profiles/tmux, usr/share/doc/byobu/help.tmux.txt:
+    - Alt-F11 breaks split into new window
+    - Shift-F11 puts window into a horizontal split in previous window
+    - Ctrl-F11 puts window into a vertical split in previous window
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Nov 2011 19:16:15 -0600
 

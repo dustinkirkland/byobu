@@ -27,5 +27,7 @@ and some convenient keybindings:
   F9				Launch byobu-config window
   F10				* Used by X11
   F11				* Used by X11
-    Shift-F11			Expand split to a full window
+    Alt-F11			Expand split to a full window
+    Ctrl-F11			Join window into a vertical split
+    Shift-F11			Join window into a horizontal split
   F12				Escape sequence
