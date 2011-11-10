@@ -36,7 +36,7 @@ ___print_updates() {
 }
 
 ___update_cache() {
-	local mycache=$1
+	local mycache=$1 RUN_THIS_ONE=
 	# Now we actually have to do hard computational work to calculate updates.
 	# Let's try to be "nice" about it:
 	renice 10 $$ >/dev/null 2>&1 || true
@@ -44,25 +44,28 @@ ___update_cache() {
 	# These are very computationally intensive processes.
 	# Background this work, have it write to the cache files,
 	# and let the next cache check pick up the results.
+	# Also, try to ensure that no more than one of these run at
+	# a given time; install the run-one package.
+	command -v run-this-one >/dev/null && RUN_THIS_ONE=run-this-one
 	if [ -x /usr/lib/update-notifier/apt-check ]; then
 		# If apt-check binary exists, use it
-		/usr/lib/update-notifier/apt-check 2>&1 | awk '-F;' 'END { print $1, $2 }' > "$mycache" &
+		$RUN_THIS_ONE /usr/lib/update-notifier/apt-check 2>&1 | awk '-F;' 'END { print $1, $2 }' > "$mycache" &
 	elif command -v apt-get >/dev/null; then
 		# If apt-get exists, use it
-		apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
+		$RUN_THIS_ONE apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
 	elif command -v pkcon >/dev/null; then
 		# use packagekit to show list of packages
-		pkcon get-updates -p | grep -c '^Package' > "$mycache" &
+		$RUN_THIS_ONE pkcon get-updates -p | grep -c '^Package' > "$mycache" &
 	elif command -v zypper >/dev/null; then
 		# If zypper exists, use it
-		zypper --no-refresh lu --best-effort | grep -c 'v |' > $mycache &
+		$RUN_THIS_ONE zypper --no-refresh lu --best-effort | grep -c 'v |' > $mycache &
 	elif command -v yum >/dev/null; then
 		# If yum exists, use it
 		# TODO: We need a better way of counting updates available from a RH expert
-		yum list updates -q | grep -vc "Updated Packages" > $mycache &
+		$RUN_THIS_ONE yum list updates -q | grep -vc "Updated Packages" > $mycache &
 	elif command -v pacman >/dev/null; then
 		# If pacman (Archlinux) exists, use it
-		LC_ALL=C pacman -Sup | grep -vc "^\(::\| \)" > $mycache &
+		LC_ALL=C $RUN_THIS_ONE pacman -Sup | grep -vc "^\(::\| \)" > $mycache &
 	fi
 }
 

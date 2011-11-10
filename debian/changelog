@@ -1,6 +1,9 @@
 byobu (4.48) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/control, usr/lib/byobu/updates_available: LP: #878547
+    - recommend run-one, MIR pending
+    - use run-this-one to ensure that more than one apt-check doesn't
+      get run simultaneously
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Nov 2011 17:54:11 -0600
 
