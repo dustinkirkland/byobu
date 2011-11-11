@@ -91,11 +91,11 @@ color_tmux() {
 	local back fore attr
 	case "$1" in
 		"") return 0 ;;
-		-)   printf "#[default]" ;;
-		--)   printf "#[default] " ;;
+		-)   printf "#[fg=$BYOBU_LIGHT,bg=$BYOBU_DARK]" ;;
+		--)   printf "#[fg=$BYOBU_LIGHT,bg=$BYOBU_DARK] " ;;
 		esc)    printf "" ;;
 		bold*)  printf "#[fg=bold]" ;;
-		none)   printf "#[default]" ;;
+		none)   printf "#[fg=$BYOBU_LIGHT,bg=$BYOBU_DARK]" ;;
 		invert) printf "#[reverse]" ;;
 		*)
 			if [ "$#" = "2" ]; then

@@ -97,3 +97,9 @@ esac
 command -v gsed >/dev/null 2>&1 && export SED="gsed" || export SED="sed"
 command -v greadlink >/dev/null 2>&1 && export READLINK="greadlink" || export READLINK="readlink"
 command -v sensible-pager >/dev/null 2>&1 && export BYOBU_PAGER="sensible-pager" || export BYOBU_PAGER="less"
+
+# Default colors
+[ -n "$BYOBU_DARK" ] || export BYOBU_DARK="black"
+[ -n "$BYOBU_LIGHT" ] || export BYOBU_LIGHT="white"
+[ -n "$BYOBU_ACCENT" ] || export BYOBU_ACCENT="magenta"
+[ -n "$BYOBU_HIGHLIGHT" ] || export BYOBU_HIGHLIGHT="red"

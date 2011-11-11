@@ -22,5 +22,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ###############################################################################
 
+source-file $HOME/.byobu/color.tmux
 source-file $BYOBU_CONFIG_DIR/profile.tmux
 source-file $HOME/.byoburc.tmux
