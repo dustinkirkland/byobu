@@ -167,6 +167,28 @@ setcolor() {
 	touch "$BYOBU_RUN_DIR/reload-required"
 }
 
+get_contrast() {
+	# See section 2.2: http://www.w3.org/TR/AERT
+	local hex="$(echo "$1" | sed "s/\(..\)\(..\)\(..\)/\1 \2 \3/")"
+	local bright=$(echo $hex | awk --non-decimal-data '{printf "%0.0f",(("0x"$1)*299+("0x"$2)*587+("0x"$3)*114)/1000}')
+	if [ $bright -ge 130 ]; then
+		_RET="black"
+	else
+		_RET="white"
+	fi
+}
+
+setcolor_tmux() {
+	dark="$1"
+	get_contrast "$dark"
+	light="$_RET"
+	accent="magenta"
+	highlight="red"
+	monochrome="0"
+	printf "BYOBU_DARK=\"#$dark\"\nBYOBU_LIGHT=$light\nBYOBU_ACCENT=$accent\nBYOBU_HIGHLIGHT=$highlight\nMONOCHROME=$MONOCHROME" > "$FILE".tmux
+	tmux source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
+}
+
 if [ $# -eq 0 ]; then
 	prompt "background"
 	prompt "foreground"
@@ -184,6 +206,26 @@ else
 			;;
 			-l|--list)
 				listprofiles
+				shift
+				break
+			;;
+			-h|--hostname)
+				color=$(hostname | md5sum | head -c 6)
+				setcolor_tmux "$color"
+				shift
+				break
+			;;
+			-i|--ip)
+				[ -r "$BYOBU_CONFIG_DIR/statusrc" ] && . "$BYOBU_CONFIG_DIR/statusrc"
+				. $BYOBU_PREFIX/lib/$PKG/ip_address
+				color=$(__ip_address t| md5sum | head -c 6)
+				setcolor_tmux "$color"
+				shift
+				break
+			;;
+			-r|--random)
+				color=$(head -c 10 /dev/urandom | md5sum | head -c 6)
+				setcolor_tmux "$color"
 				shift
 				break
 			;;

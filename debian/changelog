@@ -22,6 +22,13 @@ byobu (4.48) unreleased; urgency=low
   * usr/share/byobu/status/statusrc:
     - fix reference to non-existent variable, MONITORED_INTERFACE; should be
       MONITORED_NETWORK
+  * usr/bin/byobu-select-profile, usr/share/byobu/keybindings/f-
+    keys.tmux, usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/doc/byobu/help.tmux.txt: LP: #817686
+    - add a couple of (tmux-only) modes to byobu-select-profile, which can
+      automatically change the background color of the status bar, based
+      on the systems hostname, ip address, or just at random
+    - map this to Ctrl-F8
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Nov 2011 17:54:11 -0600
 

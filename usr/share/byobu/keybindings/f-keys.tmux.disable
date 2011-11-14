@@ -55,6 +55,7 @@ unbind-key -n F7
 unbind-key -n M-NPage
 unbind-key -n M-PPage
 unbind-key -n F8
+unbind-key -n C-F8
 unbind-key -n F9
 unbind-key -n M-F11
 unbind-key -n C-F11

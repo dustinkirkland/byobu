@@ -24,7 +24,8 @@ and some convenient keybindings:
     Ctrl-F6                     Kill split in focus
   F7                            Enter scrollback history
     Alt-PageUp/PageDown         Enter and move through scrollback
-  F8                            Rename the current window
+  F8                            Change the current window's name
+    Ctrl-F8                     Change status bar's color randomly
   F9                            Launch byobu-config window
   F10                           * Used by X11 *
   F11                           * Used by X11 *
