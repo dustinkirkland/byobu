@@ -14,6 +14,8 @@ byobu (4.48) unreleased; urgency=low
     usr/share/doc/byobu/help.tmux.txt:
     - add a keybinding, Ctrl-Shift-F3/F4, to move a window right
       or left in the list
+  * usr/lib/byobu/ip_address:
+    - remove some first-launch noise, when ip address is not yet available
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Nov 2011 17:54:11 -0600
 

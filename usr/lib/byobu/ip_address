@@ -41,7 +41,7 @@ __ip_address() {
 			if [ "$IP_EXTERNAL" = "1" ]; then
 				ipaddr=$(wget -O- -q http://v6.ipv6-test.com/api/myip.php)
 			else
-				ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global)
+				ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global 2>/dev/null)
 				# Print 'None' if we have no global address
 				[ -z "$ipaddr" ] && ipaddr="None"
 				ipaddr=${ipaddr#* inet6 }
@@ -55,7 +55,7 @@ __ip_address() {
 				# We're in EC2, so get our public IP address
 				ipaddr=$(wget -q -O- http://169.254.169.254/latest/meta-data/public-ipv4)
 			else
-				ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global)
+				ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global 2>/dev/null)
 				ipaddr=${ipaddr#* inet }
 				ipaddr=${ipaddr%%/*}
 			fi
