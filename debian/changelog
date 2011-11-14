@@ -16,6 +16,9 @@ byobu (4.48) unreleased; urgency=low
       or left in the list
   * usr/lib/byobu/ip_address:
     - remove some first-launch noise, when ip address is not yet available
+  * debian/control:
+    - we really need tmux 1.5 to take advantage of its features
+    - N.B.: I have pushed backports of tmux 1.5-1 to ppa:byobu/ppa
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Nov 2011 17:54:11 -0600
 
