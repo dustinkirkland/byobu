@@ -9,6 +9,11 @@ byobu (4.48) unreleased; urgency=low
     usr/share/byobu/profiles/tmuxrc:
     - add background/foreground/accent/highlight configurability
       for tmux profiles
+  * usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/doc/byobu/help.tmux.txt:
+    - add a keybinding, Ctrl-Shift-F3/F4, to move a window right
+      or left in the list
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Nov 2011 17:54:11 -0600
 
