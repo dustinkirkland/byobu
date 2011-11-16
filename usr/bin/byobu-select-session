@@ -57,7 +57,7 @@ def attach_session(session):
 	print("Attaching: [%s]\n" % session)
 	items = session.split("____", 2)
 	if items[0] == "tmux":
-		os.execvp("tmux", ["", "attach", "-t", items[1]])
+		os.execvp("tmux", ["", "-2", "attach", "-t", items[1]])
 	else:
 		os.execvp("screen", ["", "-AOxRR", items[1]])
 
@@ -99,7 +99,7 @@ if len(sessions) > 1:
 elif len(sessions) == 1:
  	# Attach to the only session; must use the binary, not the wrapper!
 	if BYOBU_BACKEND == "tmux":
-		os.execvp("tmux", ["", "attach"])
+		os.execvp("tmux", ["", "-2", "attach"])
 	else:
 		os.execvp("screen", ["", "-AOxRR"])
 
