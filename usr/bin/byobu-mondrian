@@ -1,0 +1,96 @@
+#!/bin/bash
+#
+#    byobu-mondrian: randomly generate some Modrian art in tmux
+#
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <dustin.kirkland@gmail.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+trap "tput reset; exit 0" EXIT HUP INT QUIT TERM KILL ILL TRAP ABRT BUS FPE USR1 SEGV USR2 PIPE ALRM
+
+# Special mode, color the screen
+if [ "$1" = "color" ] && [ -n "$2" ]; then
+	i=0
+	out=
+	tput setab "$2"
+	tput setaf "$2"
+	count=$(stty size | awk '{print $1*$2}')
+	while [ $i -lt $count ]; do
+	        out="$out "
+	        i=$((i+1))
+	done
+	printf "$out"
+	head -n1
+	exit 0
+fi
+
+get_random_pane() {
+	local panes=$(tmux list-panes | wc -l)
+	r=$((RANDOM % 4))
+	while [ $r = "$LAST_PANE" ]; do
+		r=$((RANDOM % 4))
+	done
+	LAST_PANE="$r"
+	echo "$r"
+}
+
+red_color=196
+yellow_color=226
+blue_color=57
+white_color=231
+
+# Get number of splits
+[ -n "$1" ] && TOTAL_SPLITS=$1 || TOTAL_SPLITS=$((RANDOM % 33 + 7))
+
+while true; do
+	# Choose 1 red, 1 yellow, 1 blue
+	nums=$(rand -N 3 -M $TOTAL_SPLITS -u)
+	red=$((RANDOM % TOTAL_SPLITS + 4))
+	while [ $red -ge $TOTAL_SPLITS ]; do
+		red=$((RANDOM % TOTAL_SPLITS + 4))
+	done
+	yellow=$((RANDOM % TOTAL_SPLITS + 4))
+	while [ "$yellow" = "$red" ] || [ $yellow -ge $TOTAL_SPLITS ]; do
+		yellow=$((RANDOM % TOTAL_SPLITS + 4))
+	done
+	blue=$((RANDOM % TOTAL_SPLITS + 4))
+	while [ "$blue" = "$yellow" ] || [ "$blue" = "$red" ] || [ $blue -ge $TOTAL_SPLITS ]; do
+		blue=$((RANDOM % TOTAL_SPLITS + 4))
+	done
+	echo "$red $yellow $blue" > /tmp/out
+	# Create some splits
+	tmux new-window -n mondrian "byobu-mondrian color $white_color"
+	tmux set-option -g pane-active-border-bg default
+	tmux set-option -g pane-active-border-fg default
+	for i in $(seq 0 $((TOTAL_SPLITS-1))); do
+		case $i in
+			$red) color=$red_color ;;
+			$yellow) color=$yellow_color ;;
+			$blue) color=$blue_color ;;
+			*) color=$white_color ;;
+		esac
+		CMD="byobu-mondrian color $color"
+		[ "$((RANDOM % 2))" = "0" ] && SPLIT="-v" || SPLIT="-h"
+		if ! tmux split-window $SPLIT -t $(get_random_pane) "$CMD" ; then
+			case "$i" in
+				$red) red=$((red+1)) ;;
+				$yellow) yellow=$((yellow+1)) ;;
+				$blue) blue=$((blue+1)) ;;
+			esac
+		fi
+	done
+	sleep 10
+	tmux kill-window -t "mondrian"
+done

@@ -2,9 +2,10 @@ byobu (4.49) unreleased; urgency=low
 
   * usr/bin/byobu-select-session:
     - fix 256-color tmux reattaches
-  * usr/bin/byobu-modrian:
+  * usr/bin/byobu-mondrian:
     - add a new, fun script
     - speed it up a bit
+    - fix up naming, randomization, clean up color printing
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 14 Nov 2011 17:43:02 -0600
 
