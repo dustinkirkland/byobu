@@ -6,6 +6,7 @@ byobu (4.49) unreleased; urgency=low
     - add a new, fun script
     - speed it up a bit
     - fix up naming, randomization, clean up color printing
+    - use thicker black lines
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 14 Nov 2011 17:43:02 -0600
 

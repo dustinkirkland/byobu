@@ -72,8 +72,10 @@ while true; do
 	echo "$red $yellow $blue" > /tmp/out
 	# Create some splits
 	tmux new-window -n mondrian "byobu-mondrian color $white_color"
-	tmux set-option -g pane-active-border-bg default
-	tmux set-option -g pane-active-border-fg default
+	tmux set-option -g pane-active-border-bg black
+	tmux set-option -g pane-active-border-fg black
+	tmux set-option -g pane-border-bg black
+	tmux set-option -g pane-border-fg black
 	for i in $(seq 0 $((TOTAL_SPLITS-1))); do
 		case $i in
 			$red) color=$red_color ;;
@@ -91,6 +93,7 @@ while true; do
 			esac
 		fi
 	done
+	tmux select-pane -t 0
 	sleep 10
 	tmux kill-window -t "mondrian"
 done
