@@ -1,9 +1,9 @@
-byobu (4.49) unreleased; urgency=low
+byobu (4.49-0ubuntu1) precise; urgency=low
 
   * usr/bin/byobu-select-session:
     - fix 256-color tmux reattaches
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 14 Nov 2011 17:43:02 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Nov 2011 15:41:32 -0600
 
 byobu (4.48-0ubuntu1) precise; urgency=low
 
