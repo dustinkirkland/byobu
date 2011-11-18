@@ -1,3 +1,9 @@
+byobu (4.50) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Nov 2011 15:41:36 -0600
+
 byobu (4.49-0ubuntu1) precise; urgency=low
 
   * usr/bin/byobu-select-session:
