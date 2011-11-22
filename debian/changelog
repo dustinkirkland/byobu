@@ -7,6 +7,8 @@ byobu (4.50) unreleased; urgency=low
     keys.tmux, usr/share/byobu/keybindings/f-keys.tmux.disable,
     usr/share/doc/byobu/help.tmux.txt:
     - install modrian
+  * usr/share/byobu/profiles/tmux:
+    - fix action bar color
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Nov 2011 15:41:36 -0600
 
