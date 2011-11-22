@@ -2,6 +2,11 @@ byobu (4.50) unreleased; urgency=low
 
   * usr/bin/byobu-mondrian:
     - clean up code, make idempotent
+  * usr/bin/byobu-mondrian => usr/lib/byobu/include/modrian,
+    usr/lib/byobu/include/Makefile.am, usr/share/byobu/keybindings/f-
+    keys.tmux, usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/doc/byobu/help.tmux.txt:
+    - install modrian
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Nov 2011 15:41:36 -0600
 

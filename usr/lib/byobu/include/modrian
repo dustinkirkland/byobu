@@ -1,7 +1,7 @@
 #!/bin/bash
-# N.B.: Use bash for $RANDOm
+# N.B.: Use bash for $RANDOM
 #
-#    byobu-mondrian: randomly generate some Modrian art in tmux
+#    mondrian: randomly generate some Modrian art in tmux
 #
 #    Copyright (C) 2011 Dustin Kirkland
 #

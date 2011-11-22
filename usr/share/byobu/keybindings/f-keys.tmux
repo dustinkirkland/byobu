@@ -65,3 +65,4 @@ bind-key -n M-F11 break-pane
 bind-key -n C-F11 join-pane -h -s :. -t :-1
 bind-key -n S-F11 join-pane -v -s :. -t :-1
 bind-key -n S-F12 source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux.disable
+bind-key -n C-S-F12 new-window -d $BYOBU_PREFIX/lib/byobu/include/mondrian
