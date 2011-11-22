@@ -1,6 +1,7 @@
 byobu (4.50) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-mondrian:
+    - clean up code, make idempotent
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Nov 2011 15:41:36 -0600
 
