@@ -77,7 +77,9 @@ while [ "$blue" = "$yellow" ] || [ "$blue" = "$red" ] || [ $blue -ge $TOTAL_SPLI
 done
 
 # Create the window, set the border colors
-tmux kill-window -t mondrian
+for i in $(tmux list-windows | grep " mondrian " | awk -F: '{print $1}'); do
+	tmux kill-window -t $i
+done
 tmux new-window -n mondrian "byobu-mondrian color $white_color"
 tmux set-option -g pane-active-border-bg black
 tmux set-option -g pane-active-border-fg black
