@@ -1,4 +1,4 @@
-byobu (4.50) unreleased; urgency=low
+byobu (4.50-0ubuntu1) precise; urgency=low
 
   * usr/bin/byobu-mondrian:
     - clean up code, fix idempotence
@@ -28,7 +28,7 @@ byobu (4.50) unreleased; urgency=low
     - create a whitelist of distros carrying the LP: #315871 fix
     - default to monochrome for other distros on initial profile creation
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Nov 2011 15:41:36 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Nov 2011 13:41:26 -0600
 
 byobu (4.49-0ubuntu1) precise; urgency=low
 
