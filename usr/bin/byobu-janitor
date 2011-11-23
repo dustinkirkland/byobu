@@ -52,10 +52,20 @@ if ! grep -qs "^screen_upper_left=" "$BYOBU_CONFIG_DIR/status"; then
 	rm -f "$BYOBU_CONFIG_DIR/status" "$BYOBU_CONFIG_DIR/statusrc"
 fi
 
+# NOTE: Older version of Screen have an arbitrary limit of only being able
+# to change colors 16 times in this 'hardstatus string'.
+# Whitelist Debian and Ubuntu where the fix has been released.
+# Also committed in Upstream git, but not yet released.
+#  * http://savannah.gnu.org/bugs/?22146
+MC=1
+if command -v egrep >/dev/null; then
+	egrep -qsi "ubuntu|debian" /etc/issue 2>/dev/null && MC=0 || true
+fi
+
 # Affects: First runs with no configuration
 # Seed the configuration
 # Setup initial local user configuration
-[ -r "$BYOBU_CONFIG_DIR/color" ] || printf "BACKGROUND=k\nFOREGROUND=w\nMONOCHROME=0" > "$BYOBU_CONFIG_DIR/color"
+[ -r "$BYOBU_CONFIG_DIR/color" ] || printf "BACKGROUND=k\nFOREGROUND=w\nMONOCHROME=$MC" > "$BYOBU_CONFIG_DIR/color"
 [ -r "$BYOBU_CONFIG_DIR/profile" ] || echo "source \$BYOBU_PREFIX/share/$PKG/profiles/common" > "$BYOBU_CONFIG_DIR/profile"
 [ -r "$BYOBU_CONFIG_DIR/profile.tmux" ] || echo "source \$BYOBU_PREFIX/share/$PKG/profiles/tmux" > "$BYOBU_CONFIG_DIR/profile.tmux"
 [ -r "$BYOBU_CONFIG_DIR/keybindings" ] || echo "source \$BYOBU_PREFIX/share/$PKG/keybindings/common" > "$BYOBU_CONFIG_DIR/keybindings"

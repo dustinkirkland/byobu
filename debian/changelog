@@ -24,6 +24,9 @@ byobu (4.50) unreleased; urgency=low
     usr/share/man/man1/byobu.1: LP: #888248
     - add Alt-Insert in tmux for "paste"
     - document scrollback/copy/paste procedures
+  * usr/bin/byobu-janitor: LP: #867746
+    - create a whitelist of distros carrying the LP: #315871 fix
+    - default to monochrome for other distros on initial profile creation
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Nov 2011 15:41:36 -0600
 
