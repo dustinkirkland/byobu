@@ -178,6 +178,10 @@ byobu keybindings can be user defined in /usr/share/byobu/keybindings/ (or withi
 
 \fBCtrl-a ~\fP \- Save the current window's scrollback buffer
 
+.SH "SCROLLBACK, COPY, PASTE MODES"
+
+Each window in Byobu has up to 10,000 lines of scrollback history, which you can enter and navigate using the \fBalt-pgup\fP and \fBalt-pgdn\fP keys.  Exit this scrollback mode by hitting \fBenter\fP.  You can also easily copy and paste text from scrollback mode.  To do so, enter scrollback using \fBalt-pgup\fP or \fBalt-pgdn\fP, press the \fBspacebar\fP to start highlighting text, use \fBup/down/left/right/pgup/pgdn\fP to select the text, and press \fBenter\fP to copy the text.  You can then paste the text using \fBalt-insert\fP or \fBctrl-a-]\fP.
+
 .SH "BUGS"
 
 For Byobu colors to work properly, older versions of GNU Screen require a 1-line patch to adjust MAX_WINMSG_REND in screen.c.  The change is in GNU Screen's upstream source control system as of 2010-01-26, but GNU Screen has not released a new upstream version in several years.  You can disable colors entirely by setting MONOCHROME=1 in \fI$BYOBU_CONFIG_DIR/statusrc\fP.  For more information, see:

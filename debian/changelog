@@ -19,6 +19,11 @@ byobu (4.50) unreleased; urgency=low
       wget from a cache file;  if this succeeds, proceed and use it
     - if not, fail through gracefully, and pick up the results from the
       cach file on the next run
+  * usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/man/man1/byobu.1: LP: #888248
+    - add Alt-Insert in tmux for "paste"
+    - document scrollback/copy/paste procedures
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Nov 2011 15:41:36 -0600
 
