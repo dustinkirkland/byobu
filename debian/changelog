@@ -10,6 +10,15 @@ byobu (4.50) unreleased; urgency=low
   * usr/share/byobu/profiles/tmux:
     - fix action bar color
   * usr/lib/byobu/include/mondrian:
+  * usr/lib/byobu/ec2_cost, usr/lib/byobu/hostname,
+    usr/lib/byobu/include/shutil, usr/lib/byobu/ip_address: LP: #894038
+    - background all wgets, as these can be expensive (cough OpenStack cough)
+    - sleep for 0.02 seconds after each wget, as most EC2 wgets take less
+      than 0.01 seconds, but some might take longer
+    - after backgrounded wget and sleep, attempt to read the results of the
+      wget from a cache file;  if this succeeds, proceed and use it
+    - if not, fail through gracefully, and pick up the results from the
+      cach file on the next run
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Nov 2011 15:41:36 -0600
 

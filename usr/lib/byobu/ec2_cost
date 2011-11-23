@@ -32,18 +32,19 @@ __ec2_cost_detail() {
 }
 
 __ec2_cost() {
-	local zone type file_to_stat cpu mem rate hours tx_gb rx_gb network_cost uptime_cost total_cost interface
+	local zone type file_to_stat cpu mem rate hours tx_gb rx_gb network_cost uptime_cost total_cost interface cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/ec2_cost"
 	# Try to use metadata service
 	if metadata_available; then
-		zone=$(wget -q -O - http://169.254.169.254/latest/meta-data/placement/availability-zone)
-		if [ ! -r "$BYOBU_PREFIX/share/$PKG/ec2/rates.${zone%?}" ]; then
-			zone="us-east-1d"
-		fi
+		[ -s "$cache.zone" ] || wget -q -O "$cache.zone" http://169.254.169.254/latest/meta-data/placement/availability-zone 2>/dev/null &
+		sleep 0.02
+		[ -s "$cache.zone" ] && read zone < "$cache.zone"
+		[ -r "$BYOBU_PREFIX/share/$PKG/ec2/rates.${zone%?}" ] || zone="us-east-1d"
 		. "$BYOBU_PREFIX/share/$PKG/ec2/rates.${zone%?}"
-		type=$(wget -q -O - http://169.254.169.254/latest/meta-data/instance-type | $SED -e "s/\./_/g")
+		[ -s "$cache.type" ] || wget -q -O "$cache.type" http://169.254.169.254/latest/meta-data/instance-type 2>/dev/null &
+		sleep 0.02
+		[ -s "$cache.type" ] && type=$($SED -e "s/\./_/g" "$cache.type")
 		eval rate="\$$type"
-		file_to_stat="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/ec2_cost.instance_type"
-		[ -f "$file_to_stat" ] || wget -q -O "$file_to_stat" http://169.254.169.254/latest/meta-data/instance-type
+		file_to_stat="$cache.type"
 	fi
 	if [ -z "$rate" ]; then
 		. "$BYOBU_PREFIX/share/$PKG/ec2/rates."*

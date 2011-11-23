@@ -26,7 +26,7 @@ __ip_address_detail() {
 }
 
 __ip_address() {
-	local interface ipaddr
+	local interface ipaddr cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/ip_address"
 	# Allow interface overrides in $BYOBU_CONFIG_DIR/statusrc
 	if [ -n "$MONITORED_NETWORK" ]; then
 		interface="$MONITORED_NETWORK"
@@ -39,21 +39,29 @@ __ip_address() {
 	case "$IPV6" in
 		1|true|yes)
 			if [ "$IP_EXTERNAL" = "1" ]; then
-				ipaddr=$(wget -O- -q http://v6.ipv6-test.com/api/myip.php)
+				# Background an update
+				wget -q -O "$cache" http://v6.ipv6-test.com/api/myip.php 2>/dev/null &
+				sleep 0.02
 			else
-				ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global 2>/dev/null)
-				# Print 'None' if we have no global address
-				[ -z "$ipaddr" ] && ipaddr="None"
-				ipaddr=${ipaddr#* inet6 }
-				ipaddr=${ipaddr%%/*}
+				# Background an update
+				LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global >"$cache" 2>/dev/null &
 			fi
+			[ -s "$cache" ] && read ipaddr < "$cache"
+			# Print 'None' if we have no global address
+			[ -z "$ipaddr" ] && ipaddr="None"
+			ipaddr=${ipaddr#* inet6 }
+			ipaddr=${ipaddr%%/*}
 		;;
 		*)
 			if [ "$IP_EXTERNAL" = "1" ]; then
-				ipaddr=$(wget -O- -q http://v4.ipv6-test.com/api/myip.php)
+				wget -q -O "$cache" http://v4.ipv6-test.com/api/myip.php 2>/dev/null &
+				sleep 0.02
+				[ -s "$cache" ] && read ipaddr < "$cache"
 			elif metadata_available; then
 				# We're in EC2, so get our public IP address
-				ipaddr=$(wget -q -O- http://169.254.169.254/latest/meta-data/public-ipv4)
+				wget -q -O "$cache" http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null &
+				sleep 0.02
+				[ -s "$cache" ] && read ipaddr < "$cache"
 			else
 				ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global 2>/dev/null)
 				ipaddr=${ipaddr#* inet }
