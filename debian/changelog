@@ -1,3 +1,9 @@
+byobu (4.51) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Nov 2011 13:41:31 -0600
+
 byobu (4.50-0ubuntu1) precise; urgency=low
 
   * usr/bin/byobu-mondrian:
