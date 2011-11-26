@@ -1,4 +1,4 @@
-byobu (4.51) unreleased; urgency=low
+byobu (4.51-0ubuntu1) precise; urgency=low
 
   * usr/bin/byobu-janitor: LP: #894430
     - whitelist archlinux for status colors
@@ -12,7 +12,7 @@ byobu (4.51) unreleased; urgency=low
     keys.tmux, usr/share/byobu/profiles/tmux: LP: #894440
     - fix a few hardcoded references to /usr -> $BYOBU_PREFIX
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Nov 2011 13:41:31 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 26 Nov 2011 17:50:22 -0600
 
 byobu (4.50-0ubuntu1) precise; urgency=low
 
