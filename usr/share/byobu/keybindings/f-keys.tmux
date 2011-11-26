@@ -22,9 +22,9 @@
 set -g prefix ^A,F12
 
 # Byobu's Keybindings
-# Documented in: /usr/share/doc/byobu/help.tmux.txt
+# Documented in: $BYOBU_PREFIX/share/doc/byobu/help.tmux.txt
 bind-key -n F1 new-window -k -n config byobu-config
-bind-key -n S-F1 new-window -k -n help '$BYOBU_PAGER /usr/share/doc/byobu/help.tmux.txt'
+bind-key -n S-F1 new-window -k -n help '$BYOBU_PAGER $BYOBU_PREFIX/share/doc/byobu/help.tmux.txt'
 bind-key -n F2 new-window
 bind-key -n C-F2 display-panes \; split-window -h
 bind-key -n S-F2 display-panes \; split-window -v
@@ -49,7 +49,7 @@ bind-key -n C-Up resize-pane -U
 bind-key -n C-Down resize-pane -D
 bind-key -n C-Left resize-pane -L
 bind-key -n C-Right resize-pane -R
-bind-key -n F5 source /usr/share/byobu/profiles/tmuxrc
+bind-key -n F5 source $BYOBU_PREFIX/share/byobu/profiles/tmuxrc
 bind-key -n S-F5 next-layout
 bind-key -n C-F5 send-keys ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets" \; send-keys Enter
 bind-key -n F6 detach

@@ -26,9 +26,9 @@ new-window -d byobu-janitor
 set -s escape-time 0
 
 # Change to Screen's ctrl-a escape sequence
-source /usr/share/doc/tmux/examples/screen-keys.conf
+source $BYOBU_PREFIX/share/doc/tmux/examples/screen-keys.conf
 # On Archlinux, this file is not under the same directory
-source /usr/share/tmux/screen-keys.conf
+source $BYOBU_PREFIX/share/tmux/screen-keys.conf
 
 # Add F12 to the prefix list
 set -g prefix ^A,F12
