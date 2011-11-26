@@ -95,7 +95,7 @@ done
 for i in $(tmux list-windows | grep " mondrian " | awk -F: '{print $1}'); do
 	tmux kill-window -t $i
 done
-tmux new-window -n mondrian "byobu-mondrian color $white_color"
+tmux new-window -n mondrian "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color"
 tmux set-option -g pane-active-border-bg black
 tmux set-option -g pane-active-border-fg black
 tmux set-option -g pane-border-bg black
@@ -109,7 +109,7 @@ for i in $(seq 0 $((TOTAL_SPLITS-1))); do
 		$blue) color=$blue_color ;;
 		*) color=$white_color ;;
 	esac
-	CMD="byobu-mondrian color $color"
+	CMD="$BYOBU_PREFIX/lib/byobu/include/mondrian color $color"
 	[ "$((RANDOM % 2))" = "0" ] && SPLIT="-v" || SPLIT="-h"
 	if ! tmux split-window $SPLIT -t $(get_random_pane) "$CMD" ; then
 		case "$i" in

@@ -5,6 +5,9 @@ byobu (4.51) unreleased; urgency=low
     - if tmux exists, then don't bother with color disabling
   * usr/lib/byobu/include/mondrian: LP: #894432
     - drop dependency on 'rand' command
+  * usr/lib/byobu/include/mondrian, usr/share/byobu/keybindings/f-
+    keys.tmux: LP: #894432
+    - fix two old references to /usr/bin/byobu-mondrian
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Nov 2011 13:41:31 -0600
 
