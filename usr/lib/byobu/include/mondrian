@@ -47,6 +47,20 @@ get_random_pane() {
 	echo "$r"
 }
 
+get_random_numbers() {
+	local max="$1" R=0 B=0 Y=0
+	R=$((RANDOM % max + 1))
+	B=$((RANDOM % max + 1))
+	Y=$((RANDOM % max + 1))
+	while [ "$B" = "$R" ] || [ "$B" = "$Y" ]; do
+		B=$((RANDOM % max + 1))
+	done
+	while [ "$Y" = "$R" ] || [ "$Y" = "$B" ]; do
+		Y=$((RANDOM % max + 1))
+	done
+	_RET="$R $B $Y"
+}
+
 red_color=196
 yellow_color=226
 blue_color=57
@@ -62,7 +76,8 @@ else
 fi
 
 # Choose 1 red, 1 yellow, 1 blue
-nums=$(rand -N 3 -M $TOTAL_SPLITS -u)
+get_random_numbers "$TOTAL_SPLITS"
+nums="$_RET"
 red=$((RANDOM % TOTAL_SPLITS + 4))
 while [ $red -ge $TOTAL_SPLITS ]; do
 	red=$((RANDOM % TOTAL_SPLITS + 4))
