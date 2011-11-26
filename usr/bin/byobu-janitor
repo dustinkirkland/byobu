@@ -54,12 +54,16 @@ fi
 
 # NOTE: Older version of Screen have an arbitrary limit of only being able
 # to change colors 16 times in this 'hardstatus string'.
-# Whitelist Debian and Ubuntu where the fix has been released.
+# Whitelist distros where the fix has been released.
 # Also committed in Upstream git, but not yet released.
 #  * http://savannah.gnu.org/bugs/?22146
 MC=1
 if command -v egrep >/dev/null; then
-	egrep -qsi "ubuntu|debian" /etc/issue 2>/dev/null && MC=0 || true
+	if ! command -v tmux >/dev/null; then
+		if egrep -qsi "ubuntu|debian" /etc/issue 2>/dev/null || [ -e "/etc/arch-release" ]; then
+			MC=0
+		fi
+	fi
 fi
 
 # Affects: First runs with no configuration

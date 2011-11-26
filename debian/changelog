@@ -1,6 +1,8 @@
 byobu (4.51) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-janitor: LP: #894430
+    - whitelist archlinux for status colors
+    - if tmux exists, then don't bother with color disabling
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Nov 2011 13:41:31 -0600
 
