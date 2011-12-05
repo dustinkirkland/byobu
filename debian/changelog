@@ -1,9 +1,9 @@
-byobu (4.52) unreleased; urgency=low
+byobu (4.52-0ubuntu1) precise; urgency=low
 
   * debian/control:
     - demote run-one to a suggests, until such time as its MIR is approved
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 26 Nov 2011 17:50:26 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Dec 2011 08:59:05 -0600
 
 byobu (4.51-0ubuntu1) precise; urgency=low
 
