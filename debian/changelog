@@ -11,7 +11,7 @@ byobu (4.53) unreleased; urgency=low
     usr/bin/byobu-silent, usr/bin/byobu-status, usr/bin/byobu-status-
     detail, usr/bin/byobu-ugraph, usr/bin/byobu-ulevel,
     usr/lib/byobu/include/dirs, usr/share/byobu/profiles/byoburc:
-    - big changeset to solve two annoying bugs, LP: #897473, #861291
+    - big changeset to solve a few bugs, LP: #897473, #861291, #897048
     - take over ~/.byoburc, and use it for storing global byobu shell
       configuration, namely BYOBU_PREFIX when necessary
       + note that some users might have previously used ~/.byoburc to
