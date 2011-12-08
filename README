@@ -20,8 +20,7 @@ install locally, using the following instructions...
  5) Install:
       make install
  6) Update your PATH and BYOBU_PREFIX environment variables
-      echo "export BYOBU_PREFIX=$HOME/byobu" >> $HOME/.bashrc
-      echo "export PATH=$BYOBU_PREFIX/bin:$PATH" >> $HOME/.bashrc
+      echo "export PATH=$HOME/byobu/bin:$PATH" >> $HOME/.bashrc
       . $HOME/.bashrc
  7) Run:
       byobu

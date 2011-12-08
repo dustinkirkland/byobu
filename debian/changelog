@@ -2,6 +2,27 @@ byobu (4.53) unreleased; urgency=low
 
   * usr/share/byobu/profiles/common: LP: #900812
     - start screen with at least a 1 second message wait
+  * usr/bin/byobu, usr/bin/byobu-ctrl-a, usr/bin/byobu-disable,
+    usr/bin/byobu-enable, usr/bin/byobu-export, usr/bin/byobu-janitor,
+    usr/bin/byobu-launch, usr/bin/byobu-launcher, usr/bin/byobu-
+    launcher-install, usr/bin/byobu-launcher-uninstall, usr/bin/byobu-
+    quiet, usr/bin/byobu-reconnect-sockets, usr/bin/byobu-select-
+    backend, usr/bin/byobu-select-profile, usr/bin/byobu-shell,
+    usr/bin/byobu-silent, usr/bin/byobu-status, usr/bin/byobu-status-
+    detail, usr/bin/byobu-ugraph, usr/bin/byobu-ulevel,
+    usr/lib/byobu/include/dirs, usr/share/byobu/profiles/byoburc:
+    - big changeset to solve two annoying bugs, LP: #897473, #861291
+    - take over ~/.byoburc, and use it for storing global byobu shell
+      configuration, namely BYOBU_PREFIX when necessary
+      + note that some users might have previously used ~/.byoburc to
+        store byobu-only screen configuration
+      + these users should now use ~/.byobu/.screenrc instead (also
+        because byobu now supports both screen and tmux)
+    - on first run, if byobu is running outside of its normal location
+      in /usr/bin/byobu, it will automatically detect and append the
+      correct BYOBU_PREFIX value and store it in ~/.byoburc
+    - ~/.byoburc is now read by all usr/bin/* in order to find the
+      correct prefix
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Dec 2011 08:59:08 -0600
 

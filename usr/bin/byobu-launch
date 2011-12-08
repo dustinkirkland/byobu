@@ -42,6 +42,7 @@ elif [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_
 	unset _tty
 	BYOBU_SOURCED_PROFILE=1
 	PKG="byobu"
+	[ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
 	[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 	. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 	# Ensure that autolaunch is not explicitly disabled

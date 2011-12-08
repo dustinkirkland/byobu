@@ -21,6 +21,7 @@ PKG="byobu"
 # Bad things happen if you run byobu, but you don't own your $HOME
 # ie, rather than "sudo byobu", you must run "sudo -H byobu"
 if [ -O "$HOME" ]; then
+	[ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
 	[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 	. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 	if [ -e "$BYOBU_CONFIG_DIR/disable-autolaunch" ]; then

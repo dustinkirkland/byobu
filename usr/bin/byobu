@@ -37,6 +37,20 @@ case "$0" in
 	*byobu-tmux) BYOBU_BACKEND="tmux" ;;
 esac
 
+# Source local byobu config
+if [ -r "$HOME/.byoburc" ]; then
+	# Ensure that this configuration is usable
+	. "$HOME/.byoburc" || mv -f "$HOME/.byoburc".orig
+fi
+if [ -z "${BYOBU_PREFIX}" ]; then
+	# Find and export the installation location prefix
+	prefix="$(dirname $(dirname $(readlink -f $0)))"
+	if [ "$prefix" != "/usr" ]; then
+		echo "export BYOBU_PREFIX='$prefix'" >> "$HOME/.byoburc"
+		. "$HOME/.byoburc"
+	fi
+fi
+[ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
@@ -81,7 +95,7 @@ case $BYOBU_BACKEND in
 		# Use 256 colors, unless the user has overridden
 		[ -z "$SCREEN_TERM" ] && SCREEN_TERM="-2"
 		PROFILE="-f $BYOBU_PREFIX/share/$PKG/profiles/tmuxrc"
-		sessions=$($BYOBU_BACKEND list-sessions) || true
+		sessions=$($BYOBU_BACKEND list-sessions 2>/dev/null) || true
 	;;
 	*)
 		# Allow override of default window list, with BYOBU_WINDOWS environment variable
@@ -107,7 +121,7 @@ case $BYOBU_BACKEND in
 		fi
 		# Some users want to maintain separate configurations
 		# if they use both GNU Screen and byobu on the same system
-		if [ -r "$HOME/.byoburc" ]; then
+		if [ -r "$BYOBU_CONFIG_DIR/.screenrc" ]; then
 			PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/byoburc"
 		else
 			PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/screenrc"
