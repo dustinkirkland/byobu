@@ -1,6 +1,7 @@
 byobu (4.53) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/profiles/common: LP: #900812
+    - start screen with at least a 1 second message wait
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Dec 2011 08:59:08 -0600
 
