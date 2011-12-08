@@ -91,7 +91,7 @@ Note that BYOBU_CONFIG_DIR=\fI$XDG_CONFIG_HOME/byobu\fP if defined, and \fI$HOME
 
 \fBuptime\fP \- the total system uptime since last boot; displayed in the lower bar toward the right in blue text on a grey background
 
-\fBusers\fP \- the number of remote users logged into the system via sshd, empty if 0 users; displayed in the lower bar toward the right in red text on a grey background with a trailing '#' sign
+\fBusers\fP \- the number of remote users logged into the system via sshd, empty if 0 users; displayed in the lower bar toward the right in red text on a grey background with a trailing '#' sign; set USERS_DISTINCT=1 to instead count the number of distinct users logged into the system (rather than open ssh sessions)
 
 \fBwhoami\fP \- the name of the user who owns the screen session; displayed in the upper bar toward the far right in bold black text on a grey background
 

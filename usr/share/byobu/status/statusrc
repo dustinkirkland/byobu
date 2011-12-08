@@ -58,3 +58,12 @@
 #SERVICES="eucalyptus-nc|NC eucalyptus-cloud|CLC eucalyptus-walrus eucalyptus-cc|CC eucalyptus-sc|SC"
 
 #FAN=$(find /sys -type f -name fan1_input | head -n1)
+
+# You can set this to 1 to report your external/public ip address
+# Default: 0
+#IP_EXTERNAL=0
+
+# The users notification normally counts ssh sessions; set this configuration to '1'
+# to instead count number of distinct users logged onto the system
+# Default: 0
+#USERS_DISTINCT=0

@@ -27,9 +27,13 @@ __users_detail() {
 
 __users() {
 	local count
-	# Note: we'd like to use pgrep -c, however, this isn't available in
-	# busybox and some distro's pgrep (and it doesn't exit non-zero).
-	count=`pgrep -f "sshd:.*@" | wc -l` || return
+	if [ "$USERS_DISTINCT" = "1" ]; then
+		count=$(pgrep -fl 'sshd:.*@' | cut -f3 -d\ | cut -f1 -d@ | sort -u | wc -l)
+	else
+		# Note: we'd like to use pgrep -c, however, this isn't available in
+		# busybox and some distro's pgrep (and it doesn't exit non-zero).
+		count=$(pgrep -f "sshd:.*@" | wc -l) || return
+	fi
 	if [ $count -gt 0 ]; then
 		color b w r; printf "%d" "$count"; color -; color w r; printf "#"; color --
 	fi
