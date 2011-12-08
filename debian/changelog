@@ -26,6 +26,8 @@ byobu (4.53) unreleased; urgency=low
       correct prefix
   * usr/lib/byobu/include/dirs: LP: #780081
     - use ~/.local/share/byobu as BYOBU_CONFIG_DIR, if it happens to exist
+  * usr/lib/byobu/include/dirs: LP: #899271
+    - allow explicit BYOBU_CONFIG_DIR selection in ~/.byoburc
 
   [ Andrew McCarthy ]
   * usr/bin/byobu-status: LP: #898801

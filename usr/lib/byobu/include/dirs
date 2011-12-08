@@ -25,7 +25,9 @@ PKG="byobu"
 [ -n "$BYOBU_PREFIX" ] || BYOBU_PREFIX="/usr"
 
 # Create and export the user configuration directory
-if [ -d "$XDG_CONFIG_HOME" ]; then
+if [ -d "$BYOBU_CONFIG_DIR" ]; then
+	export BYOBU_CONFIG_DIR="$BYOBU_CONFIG_DIR"
+elif [ -d "$XDG_CONFIG_HOME" ]; then
 	# Use XDG, as some users insist on such nonsense :-)
 	export BYOBU_CONFIG_DIR="$XDG_CONFIG_HOME/$PKG"
 elif [ -d "$HOME/.local/share/$PKG" ]; then
