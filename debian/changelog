@@ -1,4 +1,4 @@
-byobu (4.53) unreleased; urgency=low
+byobu (4.53-0ubuntu1) precise; urgency=low
 
   [ Dustin Kirkland ]
   * usr/share/byobu/profiles/common: LP: #900812
@@ -37,7 +37,7 @@ byobu (4.53) unreleased; urgency=low
   * usr/bin/byobu-status: LP: #898801
     - fix status detailing, skip include, as it's a directory
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Dec 2011 08:59:08 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 08 Dec 2011 12:15:15 -0600
 
 byobu (4.52-0ubuntu1) precise; urgency=low
 
