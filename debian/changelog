@@ -1,5 +1,6 @@
 byobu (4.53) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/share/byobu/profiles/common: LP: #900812
     - start screen with at least a 1 second message wait
   * usr/bin/byobu, usr/bin/byobu-ctrl-a, usr/bin/byobu-disable,
@@ -25,6 +26,10 @@ byobu (4.53) unreleased; urgency=low
       correct prefix
   * usr/lib/byobu/include/dirs: LP: #780081
     - use ~/.local/share/byobu as BYOBU_CONFIG_DIR, if it happens to exist
+
+  [ Andrew McCarthy ]
+  * usr/bin/byobu-status: LP: #898801
+    - fix status detailing, skip include, as it's a directory
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Dec 2011 08:59:08 -0600
 
