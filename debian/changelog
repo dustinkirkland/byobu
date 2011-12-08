@@ -23,6 +23,8 @@ byobu (4.53) unreleased; urgency=low
       correct BYOBU_PREFIX value and store it in ~/.byoburc
     - ~/.byoburc is now read by all usr/bin/* in order to find the
       correct prefix
+  * usr/lib/byobu/include/dirs: LP: #780081
+    - use ~/.local/share/byobu as BYOBU_CONFIG_DIR, if it happens to exist
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Dec 2011 08:59:08 -0600
 

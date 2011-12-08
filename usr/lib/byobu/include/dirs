@@ -28,8 +28,11 @@ PKG="byobu"
 if [ -d "$XDG_CONFIG_HOME" ]; then
 	# Use XDG, as some users insist on such nonsense :-)
 	export BYOBU_CONFIG_DIR="$XDG_CONFIG_HOME/$PKG"
+elif [ -d "$HOME/.local/share/$PKG" ]; then
+	# Use XDG common directory, if it exists
+	export BYOBU_CONFIG_DIR="$HOME/.local/share/$PKG"
 else
-	# But fall back to classic config dir location
+	# And to default to good old classic config dir location!
 	export BYOBU_CONFIG_DIR="$HOME/.$PKG"
 fi
 [ -d "$BYOBU_CONFIG_DIR" ] || mkdir -p "$BYOBU_CONFIG_DIR"
