@@ -1,9 +1,9 @@
 ###############################################################################
 #    disable byobu's tmux f-key keybindings
 #
-#    Copyright (C) 2011 Dustin Kirkland
+#    Copyright (C) 2011 Dustin Kirkland <dustin.kirkland@gmail.com>
 #
-#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#    Authors: Dustin Kirkland <dustin.kirkland@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -56,6 +56,8 @@ unbind-key -n M-NPage
 unbind-key -n M-PPage
 unbind-key -n F8
 unbind-key -n C-F8
+unbind-key -n C-S-F8
+unbind-key -n S-F8
 unbind-key -n F9
 unbind-key -n M-F11
 unbind-key -n C-F11

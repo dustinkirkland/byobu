@@ -26,6 +26,8 @@ and some convenient keybindings:
     Alt-PageUp/PageDown         Enter and move through scrollback
   F8                            Change the current window's name
     Ctrl-F8                     Change status bar's color randomly
+    Shift-F8                    Restore a split-pane layout
+    Ctrl-Shift-F8               Save the current split-pane layout
   F9                            Launch byobu-config window
   F10                           * Used by X11 *
   F11                           * Used by X11 *

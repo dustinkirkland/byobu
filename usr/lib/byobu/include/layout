@@ -1,0 +1,115 @@
+#!/bin/sh -e
+#
+#    layout: save and restore byobu layouts
+#    Copyright (C) 2011 Dustin Kirkland <dustin.kirkland@gmail.com>
+#
+#    Authors: Dustin Kirkland <dustin.kirkland@gmail.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+PKG="byobu"
+[ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
+
+# Get the layouts directory
+DIR="$BYOBU_CONFIG_DIR/layouts"
+mkdir -p "$DIR"
+PRESETS="even-horizontal even-vertical main-horizontal main-vertical tiled"
+current_panes=$(tmux list-panes | wc -l)
+
+list_layouts() {
+	echo
+	echo "Restore layout with <shift-F8>, save a layout with <shift-ctrl-F8>"
+	echo
+	echo "Byobu Saved Layouts"
+	local count=0 i= desc= count= p=
+	for i in $PRESETS "$DIR"/*; do
+		desc=${i##*/}
+		count=$(expr $count + 1)
+		[ -f "$i" ] && p=$(head -n1 "$i")
+		[ -n "$p" ] && p=" ($p splits)"
+		echo "  $count. $desc$p"
+	done
+	echo
+	_RET="$count"
+}
+
+case "$1" in
+	"save")
+		layout=$(tmux list-windows | grep "(active)$" | sed -e "s/.*\[layout //" -e "s/\] (active)$//")
+		panes=$(tmux list-panes | wc -l)
+		if [ -n "$2" ]; then
+			name="$2"
+		else
+			while true; do
+				list_layouts
+				echo -n "Enter a unique name to save this layout: "
+				name=$(head -n1)
+				valid=1
+				for i in $PRESETS "$DIR"/*; do
+					i=${i##*/}
+					if [ "$i" = "$name" ]; then
+						valid=0
+					fi
+				done
+				[ "$valid" = "1" ] && break
+			done
+		fi
+		printf "$panes\n$layout\n" > "$BYOBU_CONFIG_DIR/layouts/$name"
+	;;
+	"restore")
+		# List the saved layouts, prompt the user to select one
+		list_layouts
+		count="$_RET"
+		while true; do
+			echo -n "Select a layout to restore [1-$count]: "
+			selected=$(head -n1)
+			if [ -n "$selected" ] && [ $selected -le $count ] && [ $selected -ge 1 ]; then
+				break
+			fi
+		done
+		# Get the details of the selected layout
+		count=0
+		panes=
+		layout=
+		for i in $PRESETS "$DIR"/*; do
+			count=$(expr $count + 1)
+			if [ $count -eq $selected ]; then
+				if [ -f "$i" ]; then
+					panes=$(head -n1 "$i")
+					layout=$(tail -n1 "$i")
+				else
+					if [ $current_panes -eq 1 ]; then
+						panes=4
+					else
+						panes=0
+					fi
+					layout="$i"
+				fi
+				break
+			fi
+		done
+		# Create panes if nececessary to restore the layout
+		while [ $(tmux list-panes | wc -l) -lt $panes ]; do
+			tmux split-window
+		done
+		# Finally, restore the layout and refresh
+		tmux select-layout "$layout"
+		tmux source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
+	;;
+	*)
+		echo "ERROR: Invalid argument, try [save|restore]" 2>&1
+		exit 1
+	;;
+esac
