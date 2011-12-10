@@ -6,6 +6,8 @@ byobu (4.54) unreleased; urgency=low
     usr/share/doc/byobu/help.tmux.txt: LP: #902416
     - new feature to save layouts using ctrl-shift-F8, and restore layouts
       using shift-F8
+  * usr/bin/Makefile.am: LP: #901904
+    - ensure re-installation works
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 08 Dec 2011 12:15:18 -0600
 
