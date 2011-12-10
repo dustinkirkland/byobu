@@ -1,3 +1,9 @@
+byobu (4.55) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Dec 2011 20:38:02 -0600
+
 byobu (4.54-0ubuntu1) precise; urgency=low
 
   * usr/lib/byobu/include/layout, usr/lib/byobu/include/Makefile.am,
