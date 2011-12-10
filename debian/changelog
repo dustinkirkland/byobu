@@ -1,4 +1,4 @@
-byobu (4.54) unreleased; urgency=low
+byobu (4.54-0ubuntu1) precise; urgency=low
 
   * usr/lib/byobu/include/layout, usr/lib/byobu/include/Makefile.am,
     usr/share/byobu/keybindings/f-keys.tmux,
@@ -9,7 +9,7 @@ byobu (4.54) unreleased; urgency=low
   * usr/bin/Makefile.am: LP: #901904
     - ensure re-installation works
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 08 Dec 2011 12:15:18 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Dec 2011 20:37:56 -0600
 
 byobu (4.53-0ubuntu1) precise; urgency=low
 
