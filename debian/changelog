@@ -5,6 +5,7 @@ byobu (4.55) unreleased; urgency=low
     usr/share/man/man1/byobu.1:
     - add a system entropy status item
     - must use cat, can't use read in dash here
+    - use yellow on grey
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Dec 2011 20:38:02 -0600
 
