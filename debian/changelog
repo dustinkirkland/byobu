@@ -1,6 +1,9 @@
 byobu (4.55) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/entropy, usr/lib/byobu/include/shutil,
+    usr/lib/byobu/Makefile.am, usr/share/byobu/status/status,
+    usr/share/man/man1/byobu.1:
+    - add a system entropy status item
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Dec 2011 20:38:02 -0600
 
