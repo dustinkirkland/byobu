@@ -23,9 +23,9 @@ __entropy_detail() {
 }
 
 __entropy() {
-	local e
-	read e < /proc/sys/kernel/random/entropy_avail
-	color k r; printf "e$e"; color --
+	# Can't use 'read' here in dash, as it only reads the first byte
+	local e=$(cat /proc/sys/kernel/random/entropy_avail)
+	color K R; printf "e%s" "$e"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab
