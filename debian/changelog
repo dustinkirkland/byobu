@@ -12,6 +12,8 @@ byobu (4.55) unreleased; urgency=low
       until we have a better way of detecting it
   * usr/lib/byobu/menu: LP: #881993
     - fix escape key determination
+  * usr/bin/byobu-janitor:
+    - clean up some old upgrade cruft
 
   [ Will Ellwood ]
   * usr/lib/byobu/disk: LP: #904824

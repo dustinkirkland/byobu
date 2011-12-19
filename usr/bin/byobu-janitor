@@ -81,44 +81,6 @@ for f in status statusrc; do
 	fi
 done
 
-# Affects: Upgrades from <= byobu-2.11
-# The status scripts used to have hyphens in their name, but now use
-# underscores such that we can source the file as a shell snippet;
-# fix existing status configuration.
-$SED -i -e "s/\([^=]+\)-\([^=]+\)=/\1_\2=/g" "$BYOBU_CONFIG_DIR/status"
-$SED -i -e "s/^disk-.*=/disk=/" "$BYOBU_CONFIG_DIR/status"
-$SED -i -e "s/^network-.*=/network=/" "$BYOBU_CONFIG_DIR/status"
-
-# Affects: Upgrades from <= byobu-2.16
-# screen-launcher was renamed byobu-launcher; if the user has byobu
-# set to auto-launch, update their configuration to use the byobu-launcher
-if grep -qs " screen-launcher" "$HOME/.profile"; then
-	byobu-launcher-install
-fi
-
-# Affects: Upgrades from <= byobu-2.25
-# Collapse separate status config files into the sourced config
-for i in disk network distro logo; do
-	if [ -r "$BYOBU_CONFIG_DIR/$i" ]; then
-		val=`cat $BYOBU_CONFIG_DIR/$i`
-		uc=`echo "$i" | tr "[:lower:]" "[:upper:]"`
-		case $i in
-			disk|network)
-				key="MONITORED_"$uc ;;
-			distro|logo)
-				key="$uc" ;;
-		esac
-		echo "$key=\"$val\"" >> "$BYOBU_CONFIG_DIR/statusrc"
-		rm "$BYOBU_CONFIG_DIR/$i"
-	fi
-done
-
-# Affects: Upgrades from <= byobu-2.57 that autolaunch
-# If the global autolaunch is on, then remove duplicate entry in ~/.profile
-if [ -h "/etc/profile.d/Z98-$PKG.sh" ]; then
-	$SED -i -e "/ $PKG-launch/d" "$HOME"/.profile || true
-fi
-
 # Affects: Upgrades from <= byobu-2.70 that autolaunch
 # Update the byobu-launch line, if necessary
 if grep -qs " $PKG-launch$" "$HOME"/.profile; then
