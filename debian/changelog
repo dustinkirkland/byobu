@@ -10,6 +10,8 @@ byobu (4.55) unreleased; urgency=low
   * usr/bin/byobu-janitor: LP: #867746
     - revert previous change, don't automatically set monochrome mode
       until we have a better way of detecting it
+  * usr/lib/byobu/menu: LP: #881993
+    - fix escape key determination
 
   [ Will Ellwood ]
   * usr/lib/byobu/disk: LP: #904824

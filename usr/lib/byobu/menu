@@ -27,7 +27,7 @@ __menu() {
 	local bindings esc key text
 	[ -r "$BYOBU_CONFIG_DIR/keybindings" ] && bindings="$BYOBU_CONFIG_DIR/keybindings" || bindings="$HOME/.screenrc"
 	if grep -qs "^source.*screen-escape-keys$" $bindings 2>/dev/null || [ "$1" = "--disable-f-keys" ]; then
-		esc=`grep "^escape" $bindings | $SED "s/^.*\(.\)$/\1/"`
+		esc=`grep "^escape" $bindings | $SED "s/.*^\(.\).*/\1/"`
 		[ -n "$esc" ] && key="^$esc-@" || key="^a-@"
 	elif grep -qs "^source.*none$" $bindings 2>/dev/null; then
 		key="byobu-config"
