@@ -1,11 +1,16 @@
 byobu (4.55) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/entropy, usr/lib/byobu/include/shutil,
     usr/lib/byobu/Makefile.am, usr/share/byobu/status/status,
     usr/share/man/man1/byobu.1:
     - add a system entropy status item
     - must use cat, can't use read in dash here
     - use yellow on grey
+
+  [ Will Ellwood ]
+  * usr/lib/byobu/disk: LP: #904824
+    - fix escaping issue
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Dec 2011 20:38:02 -0600
 
