@@ -1,4 +1,4 @@
-byobu (4.55) unreleased; urgency=low
+byobu (4.55-0ubuntu1) precise; urgency=low
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/entropy, usr/lib/byobu/include/shutil,
@@ -20,7 +20,7 @@ byobu (4.55) unreleased; urgency=low
   * usr/lib/byobu/disk: LP: #904824
     - fix escaping issue
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 09 Dec 2011 20:38:02 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 18 Dec 2011 21:34:54 -0600
 
 byobu (4.54-0ubuntu1) precise; urgency=low
 
