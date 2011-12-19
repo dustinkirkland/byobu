@@ -7,6 +7,9 @@ byobu (4.55) unreleased; urgency=low
     - add a system entropy status item
     - must use cat, can't use read in dash here
     - use yellow on grey
+  * usr/bin/byobu-janitor: LP: #867746
+    - revert previous change, don't automatically set monochrome mode
+      until we have a better way of detecting it
 
   [ Will Ellwood ]
   * usr/lib/byobu/disk: LP: #904824
