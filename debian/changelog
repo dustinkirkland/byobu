@@ -1,3 +1,9 @@
+byobu (4.56) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 18 Dec 2011 21:35:00 -0600
+
 byobu (4.55-0ubuntu1) precise; urgency=low
 
   [ Dustin Kirkland ]
