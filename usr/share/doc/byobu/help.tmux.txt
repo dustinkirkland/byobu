@@ -17,16 +17,17 @@ and some convenient keybindings:
     Shift-Left/Right/Up/Down    Move focus among splits
     Ctrl-Left/Right/Up/Down     Resize a split
   F5                            Reload profile, refresh status
-    Shift-F5                    Toggle through split arrangements
+    Shift-F5                    Toggle through status lines
     Ctrl-F5                     Reconnect ssh/gpg/dbus sockets
+    Ctrl-Shift-F5               Change status bar's color randomly
   F6                            Detach session and then logout
     Shift-F6                    Detach session and do not logout
     Ctrl-F6                     Kill split in focus
   F7                            Enter scrollback history
     Alt-PageUp/PageDown         Enter and move through scrollback
   F8                            Change the current window's name
-    Ctrl-F8                     Change status bar's color randomly
-    Shift-F8                    Restore a split-pane layout
+    Shift-F8                    Toggle through split arrangements
+    Ctrl-F8                     Restore a split-pane layout
     Ctrl-Shift-F8               Save the current split-pane layout
   F9                            Launch byobu-config window
   F10                           * Used by X11 *

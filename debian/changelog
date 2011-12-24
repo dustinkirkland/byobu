@@ -4,6 +4,11 @@ byobu (5.0) unreleased; urgency=low
     usr/bin/byobu-select-session, usr/lib/byobu/include/common:
     - bump up to the 5.x series
     - change default backend from screen to tmux
+  * usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/doc/byobu/help.tmux.txt:
+    - put all of the status line functions under *-F5
+    - put all of the split arrangement functions under *-F8
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 18 Dec 2011 21:35:00 -0600
 

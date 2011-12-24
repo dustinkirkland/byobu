@@ -50,8 +50,8 @@ bind-key -n C-Down resize-pane -D
 bind-key -n C-Left resize-pane -L
 bind-key -n C-Right resize-pane -R
 bind-key -n F5 source $BYOBU_PREFIX/share/byobu/profiles/tmuxrc
-bind-key -n S-F5 next-layout
 bind-key -n C-F5 send-keys ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets" \; send-keys Enter
+bind-key -n C-S-F5 new-window -d "byobu-select-profile -r"
 bind-key -n F6 detach
 bind-key -n S-F6 run-shell 'exec touch $BYOBU_RUN_DIR/no-logout' \; detach
 bind-key -n C-F6 kill-pane
@@ -59,9 +59,9 @@ bind-key -n F7 copy-mode
 bind-key -n M-NPage copy-mode \; send-keys NPage
 bind-key -n M-PPage copy-mode \; send-keys PPage
 bind-key -n F8 command-prompt -p "(rename-window)" "rename-window %%"
-bind-key -n C-F8 new-window -d "byobu-select-profile -r"
+bind-key -n S-F8 next-layout
+bind-key -n C-F8 new-window -k "$BYOBU_PREFIX/lib/byobu/include/layout restore; clear; $SHELL"
 bind-key -n C-S-F8 command-prompt -p "Save byobu layout as:" "run-shell '$BYOBU_PREFIX/lib/byobu/include/layout save %%'"
-bind-key -n S-F8 new-window -k "$BYOBU_PREFIX/lib/byobu/include/layout restore; clear; $SHELL"
 bind-key -n F9 new-window -k -n config byobu-config
 bind-key -n M-F11 break-pane
 bind-key -n C-F11 join-pane -h -s :. -t :-1
