@@ -1,6 +1,9 @@
-byobu (4.56) unreleased; urgency=low
+byobu (5.0) unreleased; urgency=low
 
-  * UNRELEASED
+  * etc/byobu/backend, usr/bin/byobu, usr/bin/byobu-config,
+    usr/bin/byobu-select-session, usr/lib/byobu/include/common:
+    - bump up to the 5.x series
+    - change default backend from screen to tmux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 18 Dec 2011 21:35:00 -0600
 

@@ -27,7 +27,7 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 		[ -r "/etc/$PKG/backend" ] && . "/etc/$PKG/backend"
 		[ -r "$BYOBU_CONFIG_DIR/backend" ] && . "$BYOBU_CONFIG_DIR/backend"
 		# Just in case there's no config file at all
-		[ -z "${BYOBU_BACKEND}" ] && BYOBU_BACKEND=screen
+		[ -z "${BYOBU_BACKEND}" ] && BYOBU_BACKEND=tmux
   	fi
 
 	# Creating backend cache
