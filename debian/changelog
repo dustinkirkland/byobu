@@ -1,4 +1,4 @@
-byobu (5.0) unreleased; urgency=low
+byobu (5.0-0ubuntu1) precise; urgency=low
 
   * etc/byobu/backend, usr/bin/byobu, usr/bin/byobu-config,
     usr/bin/byobu-select-session, usr/lib/byobu/include/common:
@@ -16,7 +16,7 @@ byobu (5.0) unreleased; urgency=low
     - define one or more tmux_right lines in ~/.byobu/status
     - press Shift-F5 to toggle through
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 18 Dec 2011 21:35:00 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 24 Dec 2011 17:35:00 -0600
 
 byobu (4.55-0ubuntu1) precise; urgency=low
 
