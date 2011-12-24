@@ -9,6 +9,12 @@ byobu (5.0) unreleased; urgency=low
     usr/share/doc/byobu/help.tmux.txt:
     - put all of the status line functions under *-F5
     - put all of the split arrangement functions under *-F8
+  * usr/lib/byobu/include/cycle-status,
+    usr/lib/byobu/include/Makefile.am, usr/share/byobu/keybindings/f-
+    keys.tmux, usr/share/byobu/status/status: LP: #887140
+    - support multiple toggle-able status lines
+    - define one or more tmux_right lines in ~/.byobu/status
+    - press Shift-F5 to toggle through
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 18 Dec 2011 21:35:00 -0600
 

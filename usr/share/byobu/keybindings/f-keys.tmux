@@ -50,6 +50,7 @@ bind-key -n C-Down resize-pane -D
 bind-key -n C-Left resize-pane -L
 bind-key -n C-Right resize-pane -R
 bind-key -n F5 source $BYOBU_PREFIX/share/byobu/profiles/tmuxrc
+bind-key -n S-F5 new-window -k "$BYOBU_PREFIX/lib/byobu/include/cycle-status" \; source $BYOBU_PREFIX/share/byobu/profiles/tmuxrc
 bind-key -n C-F5 send-keys ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets" \; send-keys Enter
 bind-key -n C-S-F5 new-window -d "byobu-select-profile -r"
 bind-key -n F6 detach
