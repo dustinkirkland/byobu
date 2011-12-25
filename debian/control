@@ -11,8 +11,8 @@ Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/byobu/trunk
 
 Package: byobu
 Architecture: all
-Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, screen, gettext-base, python, python-newt (>= 0.52.2-11)
-Recommends: tmux (>= 1.5)
+Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, gettext-base, python, python-newt (>= 0.52.2-11), tmux (>= 1.5)
+Recommends: screen
 Suggests: apport, vim, w3m, po-debconf, update-notifier-common, lsb-release, run-one
 Provides: screen-profiles, screen-profiles-extras, byobu-extras
 Replaces: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0), byobu-extras (<< 2.17)
