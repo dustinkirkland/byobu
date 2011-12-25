@@ -36,14 +36,14 @@ prompt() {
 	local choice
 	echo
 	echo "Select the byobu backend:"
-	echo "  1. screen"
-	echo "  2. tmux"
+	echo "  1. tmux"
+	echo "  2. screen"
 	echo
-	printf "Choose 1-2 [2]: "
+	printf "Choose 1-2 [1]: "
 	choice=$(head -n1)
 	case $choice in
-		1) _RET="screen" ;;
-		2|"") _RET="tmux" ;;
+		1|"") _RET="tmux" ;;
+		2) _RET="screen" ;;
 		*) prompt ;;
 	esac
 }

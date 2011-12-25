@@ -1,6 +1,7 @@
 byobu (5.1) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-select-backend:
+    - switch the order of the listed backends
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 24 Dec 2011 17:35:04 -0600
 
