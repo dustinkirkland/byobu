@@ -180,7 +180,7 @@ fpdiv() {
 	n=${n%?}
 	whole=${n%${chunk}}
 	part=${n#${whole}}
-	_RET=${whole}${part:+.${part}}
+	_RET=${whole:-0}${part:+.${part}}
 	return
 }
 

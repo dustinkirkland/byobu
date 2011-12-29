@@ -4,6 +4,9 @@ byobu (5.1) unreleased; urgency=low
     - switch the order of the listed backends
   * debian/control: LP: #909221
     - depend on tmux, recommend screen
+  * usr/lib/byobu/cpu_freq, usr/lib/byobu/include/shutil: LP: #909325
+    - use a leading zero on fpdiv operations, for consistency with
+      awk-based math
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 24 Dec 2011 17:35:04 -0600
 
