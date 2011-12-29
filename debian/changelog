@@ -1,4 +1,4 @@
-byobu (5.1) unreleased; urgency=low
+byobu (5.1-0ubuntu1) precise; urgency=low
 
   * usr/bin/byobu-select-backend:
     - switch the order of the listed backends
@@ -8,7 +8,7 @@ byobu (5.1) unreleased; urgency=low
     - use a leading zero on fpdiv operations, for consistency with
       awk-based math
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 24 Dec 2011 17:35:04 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Dec 2011 12:28:49 -0600
 
 byobu (5.0-0ubuntu1) precise; urgency=low
 
