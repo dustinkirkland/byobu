@@ -2,6 +2,8 @@ byobu (5.2) unreleased; urgency=low
 
   * icons/byobu_multi.svg, === removed directory icons,
     - save some space in the tarball
+  * usr/lib/byobu/logo:
+    - add a linux mint logo
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Dec 2011 12:28:51 -0600
 
