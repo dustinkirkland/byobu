@@ -69,37 +69,43 @@ case "$1" in
 		printf "$panes\n$layout\n" > "$BYOBU_CONFIG_DIR/layouts/$name"
 	;;
 	"restore")
-		# List the saved layouts, prompt the user to select one
-		list_layouts
-		count="$_RET"
-		while true; do
-			echo -n "Select a layout to restore [1-$count]: "
-			selected=$(head -n1)
-			if [ -n "$selected" ] && [ $selected -le $count ] && [ $selected -ge 1 ]; then
-				break
-			fi
-		done
+		if [ -n "$2" ]; then
+			# Layout selected on the command line
+			name="$2"
+		else
+			# List the saved layouts, prompt the user to select one
+			list_layouts
+			count="$_RET"
+			while true; do
+				echo -n "Select a layout to restore [1-$count]: "
+				selected=$(head -n1)
+				if [ -n "$selected" ] && [ $selected -le $count ] && [ $selected -ge 1 ]; then
+					break
+				fi
+			done
+			count=0
+			for i in $PRESETS "$DIR"/*; do
+				count=$(expr $count + 1)
+				if [ $count -eq $selected ]; then
+					name=$(basename "$i")
+					break
+				fi
+			done
+		fi
 		# Get the details of the selected layout
-		count=0
 		panes=
 		layout=
-		for i in $PRESETS "$DIR"/*; do
-			count=$(expr $count + 1)
-			if [ $count -eq $selected ]; then
-				if [ -f "$i" ]; then
-					panes=$(head -n1 "$i")
-					layout=$(tail -n1 "$i")
-				else
-					if [ $current_panes -eq 1 ]; then
-						panes=4
-					else
-						panes=0
-					fi
-					layout="$i"
-				fi
-				break
+		if [ -f "$DIR/$name" ]; then
+			panes=$(head -n1 "$DIR/$name")
+			layout=$(tail -n1 "$DIR/$name")
+		else
+			if [ $current_panes -eq 1 ]; then
+				panes=4
+			else
+				panes=0
 			fi
-		done
+			layout="$name"
+		fi
 		# Create panes if nececessary to restore the layout
 		while [ $(tmux list-panes | wc -l) -lt $panes ]; do
 			tmux split-window

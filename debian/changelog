@@ -4,6 +4,13 @@ byobu (5.2) unreleased; urgency=low
     - save some space in the tarball
   * usr/lib/byobu/logo:
     - add a linux mint logo
+  * usr/lib/byobu/include/layout => usr/bin/byobu-layout,
+    usr/share/byobu/keybindings/f-keys.tmux, usr/share/man/man1/byobu-
+    layout.1:
+    - move the layout library utility to a generally usable byobu-layout
+      in the system path
+    - add specific named layout support to both save and restore operations
+    - add a manpage
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Dec 2011 12:28:51 -0600
 
