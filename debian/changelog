@@ -24,6 +24,9 @@ byobu (5.2) unreleased; urgency=low
       ctrl-shift-left/right;  seems alt-left-right are used by irssi
   * README: LP: #911825
     - add note about tmux version required
+  * usr/lib/byobu/include/common: LP: #911149
+    - when backend is not automatically set, check if screen or tmux
+      is installed on the system before setting the default backend
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Dec 2011 12:28:51 -0600
 

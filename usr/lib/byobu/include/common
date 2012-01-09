@@ -27,7 +27,16 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 		[ -r "/etc/$PKG/backend" ] && . "/etc/$PKG/backend"
 		[ -r "$BYOBU_CONFIG_DIR/backend" ] && . "$BYOBU_CONFIG_DIR/backend"
 		# Just in case there's no config file at all
-		[ -z "${BYOBU_BACKEND}" ] && BYOBU_BACKEND=tmux
+		if [ -z "${BYOBU_BACKEND}" ]; then
+			# If tmux is installed, use it
+			if command -v tmux >/dev/null; then
+				BYOBU_BACKEND=tmux
+			elif command -v screen >/dev/null; then
+				BYOBU_BACKEND=screen
+			else
+				echo "ERROR: $PKG won't work without tmux or screen installed" 1>&2
+			fi
+		fi
   	fi
 
 	# Creating backend cache
