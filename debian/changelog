@@ -31,6 +31,9 @@ byobu (5.2) unreleased; urgency=low
   * debian/control: LP: #910187
     - depend on tmux | screen, recommend tmux and screen
     - hopefully this solves dependency resolution on hardy
+  * usr/bin/byobu, usr/share/byobu/profiles/tmux: LP: #908766
+    - use screen-bce instead of screen-256color, to support background
+      colors correctly
 
   [ Daniel Hahler ]
   * usr/bin/byobu-ctrl-a, usr/share/byobu/profiles/tmux: LP: #910779
