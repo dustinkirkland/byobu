@@ -28,6 +28,9 @@ byobu (5.2) unreleased; urgency=low
   * usr/lib/byobu/include/common: LP: #911149
     - when backend is not automatically set, check if screen or tmux
       is installed on the system before setting the default backend
+  * debian/control: LP: #910187
+    - depend on tmux | screen, recommend tmux and screen
+    - hopefully this solves dependency resolution on hardy
 
   [ Daniel Hahler ]
   * usr/bin/byobu-ctrl-a, usr/share/byobu/profiles/tmux: LP: #910779
