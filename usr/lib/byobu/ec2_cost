@@ -74,12 +74,16 @@ __ec2_cost() {
 	hours=$(((`date +%s` - `stat --printf %Y $file_to_stat`) / 60 / 60 + 1))
 	# Auto detect network interface
 	interface=`tail -n1 /proc/net/route  | awk '{print $1}'`
-	ifconfig_out=`LC_ALL=C /sbin/ifconfig "$interface"`
-	# Calculate bandwidth cost
-	tx_gb=${ifconfig_out#*RX bytes:}
-	tx_gb=$(echo ${tx_gb%% *} | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }')
-	rx_gb=${ifconfig_out#*TX bytes:}
-	rx_gb=$(echo ${rx_gb%% *} | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }')
+	local iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed
+	while read iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed; do
+		if [ "$iface" = "${interface}:" ]; then                 
+			tx_gb=${tbytes}
+			rx_gb=${rbytes}
+			break;                                         
+		fi                                                     
+	done < /proc/net/dev
+	tx_gb=$(echo ${tx_gb} | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }')
+	rx_gb=$(echo ${rx_gb} | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }')
 	network_cost=`echo "$tx_gb" "$TX_RATE" "$rx_gb" "$RX_RATE" | awk '{printf "%f %f", $1*$2, $3*$4}' | awk '{printf "%f", $1 + $2}'`
 	# Calculate uptime cost
 	uptime_cost=`echo "$hours" | awk "{printf \"%f\", "$rate" * $hours}"`

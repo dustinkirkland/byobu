@@ -14,6 +14,9 @@ byobu (5.2) unreleased; urgency=low
   * usr/bin/Makefile.am, usr/lib/byobu/include/Makefile.am,
     usr/share/man/man1/Makefile.am:
     - install the byobu-layout tool and manpage
+  * usr/lib/byobu/ec2_cost, usr/lib/byobu/network:
+    - use /proc/net/dev for network transfer calculations
+    - fixes issue with ifconfig format changes
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Dec 2011 12:28:51 -0600
 
