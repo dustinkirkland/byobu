@@ -76,7 +76,7 @@ case "$bind_to" in
 		echo 'escape "^Aa"' >> "$keybindings"
 		echo 'register x "^A"' >> "$keybindings"
 		echo 'bindkey "^A"' >> "$keybindings"
-		echo "source \$BYOBU_PREFIX/share/doc/tmux/examples/screen-keys.conf" > "$keybindings.tmux"
+		echo "source /usr/share/doc/tmux/examples/screen-keys.conf" > "$keybindings.tmux"
 		echo "INFO: ctrl-a will now operate in GNU Screen mode"
 		break
 	;;

@@ -1,5 +1,6 @@
 byobu (5.2) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * icons/byobu_multi.svg, === removed directory icons,
     - save some space in the tarball
   * usr/lib/byobu/logo:
@@ -27,6 +28,10 @@ byobu (5.2) unreleased; urgency=low
   * usr/lib/byobu/include/common: LP: #911149
     - when backend is not automatically set, check if screen or tmux
       is installed on the system before setting the default backend
+
+  [ Daniel Hahler ]
+  * usr/bin/byobu-ctrl-a, usr/share/byobu/profiles/tmux: LP: #910779
+    - don't use BYOBU_PREFIX for tmux paths
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Dec 2011 12:28:51 -0600
 
