@@ -2,4 +2,4 @@ bin_SCRIPTS = byobu  byobu-config  byobu-ctrl-a  byobu-disable  byobu-enable  by
 
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && rm -f byobu-screen && $(LN_S) byobu byobu-screen
-	cd $(DESTDIR)$(bindir) && rm -f byobu-screen && $(LN_S) byobu byobu-tmux
+	cd $(DESTDIR)$(bindir) && rm -f byobu-tmux   && $(LN_S) byobu byobu-tmux
