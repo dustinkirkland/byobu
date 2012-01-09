@@ -12,9 +12,9 @@ and some convenient keybindings:
     Shift-F3/F4                 Move focus among splits
     Ctrl-F3/F4                  Move a split
     Ctrl-Shift-F3/F4            Move a window
-    Alt-Left/Right              Move focus among windows
     Alt-Up/Down                 Move focus among sessions
     Shift-Left/Right/Up/Down    Move focus among splits
+    Ctrl-Shift-Left/Right       Move focus among windows
     Ctrl-Left/Right/Up/Down     Resize a split
   F5                            Reload profile, refresh status
     Shift-F5                    Toggle through status lines

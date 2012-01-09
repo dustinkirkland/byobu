@@ -31,8 +31,8 @@ bind-key -n S-F2 display-panes \; split-window -v
 bind-key -n C-S-F2 new-session
 bind-key -n F3 previous-window
 bind-key -n F4 next-window
-bind-key -n M-Left previous-window
-bind-key -n M-Right next-window
+bind-key -n C-S-Left previous-window
+bind-key -n C-S-Right next-window
 bind-key -n M-Up choose-session \; send-keys Up \; send-keys Enter
 bind-key -n M-Down choose-session \; send-keys Down \; send-keys Enter
 bind-key -n S-F3 display-panes \; select-pane -t :.-

@@ -17,6 +17,11 @@ byobu (5.2) unreleased; urgency=low
   * usr/lib/byobu/ec2_cost, usr/lib/byobu/network:
     - use /proc/net/dev for network transfer calculations
     - fixes issue with ifconfig format changes
+  * usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/doc/byobu/help.tmux.txt: LP: #912637
+    - change prev/next window keybinding from alt-left/right to
+      ctrl-shift-left/right;  seems alt-left-right are used by irssi
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Dec 2011 12:28:51 -0600
 

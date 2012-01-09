@@ -27,8 +27,8 @@ unbind-key -n S-F2
 unbind-key -n C-S-F2
 unbind-key -n F3
 unbind-key -n F4
-unbind-key -n M-Left
-unbind-key -n M-Right
+unbind-key -n C-S-Left
+unbind-key -n C-S-Right
 unbind-key -n M-Up
 unbind-key -n M-Down
 unbind-key -n S-F3
