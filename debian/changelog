@@ -1,6 +1,8 @@
 byobu (5.3) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Daniel Hahler ]
+  * usr/bin/Makefile.am:
+    - fix safe link creation
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 08 Jan 2012 20:28:08 -0600
 
