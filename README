@@ -26,9 +26,9 @@ install locally, using the following instructions...
       byobu
 
 Note that you will need to have a few dependencies installed:
- * screen and/or tmux
+ * tmux >= 1.5 and screen
  * python-newt (if you want to use Byobu's configuration utility)
  * gsed (if your sed implementation doesn't support -i)
 
 Dustin Kirkland <dustin.kirkland@gmail.com>
-2011-09-21
+2012-01-08
