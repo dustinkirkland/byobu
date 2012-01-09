@@ -11,6 +11,9 @@ byobu (5.2) unreleased; urgency=low
       in the system path
     - add specific named layout support to both save and restore operations
     - add a manpage
+  * usr/bin/Makefile.am, usr/lib/byobu/include/Makefile.am,
+    usr/share/man/man1/Makefile.am:
+    - install the byobu-layout tool and manpage
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 29 Dec 2011 12:28:51 -0600
 
