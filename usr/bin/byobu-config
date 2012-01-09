@@ -63,9 +63,14 @@ def ioctl_GWINSZ(fd):                  #### TABULATION FUNCTIONS
     return cr
 
 def reload_required():
-    f = open(RELOAD_FLAG,'w')
-    f.close()
-    commands.getoutput(RELOAD_CMD)
+    try:
+	if not os.path.exists(BYOBU_CONFIG_DIR):
+	    os.makedirs(BYOBU_CONFIG_DIR, 0755)
+	f = open(RELOAD_FLAG,'w')
+	f.close()
+	commands.getoutput(RELOAD_CMD)
+    except:
+	True
 
 def terminal_size():                    ### decide on *some* terminal size
     cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)  # try open fds

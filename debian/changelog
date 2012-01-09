@@ -34,6 +34,8 @@ byobu (5.2) unreleased; urgency=low
   * usr/bin/byobu, usr/share/byobu/profiles/tmux: LP: #908766
     - use screen-bce instead of screen-256color, to support background
       colors correctly
+  * usr/bin/byobu-config: LP: #910638
+    - ensure that config dir exists before touching reload flag
 
   [ Daniel Hahler ]
   * usr/bin/byobu-ctrl-a, usr/share/byobu/profiles/tmux: LP: #910779
