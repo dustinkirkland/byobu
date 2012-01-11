@@ -4,6 +4,10 @@ byobu (5.3) unreleased; urgency=low
   * usr/bin/Makefile.am:
     - fix safe link creation
 
+  [ Dustin Kirkland ]
+  * usr/share/byobu/profiles/tmux:
+    - add some whitespace
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 08 Jan 2012 20:28:08 -0600
 
 byobu (5.2-0ubuntu1) precise; urgency=low
