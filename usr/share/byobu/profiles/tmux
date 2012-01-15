@@ -65,10 +65,13 @@ set-window-option -g aggressive-resize on
 set-window-option -g monitor-activity on
 #set-window-option -g xterm-keys on
 
+# Cannot use:
+#  - screen-bce, screen-256color-bce: tmux does not support bce
+#  - screen-256color: vim broken without -bce
+set -g default-terminal "screen"
+set -g terminal-overrides 'xterm*:smcup@:rmcup@'
 # Must set default-command to $SHELL, in order to not source ~/.profile
 # BUG: Should *not* hardcode /bin/bash here
-set -g default-terminal "screen-bce"
-set -g terminal-overrides 'xterm*:smcup@:rmcup@'
 set -g default-command $SHELL
 set -g status-bg $BYOBU_DARK
 set -g status-fg $BYOBU_LIGHT

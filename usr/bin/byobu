@@ -116,7 +116,7 @@ case $BYOBU_BACKEND in
 		# Check if our terminfo supports 256 colors
 		if command -v tput >/dev/null; then
 			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then
-				SCREEN_TERM="-T screen-bce"
+				SCREEN_TERM="-T screen"
 			fi
 		fi
 		# Some users want to maintain separate configurations
