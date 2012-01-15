@@ -10,6 +10,10 @@ byobu (5.3) unreleased; urgency=low
   * usr/bin/byobu, usr/share/byobu/profiles/tmux: LP: #908766
     - TERM must be 'screen', to work with: a) 256 colors, and
       b) vim/mutt with bce;  tmux does not support bce properly
+  * usr/bin/byobu: LP: #914424
+    - use READLINK
+  * usr/share/byobu/profiles/tmux:
+    - add some comments
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 08 Jan 2012 20:28:08 -0600
 
