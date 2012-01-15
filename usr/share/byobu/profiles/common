@@ -72,6 +72,9 @@ activity ""
 # Fit to the current window size, useful with F5/reloads of the profile
 fit
 
+# Empty shell title by default, maximizes number of windows we can fit, F8 renames easily
+shelltitle ""
+
 # Maintain SSH_AUTH_SOCK link
 setenv SSH_AUTH_SOCK $BYOBU_CONFIG_DIR/.ssh-agent
 
