@@ -50,12 +50,25 @@ get_status() {
 	local lastpath="$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND/$1"
 	local lastrun
 	[ -r "$lastpath" ] && read lastrun < "$lastpath" || lastrun=0
-	status_freq "$1"
+	case "$1" in
+		ip_address4)
+			IPV6=0
+			function="ip_address"
+		;;
+		ip_address6)
+			IPV6=1
+			function="ip_address"
+		;;
+		*)
+			function="$1"
+		;;
+	esac
+	status_freq "$function"
 	local expiry=$(($lastrun+$_RET))
-	find_script "$1" && . "${_RET}"
+	find_script "$function" && . "${_RET}"
 	# Update cache now, if necessary
 	if [ $NOW -ge $expiry ] || [ "$lastrun" = "0" ]; then
-		"__$1" > "$cachepath"
+		"__$function" > "$cachepath"
 		echo "$NOW" > "$lastpath"
 	fi
 	if [ -s "$cachepath" ]; then
