@@ -24,6 +24,8 @@ byobu (5.3) unreleased; urgency=low
       rather than one or the other
   * etc/profile.d/Z97-byobu.sh:
     - support LC_TERMTYPE=[byobu|byobu-screen|byobu-tmux]
+  * etc/profile.d/Z97-byobu.sh, usr/bin/byobu-launcher: LP: #897711
+    - allow nesting, if LC_BYOBU > 1
 
   [ Dustin Kirkland and Ryan Thompson ]
   * usr/bin/byobu-reconnect-sockets, usr/bin/byobu-select-session: LP: #908944

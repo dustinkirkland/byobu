@@ -20,7 +20,7 @@
 # Apologies for borrowing the LC_BYOBU namespace, but:
 #  a) it's reasonable to assume that no one else is using LC_BYOBU
 #  b) LC_* is sent and receieved by most /etc/ssh/ssh*_config
-if [ "$LC_BYOBU" = "1" ] && [ -r "/usr/bin/byobu-launch" ]; then
+if [ -n "$LC_BYOBU" ] && [ "$LC_BYOBU" -gt 0 ] && [ -r "/usr/bin/byobu-launch" ]; then
 	. /usr/bin/byobu-launch
 elif [ "$LC_TERMTYPE" = "byobu" ] && [ -r "/usr/bin/byobu-launch" ]; then
 	. /usr/bin/byobu-launch

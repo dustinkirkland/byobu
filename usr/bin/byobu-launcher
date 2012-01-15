@@ -29,9 +29,13 @@ if [ -O "$HOME" ]; then
 	else
 		case "$TERM" in
 			*screen*)
-				# Handle nesting (silence this message, as some users found it noisy?)
-				# printf "$(gettext 'To launch in a nested session, run: byobu')\n"
-				true
+				# Handle nesting
+				if [ -n "$LC_BYOBU" ] && [ "$LC_BYOBU" -gt 1 ]; then
+					# LC_BYOBU > 1, so user explicitly wants nested sessions
+					exec $BYOBU_PREFIX/bin/byobu "$@"
+				else
+					true
+				fi
 			;;
 			dumb)
 				# Dumb terminal, don't launch
