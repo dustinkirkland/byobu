@@ -16,6 +16,8 @@ byobu (5.3) unreleased; urgency=low
     - add some comments
   * usr/lib/byobu/ec2_cost, usr/lib/byobu/network: LP: #914098
     - fix regression from r1839, add colon to IFS
+  * usr/share/man/man1/byobu.1: LP: #913817
+    - mention byobu-select-backend prominently in the manpage
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 08 Jan 2012 20:28:08 -0600
 
