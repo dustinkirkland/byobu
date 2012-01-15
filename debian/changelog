@@ -19,6 +19,10 @@ byobu (5.3) unreleased; urgency=low
   * usr/share/man/man1/byobu.1: LP: #913817
     - mention byobu-select-backend prominently in the manpage
 
+  [ Dustin Kirkland and Ryan Thompson ]
+  * usr/bin/byobu-reconnect-sockets, usr/bin/byobu-select-session: LP: #908944
+    - improve support for importing X11 environment variables
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 08 Jan 2012 20:28:08 -0600
 
 byobu (5.2-0ubuntu1) precise; urgency=low

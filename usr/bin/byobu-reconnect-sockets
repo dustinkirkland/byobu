@@ -6,8 +6,10 @@
 #                              byobu session.
 #
 #    Copyright (C) 2009 Canonical Ltd.
+#    Copyright (C) 2012 Dustin Kirkland <dustin.kirkland@gmail.com>
 #
-#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#    Authors: Dustin Kirkland <dustin.kirkland@gmail.com>
+#             Ryan C. Thompson <rct@thompsonclan.org>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -39,15 +41,61 @@ case "$-" in
 	;;
 esac
 
+export_and_send () {
+	var="$1"
+	value="$(eval "echo \$$var")"
+	export "$var"
+	case $BYOBU_BACKEND in
+		tmux)
+			tmux setenv "$var" "$value"
+		;;
+		*)
+			screen -X setenv "$var" "$value"
+		;;
+	esac
+}
+
+screen_update () {
+	# Ensure that screen's environment variables/values get propagated here
+	tempfile=$(mktemp -q) && {
+		for var in $VARS_TO_UPDATE; do
+			screen sh -c "echo export $var=\$$var >> \"$tempfile\""
+		done
+		. "$tempfile"
+		rm -f "$tempfile"
+	}
+}
+
+tmux_update () {
+	# Ensure that tmux's environment variables/values get propagated here
+	for var in $VARS_TO_UPDATE; do
+		expr="$(tmux showenv | grep "^$var=")"
+		if [ -n "$expr" ]; then
+			export "$expr"
+		fi
+	done
+}
+
+# Pull environment variables/values from backend and update/export here
+VARS_TO_UPDATE="DISPLAY DBUS_SESSION_BUS_ADDRESS SESSION_MANAGER GPG_AGENT_INFO"
+case $BYOBU_BACKEND in
+	tmux)
+		tmux_update
+	;;
+	screen)
+		screen_update
+	;;
+esac
+
 # Establish gpg-agent socket, helps when reconnecting to a detached session
-newest "$HOME/.gnupg/"gpg-agent-info-* && . "$_RET" && export GPG_AGENT_INFO
+newest "$HOME/.gnupg/"gpg-agent-info-* && . "$_RET" && export_and_send GPG_AGENT_INFO
 
 # Reconnect dbus, source the most recently touched session-bus
 # Sorry, ls -t is needed here, to sort by time
 newest "$HOME/.dbus/session-bus/*" && . "$_RET"
 
 [ -r "$BYOBU_RUN_DIR/sockets" ] && . "$BYOBU_RUN_DIR/sockets"
-export DBUS_SESSION_DBUS_ADDRESS
-export SESSION_MANAGER
+export_and_send DBUS_SESSION_BUS_ADDRESS
+export_and_send SESSION_MANAGER
 
 # vi: syntax=sh ts=4 noexpandtab

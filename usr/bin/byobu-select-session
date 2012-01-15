@@ -2,8 +2,10 @@
 #
 #    byobu-select-session
 #    Copyright (C) 2010 Canonical Ltd.
+#    Copyright (C) 2012 Dustin Kirkland <dustin.kirkland@gmail.com>
 #
-#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#    Authors: Dustin Kirkland <dustin.kirkland@gmail.com>
+#             Ryan C. Thompson <rct@thompsonclan.org>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,7 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import commands, os, re, sys
+import commands, os, re, sys, subprocess
 
 PKG = "byobu"
 SHELL = os.getenv("SHELL", "/bin/bash")
@@ -28,6 +30,8 @@ BYOBU_BACKEND=os.getenv("BYOBU_BACKEND", "tmux")
 choice = ""
 sessions = []
 text = []
+
+BYOBU_UPDATE_ENVVARS=["DISPLAY", "DBUS_SESSION_BUS_ADDRESS", "SESSION_MANAGER", "GPG_AGENT_INFO"]
 
 def get_sessions():
 	sessions = []
@@ -53,13 +57,26 @@ def get_sessions():
 				i += 1
 	return sessions
 
+def update_environment(session):
+	backend, session_name = session.split("____", 2)
+	for var in BYOBU_UPDATE_ENVVARS:
+		value = os.getenv(var)
+		if value:
+			if backend == "tmux":
+				cmd = ["tmux", "setenv", "-t", session_name, var, value]
+			else:
+				cmd = ["screen", "-S", session_name, "-X", "setenv", var, value]
+			print "Sending variable: %s" % (cmd, )
+			subprocess.call(cmd, stdout=open(os.devnull, "w"))
+
 def attach_session(session):
 	print("Attaching: [%s]\n" % session)
-	items = session.split("____", 2)
-	if items[0] == "tmux":
-		os.execvp("tmux", ["", "-2", "attach", "-t", items[1]])
+	update_environment(session)
+	backend, session_name = session.split("____", 2)
+	if backend == "tmux":
+		os.execvp("tmux", ["", "-2", "attach", "-t", session_name])
 	else:
-		os.execvp("screen", ["", "-AOxRR", items[1]])
+		os.execvp("screen", ["", "-AOxRR", session_name])
 
 sessions = get_sessions()
 
