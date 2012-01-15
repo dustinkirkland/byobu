@@ -7,7 +7,7 @@ byobu (5.3) unreleased; urgency=low
   [ Dustin Kirkland ]
   * usr/share/byobu/profiles/tmux:
     - add some whitespace
-  * usr/bin/byobu, usr/share/byobu/profiles/tmux: LP: #908766
+  * usr/bin/byobu, usr/share/byobu/profiles/tmux: LP: #908766, #900309
     - TERM must be 'screen', to work with: a) 256 colors, and
       b) vim/mutt with bce;  tmux does not support bce properly
   * usr/bin/byobu: LP: #914424
