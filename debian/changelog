@@ -26,6 +26,11 @@ byobu (5.3) unreleased; urgency=low
     - support LC_TERMTYPE=[byobu|byobu-screen|byobu-tmux]
   * etc/profile.d/Z97-byobu.sh, usr/bin/byobu-launcher: LP: #897711
     - allow nesting, if LC_BYOBU > 1
+  * usr/bin/byobu, usr/bin/byobu-janitor, usr/lib/byobu/include/common,
+    usr/lib/byobu/include/constants:
+    - for users upgrading from an older version of byobu, where they were
+      previously using a screen backend, keep them using a screen backend
+    - for new users, default to tmux backend
 
   [ Dustin Kirkland and Ryan Thompson ]
   * usr/bin/byobu-reconnect-sockets, usr/bin/byobu-select-session: LP: #908944

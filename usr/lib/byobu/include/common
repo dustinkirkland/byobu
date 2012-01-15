@@ -28,12 +28,22 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 		[ -r "$BYOBU_CONFIG_DIR/backend" ] && . "$BYOBU_CONFIG_DIR/backend"
 		# Just in case there's no config file at all
 		if [ -z "${BYOBU_BACKEND}" ]; then
-			# If tmux is installed, use it
-			if command -v tmux >/dev/null; then
-				BYOBU_BACKEND=tmux
-			elif command -v screen >/dev/null; then
-				BYOBU_BACKEND=screen
+			if [ -d "$BYOBU_CONFIG_DIR" ] && [ -r "$BYOBU_CONFIG_DIR/profile" ]; then
+				# Previous byobu configuration exists, default to screen
+				for i in screen tmux; do
+					command -v $i >/dev/null && BYOBU_BACKEND="$i"
+					break
+				done
+				unset i
 			else
+				# New byobu configuration, default to tmux
+				for i in tmux screen; do
+					command -v $i >/dev/null && BYOBU_BACKEND="$i"
+					break
+				done
+				unset i
+			fi
+			if ! command -v "$BYOBU_BACKEND" >/dev/null; then
 				echo "ERROR: $PKG won't work without tmux or screen installed" 1>&2
 			fi
 		fi

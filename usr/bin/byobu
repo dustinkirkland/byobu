@@ -31,12 +31,6 @@ if [ ! -O "$HOME" ]; then
 	exit 1
 fi
 
-# Determine backend as early as possible, if applicable
-case "$0" in
-	*byobu-screen) BYOBU_BACKEND="screen" ;;
-	*byobu-tmux) BYOBU_BACKEND="tmux" ;;
-esac
-
 # Source local byobu config
 if [ -r "$HOME/.byoburc" ]; then
 	# Ensure that this configuration is usable
@@ -54,6 +48,12 @@ fi
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
+
+# Override backend if we can determine intentions from argv[0]
+case "$0" in
+	*byobu-screen) BYOBU_BACKEND="screen" ;;
+	*byobu-tmux) BYOBU_BACKEND="tmux" ;;
+esac
 
 # At this point, we're sure BYOBU_BACKEND is properly defined
 export BYOBU_BACKEND

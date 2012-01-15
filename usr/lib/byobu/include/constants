@@ -86,7 +86,7 @@ case "$BYOBU_BACKEND" in
 		BYOBU_ARG_VERSION="-V"
 		ESC=
 	;;
-	*)
+	screen)
 		export BYOBU_BACKEND="screen"
 		BYOBU_ARG_VERSION="-v"
 		ESC="\005"
