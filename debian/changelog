@@ -22,6 +22,8 @@ byobu (5.3) unreleased; urgency=low
     - support ip_address4 and ip_address6 in the status line
     - allows for users to see both ipv4 and ipv6 addresses simultaneously
       rather than one or the other
+  * etc/profile.d/Z97-byobu.sh:
+    - support LC_TERMTYPE=[byobu|byobu-screen|byobu-tmux]
 
   [ Dustin Kirkland and Ryan Thompson ]
   * usr/bin/byobu-reconnect-sockets, usr/bin/byobu-select-session: LP: #908944

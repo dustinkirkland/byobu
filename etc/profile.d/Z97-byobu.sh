@@ -22,6 +22,14 @@
 #  b) LC_* is sent and receieved by most /etc/ssh/ssh*_config
 if [ "$LC_BYOBU" = "1" ] && [ -r "/usr/bin/byobu-launch" ]; then
 	. /usr/bin/byobu-launch
+elif [ "$LC_TERMTYPE" = "byobu" ] && [ -r "/usr/bin/byobu-launch" ]; then
+	. /usr/bin/byobu-launch
+elif [ "$LC_TERMTYPE" = "byobu-screen" ] && [ -r "/usr/bin/byobu-launch" ]; then
+	export BYOBU_BACKEND="screen"
+	. /usr/bin/byobu-launch
+elif [ "$LC_TERMTYPE" = "byobu-tmux" ] && [ -r "/usr/bin/byobu-launch" ]; then
+	export BYOBU_BACKEND="tmux"
+	. /usr/bin/byobu-launch
 fi
 
 # vi: syntax=sh ts=4 noexpandtab
