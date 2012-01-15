@@ -1,4 +1,4 @@
-byobu (5.3) unreleased; urgency=low
+byobu (5.3-0ubuntu1) precise; urgency=low
 
   [ Daniel Hahler ]
   * usr/bin/Makefile.am:
@@ -42,7 +42,7 @@ byobu (5.3) unreleased; urgency=low
   * usr/bin/byobu-reconnect-sockets, usr/bin/byobu-select-session: LP: #908944
     - improve support for importing X11 environment variables
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 08 Jan 2012 20:28:08 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 15 Jan 2012 13:54:14 -0600
 
 byobu (5.2-0ubuntu1) precise; urgency=low
 
