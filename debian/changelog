@@ -5,6 +5,15 @@ byobu (5.4) unreleased; urgency=low
     debian/rules, debian/source/format: LP: #917682
     - switch to dh7 format for build
 
+  [ Dustin Kirkland ]
+  * debian/install, debian/links, === removed symlink
+    usr/share/byobu/keybindings/common, === target was uf-keys,
+    usr/share/byobu/keybindings/common:
+    - re-establish a symlink for the icon/art; note, this should
+      really be handled in the autohell build for portability;
+      using debian/links is hacky
+    - drop common as a link;  instead, use "source"
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 15 Jan 2012 13:54:17 -0600
 
 byobu (5.3-0ubuntu1) precise; urgency=low
