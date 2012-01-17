@@ -1,6 +1,9 @@
 byobu (5.4) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Alexander Chernyakhovsky and Dustin Kirkland ]
+  * === added directory debian/source, debian/control, debian/install,
+    debian/rules, debian/source/format: LP: #917682
+    - switch to dh7 format for build
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 15 Jan 2012 13:54:17 -0600
 

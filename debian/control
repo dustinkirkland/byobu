@@ -5,18 +5,42 @@ Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 DM-Upload-Allowed: yes
 Uploaders: Antoine Beaupré <anarcat@koumbit.org>
 Standards-Version: 3.9.2
-Build-Depends: debhelper (>= 6), gettext-base, automake, autoconf
+Build-Depends: debhelper (>= 7), gettext-base, automake, autoconf
 Homepage: http://launchpad.net/byobu
 Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/byobu/trunk
 
 Package: byobu
 Architecture: all
-Depends: ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, gettext-base, python, python-newt (>= 0.52.2-11), tmux (>= 1.5) | screen
-Recommends: screen, tmux (>= 1.5)
-Suggests: apport, vim, w3m, po-debconf, update-notifier-common, lsb-release, run-one
-Provides: screen-profiles, screen-profiles-extras, byobu-extras
-Replaces: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0), byobu-extras (<< 2.17)
-Breaks: screen-profiles (<< 2.0), screen-profiles-extras (<< 2.0), byobu-extras (<< 2.17)
+Depends:
+ ${misc:Depends}, ${perl:Depends},
+ debconf (>= 0.5) | debconf-2.0,
+ gettext-base,
+ python,
+ python-newt (>= 0.52.2-11),
+ tmux (>= 1.5) | screen
+Recommends:
+ screen,
+ tmux (>= 1.5)
+Suggests:
+ apport,
+ lsb-release,
+ po-debconf,
+ run-one,
+ update-notifier-common,
+ vim,
+ w3m
+Provides:
+ screen-profiles,
+ screen-profiles-extras,
+ byobu-extras
+Replaces:
+ screen-profiles (<< 2.0),
+ screen-profiles-extras (<< 2.0),
+ byobu-extras (<< 2.17)
+Breaks:
+ screen-profiles (<< 2.0),
+ screen-profiles-extras (<< 2.0),
+ byobu-extras (<< 2.17)
 Enhances: screen
 Description: powerful, text based window manager and shell multiplexer
  Byobu is Ubuntu's text-based window manager based on GNU Screen.

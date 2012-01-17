@@ -1,6 +1,4 @@
-/usr
-/etc/byobu/backend
-/etc/byobu/socketdir
-/etc/profile.d/Z97-byobu.sh
-../../debian/source_byobu.py usr/share/apport/package-hooks
-../../debian/lintian/byobu usr/share/lintian/overrides
+etc/byobu/socketdir etc/byobu/
+etc/byobu/backend etc/byobu/
+etc/profile.d/Z97-byobu.sh etc/profile.d/
+debian/source_byobu.py usr/share/apport/package-hooks
