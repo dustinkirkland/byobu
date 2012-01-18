@@ -1,6 +1,7 @@
 byobu (5.5) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/ec2_cost, usr/lib/byobu/network:
+    - fix input-field-separator problems with /proc/net/dev parsing
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 17 Jan 2012 12:56:23 -0600
 
