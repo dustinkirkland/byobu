@@ -2,6 +2,7 @@ byobu (5.5) unreleased; urgency=low
 
   * usr/lib/byobu/ec2_cost, usr/lib/byobu/network:
     - fix input-field-separator problems with /proc/net/dev parsing
+    - get them in the right order on flip flag
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 17 Jan 2012 12:56:23 -0600
 

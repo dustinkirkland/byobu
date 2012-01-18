@@ -49,7 +49,7 @@ __network() {
 				;;
 				${interface}:*)
 					# Interface and tbytes got munged together
-					[ "$i" = "up" ] && x2=${iface##*:} || x2=${rmulticast##*:}
+					[ "$i" = "up" ] && x2=${rmulticast##*:} || x2=${iface##*:}
 					break;
 				;;
 			esac
