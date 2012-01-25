@@ -73,7 +73,7 @@ __ip_address() {
 		if [ "$1" = "t" ]; then
 			printf "%s" "$ipaddr"
 		else
-			color bold2; printf "%s" "$ipaddr"; color --
+			color b w k; printf "%s" "$ipaddr"; color --
 		fi
 	fi
 }

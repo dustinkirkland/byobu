@@ -1,6 +1,8 @@
 byobu (5.6) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/ip_address:
+    - user@host and ipaddress need some separation, as they're hard to
+      differentiate when next to one another
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 18 Jan 2012 19:57:15 -0600
 
