@@ -73,6 +73,7 @@ def attach_session(session):
 	print("Attaching: [%s]\n" % session)
 	update_environment(session)
 	backend, session_name = session.split("____", 2)
+	# must use the binary, not the wrapper!
 	if backend == "tmux":
 		os.execvp("tmux", ["", "-2", "attach", "-t", session_name])
 	else:
@@ -114,11 +115,8 @@ if len(sessions) > 1:
 			choice = ""
 			sys.stderr.write("\nERROR: Invalid input\n");
 elif len(sessions) == 1:
- 	# Attach to the only session; must use the binary, not the wrapper!
-	if BYOBU_BACKEND == "tmux":
-		os.execvp("tmux", ["", "-2", "attach"])
-	else:
-		os.execvp("screen", ["", "-AOxRR"])
+	# Auto-select the only session
+	choice = 1
 
 if choice:
 	if sessions[choice-1] == "NEW":

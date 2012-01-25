@@ -8,6 +8,8 @@ byobu (5.6) unreleased; urgency=low
   [ Ryan Thompson ]
   * usr/bin/byobu-select-session: LP: #919391
     - read only integers
+  * usr/bin/byobu-select-session: LP: #908944
+    - use attach_session function
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 18 Jan 2012 19:57:15 -0600
 
