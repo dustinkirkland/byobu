@@ -25,6 +25,8 @@ byobu (5.6) unreleased; urgency=low
   * usr/bin/byobu, usr/bin/byobu-janitor, usr/lib/byobu/disk_io,
     usr/lib/byobu/include/constants:
     - use BYOBU_READLINK instead of READLINK
+  * usr/bin/byobu-select-session: LP: #911500
+    - detect and avoid some circular byobu-inside-byobu infinite loops
 
   [ Ryan Thompson ]
   * usr/bin/byobu-select-session: LP: #919391

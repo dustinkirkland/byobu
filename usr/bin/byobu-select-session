@@ -117,6 +117,12 @@ if len(sessions) > 1:
 elif len(sessions) == 1:
 	# Auto-select the only session
 	choice = 1
+	if BYOBU_BACKEND == "tmux" and os.getenv("TMUX"):
+		sys.stderr.write("ERROR: Sessions should be nested with care. Unset $TMUX to force.\n")
+		sys.exit(1)
+	elif BYOBU_BACKEND == "screen" and re.match("screen", os.getenv("TERM")):
+		sys.stderr.write("ERROR: Sessions should be nested with care. Remove 'screen' from $TERM to force.\n")
+		sys.exit(1)
 
 if choice:
 	if sessions[choice-1] == "NEW":
