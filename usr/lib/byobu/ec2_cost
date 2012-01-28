@@ -42,7 +42,7 @@ __ec2_cost() {
 		. "$BYOBU_PREFIX/share/$PKG/ec2/rates.${zone%?}"
 		[ -s "$cache.type" ] || wget -q -O "$cache.type" http://169.254.169.254/latest/meta-data/instance-type 2>/dev/null &
 		sleep 0.02
-		[ -s "$cache.type" ] && type=$($SED -e "s/\./_/g" "$cache.type")
+		[ -s "$cache.type" ] && type=$($BYOBU_SED -e "s/\./_/g" "$cache.type")
 		eval rate="\$$type"
 		file_to_stat="$cache.type"
 	fi

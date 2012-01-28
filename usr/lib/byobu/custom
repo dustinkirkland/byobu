@@ -53,7 +53,7 @@ __custom() {
 			;;
 		esac
 	done
-	printf "$output" | $SED ':a;N;$!ba;s/\n//g'
+	printf "$output" | $BYOBU_SED ':a;N;$!ba;s/\n//g'
 }
 
 # vi: syntax=sh ts=4 noexpandtab

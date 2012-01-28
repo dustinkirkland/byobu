@@ -13,6 +13,15 @@ byobu (5.6) unreleased; urgency=low
     - easy to change with F8
     - need to save characters in default tmux launch to get it to fit
       in 80x24 terminals
+  * experimental/byobu-classroom, usr/bin/byobu-config, usr/bin/byobu-
+    ctrl-a, usr/bin/byobu-janitor, usr/bin/byobu-launcher-uninstall,
+    usr/bin/byobu-quiet, usr/bin/byobu-silent, usr/bin/byobu-status,
+    usr/lib/byobu/cpu_temp, usr/lib/byobu/custom,
+    usr/lib/byobu/ec2_cost, usr/lib/byobu/include/constants,
+    usr/lib/byobu/logo, usr/lib/byobu/menu, usr/lib/byobu/network,
+    usr/share/byobu/keybindings/f-keys: LP: #920661
+    - byobu should not set environment variable 'SED'
+    - use BYOBU_SED instead
 
   [ Ryan Thompson ]
   * usr/bin/byobu-select-session: LP: #919391

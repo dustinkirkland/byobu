@@ -44,7 +44,7 @@ bind $ $BYOBU_BACKEND -t status 0 byobu-status-detail	# F12 $ | show detailed st
 bind @ $BYOBU_BACKEND -t config 0 byobu-config		# F12 @ | Configuration
 bind R process r					# F12 R | Reload profile
 register s "[g G$>^h"					# Goes with F12 ~ definition
-bind ~ eval 'process x' 'process s' 'exec $SED -i -e "/./,/^$/!d" $BYOBU_RUN_DIR/printscreen' '$BYOBU_BACKEND -t PRINTSCREEN view $BYOBU_RUN_DIR/printscreen' # F12 ~ | write the buffer to file, open in a new window
+bind ~ eval 'process x' 'process s' 'exec $BYOBU_SED -i -e "/./,/^$/!d" $BYOBU_RUN_DIR/printscreen' '$BYOBU_BACKEND -t PRINTSCREEN view $BYOBU_RUN_DIR/printscreen' # F12 ~ | write the buffer to file, open in a new window
 
 # Hotkeys for splits (gnome-terminal)
 bindkey "^[O1;2Q" eval 'split' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave'	# shift-F2 | horizontal split

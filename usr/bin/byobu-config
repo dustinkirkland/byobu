@@ -47,9 +47,9 @@ ESC = ''
 snack.hotkeys[ESC] = ord(ESC)
 snack.hotkeys[ord(ESC)] = ESC
 if commands.getstatusoutput('which gsed')[0] == 0:
-	SED = "gsed"
+	BYOBU_SED = "gsed"
 else:
-	SED = "sed"
+	BYOBU_SED = "sed"
 gettext.bindtextdomain(PKG, SHARE+'/po')
 gettext.textdomain(PKG)
 _ = gettext.gettext
@@ -121,7 +121,7 @@ def help(snackScreen, size, config):
     text=f.read()
     f.close()
     text=text.replace("<esckey>", getesckey(), 1)
-    text=text.replace("_VER_", commands.getoutput("byobu -v | head -n1 | " + SED + " 's/.* //'"), 1)
+    text=text.replace("_VER_", commands.getoutput("byobu -v | head -n1 | " + BYOBU_SED + " 's/.* //'"), 1)
     t = Textbox(67, 16, text, scroll=1, wrap=1)
     bb = ButtonBar(snackScreen, ((_("Menu"), "menu", ESC),), compact = 1)
     g = GridForm(snackScreen, _("Byobu Help"), 2, 4)
@@ -177,16 +177,16 @@ def writestatus(items):
     path = BYOBU_CONFIG_DIR+'/status'
     for i in items:
         status[i[1]] = i[0]
-    # SED is hacky here, but effective
+    # BYOBU_SED is hacky here, but effective
     if BYOBU_BACKEND == "tmux":
 	for key in ["tmux_left", "tmux_right"]:
             val = genstatusstring(key, status)
-            commands.getoutput("%s -i -e '/^%s=/d' %s" % (SED, key, path))
+            commands.getoutput("%s -i -e '/^%s=/d' %s" % (BYOBU_SED, key, path))
             commands.getoutput("echo '%s=\"%s\"' >> %s" % (key, val, path))
     else:
 	for key in ["screen_upper_left", "screen_upper_right", "screen_lower_left", "screen_lower_right"]:
             val = genstatusstring(key, status)
-            commands.getoutput("%s -i -e '/^%s=/d' %s" % (SED, key, path))
+            commands.getoutput("%s -i -e '/^%s=/d' %s" % (BYOBU_SED, key, path))
             commands.getoutput("echo '%s=\"%s\"' >> %s" % (key, val, path))
 
 def togglestatus(snackScreen, size):
@@ -257,13 +257,13 @@ def setesckey(key):
         u = key[0].upper()
         l = key[0].lower()
         if os.path.exists(path):
-            out = commands.getoutput(SED+" -i -e 's/^escape.*$//' "+path)
+            out = commands.getoutput(BYOBU_SED+" -i -e 's/^escape.*$//' "+path)
             appendtofile(path, "escape ^"+u+l+"\n")
-            out = commands.getoutput(SED+" -i -e 's/^register.*$//' "+path)
+            out = commands.getoutput(BYOBU_SED+" -i -e 's/^register.*$//' "+path)
             out = commands.getoutput("grep -sh '^register x' "+SHARE+"/keybindings/*keys")
             appendtofile(path, out+"\n")
-            out = commands.getoutput(SED+" -i -e 's/\"^^/\"\^"+l+"/g' "+path)
-            out = commands.getoutput(SED+" -i -e '/^$/d' "+path)
+            out = commands.getoutput(BYOBU_SED+" -i -e 's/\"^^/\"\^"+l+"/g' "+path)
+            out = commands.getoutput(BYOBU_SED+" -i -e '/^$/d' "+path)
 
 def chgesc(snackScreen, size):
     esc=Entry(2, text=getesckey(), returnExit=1)

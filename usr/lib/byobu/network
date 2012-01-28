@@ -21,7 +21,7 @@
 
 __network_detail() {
 	get_network_interface; local interface="$_RET"
-	LC_ALL=C /sbin/ifconfig "$interface" | $SED 's/\s*$//'
+	LC_ALL=C /sbin/ifconfig "$interface" | $BYOBU_SED 's/\s*$//'
 }
 
 __network() {

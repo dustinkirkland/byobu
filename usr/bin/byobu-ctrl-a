@@ -70,13 +70,13 @@ done
 
 case "$bind_to" in
 	emacs)
-		$SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape escape \^Aa/d" "$keybindings"
+		$BYOBU_SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape escape \^Aa/d" "$keybindings"
 		echo 'bindkey "^A"' >> "$keybindings"
 		echo "INFO: ctrl-a will now operate in emacs mode"
 		echo > "$keybindings.tmux"
 	;;
 	screen)
-		$SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
+		$BYOBU_SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
 		echo 'escape "^Aa"' >> "$keybindings"
 		echo 'register x "^A"' >> "$keybindings"
 		echo 'bindkey "^A"' >> "$keybindings"
