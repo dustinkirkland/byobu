@@ -49,7 +49,7 @@ export_and_send () {
 		tmux)
 			tmux setenv "$var" "$value"
 		;;
-		*)
+		screen)
 			screen -X setenv "$var" "$value"
 		;;
 	esac

@@ -116,7 +116,7 @@ color() {
 		tmux)
 			color_tmux "$@"
 		;;
-		*)
+		screen)
 			color_screen "$@"
 		;;
 	esac

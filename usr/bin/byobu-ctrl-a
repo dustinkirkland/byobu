@@ -90,6 +90,9 @@ case "$bind_to" in
 esac
 
 case "$BYOBU_BACKEND" in
+	tmux)
+		true
+	;;
 	screen)
 		$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 	;;

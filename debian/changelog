@@ -27,6 +27,10 @@ byobu (5.6) unreleased; urgency=low
     - use BYOBU_READLINK instead of READLINK
   * usr/bin/byobu-select-session: LP: #911500
     - detect and avoid some circular byobu-inside-byobu infinite loops
+  * usr/bin/byobu, usr/bin/byobu-ctrl-a, usr/bin/byobu-reconnect-
+    sockets, usr/lib/byobu/color, usr/lib/byobu/date,
+    usr/lib/byobu/include/shutil, usr/lib/byobu/time:
+    - make check for BYOBU_BACKEND explitly tmux|screen
 
   [ Ryan Thompson ]
   * usr/bin/byobu-select-session: LP: #919391

@@ -29,7 +29,7 @@ __color() {
 		tmux)
 			true
 		;;
-		*)
+		screen)
 			printf "\005{= $BACKGROUND$FOREGROUND}"
 		;;
 	esac
