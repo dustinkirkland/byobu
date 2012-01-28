@@ -22,6 +22,9 @@ byobu (5.6) unreleased; urgency=low
     usr/share/byobu/keybindings/f-keys: LP: #920661
     - byobu should not set environment variable 'SED'
     - use BYOBU_SED instead
+  * usr/bin/byobu, usr/bin/byobu-janitor, usr/lib/byobu/disk_io,
+    usr/lib/byobu/include/constants:
+    - use BYOBU_READLINK instead of READLINK
 
   [ Ryan Thompson ]
   * usr/bin/byobu-select-session: LP: #919391

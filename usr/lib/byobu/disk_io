@@ -31,7 +31,7 @@ __disk_io_detail() {
 getdisk() {
 	local t=""
 	if [ -L "${1}" ]; then
-		t=$($READLINK -f "$1")
+		t=$($BYOBU_READLINK -f "$1")
 	else
 		t="$1"
 	fi

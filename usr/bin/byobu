@@ -38,8 +38,8 @@ if [ -r "$HOME/.byoburc" ]; then
 fi
 if [ -z "${BYOBU_PREFIX}" ]; then
 	# Find and export the installation location prefix
-	command -v greadlink >/dev/null 2>&1 && export READLINK="greadlink" || export READLINK="readlink"
-	prefix="$(dirname $(dirname $($READLINK -f $0)))"
+	command -v greadlink >/dev/null 2>&1 && export BYOBU_READLINK="greadlink" || export BYOBU_READLINK="readlink"
+	prefix="$(dirname $(dirname $($BYOBU_READLINK -f $0)))"
 	if [ "$prefix" != "/usr" ]; then
 		echo "export BYOBU_PREFIX='$prefix'" >> "$HOME/.byoburc"
 		. "$HOME/.byoburc"
