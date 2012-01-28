@@ -25,7 +25,7 @@ set -g prefix ^A,F12
 # Documented in: $BYOBU_PREFIX/share/doc/byobu/help.tmux.txt
 bind-key -n F1 new-window -k -n config byobu-config
 bind-key -n S-F1 new-window -k -n help '$BYOBU_PAGER $BYOBU_PREFIX/share/doc/byobu/help.tmux.txt'
-bind-key -n F2 new-window
+bind-key -n F2 new-window \; rename-window ""
 bind-key -n C-F2 display-panes \; split-window -h
 bind-key -n S-F2 display-panes \; split-window -v
 bind-key -n C-S-F2 new-session

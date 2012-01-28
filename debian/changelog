@@ -7,6 +7,12 @@ byobu (5.6) unreleased; urgency=low
   * usr/bin/byobu-ctrl-a: LP: #922951
     - if the user has already chosen an escape sequence, don't run the
       interactive byobu-ctrl-a program
+  * usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/profiles/tmux:
+    - empty default window names
+    - easy to change with F8
+    - need to save characters in default tmux launch to get it to fit
+      in 80x24 terminals
 
   [ Ryan Thompson ]
   * usr/bin/byobu-select-session: LP: #919391
