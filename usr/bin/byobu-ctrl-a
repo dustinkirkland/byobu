@@ -34,6 +34,10 @@ bind_to=""
 keybindings="$BYOBU_CONFIG_DIR/keybindings"
 touch "$keybindings"
 
+# If the user has already chosen an escape sequence, then
+# presumably they want ctrl-a to operate in emacs mode
+grep -qs "^escape" "$keybindings" && bind_to="emacs"
+
 case "${1}" in
 	-h|--help) Usage; exit 0;;
 	screen) bind_to="screen";;
@@ -66,7 +70,7 @@ done
 
 case "$bind_to" in
 	emacs)
-		$SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
+		$SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape escape \^Aa/d" "$keybindings"
 		echo 'bindkey "^A"' >> "$keybindings"
 		echo "INFO: ctrl-a will now operate in emacs mode"
 		echo > "$keybindings.tmux"

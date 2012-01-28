@@ -4,6 +4,9 @@ byobu (5.6) unreleased; urgency=low
   * usr/lib/byobu/ip_address:
     - user@host and ipaddress need some separation, as they're hard to
       differentiate when next to one another
+  * usr/bin/byobu-ctrl-a: LP: #922951
+    - if the user has already chosen an escape sequence, don't run the
+      interactive byobu-ctrl-a program
 
   [ Ryan Thompson ]
   * usr/bin/byobu-select-session: LP: #919391
