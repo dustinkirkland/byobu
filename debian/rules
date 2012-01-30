@@ -1,3 +1,6 @@
 #!/usr/bin/make -f
 %:
 	dh $@
+
+override_dh_perl:
+	dh_perl -d

@@ -5,7 +5,7 @@ Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 DM-Upload-Allowed: yes
 Uploaders: Antoine Beaupré <anarcat@koumbit.org>
 Standards-Version: 3.9.2
-Build-Depends: debhelper (>= 7), gettext-base, automake, autoconf
+Build-Depends: debhelper (>= 7.0.50~), gettext-base, automake, autoconf
 Homepage: http://launchpad.net/byobu
 Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/byobu/trunk
 
