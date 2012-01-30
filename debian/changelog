@@ -1,6 +1,8 @@
 byobu (5.7) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Ryan Thompson ]
+  * usr/bin/byobu-reconnect-sockets: LP: #923169
+    - nasty hack for compatibility with zsh sourcing this file
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 28 Jan 2012 15:19:07 -0600
 
