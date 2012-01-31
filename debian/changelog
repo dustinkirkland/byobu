@@ -1,6 +1,8 @@
 byobu (5.8) unreleased; urgency=low
 
-  * UNRELEASED
+  [ Daniel Hahler ]
+  * debian/rules:
+    - autoconf into debian rules
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 30 Jan 2012 18:12:49 -0600
 
