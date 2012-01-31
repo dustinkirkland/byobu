@@ -4,6 +4,10 @@ byobu (5.8) unreleased; urgency=low
   * debian/rules:
     - autoconf into debian rules
 
+  [ Daniel Hahler ]
+  * usr/bin/byobu-reconnect-sockets: LP: #923169
+    - better fix for zsh, set compatibility options instead
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 30 Jan 2012 18:12:49 -0600
 
 byobu (5.7-0ubuntu1) precise; urgency=low
