@@ -4,3 +4,11 @@
 
 override_dh_perl:
 	dh_perl -d
+
+autoconf: clean
+	dh_testdir
+	cp debian/changelog ChangeLog
+	aclocal
+	automake --add-missing --copy
+	autoconf
+
