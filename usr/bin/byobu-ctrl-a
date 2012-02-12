@@ -32,6 +32,7 @@ PKG="byobu"
 
 bind_to=""
 keybindings="$BYOBU_CONFIG_DIR/keybindings"
+[ "$BYOBU_BACKEND" = "tmux" ] && keybindings="$keybindings.tmux"
 touch "$keybindings"
 
 # If the user has already chosen an escape sequence, then
@@ -43,7 +44,7 @@ case "${1}" in
 	screen) bind_to="screen";;
 	emacs) bind_to="emacs";;
 	"") :;;
-	*) { Usage echo "bad argument $1"; } 1>&2; exit 1;;
+	*) { Usage printf "%s\n" "Bad argument $1"; } 1>&2; exit 1;;
 esac
 
 while [ -z "$bind_to" ]; do
@@ -55,7 +56,7 @@ while [ -z "$bind_to" ]; do
 	echo "    (2) Emacs mode  (go to beginning of line)"
 	echo
 	echo "Note that:"
-	echo "  - F12 also operates as Screen escape in Byobu"
+	echo "  - F12 also operates as an escape in Byobu"
 	echo "  - You can press F9 and choose your escape character"
 	echo "  - You can run 'byobu-ctrl-a' at any time to change your selection"
 	echo
@@ -70,31 +71,42 @@ done
 
 case "$bind_to" in
 	emacs)
-		$BYOBU_SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape escape \^Aa/d" "$keybindings"
-		echo 'bindkey "^A"' >> "$keybindings"
+		case "$BYOBU_BACKEND" in
+			screen)
+				$BYOBU_SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape escape \^Aa/d" "$keybindings"
+				echo 'bindkey "^A"' >> "$keybindings"
+				$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
+			;;
+			tmux)
+				$BYOBU_SED -i -e "/^set -g prefix /d" -e "/ send-prefix/d" -e "/^unbind-key -n C-a/d" "$keybindings"
+				echo "set -g prefix F12" >> "$keybindings"
+				echo "unbind-key -n C-a" >> "$keybindings"
+				$BYOBU_BACKEND source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
+			;;
+		esac
 		echo "INFO: ctrl-a will now operate in emacs mode"
-		echo > "$keybindings.tmux"
 	;;
 	screen)
-		$BYOBU_SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
-		echo 'escape "^Aa"' >> "$keybindings"
-		echo 'register x "^A"' >> "$keybindings"
-		echo 'bindkey "^A"' >> "$keybindings"
-		echo "source /usr/share/doc/tmux/examples/screen-keys.conf" > "$keybindings.tmux"
+		case "$BYOBU_BACKEND" in
+			screen)
+				$BYOBU_SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
+				echo 'escape "^Aa"' >> "$keybindings"
+				echo 'register a "^A"' >> "$keybindings"
+				echo 'bindkey "^A"' >> "$keybindings"
+				$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
+			;;
+			tmux)
+				$BYOBU_SED -i -e "/^set -g prefix /d" -e "/ send-prefix/d" -e "/^unbind-key -n C-a/d" "$keybindings"
+				echo "unbind-key -n C-a" >> "$keybindings"
+				echo "set -g prefix ^A,F12" >> "$keybindings"
+				echo "bind a send-prefix" >> "$keybindings"
+				$BYOBU_BACKEND source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
+			;;
+		esac
 		echo "INFO: ctrl-a will now operate in GNU Screen mode"
-		break
 	;;
 	*)
 		echo "Error: bad value for binding: $bind_to"
-	;;
-esac
-
-case "$BYOBU_BACKEND" in
-	tmux)
-		true
-	;;
-	screen)
-		$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 	;;
 esac
 

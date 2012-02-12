@@ -19,7 +19,7 @@
 ###############################################################################
 
 # Add F12 to the prefix list
-set -g prefix ^A,F12
+set -g prefix F12
 
 # Byobu's Keybindings
 # Documented in: $BYOBU_PREFIX/share/doc/byobu/help.tmux.txt
@@ -70,3 +70,5 @@ bind-key -n S-F11 join-pane -v -s :. -t :-1
 bind-key -n S-F12 source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux.disable
 bind-key -n C-S-F12 new-window $BYOBU_PREFIX/lib/byobu/include/mondrian
 bind-key -n M-IC paste-buffer
+
+bind-key -n C-a new-window -n "ctrl-a" "byobu-ctrl-a"

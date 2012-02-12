@@ -3,6 +3,12 @@ byobu (5.9) unreleased; urgency=low
   * usr/bin/byobu-status:
     - fix broken status expiration, which wasn't working and probably
       had a huge performance penalty :-(
+  * usr/bin/byobu-ctrl-a, usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/byobu/profiles/tmuxrc: LP: #923134
+    - get byobu-ctrl-a working within tmux, like screen
+    - prompt the user for ctrl-a to work in Screen/escape mode, or emacs
+      mode
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Feb 2012 10:01:36 -0600
 

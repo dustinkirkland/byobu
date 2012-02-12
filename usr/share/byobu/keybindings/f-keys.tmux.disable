@@ -66,3 +66,4 @@ unbind-key -n S-F11
 bind-key -n S-F12 source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux
 unbind-key -n C-S-F12
 unbind-key -n M-IC
+unbind-key -n C-a
