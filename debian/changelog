@@ -11,6 +11,9 @@ byobu (5.8) unreleased; urgency=low
   [ Dustin Kirkland ]
   * debian/control:
     - suggest ttf-ubuntu-font-family which provides the  character
+  * usr/share/byobu/profiles/tmux:
+    - drop the brackets around the open windows, saves ~4 horizontal
+      characters;  trying to get default tmux to fit in 80x25
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 30 Jan 2012 18:12:49 -0600
 
