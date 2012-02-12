@@ -1,4 +1,4 @@
-byobu (5.9) unreleased; urgency=low
+byobu (5.9-0ubuntu1) precise; urgency=low
 
   * usr/bin/byobu-status:
     - fix broken status expiration, which wasn't working and probably
@@ -10,7 +10,7 @@ byobu (5.9) unreleased; urgency=low
     - prompt the user for ctrl-a to work in Screen/escape mode, or emacs
       mode
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Feb 2012 10:01:36 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Feb 2012 11:07:40 -0600
 
 byobu (5.8-0ubuntu1) precise; urgency=low
 
