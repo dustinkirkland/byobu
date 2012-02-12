@@ -27,6 +27,13 @@ byobu (5.8) unreleased; urgency=low
     usr/lib/byobu/include/common, usr/lib/byobu/include/mondrian,
     usr/lib/byobu/include/shutil:
     - use printf where possible, saves some forks
+  * usr/lib/byobu/release, usr/share/byobu/status/statusrc,
+    usr/share/man/man1/byobu.1:
+    - based on suggestion from Scott Moser, support an abbreviated
+      version of the release string
+    - support a statusrc configuration variable of RELEASE_ABBREVIATED=N
+      where N is the number of characters from the front of the release
+      string to display
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 30 Jan 2012 18:12:49 -0600
 

@@ -31,6 +31,11 @@
 # via $DISTRO)
 #LOGO="\o/"
 
+# Abbreviate the release to N characters
+# By default, this is disabled.  But if you set RELEASE_ABBREVIATED=1
+# and your lsb_release is "precise", only "p" will be displayed
+#RELEASE_ABBREVIATED=1
+
 # Default: /
 #MONITORED_DISK=/
 
