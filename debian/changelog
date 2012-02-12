@@ -1,4 +1,4 @@
-byobu (5.8) unreleased; urgency=low
+byobu (5.8-0ubuntu1) precise; urgency=low
 
   [ Daniel Hahler ]
   * debian/rules:
@@ -35,7 +35,7 @@ byobu (5.8) unreleased; urgency=low
       where N is the number of characters from the front of the release
       string to display
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 30 Jan 2012 18:12:49 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Feb 2012 10:01:31 -0600
 
 byobu (5.7-0ubuntu1) precise; urgency=low
 
