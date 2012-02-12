@@ -38,7 +38,7 @@ __custom() {
 		local expiration=$(($lastrun+$freq))
 		if [ $now -ge $expiration ]; then
 			"$i" > "$cache.$script" 2>/dev/null
-			echo "${now}" > "$cache.$script.last"
+			printf "%s\n" "${now}" > "$cache.$script.last"
 		fi
 		readfile < "$cache.$script"
 		local str="${_RET}"

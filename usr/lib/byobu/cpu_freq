@@ -36,7 +36,7 @@ __cpu_freq() {
 			# Must scale frequency by number of processors, if counting bogomips
 			count=$(getconf _NPROCESSORS_ONLN 2>/dev/null || grep -ci "^processor" /proc/cpuinfo)
 			freq=$(egrep -i -m 1 "^bogomips" /proc/cpuinfo | awk -F"[:.]" '{ print $2 }')
-			freq=$(echo "$freq" "$count" | awk '{printf "%01.1f\n", $1/$2/1000}')
+			freq=$(printf "%s %s" "$freq" "$count" | awk '{printf "%01.1f\n", $1/$2/1000}')
 		fi
 	fi
 	color b c W; printf "%s" "$freq"; color -; color c W; printf "%s" "$ICON_GHz"; color --

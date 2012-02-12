@@ -23,7 +23,7 @@ __disk_io_detail() {
 	if command -v iostat >/dev/null; then
 		iostat -d -m -h
 	else
-		echo "Please install iostat if you want detailed information on your disk throughput"
+		printf "%s\n" "Please install iostat if you want detailed information on your disk throughput"
 	fi
 }
 
@@ -71,7 +71,7 @@ __disk_io() {
 				symbol="$ICON_WR"
 				x2="$a7"
 			fi
-			echo "$x2" > "$cache"
+			printf "%s" "$x2" > "$cache"
 			rate=$((($x2 - $x1) / ($t2 - $t1) * 512 / 1024))
 			if [ $rate -lt $DISK_IO_THRESHOLD ]; then
 				# Below threshold, don't print

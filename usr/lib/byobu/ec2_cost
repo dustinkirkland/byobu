@@ -68,7 +68,7 @@ __ec2_cost() {
 			rate=$m1_large
 		else
 			# Otherwise, scale based on number of cpu's (c* types)
-			rate=$(echo "$cpu" "$m1_small" | awk '{printf "%f", $1*$2}')
+			rate=$(printf "%s %s" "$cpu" "$m1_small" | awk '{printf "%f", $1*$2}')
 		fi
 	fi
 	hours=$(((`date +%s` - `stat --printf %Y $file_to_stat`) / 60 / 60 + 1))
@@ -95,12 +95,12 @@ __ec2_cost() {
 			break
 		fi
 	done < /proc/net/dev
-	tx_gb=$(echo ${tx_gb} | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }')
-	rx_gb=$(echo ${rx_gb} | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }')
-	network_cost=`echo "$tx_gb" "$TX_RATE" "$rx_gb" "$RX_RATE" | awk '{printf "%f %f", $1*$2, $3*$4}' | awk '{printf "%f", $1 + $2}'`
+	tx_gb=$(printf "%s" ${tx_gb} | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }')
+	rx_gb=$(printf "%s" ${rx_gb} | awk '{ printf "%f", $1 / 1024 / 1024 / 1024 }')
+	network_cost=`printf "%s %s %s %s" "$tx_gb" "$TX_RATE" "$rx_gb" "$RX_RATE" | awk '{printf "%f %f", $1*$2, $3*$4}' | awk '{printf "%f", $1 + $2}'`
 	# Calculate uptime cost
-	uptime_cost=`echo "$hours" | awk "{printf \"%f\", "$rate" * $hours}"`
-	total_cost=`echo "$network_cost" "$uptime_cost" | awk '{printf "%.2f", $1 + $2}'`
+	uptime_cost=`printf "%s" "$hours" | awk "{printf \"%f\", "$rate" * $hours}"`
+	total_cost=`printf "%s %s" "$network_cost" "$uptime_cost" | awk '{printf "%.2f", $1 + $2}'`
 	if [ "$DETAIL" = "1" ]; then
 		echo "================================================"
 		echo "Estimated cost in Amazon's EC2 since last reboot"
@@ -108,7 +108,7 @@ __ec2_cost() {
 		echo "  Network sent:  $tx_gb GB   @ \$$RX_RATE/GB"
 		echo "  Network recv:  $rx_gb GB   @ \$$TX_RATE/GB"
 		echo "  Network cost:  \$$network_cost"
-			echo "------------------------------------------------"
+		echo "------------------------------------------------"
 		echo "  Uptime:        $hours hr  @ \$$rate/hr"
 		echo "  Uptime cost:   \$$uptime_cost"
 		echo "------------------------------------------------"

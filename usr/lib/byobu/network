@@ -54,7 +54,7 @@ __network() {
 				;;
 			esac
 		done < /proc/net/dev
-		echo "$x2" > "$cache"
+		printf "%s" "$x2" > "$cache"
 		rate=$((8*($x2 - $x1) / $t / 1024))  # in kbps
 		[ "$rate" -lt 0 ] && rate=0
 		if [ $rate -gt $NETWORK_THRESHOLD ]; then

@@ -128,7 +128,7 @@ done
 
 if [ -z "$clock_type" ]
 then
-  echo "ERROR: must specify clock type"
+  printf "%s\n" "ERROR: must specify clock type"
   exit 1
 fi
 
@@ -169,5 +169,5 @@ else
   display_time="${hh}${sep}${hm}${hs}${ending}"
 fi
 
-echo -ne "$display_time"
+printf "%s" "$display_time"
 exit 0

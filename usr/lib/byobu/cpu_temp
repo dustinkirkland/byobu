@@ -23,7 +23,7 @@ __cpu_temp_detail() {
 	local i
 	for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /sys/class/hwmon/hwmon*/device/temp*_input /proc/acpi/ibm/thermal /proc/acpi/thermal_zone/*/temperature; do
 		[ -r "$i" ] || continue
-		echo "$i:"
+		printf "%s\n" "$i:"
 		cat "$i"/*
 	done
 }
