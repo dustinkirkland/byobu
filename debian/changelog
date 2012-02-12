@@ -16,6 +16,8 @@ byobu (5.8) unreleased; urgency=low
       characters;  trying to get default tmux to fit in 80x25
   * usr/lib/byobu/users:
     - do a better job counting ssh users
+  * usr/share/byobu/status/status:
+    - move wifi_quality to second right status
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 30 Jan 2012 18:12:49 -0600
 
