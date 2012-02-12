@@ -44,7 +44,7 @@ get_random_pane() {
 		r=$((RANDOM % 4))
 	done
 	LAST_PANE="$r"
-	echo "$r"
+	printf "%s\n" "$r"
 }
 
 get_random_numbers() {

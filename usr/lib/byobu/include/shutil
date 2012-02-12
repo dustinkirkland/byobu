@@ -141,7 +141,7 @@ newest() {
 }
 
 error() {
-	echo "ERROR: " "$@" 1>&2
+	printf "%s\n" "ERROR: " "$@" 1>&2
 }
 
 fail() {

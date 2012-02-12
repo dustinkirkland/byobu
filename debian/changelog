@@ -23,7 +23,9 @@ byobu (5.8) unreleased; urgency=low
   * usr/lib/byobu/cpu_freq, usr/lib/byobu/cpu_temp,
     usr/lib/byobu/custom, usr/lib/byobu/date, usr/lib/byobu/disk_io,
     usr/lib/byobu/ec2_cost, usr/lib/byobu/logo, usr/lib/byobu/network,
-    usr/lib/byobu/rcs_cost, usr/lib/byobu/time_binary:
+    usr/lib/byobu/rcs_cost, usr/lib/byobu/time_binary,
+    usr/lib/byobu/include/common, usr/lib/byobu/include/mondrian,
+    usr/lib/byobu/include/shutil:
     - use printf where possible, saves some forks
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 30 Jan 2012 18:12:49 -0600

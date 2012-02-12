@@ -44,7 +44,7 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 				unset i
 			fi
 			if ! command -v "$BYOBU_BACKEND" >/dev/null; then
-				echo "ERROR: $PKG won't work without tmux or screen installed" 1>&2
+				printf "%s\n" "ERROR: $PKG won't work without tmux or screen installed" 1>&2
 			fi
 		fi
   	fi
