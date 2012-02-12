@@ -48,8 +48,8 @@ get_now; NOW=${_RET}
 get_status() {
 	local cachepath="$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/$1"
 	local lastpath="$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND/$1"
-	local lastrun
-	[ -r "$lastpath" ] && read lastrun < "$lastpath" || lastrun=0
+	local lastrun=0
+	[ -r "$lastpath" ] && read lastrun < "$lastpath"
 	case "$1" in
 		ip_address4)
 			IPV6=0

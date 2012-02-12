@@ -1,6 +1,8 @@
 byobu (5.9) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-status:
+    - fix broken status expiration, which wasn't working and probably
+      had a huge performance penalty :-(
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Feb 2012 10:01:36 -0600
 
