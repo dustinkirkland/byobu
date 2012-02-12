@@ -32,7 +32,7 @@ __users() {
 	else
 		# Note: we'd like to use pgrep -c, however, this isn't available in
 		# busybox and some distro's pgrep (and it doesn't exit non-zero).
-		count=$(pgrep -f "sshd:.*@" | wc -l) || return
+		count=$(pgrep -f "^sshd:.*@" | wc -l) || return
 	fi
 	if [ $count -gt 0 ]; then
 		color b w r; printf "%d" "$count"; color -; color w r; printf "#"; color --

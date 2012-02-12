@@ -14,6 +14,8 @@ byobu (5.8) unreleased; urgency=low
   * usr/share/byobu/profiles/tmux:
     - drop the brackets around the open windows, saves ~4 horizontal
       characters;  trying to get default tmux to fit in 80x25
+  * usr/lib/byobu/users:
+    - do a better job counting ssh users
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 30 Jan 2012 18:12:49 -0600
 
