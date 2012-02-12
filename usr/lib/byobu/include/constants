@@ -73,7 +73,7 @@ else
 	ICON_GHz="GHz"
 	ICON_MBPS="Mbps"
 fi
-PCT="%%"
+PCT="%"
 
 # Support two different backends (screen/tmux)
 if [ -z "$BYOBU_BACKEND" ]; then

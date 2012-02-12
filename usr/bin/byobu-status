@@ -69,10 +69,10 @@ get_status() {
 	# Update cache now, if necessary
 	if [ $NOW -ge $expiry ] || [ "$lastrun" = "0" ]; then
 		"__$function" > "$cachepath"
-		echo "$NOW" > "$lastpath"
+		printf "%s" "$NOW" > "$lastpath"
 	fi
 	if [ -s "$cachepath" ]; then
-		IFS= read line < "$cachepath"; printf "$line"
+		IFS= read line < "$cachepath"; printf "%s" "$line"
 	fi
 }
 
@@ -87,7 +87,7 @@ case "$1" in
 	--detail)
 		VER=
 		if command -v dpkg-query >/dev/null; then
-			VER=$(set -- $(dpkg-query --show $PKG); echo "$2")
+			VER=$(set -- $(dpkg-query --show $PKG); printf "%s\n" "$2")
 		fi
 		printf "$PKG-$VER Detailed Status Navigation\n"
 		if command -v vim >/dev/null && `vim --version | grep -q +folding`; then

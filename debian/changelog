@@ -18,6 +18,8 @@ byobu (5.8) unreleased; urgency=low
     - do a better job counting ssh users
   * usr/share/byobu/status/status:
     - move wifi_quality to second right status
+  * usr/bin/byobu-status, usr/lib/byobu/include/constants:
+    - use printf instead of echo, saves a few forks
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 30 Jan 2012 18:12:49 -0600
 
