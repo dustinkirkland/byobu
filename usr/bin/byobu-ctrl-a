@@ -78,7 +78,7 @@ case "$bind_to" in
 				$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 			;;
 			tmux)
-				$BYOBU_SED -i -e "/^set -g prefix /d" -e "/ send-prefix/d" -e "/^unbind-key -n C-a/d" "$keybindings"
+				$BYOBU_SED -i -e "/^set -g prefix/d" -e "/ send-prefix/d" -e "/^unbind-key -n C-a/d" "$keybindings"
 				echo "set -g prefix F12" >> "$keybindings"
 				echo "unbind-key -n C-a" >> "$keybindings"
 				$BYOBU_BACKEND source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
@@ -96,9 +96,16 @@ case "$bind_to" in
 				$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 			;;
 			tmux)
-				$BYOBU_SED -i -e "/^set -g prefix /d" -e "/ send-prefix/d" -e "/^unbind-key -n C-a/d" "$keybindings"
+				$BYOBU_SED -i -e "/^set -g prefix/d" -e "/ send-prefix/d" -e "/^unbind-key -n C-a/d" "$keybindings"
 				echo "unbind-key -n C-a" >> "$keybindings"
-				echo "set -g prefix ^A,F12" >> "$keybindings"
+				if $BYOBU_BACKEND -V | grep " 1.5"; then
+					# tmux 1.5 supports a list of prefixes
+					echo "set -g prefix ^A,F12" >> "$keybindings"
+				else
+					# tmux 1.6 and above supports prefix and prefix2
+					echo "set -g prefix ^A" >> "$keybindings"
+					echo "set -g prefix2 ^A" >> "$keybindings"
+				fi
 				echo "bind a send-prefix" >> "$keybindings"
 				$BYOBU_BACKEND source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
 			;;

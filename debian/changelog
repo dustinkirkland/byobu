@@ -1,8 +1,9 @@
-byobu (5.10) unreleased; urgency=low
+byobu (5.10-0ubuntu1) precise; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-ctrl-a: LP: #931345
+    - fix ctrl-a support for tmux 1.5 and 1.6
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Feb 2012 11:07:46 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 14 Feb 2012 14:37:47 -0600
 
 byobu (5.9-0ubuntu1) precise; urgency=low
 
