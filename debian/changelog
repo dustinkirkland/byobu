@@ -1,3 +1,9 @@
+byobu (5.11) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 14 Feb 2012 14:37:49 -0600
+
 byobu (5.10-0ubuntu1) precise; urgency=low
 
   * usr/bin/byobu-ctrl-a: LP: #931345
