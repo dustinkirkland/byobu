@@ -7,6 +7,10 @@ byobu (5.11) unreleased; urgency=low
   [ Dustin Kirkland ]
   * usr/bin/byobu-status:
     - clear first window name
+  * usr/share/byobu/status/status:
+    - disable a few status items in the first tmux status line to ensure
+      that the status line fits in 80x25 terminals
+    - press shift-f5 for more status
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 14 Feb 2012 14:37:49 -0600
 
