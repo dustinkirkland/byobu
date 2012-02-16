@@ -42,6 +42,15 @@ if [ -e "/var/run/screen/S-$USER/$PKG.reload-required" ] || [ -e "$BYOBU_RUN_DIR
 	fi
 fi
 
+# Do first-run procedures, if necessary
+if [ -n "$TMUX" ]; then
+	if [ ! -e "$BYOBU_RUN_DIR/${TMUX#*,}" ]; then
+		# Clear initial window name
+		tmux rename-window ""
+		touch "$BYOBU_RUN_DIR/${TMUX#*,}"
+	fi
+fi
+
 # Get the current timestamp
 get_now; NOW=${_RET}
 

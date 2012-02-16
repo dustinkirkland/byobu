@@ -4,6 +4,10 @@ byobu (5.11) unreleased; urgency=low
   * usr/bin/byobu-reconnect-sockets, usr/bin/byobu-select-session: LP: #924545
     - add to the list of environment variables to update on reconnect
 
+  [ Dustin Kirkland ]
+  * usr/bin/byobu-status:
+    - clear first window name
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 14 Feb 2012 14:37:49 -0600
 
 byobu (5.10-0ubuntu1) precise; urgency=low
