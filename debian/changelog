@@ -1,3 +1,9 @@
+byobu (5.13) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Feb 2012 23:58:36 -0600
+
 byobu (5.12-0ubuntu1) precise; urgency=low
 
   * usr/share/byobu/keybindings/f-keys,
