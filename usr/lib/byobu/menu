@@ -3,9 +3,9 @@
 #    menu: display the menu text
 #
 #    Copyright (C) 2008 Canonical Ltd.
-#    Copyright (C) 2011 Dustin Kirkland
+#    Copyright (C) 2011-2012 Dustin Kirkland <dustin.kirkland@gmail.com>
 #
-#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#    Authors: Dustin Kirkland <dustin.kirkland@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ __menu_detail() {
 __menu() {
 	local bindings esc key text
 	[ -r "$BYOBU_CONFIG_DIR/keybindings" ] && bindings="$BYOBU_CONFIG_DIR/keybindings" || bindings="$HOME/.screenrc"
-	if grep -qs "^source.*screen-escape-keys$" $bindings 2>/dev/null || [ "$1" = "--disable-f-keys" ]; then
+	if grep -qs "^source.*screen-escape-keys$" $bindings 2>/dev/null || grep -qs "^source.*f-keys.screen.disable$" $bindings 2>/dev/null || [ "$1" = "--disable-f-keys" ]; then
 		esc=`grep "^escape" $bindings | $BYOBU_SED "s/.*^\(.\).*/\1/"`
 		[ -n "$esc" ] && key="^$esc-@" || key="^a-@"
 	elif grep -qs "^source.*none$" $bindings 2>/dev/null; then

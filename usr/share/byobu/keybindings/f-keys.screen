@@ -1,0 +1,89 @@
+###############################################################################
+#    Byobu f-key keybindings
+#      This configuration profile is intended to provide a useful
+#      keybindings using the keyboard's f-keys
+#
+#    Copyright (C) 2008-2012	Dustin Kirkland <dustin.kirkland@gmail.com>
+#				Nick Barcet <nick.barcet@canonical.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###############################################################################
+
+# Byobu's escape key is ASCII Dec:94, Hex:5E, Oct:136, Char: ctrl-^ -- ctrl-caret
+# which is bound to F12
+escape ^^^^
+register x "^^"						#     | Goes with the F12 definition
+
+# F-keys seem to work well in both gnome-terminal and tty consoles
+bindkey -k k1 $BYOBU_BACKEND -t config 0 byobu-config	# F1  | Configuration (along with F9)
+							#     | since F1 = Help in gnome-terminal
+bindkey "^[O1;2P" $BYOBU_BACKEND -t help 0 $BYOBU_PAGER $BYOBU_PREFIX/share/doc/byobu/help.screen.txt	# shift-F1  | help
+bindkey -k k2 $BYOBU_BACKEND				# F2  | Create new window
+bindkey "^[O1;5Q" eval 'split -v' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave'	# ctrl-F2  | vertical split
+bindkey "^[O1;2Q" eval 'split' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave'	# shift-F2 | horizontal split
+# No ctrl-shift-F2 (new session) in Screen
+bindkey -k k3 eval 'prev' 'fit'				# F3  | Previous Window
+bindkey -k k4 eval 'next' 'fit'				# F4  | Next Window
+bindkey "^[[1;6D" eval 'prev' 'fit'			# ctrl-shift-left  | Previous Window
+bindkey "^[[1;6C" eval 'next' 'fit'			# ctrl-shift-right  | Next Window
+# No alt-up (previous session) in Screen
+# No alt-down (next session) in Screen
+bindkey "^[O1;2R" focus up				# shift-F3 | focus up
+bindkey "^[O1;2S" focus down				# shift-F4 | focus down
+bindkey "^[[1;2A" focus up				# shift-up | focus up
+bindkey "^[[1;2B" focus down				# shift-up | focus down
+bindkey "^[[1;2D" focus up				# shift-left | focus up
+bindkey "^[[1;2C" focus down				# shift-right | focus down
+# No ctrl-shift-F3 (move pane) in Screen
+# No ctrl-shift-F4 (move pane) in Screen
+bindkey "^[[1;5A" resize +1				# ctrl-up | resize +1
+bindkey "^[[1;5B" resize -1				# ctrl-down | resize -1
+bindkey "^[[1;5D" resize -1				# ctrl-left | resize -1
+bindkey "^[[1;5C" resize +1				# ctrl-right | resize +1
+register r ":source $BYOBU_CONFIG_DIR/profile^M"	#     | Goes with F5 definition
+bindkey -k k5 eval 'process x' 'process r'		# F5  | Reload profile
+bindkey "^[[15;5~" eval 'process x' 'process r' 'stuff ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets^M"' # ctrl-F5 | reconnect gpg/ssh/x sockets
+bindkey "^[[15;6~" $BYOBU_BACKEND -t color 0 byobu-select-profile	# ctrl-shift-F5  | choose a background color
+bindkey "^[[15;2~" only					# shift-F5 | kill all splits
+bindkey "^[[31~" only					# shift-F5 | kill all splits
+bindkey -k k6 detach					# F6  | Detach from this session
+bindkey "^[[17;2~" eval 'exec touch $BYOBU_RUN_DIR/no-logout' 'detach'   # shift-F6 | detach, but don't logout
+bindkey "^[[32~" eval 'exec touch $BYOBU_RUN_DIR/no-logout' 'detach'	# shift-F6 | detach, but don't logout
+bindkey "^[[17;5~" remove				# ctrl-F6  | kill this split
+							# ctrl-F6  | sadly, does not work in tty :-(
+bindkey -k k7 copy					# F7  | Enter copy/scrollback mode
+register p "^[[5~"
+bindkey "^[[5;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process p' 'msgwait 1' 'echo "Byobu scrollback mode (alt-pgup / alt-pgdown)"' # alt-pageup | scrollback
+register n "^[[6~"
+bindkey "^[[6;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process n' 'msgwait 1' 'echo "Byobu scrollback mode (alt-pgup / alt-pgdown)"' # alt-pagedn | scrollback
+register t "A^[OH^k^h"					#     | Goes with the F8 definition
+bindkey -k k8 eval 'process x' 'process t'		# F8  | Re-title a window
+# No ctrl-F8 (restore layout) in Screen
+# No ctrl-shift-F8 (save layout) in Screen
+bindkey -k k9 $BYOBU_BACKEND -t config 0 byobu-config	# F9  | Configuration
+							# F10 | 'toolbar' in gnome-terminal
+							# F11 | 'Full Screen' in gnome-terminal
+# No alt-F11 (break pane) in Screen
+# No ctrl-F11 (join pane) in Screen
+# No shift-F11 (join pane) in Screen
+bindkey -k F2 process x					# F12 | Byobu's escape key
+bind $ $BYOBU_BACKEND -t status 0 byobu-status-detail	# F12 $ | show detailed status
+bind @ $BYOBU_BACKEND -t config 0 byobu-config		# F12 @ | Configuration
+bind R process r					# F12 R | Reload profile
+register s "[g G$>^h"					# Goes with F12 ~ definition
+bind ~ eval 'process x' 'process s' 'exec $BYOBU_SED -i -e "/./,/^$/!d" $BYOBU_RUN_DIR/printscreen' '$BYOBU_BACKEND -t PRINTSCREEN view $BYOBU_RUN_DIR/printscreen' # F12 ~ | write the buffer to file, open in a new window
+
+register d ":source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.screen.disable^M"
+bind ! eval 'process x' 'process d' 'backtick 111 9999999 9999999 byobu-status menu --disable-f-keys'	# F12 ! | toggle on/off f-keys
+
+bindkey "^A" $BYOBU_BACKEND -t ctrl-a byobu-ctrl-a

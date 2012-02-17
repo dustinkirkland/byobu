@@ -5,6 +5,14 @@ byobu (5.12) unreleased; urgency=low
     - keybindings for screen to match tmux for consistency
   * usr/bin/byobu-ctrl-a:
     - fix regression in byobu-screen ctrl-a handling
+  * usr/lib/byobu/menu, usr/share/byobu/keybindings/common,
+    usr/share/byobu/keybindings/f-keys, usr/share/byobu/keybindings/f-
+    keys.tmux, usr/share/byobu/keybindings/f-keys =>
+    usr/share/byobu/keybindings/f-keys.screen,
+    usr/share/byobu/keybindings/Makefile.am,
+    usr/share/byobu/keybindings/screen-escape-keys =>
+    usr/share/byobu/keybindings/f-keys.screen.disable:
+    - keybindings for screen to match tmux for consistency
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 15 Feb 2012 22:22:12 -0600
 

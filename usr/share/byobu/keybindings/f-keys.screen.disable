@@ -2,7 +2,7 @@
 #    Disable Byobu's f-key keybindings, define a set using Screen's escape
 #    sequence.
 #
-#    Copyright (C) 2009  Dustin Kirkland <kirkland@ubuntu.com>
+#    Copyright (C) 2009-2012  Dustin Kirkland <dustin.kirkland@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -24,25 +24,6 @@
 escape ^Aa
 register x "^A"
 
-# Disable the f-key bindings
-bindkey -k k2
-bindkey -k k3
-bindkey -k k4
-bindkey -k k5
-bindkey -k k6
-bindkey -k k7
-bindkey -k k8
-bindkey -k k9
-bindkey -k F2
-bindkey "^[O1;2Q"
-bindkey "^[O1;5Q"
-bindkey "^[O1;2R"
-bindkey "^[O1;2S"
-bindkey "^[[15;2~"
-bindkey "^[[17;2~"
-bindkey "^[[15;5~"
-bindkey "^[[17;2~"
-
 # Use the following sequences for byobu functionality
 # SEQUENCE      ACTION                          F-Key equivalent
 # ctrl-a-c      Create a new window             F2
@@ -59,9 +40,42 @@ bind @ $BYOBU_BACKEND -t config 0 byobu-config
 # ctrl-a-$      Show detailed status
 bind $ $BYOBU_BACKEND -t status 0 byobu-status-detail
 # ctrl-a-!	Toggle f-key keybindings on
-register e ":source $BYOBU_PREFIX/share/byobu/keybindings/f-keys^M"
+register e ":source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.screen^M"
 bind ! eval 'process x' 'process e' 'backtick 111 9999999 9999999 byobu-status menu'
 
-bindkey "^[[1;2C"
+# Disable the f-key bindings
+bindkey -k k1
+bindkey "^[O1;2P"
+bindkey -k k2
+bindkey "^[O1;5Q"
+bindkey "^[O1;2Q"
+bindkey -k k3
+bindkey -k k4
+bindkey "^[[1;6D"
+bindkey "^[[1;6C"
+bindkey "^[O1;2R"
+bindkey "^[O1;2S"
+bindkey "^[[1;2A"
+bindkey "^[[1;2B"
 bindkey "^[[1;2D"
-
+bindkey "^[[1;2C"
+bindkey "^[[1;5A"
+bindkey "^[[1;5B"
+bindkey "^[[1;5D"
+bindkey "^[[1;5C"
+bindkey -k k5
+bindkey "^[[15;5~"
+bindkey "^[[15;6~"
+bindkey "^[[15;2~"
+bindkey "^[[31~"
+bindkey -k k6
+bindkey "^[[17;2~"
+bindkey "^[[32~"
+bindkey "^[[17;5~"
+bindkey -k k7
+bindkey "^[[5;3~"
+bindkey "^[[6;3~"
+bindkey -k k8
+bindkey -k k9
+bindkey -k F2
+bindkey "^A"
