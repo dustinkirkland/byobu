@@ -73,7 +73,7 @@ case "$bind_to" in
 	emacs)
 		case "$BYOBU_BACKEND" in
 			screen)
-				$BYOBU_SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape escape \^Aa/d" "$keybindings"
+				$BYOBU_SED -i -e "/^register x /d" -e "/^bindkey \"^A\"/d" -e "/^escape escape \^Aa/d" "$keybindings"
 				echo 'bindkey "^A"' >> "$keybindings"
 				$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 			;;
@@ -89,9 +89,9 @@ case "$bind_to" in
 	screen)
 		case "$BYOBU_BACKEND" in
 			screen)
-				$BYOBU_SED -i -e "/^register a /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
+				$BYOBU_SED -i -e "/^register x /d" -e "/^bindkey \"^A\"/d" -e "/^escape /d" "$keybindings"
 				echo 'escape "^Aa"' >> "$keybindings"
-				echo 'register a "^A"' >> "$keybindings"
+				echo 'register x "^A"' >> "$keybindings"
 				echo 'bindkey "^A"' >> "$keybindings"
 				$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 			;;
