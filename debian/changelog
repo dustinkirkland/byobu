@@ -1,6 +1,8 @@
 byobu (5.12) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/keybindings/f-keys,
+    usr/share/byobu/keybindings/screen-escape-keys:
+    - keybindings for screen to match tmux for consistency
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 15 Feb 2012 22:22:12 -0600
 

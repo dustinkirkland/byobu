@@ -61,3 +61,7 @@ bind $ $BYOBU_BACKEND -t status 0 byobu-status-detail
 # ctrl-a-!	Toggle f-key keybindings on
 register e ":source $BYOBU_PREFIX/share/byobu/keybindings/f-keys^M"
 bind ! eval 'process x' 'process e' 'backtick 111 9999999 9999999 byobu-status menu'
+
+bindkey "^[[1;2C"
+bindkey "^[[1;2D"
+
