@@ -25,14 +25,8 @@ trap "tput reset" EXIT HUP INT QUIT TERM KILL ILL TRAP ABRT BUS FPE USR1 SEGV US
 if [ "$1" = "color" ] && [ -n "$2" ]; then
 	i=0
 	out=
-	tput setab "$2"
-	tput setaf "$2"
 	count=$(stty size | awk '{print $1*$2}')
-	while [ $i -lt $count ]; do
-	        out="$out "
-	        i=$((i+1))
-	done
-	printf "$out"
+	perl -e "print color 'reset'; printf \"\x1b[48;5;${2}m%${count}s\", \" \";";
 	head -n1
 	exit 0
 fi
