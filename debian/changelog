@@ -1,7 +1,9 @@
 byobu (5.13) unreleased; urgency=low
 
   * usr/lib/byobu/include/mondrian:
-    - simply and speed up using perl
+    - simply speed up using perl
+  * usr/bin/byobu: LP: #937175
+    - check tput for 256 color support before defaulting to that in tmux mode
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Feb 2012 23:58:36 -0600
 

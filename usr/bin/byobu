@@ -93,8 +93,12 @@ fi
 
 case $BYOBU_BACKEND in
 	tmux)
-		# Use 256 colors, unless the user has overridden
-		[ -z "$SCREEN_TERM" ] && SCREEN_TERM="-2"
+		# Use 256 colors if possible
+		if command -v tput >/dev/null; then
+			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then
+				[ -z "$SCREEN_TERM" ] && SCREEN_TERM="-2"
+			fi
+		fi
 		PROFILE="-f $BYOBU_PREFIX/share/$PKG/profiles/tmuxrc"
 		sessions=$($BYOBU_BACKEND list-sessions 2>/dev/null) || true
 	;;
