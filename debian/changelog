@@ -13,6 +13,9 @@ byobu (5.13) unreleased; urgency=low
   * usr/lib/byobu/include/shutil: LP: #930656
     - support network interface detection on Mac OSX
     - untested by me, but sort of suggested by a user
+  * etc/byobu/backend, usr/lib/byobu/include/common,
+    usr/lib/byobu/include/constants: LP: #937174
+    - fix upgrades while within a running byobu-screen session
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Feb 2012 23:58:36 -0600
 

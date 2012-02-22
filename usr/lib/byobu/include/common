@@ -31,15 +31,13 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 			if [ -d "$BYOBU_CONFIG_DIR" ] && [ -r "$BYOBU_CONFIG_DIR/profile" ]; then
 				# Previous byobu configuration exists, default to screen
 				for i in screen tmux; do
-					command -v $i >/dev/null && BYOBU_BACKEND="$i"
-					break
+					command -v $i >/dev/null && BYOBU_BACKEND="$i" && break
 				done
 				unset i
 			else
 				# New byobu configuration, default to tmux
 				for i in tmux screen; do
-					command -v $i >/dev/null && BYOBU_BACKEND="$i"
-					break
+					command -v $i >/dev/null && BYOBU_BACKEND="$i" && break
 				done
 				unset i
 			fi
