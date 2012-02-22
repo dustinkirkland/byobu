@@ -47,6 +47,8 @@ __ec2_cost() {
 		file_to_stat="$cache.type"
 	fi
 	if [ -z "$rate" ]; then
+		# No instance type/rate, exit immediately unless we explicitly want an estimate
+		[ "$EC2_ESTIMATE" = "1" ] || return
 		. "$BYOBU_PREFIX/share/$PKG/ec2/rates."*
 		# Count CPUs, Memory, Architecture, hours
 		cpu=$(grep -c "^processor.*:" /proc/cpuinfo) || cpu=1

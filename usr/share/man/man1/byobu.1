@@ -47,7 +47,7 @@ Note that BYOBU_CONFIG_DIR=\fI$XDG_CONFIG_HOME/byobu\fP if defined, and \fI$HOME
 
 \fBdistro\fP \- OS/distribution name of the release running on the current system as reported by \fBlsb_release(1)\fP or \fI/etc/issue\fP; displayed in the lower bar in bold black text toward the left on a grey background; you may override the detected release with DISTRO=Whatever in \fI$BYOBU_CONFIG_DIR/statusrc\fP
 
-\fBec2_cost\fP \- an estimation of the cost of the current boot of the system in terms of the Amazon EC2 billing model; displayed in the lower bar toward the right in green text on a black background; there is a leading '~' to indicate that this is an estimation, and the monetary units are US Dollars '$'
+\fBec2_cost\fP \- an estimation of the cost of the current boot of the system in terms of the Amazon EC2 billing model; displayed in the lower bar toward the right in green text on a black background; there is a leading '~' to indicate that this is an estimation, and the monetary units are US Dollars '$'; if not running in EC2, this plugin is disabled unless EC2_ESTIMATE=1 in \fI~/.byobu/statusrc\fP
 
 \fBentropy\fP \- a count of the system's current entropy in bytes; displayed in the lower bar toward the right in yellow text on a dark grey background; there is a leading 'e' to indicate 'entropy'
 

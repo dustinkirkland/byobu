@@ -72,3 +72,9 @@
 # to instead count number of distinct users logged onto the system
 # Default: 0
 #USERS_DISTINCT=0
+
+# If we're not in EC2 (ie, no metadata service, and no known instance type), the
+# ec2_cost status is disabled by default.  To override, and get an esitmate, set
+# this to '1'.
+# Default: 0
+#EC2_ESTIMATE=0
