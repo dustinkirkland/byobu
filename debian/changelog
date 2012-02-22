@@ -10,6 +10,9 @@ byobu (5.13) unreleased; urgency=low
     usr/share/man/man1/byobu.1: LP: #929907
     - disable the ec2_cost plugin if not running in EC2,
       allow override with EC2_ESTIMATE=1 in ~/.byobu/statusrc
+  * usr/lib/byobu/include/shutil: LP: #930656
+    - support network interface detection on Mac OSX
+    - untested by me, but sort of suggested by a user
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Feb 2012 23:58:36 -0600
 
