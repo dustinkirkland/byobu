@@ -52,16 +52,16 @@ __disk_io() {
 	esac
 	getdisk "$part"
 	local disk=${_RET}
-	local t2=`date +%s` t1=
+	local t2=$(date +%s) t1=
 	for i in "read" "write"; do
 		local cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/disk.$i"
-		t1=`stat -c %Y "$cache"` 2>/dev/null || t1=0
+		t1=$(stat -c %Y "$cache") 2>/dev/null || t1=0
 		local unit="kB/s"
-		local rate= x1= x2= symbol= unit=
+		local rate=0 x1=0 x2=0 symbol= unit=
 		if [ $t2 -le $t1 ]; then
 			rate=0
 		else
-			[ -r "$cache" ] && read x1 < "$cache" || x1=0
+			[ -r "$cache" ] && read x1 < "$cache"
 			local a1= a2= a3= a4= a5= a6= a7= a8= a9= a10=
 			read a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 other < "/sys/block/$disk/stat"
 			if [ "$i" = "read" ]; then
