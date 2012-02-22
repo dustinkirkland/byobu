@@ -4,7 +4,7 @@ byobu (5.13) unreleased; urgency=low
     - simply speed up using perl
   * usr/bin/byobu: LP: #937175
     - check tput for 256 color support before defaulting to that in tmux mode
-  * usr/lib/byobu/disk_io: LP: #934893
+  * usr/lib/byobu/disk_io: LP: #934893, #936393
     - initialize the x1 value correctly
   * usr/lib/byobu/ec2_cost, usr/share/byobu/status/statusrc,
     usr/share/man/man1/byobu.1: LP: #929907
