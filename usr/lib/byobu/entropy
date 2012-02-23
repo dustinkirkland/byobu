@@ -24,6 +24,7 @@ __entropy_detail() {
 
 __entropy() {
 	local e=$(cat /proc/sys/kernel/random/entropy_avail)
+	[ -n "$e" ] || return
 	color K Y; printf "e%s" "$e"; color --
 }
 

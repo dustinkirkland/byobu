@@ -87,6 +87,7 @@ __network() {
 					fi
 				;;
 			esac
+			[ -n "$rate" ] || continue
 			color b m w; printf "%s%s" "$symbol" "$rate"; color -; color m w; printf "%s" "$unit"; color --
 		fi
 	done

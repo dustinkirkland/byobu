@@ -40,6 +40,7 @@ __wifi_quality() {
 	if [ -z "$quality" ] || [ "$quality" = "0" ]; then
 		quality="0"
 	fi
+	[ -n "$quality" ] || return
 	[ "$quality" = "0" ] && return
 	printf "${ICON_WIFI}"; color b C k; printf "%s" "$bitrate"; color -; color C k; printf "%s" "$ICON_MBPS"; color -; color b C k; printf "%s" "$quality"; color -; color C k; printf "%s" "$PCT"; color --
 }

@@ -90,7 +90,8 @@ __disk_io() {
 				unit="kB/s"
 			fi
 		fi
-		[ "$rate" != "0" ] || continue
+		[ -z "$rate" ] && continue
+		[ "$rate" = "0" ] && continue
 		color b M W; printf "%s%s" "$symbol" "$rate"; color -; color M W; printf "%s" "$unit"; color --
 	done
 }

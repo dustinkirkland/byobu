@@ -50,6 +50,7 @@ __swap() {
 		mem="$mem"
 		unit="$ICON_KB"
 	fi
+	[ -n "$mem" ] || return
 	color b G W; printf "s%s" "$mem"; color -; color G W; printf "%s" "$unit"; color -;
 	color b G W; printf "%s" "$f"; color -; color G W; printf "%s" "$PCT"; color --
 }

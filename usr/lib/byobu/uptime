@@ -38,6 +38,7 @@ __uptime() {
 	else
 		str="${u}s"
 	fi
+	[ -n "$str" ] || return
 	color w b; printf "%s" "${str}"; color --
 }
 

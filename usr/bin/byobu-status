@@ -34,22 +34,27 @@ for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/
 	[ -r "$i" ] && . "$i"
 done
 
-# Reload profile, if necessary
-if [ -e "/var/run/screen/S-$USER/$PKG.reload-required" ] || [ -e "$BYOBU_RUN_DIR/reload-required" ]; then
-	if [ "$BYOBU_BACKEND" = "screen" ] && [ -r "$BYOBU_CONFIG_DIR/profile" ]; then
-		# If the forced janitorial steps succeed, try a profile reload
-		byobu-janitor --force && screen -X at 0 source "$BYOBU_CONFIG_DIR/profile" >/dev/null 2>&1
-	fi
-fi
-
-# Do first-run procedures, if necessary
-if [ -n "$TMUX" ]; then
-	if [ ! -e "$BYOBU_RUN_DIR/${TMUX#*,}" ]; then
-		# Clear initial window name
-		tmux rename-window ""
-		touch "$BYOBU_RUN_DIR/${TMUX#*,}"
-	fi
-fi
+case "$BYOBU_BACKEND" in
+	screen)
+		# Reload profile, if necessary
+		if [ -e "/var/run/screen/S-$USER/$PKG.reload-required" ] || [ -e "$BYOBU_RUN_DIR/reload-required" ]; then
+			if [ -r "$BYOBU_CONFIG_DIR/profile" ]; then
+				# If the forced janitorial steps succeed, try a profile reload
+				byobu-janitor --force && screen -X at 0 source "$BYOBU_CONFIG_DIR/profile" >/dev/null 2>&1
+			fi
+		fi
+	;;
+	tmux)
+		# Do first-run procedures, if necessary
+		if [ -n "$TMUX" ]; then
+			if [ ! -e "$BYOBU_RUN_DIR/${TMUX#*,}" ]; then
+				# Clear initial window name
+				tmux rename-window ""
+				touch "$BYOBU_RUN_DIR/${TMUX#*,}"
+			fi
+		fi
+	;;
+esac
 
 # Get the current timestamp
 get_now; NOW=${_RET}
@@ -77,10 +82,16 @@ get_status() {
 	find_script "$function" && . "${_RET}"
 	# Update cache now, if necessary
 	if [ $NOW -ge $expiry ] || [ "$lastrun" = "0" ]; then
-		"__$function" > "$cachepath"
-		printf "%s" "$NOW" > "$lastpath"
+		"__$function" > "$cachepath".new
 	fi
-	if [ -s "$cachepath" ]; then
+	# Check if we have data in the cache
+	if [ -s "$cachepath".new ]; then
+		# Looks like we have an updated cache, use it
+		mv -f "$cachepath".new "$cachepath"
+		printf "%s" "$NOW" > "$lastpath"
+		IFS= read line < "$cachepath"; printf "%s" "$line"
+	elif [ -s "$cachepath" ]; then
+		# New cache is empty, but we have data from our last run, use it
 		IFS= read line < "$cachepath"; printf "%s" "$line"
 	fi
 }

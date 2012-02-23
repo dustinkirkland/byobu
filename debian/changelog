@@ -1,6 +1,16 @@
 byobu (5.14) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-status, usr/lib/byobu/battery, usr/lib/byobu/cpu_freq,
+    usr/lib/byobu/custom, usr/lib/byobu/disk, usr/lib/byobu/disk_io,
+    usr/lib/byobu/distro, usr/lib/byobu/ec2_cost, usr/lib/byobu/entropy,
+    usr/lib/byobu/fan_speed, usr/lib/byobu/hostname,
+    usr/lib/byobu/load_average, usr/lib/byobu/memory,
+    usr/lib/byobu/network, usr/lib/byobu/processes, usr/lib/byobu/raid,
+    usr/lib/byobu/rcs_cost, usr/lib/byobu/swap, usr/lib/byobu/uptime,
+    usr/lib/byobu/wifi_quality:
+    - help ensure that a status is printed
+    - this fixes byobu status on some slower systems
+    - use the last cached status, if the current one doesn't return
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 21 Feb 2012 23:22:38 -0600
 

@@ -31,7 +31,7 @@ __fan_speed() {
 	for i in $FAN /sys/class/hwmon/*/*/fan1_input /sys/class/hwmon/*/device/hwmon/*/fan1_input; do
 		[ -f "$i" ] || continue
 		read speed < "$i"
-		if [ "$speed" -gt 0 ]; then
+		if [ -n "$speed" ] && [ "$speed" -gt 0 ]; then
 			color bold1; printf "%s" "$speed"; color -; color none; printf "rpm"; color --
 			return 0
 		fi
@@ -43,7 +43,7 @@ __fan_speed() {
 		read line < /proc/i8k
 		set -- $line
 		for speed in $7 $8; do
-			if [ "$speed" -gt 0 ]; then
+			if [ -n "$speed" ] && [ "$speed" -gt 0 ]; then
 				# I8K_FAN_MULT defaults to 30 (buggy BIOS workaround?),
 				# use `modprobe i8k fan_mult=1` to disable if unneeded,
 				# resulting in nonsensical speeds

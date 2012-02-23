@@ -36,9 +36,8 @@ __raid() {
 				msg="$msg,$p";;
 		esac
 	done < /proc/mdstat
-	if [ -n "$msg" ]; then
-		color B w r; printf "%s" "$msg"; color --
-	fi
+	[ -n "$msg" ] || return
+	color B w r; printf "%s" "$msg"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab

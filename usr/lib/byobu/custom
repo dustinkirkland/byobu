@@ -53,6 +53,7 @@ __custom() {
 			;;
 		esac
 	done
+	[ -n "$output" ] || return
 	printf "$output" | $BYOBU_SED ':a;N;$!ba;s/\n//g'
 }
 

@@ -39,6 +39,7 @@ __cpu_freq() {
 			freq=$(printf "%s %s" "$freq" "$count" | awk '{printf "%01.1f\n", $1/$2/1000}')
 		fi
 	fi
+	[ -n "$freq" ] || return
 	color b c W; printf "%s" "$freq"; color -; color c W; printf "%s" "$ICON_GHz"; color --
 }
 

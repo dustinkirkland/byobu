@@ -44,6 +44,7 @@ __disk() {
 		g*|G*) unit="$ICON_GB" ;;
 		t*|T*) unit="$ICON_TB" ;;
 	esac
+	[ -n "$size" ] || return
 	color b M W; printf "%s" "$size"; color -; color M W; printf "%s" "$unit"; color -;
 	color b M W; printf "%s" "$pct";  color -; color M W; printf "%s" "$PCT"; color --;
 }

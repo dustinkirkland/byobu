@@ -61,6 +61,7 @@ __distro() {
 	else
 		DISTRO="Byobu"
 	fi
+	[ -n "$DISTRO" ] || return
 	color bold2; printf "%s" "$DISTRO"; color --
 }
 

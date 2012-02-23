@@ -53,6 +53,7 @@ __memory() {
 	else
 		unit="$ICON_KB"
 	fi
+	[ -n "$total" ] || return
 	color b g W; printf "%s" "$total"; color -; color g W; printf "%s" "$unit"; color -; color b g W; printf "%s" "$f"; color -; color g W; printf "%s" "$PCT"; color --
 }
 

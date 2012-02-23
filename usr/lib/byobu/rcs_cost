@@ -91,6 +91,7 @@ __rcs_cost() {
 		return
 	fi
 
+	[ -n "$total_cost" ] || return
 	color K G; printf "R\$%s"; color -; color b K G; printf "%s" "$total_cost"; color --
 }
 

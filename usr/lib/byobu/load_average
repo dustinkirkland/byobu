@@ -25,6 +25,7 @@ __load_average_detail() {
 
 __load_average() {
 	read one five fifteen other < /proc/loadavg
+	[ -n "$one" ] || return
 	color Y k; printf "$one"; color --
 }
 

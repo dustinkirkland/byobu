@@ -118,6 +118,7 @@ __ec2_cost() {
 		echo "================================================"
 		return
 	fi
+	[ -n "$total_cost" ] || return
 	color K G; printf "A\$"; color -; color b K G; printf "%s" "$total_cost"; color --
 }
 

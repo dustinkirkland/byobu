@@ -25,6 +25,7 @@ __processes_detail() {
 
 __processes() {
 	local count=$(ls -d /proc/[0-9]* 2>/dev/null| wc -l)
+	[ -n "$count" ] || return
 	color b y w; printf "%s" "$count"; color -; color y w; printf "&"; color --
 }
 
