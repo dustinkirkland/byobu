@@ -1,11 +1,11 @@
-byobu (5.15) unreleased; urgency=low
+byobu (5.15-0ubuntu1) precise; urgency=low
 
   * usr/bin/byobu, usr/lib/byobu/include/constants:
     - fix 256 color support
     - default to colors specified in the Ubuntu brand guidelines
       + http://design.canonical.com/the-toolkit/ubuntu-brand-guidelines/
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 23 Feb 2012 08:04:07 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 23 Feb 2012 15:01:45 -0600
 
 byobu (5.14-0ubuntu1) precise; urgency=low
 
