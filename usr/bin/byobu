@@ -95,7 +95,7 @@ case $BYOBU_BACKEND in
 	tmux)
 		# Use 256 colors if possible
 		if command -v tput >/dev/null; then
-			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then
+			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ] || [ "$COLORTERM" = "gnome-terminal" ] || [ "$TERM" = "xterm" ]; then
 				[ -z "$SCREEN_TERM" ] && SCREEN_TERM="-2"
 			fi
 		fi
