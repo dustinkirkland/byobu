@@ -31,7 +31,7 @@ ___print_updates() {
 				printf "$ICON_UPDATES"
 			fi
 			color --
-		elif [ "$u" = "0" ]; then
+		elif [ "$u" = "0" ] && [ -e "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/updates_available" ]; then
 			# Clear out byobu's status cache
 			rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/updates_available"*
 		fi

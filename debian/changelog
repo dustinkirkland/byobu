@@ -3,6 +3,9 @@ byobu (5.16) unreleased; urgency=low
   * usr/lib/byobu/updates_available: LP: #942469
     - fix regression clearing updates_available status
     - and fix a typo in that commit
+  * usr/lib/byobu/reboot_required, usr/lib/byobu/updates_available:
+    - powersave flag and reload flag suffered from the same problem
+      as LP: #942469
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 23 Feb 2012 15:01:55 -0600
 
