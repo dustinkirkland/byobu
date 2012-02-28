@@ -33,7 +33,7 @@ ___print_updates() {
 			color --
 		elif [ "$u" = "0" ]; then
 			# Clear out byobu's status cache
-			rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/updates_available*"
+			rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/updates_available"*
 		fi
 	fi
 }
