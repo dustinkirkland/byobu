@@ -99,7 +99,7 @@ case $BYOBU_BACKEND in
 				[ -z "$SCREEN_TERM" ] && SCREEN_TERM="-2"
 			fi
 		fi
-		PROFILE="-f $BYOBU_PREFIX/share/$PKG/profiles/tmuxrc"
+		BYOBU_PROFILE="-f $BYOBU_PREFIX/share/$PKG/profiles/tmuxrc"
 		sessions=$($BYOBU_BACKEND list-sessions 2>/dev/null) || true
 	;;
 	screen)
@@ -127,14 +127,14 @@ case $BYOBU_BACKEND in
 		# Some users want to maintain separate configurations
 		# if they use both GNU Screen and byobu on the same system
 		if [ -r "$BYOBU_CONFIG_DIR/.screenrc" ]; then
-			PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/byoburc"
+			BYOBU_PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/byoburc"
 		else
-			PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/screenrc"
+			BYOBU_PROFILE="-c $BYOBU_PREFIX/share/$PKG/profiles/screenrc"
 		fi
-		NAME="-S $PKG"
-		# Zero out $NAME if user has specified a session name
+		BYOBU_SESSION_NAME="-S $PKG"
+		# Zero out $BYOBU_SESSION_NAME if user has specified a session name
 		for i in "$@"; do
-			case $i in -*r*|-*d*|-*D*|-*S*|-ls|-list) NAME= ;; esac
+			case $i in -*r*|-*d*|-*D*|-*S*|-ls|-list) BYOBU_SESSION_NAME= ;; esac
 		done
 		sessions=$($BYOBU_BACKEND -wipe 2>/dev/null) || true
 	;;
@@ -148,7 +148,7 @@ esac
 if [ "$#" = "0" ]; then
 	if [ "$CUSTOM_WINDOW_SET" = "1" ]; then
 		# Start new custom window set session
-		exec $BYOBU_BACKEND $SCREEN_TERM $NAME $PROFILE
+		exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE
 	else
 		case "$sessions" in
 			*\(*\)*)
@@ -157,13 +157,13 @@ if [ "$#" = "0" ]; then
 			;;
 			*)
 				# Start new default session
-				exec $BYOBU_BACKEND $SCREEN_TERM $NAME $PROFILE $DEFAULT_WINDOW
+				exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE $DEFAULT_WINDOW
 			;;
 		esac
 	fi
 else
 	# Launch with command line args
-	exec $BYOBU_BACKEND $SCREEN_TERM $NAME $PROFILE "$@"
+	exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE "$@"
 fi
 
 # vi: syntax=sh ts=4 noexpandtab

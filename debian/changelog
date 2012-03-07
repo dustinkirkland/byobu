@@ -6,6 +6,8 @@ byobu (5.16) unreleased; urgency=low
   * usr/lib/byobu/reboot_required, usr/lib/byobu/updates_available:
     - powersave flag and reload flag suffered from the same problem
       as LP: #942469
+  * usr/bin/byobu: LP: #949385
+    - namespace a few environment variables more appropriately
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 23 Feb 2012 15:01:55 -0600
 
