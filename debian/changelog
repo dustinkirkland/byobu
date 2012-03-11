@@ -1,3 +1,9 @@
+byobu (5.17) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 11 Mar 2012 07:23:06 -0500
+
 byobu (5.16-0ubuntu1) precise; urgency=low
 
   * usr/lib/byobu/updates_available: LP: #942469
