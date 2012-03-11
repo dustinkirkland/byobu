@@ -1,4 +1,4 @@
-byobu (5.16) unreleased; urgency=low
+byobu (5.16-0ubuntu1) precise; urgency=low
 
   * usr/lib/byobu/updates_available: LP: #942469
     - fix regression clearing updates_available status
