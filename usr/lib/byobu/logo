@@ -55,7 +55,11 @@ __logo() {
 		*ubuntu*)
 			if $MARKUP; then
 				if [ "$UTF8" = "1" ] || [ "$BYOBU_BACKEND" = "tmux" ]; then
-					color m W; printf " u "; color -
+					if [ ! "$VTE_CJK_WIDTH" = "1" ] && [ !  "$VTE_CJK_WIDTH" = "wide" ] ; then
+						color m W; printf " u "; color -
+					else
+						color m W; printf " U "; color -
+					fi
 				else
 					color m W; printf " U "; color -
 				fi
