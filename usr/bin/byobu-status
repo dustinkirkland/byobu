@@ -27,7 +27,8 @@ PKG="byobu"
 [ -f "$BYOBU_CONFIG_DIR/status.disable" ] && exit 0
 
 # Clean and create cache directories
-mkdir -p "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND" "$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND"
+[ -d "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND" ] || mkdir -p "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND"
+[ -d "$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND" ] || mkdir -p "$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND"
 
 # Source configurations
 for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/status/statusrc" "$BYOBU_CONFIG_DIR/status" "$BYOBU_CONFIG_DIR/statusrc" "$BYOBU_CONFIG_DIR/color" "$BYOBU_CONFIG_DIR/color.tmux"; do
@@ -66,15 +67,15 @@ get_status() {
 	[ -r "$lastpath" ] && read lastrun < "$lastpath"
 	case "$1" in
 		ip_address4)
-			IPV6=0
-			function="ip_address"
+			local IPV6=0
+			local function="ip_address"
 		;;
 		ip_address6)
-			IPV6=1
-			function="ip_address"
+			local IPV6=1
+			local function="ip_address"
 		;;
 		*)
-			function="$1"
+			local function="$1"
 		;;
 	esac
 	status_freq "$function"

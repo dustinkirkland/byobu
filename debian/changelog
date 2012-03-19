@@ -1,6 +1,9 @@
 byobu (5.17) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-status:
+    - performance improvement, testing for directory existence before
+      mkdir -p saves time
+    - localize a couple of function variables
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 11 Mar 2012 07:23:06 -0500
 
