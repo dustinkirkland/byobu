@@ -1,9 +1,14 @@
 byobu (5.17) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu-status:
     - performance improvement, testing for directory existence before
       mkdir -p saves time
     - localize a couple of function variables
+
+  [ Fumihito YOSHIDA (hito) ]
+  * usr/lib/byobu/logo: LP: #952724
+    - handle VTE_CJK_WIDTH=1 for asian locales
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 11 Mar 2012 07:23:06 -0500
 
