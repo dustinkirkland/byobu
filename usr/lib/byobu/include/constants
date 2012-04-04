@@ -99,8 +99,7 @@ command -v greadlink >/dev/null 2>&1 && export BYOBU_READLINK="greadlink" || exp
 command -v sensible-pager >/dev/null 2>&1 && export BYOBU_PAGER="sensible-pager" || export BYOBU_PAGER="less"
 
 # Default colors
-export BYOBU_DARK="#AEA79F"		# WARM GREY
-export BYOBU_LIGHT="#333333"		# COOL GREY
-export BYOBU_ACCENT="#75507B"		# AUBERGINE
-export BYOBU_HIGHLIGHT="#DD4814"	# UBUNTU ORANGE
-
+export BYOBU_DARK="black"
+export BYOBU_LIGHT="white"
+export BYOBU_ACCENT="#75507B"          # AUBERGINE
+export BYOBU_HIGHLIGHT="#DD4814"       # UBUNTU ORANGE
