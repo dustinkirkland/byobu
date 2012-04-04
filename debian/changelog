@@ -1,4 +1,4 @@
-byobu (5.17) unreleased; urgency=low
+byobu (5.17-0ubuntu1) precise; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-status:
@@ -14,7 +14,7 @@ byobu (5.17) unreleased; urgency=low
   * usr/lib/byobu/logo: LP: #952724
     - handle VTE_CJK_WIDTH=1 for asian locales
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 11 Mar 2012 07:23:06 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Apr 2012 19:22:02 -0500
 
 byobu (5.16-0ubuntu1) precise; urgency=low
 
