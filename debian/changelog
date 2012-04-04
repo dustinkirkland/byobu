@@ -5,6 +5,8 @@ byobu (5.17) unreleased; urgency=low
     - performance improvement, testing for directory existence before
       mkdir -p saves time
     - localize a couple of function variables
+  * usr/bin/byobu: LP: #966686
+    - ensure that the MOTD gets printed on byobu-tmux first launches
 
   [ Fumihito YOSHIDA (hito) ]
   * usr/lib/byobu/logo: LP: #952724
