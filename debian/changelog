@@ -1,7 +1,12 @@
 byobu (5.18) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu-status: LP: #997766
     - handle status wider than terminal more gracefully
+
+  [ Daniel Hahler ]
+  * usr/bin/byobu-config: LP: #996559
+    - use env for python version
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Apr 2012 19:22:04 -0500
 
