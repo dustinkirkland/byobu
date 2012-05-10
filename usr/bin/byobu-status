@@ -35,6 +35,15 @@ for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/
 	[ -r "$i" ] && . "$i"
 done
 
+# Fix status printing for small terminal sizes
+w=$(tmux list-windows -F "#{session_width}")
+read w_last < $BYOBU_RUN_DIR/width || w_last=
+if [ "$w" != "$w_last" ]; then
+	tmux set -g status-left-length $((w*1/4)) >/dev/null 2>&1
+	tmux set -g status-right-length $((w*3/4)) >/dev/null 2>&1
+	printf "$w" > $BYOBU_RUN_DIR/width
+fi
+
 case "$BYOBU_BACKEND" in
 	screen)
 		# Reload profile, if necessary

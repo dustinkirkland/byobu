@@ -1,6 +1,7 @@
 byobu (5.18) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-status: LP: #997766
+    - handle status wider than terminal more gracefully
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Apr 2012 19:22:04 -0500
 
