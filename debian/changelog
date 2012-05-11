@@ -1,4 +1,4 @@
-byobu (5.18) unreleased; urgency=low
+byobu (5.18-0ubuntu1) quantal; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-status: LP: #997766
@@ -8,7 +8,7 @@ byobu (5.18) unreleased; urgency=low
   * usr/bin/byobu-config: LP: #996559
     - use env for python version
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Apr 2012 19:22:04 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 11 May 2012 15:42:59 -0700
 
 byobu (5.17-0ubuntu1) precise; urgency=low
 
