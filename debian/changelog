@@ -1,3 +1,9 @@
+byobu (5.19) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 11 May 2012 15:43:02 -0700
+
 byobu (5.18-0ubuntu1) quantal; urgency=low
 
   [ Dustin Kirkland ]
