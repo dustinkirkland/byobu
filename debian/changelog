@@ -1,6 +1,7 @@
 byobu (5.19) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-config, usr/bin/byobu-select-session: LP: #988471
+    - per Barry Warsaw, scripts should NOT use 'env python'; sorry
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 11 May 2012 15:43:02 -0700
 
