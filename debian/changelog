@@ -2,6 +2,9 @@ byobu (5.19) unreleased; urgency=low
 
   * usr/bin/byobu-config, usr/bin/byobu-select-session: LP: #988471
     - per Barry Warsaw, scripts should NOT use 'env python'; sorry
+  * === added directory usr/share/sounds, === added directory
+    usr/share/sounds/byobu, usr/share/sounds/byobu/byobu.ogg: LP: #999716
+    - add byobu sound to repo, as pronounced by Fumihito YOSHIDA
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 11 May 2012 15:43:02 -0700
 
