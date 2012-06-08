@@ -1,4 +1,4 @@
-byobu (5.19) unreleased; urgency=low
+byobu (5.19-0ubuntu1) quantal; urgency=low
 
   * usr/bin/byobu-config, usr/bin/byobu-select-session: LP: #988471
     - per Barry Warsaw, scripts should NOT use 'env python'; sorry
@@ -8,7 +8,7 @@ byobu (5.19) unreleased; urgency=low
   * usr/lib/byobu/updates_available:
     - use run-one, rather than run-this-one (which isn't working well)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 11 May 2012 15:43:02 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Jun 2012 17:25:18 -0500
 
 byobu (5.18-0ubuntu1) quantal; urgency=low
 
