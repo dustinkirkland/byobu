@@ -1,6 +1,8 @@
 byobu (5.20) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-status:
+    - fix upgrades to the new width handling, where some things
+      were undefined
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Jun 2012 17:25:23 -0500
 
