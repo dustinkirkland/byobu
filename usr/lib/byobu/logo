@@ -27,10 +27,12 @@ get_distro() {
 	elif [ -r "/etc/issue" ]; then
 		# Otherwise, check /etc/issue
 		_RET=`grep -m1 "^[A-Za-z]" /etc/issue`
-	elif which lsb_release >/dev/null 2>&1; then
+	elif $BYOBU_TEST lsb_release >/dev/null 2>&1; then
 		# This can be a very expensive operation, do it only
 		# if all other methods fail
 		_RET=`lsb_release -s -a 2>/dev/null`
+	elif $BYOBU_TEST sw_vers >/dev/null 2>&1; then
+		_RET=`sw_vers 2>/dev/null`
 	else
 		# No idea!
 		_RET="[B]"
@@ -94,6 +96,14 @@ __logo() {
 		*gentoo*)
 			logo=" > "
 			$MARKUP && printf "$(color b c w)%s$(color -)" "$logo" || printf "$logo"
+		;;
+		*mac*)
+			if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
+			logo=" ⌘  "
+			else
+				logo=" X "
+			fi
+			$MARKUP && printf "$(color b k w)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*mandriva*)
 			logo=" (* "
