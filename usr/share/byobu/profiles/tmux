@@ -60,6 +60,9 @@ set-window-option -g window-status-current-fg $BYOBU_LIGHT
 set-window-option -g window-status-alert-bg $BYOBU_DARK
 set-window-option -g window-status-alert-fg $BYOBU_LIGHT
 set-window-option -g window-status-alert-attr bold
+set-window-option -g window-status-activity-bg $BYOBU_DARK
+set-window-option -g window-status-activity-fg $BYOBU_LIGHT
+set-window-option -g window-status-activity-attr bold
 set-window-option -g automatic-rename off
 set-window-option -g aggressive-resize on
 set-window-option -g monitor-activity on

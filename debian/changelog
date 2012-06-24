@@ -31,6 +31,9 @@ byobu (5.20) unreleased; urgency=low
     usr/lib/byobu/rcs_cost: LP: #1013220
     - gracefully silence status notifications that require /proc/net/route
       when it's not really there (cygwin, mac)
+  * usr/share/byobu/profiles/tmux: LP: #1012348
+    - fix status activity/alert bolding
+    - seems upstream tmux changed the option name from "alert" to "activity"
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Jun 2012 17:25:23 -0500
 
