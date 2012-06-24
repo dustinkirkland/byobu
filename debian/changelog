@@ -34,6 +34,10 @@ byobu (5.20) unreleased; urgency=low
   * usr/share/byobu/profiles/tmux: LP: #1012348
     - fix status activity/alert bolding
     - seems upstream tmux changed the option name from "alert" to "activity"
+
+  [ https://launchpad.net/~ktyubuntu ]
+  * usr/lib/byobu/logo: LP: #1004712
+    - fix Red Hat logo detection
   * usr/lib/byobu/logo: LP: #1004722
     - add apple distro and logo
 
