@@ -1,6 +1,6 @@
 byobu (5.20) unreleased; urgency=low
 
-  * usr/bin/byobu-status:
+  * usr/bin/byobu-status: LP: #998812
     - fix upgrades to the new width handling, where some things
       were undefined
   * usr/lib/byobu/updates_available: LP: #976928, #1010505, #999151
