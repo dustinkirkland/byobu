@@ -94,7 +94,7 @@ case "$BYOBU_BACKEND" in
 esac
 
 # MacOS Support
-$BYOBU_TEST gsed >/dev/null 2>&1 && export BYOBU_SED="gsed" || export BYOBU_SED="sed"
+$BYOBU_TEST gsed >/dev/null 2>&1 && export BYOBU_SED="gsed --follow-symlinks" || export BYOBU_SED="sed --follow-symlinks"
 $BYOBU_TEST greadlink >/dev/null 2>&1 && export BYOBU_READLINK="greadlink" || export BYOBU_READLINK="readlink"
 $BYOBU_TEST sensible-pager >/dev/null 2>&1 && export BYOBU_PAGER="sensible-pager" || export BYOBU_PAGER="less"
 

@@ -37,6 +37,9 @@ byobu (5.20) unreleased; urgency=low
     - seems upstream tmux changed the option name from "alert" to "activity"
   * usr/share/man/man1/byobu.1: LP: #977225
     - add documentation about the status line background colors
+  * usr/lib/byobu/include/constants: LP: #954031
+    - use the sed --follow-symlinks option to keep from recreating files,
+      especially .profile and .bashrc
 
   [ Dustin Kirkland and Daniel Lee ]
   * usr/lib/byobu/disk_io, usr/lib/byobu/mail, usr/lib/byobu/network:
