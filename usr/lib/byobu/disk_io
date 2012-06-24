@@ -90,9 +90,11 @@ __disk_io() {
 				unit="kB/s"
 			fi
 		fi
-		[ -z "$rate" ] && continue
-		[ "$rate" = "0" ] && continue
-		color b M W; printf "%s%s" "$symbol" "$rate"; color -; color M W; printf "%s" "$unit"; color --
+		if [ -z "$rate" ] || [ "$rate" = "0" ]; then
+			rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/disk_io"*
+		else
+			color b M W; printf "%s%s" "$symbol" "$rate"; color -; color M W; printf "%s" "$unit"; color --
+		fi
 	done
 }
 

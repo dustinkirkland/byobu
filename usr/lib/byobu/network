@@ -89,6 +89,8 @@ __network() {
 			esac
 			[ -n "$rate" ] || continue
 			color b m w; printf "%s%s" "$symbol" "$rate"; color -; color m w; printf "%s" "$unit"; color --
+		else
+			rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/network"*
 		fi
 	done
 }

@@ -28,6 +28,8 @@ __mail_detail() {
 __mail() {
 	if [ -s "$MAILFILE" ]; then
 		 color b; printf "%s" "$ICON_MAIL"; color --
+	else
+		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/mail"*
 	fi
 }
 
