@@ -10,6 +10,8 @@ byobu (5.20) unreleased; urgency=low
     - drop run-one usage, use flock directly instead
   * debian/control, usr/share/byobu/windows/common:
     - fix some lintian warnings and errors
+  * usr/lib/byobu/raid: LP: #1006971
+    - ensure raid status cache gets cleared out when done rebuilding
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Jun 2012 17:25:23 -0500
 

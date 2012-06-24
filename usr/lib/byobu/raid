@@ -29,15 +29,21 @@ __raid() {
 		# Errors in your raid
 		case "$line" in
 			*\ blocks\ *\[*_*\]$)
-				[ -z "${msg}" ] && msg="RAID";;
+				[ -z "${msg}" ] && msg="RAID"
+			;;
 			*%*)
 				p="${line%%\%*}${PCT}"; p=${p##* };
 				[ -z "$msg" ] && msg="RAID"
-				msg="$msg,$p";;
+				msg="$msg,$p"
+			;;
 		esac
 	done < /proc/mdstat
-	[ -n "$msg" ] || return
-	color B w r; printf "%s" "$msg"; color --
+	if [ -n "$msg" ]; then
+		color B w r; printf "%s" "$msg"; color --
+	elif [ -e "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/raid" ]; then
+		# Clear out cached raid message
+		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/raid"*
+	fi
 }
 
 # vi: syntax=sh ts=4 noexpandtab
