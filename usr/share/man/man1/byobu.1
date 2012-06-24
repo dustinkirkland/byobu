@@ -18,6 +18,9 @@ Options to \fBbyobu\fP are simply passed through \fBscreen\fP(1) or \fBtmux\fP(1
 
 Note that BYOBU_CONFIG_DIR=\fI$XDG_CONFIG_HOME/byobu\fP if defined, and \fI$HOME/.byobu\fP otherwise.
 
+.SH BACKGROUND COLORS
+The background colors of the \fBbyobu\fP status lines can be adjusted by editing the files \fI$HOME/.byobu/color\fP (for \fBbyobu\-screen\fP) and \fI$HOME/.byobu/color.tmux\fP (for \fBbyobu\-tmux\fP).  The command \fBCtrl-Shift-F5\fP will change the background to a randomly selected color when running in \fBbyobu\-tmux\fP mode.  Simply remove those files to return to the default color configuration.
+
 .SH STATUS NOTIFICATIONS
 
 \fBbyobu\fP supports a number of unique and interesting status notifications across the lowest two lines in the screen.  Each status notification item is independently configurable, enabled and disabled by the configuration utility.  The guide below helps identify each status item (in alphabetical order):

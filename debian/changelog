@@ -1,5 +1,6 @@
 byobu (5.20) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu-status: LP: #998812
     - fix upgrades to the new width handling, where some things
       were undefined
@@ -34,6 +35,8 @@ byobu (5.20) unreleased; urgency=low
   * usr/share/byobu/profiles/tmux: LP: #1012348
     - fix status activity/alert bolding
     - seems upstream tmux changed the option name from "alert" to "activity"
+  * usr/share/man/man1/byobu.1: LP: #977225
+    - add documentation about the status line background colors
 
   [ https://launchpad.net/~ktyubuntu ]
   * usr/lib/byobu/logo: LP: #1004712
