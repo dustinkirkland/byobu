@@ -20,8 +20,8 @@
 
 PKG="byobu"
 
-# UTF8 support in the hardstatus is coming one day in Screen
-if [ "$UTF8" = "1" ] || [ "$BYOBU_BACKEND" = "tmux" ]; then
+# UTF-8 support in the hardstatus is coming one day in Screen
+if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
 	#ICON_C="℃"
 	#ICON_F="℉"
 	ICON_C="C"

@@ -15,6 +15,11 @@ byobu (5.20) unreleased; urgency=low
   * debian/postrm: LP: #996873
     - at package removal, ensure that we remove the auto-launch symlink
       if it exists
+  * usr/bin/byobu, usr/lib/byobu/include/constants, usr/lib/byobu/logo,
+    usr/share/man/man1/byobu.1: LP: #938920, #952724
+    - fix "infinite scrolling" of status line, when using multibyte
+      utf-8 characters in status
+    - detect character map, and only enable utf-8 when possible
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Jun 2012 17:25:23 -0500
 

@@ -91,7 +91,7 @@ Note that BYOBU_CONFIG_DIR=\fI$XDG_CONFIG_HOME/byobu\fP if defined, and \fI$HOME
 
 \fBtime\fP \- the system time in HH:MM:SS format; displayed in the lower bar on the far right in the default text and default background colors
 
-\fBtime_binary\fP \- only for the hard core geek, the local system time in binary; requires UTF8 support in a VERY recent version of GNU Screen; you must additionally set "UTF8=1" in \fI$BYOBU_CONFIG_DIR/statusrc\fP; displayed in the lower bar on the far right in the default text and background colors
+\fBtime_binary\fP \- only for the hard core geek, the local system time in binary; requires UTF-8 support in a VERY recent version of GNU Screen; displayed in the lower bar on the far right in the default text and background colors
 
 \fBtime_utc\fP \- the UTC system time in HH:MMformat; displayed in the lower bar on the far right in dark text on a light background
 
@@ -202,7 +202,7 @@ Apple Mac OSX terminal users have reported 'flashing text'.  You can fix this in
 Apple Mac keyboard users may need to specify a vt100 terminal by adding this to your OSX profile, in order to get Byobu's function keys and colors to work:
   alias ssh='TERM=vt100 ssh'
 
-Users of a non-UTF8 locale (such as cs_CZ charset ISO-8859-2), may need to add "defutf8 off" to \fI~/.screenrc\fP, if some characters are rendering as "?".
+Users of a non-UTF-8 locale (such as cs_CZ charset ISO-8859-2), may need to add "defutf8 off" to \fI~/.screenrc\fP, if some characters are rendering as "?".
 
 Users who customize their PS1 prompt need to put this setting in \fI~/.bashrc\fP, rather than \fI~/.profile\fP, in order for it to work correctly with Byobu.
 
