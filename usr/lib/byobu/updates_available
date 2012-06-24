@@ -51,20 +51,20 @@ ___update_cache() {
 	if [ -x /usr/lib/update-notifier/apt-check ]; then
 		# If apt-check binary exists, use it
 		flock -xn "$flock" /usr/lib/update-notifier/apt-check 2>&1 | awk '-F;' 'END { print $1, $2 }' > "$mycache" &
-	elif command -v apt-get >/dev/null; then
+	elif $BYOBU_TEST apt-get >/dev/null; then
 		# If apt-get exists, use it
 		flock -xn "$flock" apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst > $mycache &
-	elif command -v pkcon >/dev/null; then
+	elif $BYOBU_TEST pkcon >/dev/null; then
 		# use packagekit to show list of packages
 		flock -xn "$flock" pkcon get-updates -p | grep -c '^Package' > "$mycache" &
-	elif command -v zypper >/dev/null; then
+	elif $BYOBU_TEST zypper >/dev/null; then
 		# If zypper exists, use it
 		flock -xn "$flock" zypper --no-refresh lu --best-effort | grep -c 'v |' > $mycache &
-	elif command -v yum >/dev/null; then
+	elif $BYOBU_TEST yum >/dev/null; then
 		# If yum exists, use it
 		# TODO: We need a better way of counting updates available from a RH expert
 		flock -xn "$flock" yum list updates -q | grep -vc "Updated Packages" > $mycache &
-	elif command -v pacman >/dev/null; then
+	elif $BYOBU_TEST pacman >/dev/null; then
 		# If pacman (Archlinux) exists, use it
 		LC_ALL=C flock -xn "$flock" pacman -Sup | grep -vc "^\(::\| \)" > $mycache &
 	fi
@@ -76,14 +76,14 @@ ___update_needed() {
 	local mycache=$1
 	# The cache doesn't exist: create it
 	[ ! -e "$mycache" ] && return 0
-	if command -v apt-get >/dev/null; then
+	if $BYOBU_TEST apt-get >/dev/null; then
 		# Debian/ubuntu
 		[ "/var/lib/apt" -nt "$mycache" ] || [ "/var/lib/apt/lists" -nt "$mycache" ]
 		return $?
 	elif [ -e "/var/lib/PackageKit/transactions.db" ]; then
 		[ "/var/lib/PackageKit/transactions.db" -nt "$mycache" ]
 		return $?
-	elif command -v pacman >/dev/null; then
+	elif $BYOBU_TEST pacman >/dev/null; then
 		# Archlinux
 		local db
 		for db in /var/lib/pacman/sync/*.db; do
@@ -95,7 +95,7 @@ ___update_needed() {
 }
 
 __updates_available_detail() {
-	if command -v apt-get >/dev/null; then
+	if $BYOBU_TEST apt-get >/dev/null; then
 		local detail=`apt-get -s -o Debug::NoLocking=true upgrade`
 		if [ "$1" = "--detail" ]; then
 			printf "$detail"

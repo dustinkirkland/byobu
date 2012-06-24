@@ -44,7 +44,7 @@ __distro() {
 				DISTRO="${issue%% *}";
 			;;
 		esac
-	elif command -v lsb_release >/dev/null 2>&1; then
+	elif $BYOBU_TEST lsb_release >/dev/null 2>&1; then
 		# If lsb_release is available, use it
 		local r=$(lsb_release -s -d)
 		case "$r" in

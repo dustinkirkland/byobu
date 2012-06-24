@@ -50,9 +50,9 @@ elif [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_
 		case "$-" in
 			*i*)
 				# Attempt to merge shell history across sessions/windows (works with a few exceptions)
-				if command -v shopt >/dev/null; then
+				if $BYOBU_TEST shopt >/dev/null; then
 					shopt -s histappend || true
-				elif command -v setopt >/dev/null; then
+				elif $BYOBU_TEST setopt >/dev/null; then
 					# Support zsh too
 					setopt appendhistory
 				fi

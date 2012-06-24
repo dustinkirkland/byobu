@@ -20,6 +20,13 @@ byobu (5.20) unreleased; urgency=low
     - fix "infinite scrolling" of status line, when using multibyte
       utf-8 characters in status
     - detect character map, and only enable utf-8 when possible
+  * usr/bin/byobu, usr/bin/byobu-launch, usr/bin/byobu-status,
+    usr/lib/byobu/disk_io, usr/lib/byobu/distro,
+    usr/lib/byobu/include/common, usr/lib/byobu/include/constants,
+    usr/lib/byobu/release, usr/lib/byobu/updates_available: LP: #996285
+    - create new BYOBU_TEST global, which is one of:
+      [command -v, type, which]
+    - command -v doesn't exist in busybox, type does
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Jun 2012 17:25:23 -0500
 

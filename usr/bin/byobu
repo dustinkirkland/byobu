@@ -38,7 +38,7 @@ if [ -r "$HOME/.byoburc" ]; then
 fi
 if [ -z "${BYOBU_PREFIX}" ]; then
 	# Find and export the installation location prefix
-	command -v greadlink >/dev/null 2>&1 && export BYOBU_READLINK="greadlink" || export BYOBU_READLINK="readlink"
+	$BYOBU_TEST greadlink >/dev/null 2>&1 && export BYOBU_READLINK="greadlink" || export BYOBU_READLINK="readlink"
 	prefix="$(dirname $(dirname $($BYOBU_READLINK -f $0)))"
 	if [ "$prefix" != "/usr" ]; then
 		echo "export BYOBU_PREFIX='$prefix'" >> "$HOME/.byoburc"
@@ -95,7 +95,7 @@ fi
 case $BYOBU_BACKEND in
 	tmux)
 		# Use 256 colors if possible
-		if command -v tput >/dev/null; then
+		if $BYOBU_TEST tput >/dev/null; then
 			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ] || [ "$COLORTERM" = "gnome-terminal" ] || [ "$TERM" = "xterm" ]; then
 				[ -z "$SCREEN_TERM" ] && SCREEN_TERM="-2"
 			fi
@@ -121,7 +121,7 @@ case $BYOBU_BACKEND in
 		# Launch shell, unless the user has default windows set to launch
 		uncommented_lines < "$BYOBU_WINDOWS" && DEFAULT_WINDOW= || DEFAULT_WINDOW="${BYOBU_PREFIX}/bin/byobu-shell"
 		# Check if our terminfo supports 256 colors
-		if command -v tput >/dev/null; then
+		if $BYOBU_TEST tput >/dev/null; then
 			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then
 				SCREEN_TERM="-T screen"
 			fi
