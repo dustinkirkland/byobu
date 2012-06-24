@@ -1,4 +1,4 @@
-byobu (5.20) unreleased; urgency=low
+byobu (5.20-0ubuntu1) quantal; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-status: LP: #998812
@@ -53,7 +53,7 @@ byobu (5.20) unreleased; urgency=low
   * usr/lib/byobu/logo: LP: #1004722
     - add apple distro and logo
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Jun 2012 17:25:23 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jun 2012 16:25:31 -0500
 
 byobu (5.19-0ubuntu1) quantal; urgency=low
 
