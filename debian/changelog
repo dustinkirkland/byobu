@@ -3,6 +3,10 @@ byobu (5.20) unreleased; urgency=low
   * usr/bin/byobu-status:
     - fix upgrades to the new width handling, where some things
       were undefined
+  * usr/lib/byobu/updates_available: LP: #976928, #1010505, #999151
+    - use run-one when running apt-check or apt-get
+    - if run-one isn't installed on Debian/Ubuntu,
+      update package checking won't work; sorry
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Jun 2012 17:25:23 -0500
 

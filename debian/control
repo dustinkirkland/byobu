@@ -17,7 +17,8 @@ Depends:
  gettext-base,
  python,
  python-newt (>= 0.52.2-11),
- tmux (>= 1.5) | screen
+ tmux (>= 1.5) | screen,
+ util-linux,
 Recommends:
  screen,
  tmux (>= 1.5),
@@ -25,7 +26,6 @@ Suggests:
  apport,
  lsb-release,
  po-debconf,
- run-one,
  ttf-ubuntu-font-family (>= 0.80-0ubuntu1~medium),
  update-notifier-common,
  vim,
