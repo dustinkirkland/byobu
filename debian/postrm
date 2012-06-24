@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+PKG="byobu"
+
+# If removing Byobu, ensure that we clean up this launch-by-default
+# symlink, if it exists
+rm -f /etc/profile.d/Z98-$PKG.sh
+
+# vi: syntax=sh ts=4 noexpandtab

@@ -12,6 +12,9 @@ byobu (5.20) unreleased; urgency=low
     - fix some lintian warnings and errors
   * usr/lib/byobu/raid: LP: #1006971
     - ensure raid status cache gets cleared out when done rebuilding
+  * debian/postrm: LP: #996873
+    - at package removal, ensure that we remove the auto-launch symlink
+      if it exists
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Jun 2012 17:25:23 -0500
 
