@@ -59,7 +59,8 @@ __rcs_cost() {
 	TX_RATE="0.22"
 
 	# Auto detect network interface
-	IF=`tail -n1 /proc/net/route  | awk '{print $1}'`
+	[ -r "/proc/net/route" ] || return
+	IF=$(tail -n1 /proc/net/route  | awk '{print $1}')
 
 	ifconfig_out=`LC_ALL=C /sbin/ifconfig "$IF"`
 

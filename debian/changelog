@@ -27,6 +27,10 @@ byobu (5.20) unreleased; urgency=low
     - create new BYOBU_TEST global, which is one of:
       [command -v, type, which]
     - command -v doesn't exist in busybox, type does
+  * usr/lib/byobu/ec2_cost, usr/lib/byobu/include/shutil,
+    usr/lib/byobu/rcs_cost: LP: #1013220
+    - gracefully silence status notifications that require /proc/net/route
+      when it's not really there (cygwin, mac)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Jun 2012 17:25:23 -0500
 

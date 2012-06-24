@@ -75,7 +75,8 @@ __ec2_cost() {
 	fi
 	hours=$(((`date +%s` - `stat --printf %Y $file_to_stat`) / 60 / 60 + 1))
 	# Auto detect network interface
-	interface=`tail -n1 /proc/net/route  | awk '{print $1}'`
+	[ -r "/proc/net/route" ] || return
+	interface=$(tail -n1 /proc/net/route  | awk '{print $1}')
 	local iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed
 	while read iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed; do
 		case "$iface" in

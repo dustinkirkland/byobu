@@ -294,14 +294,17 @@ get_network_interface() {
         if [ -n "$MONITORED_NETWORK" ]; then
 		# Manual override
                 _RET="$MONITORED_NETWORK"
-        elif [ -d /proc ]; then
+        elif [ -e /proc/net/route ]; then
 		# Linux systems, read route and interface from procfs
 		local Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT
 		while read Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT; do
 			[ "$Mask" = "00000000" ] && break
 		done < /proc/net/route
 		_RET="$Iface"
-	else
+	elif $BYOBU_TEST route >/dev/null; then
+		# Route command on path
+		_RET=$(route get default|grep interface:|awk '{print $2}')
+	elif [ -x "/sbin/route" ]; then
 		# Mac OSX, shell out to the route command
 		_RET=$(/sbin/route get default|grep interface:|awk '{print $2}')
 	fi
