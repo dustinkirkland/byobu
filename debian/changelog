@@ -8,6 +8,8 @@ byobu (5.20) unreleased; urgency=low
       + ideally we'd use run-one here, but not yet in main or other distros
     - depend on util-linux, which provides flock
     - drop run-one usage, use flock directly instead
+  * debian/control, usr/share/byobu/windows/common:
+    - fix some lintian warnings and errors
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Jun 2012 17:25:23 -0500
 

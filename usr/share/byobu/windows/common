@@ -1,5 +1,5 @@
 # Default windows examples
-# $BYOBU_BACKEND -t notify-osd -M tail -f $HOME/.cache/notify-osd.log
-# $BYOBU_BACKEND -t top top
-# $BYOBU_BACKEND -t web w3m http://LinuxSearch.org
-# $BYOBU_BACKEND -t shell byobu-shell
+# screen -t notify-osd -M tail -f $HOME/.cache/notify-osd.log
+# screen -t top top
+# screen -t web w3m http://LinuxSearch.org
+# screen -t shell byobu-shell
