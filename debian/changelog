@@ -4,9 +4,10 @@ byobu (5.20) unreleased; urgency=low
     - fix upgrades to the new width handling, where some things
       were undefined
   * usr/lib/byobu/updates_available: LP: #976928, #1010505, #999151
-    - use run-one when running apt-check or apt-get
-    - if run-one isn't installed on Debian/Ubuntu,
-      update package checking won't work; sorry
+    - use flock when running apt-check or apt-get
+      + ideally we'd use run-one here, but not yet in main or other distros
+    - depend on util-linux, which provides flock
+    - drop run-one usage, use flock directly instead
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Jun 2012 17:25:23 -0500
 
