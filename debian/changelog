@@ -43,7 +43,7 @@ byobu (5.20) unreleased; urgency=low
 
   [ Dustin Kirkland and Daniel Lee ]
   * usr/lib/byobu/disk_io, usr/lib/byobu/mail, usr/lib/byobu/network:
-    - LP: #962730
+    - LP: #962730, #998202
     - clear out cache on a few other status notifications where we go
       from activity, to none
 
