@@ -1,6 +1,7 @@
 byobu (5.21) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/users:
+    - clear cache on 0 users
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jun 2012 16:25:33 -0500
 

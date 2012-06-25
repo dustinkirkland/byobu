@@ -36,6 +36,8 @@ __users() {
 	fi
 	if [ $count -gt 0 ]; then
 		color b w r; printf "%d" "$count"; color -; color w r; printf "#"; color --
+	else
+		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/users"*
 	fi
 }
 
