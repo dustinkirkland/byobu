@@ -22,7 +22,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __users_detail() {
-	ps -ef | grep "sshd;.*@" | grep -v grep
+	ps -ef | grep "sshd:.*@" | grep -v grep
 }
 
 __users() {
