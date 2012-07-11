@@ -1,7 +1,12 @@
 byobu (5.21) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/users:
     - clear cache on 0 users
+
+  [ Daniel Hahler ]
+  * usr/lib/byobu/include/common:
+    - clear stderr in byobu test
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 24 Jun 2012 16:25:33 -0500
 
