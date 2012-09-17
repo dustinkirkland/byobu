@@ -1,6 +1,7 @@
 byobu (5.22) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-config, usr/bin/byobu-ctrl-a:
+    - fix escape sequence setting in config with tmux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Jul 2012 12:02:34 -0500
 

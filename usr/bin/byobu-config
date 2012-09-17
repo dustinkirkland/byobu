@@ -238,10 +238,14 @@ def appendtofile(p, s):
     return
 
 def getesckey():
-    path=BYOBU_CONFIG_DIR+'/keybindings'
+    if BYOBU_BACKEND == "tmux":
+	path=BYOBU_CONFIG_DIR+'/keybindings.tmux'
+        line = commands.getoutput("grep '^set -g prefix ' "+path)
+    else:
+	path=BYOBU_CONFIG_DIR+'/keybindings'
+        line = commands.getoutput("grep ^escape "+path)
     if not os.path.exists(path):
         return DEF_ESC
-    line = commands.getoutput("grep ^escape "+path)
     if line == "":
         return DEF_ESC
     esc = line[line.find('^')+1]
@@ -250,20 +254,8 @@ def getesckey():
     return esc
 
 def setesckey(key):
-    path = BYOBU_CONFIG_DIR+'/keybindings'
-    if key != "":
-        if key == " ":
-            key = "`"
-        u = key[0].upper()
-        l = key[0].lower()
-        if os.path.exists(path):
-            out = commands.getoutput(BYOBU_SED+" -i -e 's/^escape.*$//' "+path)
-            appendtofile(path, "escape ^"+u+l+"\n")
-            out = commands.getoutput(BYOBU_SED+" -i -e 's/^register.*$//' "+path)
-            out = commands.getoutput("grep -sh '^register x' "+SHARE+"/keybindings/*keys")
-            appendtofile(path, out+"\n")
-            out = commands.getoutput(BYOBU_SED+" -i -e 's/\"^^/\"\^"+l+"/g' "+path)
-            out = commands.getoutput(BYOBU_SED+" -i -e '/^$/d' "+path)
+    if key.isalpha():
+        out = commands.getoutput("byobu-ctrl-a screen %s" % key)
 
 def chgesc(snackScreen, size):
     esc=Entry(2, text=getesckey(), returnExit=1)
