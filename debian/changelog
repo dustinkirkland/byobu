@@ -2,6 +2,8 @@ byobu (5.22) unreleased; urgency=low
 
   * usr/bin/byobu-config, usr/bin/byobu-ctrl-a: LP: #1019743
     - fix escape sequence setting in config with tmux
+  * debian/postinst, debian/postrm: LP: #1050249
+    - clean up obsolete config file
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Jul 2012 12:02:34 -0500
 

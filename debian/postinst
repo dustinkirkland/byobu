@@ -43,6 +43,9 @@ if [ -d "$SOCKETDIR" ]; then
 	done
 fi
 
+# Clean-up obsolete config file
+rm -f /etc/byobu/statusrc || true
+
 #DEBHELPER#
 
 # vi: syntax=sh ts=4 noexpandtab
