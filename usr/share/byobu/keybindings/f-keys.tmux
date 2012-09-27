@@ -33,8 +33,8 @@ bind-key -n F3 previous-window
 bind-key -n F4 next-window
 bind-key -n C-S-Left previous-window
 bind-key -n C-S-Right next-window
-bind-key -n M-Up choose-session \; send-keys Up \; send-keys Enter
-bind-key -n M-Down choose-session \; send-keys Down \; send-keys Enter
+bind-key -n C-Up choose-session \; send-keys Up \; send-keys Enter
+bind-key -n C-Down choose-session \; send-keys Down \; send-keys Enter
 bind-key -n S-F3 display-panes \; select-pane -t :.-
 bind-key -n S-F4 display-panes \; select-pane -t :.+
 bind-key -n S-Up display-panes \; select-pane -U
@@ -45,10 +45,10 @@ bind-key -n C-F3 display-panes \; swap-pane -s :. -t :.- \; select-pane -t :.-
 bind-key -n C-F4 display-panes \; swap-pane -s :. -t :.+ \; select-pane -t :.+
 bind-key -n C-S-F3 swap-window -t :-1
 bind-key -n C-S-F4 swap-window -t :+1
-bind-key -n C-Up resize-pane -U
-bind-key -n C-Down resize-pane -D
-bind-key -n C-Left resize-pane -L
-bind-key -n C-Right resize-pane -R
+bind-key -n M-Up resize-pane -U
+bind-key -n M-Down resize-pane -D
+bind-key -n M-Left resize-pane -L
+bind-key -n M-Right resize-pane -R
 bind-key -n F5 source $BYOBU_PREFIX/share/byobu/profiles/tmuxrc
 bind-key -n S-F5 new-window -k "$BYOBU_PREFIX/lib/byobu/include/cycle-status" \; source $BYOBU_PREFIX/share/byobu/profiles/tmuxrc
 bind-key -n C-F5 send-keys ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets" \; send-keys Enter

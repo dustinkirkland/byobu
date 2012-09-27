@@ -46,10 +46,10 @@ bindkey "^[[1;2D" focus up				# shift-left | focus up
 bindkey "^[[1;2C" focus down				# shift-right | focus down
 # No ctrl-shift-F3 (move pane) in Screen
 # No ctrl-shift-F4 (move pane) in Screen
-bindkey "^[[1;5A" resize +1				# ctrl-up | resize +1
-bindkey "^[[1;5B" resize -1				# ctrl-down | resize -1
-bindkey "^[[1;5D" resize -1				# ctrl-left | resize -1
-bindkey "^[[1;5C" resize +1				# ctrl-right | resize +1
+bindkey "^[[1;3A" resize +1				# alt-up | resize +1
+bindkey "^[[1;3B" resize -1				# alt-down | resize -1
+bindkey "^[[1;3D" resize -1				# alt-left | resize -1
+bindkey "^[[1;3C" resize +1				# alt-right | resize +1
 register r ":source $BYOBU_CONFIG_DIR/profile^M"	#     | Goes with F5 definition
 bindkey -k k5 eval 'process x' 'process r'		# F5  | Reload profile
 bindkey "^[[15;5~" eval 'process x' 'process r' 'stuff ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets^M"' # ctrl-F5 | reconnect gpg/ssh/x sockets
