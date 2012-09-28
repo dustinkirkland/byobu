@@ -1,9 +1,28 @@
 byobu (5.22) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu-config, usr/bin/byobu-ctrl-a: LP: #1019743
     - fix escape sequence setting in config with tmux
   * debian/postinst, debian/postrm: LP: #1050249
     - clean up obsolete config file
+
+  [ Jake Biesinger and Dustin Kirkland ]
+  * usr/share/byobu/keybindings/common, usr/share/byobu/keybindings/f-
+    keys.screen, usr/share/byobu/keybindings/f-keys.screen.disable,
+    usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/doc/byobu/help.tmux.txt: LP: #945069
+    - unbind ctrl-left/right/up/down in byobu
+      + previously was used to resize splits
+      + some users unfortunately expect ctrl-left/right to move the
+        cursor around words
+    - resizing splits is something that happens relatively infrequently,
+      so bind these to shift-alt-up/down/left/right
+    - use alt-left/right to move between windows
+    - use alt-up/down to move between sessions
+    - source the disable bindings just before sourcing the byobu bindings,
+      this enables a clean undo of bindings
+    - document the changes in the help text
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Jul 2012 12:02:34 -0500
 

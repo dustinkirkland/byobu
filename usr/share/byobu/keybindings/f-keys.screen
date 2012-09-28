@@ -32,10 +32,10 @@ bindkey -k k2 $BYOBU_BACKEND				# F2  | Create new window
 bindkey "^[O1;5Q" eval 'split -v' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave'	# ctrl-F2  | vertical split
 bindkey "^[O1;2Q" eval 'split' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave'	# shift-F2 | horizontal split
 # No ctrl-shift-F2 (new session) in Screen
-bindkey -k k3 eval 'prev' 'fit'				# F3  | Previous Window
-bindkey -k k4 eval 'next' 'fit'				# F4  | Next Window
-bindkey "^[[1;6D" eval 'prev' 'fit'			# ctrl-shift-left  | Previous Window
-bindkey "^[[1;6C" eval 'next' 'fit'			# ctrl-shift-right  | Next Window
+bindkey -k k3 eval 'prev' 'fit'				# F3         | Previous Window
+bindkey -k k4 eval 'next' 'fit'				# F4         | Next Window
+bindkey "^[[1;3D" eval 'prev' 'fit'			# alt-left   | Previous Window
+bindkey "^[[1;3C" eval 'next' 'fit'			# alt-right  | Next Window
 # No alt-up (previous session) in Screen
 # No alt-down (next session) in Screen
 bindkey "^[O1;2R" focus up				# shift-F3 | focus up
@@ -46,10 +46,10 @@ bindkey "^[[1;2D" focus up				# shift-left | focus up
 bindkey "^[[1;2C" focus down				# shift-right | focus down
 # No ctrl-shift-F3 (move pane) in Screen
 # No ctrl-shift-F4 (move pane) in Screen
-bindkey "^[[1;5A" resize +1				# ctrl-up | resize +1
-bindkey "^[[1;5B" resize -1				# ctrl-down | resize -1
-bindkey "^[[1;5D" resize -1				# ctrl-left | resize -1
-bindkey "^[[1;5C" resize +1				# ctrl-right | resize +1
+bindkey "^[[1;4A" resize +1				# shift-alt-up    | resize +1
+bindkey "^[[1;4B" resize -1				# shift-alt-down  | resize -1
+bindkey "^[[1;4D" resize -1				# shift-alt-left  | resize -1
+bindkey "^[[1;4C" resize +1				# shift-alt-right | resize +1
 register r ":source $BYOBU_CONFIG_DIR/profile^M"	#     | Goes with F5 definition
 bindkey -k k5 eval 'process x' 'process r'		# F5  | Reload profile
 bindkey "^[[15;5~" eval 'process x' 'process r' 'stuff ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets^M"' # ctrl-F5 | reconnect gpg/ssh/x sockets
