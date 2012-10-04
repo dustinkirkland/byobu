@@ -5,6 +5,8 @@ byobu (5.22) unreleased; urgency=low
     - fix escape sequence setting in config with tmux
   * debian/postinst, debian/postrm: LP: #1050249
     - clean up obsolete config file
+  * usr/share/byobu/keybindings/f-keys.screen:
+    - create a new shell when splitting a window in byobu-screen
 
   [ Jake Biesinger and Dustin Kirkland ]
   * usr/share/byobu/keybindings/common, usr/share/byobu/keybindings/f-

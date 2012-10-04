@@ -29,8 +29,8 @@ bindkey -k k1 $BYOBU_BACKEND -t config 0 byobu-config	# F1  | Configuration (alo
 							#     | since F1 = Help in gnome-terminal
 bindkey "^[O1;2P" $BYOBU_BACKEND -t help 0 $BYOBU_PAGER $BYOBU_PREFIX/share/doc/byobu/help.screen.txt	# shift-F1  | help
 bindkey -k k2 $BYOBU_BACKEND				# F2  | Create new window
-bindkey "^[O1;5Q" eval 'split -v' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave'	# ctrl-F2  | vertical split
-bindkey "^[O1;2Q" eval 'split' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave'	# shift-F2 | horizontal split
+bindkey "^[O1;5Q" eval 'split -v' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave' 'screen'	# ctrl-F2  | vertical split
+bindkey "^[O1;2Q" eval 'split' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave' 'screen'	# shift-F2 | horizontal split
 # No ctrl-shift-F2 (new session) in Screen
 bindkey -k k3 eval 'prev' 'fit'				# F3         | Previous Window
 bindkey -k k4 eval 'next' 'fit'				# F4         | Next Window
