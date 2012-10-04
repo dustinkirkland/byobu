@@ -7,6 +7,11 @@ byobu (5.22) unreleased; urgency=low
     - clean up obsolete config file
   * usr/share/byobu/keybindings/f-keys.screen:
     - create a new shell when splitting a window in byobu-screen
+  * usr/lib/byobu/memory: LP: #1059307
+    - drop fo_cached calculation, which was not actually used
+    - change foreground color of free memory percentage to yellow,
+      if its over 90% used
+    - use a better variable name for memory usage
 
   [ Jake Biesinger and Dustin Kirkland ]
   * usr/share/byobu/keybindings/common, usr/share/byobu/keybindings/f-

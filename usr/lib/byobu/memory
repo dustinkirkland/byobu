@@ -39,9 +39,8 @@ __memory() {
         buffers_plus_cached=$(($buffers+$cached))
         # "free output" buffers and cache (output from 'free')
         fo_buffers=$(($kb_main_used - $buffers_plus_cached))
-        fo_cached=$(($kb_main_free + $buffers_plus_cached))
         fpdiv $((100*${fo_buffers})) "${total}" 0;
-        f=${_RET}
+        usage=${_RET}
 	if [ $total -ge 1048576 ]; then
 		fpdiv "$total" 1048567 1
 		total=${_RET}
@@ -53,8 +52,14 @@ __memory() {
 	else
 		unit="$ICON_KB"
 	fi
+	if [ $usage -gt 90 ]; then
+		# Change foreground to yellow, if usage over 90%
+		fg="Y"
+	else
+		fg="W"
+	fi
 	[ -n "$total" ] || return
-	color b g W; printf "%s" "$total"; color -; color g W; printf "%s" "$unit"; color -; color b g W; printf "%s" "$f"; color -; color g W; printf "%s" "$PCT"; color --
+	color b g W; printf "%s" "$total"; color -; color g W; printf "%s" "$unit"; color -; color b g "$fg"; printf "%s" "$usage"; color -; color g "$fg"; printf "%s" "$PCT"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab
