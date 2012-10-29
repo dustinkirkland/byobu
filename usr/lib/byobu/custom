@@ -48,8 +48,8 @@ __custom() {
 				output="$output$(printf "$str")"
 			;;
 			*)
-				# Default to inverted coloring
-				output="$output$(color invert; printf "%s" "$str"; color --)"
+				# Default coloring
+				output="$output$str "
 			;;
 		esac
 	done

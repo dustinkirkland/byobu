@@ -12,6 +12,8 @@ byobu (5.22) unreleased; urgency=low
     - change foreground color of free memory percentage to yellow,
       if its over 90% used
     - use a better variable name for memory usage
+  * usr/lib/byobu/custom, usr/share/man/man1/byobu.1:
+    - fix color for custom scripts; default to no color changes
 
   [ Jake Biesinger and Dustin Kirkland ]
   * usr/share/byobu/keybindings/common, usr/share/byobu/keybindings/f-
