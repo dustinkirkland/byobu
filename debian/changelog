@@ -14,6 +14,11 @@ byobu (5.22) unreleased; urgency=low
     - use a better variable name for memory usage
   * usr/lib/byobu/custom, usr/share/man/man1/byobu.1:
     - fix color for custom scripts; default to no color changes
+  * usr/bin/byobu-janitor, usr/lib/byobu/include/shutil: LP: #1071287
+    - ensure that we re-check metadata service availability each time
+      byobu-janitor runs
+    - move metadata_available flag to more ephemeral run dir
+    - drop timeout on metadata check to 5 seconds
 
   [ Jake Biesinger and Dustin Kirkland ]
   * usr/share/byobu/keybindings/common, usr/share/byobu/keybindings/f-

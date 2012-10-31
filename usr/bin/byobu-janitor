@@ -27,6 +27,9 @@ PKG="byobu"
 # Ensure that all updates get run immediately
 rm -rf "$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND"
 
+# Ensure that we re-check metadata service
+rm -f "$BYOBU_CONFIG_DIR/.metadata_available" "$BYOBU_RUN_DIR/.metadata_available"
+
 # Exit immediately, if we're not forced, and there is no reload flag
 FLAG="$BYOBU_RUN_DIR/reload-required"
 if [ "$1" != "--force" ] && [ ! -e "$FLAG" ]; then
