@@ -46,20 +46,7 @@ __release() {
 	fi
 	if [ -z "$RELEASE" ] && $BYOBU_TEST lsb_release >/dev/null 2>&1; then
 		# If lsb_release is available, use it
-		local r=$(lsb_release -s -d)
-		case "$r" in
-			Ubuntu*)
-				# Use the -d if an Ubuntu LTS
-				RELEASE="$r"
-			;;
-			*)
-				# But for other distros the description
-				# is too long, so build from -i and -r
-				local i=$(lsb_release -s -i)
-				r=$(lsb_release -s -r)
-				RELEASE="$i $r"
-			;;
-		esac
+		RELEASE=$(lsb_release -s -r)
 	fi
 	if [ -n "$RELEASE_ABBREVIATED" ] && [ $RELEASE_ABBREVIATED -gt 0 ]; then
 		color bold2; printf "%.${RELEASE_ABBREVIATED}s" "$RELEASE"; color --

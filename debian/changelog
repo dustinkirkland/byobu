@@ -19,6 +19,8 @@ byobu (5.22) unreleased; urgency=low
       byobu-janitor runs
     - move metadata_available flag to more ephemeral run dir
     - drop timeout on metadata check to 5 seconds
+  * usr/lib/byobu/release: LP: #1068581
+    - simplify and use lsb_release -s -r when necessary
 
   [ Jake Biesinger and Dustin Kirkland ]
   * usr/share/byobu/keybindings/common, usr/share/byobu/keybindings/f-
