@@ -21,6 +21,9 @@ byobu (5.22) unreleased; urgency=low
     - drop timeout on metadata check to 5 seconds
   * usr/lib/byobu/release: LP: #1068581
     - simplify and use lsb_release -s -r when necessary
+  * usr/lib/byobu/include/constants: LP: #1068580
+    - test for the sed --follow-symlink option and only use it when
+      available
 
   [ Jake Biesinger and Dustin Kirkland ]
   * usr/share/byobu/keybindings/common, usr/share/byobu/keybindings/f-
