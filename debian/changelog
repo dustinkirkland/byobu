@@ -24,6 +24,9 @@ byobu (5.22) unreleased; urgency=low
   * usr/lib/byobu/include/constants: LP: #1068580
     - test for the sed --follow-symlink option and only use it when
       available
+  * usr/share/man/man1/byobu.1: LP: #1059237
+    - document that you can copy status scripts to ~/.byobu/bin and
+      modify them locally
 
   [ Jake Biesinger and Dustin Kirkland ]
   * usr/share/byobu/keybindings/common, usr/share/byobu/keybindings/f-
