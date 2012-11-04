@@ -27,6 +27,8 @@ byobu (5.22) unreleased; urgency=low
   * usr/share/man/man1/byobu.1: LP: #1059237
     - document that you can copy status scripts to ~/.byobu/bin and
       modify them locally
+  * usr/lib/byobu/include/shutil: LP: #1059232
+    - fix tmux color clearing
 
   [ Jake Biesinger and Dustin Kirkland ]
   * usr/share/byobu/keybindings/common, usr/share/byobu/keybindings/f-

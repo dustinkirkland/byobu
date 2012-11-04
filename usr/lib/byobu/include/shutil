@@ -91,12 +91,12 @@ color_tmux() {
 	local back fore attr
 	case "$1" in
 		"") return 0 ;;
-		-)   printf "#[fg=$BYOBU_LIGHT,bg=$BYOBU_DARK]" ;;
-		--)   printf "#[fg=$BYOBU_LIGHT,bg=$BYOBU_DARK] " ;;
+		-)      printf "#[default]#[fg=$BYOBU_LIGHT,bg=$BYOBU_DARK]" ;;
+		--)     printf "#[default]#[fg=$BYOBU_LIGHT]#[bg=$BYOBU_DARK] " ;;
 		esc)    printf "" ;;
-		bold*)  printf "#[fg=bold]" ;;
-		none)   printf "#[fg=$BYOBU_LIGHT,bg=$BYOBU_DARK]" ;;
-		invert) printf "#[reverse]" ;;
+		bold*)  printf "#[default]#[fg=bold]" ;;
+		none)   printf "#[default]#[fg=$BYOBU_LIGHT,bg=$BYOBU_DARK]" ;;
+		invert) printf "#[default]#[reverse]" ;;
 		*)
 			if [ "$#" = "2" ]; then
 				color_map "$1"; back="$_RET"
@@ -106,7 +106,7 @@ color_tmux() {
 				color_map "$2"; back="$_RET"
 				color_map "$3"; fore="$_RET"
 			fi
-			[ "$MONOCHROME" = "1" ] && printf "#[default]" || printf "#[fg=$fore$attr,bg=$back]"
+			[ "$MONOCHROME" = "1" ] && printf "#[default]" || printf "#[default]#[fg=$fore$attr,bg=$back]"
 		;;
 	esac
 }
@@ -209,7 +209,7 @@ metadata_available() {
 	# This is really ugly.  We need a reliable, fast way of determining
 	# if a metadata service is available, that does NOT slow down non-ec2
 	# machines.
-	local x=0 cache="$BYOBU_RUN_DIR/.metadata_available"
+	local x=0 cache="$BYOBU_CONFIG_DIR/.metadata_available"
 	# First, check the cache
 	if [ -s "$cache" ]; then
 		# Metadata is non-empty, so we have metadata available
@@ -218,7 +218,7 @@ metadata_available() {
 		# Must seed the cache
 		if [ -e /etc/ec2_version ] || [ -e /usr/sbin/update-grub-legacy-ec2 ]; then
 			# This *looks* like a machine with metadata, so background a potentially slow check
-			wget -q -O "$cache" --timeout=5 --tries=1 http://169.254.169.254 2>/dev/null &
+			wget -q -O "$cache" --timeout=10 --tries=1 http://169.254.169.254 2>/dev/null &
 			sleep 0.02
 			[ -s "$cache" ] && x=1
 		fi
