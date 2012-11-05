@@ -29,6 +29,8 @@ byobu (5.22) unreleased; urgency=low
       modify them locally
   * usr/lib/byobu/include/shutil: LP: #1059232
     - fix tmux color clearing
+  * usr/lib/byobu/include/common:
+    - remove trailing whitespace
 
   [ Jake Biesinger and Dustin Kirkland ]
   * usr/share/byobu/keybindings/common, usr/share/byobu/keybindings/f-

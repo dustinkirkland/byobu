@@ -21,7 +21,7 @@
 if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 	# Needed to set up $BYOBU_CONFIG_DIR
 	. "${BYOBU_PREFIX}/lib/${PKG}/include/dirs"
-	
+
 	# Find command/type/which
 	if command -v 2>/dev/null; then
 		BYOBU_TEST="command -v"
