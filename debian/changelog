@@ -1,4 +1,4 @@
-byobu (5.22) unreleased; urgency=low
+byobu (5.22-0ubuntu1) raring; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-config, usr/bin/byobu-ctrl-a: LP: #1019743
@@ -50,7 +50,7 @@ byobu (5.22) unreleased; urgency=low
       this enables a clean undo of bindings
     - document the changes in the help text
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 11 Jul 2012 12:02:34 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Nov 2012 13:48:11 +0100
 
 byobu (5.21-0ubuntu1) quantal; urgency=low
 
