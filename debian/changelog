@@ -1,6 +1,22 @@
 byobu (5.23) unreleased; urgency=low
 
-  * UNRELEASED
+  * configure.ac, debian/control, debian/copyright, README,
+    usr/lib/byobu/rcs_cost, usr/share/man/man1/byobu.1,
+    usr/share/man/man1/byobu-config.1, usr/share/man/man1/byobu-ctrl-
+    a.1, usr/share/man/man1/byobu-enable.1, usr/share/man/man1/byobu-
+    janitor.1, usr/share/man/man1/byobu-launcher.1,
+    usr/share/man/man1/byobu-launcher-install.1,
+    usr/share/man/man1/byobu-launcher-uninstall.1,
+    usr/share/man/man1/byobu-layout.1, usr/share/man/man1/byobu-quiet.1,
+    usr/share/man/man1/byobu-reconnect-sockets.1,
+    usr/share/man/man1/byobu-screen.1, usr/share/man/man1/byobu-select-
+    backend.1, usr/share/man/man1/byobu-select-profile.1,
+    usr/share/man/man1/byobu-select-session.1, usr/share/man/man1/byobu-
+    shell.1, usr/share/man/man1/byobu-silent.1,
+    usr/share/man/man1/byobu-status.1, usr/share/man/man1/byobu-status-
+    detail.1, usr/share/man/man1/byobu-tmux.1:
+    - point to the new byobu.co website rather than the launchpad landing
+      page
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Nov 2012 13:48:13 +0100
 
