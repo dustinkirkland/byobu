@@ -31,7 +31,7 @@ byobu (5.23) unreleased; urgency=low
     - some batteries use "CHARGE" while others use "ENERGY"
 
   [ Antonio Lorusso ]
-  * usr/bin/byobu-status: LP: #1018538, #1073145
+  * usr/bin/byobu-status: LP: #1018538, #1073145, #1020674
     - fix select/copy/paste in iTerm2 and KDE
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Nov 2012 13:48:13 +0100
