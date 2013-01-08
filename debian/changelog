@@ -19,6 +19,10 @@ byobu (5.23) unreleased; urgency=low
     - point to the new byobu.co website rather than the launchpad landing
       page
 
+  [ Dustin Kirkland and Philip Muškovac ]
+  * usr/lib/byobu/battery: LP: #1090831
+    - some batteries use "CHARGE" while others use "ENERGY"
+
   [ Antonio Lorusso ]
   * usr/bin/byobu-status: LP: #1018538, #1073145
     - fix select/copy/paste in iTerm2 and KDE

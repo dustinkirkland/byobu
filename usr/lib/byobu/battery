@@ -38,8 +38,11 @@ __battery() {
 				if [ -r "$bat/uevent" ]; then
 					. "$bat/uevent"
 					present="$POWER_SUPPLY_PRESENT"
-					full="$POWER_SUPPLY_CHARGE_FULL"
-					rem="$POWER_SUPPLY_CHARGE_NOW"
+					# Some use "CHARGE", others use "ENERGY"
+					[ -n "$POWER_SUPPLY_CHARGE_FULL" ] && full="$POWER_SUPPLY_CHARGE_FULL"
+					[ -n "$POWER_SUPPLY_ENERGY_FULL" ] && full="$POWER_SUPPLY_ENERGY_FULL"
+					[ -n "$POWER_SUPPLY_CHARGE_NOW" ] && rem="$POWER_SUPPLY_CHARGE_NOW"
+					[ -n "$POWER_SUPPLY_ENERGY_NOW" ] && rem="$POWER_SUPPLY_ENERGY_NOW"
 					state="$POWER_SUPPLY_STATUS"
 					[ "$present" = "1" ] && [ -n "$full" ] && [ -n "$rem" ] && [ -n "$state" ] && break
 				fi
