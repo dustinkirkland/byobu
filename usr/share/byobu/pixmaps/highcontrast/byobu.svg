@@ -1,0 +1,4417 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="300"
+   height="300"
+   id="svg6345"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="byobu.svg">
+  <defs
+     id="defs6347">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 384 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="1024 : 384 : 1"
+       inkscape:persp3d-origin="512 : 256 : 1"
+       id="perspective6353" />
+    <inkscape:perspective
+       id="perspective6363"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <filter
+       id="filter3891"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3893"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6611" />
+      <feGaussianBlur
+         id="feGaussianBlur6613"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6615"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6617"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6619"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6621"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6623"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6625"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3895"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3897"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6627" />
+      <feGaussianBlur
+         id="feGaussianBlur6629"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6631"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6633"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6635"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6637"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6639"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6641"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3899"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3901"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6643" />
+      <feGaussianBlur
+         id="feGaussianBlur6645"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6647"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6649"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6651"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6653"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6655"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6657"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3903"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3905"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6659" />
+      <feGaussianBlur
+         id="feGaussianBlur6661"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6663"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6665"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6667"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6669"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6671"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6673"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3907"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3909"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6675" />
+      <feGaussianBlur
+         id="feGaussianBlur6677"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6679"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6681"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6683"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6685"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6687"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6689"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3911"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3913"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6691" />
+      <feGaussianBlur
+         id="feGaussianBlur6693"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6695"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6697"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6699"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6701"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6703"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6705"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3915"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3917"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6707" />
+      <feGaussianBlur
+         id="feGaussianBlur6709"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6711"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6713"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6715"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6717"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6719"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6721"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3919"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3921"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6723" />
+      <feGaussianBlur
+         id="feGaussianBlur6725"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6727"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6729"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6731"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6733"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6735"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6737"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3923"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3925"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6739" />
+      <feGaussianBlur
+         id="feGaussianBlur6741"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6743"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6745"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6747"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6749"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6751"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6753"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3927"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3929"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6755" />
+      <feGaussianBlur
+         id="feGaussianBlur6757"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6759"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6761"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6763"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6765"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6767"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6769"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3931"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3933"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6771" />
+      <feGaussianBlur
+         id="feGaussianBlur6773"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6775"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6777"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6779"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6781"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6783"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6785"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3935"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3937"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6787" />
+      <feGaussianBlur
+         id="feGaussianBlur6789"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6791"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6793"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6795"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6797"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6799"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6801"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3939"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3941"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6803" />
+      <feGaussianBlur
+         id="feGaussianBlur6805"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6807"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6809"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6811"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6813"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6815"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6817"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3943"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3945"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6819" />
+      <feGaussianBlur
+         id="feGaussianBlur6821"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6823"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6825"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6827"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6829"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6831"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6833"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3947"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3949"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6835" />
+      <feGaussianBlur
+         id="feGaussianBlur6837"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6839"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6841"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6843"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6845"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6847"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6849"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3951"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3953"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6851" />
+      <feGaussianBlur
+         id="feGaussianBlur6853"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6855"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6857"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6859"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6861"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6863"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6865"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3955"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3957"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6867" />
+      <feGaussianBlur
+         id="feGaussianBlur6869"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6871"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6873"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6875"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6877"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6879"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6881"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3959"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3961"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6883" />
+      <feGaussianBlur
+         id="feGaussianBlur6885"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6887"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6889"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6891"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6893"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6895"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6897"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3963"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3965"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6899" />
+      <feGaussianBlur
+         id="feGaussianBlur6901"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6903"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6905"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6907"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6909"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6911"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6913"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3967"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3969"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6915" />
+      <feGaussianBlur
+         id="feGaussianBlur6917"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6919"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6921"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6923"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6925"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6927"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6929"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3971"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3973"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6931" />
+      <feGaussianBlur
+         id="feGaussianBlur6933"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6935"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6937"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6939"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6941"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6943"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6945"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3975"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3977"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6947" />
+      <feGaussianBlur
+         id="feGaussianBlur6949"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6951"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6953"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6955"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6957"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6959"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6961"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3979"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3981"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6963" />
+      <feGaussianBlur
+         id="feGaussianBlur6965"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6967"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6969"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6971"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6973"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6975"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6977"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3983"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3985"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6979" />
+      <feGaussianBlur
+         id="feGaussianBlur6981"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6983"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix6985"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite6987"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur6989"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend6991"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite6993"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3987"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3989"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix6995" />
+      <feGaussianBlur
+         id="feGaussianBlur6997"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix6999"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7001"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7003"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7005"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7007"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7009"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3991"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3993"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7011" />
+      <feGaussianBlur
+         id="feGaussianBlur7013"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7015"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7017"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7019"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7021"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7023"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7025"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3995"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix3997"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7027" />
+      <feGaussianBlur
+         id="feGaussianBlur7029"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7031"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7033"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7035"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7037"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7039"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7041"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter3999"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4001"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7043" />
+      <feGaussianBlur
+         id="feGaussianBlur7045"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7047"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7049"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7051"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7053"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7055"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7057"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4003"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4005"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7059" />
+      <feGaussianBlur
+         id="feGaussianBlur7061"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7063"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7065"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7067"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7069"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7071"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7073"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4007"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4009"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7075" />
+      <feGaussianBlur
+         id="feGaussianBlur7077"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7079"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7081"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7083"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7085"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7087"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7089"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4011"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4013"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7091" />
+      <feGaussianBlur
+         id="feGaussianBlur7093"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7095"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7097"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7099"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7101"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7103"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7105"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4015"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4017"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7107" />
+      <feGaussianBlur
+         id="feGaussianBlur7109"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7111"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7113"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7115"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7117"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7119"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7121"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4019"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4021"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7123" />
+      <feGaussianBlur
+         id="feGaussianBlur7125"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7127"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7129"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7131"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7133"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7135"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7137"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4023"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4025"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7139" />
+      <feGaussianBlur
+         id="feGaussianBlur7141"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7143"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7145"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7147"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7149"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7151"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7153"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4027"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4029"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7155" />
+      <feGaussianBlur
+         id="feGaussianBlur7157"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7159"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7161"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7163"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7165"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7167"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7169"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4031"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4033"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7171" />
+      <feGaussianBlur
+         id="feGaussianBlur7173"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7175"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7177"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7179"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7181"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7183"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7185"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4035"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4037"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7187" />
+      <feGaussianBlur
+         id="feGaussianBlur7189"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7191"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7193"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7195"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7197"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7199"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7201"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4039"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4041"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7203" />
+      <feGaussianBlur
+         id="feGaussianBlur7205"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7207"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7209"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7211"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7213"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7215"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7217"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4043"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4045"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7219" />
+      <feGaussianBlur
+         id="feGaussianBlur7221"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7223"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7225"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7227"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7229"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7231"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7233"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4047"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4049"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7235" />
+      <feGaussianBlur
+         id="feGaussianBlur7237"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7239"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7241"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7243"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7245"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7247"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7249"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4051"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4053"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7251" />
+      <feGaussianBlur
+         id="feGaussianBlur7253"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7255"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7257"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7259"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7261"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7263"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7265"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4055"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4057"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7267" />
+      <feGaussianBlur
+         id="feGaussianBlur7269"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7271"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7273"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7275"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7277"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7279"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7281"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4059"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4061"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7283" />
+      <feGaussianBlur
+         id="feGaussianBlur7285"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7287"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7289"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7291"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7293"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7295"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7297"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4063"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4065"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7299" />
+      <feGaussianBlur
+         id="feGaussianBlur7301"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7303"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7305"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7307"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7309"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7311"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7313"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4067"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4069"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7315" />
+      <feGaussianBlur
+         id="feGaussianBlur7317"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7319"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7321"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7323"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7325"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7327"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7329"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4071"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4073"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7331" />
+      <feGaussianBlur
+         id="feGaussianBlur7333"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7335"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7337"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7339"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7341"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7343"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7345"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4075"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4077"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7347" />
+      <feGaussianBlur
+         id="feGaussianBlur7349"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7351"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7353"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7355"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7357"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7359"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7361"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4079"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4081"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7363" />
+      <feGaussianBlur
+         id="feGaussianBlur7365"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7367"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7369"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7371"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7373"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7375"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7377"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4083"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4085"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7379" />
+      <feGaussianBlur
+         id="feGaussianBlur7381"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7383"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7385"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7387"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7389"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7391"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7393"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4087"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4089"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7395" />
+      <feGaussianBlur
+         id="feGaussianBlur7397"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7399"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7401"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7403"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7405"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7407"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7409"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4091"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4093"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7411" />
+      <feGaussianBlur
+         id="feGaussianBlur7413"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7415"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7417"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7419"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7421"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7423"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7425"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4095"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4097"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7427" />
+      <feGaussianBlur
+         id="feGaussianBlur7429"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7431"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7433"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7435"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7437"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7439"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7441"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4099"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4101"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7443" />
+      <feGaussianBlur
+         id="feGaussianBlur7445"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7447"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7449"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7451"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7453"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7455"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7457"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4103"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4105"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7459" />
+      <feGaussianBlur
+         id="feGaussianBlur7461"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7463"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7465"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7467"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7469"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7471"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7473"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4107"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4109"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7475" />
+      <feGaussianBlur
+         id="feGaussianBlur7477"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7479"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7481"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7483"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7485"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7487"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7489"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4111"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4113"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7491" />
+      <feGaussianBlur
+         id="feGaussianBlur7493"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7495"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7497"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7499"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7501"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7503"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7505"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4115"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4117"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7507" />
+      <feGaussianBlur
+         id="feGaussianBlur7509"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7511"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7513"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7515"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7517"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7519"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7521"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4119"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4121"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7523" />
+      <feGaussianBlur
+         id="feGaussianBlur7525"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7527"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7529"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7531"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7533"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7535"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7537"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4123"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4125"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7539" />
+      <feGaussianBlur
+         id="feGaussianBlur7541"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7543"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7545"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7547"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7549"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7551"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7553"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4127"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4129"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7555" />
+      <feGaussianBlur
+         id="feGaussianBlur7557"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7559"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7561"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7563"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7565"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7567"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7569"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter4131"
+       inkscape:label="Drawing"
+       x="0"
+       y="0"
+       width="1"
+       height="1"
+       inkscape:menu="Image effects"
+       inkscape:menu-tooltip="Give lead pencil or chromolithography or engraving or other effects to images and material filled objects"
+       color-interpolation-filters="sRGB">
+      <feColorMatrix
+         id="feColorMatrix4133"
+         type="saturate"
+         values="0"
+         result="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix7571" />
+      <feGaussianBlur
+         id="feGaussianBlur7573"
+         stdDeviation="0.5"
+         result="result8"
+         in="fbSourceGraphic" />
+      <feConvolveMatrix
+         id="feConvolveMatrix7575"
+         bias="0"
+         result="result0"
+         preserveAlpha="true"
+         targetY="1"
+         targetX="1"
+         divisor="1"
+         in="result8"
+         kernelMatrix="1 1 1 1 -8 1 1 1 1 "
+         order="3 3" />
+      <feColorMatrix
+         id="feColorMatrix7577"
+         values="0 -6 0 0 1 0 -6 0 0 1 0 -6 0 0 1 0 0 0 1 0 "
+         result="result3" />
+      <feComposite
+         id="feComposite7579"
+         in2="result3"
+         k3="0.3"
+         k1="1"
+         operator="arithmetic"
+         in="fbSourceGraphic"
+         result="fbSourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur7581"
+         stdDeviation="0.01"
+         in="fbSourceGraphic"
+         result="result7" />
+      <feBlend
+         id="feBlend7583"
+         in2="result7"
+         in="result7"
+         mode="multiply"
+         result="result9" />
+      <feComposite
+         id="feComposite7585"
+         in2="fbSourceGraphic"
+         operator="in" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="83.970117"
+     inkscape:cy="164.30132"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:window-width="1871"
+     inkscape:window-height="1056"
+     inkscape:window-x="49"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata6350">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     transform="translate(0,-468)">
+    <path
+       style="fill:#ffcca3;fill-opacity:0.75000000000000000;stroke:#000000;stroke-width:0.64681845999999998px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter3891)"
+       d="m 11.449154,481.47264 2.651528,272.01508"
+       id="path4136" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.64681845999999998px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter3895)"
+       d="m 10.786272,482.08255 3.31441,272.62495 95.459728,-10.36829 88.8309,13.41779 86.17938,-6.09899 3.97729,-265.91607 -84.85294,-7.3188 -95.46039,14.0277 -97.448378,-10.36829 z"
+       id="path4158" />
+    <path
+       style="fill:#ffcca3;fill-opacity:0.75000000000000000;stroke:#000000;stroke-width:0.64681845999999998px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter3899)"
+       d="m 108.23465,492.45084 0,252.49828 0,0"
+       id="path4162" />
+    <path
+       style="fill:#ffcca3;fill-opacity:0.15306121000000000;stroke:#000000;stroke-width:0.64681845999999998px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter3903)"
+       d="m 203.69504,477.81325 0,278.72395"
+       id="path4164" />
+    <path
+       style="fill:#f4bd71;fill-opacity:0.11224491000000000;stroke:none;filter:url(#filter3907)"
+       d="m 204.07604,617.80486 0,-138.9073 1.82278,0.28888 c 1.00274,0.15888 19.71516,1.81543 41.58285,3.6812 21.86838,1.86578 39.8943,3.51561 40.05819,3.6663 0.53339,0.49112 -3.57137,263.62612 -4.12095,264.13156 -0.29333,0.27008 -18.26532,1.74107 -39.93813,3.26886 l -39.40474,2.77777 0,-138.90727 z"
+       id="path4166" />
+    <path
+       style="fill:#f4bd71;fill-opacity:0.11224491000000000;stroke:none;filter:url(#filter3911)"
+       d="m 204.07604,617.80486 0,-138.9073 1.82278,0.28888 c 1.00274,0.15888 19.71516,1.81543 41.58285,3.6812 21.86838,1.86578 39.8943,3.51561 40.05819,3.6663 0.53339,0.49112 -3.57137,263.62612 -4.12095,264.13156 -0.29333,0.27008 -18.26532,1.74107 -39.93813,3.26886 l -39.40474,2.77777 0,-138.90727 z"
+       id="path4168" />
+    <path
+       style="fill:#f4bd71;fill-opacity:0.11224491000000000;stroke:none;filter:url(#filter3915)"
+       d="m 204.07604,617.80486 0,-138.9073 1.82278,0.28888 c 1.00274,0.15888 19.71516,1.81543 41.58285,3.6812 21.86838,1.86578 39.8943,3.51561 40.05819,3.6663 0.53339,0.49112 -3.57137,263.62612 -4.12095,264.13156 -0.29333,0.27008 -18.26532,1.74107 -39.93813,3.26886 l -39.40474,2.77777 0,-138.90727 z"
+       id="path4170" />
+    <path
+       style="fill:#f4bd71;fill-opacity:0.11224491000000000;stroke:none;filter:url(#filter3919)"
+       d="m 204.07604,617.80486 0,-138.9073 1.82278,0.28888 c 1.00274,0.15888 19.71516,1.81543 41.58285,3.6812 21.86838,1.86578 39.8943,3.51561 40.05819,3.6663 0.53339,0.49112 -3.57137,263.62612 -4.12095,264.13156 -0.29333,0.27008 -18.26532,1.74107 -39.93813,3.26886 l -39.40474,2.77777 0,-138.90727 z"
+       id="path4172" />
+    <path
+       style="fill:#ffcca3;fill-opacity:0.15306121000000000;stroke:none;filter:url(#filter3923)"
+       d="m 154.3572,750.54423 c -22.78815,-3.46598 -42.4022,-6.46701 -43.58702,-6.66899 l -2.15453,-0.36718 0,-125.30664 c 0,-68.91867 0.22993,-125.30666 0.51116,-125.30666 0.28051,0 21.0281,-3.01901 46.10434,-6.70889 25.0769,-3.6899 46.02681,-6.70889 46.55617,-6.70889 0.83888,0 0.96231,17.86713 0.96231,138.75206 l 0,138.75208 -3.4803,-0.0675 c -1.91381,-0.0372 -22.12464,-2.90336 -44.91213,-6.36933 l 0,0 z"
+       id="path4176" />
+    <path
+       style="fill:#ffcca3;fill-opacity:0.15306121000000000;stroke:none;filter:url(#filter3927)"
+       d="m 154.3572,750.54423 c -22.78815,-3.46598 -42.4022,-6.46701 -43.58702,-6.66899 l -2.15453,-0.36718 0,-125.30664 c 0,-68.91867 0.22993,-125.30666 0.51116,-125.30666 0.28051,0 21.0281,-3.01901 46.10434,-6.70889 25.0769,-3.6899 46.02681,-6.70889 46.55617,-6.70889 0.83888,0 0.96231,17.86713 0.96231,138.75206 l 0,138.75208 -3.4803,-0.0675 c -1.91381,-0.0372 -22.12464,-2.90336 -44.91213,-6.36933 l 0,0 z"
+       id="path4178" />
+    <path
+       style="fill:#ffcca3;fill-opacity:0.15306121000000000;stroke:none;filter:url(#filter3931)"
+       d="m 154.3572,750.54423 c -22.78815,-3.46598 -42.4022,-6.46701 -43.58702,-6.66899 l -2.15453,-0.36718 0,-125.30664 c 0,-68.91867 0.22993,-125.30666 0.51116,-125.30666 0.28051,0 21.0281,-3.01901 46.10434,-6.70889 25.0769,-3.6899 46.02681,-6.70889 46.55617,-6.70889 0.83888,0 0.96231,17.86713 0.96231,138.75206 l 0,138.75208 -3.4803,-0.0675 c -1.91381,-0.0372 -22.12464,-2.90336 -44.91213,-6.36933 l 0,0 z"
+       id="path4180" />
+    <path
+       style="fill:#ffcca3;fill-opacity:0.15306121000000000;stroke:none;filter:url(#filter3935)"
+       d="m 154.3572,750.54423 c -22.78815,-3.46598 -42.4022,-6.46701 -43.58702,-6.66899 l -2.15453,-0.36718 0,-125.30664 c 0,-68.91867 0.22993,-125.30666 0.51116,-125.30666 0.28051,0 21.0281,-3.01901 46.10434,-6.70889 25.0769,-3.6899 46.02681,-6.70889 46.55617,-6.70889 0.83888,0 0.96231,17.86713 0.96231,138.75206 l 0,138.75208 -3.4803,-0.0675 c -1.91381,-0.0372 -22.12464,-2.90336 -44.91213,-6.36933 l 0,0 z"
+       id="path4182" />
+    <path
+       style="fill:#f4bd71;fill-opacity:0.11224491000000000;stroke:none;filter:url(#filter3939)"
+       d="m 204.07604,617.80486 0,-138.9073 1.82278,0.28888 c 1.00274,0.15888 19.71516,1.81543 41.58285,3.6812 21.86838,1.86578 39.8943,3.51561 40.05819,3.6663 0.53339,0.49112 -3.57137,263.62612 -4.12095,264.13156 -0.29333,0.27008 -18.26532,1.74107 -39.93813,3.26886 l -39.40474,2.77777 0,-138.90727 z"
+       id="path4184" />
+    <path
+       style="fill:#f4bd71;fill-opacity:0.11224491000000000;stroke:none;filter:url(#filter3943)"
+       d="m 204.07604,617.80486 0,-138.9073 1.82278,0.28888 c 1.00274,0.15888 19.71516,1.81543 41.58285,3.6812 21.86838,1.86578 39.8943,3.51561 40.05819,3.6663 0.53339,0.49112 -3.57137,263.62612 -4.12095,264.13156 -0.29333,0.27008 -18.26532,1.74107 -39.93813,3.26886 l -39.40474,2.77777 0,-138.90727 z"
+       id="path4186" />
+    <path
+       style="fill:#ffcca3;fill-opacity:0;stroke:#000000;stroke-width:6.46818446999999974;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter3947)"
+       d="m 204.07604,617.80486 0,-138.9073 1.82278,0.28888 c 1.00274,0.15888 19.71516,1.81543 41.58285,3.6812 21.86838,1.86578 39.8943,3.51561 40.05819,3.6663 0.53339,0.49112 -3.57137,263.62612 -4.12095,264.13156 -0.29333,0.27008 -18.26532,1.74107 -39.93813,3.26886 l -39.40474,2.77777 0,-138.90727 z"
+       id="path4188" />
+    <path
+       style="fill:#ffcca3;fill-opacity:0.19607843000000000;stroke:#000000;stroke-width:6.46818446999999974;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter3951)"
+       d="m 154.3572,750.54423 c -22.78815,-3.46598 -42.4022,-6.46701 -43.58702,-6.66899 l -2.15453,-0.36718 0,-125.30664 c 0,-68.91867 0.22993,-125.30666 0.51116,-125.30666 0.28051,0 21.0281,-3.01901 46.10434,-6.70889 25.0769,-3.6899 46.02681,-6.70889 46.55617,-6.70889 0.83888,0 0.96231,17.86713 0.96231,138.75206 l 0,138.75208 -3.4803,-0.0675 c -1.91381,-0.0372 -22.12464,-2.90336 -44.91213,-6.36933 l 0,0 z"
+       id="path4700" />
+    <path
+       style="fill:#ffcca3;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:6.46818446999999974;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter3955)"
+       d="m 14.428415,729.38319 c -0.02697,-13.50164 -0.565102,-74.36198 -1.190221,-135.24516 -0.625793,-60.88319 -1.043213,-110.81662 -0.9279,-110.96317 0.173981,-0.22169 71.495492,7.14453 89.510646,9.24487 l 5.46895,0.63762 0,125.55795 c 0,108.87053 -0.12679,125.55793 -0.95421,125.55793 -0.52532,0 -21.14546,2.19564 -45.822467,4.87921 -24.677689,2.68354 -45.129925,4.87919 -45.449566,4.87919 -0.323686,0 -0.605562,-10.9082 -0.635232,-24.54844 l 0,0 z"
+       id="path4702" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:5.82136583000000041;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.68627453000000005;stroke-dasharray:none;filter:url(#filter3959)"
+       d="m 257.39118,746.16891 -56.34833,-47.57214 -34.47122,-16.46727 -19.88781,-42.08306 -33.80834,-31.10485 -0.66287,-18.29698 11.26901,-43.91274"
+       id="path6195" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:5.17454766999999993;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.58823532000000001;stroke-dasharray:none;filter:url(#filter3963)"
+       d="M 198.39131,696.15717 251.42458,669.9315"
+       id="path6197" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:5.17454766999999993;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.58823532000000001;stroke-dasharray:none;filter:url(#filter3967)"
+       d="m 189.11096,691.27797 43.08936,-36.59393"
+       id="path6199" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:3.23409223999999984;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.58823532000000001;stroke-dasharray:none;filter:url(#filter3971)"
+       d="m 177.17841,686.3988 -37.1234,26.22565"
+       id="path6201" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:4.90143967000000025;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.68627453000000005;stroke-dasharray:none;filter:url(#filter3975)"
+       d="m 164.3881,674.90693 -40.68935,18.63143 -24.412679,-20.37814 -65.10337,4.07564"
+       id="path6203" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:5.17454766999999993;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.68627453000000005;stroke-dasharray:none;filter:url(#filter3979)"
+       d="m 145.35806,637.60686 30.49392,-36.59395 58.99987,-39.64347 20.55068,-3.04948 0.66289,0"
+       id="path6205" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:4.52772902999999971;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.58823532000000001;stroke-dasharray:none;filter:url(#filter3983)"
+       d="m 161.2679,617.48018 -6.62883,-25.61576 29.16815,-15.85739"
+       id="path6207" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:3.23409223999999984;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.58823532000000001;stroke-dasharray:none;filter:url(#filter3987)"
+       d="m 171.21179,583.32581 -0.66287,-26.83555 18.56204,1.21979 53.03327,-45.74245"
+       id="path6209" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:3.23409223999999984;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.58823532000000001;stroke-dasharray:none;filter:url(#filter3991)"
+       d="M 112.21261,593.08421 144.0323,563.80906"
+       id="path6211" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:4.52772902999999971;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.68627453000000005;stroke-dasharray:none;filter:url(#filter3995)"
+       d="M 111.54971,598.57331 83.043776,609.5515 49.898335,583.32581 37.965784,581.49612"
+       id="path6213" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:3.23409223999999984;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.58823532000000001;stroke-dasharray:none;filter:url(#filter3999)"
+       d="m 113.53837,585.15554 -45.741549,-24.396 -27.842392,1.21981 4.640176,-20.73657"
+       id="path6215" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4003)"
+       id="path6251"
+       sodipodi:cx="17087.881"
+       sodipodi:cy="140.57626"
+       sodipodi:rx="9.3389826"
+       sodipodi:ry="9.8305082"
+       d="m 17097.22,140.57626 a 9.3389826,9.8305082 0 1 1 -18.678,0 9.3389826,9.8305082 0 1 1 18.678,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11257.465,468.05486)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4007)"
+       id="path6253"
+       sodipodi:cx="17057.898"
+       sodipodi:cy="167.61017"
+       sodipodi:rx="6.8813558"
+       sodipodi:ry="8.3559322"
+       d="m 17064.78,167.61017 a 6.8813558,8.3559322 0 1 1 -13.763,0 6.8813558,8.3559322 0 1 1 13.763,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11244.206,466.22518)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4011)"
+       id="path6255"
+       sodipodi:cx="17034.305"
+       sodipodi:cy="147.45763"
+       sodipodi:rx="11.79661"
+       sodipodi:ry="10.81356"
+       d="m 17046.101,147.45763 a 11.79661,10.81356 0 1 1 -23.593,0 11.79661,10.81356 0 1 1 23.593,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11241.555,455.24697)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4015)"
+       id="path6257"
+       sodipodi:cx="17060.848"
+       sodipodi:cy="110.10169"
+       sodipodi:rx="6.8813558"
+       sodipodi:ry="8.8474579"
+       d="m 17067.729,110.10169 a 6.8813558,8.8474579 0 1 1 -13.763,0 6.8813558,8.8474579 0 1 1 13.763,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11262.769,455.24697)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4019)"
+       id="path6259"
+       sodipodi:cx="17020.051"
+       sodipodi:cy="110.10169"
+       sodipodi:rx="10.322034"
+       sodipodi:ry="9.8305082"
+       d="m 17030.373,110.10169 a 10.322034,9.8305082 0 1 1 -20.644,0 10.322034,9.8305082 0 1 1 20.644,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11253.488,446.09849)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4023)"
+       id="path6261"
+       sodipodi:cx="17021.033"
+       sodipodi:cy="256.57626"
+       sodipodi:rx="5.4067798"
+       sodipodi:ry="4.9152541"
+       d="m 17026.44,256.57626 a 5.4067798,4.9152541 0 1 1 -10.814,0 5.4067798,4.9152541 0 1 1 10.814,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11246.196,504.64882)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4027)"
+       id="path6263"
+       sodipodi:cx="17026.932"
+       sodipodi:cy="282.62711"
+       sodipodi:rx="10.322034"
+       sodipodi:ry="9.3389826"
+       d="m 17037.254,282.62711 a 10.322034,9.3389826 0 1 1 -20.644,0 10.322034,9.3389826 0 1 1 20.644,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11246.196,470.49447)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4031)"
+       id="path6265"
+       sodipodi:cx="17041.186"
+       sodipodi:cy="307.2034"
+       sodipodi:rx="9.8305082"
+       sodipodi:ry="10.322034"
+       d="m 17051.016,307.2034 a 9.8305082,10.322034 0 1 1 -19.661,0 9.8305082,10.322034 0 1 1 19.661,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11271.388,460.12617)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4035)"
+       id="path6267"
+       sodipodi:cx="17076.576"
+       sodipodi:cy="335.71185"
+       sodipodi:rx="11.79661"
+       sodipodi:ry="8.3559322"
+       d="m 17088.373,335.71185 a 11.79661,8.3559322 0 1 1 -23.593,0 11.79661,8.3559322 0 1 1 23.593,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11253.488,466.22518)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4039)"
+       id="path6269"
+       sodipodi:cx="17029.881"
+       sodipodi:cy="360.77966"
+       sodipodi:rx="5.4067798"
+       sodipodi:ry="3.9322033"
+       d="m 17035.288,360.77966 a 5.4067798,3.9322033 0 1 1 -10.814,0 5.4067798,3.9322033 0 1 1 10.814,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11296.577,358.273)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4043)"
+       id="path6271"
+       sodipodi:cx="17042.66"
+       sodipodi:cy="354.88135"
+       sodipodi:rx="8.3559322"
+       sodipodi:ry="6.8813558"
+       d="m 17051.016,354.88135 a 8.3559322,6.8813558 0 1 1 -16.712,0 8.3559322,6.8813558 0 1 1 16.712,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11243.543,462.56576)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4047)"
+       id="path6273"
+       sodipodi:cx="16896.186"
+       sodipodi:cy="414.35593"
+       sodipodi:rx="9.3389826"
+       sodipodi:ry="9.3389826"
+       d="m 16905.525,414.35593 a 9.3389826,9.3389826 0 1 1 -18.678,0 9.3389826,9.3389826 0 1 1 18.678,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11260.778,447.9282)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4051)"
+       id="path6275"
+       sodipodi:cx="16954.186"
+       sodipodi:cy="339.15256"
+       sodipodi:rx="5.4067798"
+       sodipodi:ry="9.8305082"
+       d="m 16959.592,339.15256 a 5.4067798,9.8305082 0 1 1 -10.813,0 5.4067798,9.8305082 0 1 1 10.813,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11284.646,507.69831)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4055)"
+       id="path6277"
+       sodipodi:cx="16913.881"
+       sodipodi:cy="338.66101"
+       sodipodi:rx="9.3389826"
+       sodipodi:ry="7.3728814"
+       d="m 16923.22,338.66101 a 9.3389826,7.3728814 0 1 1 -18.678,0 9.3389826,7.3728814 0 1 1 18.678,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11166.645,294.23359)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4059)"
+       id="path6279"
+       sodipodi:cx="16954.186"
+       sodipodi:cy="287.54236"
+       sodipodi:rx="8.3559322"
+       sodipodi:ry="9.3389826"
+       d="m 16962.541,287.54236 a 8.3559322,9.3389826 0 1 1 -16.711,0 8.3559322,9.3389826 0 1 1 16.711,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11282.656,376.56998)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4063)"
+       id="path6281"
+       sodipodi:cx="16923.711"
+       sodipodi:cy="260.01694"
+       sodipodi:rx="7.3728814"
+       sodipodi:ry="9.3389826"
+       d="m 16931.084,260.01694 a 7.3728814,9.3389826 0 1 1 -14.746,0 7.3728814,9.3389826 0 1 1 14.746,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11230.286,405.84515)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4067)"
+       id="path6283"
+       sodipodi:cx="16918.305"
+       sodipodi:cy="211.35593"
+       sodipodi:rx="8.8474579"
+       sodipodi:ry="7.8644066"
+       d="m 16927.152,211.35593 a 8.8474579,7.8644066 0 1 1 -17.695,0 8.8474579,7.8644066 0 1 1 17.695,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11257.465,437.55991)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4071)"
+       id="path6287"
+       sodipodi:cx="16891.764"
+       sodipodi:cy="131.72882"
+       sodipodi:rx="12.779661"
+       sodipodi:ry="9.8305082"
+       d="m 16904.543,131.72882 a 12.779661,9.8305082 0 1 1 -25.559,0 12.779661,9.8305082 0 1 1 25.559,0 z"
+       transform="matrix(0.33717295,0,0,0.74449769,-5576.2721,438.90168)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4075)"
+       id="path6289"
+       sodipodi:cx="16760.033"
+       sodipodi:cy="129.27118"
+       sodipodi:rx="9.8305082"
+       sodipodi:ry="13.271187"
+       d="m 16769.864,129.27118 a 9.8305082,13.271187 0 1 1 -19.661,0 9.8305082,13.271187 0 1 1 19.661,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11268.735,462.56576)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4079)"
+       id="path6291"
+       sodipodi:cx="16805.254"
+       sodipodi:cy="191.20338"
+       sodipodi:rx="14.745763"
+       sodipodi:ry="12.288136"
+       d="m 16820,191.20338 a 14.745763,12.288136 0 1 1 -29.492,0 14.745763,12.288136 0 1 1 29.492,0 z"
+       transform="matrix(0.58443311,0,0,0.39706542,-9776.2887,497.64718)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4083)"
+       id="path6293"
+       sodipodi:cx="16762.492"
+       sodipodi:cy="220.69492"
+       sodipodi:rx="12.288136"
+       sodipodi:ry="10.322034"
+       d="m 16774.78,220.69492 a 12.288136,10.322034 0 1 1 -24.576,0 12.288136,10.322034 0 1 1 24.576,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11263.432,455.85688)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4087)"
+       id="path6295"
+       sodipodi:cx="16818.033"
+       sodipodi:cy="308.67798"
+       sodipodi:rx="8.8474579"
+       sodipodi:ry="6.8813558"
+       d="m 16826.881,308.67798 a 8.8474579,6.8813558 0 1 1 -17.695,0 8.8474579,6.8813558 0 1 1 17.695,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11299.228,339.36613)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4091)"
+       id="path6297"
+       sodipodi:cx="16831.305"
+       sodipodi:cy="331.28815"
+       sodipodi:rx="6.3898306"
+       sodipodi:ry="9.8305082"
+       d="m 16837.695,331.28815 a 6.3898306,9.8305082 0 1 1 -12.78,0 6.3898306,9.8305082 0 1 1 12.78,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11319.779,374.13038)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4095)"
+       id="path6299"
+       sodipodi:cx="16810.66"
+       sodipodi:cy="382.89832"
+       sodipodi:rx="6.3898306"
+       sodipodi:ry="6.3898306"
+       d="m 16817.05,382.89832 a 6.3898306,6.3898306 0 1 1 -12.78,0 6.3898306,6.3898306 0 1 1 12.78,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11144.768,336.92653)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4099)"
+       id="path6311"
+       sodipodi:cx="16826.881"
+       sodipodi:cy="393.71185"
+       sodipodi:rx="8.8474579"
+       sodipodi:ry="8.3559322"
+       d="m 16835.728,393.71185 a 8.8474579,8.3559322 0 1 1 -17.695,0 8.8474579,8.3559322 0 1 1 17.695,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11321.105,440.60941)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4103)"
+       id="path6313"
+       sodipodi:cx="16772.322"
+       sodipodi:cy="385.35593"
+       sodipodi:rx="21.135593"
+       sodipodi:ry="11.79661"
+       d="m 16793.458,385.35593 a 21.135593,11.79661 0 1 1 -42.271,0 21.135593,11.79661 0 1 1 42.271,0 z"
+       transform="matrix(0.32933172,0,0,0.41360982,-5480.0571,527.62168)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4107)"
+       id="path6315"
+       sodipodi:cx="16786.576"
+       sodipodi:cy="348.98306"
+       sodipodi:rx="9.8305082"
+       sodipodi:ry="7.8644066"
+       d="m 16796.407,348.98306 a 9.8305082,7.8644066 0 1 1 -19.661,0 9.8305082,7.8644066 0 1 1 19.661,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11285.307,450.97768)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4111)"
+       id="path6317"
+       sodipodi:cx="16798.865"
+       sodipodi:cy="333.74576"
+       sodipodi:rx="6.3898306"
+       sodipodi:ry="7.3728814"
+       d="m 16805.255,333.74576 a 6.3898306,7.3728814 0 1 1 -12.78,0 6.3898306,7.3728814 0 1 1 12.78,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11196.478,339.36613)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4115)"
+       id="path6323"
+       sodipodi:cx="16764.457"
+       sodipodi:cy="341.11865"
+       sodipodi:rx="10.322034"
+       sodipodi:ry="7.8644066"
+       d="m 16774.779,341.11865 a 10.322034,7.8644066 0 1 1 -20.644,0 10.322034,7.8644066 0 1 1 20.644,0 z"
+       transform="matrix(0.77068099,0,0,0.50408697,-12786.624,363.49527)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4119)"
+       id="path6325"
+       sodipodi:cx="16888.814"
+       sodipodi:cy="284.10168"
+       sodipodi:rx="6.8813558"
+       sodipodi:ry="7.8644066"
+       d="m 16895.696,284.10168 a 6.8813558,7.8644066 0 1 1 -13.763,0 6.8813558,7.8644066 0 1 1 13.763,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11250.836,380.83927)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4123)"
+       id="path6327"
+       sodipodi:cx="17077.068"
+       sodipodi:cy="290"
+       sodipodi:rx="11.305085"
+       sodipodi:ry="14.745763"
+       d="m 17088.373,290 a 11.305085,14.745763 0 1 1 -22.61,0 11.305085,14.745763 0 1 1 22.61,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11262.104,477.20335)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4127)"
+       id="path6329"
+       sodipodi:cx="16825.898"
+       sodipodi:cy="146.96609"
+       sodipodi:rx="11.79661"
+       sodipodi:ry="7.3728814"
+       d="m 16837.695,146.96609 a 11.79661,7.3728814 0 1 1 -23.593,0 11.79661,7.3728814 0 1 1 23.593,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11291.274,447.3183)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4131)"
+       id="path6331"
+       sodipodi:cx="16937.967"
+       sodipodi:cy="414.35593"
+       sodipodi:rx="7.8644066"
+       sodipodi:ry="6.3898306"
+       d="m 16945.831,414.35593 a 7.8644066,6.3898306 0 1 1 -15.729,0 7.8644066,6.3898306 0 1 1 15.729,0 z"
+       transform="matrix(0.67434588,0,0,0.62041473,-11285.97,463.17569)" />
+  </g>
+</svg>
