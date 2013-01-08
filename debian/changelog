@@ -1,5 +1,6 @@
 byobu (5.23) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * configure.ac, debian/control, debian/copyright, README,
     usr/lib/byobu/rcs_cost, usr/share/man/man1/byobu.1,
     usr/share/man/man1/byobu-config.1, usr/share/man/man1/byobu-ctrl-
@@ -17,6 +18,10 @@ byobu (5.23) unreleased; urgency=low
     detail.1, usr/share/man/man1/byobu-tmux.1:
     - point to the new byobu.co website rather than the launchpad landing
       page
+
+  [ Antonio Lorusso ]
+  * usr/bin/byobu-status: LP: #1018538, #1073145
+    - fix select/copy/paste in iTerm2 and KDE
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Nov 2012 13:48:13 +0100
 

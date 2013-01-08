@@ -37,8 +37,11 @@ done
 
 # Fix status printing for small terminal sizes
 width=$(tmux list-windows -F "#{session_width}")
-w_last=0
-[ -r "$BYOBU_RUN_DIR/width" ] && read w_last < $BYOBU_RUN_DIR/width 2>/dev/null 1>&2 || w_last=0
+if [ -r "$BYOBU_RUN_DIR/width" ]; then
+	read w_last < $BYOBU_RUN_DIR/width 2>/dev/null 1>&2
+else
+	w_last=0
+fi
 for w in $width; do
 	if [ "$w" != "$w_last" ]; then
 		tmux set -g status-left-length $(($w*1/4)) >/dev/null 2>&1
