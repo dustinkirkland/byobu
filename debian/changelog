@@ -24,6 +24,7 @@ byobu (5.23) unreleased; urgency=low
   * === added directory usr/share/byobu/pixmaps/highcontrast,
     debian/install, usr/share/byobu/pixmaps/highcontrast/byobu.svg:
     - add a byobu high contrast icon, LP: #1082241
+    - simplify, removing detail
 
   [ Dustin Kirkland and Philip Muškovac ]
   * usr/lib/byobu/battery: LP: #1090831
