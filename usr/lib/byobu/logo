@@ -33,6 +33,8 @@ get_distro() {
 		_RET=`lsb_release -s -a 2>/dev/null`
 	elif $BYOBU_TEST sw_vers >/dev/null 2>&1; then
 		_RET=`sw_vers 2>/dev/null`
+	elif $BYOBU_TEST uname >/dev/null 2>&1; then
+		_RET=`uname -s`
 	else
 		# No idea!
 		_RET="[B]"
@@ -66,7 +68,7 @@ __logo() {
 					color m W; printf " U "; color -
 				fi
 			else
-				printf "\\o/"
+				printf " U "
 			fi
 		;;
 		*altlinux*)
@@ -97,13 +99,13 @@ __logo() {
 			logo=" > "
 			$MARKUP && printf "$(color b c w)%s$(color -)" "$logo" || printf "$logo"
 		;;
-		*mac*)
+		*mac*|*darwin*)
 			if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
-			logo=" ⌘  "
+				logo=" ⌘  "
 			else
 				logo=" X "
 			fi
-			$MARKUP && printf "$(color b k w)%s$(color -)" "$logo" || printf "$logo"
+			$MARKUP && printf "$(color w k)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*mandriva*)
 			logo=" (* "

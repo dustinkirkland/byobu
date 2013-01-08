@@ -25,6 +25,8 @@ byobu (5.23) unreleased; urgency=low
     debian/install, usr/share/byobu/pixmaps/highcontrast/byobu.svg:
     - add a byobu high contrast icon, LP: #1082241
     - simplify, removing detail
+  * usr/lib/byobu/distro, usr/lib/byobu/logo: LP: #1094716
+    - try to improve logo printing and distro detection on Mac
 
   [ Dustin Kirkland and Philip Muškovac ]
   * usr/lib/byobu/battery: LP: #1090831
