@@ -18,6 +18,9 @@ byobu (5.23) unreleased; urgency=low
     detail.1, usr/share/man/man1/byobu-tmux.1:
     - point to the new byobu.co website rather than the launchpad landing
       page
+  * usr/share/byobu/profiles/common: LP: #1089008
+    - re-enable shift-pgup/shift-pgdn in the terminal buffer in screen,
+      to match our default in tmux
 
   [ Dustin Kirkland and Philip Muškovac ]
   * usr/lib/byobu/battery: LP: #1090831

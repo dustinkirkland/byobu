@@ -47,10 +47,11 @@ backtick 1004 	2	2		byobu-status screen_lower_right
 hardstatus alwayslastline
 
 # The following line would turn off alternate Screen switching in xterms,
-# so that text in Screen will go into the xterm's scrollback buffer.
-# However, we are disabling this at this point, since byobu's
-# alt-pgup and alt-pgdn keybindings now exist.
-#termcapinfo xterm* ti@:te@
+# so that text in Screen will go into the xterm's scrollback buffer
+# and user's can press shift-pgup/shift-pgdn.
+# However, alt-pgup and alt-pgdn keybindings are far more accurate,
+# and handle per session/window/split scrollback correctly
+termcapinfo xterm* ti@:te@
 altscreen on
 
 # Enable 256 color terminal
