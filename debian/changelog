@@ -1,11 +1,11 @@
-byobu (5.24) unreleased; urgency=low
+byobu (5.24-0ubuntu1) raring; urgency=low
 
   * usr/lib/byobu/logo: LP: #1094716
     - use the Apple unicode logo, rather than the Apple option symbol
     - this is only visible from Mac terminals (much like the Ubuntu logo
       is only visible from Ubuntu terminals)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Jan 2013 22:39:57 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Jan 2013 09:49:44 -0600
 
 byobu (5.23-0ubuntu1) raring; urgency=low
 
