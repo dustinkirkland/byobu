@@ -1,6 +1,7 @@
 byobu (5.25) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-status:
+    - move tmux-specific width code into tmux case block
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Jan 2013 09:49:47 -0600
 
