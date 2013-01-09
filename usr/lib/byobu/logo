@@ -101,7 +101,10 @@ __logo() {
 		;;
 		*mac*|*darwin*)
 			if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
-				logo=" ⌘  "
+				# The Apple option character
+				#logo=" ⌘  "
+				# The Apple logo -- only visible from Mac terminals
+				logo=""
 			else
 				logo=" X "
 			fi
