@@ -33,6 +33,8 @@ byobu (5.23) unreleased; urgency=low
       + except use tabs instead of spaces, and allow lines longer than
         80 characters
     - this should get byobu's python code working better with python3
+  * debian/postrm:
+    - fix lintian error
 
   [ Dustin Kirkland and Philip Muškovac ]
   * usr/lib/byobu/battery: LP: #1090831
