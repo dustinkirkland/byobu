@@ -1,4 +1,4 @@
-byobu (5.23) unreleased; urgency=low
+byobu (5.23-0ubuntu1) raring; urgency=low
 
   [ Dustin Kirkland ]
   * configure.ac, debian/control, debian/copyright, README,
@@ -44,7 +44,7 @@ byobu (5.23) unreleased; urgency=low
   * usr/bin/byobu-status: LP: #1018538, #1073145, #1020674
     - fix select/copy/paste in iTerm2 and KDE
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Nov 2012 13:48:13 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 08 Jan 2013 22:39:54 -0600
 
 byobu (5.22-0ubuntu1) raring; urgency=low
 
