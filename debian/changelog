@@ -1,4 +1,4 @@
-byobu (5.25) unreleased; urgency=low
+byobu (5.25-0ubuntu1) raring; urgency=low
 
   * usr/bin/byobu-status:
     - move tmux-specific width code into tmux case block
@@ -8,7 +8,7 @@ byobu (5.25) unreleased; urgency=low
   * usr/bin/byobu-select-session:
     - update python code for python3 compatibility
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Jan 2013 09:49:47 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Jan 2013 15:17:35 -0600
 
 byobu (5.24-0ubuntu1) raring; urgency=low
 
