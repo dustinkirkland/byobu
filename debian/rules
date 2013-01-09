@@ -2,6 +2,11 @@
 %:
 	dh $@
 
+override_dh_auto_build:
+	# Check syntax
+	pep8 --verbose --repeat --ignore W191,E501 usr/bin/byobu-config usr/bin/byobu-select-session
+	dh_auto_build
+
 override_dh_perl:
 	dh_perl -d
 

@@ -27,6 +27,12 @@ byobu (5.23) unreleased; urgency=low
     - simplify, removing detail
   * usr/lib/byobu/distro, usr/lib/byobu/logo: LP: #1094716
     - try to improve logo printing and distro detection on Mac
+  * debian/control, debian/rules, usr/bin/byobu-config, usr/bin/byobu-
+    select-session: LP: #1043048
+    - get our python code pep8 compliant
+      + except use tabs instead of spaces, and allow lines longer than
+        80 characters
+    - this should get byobu's python code working better with python3
 
   [ Dustin Kirkland and Philip Muškovac ]
   * usr/lib/byobu/battery: LP: #1090831
