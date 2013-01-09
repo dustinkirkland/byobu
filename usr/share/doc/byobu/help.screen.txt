@@ -1,4 +1,4 @@
-Byobu _VER_ is an enhancement to GNU Screen, a command line
+Byobu is an enhancement to GNU Screen, a command line
 tool providing live system status, dynamic window management,
 and some convenient keybindings:
 

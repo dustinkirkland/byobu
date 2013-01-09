@@ -2,6 +2,9 @@ byobu (5.25) unreleased; urgency=low
 
   * usr/bin/byobu-status:
     - move tmux-specific width code into tmux case block
+  * usr/bin/byobu-config, usr/bin/byobu-ctrl-a,
+    usr/share/doc/byobu/help.screen.txt:
+    - update python code for python3 compatibility
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Jan 2013 09:49:47 -0600
 

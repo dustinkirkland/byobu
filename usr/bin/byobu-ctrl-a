@@ -125,7 +125,9 @@ case "$bind_to" in
 	;;
 esac
 
-echo "To modify this behavior again later, run 'byobu-ctrl-a'"
-echo
+if [ -z "${2}" ]; then
+	echo "To modify this behavior again later, run 'byobu-ctrl-a'"
+	echo
+fi
 
 # vi: syntax=sh ts=4 noexpandtab
