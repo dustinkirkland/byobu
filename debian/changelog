@@ -1,6 +1,11 @@
-byobu (5.26) unreleased; urgency=low
+byobu (5.26) UNRELEASED; urgency=low
 
+  [ Dustin Kirkland ]
   * UNRELEASED
+
+  [ Iain Lane ]
+  * usr/bin/byobu-select-session:
+    - Handle `screen -ls' returning 1. (LP: #1098341)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Jan 2013 15:17:43 -0600
 
