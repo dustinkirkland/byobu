@@ -1,10 +1,10 @@
-byobu (5.26) UNRELEASED; urgency=low
+byobu (5.26-0ubuntu1) raring; urgency=low
 
   [ Iain Lane ]
   * usr/bin/byobu-select-session:
     - Handle `screen -ls' returning 1. (LP: #1098341)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Jan 2013 15:17:43 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 10 Jan 2013 16:36:21 -0600
 
 byobu (5.25-0ubuntu1) raring; urgency=low
 
