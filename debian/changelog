@@ -4,6 +4,9 @@ byobu (5.27) unreleased; urgency=low
     - ensure byobu-config works even if ~/.profile doesn't exist
   * usr/bin/byobu-ctrl-a: LP: #1098229
     - fix typo that breaks ctrl-a selection behavior
+  * usr/bin/byobu: LP: #1026595
+    - fix readlink detection; we were using BYOBU_TEST before it was defined
+    - instead, try to greadlink -f .; operationally the same
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 10 Jan 2013 16:36:23 -0600
 
