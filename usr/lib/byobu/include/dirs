@@ -30,8 +30,11 @@ if [ -d "$BYOBU_CONFIG_DIR" ]; then
 elif [ -d "$XDG_CONFIG_HOME" ]; then
 	# Use XDG, as some users insist on such nonsense :-)
 	export BYOBU_CONFIG_DIR="$XDG_CONFIG_HOME/$PKG"
+elif [ -d "$HOME/.config/$PKG" ]; then
+	# Use XDG config directory, if it exists
+	export BYOBU_CONFIG_DIR="$HOME/.config/$PKG"
 elif [ -d "$HOME/.local/share/$PKG" ]; then
-	# Use XDG common directory, if it exists
+	# Use XDG local directory, if it exists
 	export BYOBU_CONFIG_DIR="$HOME/.local/share/$PKG"
 else
 	# And to default to good old classic config dir location!

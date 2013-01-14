@@ -7,6 +7,9 @@ byobu (5.27) unreleased; urgency=low
   * usr/bin/byobu: LP: #1026595
     - fix readlink detection; we were using BYOBU_TEST before it was defined
     - instead, try to greadlink -f .; operationally the same
+  * usr/lib/byobu/include/dirs: LP: #1025998
+    - more XDG annoyances
+    - use $HOME/.config/byobu as BYOBU_CONFIG_DIR if it exists
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 10 Jan 2013 16:36:23 -0600
 
