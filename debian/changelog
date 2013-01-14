@@ -1,4 +1,4 @@
-byobu (5.27) unreleased; urgency=low
+byobu (5.27-0ubuntu1) raring; urgency=low
 
   * usr/bin/byobu-config: LP: #1097922, #1098102
     - ensure byobu-config works even if ~/.profile doesn't exist
@@ -19,7 +19,7 @@ byobu (5.27) unreleased; urgency=low
   * usr/lib/byobu/distro, usr/lib/byobu/release: LP: #1004722
     - use sw_vers utility on Mac to determine distro and release
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 10 Jan 2013 16:36:23 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 14 Jan 2013 15:27:34 -0600
 
 byobu (5.26-0ubuntu1) raring; urgency=low
 
