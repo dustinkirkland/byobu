@@ -16,6 +16,8 @@ byobu (5.27) unreleased; urgency=low
       bzr
   * usr/bin/byobu-select-profile: LP: #946112
     - fix byobu interactive color selection in tmux
+  * usr/lib/byobu/distro, usr/lib/byobu/release: LP: #1004722
+    - use sw_vers utility on Mac to determine distro and release
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 10 Jan 2013 16:36:23 -0600
 

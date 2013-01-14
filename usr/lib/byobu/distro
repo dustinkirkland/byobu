@@ -58,6 +58,8 @@ __distro() {
 				DISTRO=$(lsb_release -s -i)
 			;;
 		esac
+	elif $BYOBU_TEST sw_vers >/dev/null 2>&1; then
+		DISTRO="$(sw_vers -productName)"
 	elif $BYOBU_TEST uname >/dev/null 2>&1; then
 		DISTRO="$(uname -s)"
 	else
