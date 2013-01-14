@@ -2,6 +2,8 @@ byobu (5.27) unreleased; urgency=low
 
   * usr/bin/byobu-config: LP: #1097922, #1098102
     - ensure byobu-config works even if ~/.profile doesn't exist
+  * usr/bin/byobu-ctrl-a: LP: #1098229
+    - fix typo that breaks ctrl-a selection behavior
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 10 Jan 2013 16:36:23 -0600
 
