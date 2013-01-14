@@ -327,9 +327,12 @@ def chgesc(snackScreen, size):
 def autolaunch():
 	if os.path.exists(BYOBU_CONFIG_DIR + "/disable-autolaunch"):
 		return 0
-	for line in open("%s/.profile" % HOME):
-		if "byobu-launch" in line:
-			return 1
+	try:
+		for line in open("%s/.profile" % HOME):
+			if "byobu-launch" in line:
+				return 1
+	except:
+		return 0
 	if os.path.exists("/etc/profile.d/Z98-%s.sh" % PKG):
 		return 1
 	return 0

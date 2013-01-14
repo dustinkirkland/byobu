@@ -1,6 +1,7 @@
 byobu (5.27) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-config: LP: #1097922, #1098102
+    - ensure byobu-config works even if ~/.profile doesn't exist
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 10 Jan 2013 16:36:23 -0600
 
