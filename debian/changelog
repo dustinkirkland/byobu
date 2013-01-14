@@ -10,6 +10,10 @@ byobu (5.27) unreleased; urgency=low
   * usr/lib/byobu/include/dirs: LP: #1025998
     - more XDG annoyances
     - use $HOME/.config/byobu as BYOBU_CONFIG_DIR if it exists
+  * === added symlink usr/bin/byobu-screen, === added symlink
+    usr/bin/byobu-tmux, === target is byobu: LP: #1022882
+    - add symlinks to repo, makes it easier to use byobu straight out of
+      bzr
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 10 Jan 2013 16:36:23 -0600
 
