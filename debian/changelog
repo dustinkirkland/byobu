@@ -14,6 +14,8 @@ byobu (5.27) unreleased; urgency=low
     usr/bin/byobu-tmux, === target is byobu: LP: #1022882
     - add symlinks to repo, makes it easier to use byobu straight out of
       bzr
+  * usr/bin/byobu-select-profile: LP: #946112
+    - fix byobu interactive color selection in tmux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 10 Jan 2013 16:36:23 -0600
 

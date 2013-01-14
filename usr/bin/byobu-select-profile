@@ -116,7 +116,14 @@ prompt() {
 				i=$(expr $i + 1)
 			done
 			echo `gettext "Selected"` "$which [$color]"
-			setcolor "$which" "$color"
+			case "$BYOBU_BACKEND" in
+				screen)
+					setcolor_screen "$which" "$color"
+				;;
+				tmux|*)
+					setcolor_tmux "$color"
+				;;
+			esac
 			return 0
 		fi
 	done
@@ -154,7 +161,7 @@ getletter() {
 	echo "$letter"
 }
 
-setcolor() {
+setcolor_screen() {
 	which="$1"
 	color="$2"
 	[ -r $FILE ] && . $FILE
@@ -166,6 +173,7 @@ setcolor() {
 	[ "$MONOCHROME" = "1" ] || MONOCHROME=0
 	printf "FOREGROUND=$FOREGROUND\nBACKGROUND=$BACKGROUND\nMONOCHROME=$MONOCHROME" > $FILE
 	touch "$BYOBU_RUN_DIR/reload-required"
+	$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 }
 
 get_contrast() {
@@ -180,29 +188,35 @@ get_contrast() {
 }
 
 setcolor_tmux() {
+	if [ "$BYOBU_BACKEND" != "tmux" ]; then
+		echo "WARNING: This functionality is only supported in Byobu with the tmux backend" 1>&2
+	fi
 	dark="$1"
 	get_contrast "$dark"
 	light="$_RET"
 	accent="magenta"
 	highlight="red"
 	monochrome="0"
-	printf "BYOBU_DARK=\"#$dark\"\nBYOBU_LIGHT=$light\nBYOBU_ACCENT=$accent\nBYOBU_HIGHLIGHT=$highlight\nMONOCHROME=$MONOCHROME" > "$FILE".tmux
+	printf "BYOBU_DARK=\"$dark\"\nBYOBU_LIGHT=$light\nBYOBU_ACCENT=$accent\nBYOBU_HIGHLIGHT=$highlight\nMONOCHROME=$MONOCHROME" > "$FILE".tmux
 	tmux source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
 }
 
 if [ $# -eq 0 ]; then
 	prompt "background"
-	prompt "foreground"
-	$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
+	case "$BYOBU_BACKEND" in
+		screen)
+			prompt "foreground"
+		;;
+	esac
 else
 	while true; do
 		case "$1" in
 			-b|--background)
-				setcolor "background" "$2"
+				setcolor_screen "background" "$2"
 				shift 2
 			;;
 			-f|--foreground)
-				setcolor "foreground" "$2"
+				setcolor_screen "foreground" "$2"
 				shift 2
 			;;
 			-l|--list)
