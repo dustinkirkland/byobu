@@ -1,3 +1,9 @@
+byobu (5.28) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 14 Jan 2013 15:27:36 -0600
+
 byobu (5.27-0ubuntu1) raring; urgency=low
 
   * usr/bin/byobu-config: LP: #1097922, #1098102
