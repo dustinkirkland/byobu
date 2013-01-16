@@ -1,6 +1,7 @@
 byobu (5.29) unreleased; urgency=low
 
-  * UNRELEASED
+  * README:
+    - update build docs referencing git repo
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Jan 2013 19:26:40 -0600
 

@@ -5,10 +5,12 @@ If Byobu is not packaged for your Linux or UNIX OS, or if you do not have
 administrative privileges in order to install Byobu, you may be able to
 install locally, using the following instructions...
 
- 0) If you have pulled the source from the upstream bzr repository
-    (bzr branch lp:byobu) then you first need to run:
+ 0) If you pull the source from the upstream bzr or git:
+      bzr branch lp:byobu
+      git clone git://github.com/dustinkirkland/byobu.git
+    Then you first need to run:
       ./debian/rules autoconf
- 1) Or download the latest version (>= 3.0) from:
+ 1) Or download the latest officially released version from:
       https://launchpad.net/byobu/+download
  2) Extract:
       tar zxvf byobu*.tar.gz
@@ -31,4 +33,4 @@ Note that you will need to have a few dependencies installed:
  * gsed (if your sed implementation doesn't support -i)
 
 Dustin Kirkland <dustin.kirkland@gmail.com>
-2012-01-08
+2013-01-15
