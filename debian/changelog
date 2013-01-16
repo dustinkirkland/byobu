@@ -1,6 +1,11 @@
 byobu (5.28) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu, usr/share/byobu/profiles/common: LP: #1031925
+    - 'byobu-screen -t foo' was hanging
+    - seems that screen's shelltitle command in our common profile
+      conflicts with the -t option on the command line
+    - add a hack to byobu that detects this, and avoids hanging
+    - set title to . otherwise (seems we need one printable character here)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 14 Jan 2013 15:27:36 -0600
 
