@@ -1,4 +1,4 @@
-byobu (5.28) unreleased; urgency=low
+byobu (5.28-0ubuntu1) raring; urgency=low
 
   * usr/bin/byobu, usr/share/byobu/profiles/common: LP: #1031925
     - 'byobu-screen -t foo' was hanging
@@ -14,7 +14,7 @@ byobu (5.28) unreleased; urgency=low
     - merge, and update a little
     - make sure we get the second-to-last byte on that line
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 14 Jan 2013 15:27:36 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Jan 2013 19:26:37 -0600
 
 byobu (5.27-0ubuntu1) raring; urgency=low
 
