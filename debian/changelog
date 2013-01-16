@@ -9,6 +9,7 @@ byobu (5.28) unreleased; urgency=low
   * usr/bin/byobu-ctrl-a: LP: #1004031
     - fix some bad problems introduced by single quotes
     - escape double quotes instead
+    - clean up keybindings file with better sed's
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 14 Jan 2013 15:27:36 -0600
 
