@@ -10,6 +10,9 @@ byobu (5.28) unreleased; urgency=low
     - fix some bad problems introduced by single quotes
     - escape double quotes instead
     - clean up keybindings file with better sed's
+  * usr/lib/byobu/menu: LP: #881993
+    - merge, and update a little
+    - make sure we get the second-to-last byte on that line
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 14 Jan 2013 15:27:36 -0600
 
