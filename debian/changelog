@@ -6,6 +6,9 @@ byobu (5.28) unreleased; urgency=low
       conflicts with the -t option on the command line
     - add a hack to byobu that detects this, and avoids hanging
     - set title to . otherwise (seems we need one printable character here)
+  * usr/bin/byobu-ctrl-a: LP: #1004031
+    - fix some bad problems introduced by single quotes
+    - escape double quotes instead
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 14 Jan 2013 15:27:36 -0600
 
