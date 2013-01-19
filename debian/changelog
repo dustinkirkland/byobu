@@ -1,5 +1,6 @@
 byobu (5.29) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * README:
     - update build docs referencing git repo
   * usr/lib/byobu/cpu_freq, usr/lib/byobu/date, usr/lib/byobu/entropy,
@@ -68,6 +69,10 @@ byobu (5.29) unreleased; urgency=low
   * usr/bin/byobu-select-session: LP: #1098102
     - fix regression with Python2.6 compatibility, use Popen instead of
       check_output
+
+  [ Przemek Wesolek ]
+  * usr/bin/byobu-status: LP: #1003938
+    - go through cat due to possible tmux/epoll bug
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Jan 2013 19:26:40 -0600
 
