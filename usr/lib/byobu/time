@@ -25,11 +25,11 @@ __time_detail() {
 
 __time() {
 	case "$BYOBU_BACKEND" in
-		tmux)
-			date +"%H:%M:%S"
-		;;
 		screen)
 			printf "\0050c:\005s"
+		;;
+		tmux|*)
+			date +"%H:%M:%S"
 		;;
 	esac
 }

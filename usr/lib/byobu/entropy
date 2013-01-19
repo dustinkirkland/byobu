@@ -19,13 +19,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __entropy_detail() {
-	cat /proc/sys/kernel/random/entropy_avail
+	cat /proc/sys/kernel/random/entropy_avail 2>/dev/null
 }
 
 __entropy() {
-	local e=$(cat /proc/sys/kernel/random/entropy_avail)
-	[ -n "$e" ] || return
-	color K Y; printf "e%s" "$e"; color --
+	if [ -r /proc/sys/kernel/random/entropy_avail ]; then
+		local e=$(cat /proc/sys/kernel/random/entropy_avail)
+		[ -n "$e" ] || return
+		color K Y; printf "e%s" "$e"; color --
+	fi
 }
 
 # vi: syntax=sh ts=4 noexpandtab

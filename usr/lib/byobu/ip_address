@@ -21,8 +21,10 @@
 
 __ip_address_detail() {
 	[ -x /sbin/ifconfig ] && /sbin/ifconfig
-	/sbin/ip -4 addr list
-	/sbin/ip -6 addr list
+	if [ -x /sbin/ip ]; then
+		/sbin/ip -4 addr list
+		/sbin/ip -6 addr list
+	fi
 }
 
 __ip_address() {
@@ -44,7 +46,12 @@ __ip_address() {
 				sleep 0.02
 			else
 				# Background an update
-				LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global >"$cache" 2>/dev/null &
+				if [ -x /sbin/ip ]; then
+					LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global >"$cache" 2>/dev/null &
+				elif $BYOBU_TEST ifconfig >/dev/null 2>&1; then
+					LC_ALL=c ifconfig "$interface" | grep "inet6 " | awk '{print $2}' | sed "s/%.*//" >"$cache" 2>/dev/null &
+
+				fi
 			fi
 			[ -s "$cache" ] && read ipaddr < "$cache"
 			# Print 'None' if we have no global address
@@ -63,9 +70,13 @@ __ip_address() {
 				sleep 0.02
 				[ -s "$cache" ] && read ipaddr < "$cache"
 			else
-				ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global 2>/dev/null)
-				ipaddr=${ipaddr#* inet }
-				ipaddr=${ipaddr%%/*}
+				if [ -x /sbin/ip ]; then
+					ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global 2>/dev/null)
+					ipaddr=${ipaddr#* inet }
+					ipaddr=${ipaddr%%/*}
+				elif $BYOBU_TEST ifconfig >/dev/null 2>&1; then
+					ipaddr=$(ifconfig "$interface" | grep "inet " | awk '{print $2}')
+				fi
 			fi
 		;;
 	esac

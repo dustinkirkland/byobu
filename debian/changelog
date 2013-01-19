@@ -2,6 +2,13 @@ byobu (5.29) unreleased; urgency=low
 
   * README:
     - update build docs referencing git repo
+  * usr/lib/byobu/cpu_freq, usr/lib/byobu/date, usr/lib/byobu/entropy,
+    usr/lib/byobu/include/shutil, usr/lib/byobu/ip_address,
+    usr/lib/byobu/load_average, usr/lib/byobu/memory,
+    usr/lib/byobu/menu, usr/lib/byobu/processes, usr/lib/byobu/time,
+    usr/lib/byobu/time_utc, usr/lib/byobu/uptime, usr/lib/byobu/users:
+    - finally got my hands on a Mac OS X box!
+    - fixed a bunch of status scripts to work on Mac OS X
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Jan 2013 19:26:40 -0600
 

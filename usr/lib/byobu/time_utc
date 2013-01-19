@@ -25,7 +25,7 @@ __time_utc_detail() {
 
 __time_utc() {
 	d=$(date -u +%H:%M)
-	color invert; printf "%s UTC" "$d"; color --
+	color invert; printf "%sUTC" "$d"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab
