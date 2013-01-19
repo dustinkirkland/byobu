@@ -29,7 +29,7 @@ __cpu_freq() {
 		read hz < /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
 		fpdiv $hz "1000000" 1 # 1Ghz
 		freq="$_RET"
-	else
+	elif [ -r "/proc/cpuinfo" ]; then
 		if egrep -q -s -i -m 1 "^cpu MHz|^clock" /proc/cpuinfo; then
 			freq=$(egrep -i -m 1 "^cpu MHz|^clock" /proc/cpuinfo | awk -F"[:.]" '{ printf "%01.1f", $2 / 1000 }')
 		else
@@ -38,6 +38,9 @@ __cpu_freq() {
 			freq=$(egrep -i -m 1 "^bogomips" /proc/cpuinfo | awk -F"[:.]" '{ print $2 }')
 			freq=$(printf "%s %s" "$freq" "$count" | awk '{printf "%01.1f\n", $1/$2/1000}')
 		fi
+	elif hz=$(sysctl -n hw.cpufrequency 2>/dev/null); then
+		fpdiv $hz "1000000000" 1 # 1Ghz
+		freq="$_RET"
 	fi
 	[ -n "$freq" ] || return
 	color b c W; printf "%s" "$freq"; color -; color c W; printf "%s" "$ICON_GHz"; color --

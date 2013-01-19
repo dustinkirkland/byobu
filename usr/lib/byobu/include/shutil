@@ -301,7 +301,7 @@ get_network_interface() {
 			[ "$Mask" = "00000000" ] && break
 		done < /proc/net/route
 		_RET="$Iface"
-	elif $BYOBU_TEST route >/dev/null; then
+	elif $BYOBU_TEST route >/dev/null 2>&1; then
 		# Route command on path
 		_RET=$(route get default|grep interface:|awk '{print $2}')
 	elif [ -x "/sbin/route" ]; then

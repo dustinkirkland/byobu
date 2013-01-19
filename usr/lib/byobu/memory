@@ -26,15 +26,28 @@ __memory() {
 __memory() {
 	local free="" total="" buffers="" cached=""
 	local kb_main_used=0 buffers_plus_cached=0 fo_buffers=0 fo_cached=0
-	while read tok val unit; do
-		case "$tok" in
-			MemTotal:) total=${val};;
-			MemFree:) free=${val};;
-			Buffers:) buffers=${val};;
-			Cached:) cached=${val};;
-		esac
-		[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
-	done < /proc/meminfo
+	if [ -r /proc/meminfo ]; then
+		while read tok val unit; do
+			case "$tok" in
+				MemTotal:) total=${val};;
+				MemFree:) free=${val};;
+				Buffers:) buffers=${val};;
+				Cached:) cached=${val};;
+			esac
+			[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
+		done < /proc/meminfo
+	elif $BYOBU_TEST vm_stat >/dev/null 2>&1; then
+		# MacOS support
+		# calculation borrowed from http://apple.stackexchange.com/a/48195/18857
+		free_blocks=$(vm_stat | grep free | awk '{ print $3 }' | sed 's/\.//')
+		inactive_blocks=$(vm_stat | grep inactive | awk '{ print $3 }' | sed 's/\.//')
+		speculative_blocks=$(vm_stat | grep speculative | awk '{ print $3 }' | sed 's/\.//')
+		free=$((($free_blocks+speculative_blocks)*4))
+		inactive=$(($inactive_blocks*4))
+		total=$((($free+$inactive)))
+		buffers=0
+		cached=0
+	fi
         kb_main_used=$(($total-$free))
         buffers_plus_cached=$(($buffers+$cached))
         # "free output" buffers and cache (output from 'free')

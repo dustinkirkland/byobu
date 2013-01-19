@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 #
 #    load_average: grab the current load average
 #
@@ -24,7 +24,11 @@ __load_average_detail() {
 }
 
 __load_average() {
-	read one five fifteen other < /proc/loadavg
+	if [ -r "/proc/loadavg" ]; then
+		read one five fifteen other < /proc/loadavg
+	else
+		one=$(uptime | sed -e "s/.*://" | awk '{print $1}')
+	fi
 	[ -n "$one" ] || return
 	color Y k; printf "$one"; color --
 }
