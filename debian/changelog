@@ -1,4 +1,4 @@
-byobu (5.29) unreleased; urgency=low
+byobu (5.29-0ubuntu1) raring; urgency=low
 
   [ Dustin Kirkland ]
   * README:
@@ -74,7 +74,7 @@ byobu (5.29) unreleased; urgency=low
   * usr/bin/byobu-status: LP: #1003938
     - go through cat due to possible tmux/epoll bug
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Jan 2013 19:26:40 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 19 Jan 2013 14:17:58 -0600
 
 byobu (5.28-0ubuntu1) raring; urgency=low
 
