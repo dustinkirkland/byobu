@@ -1,3 +1,9 @@
+byobu (5.30) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 19 Jan 2013 14:18:01 -0600
+
 byobu (5.29-0ubuntu1) raring; urgency=low
 
   [ Dustin Kirkland ]
