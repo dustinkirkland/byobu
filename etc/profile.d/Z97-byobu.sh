@@ -2,7 +2,7 @@
 #    Z97-byobu.sh - allow any user to opt into auto-launching byobu
 #    Copyright (C) 2011 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#    Authors: Dustin Kirkland <kirkland@byobu.co>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
