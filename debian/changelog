@@ -65,6 +65,9 @@ byobu (5.29) unreleased; urgency=low
     usr/share/man/man1/byobu-status.1, usr/share/man/man1/byobu-status-
     detail.1, usr/share/man/man1/byobu-tmux.1:
     - updated email address from kirkland@ubuntu.com to kirkland@byobu.co
+  * usr/bin/byobu-select-session: LP: #1098102
+    - fix regression with Python2.6 compatibility, use Popen instead of
+      check_output
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Jan 2013 19:26:40 -0600
 
