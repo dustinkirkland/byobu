@@ -9,6 +9,15 @@ byobu (5.29) unreleased; urgency=low
     usr/lib/byobu/time_utc, usr/lib/byobu/uptime, usr/lib/byobu/users:
     - finally got my hands on a Mac OS X box!
     - fixed a bunch of status scripts to work on Mac OS X
+  * AUTHORS, debian/copyright, po/bg.po, po/sv.po, README,
+    usr/bin/byobu-layout, usr/bin/byobu-reconnect-sockets,
+    usr/bin/byobu-select-session, usr/lib/byobu/entropy,
+    usr/lib/byobu/include/cycle-status, usr/lib/byobu/include/mondrian,
+    usr/lib/byobu/menu, usr/share/byobu/keybindings/f-keys.screen,
+    usr/share/byobu/keybindings/f-keys.screen.disable,
+    usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable:
+    - updated email address
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 15 Jan 2013 19:26:40 -0600
 

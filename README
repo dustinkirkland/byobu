@@ -32,5 +32,5 @@ Note that you will need to have a few dependencies installed:
  * python-newt (if you want to use Byobu's configuration utility)
  * gsed (if your sed implementation doesn't support -i)
 
-Dustin Kirkland <dustin.kirkland@gmail.com>
+Dustin Kirkland <kirkland@byobu.co>
 2013-01-15
