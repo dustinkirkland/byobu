@@ -4,7 +4,9 @@ byobu (5.30) unreleased; urgency=low
     - use $BYOBU_SHELL_TITLE in tmux too
   * usr/share/byobu/windows/Makefile.am:
     - fix lintian warning, install as DATA rather than SCRIPTS
-  * debian/po/POTFILES.in:
+  * debian/po/de.po, debian/po/en_GB.po, debian/po/es.po,
+    debian/po/pt.po, debian/po/ru.po, debian/po/templates.pot,
+    debian/po/POTFILES.in:
     - re-add this file, not sure when/how it got removed, fixes lintian
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 19 Jan 2013 14:18:01 -0600
