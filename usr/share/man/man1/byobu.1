@@ -14,7 +14,7 @@ Options to \fBbyobu\fP are simply passed through \fBscreen\fP(1) or \fBtmux\fP(1
 .SH DESCRIPTION
 \fBbyobu\fP is a script that launches a text based window manager (either \fBscreen\fP(1) or \fBtmux\fP(1)) in the byobu configuration.  This enables the display of system information and status notifications within two lines at the bottom of the screen session. It also enables multiple tabbed terminal sessions, accessible through simple keystrokes.
 
-\fBbyobu\fP currently defaults to using \fBtmux\fP(1) (if present) as the backend, however, this can be overriden with the \fBbyobu-select-backend\fP(1) utility.
+\fBbyobu\fP currently defaults to using \fBtmux\fP(1) (if present) as the backend, however, this can be overridden with the \fBbyobu-select-backend\fP(1) utility.
 
 Note that BYOBU_CONFIG_DIR=\fI$XDG_CONFIG_HOME/byobu\fP if defined, and \fI$HOME/.byobu\fP otherwise.
 
@@ -210,9 +210,9 @@ Users of a non-UTF-8 locale (such as cs_CZ charset ISO-8859-2), may need to add 
 
 Users who customize their PS1 prompt need to put this setting in \fI~/.bashrc\fP, rather than \fI~/.profile\fP, in order for it to work correctly with Byobu.
 
-If you run \fBbyobu\fP(1) under \fBsudo\fP(8), you \fBmust\fP use the -H option, such that the user's $HOME directory environment variable is set properly.  Otherwise, \fBbyobu\fP(1) will create a bunch of directories in the $SUDO_USER's $HOME, but will be owned by root.  To prevent this from happening, \fBbyobu\fP(1) will simply refuse to run if $USER does not own $HOME.
+If you run \fBbyobu\fP(1) under \fBsudo\fP(8), you \fBmust\fP use the \-H option, such that the user's $HOME directory environment variable is set properly.  Otherwise, \fBbyobu\fP(1) will create a bunch of directories in the $SUDO_USER's $HOME, but will be owned by root.  To prevent this from happening, \fBbyobu\fP(1) will simply refuse to run if $USER does not own $HOME.
 
-Byobu requires a suitable \fBulimit\fP(3) values to run.  If you get an error at startup saying, 'pipe: too many open files', then check your ulimit -a values, as your "open files" or "max user processes" are too low.  In this case, you will probably need to run simple \fBscreen\fP(1)
+Byobu requires a suitable \fBulimit\fP(3) values to run.  If you get an error at startup saying, 'pipe: too many open files', then check your ulimit \-a values, as your "open files" or "max user processes" are too low.  In this case, you will probably need to run simple \fBscreen\fP(1)
 
 .SH SEE ALSO
 .PD 0

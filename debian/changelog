@@ -8,6 +8,9 @@ byobu (5.30) unreleased; urgency=low
     debian/po/pt.po, debian/po/ru.po, debian/po/templates.pot,
     debian/po/POTFILES.in:
     - re-add this file, not sure when/how it got removed, fixes lintian
+  * usr/share/man/man1/byobu.1, usr/share/man/man1/byobu-quiet.1,
+    usr/share/man/man1/byobu-silent.1:
+    - fix lintian info messages
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 19 Jan 2013 14:18:01 -0600
 
