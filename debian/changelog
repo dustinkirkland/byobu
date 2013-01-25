@@ -11,6 +11,8 @@ byobu (5.30) unreleased; urgency=low
   * usr/share/man/man1/byobu.1, usr/share/man/man1/byobu-quiet.1,
     usr/share/man/man1/byobu-silent.1:
     - fix lintian info messages
+  * NEWS:
+    - point to byobu.co in NEWS file
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 19 Jan 2013 14:18:01 -0600
 
