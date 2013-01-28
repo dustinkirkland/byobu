@@ -29,9 +29,11 @@ import string
 import subprocess
 import gettext
 import glob
-import snack
-from snack import *
-
+try:
+	import snack
+	from snack import *
+except:
+	error("Could not import the python snack module")
 PKG = "byobu"
 HOME = os.getenv("HOME")
 USER = os.getenv("USER")

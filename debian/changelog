@@ -23,6 +23,8 @@ byobu (5.30) unreleased; urgency=low
     - the sed found in Mac OS X seems to really prefer a -e before expression
   * usr/share/byobu/pixmaps/Byobu.png:
     - image added for Mac OS X packaging
+  * usr/bin/byobu-config:
+    - throw an error message when we can't import snack
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 19 Jan 2013 14:18:01 -0600
 
