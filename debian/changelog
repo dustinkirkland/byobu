@@ -1,4 +1,4 @@
-byobu (5.30) unreleased; urgency=low
+byobu (5.30-0ubuntu1) raring; urgency=low
 
   * usr/share/byobu/keybindings/f-keys.tmux:
     - use $BYOBU_SHELL_TITLE in tmux too
@@ -28,7 +28,7 @@ byobu (5.30) unreleased; urgency=low
   * Applications/Byobu.app/Contents/MacOS/Byobu:
     - add an application launcher for Mac OS X
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 19 Jan 2013 14:18:01 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Jan 2013 02:21:12 -0600
 
 byobu (5.29-0ubuntu1) raring; urgency=low
 
