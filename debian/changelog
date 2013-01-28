@@ -13,6 +13,8 @@ byobu (5.30) unreleased; urgency=low
     - fix lintian info messages
   * NEWS:
     - point to byobu.co in NEWS file
+  * usr/bin/byobu-select-profile:
+    - find a suitable hash sum utility (fixes Mac OS X)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 19 Jan 2013 14:18:01 -0600
 

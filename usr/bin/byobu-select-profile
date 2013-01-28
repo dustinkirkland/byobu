@@ -49,6 +49,14 @@ COLORS="default_light \
 	yellow \
 	brown"
 
+# Find a hash utility
+for i in md5sum md5 sha512sum sha256sum sha1sum shasum shasum5.12 shasum5.10; do
+	if $BYOBU_TEST $i >/dev/null 2>&1; then
+		HASH="$i"
+		break
+	fi
+done
+
 usage () {
     cat <<EOT
 Usage: $0 [(-l|--list)][(-h|--help)]
@@ -225,7 +233,7 @@ else
 				break
 			;;
 			-h|--hostname)
-				color=$(hostname | md5sum | head -c 6)
+				color=$(hostname | $HASH | head -c 6)
 				setcolor_tmux "$color"
 				shift
 				break
@@ -233,13 +241,13 @@ else
 			-i|--ip)
 				[ -r "$BYOBU_CONFIG_DIR/statusrc" ] && . "$BYOBU_CONFIG_DIR/statusrc"
 				. $BYOBU_PREFIX/lib/$PKG/ip_address
-				color=$(__ip_address t| md5sum | head -c 6)
+				color=$(__ip_address t| $HASH | head -c 6)
 				setcolor_tmux "$color"
 				shift
 				break
 			;;
 			-r|--random)
-				color=$(head -c 10 /dev/urandom | md5sum | head -c 6)
+				color=$(head -c 10 /dev/urandom | $HASH | head -c 6)
 				setcolor_tmux "$color"
 				shift
 				break
