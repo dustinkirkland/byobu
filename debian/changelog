@@ -25,6 +25,8 @@ byobu (5.30) unreleased; urgency=low
     - image added for Mac OS X packaging
   * usr/bin/byobu-config:
     - throw an error message when we can't import snack
+  * Applications/Byobu.app/Contents/MacOS/Byobu:
+    - add an application launcher for Mac OS X
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 19 Jan 2013 14:18:01 -0600
 
