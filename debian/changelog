@@ -21,6 +21,8 @@ byobu (5.30) unreleased; urgency=low
     usr/lib/byobu/include/cycle-status, usr/lib/byobu/ip_address,
     usr/lib/byobu/memory:
     - the sed found in Mac OS X seems to really prefer a -e before expression
+  * usr/share/byobu/pixmaps/Byobu.png:
+    - image added for Mac OS X packaging
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 19 Jan 2013 14:18:01 -0600
 
