@@ -47,6 +47,8 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>Byobu</string>
+        <key>CFBundleIdentifier</key>
+        <string>co.byobu</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
