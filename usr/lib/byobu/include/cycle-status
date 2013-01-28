@@ -35,7 +35,7 @@ for i in $all $all; do
 done
 
 # Disable all
-sed -i "s/^tmux_right=/#tmux_right=/" "$BYOBU_CONFIG_DIR/status"
+sed -i -e "s/^tmux_right=/#tmux_right=/" "$BYOBU_CONFIG_DIR/status"
 
 # Enable the next one
-sed -i "${next}s/^#tmux_right=/tmux_right=/" "$BYOBU_CONFIG_DIR/status"
+sed -i -e "${next}s/^#tmux_right=/tmux_right=/" "$BYOBU_CONFIG_DIR/status"

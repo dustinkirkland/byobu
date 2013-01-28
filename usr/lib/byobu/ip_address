@@ -49,7 +49,7 @@ __ip_address() {
 				if [ -x /sbin/ip ]; then
 					LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global >"$cache" 2>/dev/null &
 				elif $BYOBU_TEST ifconfig >/dev/null 2>&1; then
-					LC_ALL=c ifconfig "$interface" | grep "inet6 " | awk '{print $2}' | sed "s/%.*//" >"$cache" 2>/dev/null &
+					LC_ALL=c ifconfig "$interface" | grep "inet6 " | awk '{print $2}' | sed -e "s/%.*//" >"$cache" 2>/dev/null &
 
 				fi
 			fi

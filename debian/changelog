@@ -17,6 +17,10 @@ byobu (5.30) unreleased; urgency=low
     - find a suitable hash sum utility (fixes Mac OS X)
   * usr/lib/byobu/uptime:
     - handle multiple white space with a single digit hour on Mac OS X
+  * usr/bin/byobu-select-profile, usr/bin/byobu-ugraph,
+    usr/lib/byobu/include/cycle-status, usr/lib/byobu/ip_address,
+    usr/lib/byobu/memory:
+    - the sed found in Mac OS X seems to really prefer a -e before expression
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 19 Jan 2013 14:18:01 -0600
 

@@ -81,7 +81,7 @@ Examples:
   Trailing echo adds a required newline
   Note no filename specified.
 
-    $script_name "(/usr/lib/byobu/mem_used |sed 's/% //g';echo)"
+    $script_name "(/usr/lib/byobu/mem_used | sed -e 's/% //g';echo)"
 
 
   Using $script_name just to rotate log and display the graph
