@@ -1,3 +1,9 @@
+byobu (5.31) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Jan 2013 02:21:15 -0600
+
 byobu (5.30-0ubuntu1) raring; urgency=low
 
   * usr/share/byobu/keybindings/f-keys.tmux:
