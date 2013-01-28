@@ -15,6 +15,8 @@ byobu (5.30) unreleased; urgency=low
     - point to byobu.co in NEWS file
   * usr/bin/byobu-select-profile:
     - find a suitable hash sum utility (fixes Mac OS X)
+  * usr/lib/byobu/uptime:
+    - handle multiple white space with a single digit hour on Mac OS X
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 19 Jan 2013 14:18:01 -0600
 

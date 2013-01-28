@@ -40,7 +40,7 @@ __uptime() {
 			str="${u}s"
 		fi
 	else
-		str=$(uptime | sed -e "s/.* up *//" -e "s/ days, /d/" -e "s/:/h/" -e "s/,.*/m/")
+		str=$(uptime | sed -e "s/.* up *//" -e "s/ *days, */d/" -e "s/:/h/" -e "s/,.*/m/")
 	fi
 	[ -n "$str" ] || return
 	color w b; printf "%s" "${str}"; color --
