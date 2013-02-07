@@ -49,7 +49,7 @@ install_launcher() {
 
 install_launcher_fish() {
 	$PKG-launcher-uninstall "$1" || true
-	printf "[ -z \"\$DISPLAY\" -a -z \"\$BYOBU_WINDOWS\" ] ; and [ \"\$TERM\" != \"dumb\" ] ; and exec byobu-launcher" >> "$1"
+	printf "status --is-login; and status --is-interactive; and exec byobu-launcher" >> "$1"
 }
 
 # Sanitize the environment

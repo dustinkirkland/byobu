@@ -1,11 +1,16 @@
 byobu (5.32) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/mail: LP: #1118364
     - support maildir format
   * debian/rules, usr/bin/byobu, usr/bin/byobu-launch,
     usr/lib/byobu/include/common, usr/lib/byobu/include/constants:
     - clean up some bashisms (better portability)
     - checkbashisms at build time
+
+  [ Lukas Stabe ]
+  * usr/bin/byobu-launcher-install:
+    - better fish launcher conditional, per actual fish user
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 06 Feb 2013 23:16:22 -0600
 
