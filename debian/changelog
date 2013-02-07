@@ -6,7 +6,7 @@ byobu (5.32) unreleased; urgency=low
   * debian/rules, usr/bin/byobu, usr/bin/byobu-launch,
     usr/lib/byobu/include/common, usr/lib/byobu/include/constants:
     - clean up some bashisms (better portability)
-    - checkbashisms at build time
+    - checkbashisms at build time, show but don't fail
 
   [ Lukas Stabe ]
   * usr/bin/byobu-launcher-install:
