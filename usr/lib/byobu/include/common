@@ -23,13 +23,9 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 	. "${BYOBU_PREFIX}/lib/${PKG}/include/dirs"
 
 	# Find command/type/which
-	if command -v 2>/dev/null; then
-		BYOBU_TEST="command -v"
-	elif type 2>/dev/null; then
-		BYOBU_TEST="type"
-	else
-		BYOBU_TEST="which"
-	fi
+	for BYOBU_TEST in "command -v" "type" "which"; do
+		$BYOBU_TEST >/dev/null && break 
+	done
 
 	# If the backend is already set (eg. running `byobu-tmux`), do nothing.
 	if [ -z "${BYOBU_BACKEND}" ]; then

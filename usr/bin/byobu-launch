@@ -49,13 +49,15 @@ elif [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_
 	if [ ! -r "$BYOBU_CONFIG_DIR/disable-autolaunch" ]; then
 		case "$-" in
 			*i*)
-				# Attempt to merge shell history across sessions/windows (works with a few exceptions)
-				if $BYOBU_TEST shopt >/dev/null; then
-					shopt -s histappend || true
-				elif $BYOBU_TEST setopt >/dev/null; then
-					# Support zsh too
-					setopt appendhistory
-				fi
+				# Attempt to merge shell history across sessions/windows (works with some exceptions)
+				for i in shopt setopt; do
+					if $BYOBU_TEST $i >/dev/null;
+						case $i in
+							shopt) $i -s histappend || true ;;
+							setopt) $i appendhistory || true ;;
+						esac
+					fi
+				done
 				[ -n "$PROMPT_COMMAND" ] && PROMPT_COMMAND="$PROMPT_COMMAND;history -a;history -r" || PROMPT_COMMAND="history -a;history -r"
 				# Source profile, if necessary
 				[ -z "$_byobu_sourced" ] && [ -r "$HOME/.profile" ] && . "$HOME/.profile"
