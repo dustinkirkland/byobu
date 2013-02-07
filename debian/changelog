@@ -1,3 +1,9 @@
+byobu (5.32) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 06 Feb 2013 23:16:22 -0600
+
 byobu (5.31-0ubuntu1) raring; urgency=low
 
   * configure.ac, Makefile.am, === removed directory
