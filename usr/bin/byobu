@@ -140,18 +140,8 @@ case $BYOBU_BACKEND in
 				-*r*|-*d*|-*D*|-*S*|-ls|-list)
 					BYOBU_SESSION_NAME=
 				;;
-				-t)
-					shelltitle=1
-				;;
 			esac
 		done
-		if [ -n "$shelltitle" ]; then
-			unset shelltitle
-			unset BYOBU_SHELL_TITLE
-		else
-			BYOBU_SHELL_TITLE="-t ."
-
-		fi
 		sessions=$($BYOBU_BACKEND -wipe 2>/dev/null) || true
 	;;
 esac
@@ -164,7 +154,14 @@ esac
 if [ "$#" = "0" ]; then
 	if [ "$CUSTOM_WINDOW_SET" = "1" ]; then
 		# Start new custom window set session
-		exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE $BYOBU_SHELL_TITLE
+		case $BYOBU_BACKEND in
+			tmux)
+				exec tmux $SCREEN_TERM $BYOBU_PROFILE
+			;;
+			screen)
+				exec screen $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE -t ''
+			;;
+		esac
 	else
 		case "$sessions" in
 			*\(*\)*)
@@ -173,13 +170,27 @@ if [ "$#" = "0" ]; then
 			;;
 			*)
 				# Start new default session
-				exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE $BYOBU_SHELL_TITLE $DEFAULT_WINDOW
+				case $BYOBU_BACKEND in
+					tmux)
+						exec tmux $SCREEN_TERM $BYOBU_PROFILE $DEFAULT_WINDOW
+					;;
+					screen)
+						exec screen $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE -t '' $DEFAULT_WINDOW
+					;;
+				esac
 			;;
 		esac
 	fi
 else
 	# Launch with command line args
-	exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE $BYOBU_SHELL_TITLE "$@"
+	case $BYOBU_BACKEND in
+		tmux)
+			exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_PROFILE "$@"
+		;;
+		screen)
+			exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE -t '' "$@"
+		;;
+	esac
 fi
 
 # vi: syntax=sh ts=4 noexpandtab

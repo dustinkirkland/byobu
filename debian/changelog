@@ -22,6 +22,8 @@ byobu (5.31) unreleased; urgency=low
     - support fish shell in the installer
   * usr/bin/byobu-select-session:
     - fix python exception
+  * usr/bin/byobu, usr/share/byobu/keybindings/f-keys.tmux: LP: #1103449
+    - fix regression, re-enable blank window titles in both screen and tmux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Jan 2013 02:21:15 -0600
 
