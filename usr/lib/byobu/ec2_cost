@@ -3,7 +3,7 @@
 #    ec2_cost: approximate EC2 cost (USD) of the current instance
 #
 #    Copyright (C) 2008 Canonical Ltd.
-#    Copyright (C) 2011 Dustin Kirkland
+#    Copyright (C) 2011-2013 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #
@@ -20,11 +20,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Data Transfer Cost Basis
-# Incoming	$0.10/GB
-# Outgoing	$0.17/GB
-# (This gets more complex if you use >1TB/mo)
-RX_RATE="0.10"
-TX_RATE="0.15"
+# Incoming	$0.01/GB
+# Outgoing	$0.12/GB
+# (This gets more complex if you use >10TB/mo)
+RX_RATE="0.01"
+TX_RATE="0.12"
 
 __ec2_cost_detail() {
 	DETAIL=1
@@ -33,46 +33,27 @@ __ec2_cost_detail() {
 
 __ec2_cost() {
 	local zone type file_to_stat cpu mem rate hours tx_gb rx_gb network_cost uptime_cost total_cost interface cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/ec2_cost"
-	# Try to use metadata service
-	if metadata_available; then
+	if [ -s "$cache.rate" ]; then
+		read rate < "$cache.rate"
+	elif metadata_available; then
+		# Try to use metadata service
 		[ -s "$cache.zone" ] || wget -q -O "$cache.zone" http://169.254.169.254/latest/meta-data/placement/availability-zone 2>/dev/null &
 		sleep 0.02
 		[ -s "$cache.zone" ] && read zone < "$cache.zone"
-		[ -r "$BYOBU_PREFIX/share/$PKG/ec2/rates.${zone%?}" ] || zone="us-east-1d"
-		. "$BYOBU_PREFIX/share/$PKG/ec2/rates.${zone%?}"
+		zone=${zone%%[a-z]}
 		[ -s "$cache.type" ] || wget -q -O "$cache.type" http://169.254.169.254/latest/meta-data/instance-type 2>/dev/null &
 		sleep 0.02
-		[ -s "$cache.type" ] && type=$($BYOBU_SED -e "s/\./_/g" "$cache.type")
-		eval rate="\$$type"
-		file_to_stat="$cache.type"
+		[ -s "$cache.type" ] && read type < "$cache.type"
+		$BYOBU_PREFIX/lib/byobu/include/ec2instancespricing.py --type ondemand --filter-region $zone --filter-type $type --filter-os-type linux --format csv | tail -n1 > "$cache.rate"
+		read rate < "$cache.rate"
 	fi
 	if [ -z "$rate" ]; then
-		# No instance type/rate, exit immediately unless we explicitly want an estimate
-		[ "$EC2_ESTIMATE" = "1" ] || return
-		. "$BYOBU_PREFIX/share/$PKG/ec2/rates."*
-		# Count CPUs, Memory, Architecture, hours
-		cpu=$(grep -c "^processor.*:" /proc/cpuinfo) || cpu=1
-		mem=$(grep ^MemTotal /proc/meminfo | awk '{print $2}')
-		# /etc/hostname gets created at installation (but might get updated...other ideas?)
-		file_to_stat="/etc/hostname"
-		# Guess this system's going rate, based on mem available (m* types)
-		if [ $mem -lt 700000 ]; then
-			rate=$t1_micro
-		elif [ $mem -gt 64000000 ]; then
-			rate=$m2_4xlarge
-		elif [ $mem -gt 32000000 ]; then
-			rate=$m2_2xlarge
-		elif [ $mem -gt 16000000 ]; then
-			rate=$m2_xlarge
-		elif [ $mem -gt 14000000 ]; then
-			rate=$m1_xlarge
-		elif [ $mem -gt 7000000 ]; then
-			rate=$m1_large
-		else
-			# Otherwise, scale based on number of cpu's (c* types)
-			rate=$(printf "%s %s" "$cpu" "$m1_small" | awk '{printf "%f", $1*$2}')
-		fi
+		# Unknown rate, exit immediately
+		# Rate estimation is now deprecated
+		return
 	fi
+	rate=${rate##*,}
+	file_to_stat="/etc/hostname"
 	hours=$(((`date +%s` - `stat --printf %Y $file_to_stat`) / 60 / 60 + 1))
 	# Auto detect network interface
 	[ -r "/proc/net/route" ] || return

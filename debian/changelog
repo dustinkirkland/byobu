@@ -1,6 +1,17 @@
 byobu (5.31) unreleased; urgency=low
 
-  * UNRELEASED
+  * configure.ac, Makefile.am, === removed directory
+    usr/share/byobu/ec2, usr/lib/byobu/ec2_cost,
+    usr/lib/byobu/include/ec2instancespricing.py,
+    usr/lib/byobu/include/Makefile.am, usr/share/byobu/ec2/Makefile.am,
+    usr/share/byobu/ec2/rates.ap-northeast-1,
+    usr/share/byobu/ec2/rates.ap-southeast-1,
+    usr/share/byobu/ec2/rates.eu-west-1, usr/share/byobu/ec2/rates.us-
+    east-1, usr/share/byobu/ec2/rates.us-west-1,
+    usr/share/byobu/ec2/rates.us-west-2:
+    - use a smarter algorithm for estimating ec2 cost
+    - include ec2instancespricing.py from
+      https://github.com/erans/ec2instancespricing
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Jan 2013 02:21:15 -0600
 

@@ -1,7 +1,6 @@
 SUBDIRS = etc/byobu \
 	etc/profile.d \
 	usr/share/applications \
-	usr/share/byobu/ec2 \
 	usr/share/byobu/keybindings \
 	usr/share/byobu/pixmaps \
 	usr/share/byobu/profiles \
