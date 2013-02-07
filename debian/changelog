@@ -20,6 +20,8 @@ byobu (5.31) unreleased; urgency=low
   * usr/bin/byobu-launcher-install, usr/bin/byobu-launcher-uninstall:
     - LP: #1002137
     - support fish shell in the installer
+  * usr/bin/byobu-select-session:
+    - fix python exception
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Jan 2013 02:21:15 -0600
 

@@ -40,6 +40,7 @@ BYOBU_UPDATE_ENVVARS = ["DISPLAY", "DBUS_SESSION_BUS_ADDRESS", "SESSION_MANAGER"
 def get_sessions():
 	sessions = []
 	i = 0
+	output = False
 	if BYOBU_BACKEND == "screen":
 		try:
 			output = subprocess.Popen(["screen", "-ls"], stdout=subprocess.PIPE).communicate()[0]
@@ -49,7 +50,8 @@ def get_sessions():
 				raise
 			else:
 				output = cpe.output
-		output = output.decode(sys.stdout.encoding)
+		if not sys.stdout.encoding is None:
+			output = output.decode(sys.stdout.encoding)
 		if output:
 			for s in output.splitlines():
 				s = re.sub(r'\s+', ' ', s)
