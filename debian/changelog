@@ -17,6 +17,9 @@ byobu (5.31) unreleased; urgency=low
     - use env for shebang in development tree
     - fix this up in the postinst
       + seems racy -- there's got to better way of handling this???
+  * usr/bin/byobu-launcher-install, usr/bin/byobu-launcher-uninstall:
+    - LP: #1002137
+    - support fish shell in the installer
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Jan 2013 02:21:15 -0600
 

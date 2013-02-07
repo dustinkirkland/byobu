@@ -47,6 +47,11 @@ install_launcher() {
 	printf "_byobu_sourced=1 . ${BYOBU_PREFIX}/bin/byobu-launch\n" >> "$1"
 }
 
+install_launcher_fish() {
+	$PKG-launcher-uninstall "$1" || true
+	printf "[ -z \"\$DISPLAY\" -a -z \"\$BYOBU_WINDOWS\" ] ; and [ \"\$TERM\" != \"dumb\" ] ; and exec byobu-launcher" >> "$1"
+}
+
 # Sanitize the environment
 $PKG-launcher-uninstall || true
 
@@ -69,6 +74,11 @@ case "$SHELL" in
 		install_launcher "$HOME/.zprofile"
 	;;
 esac
+
+# Handle fish shell
+if [ -d "$HOME/.config/fish" ]; then
+	install_launcher_fish "$HOME/.config/fish/config.fish"
+fi
 
 # Hush login, since we will handle motd printing
 touch "$HOME"/.hushlogin
