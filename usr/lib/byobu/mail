@@ -22,11 +22,14 @@
 MAILFILE="/var/spool/mail/$USER"
 
 __mail_detail() {
-	[ -s "$MAILFILE" ] && ls -alF "$MAILFILE" 2>&1
+	[ ! -d "$MAILFILE" ] && [ -s "$MAILFILE" ] && ls -alF "$MAILFILE" 2>&1
+	[ -d "$MAILFILE/new" ] && ls -AlF "$MAILFILE/new" 2>&1
 }
 
 __mail() {
-	if [ -s "$MAILFILE" ]; then
+	if [ -f "$MAILFILE" ] && [ -s "$MAILFILE" ]; then
+		 color b; printf "%s" "$ICON_MAIL"; color --
+	elif [ -d "$MAILFILE/new" ] && "$(ls -A "$MAILFILE/new" 2>/dev/null)"; then
 		 color b; printf "%s" "$ICON_MAIL"; color --
 	else
 		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/mail"*

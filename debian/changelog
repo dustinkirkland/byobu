@@ -1,6 +1,7 @@
 byobu (5.32) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/mail: LP: #1118364
+    - support maildir format
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 06 Feb 2013 23:16:22 -0600
 
