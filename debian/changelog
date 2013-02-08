@@ -1,4 +1,4 @@
-byobu (5.32) unreleased; urgency=low
+byobu (5.32-0ubuntu1) raring; urgency=low
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/mail: LP: #1118364
@@ -12,7 +12,7 @@ byobu (5.32) unreleased; urgency=low
   * usr/bin/byobu-launcher-install:
     - better fish launcher conditional, per actual fish user
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 06 Feb 2013 23:16:22 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Feb 2013 18:11:38 -0600
 
 byobu (5.31-0ubuntu1) raring; urgency=low
 
