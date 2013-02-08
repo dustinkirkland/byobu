@@ -1,6 +1,6 @@
 byobu (5.33) unreleased; urgency=low
 
-  * usr/bin/byobu-launch: LP: #1119446
+  * usr/bin/byobu-launch: LP: #1119446, #1119345
     - fix shell syntax regression
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Feb 2013 18:11:44 -0600
