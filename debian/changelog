@@ -1,9 +1,9 @@
-byobu (5.33) unreleased; urgency=low
+byobu (5.33-0ubuntu1) raring; urgency=low
 
   * usr/bin/byobu-launch: LP: #1119446, #1119345
     - fix shell syntax regression
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Feb 2013 18:11:44 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Feb 2013 14:48:00 -0600
 
 byobu (5.32-0ubuntu1) raring; urgency=low
 
