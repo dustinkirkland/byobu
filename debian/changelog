@@ -1,6 +1,7 @@
 byobu (5.34) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/rules:
+    - check bash syntax at build time, to avoid LP: #1119446, #1119345 again
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Feb 2013 14:48:02 -0600
 

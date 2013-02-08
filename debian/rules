@@ -3,8 +3,10 @@
 	dh $@
 
 override_dh_auto_build:
-	# Check syntax
+	# Check python syntax
 	pep8 --verbose --repeat --ignore W191,E501 usr/bin/byobu-config usr/bin/byobu-select-session
+	# Check shell syntax
+	sh -n `find . -type f -exec grep -l "^\#\!/bin/sh" '{}' \;`
 	# Check for bashisms in shell scripts
 	checkbashisms `find . -type f -exec grep -l "^\#\!/bin/sh" '{}' \;` || true
 	dh_auto_build
