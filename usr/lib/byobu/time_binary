@@ -76,7 +76,7 @@ EOT
 suppress_seconds=n
 clock_type=binary
 format=std
-ending="\n"
+ending=""
 uppercase=n
 leading_zeros=n
 
@@ -169,5 +169,6 @@ else
   display_time="${hh}${sep}${hm}${hs}${ending}"
 fi
 
+color k w
 printf "%s" "$display_time"
-exit 0
+color --
