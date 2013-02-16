@@ -24,12 +24,18 @@ __time_detail() {
 }
 
 __time() {
+	local secs=1
+	[ -n "$TIME_SECONDS" ] && secs=$TIME_SECONDS
 	case "$BYOBU_BACKEND" in
 		screen)
-			printf "\0050c:\005s"
+			format="\0050c"
+			[ "$secs" != "0" ] && format="$format:\005s"
+			printf $format
 		;;
 		tmux|*)
-			date +"%H:%M:%S"
+			format="%H:%M"
+			[ "$secs" != "0" ] && format="$format:%S"
+			date +$format
 		;;
 	esac
 }

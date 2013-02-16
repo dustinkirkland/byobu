@@ -72,3 +72,7 @@
 # to instead count number of distinct users logged onto the system
 # Default: 0
 #USERS_DISTINCT=0
+
+# Set this to zero to hide seconds int the time display
+# Default 1
+#TIME_SECONDS=0
