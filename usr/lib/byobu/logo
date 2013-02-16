@@ -104,7 +104,7 @@ __logo() {
 				# The Apple option character
 				#logo=" ⌘  "
 				# The Apple logo -- only visible from Mac terminals
-				logo=""
+				logo="  "
 			else
 				logo=" X "
 			fi
