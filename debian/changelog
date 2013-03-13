@@ -9,6 +9,8 @@ byobu (5.34) unreleased; urgency=low
   [ Lukas Stabe <lukas@stabe.de> ]
   * usr/lib/byobu/logo:
     - display logo surrounded by spaces on OSX
+  * usr/lib/byobu/time_binary:
+    - fix time_binary printing "\n" and killing other output
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Feb 2013 14:48:02 -0600
 
