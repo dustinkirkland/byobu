@@ -67,6 +67,13 @@ ___update_cache() {
 	elif $BYOBU_TEST pacman >/dev/null; then
 		# If pacman (Archlinux) exists, use it
 		LC_ALL=C flock -xn "$flock" pacman -Sup | grep -vc "^\(::\| \)" > $mycache &
+	elif $BYOBU_TEST brew >/dev/null; then
+		# If homebrew (Mac OSX) exists, use it, also background if flock exists
+		if $BYOBU_TEST flock; then
+			flock -xn "$flock" brew outdated | wc -l > $mycache &
+		else
+			brew outdated | wc -l > $mycache &
+		fi
 	fi
 }
 
@@ -90,6 +97,19 @@ ___update_needed() {
 			[ "$db" -nt "$mycache" ] && return 0
 		done
 		return 1
+	elif $BYOBU_TEST brew >/dev/null; then
+		# Mac OSX
+		# check if any new versions have been installed since
+		# we last cached. this may not recognize formulae
+		# installed with HEAD
+		for f in $(brew --prefix)/Cellar/*; do
+			[ "$f" -nt "$mycache" ] && return 0	
+		done
+		
+		# nothing new has been installed, so check wether the
+		# formulae database was updated
+		[ "$(brew --prefix)/Library/Formula" -nt "$mycache" ]
+		return $?
 	fi
 	return 1
 }
