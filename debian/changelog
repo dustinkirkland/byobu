@@ -1,4 +1,4 @@
-byobu (5.34) unreleased; urgency=low
+byobu (5.34-0ubuntu1) raring; urgency=low
 
   [ Dustin Kirkland ]
   * debian/rules:
@@ -16,7 +16,7 @@ byobu (5.34) unreleased; urgency=low
   * usr/lib/byobu/time, usr/share/byobu/status/statusrc:
     - add an option to time to hide seconds
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Feb 2013 14:48:02 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 12 Mar 2013 23:14:22 -0500
 
 byobu (5.33-0ubuntu1) raring; urgency=low
 
