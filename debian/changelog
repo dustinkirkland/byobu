@@ -13,6 +13,8 @@ byobu (5.34) unreleased; urgency=low
     - fix time_binary printing "\n" and killing other output
   * usr/lib/byobu/updates_available:
     - make updates_available aware of homebrew
+  * usr/lib/byobu/time, usr/share/byobu/status/statusrc:
+    - add an option to time to hide seconds
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Feb 2013 14:48:02 -0600
 
