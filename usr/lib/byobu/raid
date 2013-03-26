@@ -28,7 +28,7 @@ __raid() {
 		local p msg
 		# Errors in your raid
 		case "$line" in
-			*\ blocks\ *\[*_*\]$)
+			*\ blocks\ *\[*_*\])
 				[ -z "${msg}" ] && msg="RAID"
 			;;
 			*%*)

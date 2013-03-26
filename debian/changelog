@@ -2,6 +2,8 @@ byobu (5.35) unreleased; urgency=low
 
   * usr/bin/byobu:
     - these ulimit tests are bash-specific
+  * usr/lib/byobu/raid:
+    - fix degraded raid detection regression
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 12 Mar 2013 23:14:29 -0500
 
