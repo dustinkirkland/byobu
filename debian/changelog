@@ -1,6 +1,7 @@
 byobu (5.36) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/doc/byobu/help.tmux.txt:
+    - fix typos
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 26 Mar 2013 11:24:38 -0500
 
@@ -947,7 +948,7 @@ byobu (4.50-0ubuntu1) precise; urgency=low
     usr/lib/byobu/include/Makefile.am, usr/share/byobu/keybindings/f-
     keys.tmux, usr/share/byobu/keybindings/f-keys.tmux.disable,
     usr/share/doc/byobu/help.tmux.txt:
-    - install modrian
+    - install mondrian
   * usr/share/byobu/profiles/tmux:
     - fix action bar color
   * usr/lib/byobu/include/mondrian:
