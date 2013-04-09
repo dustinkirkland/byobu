@@ -2,6 +2,8 @@ byobu (5.36) unreleased; urgency=low
 
   * usr/share/doc/byobu/help.tmux.txt:
     - fix typos
+  * usr/lib/byobu/distro:
+    - fix distro printing for RHEL
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 26 Mar 2013 11:24:38 -0500
 

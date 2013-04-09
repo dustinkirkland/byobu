@@ -31,13 +31,16 @@ __distro() {
 	elif [ -r "/etc/issue" ]; then
 		# lsb_release is *really* slow;  try to use /etc/issue first
 		local issue
-		read issue < /etc/issue
+		IFS="" read issue < /etc/issue
 		case "$issue" in
 			Ubuntu*)
 				DISTRO="Ubuntu";
 			;;
 			Debian*)
 				DISTRO="Debian"
+			;;
+			Red Hat Enterprise*)
+				DISTRO="RHEL"
 			;;
 			*)
 				# assume first field is what we want
