@@ -1,6 +1,7 @@
 byobu (5.37) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/distro:
+    - must escape whitespace
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Apr 2013 12:10:29 -0500
 

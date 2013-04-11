@@ -39,7 +39,7 @@ __distro() {
 			Debian*)
 				DISTRO="Debian"
 			;;
-			Red Hat Enterprise*)
+			Red\ Hat\ Enterprise*)
 				DISTRO="RHEL"
 			;;
 			*)
