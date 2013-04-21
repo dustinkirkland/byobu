@@ -1,4 +1,4 @@
-byobu (5.37) unreleased; urgency=low
+byobu (5.37-0ubuntu1) raring; urgency=low
 
   * usr/lib/byobu/distro:
     - must escape whitespace
@@ -16,7 +16,7 @@ byobu (5.37) unreleased; urgency=low
       + note that this might (?) annoy users of byobu from source or PPAs
         running the backports in PPAs or building from source
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Apr 2013 12:10:29 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Apr 2013 11:10:59 -0500
 
 byobu (5.36-0ubuntu1) raring; urgency=low
 
