@@ -1,3 +1,9 @@
+byobu (5.38) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Apr 2013 11:11:01 -0500
+
 byobu (5.37-0ubuntu1) raring; urgency=low
 
   * usr/lib/byobu/distro:
