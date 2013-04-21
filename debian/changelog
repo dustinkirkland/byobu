@@ -2,6 +2,19 @@ byobu (5.37) unreleased; urgency=low
 
   * usr/lib/byobu/distro:
     - must escape whitespace
+  * usr/bin/byobu-janitor, usr/share/byobu/keybindings/Makefile.am,
+    usr/share/byobu/keybindings/tmux-screen-keys.conf,
+    usr/share/byobu/profiles/tmux, usr/share/byobu/profiles/tmuxrc:
+    - fix a number of warnings/errors when launching Byobu on Mac OS X
+    - ship a copy of screen-keys.conf, snapshot from tmux
+      + unfortunately, this gets installed (or doesn't) in various different
+        places by version of Linux/UNIX
+    - touch a couple of byobu/tmux configuration files that should exist
+      + otherwise, tmux 1.8 shows errors on launch
+    - deprecate a couple of tmux configuration options that have gone
+      away with tmux 1.7+
+      + note that this might (?) annoy users of byobu from source or PPAs
+        running the backports in PPAs or building from source
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Apr 2013 12:10:29 -0500
 
