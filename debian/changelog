@@ -1,6 +1,7 @@
 byobu (5.38) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-janitor:
+    - there is no "grey" in tmux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Apr 2013 11:11:01 -0500
 
