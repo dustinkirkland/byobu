@@ -28,6 +28,9 @@ byobu (5.38) unreleased; urgency=low
       on an off
     - useful when Shift-F12 is not usable (Linux console tty), and
       when ctrl-a-! is not usable (tmux)
+  * usr/bin/byobu-ctrl-a: LP: #1045070
+    - check if the user has already chosen an escape sequence and if so,
+      don't bother them with the ctrl-a question
 
   [ Reinhard Tartler ]
   * usr/bin/byobu-reconnect-sockets, usr/lib/byobu/include/shutil: LP: #1162432

@@ -37,7 +37,24 @@ touch "$keybindings"
 
 # If the user has already chosen an escape sequence, then
 # presumably they want ctrl-a to operate in emacs mode
-grep -qs "^escape" "$keybindings" && bind_to="emacs"
+case "$BYOBU_BACKEND" in
+	"screen")
+		if grep -qs "^escape" "$keybindings"; then
+			# Check for escape definition in local keybindings config
+			bind_to="emacs"
+		fi
+	;;
+	"tmux")
+		if grep -qs "^set -g prefix" "$keybindings"e;  then
+			# Check for escape definition in local keybindings config
+			bind_to="emacs"
+		fi
+		# Check for some other escape sequence in tmux keys
+		if tmux list-keys | grep -qs "^bind-key\s\+[^a]\s\+send-prefix"; then
+			bind_to="emacs"
+		fi
+	;;
+esac
 
 case "${1}" in
 	-h|--help) Usage; exit 0;;
