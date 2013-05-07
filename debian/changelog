@@ -1,4 +1,4 @@
-byobu (5.38) unreleased; urgency=low
+byobu (5.38-0ubuntu1) saucy; urgency=low
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-janitor: LP: #1173620
@@ -36,7 +36,7 @@ byobu (5.38) unreleased; urgency=low
   * usr/bin/byobu-reconnect-sockets, usr/lib/byobu/include/shutil: LP: #1162432
     - fix reconnect on zsh
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Apr 2013 11:11:01 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 May 2013 17:16:29 -0500
 
 byobu (5.37-0ubuntu1) raring; urgency=low
 
