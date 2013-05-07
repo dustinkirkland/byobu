@@ -1,0 +1,47 @@
+#!/bin/sh
+#
+#    byobu-keybindings - toggle on/off the Byobu f-key shortcuts
+#    Copyright (C) 2013 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@byobu.co>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+case "$BYOBU_BACKEND" in
+	"tmux")
+		enabled=$(tmux list-keys | grep "f-keys.tmux.disable$")
+		if [ -n "$enabled" ]; then
+			tmux source "$BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux.disable"
+			echo "Byobu keybindings: [OFF]"
+		else
+			tmux source "$BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux"
+			echo "Byobu keybindings: [ON]"
+		fi
+
+	;;
+	"screen")
+		if [ -n "$STY" ]; then
+			flag="$BYOBU_RUN_DIR/.${STY}__f-keys_disabled"
+			if [ -e "$flag" ]; then
+				screen -X -S $STY at "*" eval 'process x' 'process e'
+				rm -f "$flag"
+				echo "Byobu keybindings: [ON]"
+			else
+				screen -X -S $STY at "*" eval 'process x' 'process d'
+				touch "$flag"
+				echo "Byobu keybindings: [OFF]"
+			fi
+		fi
+	;;
+esac
