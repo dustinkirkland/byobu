@@ -93,7 +93,7 @@ case $BYOBU_BACKEND in
 esac
 
 # Establish gpg-agent socket, helps when reconnecting to a detached session
-newest "$HOME/.gnupg/"gpg-agent-info-* && . "$_RET" && export_and_send GPG_AGENT_INFO
+newest "$HOME/.gnupg/gpg-agent-info-*" && . "$_RET" && export_and_send GPG_AGENT_INFO
 
 # Reconnect dbus, source the most recently touched session-bus
 # Sorry, ls -t is needed here, to sort by time
