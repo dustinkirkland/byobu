@@ -1,3 +1,9 @@
+byobu (5.39) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 May 2013 17:16:31 -0500
+
 byobu (5.38-0ubuntu1) saucy; urgency=low
 
   [ Dustin Kirkland ]
