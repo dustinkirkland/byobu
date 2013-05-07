@@ -14,6 +14,8 @@ byobu (5.38) unreleased; urgency=low
       + often used to maximize your tmux session, since tmux reduces
         the available size of your terminal to the smallest connected
         session
+  * usr/bin/byobu: LP: #1176956
+    - handle unlimted ulimits
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Apr 2013 11:11:01 -0500
 
