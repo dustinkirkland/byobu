@@ -22,6 +22,7 @@ and some convenient keybindings:
     Ctrl-Shift-F5                Change status bar's color randomly
   F6                             Detach session and then logout
     Shift-F6                     Detach session and do not logout
+    Alt-F6                       Detach all clients but yourself
     Ctrl-F6                      Kill split in focus
   F7                             Enter scrollback history
     Alt-PageUp/PageDown          Enter and move through scrollback

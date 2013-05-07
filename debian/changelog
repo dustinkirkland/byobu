@@ -5,6 +5,15 @@ byobu (5.38) unreleased; urgency=low
   * usr/bin/byobu-launch:
     - append, rather than prepend, $PROMPT_COMMAND, as double-semi-colons
       are illegal, thanks to Christian Mäder in github for patch
+  * usr/bin/byobu, usr/lib/byobu/include/Makefile.am,
+    usr/lib/byobu/include/tmux-detach-all-but-current-client,
+    usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/doc/byobu/help.tmux.txt: LP: #939870
+    - add a new keybinding, Alt-F6, which detaches all other clients
+      + often used to maximize your tmux session, since tmux reduces
+        the available size of your terminal to the smallest connected
+        session
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 21 Apr 2013 11:11:01 -0500
 

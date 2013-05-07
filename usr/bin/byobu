@@ -2,6 +2,7 @@
 #
 #    byobu - wrapper script
 #    Copyright (C) 2008-2009 Canonical Ltd.
+#    Copyright (C) 2008-2013 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #
@@ -58,6 +59,9 @@ esac
 
 # At this point, we're sure BYOBU_BACKEND is properly defined
 export BYOBU_BACKEND
+
+# Store the parent tty
+export BYOBU_TTY=$(tty)
 
 # Add a version argument for debugging purposes
 if [ "$#" = "1" ]; then

@@ -57,6 +57,7 @@ bind-key -n S-F5 new-window -k "$BYOBU_PREFIX/lib/byobu/include/cycle-status" \;
 bind-key -n C-F5 send-keys ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets" \; send-keys Enter
 bind-key -n C-S-F5 new-window -d "byobu-select-profile -r"
 bind-key -n F6 detach
+bind-key -n M-F6 run-shell '$BYOBU_PREFIX/lib/byobu/include/tmux-detach-all-but-current-client'
 bind-key -n S-F6 run-shell 'exec touch $BYOBU_RUN_DIR/no-logout' \; detach
 bind-key -n C-F6 kill-pane
 bind-key -n F7 copy-mode
