@@ -1,6 +1,6 @@
 byobu (5.38) unreleased; urgency=low
 
-  * usr/bin/byobu-janitor:
+  * usr/bin/byobu-janitor: LP: #1173620
     - there is no "grey" in tmux
   * usr/bin/byobu-launch:
     - append, rather than prepend, $PROMPT_COMMAND, as double-semi-colons
