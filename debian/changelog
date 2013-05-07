@@ -17,6 +17,9 @@ byobu (5.38) unreleased; urgency=low
         session
   * usr/bin/byobu: LP: #1176956
     - handle unlimted ulimits
+  * usr/share/man/man1/byobu.1: LP: #1121414
+    - document PuTTY UTF-8 configuration
+      + thanks to Chris Holmes
 
   [ Reinhard Tartler ]
   * usr/bin/byobu-reconnect-sockets, usr/lib/byobu/include/shutil: LP: #1162432
