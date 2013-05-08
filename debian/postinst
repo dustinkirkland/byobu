@@ -12,9 +12,6 @@ else
 	rm -f /etc/profile.d/Z98-$PKG.sh
 fi
 
-# Replace the development tree's "/usr/bin/env python" shebang
-sed -i -e "s:^#!/usr/bin/env python:#!/usr/bin/python:" /usr/bin/byobu-config /usr/bin/byobu-select-session /usr/lib/byobu/include/ec2instancespricing.py
-
 # Clean up any old-school screen-profiles diversions of /usr/bin/screen
 if [ -f /usr/bin/screen ] && [ -f /usr/bin/screen.real ]; then
 	divertpkg=$(dpkg-divert --listpackage /usr/bin/screen || true)
