@@ -1,6 +1,7 @@
 byobu (5.40) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/profiles/tmux: LP: #1177728
+    - use byobu's tmux-screen-keys.conf
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 May 2013 22:01:40 -0500
 
