@@ -4,6 +4,8 @@ byobu (5.40) unreleased; urgency=low
     - use byobu's tmux-screen-keys.conf
   * debian/postinst: LP: #1174537
     - drop the env python changes in the postinst
+  * debian/control, usr/bin/byobu-select-profile: LP: #1166416
+    - hardcode a use of gawk (for hex calculations)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 May 2013 22:01:40 -0500
 

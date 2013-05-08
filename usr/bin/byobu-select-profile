@@ -186,8 +186,12 @@ setcolor_screen() {
 
 get_contrast() {
 	# See section 2.2: http://www.w3.org/TR/AERT
+	local awk="awk"
+	if $BYOBU_TEST gawk >/dev/null 2>&1; then
+		awk="gawk"
+	fi
 	local hex="$(echo "$1" | sed -e "s/\(..\)\(..\)\(..\)/\1 \2 \3/")"
-	local bright=$(echo $hex | awk --non-decimal-data '{printf "%0.0f",(("0x"$1)*299+("0x"$2)*587+("0x"$3)*114)/1000}')
+	local bright=$(echo $hex | $awk --non-decimal-data '{printf "%0.0f",(("0x"$1)*299+("0x"$2)*587+("0x"$3)*114)/1000}')
 	if [ $bright -ge 130 ]; then
 		_RET="black"
 	else
