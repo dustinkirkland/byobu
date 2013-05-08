@@ -12,6 +12,8 @@ byobu (5.40) unreleased; urgency=low
     - handle non-existant keybindings file
   * usr/bin/byobu-config: LP: #1125469
     - define error() function
+  * debian/control:
+    - lintian fixes
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 May 2013 22:01:40 -0500
 
