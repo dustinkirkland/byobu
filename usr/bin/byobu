@@ -70,7 +70,6 @@ if [ "$#" = "1" ]; then
 			echo "$PKG version $VERSION"
 			if $BYOBU_TEST bash >/dev/null 2>&1; then
 				# Check ulimits
-				local u
 				u=$(bash -c "ulimit -n")
 				[ "$u" = "unlimited" ] || [ $u -ge 15 ] || echo "WARNING: ulimit -n is too low" 1>&2
 				u=$(bash -c "ulimit -u")

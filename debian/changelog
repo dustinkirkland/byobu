@@ -1,6 +1,7 @@
 byobu (5.39) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu:
+    - fix minor syntax error
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 May 2013 17:16:31 -0500
 
