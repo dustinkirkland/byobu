@@ -265,16 +265,20 @@ def getesckey():
 	line = ""
 	if BYOBU_BACKEND == "tmux":
 		path = BYOBU_CONFIG_DIR + '/keybindings.tmux'
-		for l in open(path):
-			if l.startswith("set -g prefix "):
-				line = l
+		if os.path.exists(path):
+			for l in open(path):
+				if l.startswith("set -g prefix "):
+					line = l
+		else:
+			return DEF_ESC
 	else:
 		path = BYOBU_CONFIG_DIR + '/keybindings'
-		for l in open(path):
-			if l.startswith("escape "):
-				line = l
-	if not os.path.exists(path):
-		return DEF_ESC
+		if os.path.exists(path):
+			for l in open(path):
+				if l.startswith("escape "):
+					line = l
+		else:
+			return DEF_ESC
 	if line == "":
 		return DEF_ESC
 	esc = line[line.find('^') + 1]

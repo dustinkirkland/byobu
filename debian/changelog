@@ -8,6 +8,8 @@ byobu (5.40) unreleased; urgency=low
     - hardcode a use of gawk (for hex calculations)
   * usr/share/doc/byobu/help.tmux.txt: LP: #1143342
     - rephrase window rename help text
+  * usr/bin/byobu-config: LP: #1166058
+    - handle non-existant keybindings file
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 May 2013 22:01:40 -0500
 
