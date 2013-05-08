@@ -1,4 +1,4 @@
-byobu (5.40) unreleased; urgency=low
+byobu (5.40-0ubuntu1) saucy; urgency=low
 
   * usr/share/byobu/profiles/tmux: LP: #1177728
     - use byobu's tmux-screen-keys.conf
@@ -15,7 +15,7 @@ byobu (5.40) unreleased; urgency=low
   * debian/control:
     - lintian fixes
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 07 May 2013 22:01:40 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 08 May 2013 13:36:03 -0500
 
 byobu (5.39-0ubuntu1) saucy; urgency=low
 
