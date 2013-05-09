@@ -1,6 +1,7 @@
 byobu (5.41) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/profiles/tmux:
+    - need to use prefix
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 08 May 2013 13:36:07 -0500
 
