@@ -1,4 +1,4 @@
-byobu (5.41) unreleased; urgency=low
+byobu (5.41-0ubuntu1) saucy; urgency=low
 
   * usr/share/byobu/profiles/tmux:
     - need to use prefix
@@ -7,7 +7,7 @@ byobu (5.41) unreleased; urgency=low
       + on Mac (tmux 1.8), it seems that the tmux session does not
         yet exist, so this fails
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 08 May 2013 13:36:07 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 09 May 2013 09:06:03 -0500
 
 byobu (5.40-0ubuntu1) saucy; urgency=low
 
