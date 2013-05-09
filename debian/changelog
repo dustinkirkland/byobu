@@ -2,6 +2,10 @@ byobu (5.41) unreleased; urgency=low
 
   * usr/share/byobu/profiles/tmux:
     - need to use prefix
+  * usr/share/byobu/profiles/tmux:
+    - run byobu-janitor in a new session, rather than a new window
+      + on Mac (tmux 1.8), it seems that the tmux session does not
+        yet exist, so this fails
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 08 May 2013 13:36:07 -0500
 

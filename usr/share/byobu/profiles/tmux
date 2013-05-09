@@ -22,7 +22,7 @@
 
 # Initialize environment, clean up
 set-environment -g BYOBU_BACKEND tmux
-new-window -d byobu-janitor
+new-session -d byobu-janitor
 set -s escape-time 0
 
 # Change to Screen's ctrl-a escape sequence and use screen-like keys
