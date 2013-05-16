@@ -2,6 +2,7 @@ byobu (5.42) unreleased; urgency=low
 
   * usr/bin/Makefile.am:
     - install byobu-ulevel
+    - install byobu-ugraph
   * usr/lib/byobu/wifi_quality:
     - clear wifi status indicator when there is no wifi connection
 
