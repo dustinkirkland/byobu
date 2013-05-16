@@ -2,6 +2,8 @@ byobu (5.42) unreleased; urgency=low
 
   * usr/bin/Makefile.am:
     - install byobu-ulevel
+  * usr/lib/byobu/wifi_quality:
+    - clear wifi status indicator when there is no wifi connection
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 09 May 2013 09:06:07 -0500
 
