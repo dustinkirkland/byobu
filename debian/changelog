@@ -1,4 +1,4 @@
-byobu (5.42) unreleased; urgency=low
+byobu (5.42-0ubuntu1) saucy; urgency=low
 
   * usr/bin/Makefile.am:
     - install byobu-ulevel
@@ -13,7 +13,7 @@ byobu (5.42) unreleased; urgency=low
     - seems that the #nnnnnn style coloring isn't working everywhere
       + should probably get to the bottom of this...
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 09 May 2013 09:06:07 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 May 2013 18:01:26 -0500
 
 byobu (5.41-0ubuntu1) saucy; urgency=low
 
