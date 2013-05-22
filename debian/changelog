@@ -1,3 +1,9 @@
+byobu (5.43) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 May 2013 18:01:28 -0500
+
 byobu (5.42-0ubuntu1) saucy; urgency=low
 
   * usr/bin/Makefile.am:
