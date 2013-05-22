@@ -60,15 +60,15 @@ color_map() {
 		"m") _RET="magenta" ;;
 		"c") _RET="cyan" ;;
 		"w") _RET="white" ;;
-		"d") _RET="color0" ;;
-		"K") _RET="#555555" ;;
-		"R") _RET="#FF0000" ;;
-		"G") _RET="#00FF00" ;;
-		"Y") _RET="#FFFF00" ;;
-		"B") _RET="#0000FF" ;;
-		"M") _RET="#FF00FF" ;;
-		"C") _RET="#00FFFF" ;;
-		"W") _RET="#FFFFFF" ;;
+		"d") _RET="black" ;;
+		"K") _RET="brightblack" ;;
+		"R") _RET="brightred" ;;
+		"G") _RET="brightgreen" ;;
+		"Y") _RET="brightyellow" ;;
+		"B") _RET="brightblue" ;;
+		"M") _RET="brightmagenta" ;;
+		"C") _RET="brightcyan" ;;
+		"W") _RET="brightwhite" ;;
 		*) _RET= ;;
 	esac
 }

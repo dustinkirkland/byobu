@@ -7,6 +7,11 @@ byobu (5.42) unreleased; urgency=low
     - clear wifi status indicator when there is no wifi connection
   * usr/bin/byobu-select-session: LP: #1182776
     - skip sessions that are just whitespace
+  * usr/lib/byobu/include/shutil, usr/lib/byobu/wifi_quality,
+    usr/share/man/man1/byobu.1: LP: #1182528
+    - fix status colors on Red Hat, Mac OS X, and elsewhere
+    - seems that the #nnnnnn style coloring isn't working everywhere
+      + should probably get to the bottom of this...
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 09 May 2013 09:06:07 -0500
 
