@@ -5,6 +5,8 @@ byobu (5.42) unreleased; urgency=low
     - install byobu-ugraph
   * usr/lib/byobu/wifi_quality:
     - clear wifi status indicator when there is no wifi connection
+  * usr/bin/byobu-select-session: LP: #1182776
+    - skip sessions that are just whitespace
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 09 May 2013 09:06:07 -0500
 

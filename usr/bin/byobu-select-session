@@ -56,7 +56,7 @@ def get_sessions():
 			for s in output.splitlines():
 				s = re.sub(r'\s+', ' ', s)
 				# Ignore hidden sessions (named sessions that start with a ".")
-				if s and (s.find(" ") == 0 and len(s) > 1 and s.count("..") == 0):
+				if s and s != " " and (s.find(" ") == 0 and len(s) > 1 and s.count("..") == 0):
 					text.append("screen: %s" % s.strip())
 					items = s.split(" ")
 					sessions.append("screen____%s" % items[1])
