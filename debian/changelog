@@ -1,3 +1,9 @@
+byobu (5.44) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 02 Jun 2013 00:15:10 -0500
+
 byobu (5.43-0ubuntu1) saucy; urgency=low
 
   * usr/bin/byobu-select-profile:
