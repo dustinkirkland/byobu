@@ -252,7 +252,7 @@ else
 			;;
 			-r|--random)
 				color=$(head -c 10 /dev/urandom | $HASH | head -c 6)
-				setcolor_tmux "$color"
+				setcolor_tmux "\#$color"
 				shift
 				break
 			;;

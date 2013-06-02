@@ -1,6 +1,7 @@
 byobu (5.43) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-select-profile:
+    - fix random background color setting for tmux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 May 2013 18:01:28 -0500
 
