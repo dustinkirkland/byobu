@@ -33,7 +33,7 @@ __wifi_quality() {
 		awk '$0 ~ /[ ]*Link Quality./ {
    sub(/.*=/,"",$2); split($2,a,"/");
    printf "quality=%.0f\n", 100*a[1]/a[2] };
-   $0 ~ /[ ]*Bit Rate/ { sub(/.*=/,"",$2); printf("bitrate=%s\n", $2); }
+   $0 ~ /[ ]*Bit Rate/ { sub(/.*[:=]/,"",$2); printf("bitrate=%s\n", $2); }
    '`
 	eval "$out"
 	[ -z "$bitrate" ] && bitrate="0"

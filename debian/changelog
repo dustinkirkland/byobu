@@ -1,6 +1,7 @@
 byobu (5.44) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/wifi_quality:
+    - minor fix for wifi quality printing, sometimes = and sometimes :
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 02 Jun 2013 00:15:10 -0500
 
