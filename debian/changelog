@@ -1,4 +1,4 @@
-byobu (5.44) unreleased; urgency=low
+byobu (5.44-0ubuntu1) saucy; urgency=low
 
   * usr/lib/byobu/wifi_quality:
     - minor fix for wifi quality printing, sometimes = and sometimes :
@@ -7,7 +7,7 @@ byobu (5.44) unreleased; urgency=low
     usr/lib/byobu/updates_available:
     - ensure input/output/stderr are handled properly for background process
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 02 Jun 2013 00:15:10 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Jul 2013 09:05:18 -0500
 
 byobu (5.43-0ubuntu1) saucy; urgency=low
 
