@@ -1,6 +1,8 @@
 byobu (5.45) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/ec2_cost, usr/lib/byobu/hostname,
+    usr/lib/byobu/include/shutil, usr/lib/byobu/ip_address:
+    - fix regression, must hook wget -o- to stdout
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Jul 2013 09:05:21 -0500
 
