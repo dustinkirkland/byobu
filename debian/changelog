@@ -7,6 +7,9 @@ byobu (5.46) unreleased; urgency=low
   [ Dustin Kirkland ]
   * usr/share/byobu/keybindings/f-keys.tmux: LP: #1190290
     - handle spaces in windows and layouts properly
+  * usr/lib/byobu/include/common: LP: #1180427
+    - handle zsh's interpretation of "command -v", let it fall through
+      to use 'type' for BYOBU_TEST
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jul 2013 15:52:56 -0500
 

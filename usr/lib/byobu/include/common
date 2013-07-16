@@ -24,7 +24,7 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 
 	# Find command/type/which
 	for BYOBU_TEST in "command -v" "type" "which"; do
-		$BYOBU_TEST >/dev/null && break 
+		$BYOBU_TEST >/dev/null && break || true
 	done
 
 	# If the backend is already set (eg. running `byobu-tmux`), do nothing.
