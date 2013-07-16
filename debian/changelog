@@ -4,6 +4,10 @@ byobu (5.46) unreleased; urgency=low
   * usr/bin/byobu: LP: #1173354
     - if tput colors is 256, use screen-256color in byobu-screen
 
+  [ Dustin Kirkland ]
+  * usr/share/byobu/keybindings/f-keys.tmux: LP: #1190290
+    - handle spaces in windows and layouts properly
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jul 2013 15:52:56 -0500
 
 byobu (5.45-0ubuntu1) saucy; urgency=low
