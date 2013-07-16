@@ -166,7 +166,7 @@ if [ "$#" = "0" ]; then
 				exec tmux $SCREEN_TERM $BYOBU_PROFILE
 			;;
 			screen)
-				exec screen $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE -t ''
+				exec screen $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE
 			;;
 		esac
 	else
@@ -182,7 +182,7 @@ if [ "$#" = "0" ]; then
 						exec tmux $SCREEN_TERM $BYOBU_PROFILE $DEFAULT_WINDOW
 					;;
 					screen)
-						exec screen $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE -t '' $DEFAULT_WINDOW
+						exec screen $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE $DEFAULT_WINDOW
 					;;
 				esac
 			;;
@@ -195,7 +195,7 @@ else
 			exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_PROFILE "$@"
 		;;
 		screen)
-			exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE -t '' "$@"
+			exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE "$@"
 		;;
 	esac
 fi

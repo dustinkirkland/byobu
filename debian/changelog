@@ -13,6 +13,9 @@ byobu (5.46) unreleased; urgency=low
   * usr/bin/byobu-config: LP: #1177997
     - use decimal for os.makedirs() permission for compatibility
       with older+newer python versions
+  * usr/bin/byobu: LP: #1195726
+    - zeroing out window titles in byobu-screen is causing other problems,
+      especially when the user defines shelltitle in ~/.screenrc
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jul 2013 15:52:56 -0500
 
