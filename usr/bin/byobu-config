@@ -83,7 +83,9 @@ def ioctl_GWINSZ(fd):
 def reload_required():
 	try:
 		if not os.path.exists(BYOBU_CONFIG_DIR):
-			os.makedirs(BYOBU_CONFIG_DIR, 0o755)
+			# 493 (decimal) is 0755 (octal)
+			# Use decimal for portability across all python versions
+			os.makedirs(BYOBU_CONFIG_DIR, 493)
 		f = open(RELOAD_FLAG, 'w')
 		f.close()
 		if BYOBU_BACKEND == "screen":

@@ -10,6 +10,9 @@ byobu (5.46) unreleased; urgency=low
   * usr/lib/byobu/include/common: LP: #1180427
     - handle zsh's interpretation of "command -v", let it fall through
       to use 'type' for BYOBU_TEST
+  * usr/bin/byobu-config: LP: #1177997
+    - use decimal for os.makedirs() permission for compatibility
+      with older+newer python versions
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jul 2013 15:52:56 -0500
 
