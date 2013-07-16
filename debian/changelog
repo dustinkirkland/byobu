@@ -1,4 +1,4 @@
-byobu (5.46) unreleased; urgency=low
+byobu (5.46-0ubuntu1) saucy; urgency=low
 
   [ Chow Loong Jin ]
   * usr/bin/byobu: LP: #1173354
@@ -19,7 +19,7 @@ byobu (5.46) unreleased; urgency=low
   * usr/share/byobu/profiles/tmux:
     - let's try tmux's automatic titles again
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jul 2013 15:52:56 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jul 2013 18:19:06 -0500
 
 byobu (5.45-0ubuntu1) saucy; urgency=low
 
