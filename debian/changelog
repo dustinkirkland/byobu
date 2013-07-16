@@ -16,6 +16,8 @@ byobu (5.46) unreleased; urgency=low
   * usr/bin/byobu: LP: #1195726
     - zeroing out window titles in byobu-screen is causing other problems,
       especially when the user defines shelltitle in ~/.screenrc
+  * usr/share/byobu/profiles/tmux:
+    - let's try tmux's automatic titles again
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 15 Jul 2013 15:52:56 -0500
 
