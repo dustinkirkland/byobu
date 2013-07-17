@@ -1,6 +1,7 @@
 byobu (5.47) unreleased; urgency=low
 
-  * UNRELEASED
+  * No changes
+  * Re-release due to some minor breakage in my release script
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jul 2013 18:19:08 -0500
 
