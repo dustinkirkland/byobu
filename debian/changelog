@@ -1,9 +1,9 @@
-byobu (5.47) unreleased; urgency=low
+byobu (5.47-0ubuntu1) saucy; urgency=low
 
   * No changes
   * Re-release due to some minor breakage in my release script
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jul 2013 18:19:08 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jul 2013 09:36:17 -0500
 
 byobu (5.46-0ubuntu1) saucy; urgency=low
 
