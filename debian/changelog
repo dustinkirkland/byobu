@@ -1,8 +1,5 @@
 byobu (5.48) unreleased; urgency=low
 
-  * usr/lib/byobu/include/shutil:
-    - drop "bright" designations, which don't seem to be working properly
-      most places
   * usr/bin/byobu-disable-prompt, usr/bin/byobu-enable-prompt,
     usr/bin/Makefile.am, usr/share/byobu/profiles/ps1.sh,
     usr/share/man/man1/byobu-disable-prompt.1,
@@ -10,6 +7,9 @@ byobu (5.48) unreleased; urgency=low
     usr/share/man/man1/Makefile.am:
     - add a utility that installs and uninstalls a nicer color prompt
       into the local shell configuration
+  * usr/bin/byobu-enable-prompt, usr/lib/byobu/include/shutil:
+    - workaround for LP: #817690
+    - add override for TERM in byobu-enable-prompt
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jul 2013 09:37:02 -0500
 
