@@ -10,6 +10,8 @@ byobu (5.48) unreleased; urgency=low
   * usr/bin/byobu-enable-prompt, usr/lib/byobu/include/shutil:
     - workaround for LP: #817690
     - add override for TERM in byobu-enable-prompt
+  * usr/lib/byobu/include/common: LP: #1180427
+    - silence STERR too on BYOBU_TEST
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jul 2013 09:37:02 -0500
 
