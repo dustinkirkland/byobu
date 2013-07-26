@@ -1,6 +1,8 @@
 byobu (5.48) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/include/shutil:
+    - drop "bright" designations, which don't seem to be working properly
+      most places
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jul 2013 09:37:02 -0500
 

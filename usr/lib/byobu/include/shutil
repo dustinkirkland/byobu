@@ -61,14 +61,14 @@ color_map() {
 		"c") _RET="cyan" ;;
 		"w") _RET="white" ;;
 		"d") _RET="black" ;;
-		"K") _RET="brightblack" ;;
-		"R") _RET="brightred" ;;
-		"G") _RET="brightgreen" ;;
-		"Y") _RET="brightyellow" ;;
-		"B") _RET="brightblue" ;;
-		"M") _RET="brightmagenta" ;;
-		"C") _RET="brightcyan" ;;
-		"W") _RET="brightwhite" ;;
+		"K") _RET="black" ;;
+		"R") _RET="red" ;;
+		"G") _RET="green" ;;
+		"Y") _RET="yellow" ;;
+		"B") _RET="blue" ;;
+		"M") _RET="magenta" ;;
+		"C") _RET="cyan" ;;
+		"W") _RET="white" ;;
 		*) _RET= ;;
 	esac
 }
