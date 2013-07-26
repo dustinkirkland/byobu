@@ -1,4 +1,4 @@
-byobu (5.48) unreleased; urgency=low
+byobu (5.48-0ubuntu1) saucy; urgency=low
 
   * usr/bin/byobu-disable-prompt, usr/bin/byobu-enable-prompt,
     usr/bin/Makefile.am, usr/share/byobu/profiles/ps1.sh,
@@ -13,7 +13,7 @@ byobu (5.48) unreleased; urgency=low
   * usr/lib/byobu/include/common: LP: #1180427
     - silence STERR too on BYOBU_TEST
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jul 2013 09:37:02 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Jul 2013 16:51:18 -0500
 
 byobu (5.47-0ubuntu1) saucy; urgency=low
 
