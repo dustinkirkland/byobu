@@ -1,3 +1,9 @@
+byobu (5.49) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Jul 2013 16:51:20 -0500
+
 byobu (5.48-0ubuntu1) saucy; urgency=low
 
   * usr/bin/byobu-disable-prompt, usr/bin/byobu-enable-prompt,
