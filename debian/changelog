@@ -3,6 +3,13 @@ byobu (5.48) unreleased; urgency=low
   * usr/lib/byobu/include/shutil:
     - drop "bright" designations, which don't seem to be working properly
       most places
+  * usr/bin/byobu-disable-color-prompt, usr/bin/byobu-enable-color-
+    prompt, usr/bin/Makefile.am, usr/share/byobu/profiles/ps1.sh,
+    usr/share/man/man1/byobu-disable-color-prompt.1,
+    usr/share/man/man1/byobu-enable-color-prompt.1,
+    usr/share/man/man1/Makefile.am:
+    - add a utility that installs and uninstalls a nicer color prompt
+      into the local shell configuration
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jul 2013 09:37:02 -0500
 
