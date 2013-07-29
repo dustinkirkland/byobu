@@ -1,6 +1,7 @@
 byobu (5.50) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/applications/byobu.desktop:
+    - ensure TERM gets full color when launching from desktop
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Jul 2013 19:51:39 -0500
 
