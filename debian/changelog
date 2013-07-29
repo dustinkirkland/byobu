@@ -1,4 +1,4 @@
-byobu (5.49) unreleased; urgency=low
+byobu (5.49-0ubuntu1) saucy; urgency=low
 
   * usr/bin/byobu-enable-prompt:
     - fix TERM
@@ -8,7 +8,7 @@ byobu (5.49) unreleased; urgency=low
     - add the second profile a more complete one, the config I used most
       of the time
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Jul 2013 16:51:20 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Jul 2013 19:51:37 -0500
 
 byobu (5.48-0ubuntu1) saucy; urgency=low
 
