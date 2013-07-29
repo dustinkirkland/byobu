@@ -24,11 +24,11 @@ fi
 # Remove the short-lived MOTD message
 rm -f /etc/update-motd.d/55-window-manager
 
-# Notify users that they should reload their profile
+# Attempt to notify users that they should reload their profile
 touch_flag() {
-	touch "$1"
+	touch "$1" || true
 	chown --reference $(dirname "$1") "$1" || true
-	chmod 700 "$1"
+	chmod 700 "$1" || true
 }
 [ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir"
 if [ -d "$SOCKETDIR" ]; then

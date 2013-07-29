@@ -1,6 +1,9 @@
 byobu (5.49) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-enable-prompt:
+    - fix TERM
+  * debian/postinst, usr/bin/byobu-enable-prompt: LP: #1205560
+    - soften requirements on touching the reload flag
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 26 Jul 2013 16:51:20 -0500
 
