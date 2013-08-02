@@ -23,10 +23,21 @@ PKG="byobu"
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
 byobu-disable-prompt || true
-cat >>"$HOME/.bashrc" <<EOF
+DISTRO=$(lsb_release -s -d)
+case $DISTRO in
+	Ubuntu*)
+		cat >>"$HOME/.bashrc" <<EOF
 PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;5m\]\h\[\e[00m\]:\[\e[38;5;172m\]\w\[\e[00m\]❭ " #byobu-prompt#
 export TERM="xterm-256color" #byobu-prompt#
 EOF
+	;;
+	*)
+		cat >>"$HOME/.bashrc" <<EOF
+PS1="${debian_chroot:+($debian_chroot)}\[\e[00;31m\]\u\[\e[00m\]@\[\e[00;36m\]\h\[\e[00m\]:\[\e[00;32m\]\w\[\e[00m\]\$ " #byobu-prompt#
+export TERM="xterm-256color" #byobu-prompt#
+EOF
+	;;
+esac
 
 if [ "$BYOBU_BACKEND" = "tmux" ]; then
 	tmux send-keys ". ~/.bashrc" \; send-keys Enter
