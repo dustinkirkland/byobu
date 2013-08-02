@@ -19,28 +19,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-get_distro() {
-	_RET=
-	if [ -n "$DISTRO" ]; then
-		# Allow manual override of distro in $BYOBU_CONFIG_DIR/status
-		_RET="$DISTRO"
-	elif [ -r "/etc/issue" ]; then
-		# Otherwise, check /etc/issue
-		_RET=`grep -m1 "^[A-Za-z]" /etc/issue`
-	elif $BYOBU_TEST lsb_release >/dev/null 2>&1; then
-		# This can be a very expensive operation, do it only
-		# if all other methods fail
-		_RET=`lsb_release -s -a 2>/dev/null`
-	elif $BYOBU_TEST sw_vers >/dev/null 2>&1; then
-		_RET=`sw_vers 2>/dev/null`
-	elif $BYOBU_TEST uname >/dev/null 2>&1; then
-		_RET=`uname -s`
-	else
-		# No idea!
-		_RET="[B]"
-	fi
-}
-
 __logo_detail() {
 	MARKUP="false"
 	__logo

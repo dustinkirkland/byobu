@@ -310,4 +310,52 @@ get_network_interface() {
 	fi
 }
 
+get_distro() {
+	local distro="${DISTRO}"
+	if [ -n "$DISTRO" ]; then
+		# user defined
+		true
+	elif [ -r "/etc/issue" ]; then
+		# lsb_release is *really* slow;  try to use /etc/issue first
+		local issue
+		IFS="" read issue < /etc/issue
+		case "$issue" in
+			Ubuntu*)
+				distro="Ubuntu";
+			;;
+			Debian*)
+				distro="Debian"
+			;;
+			Red\ Hat\ Enterprise*)
+				distro="RHEL"
+			;;
+			*)
+				# assume first field is what we want
+				distro="${issue%% *}";
+			;;
+		esac
+	elif $BYOBU_TEST lsb_release >/dev/null 2>&1; then
+		# If lsb_release is available, use it
+		local r=$(lsb_release -s -d)
+		case "$r" in
+			Ubuntu*)
+				# Use the -d if an Ubuntu LTS
+				distro="Ubuntu"
+			;;
+			*)
+				# But for other distros the description
+				# is too long, so build from -i and -r
+				distro=$(lsb_release -s -i)
+			;;
+		esac
+	elif $BYOBU_TEST sw_vers >/dev/null 2>&1; then
+		distro="$(sw_vers -productName)"
+	elif $BYOBU_TEST uname >/dev/null 2>&1; then
+		distro="$(uname -s)"
+	else
+		distro="Byobu"
+	fi
+	_RET="$distro"
+}
+
 # vi: syntax=sh ts=4 noexpandtab

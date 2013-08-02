@@ -28,47 +28,10 @@ __distro() {
 	if [ -n "$DISTRO" ]; then
 		# user defined
 		true
-	elif [ -r "/etc/issue" ]; then
-		# lsb_release is *really* slow;  try to use /etc/issue first
-		local issue
-		IFS="" read issue < /etc/issue
-		case "$issue" in
-			Ubuntu*)
-				DISTRO="Ubuntu";
-			;;
-			Debian*)
-				DISTRO="Debian"
-			;;
-			Red\ Hat\ Enterprise*)
-				DISTRO="RHEL"
-			;;
-			*)
-				# assume first field is what we want
-				DISTRO="${issue%% *}";
-			;;
-		esac
-	elif $BYOBU_TEST lsb_release >/dev/null 2>&1; then
-		# If lsb_release is available, use it
-		local r=$(lsb_release -s -d)
-		case "$r" in
-			Ubuntu*)
-				# Use the -d if an Ubuntu LTS
-				DISTRO="Ubuntu"
-			;;
-			*)
-				# But for other distros the description
-				# is too long, so build from -i and -r
-				DISTRO=$(lsb_release -s -i)
-			;;
-		esac
-	elif $BYOBU_TEST sw_vers >/dev/null 2>&1; then
-		DISTRO="$(sw_vers -productName)"
-	elif $BYOBU_TEST uname >/dev/null 2>&1; then
-		DISTRO="$(uname -s)"
 	else
-		DISTRO="Byobu"
+		get_distro
+		DISTRO="$_RET"
 	fi
-	[ -n "$DISTRO" ] || return
 	color bold2; printf "%s" "$DISTRO"; color --
 }
 

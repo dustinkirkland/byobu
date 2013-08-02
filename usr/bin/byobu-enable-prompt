@@ -22,8 +22,9 @@ PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
+get_distro
+DISTRO="$_RET"
 byobu-disable-prompt || true
-DISTRO=$(lsb_release -s -d)
 case $DISTRO in
 	Ubuntu*)
 		cat >>"$HOME/.bashrc" <<EOF

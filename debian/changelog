@@ -9,6 +9,9 @@ byobu (5.50) unreleased; urgency=low
   * usr/bin/byobu-disable-prompt, usr/bin/byobu-enable-prompt:
     - use ubuntu themed colors for the prompt if running on
       Ubuntu
+  * usr/bin/byobu-enable-prompt, usr/lib/byobu/distro,
+    usr/lib/byobu/include/shutil, usr/lib/byobu/logo:
+    - use a common get_distro function in a couple of places
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Jul 2013 19:51:39 -0500
 
