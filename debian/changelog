@@ -12,6 +12,8 @@ byobu (5.50) unreleased; urgency=low
   * usr/bin/byobu-enable-prompt, usr/lib/byobu/distro,
     usr/lib/byobu/include/shutil, usr/lib/byobu/logo:
     - use a common get_distro function in a couple of places
+  * usr/lib/byobu/wifi_quality, usr/share/man/man1/byobu.1:
+    - make wifi status a little easier to read
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Jul 2013 19:51:39 -0500
 

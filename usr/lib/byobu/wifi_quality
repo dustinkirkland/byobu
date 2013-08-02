@@ -44,7 +44,7 @@ __wifi_quality() {
 		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/wifi_quality"*
 		return
 	fi
-	printf "${ICON_WIFI}"; color b C w; printf "%s" "$bitrate"; color -; color C w; printf "%s" "$ICON_MBPS"; color -; color b C w; printf "%s" "$quality"; color -; color C w; printf "%s" "$PCT"; color --
+	printf "${ICON_WIFI}"; color b C k; printf "%s" "$bitrate"; color -; color C k; printf "%s" "$ICON_MBPS"; color -; color b C k; printf "%s" "$quality"; color -; color C k; printf "%s" "$PCT"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab
