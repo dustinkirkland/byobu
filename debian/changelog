@@ -6,6 +6,9 @@ byobu (5.50) unreleased; urgency=low
     - the @ symbol in the color prompt was hard to read
   * usr/bin/byobu-disable-prompt:
     - clean up all byobu-prompt lines
+  * usr/bin/byobu-disable-prompt, usr/bin/byobu-enable-prompt:
+    - use ubuntu themed colors for the prompt; might need to
+      ship themes for other distros?
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Jul 2013 19:51:39 -0500
 

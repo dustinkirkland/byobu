@@ -24,4 +24,14 @@ PKG="byobu"
 
 $BYOBU_SED -i -e "/#byobu-prompt#$/d" "$HOME/.bashrc"
 
+if [ "$BYOBU_BACKEND" = "tmux" ]; then
+	tmux send-keys ". ~/.bashrc" \; send-keys Enter
+else
+	echo
+	echo "You will need to reload your shell configuration for this to take effect..."
+	echo "  . ~/.bashrc"
+	echo
+fi
+
+# vi: syntax=sh ts=4 noexpandtab
 # vi: syntax=sh ts=4 noexpandtab
