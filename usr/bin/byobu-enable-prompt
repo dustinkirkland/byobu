@@ -24,7 +24,7 @@ PKG="byobu"
 
 get_distro
 DISTRO="$_RET"
-byobu-disable-prompt || true
+byobu-disable-prompt --no-reload || true
 case $DISTRO in
 	Ubuntu*)
 		cat >>"$HOME/.bashrc" <<EOF
@@ -40,7 +40,7 @@ EOF
 	;;
 esac
 
-if [ "$BYOBU_BACKEND" = "tmux" ]; then
+if [ -n "$TMUX" ] && [ "$SHELL" = "/bin/bash" ]; then
 	tmux send-keys ". ~/.bashrc" \; send-keys Enter
 else
 	echo
