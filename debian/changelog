@@ -1,4 +1,4 @@
-byobu (5.50) unreleased; urgency=low
+byobu (5.50-0ubuntu1) saucy; urgency=low
 
   * usr/share/applications/byobu.desktop:
     - ensure TERM gets full color when launching from desktop
@@ -19,7 +19,7 @@ byobu (5.50) unreleased; urgency=low
     - ensure we're in a bash shell
     - don't double-reload
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Jul 2013 19:51:39 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 02 Aug 2013 17:30:09 -0500
 
 byobu (5.49-0ubuntu1) saucy; urgency=low
 
