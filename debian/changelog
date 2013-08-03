@@ -15,6 +15,8 @@ byobu (5.51) unreleased; urgency=low
     - fix a bash error
   * usr/bin/byobu-enable-prompt, usr/bin/byobu-janitor:
     - enable the new byobu colored prompt by default, on new logins
+  * usr/bin/byobu-janitor:
+    - enable users to remove the line from their ~/.bashrc
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 02 Aug 2013 17:30:11 -0500
 
