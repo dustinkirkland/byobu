@@ -26,7 +26,7 @@ PKG="byobu"
 
 
 prompt="${BYOBU_CONFIG_DIR}/prompt"
-[ -e "$prompt" ] || printf ". ${BYOBU_PREFIX}/share/${PKG}/profiles/bashrc  #byobu-prompt#\n" > "$prompt"
+printf ". ${BYOBU_PREFIX}/share/${PKG}/profiles/bashrc  #byobu-prompt#\n" > "$prompt"
 $PKG-disable-prompt --no-reload "$1" || true
 printf "[ -r $prompt ] && . $prompt   #byobu-prompt#\n" >> "$HOME/.bashrc"
 

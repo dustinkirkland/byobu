@@ -13,6 +13,8 @@ byobu (5.51) unreleased; urgency=low
     - use a ~/.byobu/prompt file as a redirect, and to enable
       end user customizations
     - fix a bash error
+  * usr/bin/byobu-enable-prompt, usr/bin/byobu-janitor:
+    - enable the new byobu colored prompt by default, on new logins
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 02 Aug 2013 17:30:11 -0500
 
