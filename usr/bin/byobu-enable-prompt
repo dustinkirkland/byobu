@@ -17,30 +17,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+[ "$SHELL" = "/bin/bash" ] || exit 1
+
 PKG="byobu"
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
-get_distro
-DISTRO="$_RET"
-byobu-disable-prompt --no-reload || true
-case $DISTRO in
-	Ubuntu*)
-		cat >>"$HOME/.bashrc" <<EOF
-PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;5m\]\h\[\e[00m\]:\[\e[38;5;172m\]\w\[\e[00m\]❭ " #byobu-prompt#
-export TERM="xterm-256color" #byobu-prompt#
-EOF
-	;;
-	*)
-		cat >>"$HOME/.bashrc" <<EOF
-PS1="${debian_chroot:+($debian_chroot)}\[\e[00;31m\]\u\[\e[00m\]@\[\e[00;36m\]\h\[\e[00m\]:\[\e[00;32m\]\w\[\e[00m\]\$ " #byobu-prompt#
-export TERM="xterm-256color" #byobu-prompt#
-EOF
-	;;
-esac
 
-if [ -n "$TMUX" ] && [ "$SHELL" = "/bin/bash" ]; then
+$PKG-disable-prompt --no-reload "$1" || true
+printf ". ${BYOBU_PREFIX}/share/${PKG}/profiles/bashrc  #byobu-prompt#\n" >> "$HOME/.bashrc"
+
+if [ -n "$TMUX" ]; then
 	tmux send-keys ". ~/.bashrc" \; send-keys Enter
 else
 	echo

@@ -1,6 +1,4 @@
-#!/bin/sh -e
-#
-#    byobu-disable-prompt
+#    byobu's bashrc -- colorize the prompt
 #    Copyright (C) 2013 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
@@ -17,22 +15,17 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-[ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
-. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
-
-$BYOBU_SED -i -e "/#byobu-prompt#$/d" "$HOME/.bashrc"
-
-if [ "$1" != "--no-reload" ]; then
-	if [ -n "$TMUX" ] && [ "$SHELL" = "/bin/bash" ]; then
-		tmux send-keys ". ~/.bashrc" \; send-keys Enter
-	else
-		echo
-		echo "You will need to reload your shell configuration for this to take effect..."
-		echo "  . ~/.bashrc"
-		echo
+# Ensure that we're in a tmux or screen session
+if [ -n "$TMUX" ] || (printf "$TERMCAP" | grep -qs "screen"); then
+	# Ensure that we're in bash, in a byobu environment
+	if [ -n "$BYOBU_BACKEND" ] && [ "$SHELL" = "/bin/bash" ]; then
+		if grep -qs "^Ubuntu" /etc/issue; then
+			# Use Ubuntu colors (grey / aubergine / orange)
+			PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;5m\]\h\[\e[00m\]:\[\e[38;5;172m\]\w\[\e[00m\]❭ "
+		else
+			# Use Byobu colors (green / blue / red)
+			PS1="${debian_chroot:+($debian_chroot)}\[\e[00;32m\]\u\[\e[00m\]@\[\e[00;36m\]\h\[\e[00m\]:\[\e[00;31m\]\w\[\e[00m\]\$ "
+		fi
+		export TERM="xterm-256color"
 	fi
 fi
-
-# vi: syntax=sh ts=4 noexpandtab

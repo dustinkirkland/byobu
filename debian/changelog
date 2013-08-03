@@ -1,6 +1,10 @@
 byobu (5.51) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-disable-prompt, usr/bin/byobu-enable-prompt,
+    usr/share/byobu/profiles/bashrc,
+    usr/share/byobu/profiles/Makefile.am,
+    usr/share/byobu/profiles/ps1.sh:
+    - use a common bashrc file
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 02 Aug 2013 17:30:11 -0500
 

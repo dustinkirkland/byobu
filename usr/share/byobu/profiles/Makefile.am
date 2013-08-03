@@ -1,2 +1,2 @@
 profilesdir = $(datadir)/@PACKAGE@/profiles
-profiles_DATA = byoburc  screenrc  common  tmux  tmuxrc  NONE
+profiles_DATA = bashrc byoburc  screenrc  common  tmux  tmuxrc  NONE
