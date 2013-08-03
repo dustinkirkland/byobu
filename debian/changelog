@@ -7,6 +7,12 @@ byobu (5.51) unreleased; urgency=low
     - use a common bashrc file
   * usr/share/byobu/profiles/bashrc:
     - allow override via a $DISTRO env variable
+  * usr/bin/byobu-disable-prompt, usr/bin/byobu-enable-prompt,
+    usr/share/byobu/profiles/bashrc:
+    - don't put profile reloads in the bash history
+    - use a ~/.byobu/prompt file as a redirect, and to enable
+      end user customizations
+    - fix a bash error
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 02 Aug 2013 17:30:11 -0500
 
