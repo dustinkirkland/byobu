@@ -5,6 +5,8 @@ byobu (5.51) unreleased; urgency=low
     usr/share/byobu/profiles/Makefile.am,
     usr/share/byobu/profiles/ps1.sh:
     - use a common bashrc file
+  * usr/share/byobu/profiles/bashrc:
+    - allow override via a $DISTRO env variable
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 02 Aug 2013 17:30:11 -0500
 

@@ -19,7 +19,7 @@
 if [ -n "$TMUX" ] || (printf "$TERMCAP" | grep -qs "screen"); then
 	# Ensure that we're in bash, in a byobu environment
 	if [ -n "$BYOBU_BACKEND" ] && [ "$SHELL" = "/bin/bash" ]; then
-		if grep -qs "^Ubuntu" /etc/issue; then
+		if [-z "$DISTRO" ] && grep -qs "^Ubuntu" /etc/issue; then
 			# Use Ubuntu colors (grey / aubergine / orange)
 			PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;5m\]\h\[\e[00m\]:\[\e[38;5;172m\]\w\[\e[00m\]❭ "
 		else
