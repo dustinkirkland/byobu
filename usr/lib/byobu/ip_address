@@ -28,7 +28,7 @@ __ip_address_detail() {
 }
 
 __ip_address() {
-	local interface ipaddr cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/ip_address"
+	local interface ipaddr cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/ip_address" brief="0.02"
 	# Allow interface overrides in $BYOBU_CONFIG_DIR/statusrc
 	if [ -n "$MONITORED_NETWORK" ]; then
 		interface="$MONITORED_NETWORK"
@@ -43,7 +43,7 @@ __ip_address() {
 			if [ "$IP_EXTERNAL" = "1" ]; then
 				# Background an update
 				wget -q -O- http://v6.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
-				sleep 0.02
+				sleep $brief
 			else
 				# Background an update
 				if [ -x /sbin/ip ]; then
@@ -62,12 +62,12 @@ __ip_address() {
 		*)
 			if [ "$IP_EXTERNAL" = "1" ]; then
 				wget -q -O- http://v4.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
-				sleep 0.02
+				sleep $brief
 				[ -s "$cache" ] && read ipaddr < "$cache"
 			elif metadata_available; then
 				# We're in EC2, so get our public IP address
 				wget -q -O- http://169.254.169.254/latest/meta-data/public-ipv4 </dev/null >"$cache" 2>/dev/null &
-				sleep 0.02
+				sleep $brief
 				[ -s "$cache" ] && read ipaddr < "$cache"
 			else
 				if [ -x /sbin/ip ]; then

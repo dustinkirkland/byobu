@@ -63,7 +63,8 @@ elif [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_
 				[ -z "$_byobu_sourced" ] && [ -r "$HOME/.profile" ] && . "$HOME/.profile"
 				if byobu-launcher; then
 					# Wait very briefly for the no-logout flag to get written?
-					sleep 0.1
+					local brief="0.1"
+					sleep $brief
 					if [ -e "$BYOBU_CONFIG_DIR/no-logout-on-detach" ] || [ -e "$BYOBU_RUN_DIR/no-logout" ]; then
 						# The user does not want to logout on byobu detach
 						rm -f "$BYOBU_RUN_DIR/no-logout"	# Remove one-time no-logout flag, if it exists

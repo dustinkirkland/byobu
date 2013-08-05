@@ -2,6 +2,10 @@ byobu (5.52) unreleased; urgency=low
 
   * usr/bin/byobu-janitor:
     - ensure byobu can be purged without breaking a bashrc
+  * usr/bin/byobu-launch, usr/lib/byobu/ec2_cost,
+    usr/lib/byobu/hostname, usr/lib/byobu/include/shutil,
+    usr/lib/byobu/ip_address:
+    - work around checkbashisms false positives
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Aug 2013 08:38:30 +0100
 
