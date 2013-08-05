@@ -1,4 +1,4 @@
-byobu (5.51) unreleased; urgency=low
+byobu (5.51-0ubuntu1) saucy; urgency=low
 
   * usr/bin/byobu-disable-prompt, usr/bin/byobu-enable-prompt,
     usr/share/byobu/profiles/bashrc,
@@ -18,7 +18,7 @@ byobu (5.51) unreleased; urgency=low
   * usr/bin/byobu-janitor:
     - enable users to remove the line from their ~/.bashrc
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 02 Aug 2013 17:30:11 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Aug 2013 08:38:26 +0100
 
 byobu (5.50-0ubuntu1) saucy; urgency=low
 
