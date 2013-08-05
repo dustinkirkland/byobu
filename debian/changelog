@@ -1,4 +1,4 @@
-byobu (5.52) unreleased; urgency=low
+byobu (5.52-0ubuntu1) saucy; urgency=low
 
   * usr/bin/byobu-janitor:
     - ensure byobu can be purged without breaking a bashrc
@@ -9,7 +9,7 @@ byobu (5.52) unreleased; urgency=low
   * usr/bin/byobu-janitor:
     - fix error in echo
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Aug 2013 08:38:30 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Aug 2013 09:22:59 +0100
 
 byobu (5.51-0ubuntu1) saucy; urgency=low
 
