@@ -1,3 +1,9 @@
+byobu (5.53) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Aug 2013 09:23:03 +0100
+
 byobu (5.52-0ubuntu1) saucy; urgency=low
 
   * usr/bin/byobu-janitor:
