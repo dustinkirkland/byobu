@@ -6,6 +6,8 @@ byobu (5.52) unreleased; urgency=low
     usr/lib/byobu/hostname, usr/lib/byobu/include/shutil,
     usr/lib/byobu/ip_address:
     - work around checkbashisms false positives
+  * usr/bin/byobu-janitor:
+    - fix error in echo
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Aug 2013 08:38:30 +0100
 
