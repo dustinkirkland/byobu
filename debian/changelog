@@ -1,6 +1,7 @@
 byobu (5.52) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-janitor:
+    - ensure byobu can be purged without breaking a bashrc
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Aug 2013 08:38:30 +0100
 

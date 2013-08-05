@@ -117,6 +117,6 @@ rm -f "$FLAG" "/var/run/screen/S-$USER/$PKG.reload-required"
 if ! (grep -qs "#byobu-prompt#$" "$HOME/.bashrc") && ! [ -e "$BYOBU_CONFIG_DIR/prompt" ]; then
 	printf "[ -r $BYOBU_CONFIG_DIR/prompt ] && . $BYOBU_CONFIG_DIR/prompt   #byobu-prompt#\n" >> "$HOME/.bashrc"
 fi
-[ -r "$BYOBU_CONFIG_DIR/prompt" ] || echo ". ${BYOBU_PREFIX}/share/${PKG}/profiles/bashrc  #byobu-prompt#\n" > "$BYOBU_CONFIG_DIR/prompt"
+[ -r "$BYOBU_CONFIG_DIR/prompt" ] || echo "[ -r ${BYOBU_PREFIX}/share/${PKG}/profiles/bashrc ] && . ${BYOBU_PREFIX}/share/${PKG}/profiles/bashrc  #byobu-prompt#\n" > "$BYOBU_CONFIG_DIR/prompt"
 
 # vi: syntax=sh ts=4 noexpandtab
