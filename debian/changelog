@@ -1,6 +1,11 @@
 byobu (5.53) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-launch, usr/lib/byobu/ec2_cost,
+    usr/lib/byobu/hostname, usr/lib/byobu/include/shutil,
+    usr/lib/byobu/ip_address: LP: #1208853
+    - revert this recent commit, as it appears to have some unintended
+      consequences, and it was just cleaning up some false positive
+      bashism hits
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Aug 2013 09:23:03 +0100
 

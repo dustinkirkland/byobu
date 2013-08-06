@@ -32,17 +32,17 @@ __ec2_cost_detail() {
 }
 
 __ec2_cost() {
-	local zone type file_to_stat cpu mem rate hours tx_gb rx_gb network_cost uptime_cost total_cost interface cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/ec2_cost" brief="0.02"
+	local zone type file_to_stat cpu mem rate hours tx_gb rx_gb network_cost uptime_cost total_cost interface cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/ec2_cost"
 	if [ -s "$cache.rate" ]; then
 		read rate < "$cache.rate"
 	elif metadata_available; then
 		# Try to use metadata service
 		[ -s "$cache.zone" ] || wget -q -O- http://169.254.169.254/latest/meta-data/placement/availability-zone </dev/null >"$cache.zone" 2>/dev/null &
-		sleep $brief
+		sleep 0.02
 		[ -s "$cache.zone" ] && read zone < "$cache.zone"
 		zone=${zone%%[a-z]}
 		[ -s "$cache.type" ] || wget -q -O- http://169.254.169.254/latest/meta-data/instance-type </dev/null >"$cache.type" 2>/dev/null &
-		sleep $brief
+		sleep 0.02
 		[ -s "$cache.type" ] && read type < "$cache.type"
 		$BYOBU_PREFIX/lib/byobu/include/ec2instancespricing.py --type ondemand --filter-region $zone --filter-type $type --filter-os-type linux --format csv | tail -n1 > "$cache.rate"
 		read rate < "$cache.rate"
