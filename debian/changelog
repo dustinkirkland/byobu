@@ -8,6 +8,13 @@ byobu (5.53) unreleased; urgency=low
       bashism hits
   * usr/share/byobu/profiles/bashrc: LP: #1208844
     - revert override of term
+  * usr/bin/byobu-prompt, usr/bin/Makefile.am, usr/share/man/man1/byobu-
+    disable-prompt.1, usr/share/man/man1/byobu-enable-prompt.1,
+    usr/share/man/man1/byobu-enable-prompt.1 =>
+    usr/share/man/man1/byobu-prompt.1, usr/share/man/man1/Makefile.am:
+    - add some documentation and an interactive utility for toggling
+      on and off the byobu-prompt, which is hinted in the inline
+      bashrc comment
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Aug 2013 09:23:03 +0100
 
