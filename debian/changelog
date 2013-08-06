@@ -6,6 +6,8 @@ byobu (5.53) unreleased; urgency=low
     - revert this recent commit, as it appears to have some unintended
       consequences, and it was just cleaning up some false positive
       bashism hits
+  * usr/share/byobu/profiles/bashrc: LP: #1208844
+    - revert override of term
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Aug 2013 09:23:03 +0100
 

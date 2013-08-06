@@ -26,6 +26,5 @@ if [ -n "$TMUX" ] || (printf "$TERMCAP" | grep -qs "screen"); then
 			# Use Byobu colors (green / blue / red)
 			PS1="${debian_chroot:+($debian_chroot)}\[\e[00;32m\]\u\[\e[00m\]@\[\e[00;36m\]\h\[\e[00m\]:\[\e[00;31m\]\w\[\e[00m\]\$ "
 		fi
-		export TERM="xterm-256color"
 	fi
 fi
