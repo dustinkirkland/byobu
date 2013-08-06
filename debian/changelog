@@ -1,4 +1,4 @@
-byobu (5.53) unreleased; urgency=low
+byobu (5.53-0ubuntu1) saucy; urgency=low
 
   * usr/bin/byobu-launch, usr/lib/byobu/ec2_cost,
     usr/lib/byobu/hostname, usr/lib/byobu/include/shutil,
@@ -16,7 +16,7 @@ byobu (5.53) unreleased; urgency=low
       on and off the byobu-prompt, which is hinted in the inline
       bashrc comment
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Aug 2013 09:23:03 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 06 Aug 2013 22:56:33 +0100
 
 byobu (5.52-0ubuntu1) saucy; urgency=low
 
