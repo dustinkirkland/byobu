@@ -1,3 +1,9 @@
+byobu (5.54) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 06 Aug 2013 22:56:38 +0100
+
 byobu (5.53-0ubuntu1) saucy; urgency=low
 
   * usr/bin/byobu-launch, usr/lib/byobu/ec2_cost,
