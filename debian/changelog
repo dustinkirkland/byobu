@@ -1,8 +1,10 @@
-byobu (5.54) unreleased; urgency=low
+byobu (5.54-0ubuntu1) saucy; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-janitor: LP: #1208844
+    - only enable the byobu prompt by default if the bashrc is stock;
+      ie, hasn't been locally modified
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 06 Aug 2013 22:56:38 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Aug 2013 12:49:24 +0100
 
 byobu (5.53-0ubuntu1) saucy; urgency=low
 
