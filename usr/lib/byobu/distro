@@ -29,8 +29,7 @@ __distro() {
 		# user defined
 		true
 	else
-		get_distro
-		DISTRO="$_RET"
+		DISTRO="$BYOBU_DISTRO"
 	fi
 	color bold2; printf "%s" "$DISTRO"; color --
 }

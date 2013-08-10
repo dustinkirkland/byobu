@@ -1,6 +1,10 @@
 byobu (5.55) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/distro, usr/lib/byobu/include/common,
+    usr/lib/byobu/logo, usr/share/byobu/profiles/bashrc:
+    - save a couple of forks in the fast path
+    - load BYOBU_DISTRO into the environment as we need this in
+      multiple places
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Aug 2013 12:49:27 +0100
 

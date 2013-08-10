@@ -16,15 +16,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Ensure that we're in a tmux or screen session
-if [ -n "$TMUX" ] || (printf "$TERMCAP" | grep -qs "screen"); then
+if [ -n "$TMUX" ] || [ "${TERMCAP#*screen}" != "${TERMCAP}" ]; then
 	# Ensure that we're in bash, in a byobu environment
 	if [ -n "$BYOBU_BACKEND" ] && [ "$SHELL" = "/bin/bash" ]; then
-		if [ -z "$DISTRO" ] && grep -qs "^Ubuntu" /etc/issue; then
-			# Use Ubuntu colors (grey / aubergine / orange)
-			PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;5m\]\h\[\e[00m\]:\[\e[38;5;172m\]\w\[\e[00m\]❭ "
-		else
-			# Use Byobu colors (green / blue / red)
-			PS1="${debian_chroot:+($debian_chroot)}\[\e[00;32m\]\u\[\e[00m\]@\[\e[00;36m\]\h\[\e[00m\]:\[\e[00;31m\]\w\[\e[00m\]\$ "
-		fi
+		case "$BYOBU_DISTRO" in
+			"Ubuntu")
+				# Use Ubuntu colors (grey / aubergine / orange)
+				PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;5m\]\h\[\e[00m\]:\[\e[38;5;172m\]\w\[\e[00m\]❭ "
+			;;
+			*)
+				# Use Byobu colors (green / blue / red)
+				PS1="${debian_chroot:+($debian_chroot)}\[\e[00;32m\]\u\[\e[00m\]@\[\e[00;36m\]\h\[\e[00m\]:\[\e[00;31m\]\w\[\e[00m\]\$ "
+			;;
+		esac
 	fi
 fi

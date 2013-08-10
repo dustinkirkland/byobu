@@ -57,5 +57,7 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 
 	. "${BYOBU_PREFIX}/lib/${PKG}/include/shutil"
 	. "${BYOBU_PREFIX}/lib/${PKG}/include/constants"
+	get_distro || true
+	export BYOBU_DISTRO="$_RET"
 	BYOBU_INCLUDED_LIBS=1
 fi

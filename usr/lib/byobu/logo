@@ -31,8 +31,7 @@ __logo() {
 		printf "%s" "$LOGO"
 		return
 	fi
-	get_distro
-	local distro="$(printf "%s" "$_RET" | $BYOBU_SED 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
+	local distro="$(printf "%s" "$BYOBU_DISTRO" | $BYOBU_SED 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')"
 	case "$distro" in
 		*ubuntu*)
 			if $MARKUP; then
