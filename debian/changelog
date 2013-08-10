@@ -1,3 +1,9 @@
+byobu (5.56) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Aug 2013 09:23:04 +0100
+
 byobu (5.55-0ubuntu1) saucy; urgency=low
 
   * usr/lib/byobu/distro, usr/lib/byobu/include/common,
