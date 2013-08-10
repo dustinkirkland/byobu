@@ -1,4 +1,4 @@
-byobu (5.55) unreleased; urgency=low
+byobu (5.55-0ubuntu1) saucy; urgency=low
 
   * usr/lib/byobu/distro, usr/lib/byobu/include/common,
     usr/lib/byobu/logo, usr/share/byobu/profiles/bashrc:
@@ -6,7 +6,7 @@ byobu (5.55) unreleased; urgency=low
     - load BYOBU_DISTRO into the environment as we need this in
       multiple places
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Aug 2013 12:49:27 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Aug 2013 09:23:02 +0100
 
 byobu (5.54-0ubuntu1) saucy; urgency=low
 
