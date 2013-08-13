@@ -1,6 +1,8 @@
 byobu (5.56) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/battery:
+    - fix battery status caching issues when battery is full, or
+      plugged into AC
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Aug 2013 09:23:04 +0100
 

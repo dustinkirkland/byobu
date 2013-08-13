@@ -37,6 +37,7 @@ __battery() {
 			/sys/*)
 				if [ -r "$bat/uevent" ]; then
 					. "$bat/uevent"
+					[ "$POWER_SUPPLY_NAME" = "AC" ] && continue
 					present="$POWER_SUPPLY_PRESENT"
 					# Some use "CHARGE", others use "ENERGY"
 					[ -n "$POWER_SUPPLY_CHARGE_FULL" ] && full="$POWER_SUPPLY_CHARGE_FULL"
@@ -84,14 +85,17 @@ __battery() {
 			color="G k"
 			bcolor="b G k"
 		fi
-		percent="$percent$PCT"
+		percent="${percent}${PCT}"
 		case $state in
 			charging|Charging|Unknown) sign="+" ;;
 			discharging|Discharging) sign="-" ;;
 			charged|Unknown|Full) sign="="; percent="" ;;
 			*) sign="$state" ;;
 		esac
-		[ -n "$percent" ] || return
+		if [ -z "$percent" ]; then
+			rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/battery"*
+			return
+		fi
 		color $bcolor; printf "%s" "$percent"; color -; color $color; printf "%s" "$sign"; color --
 	fi
 }
