@@ -3,6 +3,9 @@ byobu (5.56) unreleased; urgency=low
   * usr/lib/byobu/battery:
     - fix battery status caching issues when battery is full, or
       plugged into AC
+  * usr/lib/byobu/network: LP: #1203601
+    - fix issue where /proc/net/dev isn't read correctly; use an
+      intermediate cache file
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Aug 2013 09:23:04 +0100
 

@@ -41,6 +41,7 @@ __network() {
 		cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/network.$i"
 		[ -r "$cache" ] && read x1 < "$cache" || tx1=0
 		local iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed
+		cat /proc/net/dev > "$cache".dev
 		while read iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed; do
 			case "$iface" in
 				${interface}:)
@@ -53,7 +54,7 @@ __network() {
 					break;
 				;;
 			esac
-		done < /proc/net/dev
+		done < "$cache".dev
 		printf "%s" "$x2" > "$cache"
 		rate=$((8*($x2 - $x1) / $t / 1024))  # in kbps
 		[ "$rate" -lt 0 ] && rate=0
