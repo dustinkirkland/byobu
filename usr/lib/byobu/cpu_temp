@@ -21,7 +21,7 @@
 
 __cpu_temp_detail() {
 	local i
-	for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /sys/class/hwmon/hwmon*/device/temp*_input /proc/acpi/ibm/thermal /proc/acpi/thermal_zone/*/temperature; do
+	for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/device/temp*_input /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/thermal /proc/acpi/thermal_zone/*/temperature; do
 		[ -r "$i" ] || continue
 		printf "%s\n" "$i:"
 		cat "$i"/*
@@ -30,7 +30,7 @@ __cpu_temp_detail() {
 
 __cpu_temp() {
 	local i t unit
-	for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/temp*_input /sys/class/hwmon/hwmon*/device/temp*_input /proc/acpi/ibm/thermal /proc/acpi/thermal_zone/*/temperature; do
+	for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/device/temp*_input /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/thermal /proc/acpi/thermal_zone/*/temperature; do
 		case "$i" in
 			*temp*_input)
 				[ -s "$i" ] && read t < "$i" && t=$(($t/1000))

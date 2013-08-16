@@ -6,6 +6,9 @@ byobu (5.56) unreleased; urgency=low
   * usr/lib/byobu/network: LP: #1203601
     - fix issue where /proc/net/dev isn't read correctly; use an
       intermediate cache file
+  * usr/lib/byobu/cpu_temp: LP: #1167176
+    - reorder cpu temp detection, as the previous order seemed to
+      pick up GPU temps before CPU temps
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Aug 2013 09:23:04 +0100
 
