@@ -53,8 +53,6 @@ bindkey -k k3
 bindkey -k k4
 bindkey "^[[1;3D"
 bindkey "^[[1;3C"
-bindkey "^[[1;6D"
-bindkey "^[[1;6C"
 bindkey "^[O1;2R"
 bindkey "^[O1;2S"
 bindkey "^[[1;2A"
@@ -80,4 +78,3 @@ bindkey "^[[6;3~"
 bindkey -k k8
 bindkey -k k9
 bindkey -k F2
-bindkey "^A"
