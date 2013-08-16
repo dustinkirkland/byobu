@@ -1,4 +1,4 @@
-byobu (5.56) unreleased; urgency=low
+byobu (5.56-0ubuntu1) saucy; urgency=low
 
   * usr/lib/byobu/battery:
     - fix battery status caching issues when battery is full, or
@@ -13,7 +13,7 @@ byobu (5.56) unreleased; urgency=low
     - drop a couple of keys that don't exist; should fix F5 refresh
       errors in byobu-screen, partial fix for LP: #814172
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Aug 2013 09:23:04 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Aug 2013 16:29:09 -0500
 
 byobu (5.55-0ubuntu1) saucy; urgency=low
 
