@@ -16,6 +16,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Ensure that we're in a tmux or screen session
+case "$TERM" in
+	xterm)
+		# Try to ensure we have 256 colors
+		export TERM="xterm-256color"
+	;;
+esac
 if [ -n "$TMUX" ] || [ "${TERMCAP#*screen}" != "${TERMCAP}" ]; then
 	# Ensure that we're in bash, in a byobu environment
 	if [ -n "$BYOBU_BACKEND" ] && [ "$SHELL" = "/bin/bash" ]; then

@@ -1,6 +1,8 @@
 byobu (5.57) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu, usr/share/byobu/profiles/bashrc:
+    - try to ensure that 256 colors stick, per feedback from Josh
+      Poulson in G+
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Aug 2013 16:29:11 -0500
 
