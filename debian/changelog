@@ -1,10 +1,10 @@
-byobu (5.57) unreleased; urgency=low
+byobu (5.57-0ubuntu1) saucy; urgency=low
 
   * usr/bin/byobu, usr/share/byobu/profiles/bashrc:
     - try to ensure that 256 colors stick, per feedback from Josh
       Poulson in G+
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Aug 2013 16:29:11 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Sep 2013 14:40:07 -0500
 
 byobu (5.56-0ubuntu1) saucy; urgency=low
 
