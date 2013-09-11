@@ -10,6 +10,16 @@ byobu (5.58) unreleased; urgency=low
       tmux mouse support
     - display a message when toggling either on or off mouse or
       F-keys support
+  * usr/share/byobu/keybindings/f-keys.screen,
+    usr/share/byobu/keybindings/f-keys.screen.disable,
+    usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/doc/byobu/help.tmux.txt: LP: #1218680
+    - byobu-screen has long supported Ctrl-A-~ which saves your scrollback
+      buffer to a file
+    - byobu-tmux had never quite implemented this
+    - Add a new keybinding to both byobu-screen and byobu-tmux that adds
+      this support, Shift-F9
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Sep 2013 14:40:09 -0500
 

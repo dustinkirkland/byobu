@@ -77,4 +77,5 @@ bindkey "^[[5;3~"
 bindkey "^[[6;3~"
 bindkey -k k8
 bindkey -k k9
+bindkey "^[[20;2~"
 bindkey -k F2

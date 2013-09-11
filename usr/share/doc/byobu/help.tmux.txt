@@ -31,6 +31,7 @@ and some convenient keybindings:
     Ctrl-F8                      Restore a split-pane layout
     Ctrl-Shift-F8                Save the current split-pane layout
   F9                             Launch byobu-config window
+    Shift-F9                     Save history to $BYOBU_RUN_DIR/printscreen
   F10                            * Used by X11 *
   F11                            * Used by X11 *
     Alt-F11                      Expand split to a full window

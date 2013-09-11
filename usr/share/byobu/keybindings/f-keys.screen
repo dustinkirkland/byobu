@@ -71,6 +71,8 @@ bindkey -k k8 eval 'process x' 'process t'		# F8  | Re-title a window
 # No ctrl-F8 (restore layout) in Screen
 # No ctrl-shift-F8 (save layout) in Screen
 bindkey -k k9 $BYOBU_BACKEND -t config 0 byobu-config	# F9  | Configuration
+register s "[g G$>^h"					# Goes with Shift-F9 and F12 ~ definition
+bindkey "^[[20;2~" eval 'process x' 'process s' 'exec $BYOBU_SED -i -e "/./,/^$/!d" $BYOBU_RUN_DIR/printscreen' '$BYOBU_BACKEND -t PRINTSCREEN view $BYOBU_RUN_DIR/printscreen' # Shift-F9 | write the buffer to file, open in a new window
 							# F10 | 'toolbar' in gnome-terminal
 							# F11 | 'Full Screen' in gnome-terminal
 # No alt-F11 (break pane) in Screen
@@ -80,7 +82,6 @@ bindkey -k F2 process x					# F12 | Byobu's escape key
 bind $ $BYOBU_BACKEND -t status 0 byobu-status-detail	# F12 $ | show detailed status
 bind @ $BYOBU_BACKEND -t config 0 byobu-config		# F12 @ | Configuration
 bind R process r					# F12 R | Reload profile
-register s "[g G$>^h"					# Goes with F12 ~ definition
 bind ~ eval 'process x' 'process s' 'exec $BYOBU_SED -i -e "/./,/^$/!d" $BYOBU_RUN_DIR/printscreen' '$BYOBU_BACKEND -t PRINTSCREEN view $BYOBU_RUN_DIR/printscreen' # F12 ~ | write the buffer to file, open in a new window
 
 register d ":source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.screen.disable^M"
