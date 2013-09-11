@@ -1,0 +1,6 @@
+set -g mouse-resize-pane off
+set -g mouse-select-pane off
+set -g mouse-select-window off
+set -g mode-mouse off
+set -g mouse-utf8 off
+bind-key -n M-F12 source $BYOBU_PREFIX/share/byobu/keybindings/mouse.tmux.enable \; display-message "Mouse: OFF"

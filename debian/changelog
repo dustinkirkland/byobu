@@ -1,6 +1,15 @@
 byobu (5.58) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/byobu/keybindings/Makefile.am,
+    usr/share/byobu/keybindings/mouse.tmux.disable,
+    usr/share/byobu/keybindings/mouse.tmux.enable,
+    usr/share/doc/byobu/help.tmux.txt:
+    - add support for a new keybinding, Alt-F12, to toggle on/off
+      tmux mouse support
+    - display a message when toggling either on or off mouse or
+      F-keys support
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Sep 2013 14:40:09 -0500
 

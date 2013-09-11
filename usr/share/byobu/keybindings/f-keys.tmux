@@ -72,8 +72,9 @@ bind-key -n F9 new-window -k -n config byobu-config
 bind-key -n M-F11 break-pane
 bind-key -n C-F11 join-pane -h -s :. -t :-1
 bind-key -n S-F11 join-pane -v -s :. -t :-1
-bind-key -n S-F12 source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux.disable
+bind-key -n S-F12 source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux.disable \; display-message "Byobu F-keys: DISABLED"
 bind-key -n C-S-F12 new-window $BYOBU_PREFIX/lib/byobu/include/mondrian
+bind-key -n M-F12 source $BYOBU_PREFIX/share/byobu/keybindings/mouse.tmux.enable
 bind-key -n M-IC paste-buffer
 
 bind-key -n C-a new-window -n "ctrl-a" "byobu-ctrl-a"
