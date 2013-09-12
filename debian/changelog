@@ -20,6 +20,8 @@ byobu (5.58) unreleased; urgency=low
     - byobu-tmux had never quite implemented this
     - Add a new keybinding to both byobu-screen and byobu-tmux that adds
       this support, Shift-F9
+  * usr/share/byobu/keybindings/f-keys.tmux: LP: #1224352
+    - show current window name when prompting for rename-window
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 03 Sep 2013 14:40:09 -0500
 
