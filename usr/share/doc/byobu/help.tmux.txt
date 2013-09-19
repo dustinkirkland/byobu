@@ -17,6 +17,7 @@ and some convenient keybindings:
     Ctrl-Shift-F3/F4             Move a window
     Shift-Alt-Left/Right/Up/Down Resize a split
   F5                             Reload profile, refresh status
+    Alt-F5                       Toggle UTF-8 support, refresh status
     Shift-F5                     Toggle through status lines
     Ctrl-F5                      Reconnect ssh/gpg/dbus sockets
     Ctrl-Shift-F5                Change status bar's color randomly

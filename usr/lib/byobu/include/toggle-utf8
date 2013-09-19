@@ -1,0 +1,45 @@
+#!/bin/sh -e
+#
+#    toggle-utf8
+#    Copyright (C) 2013 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@byobu.co>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+PKG="byobu"
+[ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
+[ -r "$BYOBU_CONFIG_DIR/statusrc" ] && . "$BYOBU_CONFIG_DIR/statusrc"
+
+if [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
+	if grep -qs "^BYOBU_CHARMAP=" $BYOBU_CONFIG_DIR/statusrc 2>/dev/null; then
+		sed -i -e "s/^BYOBU_CHARMAP=.*/BYOBU_CHARMAP=x/" $BYOBU_CONFIG_DIR/statusrc
+	else
+		echo "BYOBU_CHARMAP=x" >> $BYOBU_CONFIG_DIR/statusrc
+	fi
+	export BYOBU_CHARMAP=x
+else
+	if grep -qs "^BYOBU_CHARMAP=" $BYOBU_CONFIG_DIR/statusrc 2>/dev/null; then
+		sed -i -e "s/^BYOBU_CHARMAP=.*/BYOBU_CHARMAP=UTF-8/" $BYOBU_CONFIG_DIR/statusrc
+	else
+		echo "BYOBU_CHARMAP=UTF-8" >> $BYOBU_CONFIG_DIR/statusrc
+	fi
+	export BYOBU_CHARMAP=UTF-8
+fi
+if [ -n "$TMUX" ]; then
+	tmux send-keys " export BYOBU_CHARMAP=$BYOBU_CHARMAP ; . ~/.bashrc" \; send-keys Enter
+fi
+
+# vi: syntax=sh ts=4 noexpandtab

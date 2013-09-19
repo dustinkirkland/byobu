@@ -54,6 +54,7 @@ unbind-key -n S-M-Down
 unbind-key -n S-M-Left
 unbind-key -n S-M-Right
 unbind-key -n F5
+unbind-key -n M-F5
 unbind-key -n S-F5
 unbind-key -n C-F5
 unbind-key -n C-S-F5

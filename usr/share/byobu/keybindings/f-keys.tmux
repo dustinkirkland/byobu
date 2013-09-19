@@ -53,7 +53,7 @@ bind-key -n M-S-Down resize-pane -D
 bind-key -n M-S-Left resize-pane -L
 bind-key -n M-S-Right resize-pane -R
 bind-key -n F5 source $BYOBU_PREFIX/share/byobu/profiles/tmuxrc
-#bind-key -n F5 source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc" \; run-shell "$BYOBU_PREFIX/lib/byobu/include/tmux-detach-all-but-current-client"
+bind-key -n M-F5 run-shell '$BYOBU_PREFIX/lib/byobu/include/toggle-utf8' \; source $BYOBU_PREFIX/share/byobu/profiles/tmuxrc
 bind-key -n S-F5 new-window -k "$BYOBU_PREFIX/lib/byobu/include/cycle-status" \; source $BYOBU_PREFIX/share/byobu/profiles/tmuxrc
 bind-key -n C-F5 send-keys ". $BYOBU_PREFIX/bin/byobu-reconnect-sockets" \; send-keys Enter
 bind-key -n C-S-F5 new-window -d "byobu-select-profile -r"
