@@ -57,8 +57,12 @@ __logo() {
 			$MARKUP && printf "$(color b w b)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*centos*)
-			logo="****"
-			$MARKUP && printf "$(color g w)*$(color -)$(color m w)*$(color -)$(color y w)*$(color -)$(color b w)*$(color -)" || printf "$logo"
+			if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
+				logo="※ "
+				$MARKUP && printf "$(color w m)※ $(color -)" || printf "$logo"
+			else
+				$MARKUP && printf "$(color g w)*$(color -)$(color m w)*$(color -)$(color y w)*$(color -)$(color b w)*$(color -)" || printf "$logo"
+			fi
 		;;
 		*debian*)
 			logo=" @ "
