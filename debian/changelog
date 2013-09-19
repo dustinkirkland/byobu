@@ -19,6 +19,9 @@ byobu (5.59) unreleased; urgency=low
     keys.tmux, usr/share/byobu/keybindings/f-keys.tmux.disable,
     usr/share/doc/byobu/help.tmux.txt:
     - add a new keybiding, Alt-F5, to toggle UTF-8 on and off
+  * usr/share/byobu/profiles/bashrc:
+    - prepend previous command's exit status on the fancy Byobu
+      prompt;  thanks for the wonderful idea, Martin Pitt!
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 12 Sep 2013 10:53:27 -0500
 
