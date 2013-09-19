@@ -1,3 +1,9 @@
+byobu (5.60) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 19 Sep 2013 12:23:43 -0500
+
 byobu (5.59-0ubuntu1) saucy; urgency=low
 
   * usr/share/byobu/profiles/bashrc:
