@@ -5,6 +5,10 @@ byobu (5.59) unreleased; urgency=low
     - I've tested this to display properly in:
       + gnome-terminal, xterm, uxterm, terminator, konsole
     - Still doesn't look right in putty
+  * usr/bin/byobu, usr/bin/byobu-status, usr/share/byobu/keybindings/f-
+    keys.tmux: LP: #1215210
+    - default window name to -
+    - this is a compromise and I see no other way around this
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 12 Sep 2013 10:53:27 -0500
 

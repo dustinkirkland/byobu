@@ -108,7 +108,7 @@ case $BYOBU_BACKEND in
 			fi
 		fi
 		BYOBU_PROFILE="-f $BYOBU_PREFIX/share/$PKG/profiles/tmuxrc"
-		DEFAULT_WINDOW="new-session ${BYOBU_PREFIX}/bin/byobu-shell"
+		DEFAULT_WINDOW="new-session -n - ${BYOBU_PREFIX}/bin/byobu-shell"
 		sessions=$($BYOBU_BACKEND list-sessions 2>/dev/null) || true
 	;;
 	screen)

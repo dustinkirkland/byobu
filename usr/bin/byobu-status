@@ -62,14 +62,6 @@ case "$BYOBU_BACKEND" in
 				break
 			fi
 		done
-		# Do first-run procedures, if necessary
-		if [ -n "$TMUX" ]; then
-			if [ ! -e "$BYOBU_RUN_DIR/${TMUX#*,}" ]; then
-				# Clear initial window name
-				tmux rename-window ""
-				touch "$BYOBU_RUN_DIR/${TMUX#*,}"
-			fi
-		fi
 	;;
 esac
 
