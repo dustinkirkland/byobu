@@ -1,4 +1,4 @@
-byobu (5.59) unreleased; urgency=low
+byobu (5.59-0ubuntu1) saucy; urgency=low
 
   * usr/share/byobu/profiles/bashrc:
     - use MATHEMATICAL RIGHT DOUBLE ANGLE BRACKET (U+27EB, Pe): ⟫
@@ -23,7 +23,7 @@ byobu (5.59) unreleased; urgency=low
     - prepend previous command's exit status on the fancy Byobu
       prompt;  thanks for the wonderful idea, Martin Pitt!
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 12 Sep 2013 10:53:27 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 19 Sep 2013 12:23:39 -0500
 
 byobu (5.58-0ubuntu1) saucy; urgency=low
 
