@@ -9,6 +9,8 @@ byobu (5.59) unreleased; urgency=low
     keys.tmux: LP: #1215210
     - default window name to -
     - this is a compromise and I see no other way around this
+  * usr/share/byobu/profiles/bashrc:
+    - allow disable of utf8 prompt via BYOBU_CHARMAP variable
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 12 Sep 2013 10:53:27 -0500
 
