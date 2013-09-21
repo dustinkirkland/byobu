@@ -1,10 +1,10 @@
-byobu (5.60) unreleased; urgency=low
+byobu (5.60-0ubuntu1) saucy; urgency=low
 
   * usr/share/byobu/profiles/bashrc, usr/share/man/man1/byobu-prompt.1:
     - only display error code when non-zero
     - document behavior in manpage
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 19 Sep 2013 12:23:43 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 21 Sep 2013 09:42:28 -0500
 
 byobu (5.59-0ubuntu1) saucy; urgency=low
 
