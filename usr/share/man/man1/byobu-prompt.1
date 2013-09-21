@@ -10,6 +10,9 @@ byobu-prompt, byobu-enable-prompt, byobu-disable-prompt \- add and remove a nice
 \fBbyobu-disable-prompt\fP
 
 .SH DESCRIPTION
+
+Byobu provides a special PS1 prompt command, compatible with Bash shells.  It will display the previous command's exit code, if it's not zero.  It will use 3 separate colors for the local username, hostname, and the current working directory.
+
 \fBbyobu-enable-prompt\fP will add one line to your \fI~/.bashrc\fP.
 
 You can safely remove the line from your \fI~/.bashrc\fP, which ends in \fB#byobu-prompt\fP.

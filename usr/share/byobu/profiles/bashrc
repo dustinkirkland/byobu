@@ -29,20 +29,21 @@ if [ -n "$TMUX" ] || [ "${TERMCAP#*screen}" != "${TERMCAP}" ]; then
 			"Ubuntu")
 				# Use Ubuntu colors (grey / aubergine / orange)
 				[ -n "$BYOBU_CHARMAP" ] || BYOBU_CHARMAP=$(locale charmap 2>/dev/null || echo)
+				PROMPT_COMMAND='prompt_status="$? "; if [[ $prompt_status == "0 " ]]; then prompt_status=; fi'
 				case "$BYOBU_CHARMAP" in
 					"UTF-8")
 						# MATHEMATICAL RIGHT DOUBLE ANGLE BRACKET (U+27EB, Pe): ⟫
-						PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;202m\]\$? \[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;5m\]\h\[\e[00m\]:\[\e[38;5;172m\]\w\[\e[00m\]⟫ "
+						PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;202m\]\$prompt_status\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;5m\]\h\[\e[00m\]:\[\e[38;5;172m\]\w\[\e[00m\]⟫ "
 					;;
 					*)
 						# Simple ASCII greater-than sign
-						PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;202m\]\$? \[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;5m\]\h\[\e[00m\]:\[\e[38;5;172m\]\w\[\e[00m\]> "
+						PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;202m\]\$prompt_status\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;5m\]\h\[\e[00m\]:\[\e[38;5;172m\]\w\[\e[00m\]> "
 					;;
 				esac
 			;;
 			*)
 				# Use Byobu colors (green / blue / red)
-				PS1="${debian_chroot:+($debian_chroot)}\[\e[31m\]\$? \[\e[00;32m\]\u\[\e[00m\]@\[\e[00;36m\]\h\[\e[00m\]:\[\e[00;31m\]\w\[\e[00m\]\$ "
+				PS1="${debian_chroot:+($debian_chroot)}\[\e[31m\]\$prompt_status\[\e[00;32m\]\u\[\e[00m\]@\[\e[00;36m\]\h\[\e[00m\]:\[\e[00;31m\]\w\[\e[00m\]\$ "
 			;;
 		esac
 	fi
