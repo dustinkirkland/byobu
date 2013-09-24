@@ -1,6 +1,8 @@
 byobu (5.61) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/logo:
+    - use a UTF-8 approximation of the Byobu logo, 〣
+      Unicode Character 'HANGZHOU NUMERAL THREE' (U+3023)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 21 Sep 2013 09:42:30 -0500
 

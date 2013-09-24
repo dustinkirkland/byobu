@@ -120,7 +120,11 @@ __logo() {
 			$MARKUP && printf "$(color W r)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*)
-			logo="[B]"
+			if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
+				logo="[B]"
+			else
+				logo="〣"
+			fi
 			$MARKUP && printf "$(color b k W)%s$(color -)" "$logo" || printf " $logo "
 		;;
 	esac
