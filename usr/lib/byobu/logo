@@ -123,7 +123,7 @@ __logo() {
 			if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
 				logo="[B]"
 			else
-				logo="〣"
+				logo="𝄝"
 			fi
 			$MARKUP && printf "$(color b k W)%s$(color -)" "$logo" || printf " $logo "
 		;;
