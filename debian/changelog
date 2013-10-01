@@ -3,6 +3,10 @@ byobu (5.61) unreleased; urgency=low
   * usr/lib/byobu/logo:
     - use a UTF-8 approximation of the Byobu logo, 〣
       Unicode Character 'HANGZHOU NUMERAL THREE' (U+3023)
+  * usr/share/byobu/pixmaps/byobu-banner.svg,
+    usr/share/byobu/pixmaps/byobu.svg:
+    - add a new banner image
+    - use a green color for the branches in the logo
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 21 Sep 2013 09:42:30 -0500
 
