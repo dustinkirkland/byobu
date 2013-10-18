@@ -1,3 +1,9 @@
+byobu (5.62) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Oct 2013 16:29:56 -0500
+
 byobu (5.61-0ubuntu1) unstable; urgency=low
 
   * usr/lib/byobu/logo:
