@@ -1,4 +1,4 @@
-byobu (5.61) unreleased; urgency=low
+byobu (5.61-0ubuntu1) unstable; urgency=low
 
   * usr/lib/byobu/logo:
     - use a UTF-8 approximation of the Byobu logo, 〣
@@ -15,7 +15,7 @@ byobu (5.61) unreleased; urgency=low
     - add an interactive step, where users can immediately choose to
       run in a nested session
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 21 Sep 2013 09:42:30 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Oct 2013 16:29:54 -0500
 
 byobu (5.60-0ubuntu1) saucy; urgency=low
 
