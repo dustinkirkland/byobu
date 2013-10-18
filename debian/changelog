@@ -7,6 +7,13 @@ byobu (5.61) unreleased; urgency=low
     usr/share/byobu/pixmaps/byobu.svg:
     - add a new banner image
     - use a green color for the branches in the logo
+  * usr/bin/byobu-select-session: LP: #1241785
+    - rework session selecting, especially when nesting
+    - support an environment variable BYOBU_NESTING=1 which users can
+      set to force nesting (rather than modifying the TERM variable
+      which other programs rely upon)
+    - add an interactive step, where users can immediately choose to
+      run in a nested session
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 21 Sep 2013 09:42:30 -0500
 
