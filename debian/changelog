@@ -1,6 +1,8 @@
 byobu (5.62) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/keybindings/f-keys.tmux:
+    - as it turns out, showing the current window name when renaming
+      is really annoying
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Oct 2013 16:29:56 -0500
 
