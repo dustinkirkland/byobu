@@ -8,6 +8,10 @@ byobu (5.62) unreleased; urgency=low
     - customizations of screen configuration should go in
       $BYOBU_CONFIG_DIR/.screenrc, which will be sourced last; rather than
       ~/.screenrc (which should be reserved for screen-without-byobu)
+  * usr/bin/byobu-reconnect-sockets, usr/bin/byobu-select-session:
+    - LP: #1243017
+    - add a few environment variables to restore, including upstart
+      to ensure upstart commands resume working in a session restart
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Oct 2013 16:29:56 -0500
 
