@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 #
 # Copyright (c) 2012 Eran Sandler (eran@sandler.co.il),  http://eran.sandler.co.il,  http://forecastcloudy.net
+# Copyright (C) 2012-2013 Dustin Kirkland <kirkland@byobu.co>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the

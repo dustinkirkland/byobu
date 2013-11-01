@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 #
 #    byobu-config
 #    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2008-2013 Dustin Kirkland <kirkland@byobu.co>
+
 #
 #    Authors: Nick Barcet <nick.barcet@ubuntu.com>
 #             Dustin Kirkland <kirkland@byobu.co>

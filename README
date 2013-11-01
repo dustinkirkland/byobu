@@ -17,14 +17,16 @@ install locally, using the following instructions...
  3) Configure:
       cd byobu*
       ./configure --prefix="$HOME/byobu"
- 4) Build:
+ 4) OPTIONAL: Use python from your environment, rather than from your distro
+      sed -i -e "s:/usr/bin/python:/usr/bin/env python" usr/bin/* usr/lib/byobu/include/*
+ 5) Build:
       make
- 5) Install:
+ 6) Install:
       make install
- 6) Update your PATH and BYOBU_PREFIX environment variables
+ 7) Update your PATH and BYOBU_PREFIX environment variables
       echo "export PATH=$HOME/byobu/bin:$PATH" >> $HOME/.bashrc
       . $HOME/.bashrc
- 7) Run:
+ 8) Run:
       byobu
 
 Note that you will need to have a few dependencies installed:

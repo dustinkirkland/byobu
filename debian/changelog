@@ -12,6 +12,17 @@ byobu (5.62) unreleased; urgency=low
     - LP: #1243017
     - add a few environment variables to restore, including upstart
       to ensure upstart commands resume working in a session restart
+  * README, usr/bin/byobu-config, usr/bin/byobu-select-session,
+    usr/lib/byobu/include/ec2instancespricing.py:
+    - LP: #996559, LP: #988471, LP: #1237071
+    - Okay, this is the last time I'm going back and forth on this;
+      for real ;-)
+    - In our 3 python scripts, we are going to use #!/usr/bin/python
+      + The vast majority of Byobu users are getting it from their
+        distro, and the package itself appropriately depends on python
+    - Advanced users, developers, and others who want to run a different
+      python in their environment will need to sed update three scripts
+    - I've left a hint in the README to that effect
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Oct 2013 16:29:56 -0500
 
