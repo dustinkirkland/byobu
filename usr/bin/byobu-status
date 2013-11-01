@@ -31,10 +31,10 @@ PKG="byobu"
 [ -d "$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND" ] || mkdir -p "$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND"
 
 # Source configurations
+. "${BYOBU_PREFIX}/lib/${PKG}/include/icons"
 for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/status/statusrc" "$BYOBU_CONFIG_DIR/status" "$BYOBU_CONFIG_DIR/statusrc" "$BYOBU_CONFIG_DIR/color" "$BYOBU_CONFIG_DIR/color.tmux"; do
 	[ -r "$i" ] && . "$i"
 done
-. "${BYOBU_PREFIX}/lib/${PKG}/include/icons"
 
 case "$BYOBU_BACKEND" in
 	screen)
