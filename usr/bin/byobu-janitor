@@ -74,7 +74,7 @@ MC=0
 [ -r "$BYOBU_CONFIG_DIR/keybindings.tmux" ] || touch "$BYOBU_CONFIG_DIR/keybindings.tmux"
 [ -r "$BYOBU_CONFIG_DIR/windows" ] || touch "$BYOBU_CONFIG_DIR/windows"
 [ -r "$BYOBU_CONFIG_DIR/backend" ] || echo "BYOBU_BACKEND=$BYOBU_BACKEND" > "$BYOBU_CONFIG_DIR/backend"
-[ -r "$HOME/.screenrc" ] || touch "$HOME/.screenrc"
+[ -r "$BYOBU_CONFIG_DIR/.screenrc" ] || touch "$BYOBU_CONFIG_DIR/.screenrc"
 [ -r "$BYOBU_CONFIG_DIR/.tmux.conf" ] || touch "$BYOBU_CONFIG_DIR/.tmux.conf"
 for f in status statusrc; do
 	if [ ! -r "$BYOBU_CONFIG_DIR/$f" ]; then

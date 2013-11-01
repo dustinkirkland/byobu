@@ -24,4 +24,4 @@
 
 source $BYOBU_CONFIG_DIR/profile
 source $BYOBU_WINDOWS
-source $HOME/.screenrc
+source $BYOBU_CONFIG_DIR/.screenrc

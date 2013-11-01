@@ -3,6 +3,11 @@ byobu (5.62) unreleased; urgency=low
   * usr/share/byobu/keybindings/f-keys.tmux:
     - as it turns out, showing the current window name when renaming
       is really annoying
+  * usr/bin/byobu-janitor, usr/lib/byobu/menu,
+    usr/share/byobu/profiles/screenrc: LP: #1244509
+    - customizations of screen configuration should go in
+      $BYOBU_CONFIG_DIR/.screenrc, which will be sourced last; rather than
+      ~/.screenrc (which should be reserved for screen-without-byobu)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Oct 2013 16:29:56 -0500
 
