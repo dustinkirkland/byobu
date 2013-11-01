@@ -1,4 +1,4 @@
-byobu (5.62) unreleased; urgency=low
+byobu (5.62-0ubuntu1) trusty; urgency=low
 
   * usr/share/byobu/keybindings/f-keys.tmux:
     - as it turns out, showing the current window name when renaming
@@ -24,7 +24,7 @@ byobu (5.62) unreleased; urgency=low
       python in their environment will need to sed update three scripts
     - I've left a hint in the README to that effect
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 18 Oct 2013 16:29:56 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 01 Nov 2013 15:27:48 -0500
 
 byobu (5.61-0ubuntu1) unstable; urgency=low
 
