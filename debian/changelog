@@ -1,6 +1,8 @@
 byobu (5.63) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu: LP: #1244981
+    - let's use our symlink for SSH_AUTH_SOCK, for consistency across
+      sessions
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 01 Nov 2013 15:27:51 -0500
 

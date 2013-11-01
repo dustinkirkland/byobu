@@ -97,6 +97,7 @@ byobu-janitor --force
 # Drop a symlink to the ssh socket in $HOME, since we can ensure that exists
 if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ]; then
 	ln -sf "$SSH_AUTH_SOCK" "$BYOBU_CONFIG_DIR/.ssh-agent"
+	export SSH_AUTH_SOCK="$BYOBU_CONFIG_DIR/.ssh-agent"
 fi
 
 case $BYOBU_BACKEND in
