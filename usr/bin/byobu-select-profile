@@ -185,7 +185,7 @@ setcolor_screen() {
 }
 
 get_contrast() {
-	# See section 2.2: http://www.w3.org/TR/AERT
+	# See section 2.2: http://www.w3.org/TR/AERT#color-contrast
 	local awk="awk"
 	if $BYOBU_TEST gawk >/dev/null 2>&1; then
 		awk="gawk"
