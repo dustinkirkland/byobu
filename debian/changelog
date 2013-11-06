@@ -5,6 +5,8 @@ byobu (5.63) unreleased; urgency=low
       sessions
   * usr/bin/byobu-status: LP: #1233407
     - ensure status icons are customizable by end users
+  * usr/share/byobu/profiles/bashrc:
+    - Ubuntu themed grep colors, from Nick Moffit
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 01 Nov 2013 15:27:51 -0500
 
