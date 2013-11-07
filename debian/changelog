@@ -1,4 +1,4 @@
-byobu (5.63) unreleased; urgency=low
+byobu (5.63-0ubuntu1) trusty; urgency=low
 
   * usr/bin/byobu: LP: #1244981
     - let's use our symlink for SSH_AUTH_SOCK, for consistency across
@@ -14,7 +14,7 @@ byobu (5.63) unreleased; urgency=low
   * usr/share/byobu/profiles/bashrc:
     - add an Ubuntu color theme for less pager (manpages)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 01 Nov 2013 15:27:51 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Nov 2013 11:55:13 -0600
 
 byobu (5.62-0ubuntu1) trusty; urgency=low
 
