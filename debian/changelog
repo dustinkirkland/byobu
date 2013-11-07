@@ -11,6 +11,8 @@ byobu (5.63) unreleased; urgency=low
     - point straight to the right section
   * usr/share/byobu/profiles/bashrc:
     - save a fork, use a function for exit status, from Nick Moffit
+  * usr/share/byobu/profiles/bashrc:
+    - add an Ubuntu color theme for less pager (manpages)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 01 Nov 2013 15:27:51 -0500
 
