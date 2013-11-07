@@ -9,6 +9,8 @@ byobu (5.63) unreleased; urgency=low
     - Ubuntu themed grep colors, from Nick Moffit
   * usr/bin/byobu-select-profile:
     - point straight to the right section
+  * usr/share/byobu/profiles/bashrc:
+    - save a fork, use a function for exit status, from Nick Moffit
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 01 Nov 2013 15:27:51 -0500
 
