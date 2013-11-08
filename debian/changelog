@@ -1,3 +1,9 @@
+byobu (5.65) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Nov 2013 13:32:40 -0600
+
 byobu (5.64-0ubuntu1) trusty; urgency=low
 
   * usr/share/byobu/profiles/bashrc:
