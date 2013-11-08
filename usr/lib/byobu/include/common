@@ -34,12 +34,11 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 		# Just in case there's no config file at all
 		if [ -z "${BYOBU_BACKEND}" ]; then
 			# New byobu configuration, default to tmux
-			for i in tmux screen; do
-				$BYOBU_TEST $i >/dev/null && BYOBU_BACKEND="$i" && break
-			done
-			unset i
-			fi
-			if ! $BYOBU_TEST "$BYOBU_BACKEND" >/dev/null; then
+			if $BYOBU_TEST tmux >/dev/null; then
+				BYOBU_BACKEND="tmux"
+			elif $BYOBU_TEST screen >/dev/null; then
+				BYOBU_BACKEND="screen"
+			else
 				printf "%s\n" "ERROR: $PKG won't work without tmux or screen installed" 1>&2
 			fi
 		fi
