@@ -4,6 +4,9 @@ byobu (5.64) unreleased; urgency=low
     - adjust whitespace
   * usr/bin/byobu:
     - handle the backend better
+  * etc/byobu/backend, usr/lib/byobu/include/common:
+    - really default to tmux, at this point
+    - tmux was the default in the previous LTS
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Nov 2013 11:55:15 -0600
 

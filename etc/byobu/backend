@@ -1,4 +1,4 @@
 # BYOBU_BACKEND can currently be "screen" or "tmux"
 # Override this on a per-user basis by editing "$BYOBU_CONFIG_DIR/backend"
 # or by launching either "byobu-screen" or "byobu-tmux" instead of "byobu".
-#BYOBU_BACKEND="tmux"
+BYOBU_BACKEND="tmux"
