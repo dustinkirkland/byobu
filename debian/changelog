@@ -1,4 +1,4 @@
-byobu (5.64) unreleased; urgency=low
+byobu (5.64-0ubuntu1) trusty; urgency=low
 
   * usr/share/byobu/profiles/bashrc:
     - adjust whitespace
@@ -10,7 +10,7 @@ byobu (5.64) unreleased; urgency=low
   * usr/lib/byobu/include/common:
     - simplify backend detection
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Nov 2013 11:55:15 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Nov 2013 13:32:21 -0600
 
 byobu (5.63-0ubuntu1) trusty; urgency=low
 
