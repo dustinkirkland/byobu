@@ -52,6 +52,7 @@ export BYOBU_CHARMAP=$(locale charmap)
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
 # Override backend if we can determine intentions from argv[0]
+[ -r "$HOME/.$PKG/backend" ] && . "$HOME/.$PKG/backend"
 case "$0" in
 	*byobu-screen) BYOBU_BACKEND="screen" ;;
 	*byobu-tmux) BYOBU_BACKEND="tmux" ;;

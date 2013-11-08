@@ -2,6 +2,8 @@ byobu (5.64) unreleased; urgency=low
 
   * usr/share/byobu/profiles/bashrc:
     - adjust whitespace
+  * usr/bin/byobu:
+    - handle the backend better
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Nov 2013 11:55:15 -0600
 
