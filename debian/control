@@ -21,6 +21,7 @@ Depends:
 Recommends:
  screen,
  tmux (>= 1.5),
+ run-one
 Suggests:
  apport,
  lsb-release,

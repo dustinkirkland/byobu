@@ -1,6 +1,8 @@
 byobu (5.65) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/control: LP: #888770
+    - recommend run-one, which is useful for some long-running status
+      items, now that it has been MIR-approved
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 08 Nov 2013 13:32:40 -0600
 
