@@ -1,3 +1,9 @@
+byobu (5.66) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Nov 2013 12:31:12 -0600
+
 byobu (5.65-0ubuntu1) trusty; urgency=low
 
   * debian/control: LP: #888770
