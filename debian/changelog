@@ -1,6 +1,13 @@
 byobu (5.66) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/keybindings/f-keys.screen,
+    usr/share/byobu/keybindings/f-keys.screen.disable,
+    usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/doc/byobu/help.tmux.txt:
+    - change the printscreen hotkey from Shift-F9 to Shift-F7
+    - Shift-F7 should be more memorable, in that F7 has long been
+      used to enter scrollback mode
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Nov 2013 12:31:12 -0600
 

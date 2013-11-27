@@ -73,9 +73,9 @@ bindkey "^[[17;2~"
 bindkey "^[[32~"
 bindkey "^[[17;5~"
 bindkey -k k7
+bindkey "^[[18;2~"
 bindkey "^[[5;3~"
 bindkey "^[[6;3~"
 bindkey -k k8
 bindkey -k k9
-bindkey "^[[20;2~"
 bindkey -k F2
