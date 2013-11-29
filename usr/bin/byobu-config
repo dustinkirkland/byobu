@@ -60,7 +60,7 @@ if not os.path.exists(DOC):
 	DOC = BYOBU_CONFIG_DIR + "/" + DOC
 DEF_ESC = "A"
 RELOAD = "If you are using the default set of keybindings, press\n<F5> or <ctrl-a-R> to activate these changes.\n\nOtherwise, exit this session and start a new one."
-RELOAD_FLAG = "%s/reload-required" % (BYOBU_CONFIG_DIR)
+RELOAD_FLAG = "%s/reload-required" % (BYOBU_RUN_DIR)
 ESC = ''
 snack.hotkeys[ESC] = ord(ESC)
 snack.hotkeys[ord(ESC)] = ESC
