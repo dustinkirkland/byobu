@@ -12,6 +12,9 @@ byobu (5.66) unreleased; urgency=low
     - fix the name of the __memory_detail() function
   * usr/bin/byobu-config: LP: #1255484
     - reload-required should always be in run-dir, not config-dir
+  * usr/lib/byobu/updates_available: LP: #1255493
+    - fix updates_available for pkcon
+    - Thanks, kealthou@gmail.com
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Nov 2013 12:31:12 -0600
 

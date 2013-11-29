@@ -56,7 +56,7 @@ ___update_cache() {
 		flock -xn "$flock" apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst >$mycache 2>/dev/null &
 	elif $BYOBU_TEST pkcon >/dev/null; then
 		# use packagekit to show list of packages
-		flock -xn "$flock" pkcon get-updates -p | grep -c '^Package' >"$mycache" 2>/dev/null &
+		LC_ALL=C flock -xn "$flock" pkcon get-updates -p | awk '/^Results:$/ { start=NR }; /^Security/ { security++ }; END { if (!/There are no updates available at this time./) { print NR-start, security }}' > "$mycache" 2>/dev/null &
 	elif $BYOBU_TEST zypper >/dev/null; then
 		# If zypper exists, use it
 		flock -xn "$flock" zypper --no-refresh lu --best-effort | grep -c 'v |' >$mycache 2>/dev/null &
