@@ -1,4 +1,4 @@
-byobu (5.66) unreleased; urgency=low
+byobu (5.66-0ubuntu1) trusty; urgency=low
 
   * usr/share/byobu/keybindings/f-keys.screen,
     usr/share/byobu/keybindings/f-keys.screen.disable,
@@ -18,7 +18,7 @@ byobu (5.66) unreleased; urgency=low
   * usr/lib/byobu/custom: LP: #1255490
     - ignore backup files, ending in ~
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Nov 2013 12:31:12 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 29 Nov 2013 09:46:46 -0600
 
 byobu (5.65-0ubuntu1) trusty; urgency=low
 
