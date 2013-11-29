@@ -15,6 +15,8 @@ byobu (5.66) unreleased; urgency=low
   * usr/lib/byobu/updates_available: LP: #1255493
     - fix updates_available for pkcon
     - Thanks, kealthou@gmail.com
+  * usr/lib/byobu/custom: LP: #1255490
+    - ignore backup files, ending in ~
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 18 Nov 2013 12:31:12 -0600
 

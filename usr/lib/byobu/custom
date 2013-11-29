@@ -28,7 +28,12 @@ __custom() {
 	local i= output=
 	for i in "$BYOBU_CONFIG_DIR/bin/"[0-9]*_*; do
 		# Loop over custom scripts
+		# Ensure executable
 		[ -x "$i" ] || continue
+		# Ignore vim backup files ending in ~
+		case "$i" in
+			*~) continue ;;
+		esac
 		local now="$(date +%s)"
 		local script=${i##*/}
 		local freq=${script%%_*}
