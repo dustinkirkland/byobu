@@ -2,6 +2,8 @@ byobu (5.67) unreleased; urgency=low
 
   * usr/bin/byobu, usr/lib/byobu/include/constants:
     - support global variable for default window name
+  * usr/bin/byobu-config:
+    - fix broken fix for LP: #1255484
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 29 Nov 2013 09:46:48 -0600
 
