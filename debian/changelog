@@ -1,3 +1,9 @@
+byobu (5.68) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Dec 2013 18:46:28 -0600
+
 byobu (5.67-0ubuntu1) trusty; urgency=low
 
   * usr/bin/byobu, usr/lib/byobu/include/constants:
