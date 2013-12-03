@@ -265,6 +265,7 @@ status_freq() {
 		reboot_required) _RET=5 ;;
 		release)	_RET=599 ;;
 		services)	_RET=53 ;;
+		session)	_RET=9999999 ;;
 		swap)		_RET=19 ;;
 		time)		[ "$BYOBU_BACKEND" = "tmux" ] && _RET=1 || _RET=9999999 ;;
 		time_binary)	_RET=23 ;;
