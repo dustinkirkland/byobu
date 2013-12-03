@@ -58,3 +58,4 @@ export BYOBU_DARK="black"
 export BYOBU_LIGHT="white"
 export BYOBU_ACCENT="#75507B"          # AUBERGINE
 export BYOBU_HIGHLIGHT="#DD4814"       # UBUNTU ORANGE
+export BYOBU_WINDOW_NAME="-"
