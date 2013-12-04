@@ -24,7 +24,12 @@ __session_detail() {
 
 __session() {
 	# Note: This will only work in byobu-tmux
-	color u W k; echo "#S"; color --
+	local count=$(tmux list-sessions 2>/dev/null | wc -l)
+	if [ $count -gt 1 ]; then
+		color u W k; printf "$ICON_SESSION#S"; color --
+	else
+		echo
+	fi
 }
 
 # vi: syntax=sh ts=4 noexpandtab

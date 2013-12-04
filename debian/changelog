@@ -4,6 +4,8 @@ byobu (5.68) unreleased; urgency=low
     usr/lib/byobu/session, usr/share/byobu/status/status,
     usr/share/man/man1/byobu.1:
     - add a new status item, to show the session name
+  * usr/lib/byobu/include/icons, usr/lib/byobu/session:
+    - use an icon for the session status item
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Dec 2013 18:46:28 -0600
 

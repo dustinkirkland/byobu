@@ -51,6 +51,7 @@ if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
 	ICON_GHz="GHz"
 	#ICON_MBPS="㏔㎰"
 	ICON_MBPS="Mb"
+	ICON_SESSION="〣"
 else
 	ICON_C="C"
 	ICON_F="F"
@@ -72,4 +73,5 @@ else
 	ICON_MHz="MHz"
 	ICON_GHz="GHz"
 	ICON_MBPS="Mbps"
+	ICON_SESSION="|"
 fi
