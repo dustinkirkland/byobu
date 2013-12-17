@@ -53,6 +53,17 @@ $BYOBU_SED --follow-symlinks "s///" </dev/null 2>/dev/null && BYOBU_SED="$BYOBU_
 # Determine if we have ulimit support
 $BYOBU_TEST ulimit >/dev/null 2>&1 && export BYOBU_ULIMIT="ulimit" || export BYOBU_ULIMIT="false"
 
+# Find a suitable python interpreter, if undefined
+if [ -z "$BYOBU_PYTHON" ]; then
+	if $BYOBU_TEST python >/dev/null 2>&1; then
+		BYOBU_PYTHON="python"
+	elif $BYOBU_TEST python2 >/dev/null 2>&1; then
+		BYOBU_PYTHON="python2"
+	elif $BYOBU_TEST python3 >/dev/null 2>&1; then
+		BYOBU_PYTHON="python3"
+	fi
+fi
+
 # Default colors
 export BYOBU_DARK="black"
 export BYOBU_LIGHT="white"

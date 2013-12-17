@@ -14,8 +14,8 @@ Depends:
  ${misc:Depends}, ${perl:Depends}, ${python:Depends},
  debconf (>= 0.5) | debconf-2.0,
  gettext-base,
- python,
- python-newt (>= 0.52.2-11),
+ python3|python,
+ python3-newt|python-newt,
  tmux (>= 1.5) | screen,
  gawk
 Recommends:

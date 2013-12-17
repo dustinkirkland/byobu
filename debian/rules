@@ -4,7 +4,7 @@
 
 override_dh_auto_build:
 	# Check python syntax
-	pep8 --verbose --repeat --ignore W191,E501 usr/bin/byobu-config usr/bin/byobu-select-session
+	pep8 --verbose --repeat --ignore W191,E501 usr/lib/byobu/include/config.py usr/lib/byobu/include/select-session.py
 	# Check shell syntax
 	sh -n `find . -type f -exec grep -l "^\#\!/bin/sh" '{}' \;`
 	# Check for bashisms in shell scripts

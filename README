@@ -18,7 +18,7 @@ install locally, using the following instructions...
       cd byobu*
       ./configure --prefix="$HOME/byobu"
  4) OPTIONAL: Use python from your environment, rather than from your distro
-      sed -i -e "s:/usr/bin/python:/usr/bin/env python" usr/bin/* usr/lib/byobu/include/*
+      echo "export BYOBU_PYTHON='/usr/bin/env python'" >> $HOME/.bashrc
  5) Build:
       make
  6) Install:

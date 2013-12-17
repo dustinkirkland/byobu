@@ -6,6 +6,15 @@ byobu (5.68) unreleased; urgency=low
     - add a new status item, to show the session name
   * usr/lib/byobu/include/icons, usr/lib/byobu/session:
     - use an icon for the session status item
+  * debian/control, debian/rules, README, usr/bin/byobu-config,
+    usr/bin/byobu-config => usr/lib/byobu/include/config.py,
+    usr/bin/byobu-select-session, usr/bin/byobu-select-session =>
+    usr/lib/byobu/include/select-session.py,
+    usr/lib/byobu/include/constants, usr/lib/byobu/include/Makefile.am:
+    - LP: #1253458
+    - introduce a new BYOBU_PYTHON environment variable, that defines
+      your desired python interpreter
+    - prefer python, then python2, then python3
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Dec 2013 18:46:28 -0600
 
