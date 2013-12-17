@@ -22,6 +22,11 @@ byobu (5.68) unreleased; urgency=low
   * usr/share/man/man1/byobu-ugraph.1, usr/share/man/man1/byobu-
     ulevel.1, usr/share/man/man1/Makefile.am:
     - add manpages, silences lintian warning
+  * usr/share/applications/byobu.desktop:
+    - have the desktop file just launch the byobu executable
+    - fixes situation where user runs byobu-disable, which touches
+      the auto launch disable flag, but user tries to click on byobu
+      desktop icon
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Dec 2013 18:46:28 -0600
 
