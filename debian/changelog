@@ -1,6 +1,7 @@
 byobu (5.69) unreleased; urgency=low
 
-  * UNRELEASED
+  * debian/control:
+    - revert build-dep on python-support, lintian is dumb sometimes
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 16 Dec 2013 22:29:52 -0700
 

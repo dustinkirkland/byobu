@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 Uploaders: Antoine Beaupré <anarcat@koumbit.org>
 Standards-Version: 3.9.4
-Build-Depends: debhelper (>= 7.0.50~), gettext-base, automake, autoconf, pep8, python-support
+Build-Depends: debhelper (>= 7.0.50~), gettext-base, automake, autoconf, pep8
 Homepage: http://byobu.co
 Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/byobu/trunk
 
