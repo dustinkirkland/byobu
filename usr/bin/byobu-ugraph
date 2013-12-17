@@ -134,36 +134,36 @@ get_data()
 while getopts "f:hm:np:rt:x:" opt
 do
   case "$opt" in
-    f) 
+    f)
       file="$OPTARG"
     ;;
 
-    h) 
+    h)
       usage
       exit 0
     ;;
 
-    m) 
+    m)
       min=$OPTARG
     ;;
 
-    n) 
+    n)
       newline=
     ;;
 
-    p) 
+    p)
       points=$OPTARG
     ;;
 
-    r) 
+    r)
       rotate=n
     ;;
 
-    t) 
+    t)
       theme="$OPTARG"
     ;;
 
-    x) 
+    x)
       max=$OPTARG
     ;;
   esac
