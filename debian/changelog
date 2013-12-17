@@ -19,6 +19,9 @@ byobu (5.68) unreleased; urgency=low
     - silence lintian warning with a build-dep on python-support
   * usr/bin/byobu-ugraph:
     - clean up trailing whitespace
+  * usr/share/man/man1/byobu-ugraph.1, usr/share/man/man1/byobu-
+    ulevel.1, usr/share/man/man1/Makefile.am:
+    - add manpages, silences lintian warning
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Dec 2013 18:46:28 -0600
 
