@@ -1,4 +1,4 @@
-byobu (5.68) unreleased; urgency=low
+byobu (5.68-0ubuntu1) trusty; urgency=low
 
   * usr/lib/byobu/include/shutil, usr/lib/byobu/Makefile.am,
     usr/lib/byobu/session, usr/share/byobu/status/status,
@@ -28,7 +28,7 @@ byobu (5.68) unreleased; urgency=low
       the auto launch disable flag, but user tries to click on byobu
       desktop icon
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Dec 2013 18:46:28 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 16 Dec 2013 22:29:49 -0700
 
 byobu (5.67-0ubuntu1) trusty; urgency=low
 
