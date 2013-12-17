@@ -15,6 +15,8 @@ byobu (5.68) unreleased; urgency=low
     - introduce a new BYOBU_PYTHON environment variable, that defines
       your desired python interpreter
     - prefer python, then python2, then python3
+  * debian/control:
+    - silence lintian warning with a build-dep on python-support
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 02 Dec 2013 18:46:28 -0600
 
