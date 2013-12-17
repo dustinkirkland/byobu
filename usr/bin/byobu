@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-VERSION=5.68
+VERSION=5.69
 PKG="byobu"
 
 # All sorts of things go wrong if you don't own your $HOME dir.

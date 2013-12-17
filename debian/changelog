@@ -1,3 +1,9 @@
+byobu (5.69) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 16 Dec 2013 22:29:52 -0700
+
 byobu (5.68-0ubuntu1) trusty; urgency=low
 
   * usr/lib/byobu/include/shutil, usr/lib/byobu/Makefile.am,
