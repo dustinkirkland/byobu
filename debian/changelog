@@ -8,6 +8,13 @@ byobu (5.70) unreleased; urgency=low
     - change the rarely used Ctrl-F8 keybinding to rename the current
        session
     - move the restore-a-split-layout to Shift-Alt-F8
+  * usr/lib/byobu/session, usr/share/byobu/keybindings/f-keys.screen,
+    usr/share/byobu/keybindings/f-keys.screen.disable,
+    usr/share/byobu/status/status: LP: #1255139
+    - add support for screen session names in the status item
+    - only display when more than one session in tmux, always displayed by
+      default in screen, where we have more real estate
+    - support the Ctrl-F8 hotkey in screen too, to rename session
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 17 Dec 2013 14:27:43 -0700
 

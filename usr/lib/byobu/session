@@ -24,12 +24,24 @@ __session_detail() {
 
 __session() {
 	# Note: This will only work in byobu-tmux
-	local count=$(tmux list-sessions 2>/dev/null | wc -l)
-	if [ $count -gt 1 ]; then
-		color u W k; printf "$ICON_SESSION#S"; color --
-	else
-		echo
-	fi
+	case "$BYOBU_BACKEND" in
+		tmux)
+			local count=$(tmux list-sessions 2>/dev/null | wc -l)
+			if [ $count -gt 1 ]; then
+				color u W k; printf "${ICON_SESSION}#S"; color --
+			else
+				echo
+			fi
+		;;
+		screen)
+			local count=$(screen -ls | grep "^        .*\)$" | wc -l)
+			if [ $count -gt 1 ]; then
+				color u W k; printf "${ICON_SESSION}%S"; color --
+			else
+				echo
+			fi
+		;;
+	esac
 }
 
 # vi: syntax=sh ts=4 noexpandtab

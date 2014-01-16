@@ -68,7 +68,9 @@ register n "^[[6~"
 bindkey "^[[6;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process n' 'msgwait 1' 'echo "Byobu scrollback mode (alt-pgup / alt-pgdown)"' # alt-pagedn | scrollback
 register t "A^[OH^k^h"					#     | Goes with the F8 definition
 bindkey -k k8 eval 'process x' 'process t'		# F8  | Re-title a window
-# No ctrl-F8 (restore layout) in Screen
+register u ":sessionname "				#     | Goes with the Ctrl-F8 definition
+bindkey "^[[19;5~" eval 'process x' 'process u'		# Ctrl-F8  | Re-title a session
+# No alt-shift-F8 (restore layout) in Screen
 # No ctrl-shift-F8 (save layout) in Screen
 bindkey -k k9 $BYOBU_BACKEND -t config 0 byobu-config	# F9  | Configuration
 register s "[g G$>^h"					# Goes with Shift-F7 and F12 ~ definition
