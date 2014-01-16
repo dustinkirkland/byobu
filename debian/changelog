@@ -2,6 +2,12 @@ byobu (5.70) unreleased; urgency=low
 
   * usr/share/byobu/keybindings/f-keys.tmux:
     - fix navigation among sessions
+  * usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/doc/byobu/help.tmux.txt:
+    - change the rarely used Ctrl-F8 keybinding to rename the current
+       session
+    - move the restore-a-split-layout to Shift-Alt-F8
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 17 Dec 2013 14:27:43 -0700
 

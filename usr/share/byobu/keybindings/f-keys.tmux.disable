@@ -69,6 +69,7 @@ unbind-key -n M-PPage
 unbind-key -n F8
 unbind-key -n C-F8
 unbind-key -n C-S-F8
+unbind-key -n M-S-F8
 unbind-key -n S-F8
 unbind-key -n F9
 unbind-key -n M-F11

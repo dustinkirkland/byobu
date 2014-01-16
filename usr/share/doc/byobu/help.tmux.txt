@@ -29,8 +29,9 @@ and some convenient keybindings:
     Alt-PageUp/PageDown          Enter and move through scrollback
     Shift-F7                     Save history to $BYOBU_RUN_DIR/printscreen
   F8                             Rename the current window
+    Ctrl-F8                      Rename the current session
     Shift-F8                     Toggle through split arrangements
-    Ctrl-F8                      Restore a split-pane layout
+    Alt-Shift-F8                 Restore a split-pane layout
     Ctrl-Shift-F8                Save the current split-pane layout
   F9                             Launch byobu-config window
   F10                            * Used by X11 *
