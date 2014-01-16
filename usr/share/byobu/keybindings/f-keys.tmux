@@ -36,8 +36,8 @@ bind-key -n F3 previous-window
 bind-key -n F4 next-window
 bind-key -n M-Left previous-window
 bind-key -n M-Right next-window
-bind-key -n M-Up choose-session \; send-keys Up \; send-keys Enter
-bind-key -n M-Down choose-session \; send-keys Down \; send-keys Enter
+bind-key -n M-Up switch-client -p
+bind-key -n M-Down switch-client -n
 bind-key -n S-F3 display-panes \; select-pane -t :.-
 bind-key -n S-F4 display-panes \; select-pane -t :.+
 bind-key -n S-Up display-panes \; select-pane -U

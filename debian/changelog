@@ -1,6 +1,7 @@
 byobu (5.70) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/share/byobu/keybindings/f-keys.tmux:
+    - fix navigation among sessions
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 17 Dec 2013 14:27:43 -0700
 
