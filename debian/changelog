@@ -1,4 +1,4 @@
-byobu (5.70) unreleased; urgency=low
+byobu (5.70-0ubuntu1) trusty; urgency=low
 
   * usr/share/byobu/keybindings/f-keys.tmux:
     - fix navigation among sessions
@@ -16,7 +16,7 @@ byobu (5.70) unreleased; urgency=low
       default in screen, where we have more real estate
     - support the Ctrl-F8 hotkey in screen too, to rename session
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 17 Dec 2013 14:27:43 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jan 2014 17:48:33 -0600
 
 byobu (5.69-0ubuntu1) trusty; urgency=low
 
