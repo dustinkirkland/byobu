@@ -99,7 +99,7 @@ __logo() {
 			logo=" lm "
 			$MARKUP && printf "$(color g w)$logo$(color -)$(color g w)$(color -) " || printf "$logo"
 		;;
-		*red*hat*)
+		*red*hat*|*rhel*)
 			logo=" RH "
 			$MARKUP && printf "$(color R k)%s$(color -)" "$logo" || printf "$logo"
 		;;
