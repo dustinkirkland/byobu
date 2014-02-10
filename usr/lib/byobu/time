@@ -32,11 +32,6 @@ __time() {
 			[ "$secs" != "0" ] && format="$format:\005s"
 			printf $format
 		;;
-		tmux|*)
-			format="%H:%M"
-			[ "$secs" != "0" ] && format="$format:%S"
-			date +$format
-		;;
 	esac
 }
 

@@ -1,6 +1,19 @@
 byobu (5.71) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/bin/byobu-janitor, usr/lib/byobu/date,
+    usr/lib/byobu/include/constants, usr/lib/byobu/include/shutil,
+    usr/lib/byobu/time, usr/share/byobu/profiles/tmux,
+    usr/share/byobu/profiles/tmuxrc, usr/share/man/man1/byobu.1:
+    - LP: #1059127
+    - fix longstanding "date and time flash on and off" bug
+    - this isn't a great fix, but it's a start
+    - basically, we need to use the tmux status native support
+      for timestamps
+    - support configuration through ~/.byobu/datetime.tmux
+    - this will be a difference between byobu-tmux and byobu-screen,
+      which is a bummer
+    - also, there's more work to be done, in order to enable/disable
+      this via F9/byobu-config
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jan 2014 17:48:35 -0600
 

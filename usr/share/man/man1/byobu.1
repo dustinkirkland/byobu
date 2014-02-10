@@ -43,7 +43,7 @@ The background colors of the \fBbyobu\fP status lines can be adjusted by editing
     printf "\\005{= bw}%s\\005{\-}" "$(uname \-r)"
 
 
-\fBdate\fP \- the system date in YYYY-MM-DD formate; displayed in the lower on the far right in the default text color on the default background
+\fBdate\fP \- the system date in YYYY-MM-DD format, or you can set this to any valid \fBstrftime\fP(3) you like in \fI$BYOBU_CONFIG_DIR/datetime\fP; displayed in the lower on the far right in the default text color on the default background
 
 \fBdisk\fP \- total disk space available and total used on / directory; displayed in the lower bar on the far right in white text on a light purple background; override the default directory by specifying an alternate mount point with MONITORED_DISK=/wherever in \fI$BYOBU_CONFIG_DIR/statusrc\fP
 
@@ -95,11 +95,11 @@ The background colors of the \fBbyobu\fP status lines can be adjusted by editing
 
 \fBswap\fP \- total swap space and total used as a percentage of the total available; displayed in the lower bar toward the right in white text on a light green background with a trailing '%' sign
 
-\fBtime\fP \- the system time in HH:MM:SS format; displayed in the lower bar on the far right in the default text and default background colors
+\fBtime\fP \- the system time in HH:MM:SS format (by default), or you can set this to any valid \fBstrftime\fP(3) you like in \fI$BYOBU_CONFIG_DIR/datetime\fP; displayed in the lower bar on the far right in the default text and default background colors
 
 \fBtime_binary\fP \- only for the hard core geek, the local system time in binary; requires UTF-8 support in a VERY recent version of GNU Screen; displayed in the lower bar on the far right in the default text and background colors
 
-\fBtime_utc\fP \- the UTC system time in HH:MMformat; displayed in the lower bar on the far right in dark text on a light background
+\fBtime_utc\fP \- the UTC system time in HH:MM format; displayed in the lower bar on the far right in dark text on a light background
 
 \fBupdates_available\fP \- the number of updates available on the system; displayed in the lower bar toward the right in white text on a red background with a trailing '!' sign; if any updates are marked 'security updates', then there will be a total of two trailing exclamation points, '!!'
 

@@ -26,12 +26,7 @@ __date_detail() {
 __date() {
 	case "$BYOBU_BACKEND" in
 		screen)
-			bd=$(date "+%m%d")
-			[ "$bd" = "0320" ] && msg="$(printf "%s" SGFwcHkgQmlydGhkYXkgU2NyZWVuIC0tIGh0dHA6Ly9iaXQubHkvc2NyZWVuLWJkYXkK | base64 -di)" && $BYOBU_BACKEND -X -S "byobu" at "*" echo "[$msg]"
 			color none; printf "\005Y-\005m-\005d"; color --
-		;;
-		tmux|*)
-			date +"%Y-%m-%d "
 		;;
 	esac
 }

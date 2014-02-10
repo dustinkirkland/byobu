@@ -85,7 +85,7 @@ set -g status-interval 1
 set -g status-left-length 256
 set -g status-right-length 256
 set -g status-left '#(byobu-status tmux_left)'
-set -g status-right '#(byobu-status tmux_right)'
+set -g status-right '#(byobu-status tmux_right)'$BYOBU_DATE$BYOBU_TIME
 set -g message-bg $BYOBU_ACCENT
 set -g message-fg white
 

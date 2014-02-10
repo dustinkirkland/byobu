@@ -243,7 +243,7 @@ status_freq() {
 		cpu_freq)	_RET=2 ;;
 		cpu_temp)	_RET=19 ;;
 		custom)		_RET=5 ;;
-		date)		[ "$BYOBU_BACKEND" = "tmux" ] && _RET=1 || _RET=28793 ;;
+		date)		_RET=9999999 ;;
 		disk)		_RET=13 ;;
 		disk_io)	_RET=3 ;;
 		distro)		_RET=9999999 ;;
@@ -267,7 +267,7 @@ status_freq() {
 		services)	_RET=53 ;;
 		session)	_RET=9999999 ;;
 		swap)		_RET=19 ;;
-		time)		[ "$BYOBU_BACKEND" = "tmux" ] && _RET=1 || _RET=9999999 ;;
+		time)		_RET=9999999 ;;
 		time_binary)	_RET=23 ;;
 		time_utc)	_RET=11 ;;
 		trash)		_RET=9999999 ;;
