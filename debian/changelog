@@ -1,3 +1,9 @@
+byobu (5.72) unreleased; urgency=low
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 10 Feb 2014 15:38:26 -0600
+
 byobu (5.71-0ubuntu1) trusty; urgency=low
 
   * usr/bin/byobu-janitor, usr/lib/byobu/date,
