@@ -1,4 +1,4 @@
-byobu (5.71) unreleased; urgency=low
+byobu (5.71-0ubuntu1) trusty; urgency=low
 
   * usr/bin/byobu-janitor, usr/lib/byobu/date,
     usr/lib/byobu/include/constants, usr/lib/byobu/include/shutil,
@@ -18,7 +18,7 @@ byobu (5.71) unreleased; urgency=low
     - ensure that we pick a python that has a proper snack module
       installed
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jan 2014 17:48:35 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 10 Feb 2014 15:38:22 -0600
 
 byobu (5.70-0ubuntu1) trusty; urgency=low
 
