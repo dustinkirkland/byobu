@@ -14,6 +14,9 @@ byobu (5.71) unreleased; urgency=low
       which is a bummer
     - also, there's more work to be done, in order to enable/disable
       this via F9/byobu-config
+  * usr/lib/byobu/include/constants: LP: #1278446
+    - ensure that we pick a python that has a proper snack module
+      installed
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 16 Jan 2014 17:48:35 -0600
 
