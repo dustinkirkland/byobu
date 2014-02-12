@@ -1,10 +1,10 @@
-byobu (5.72) unreleased; urgency=low
+byobu (5.72-0ubuntu1) trusty; urgency=low
 
   * usr/lib/byobu/include/constants:
     - make sure we export this variable, so that we only need to
       do the expensive test once
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 10 Feb 2014 15:38:26 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 12 Feb 2014 14:30:38 -0600
 
 byobu (5.71-0ubuntu1) trusty; urgency=low
 
