@@ -56,11 +56,11 @@ $BYOBU_TEST ulimit >/dev/null 2>&1 && export BYOBU_ULIMIT="ulimit" || export BYO
 # Find a suitable python interpreter, if undefined
 if [ -z "$BYOBU_PYTHON" ]; then
 	if python3 -c "import snack" >/dev/null 2>&1; then
-		BYOBU_PYTHON="python3"
+		export BYOBU_PYTHON="python3"
 	elif python2 -c "import snack" >/dev/null 2>&1; then
-		BYOBU_PYTHON="python2"
+		export BYOBU_PYTHON="python2"
 	elif python -c "import snack" >/dev/null 2>&1; then
-		BYOBU_PYTHON="python"
+		export BYOBU_PYTHON="python"
 	fi
 fi
 
