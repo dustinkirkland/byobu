@@ -1,4 +1,4 @@
-byobu (5.73) unreleased; urgency=low
+byobu (5.73-0ubuntu1) trusty; urgency=low
 
   * usr/lib/byobu/include/Makefile.am, usr/lib/byobu/include/tmux-send-
     command-to-all-panes, usr/lib/byobu/include/tmux-send-command-to-
@@ -9,7 +9,7 @@ byobu (5.73) unreleased; urgency=low
     - these will prompt you for a command, and then run that command
       in all splits or windows (respectively)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 12 Feb 2014 14:30:40 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Feb 2014 15:06:58 -0600
 
 byobu (5.72-0ubuntu1) trusty; urgency=low
 
