@@ -1,8 +1,14 @@
 byobu (5.74) unreleased; urgency=low
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/include/ec2instancespricing.py: LP: #1286367
     - merged in updated instance pricing script from
       https://github.com/erans/ec2instancespricing
+
+  [ Jan Klepek ]
+  * usr/lib/byobu/include/config.py: LP: #1286249
+    - fall back to using the distro status file, fixes
+      crash in config if status file disappears
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Feb 2014 15:07:01 -0600
 

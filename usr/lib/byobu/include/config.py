@@ -212,10 +212,16 @@ def writestatus(items):
 		status[i[1]] = i[0]
 	for key in ["tmux_left", "tmux_right", "screen_upper_left", "screen_upper_right", "screen_lower_left", "screen_lower_right"]:
 		if key.startswith(BYOBU_BACKEND):
-			f = open(path, "r")
+			try:
+				f = open(path, "r")
+			except:
+				f = open(SHARE + '/status/status', "r")
 			lines = f.readlines()
 			f.close()
-			f = open(path, "w")
+			try:
+				f = open(path, "w")
+			except:
+				f = open(path, "a+")
 			for l in lines:
 				if l.startswith("%s=" % key):
 					val = genstatusstring(key, status)
