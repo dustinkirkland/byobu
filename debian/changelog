@@ -4,6 +4,8 @@ byobu (5.74) unreleased; urgency=low
   * usr/lib/byobu/include/ec2instancespricing.py: LP: #1286367
     - merged in updated instance pricing script from
       https://github.com/erans/ec2instancespricing
+  * usr/share/byobu/profiles/tmux: LP: #1273685
+    - remove double sourcing of local .tmux.conf
 
   [ Arminius Silvanus ]
   * usr/share/byobu/profiles/bashrc: LP: #1280550

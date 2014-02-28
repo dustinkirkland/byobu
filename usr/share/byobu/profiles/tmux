@@ -88,6 +88,3 @@ set -g status-left '#(byobu-status tmux_left)'
 set -g status-right '#(byobu-status tmux_right)'$BYOBU_DATE$BYOBU_TIME
 set -g message-bg $BYOBU_ACCENT
 set -g message-fg white
-
-# Allow local overrides
-source $BYOBU_CONFIG_DIR/.tmux.conf
