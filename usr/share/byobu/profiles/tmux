@@ -36,8 +36,8 @@ set -g prefix2 F12
 # Byobu's Keybindings
 source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux
 
-set-option -g set-titles on
-set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
+#set-option -g set-titles on
+#set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
 set-option -g pane-active-border-bg $BYOBU_ACCENT
 set-option -g pane-active-border-fg $BYOBU_ACCENT
 set-option -g pane-border-fg $BYOBU_LIGHT

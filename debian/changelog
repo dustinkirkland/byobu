@@ -11,8 +11,10 @@ byobu (5.74) unreleased; urgency=low
     - thanks to Felix Krull for the initial patch
 
   [ Daniel Hahler ]
-  * usr/bin/byobu-keybindings:
+  * usr/bin/byobu-keybindings: LP: #1258093
     - fix toggling of f-keys
+  * usr/share/byobu/profiles/tmux: LP: #1258534
+    - ensure that we respect BYOBU_NO_TITLE in tmux
 
   [ Ryo ONODERA ]
   * configure.ac, etc/profile.d/Z97-byobu.sh => etc/profile.d/Z97-
