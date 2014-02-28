@@ -1,8 +1,7 @@
-#!/bin/bash
+#!/bin/sh -e
 #
-#    byobu-time-notifications: performance testing of byobu's status scripts
-#
-#    Copyright (C) 2009 Canonical Ltd.
+#    byobu-disable: disable byobu at login
+#    Copyright (C) 2010 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #
@@ -18,31 +17,25 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+PKG="byobu"
+[ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
-PKG=byobu
-RUNS=100
-[ -z "$BYOBU_PREFIX" ] && BYOBU_PREFIX="/usr"
-export BYOBU_PREFIX
+byobu-launcher-uninstall
 
-loop() {
-	for j in $(seq 1 $RUNS); do
-		usr/lib/$PKG/$1 >/dev/null 2>&1
-	done
-}
+echo
+echo "The Byobu window manager will no longer be launched automatically at login."
+echo
+echo "To re-enable this behavior later, just run:"
+echo "  byobu-enable"
+echo
 
-TIMEFORMAT="%R"
-if [ -n "$1" ]; then
-	list="$1"
-else
-	list=$(ls /usr/lib/$PKG/)
-fi
-for i in $list; do
-	case "$i" in
-		notify_osd)
-			continue
-		;;
-	esac
-	freq=`grep "byobu-status $i$" /usr/share/$PKG/profiles/common | awk '{print $3}'`
-	printf "%s" "$i $freq "
-	time loop $i
-done
+# If we're in a byobu session, let's exit that too
+case "$STY" in
+	*byobu)
+		$BYOBU_BACKEND -X at 0 quit
+	;;
+esac
+
+# vi: syntax=sh ts=4 noexpandtab

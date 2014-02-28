@@ -26,7 +26,7 @@
 
 PKG="byobu"
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
 script_name=${0##*/}
@@ -81,7 +81,7 @@ Examples:
   Trailing echo adds a required newline
   Note no filename specified.
 
-    $script_name "(/usr/lib/byobu/mem_used | sed -e 's/% //g';echo)"
+    $script_name "(@prefix@/lib/byobu/mem_used | sed -e 's/% //g';echo)"
 
 
   Using $script_name just to rotate log and display the graph

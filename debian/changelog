@@ -10,6 +10,40 @@ byobu (5.74) unreleased; urgency=low
     - add support for yet another batter type (Android)
     - thanks to Felix Krull for the initial patch
 
+  [ Ryo ONODERA ]
+  * configure.ac, etc/profile.d/Z97-byobu.sh => etc/profile.d/Z97-
+    byobu.sh.in, usr/bin/byobu-config => usr/bin/byobu-config.in,
+    usr/bin/byobu-ctrl-a => usr/bin/byobu-ctrl-a.in, usr/bin/byobu-
+    disable-prompt => usr/bin/byobu-disable-prompt.in, usr/bin/byobu-
+    disable => usr/bin/byobu-disable.in, usr/bin/byobu-enable-prompt =>
+    usr/bin/byobu-enable-prompt.in, usr/bin/byobu-enable =>
+    usr/bin/byobu-enable.in, usr/bin/byobu-export => usr/bin/byobu-
+    export.in, usr/bin/byobu-janitor => usr/bin/byobu-janitor.in,
+    usr/bin/byobu-launcher-install => usr/bin/byobu-launcher-install.in,
+    usr/bin/byobu-launcher-uninstall => usr/bin/byobu-launcher-
+    uninstall.in, usr/bin/byobu-launcher => usr/bin/byobu-launcher.in,
+    usr/bin/byobu-launch => usr/bin/byobu-launch.in, usr/bin/byobu-
+    layout => usr/bin/byobu-layout.in, usr/bin/byobu-prompt =>
+    usr/bin/byobu-prompt.in, usr/bin/byobu-quiet => usr/bin/byobu-
+    quiet.in, usr/bin/byobu-reconnect-sockets => usr/bin/byobu-
+    reconnect-sockets.in, usr/bin/byobu-select-backend => usr/bin/byobu-
+    select-backend.in, usr/bin/byobu-select-profile => usr/bin/byobu-
+    select-profile.in, usr/bin/byobu-select-session => usr/bin/byobu-
+    select-session.in, usr/bin/byobu-shell => usr/bin/byobu-shell.in,
+    usr/bin/byobu-silent => usr/bin/byobu-silent.in, usr/bin/byobu-
+    status-detail => usr/bin/byobu-status-detail.in, usr/bin/byobu-
+    status => usr/bin/byobu-status.in, usr/bin/byobu-ugraph =>
+    usr/bin/byobu-ugraph.in, usr/bin/byobu-ulevel => usr/bin/byobu-
+    ulevel.in, usr/bin/byobu => usr/bin/byobu.in,
+    usr/lib/byobu/include/config.py =>
+    usr/lib/byobu/include/config.py.in, usr/lib/byobu/include/dirs =>
+    usr/lib/byobu/include/dirs.in, usr/lib/byobu/include/toggle-utf8 =>
+    usr/lib/byobu/include/toggle-utf8.in, usr/share/byobu/tests/byobu-
+    time-notifications => usr/share/byobu/tests/byobu-time-
+    notifications.in:
+    - use @prefix@ rather than hardcoding /usr, makes code
+      more portable and easier to build with ./config --prefix
+
   [ Arminius Silvanus ]
   * usr/share/byobu/profiles/bashrc: LP: #1280550
     - test the $BASH variable, rather than $SHELL, to tell if we're

@@ -22,7 +22,7 @@ PKG="byobu"
 
 # Some users build and install byobu themselves, rather than from a distro
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
-[ -n "$BYOBU_PREFIX" ] || BYOBU_PREFIX="/usr"
+[ -n "$BYOBU_PREFIX" ] || BYOBU_PREFIX="@prefix@"
 
 # Create and export the user configuration directory
 if [ -d "$BYOBU_CONFIG_DIR" ]; then

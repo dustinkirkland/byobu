@@ -1,7 +1,7 @@
 #!/bin/sh -e
 #
-#    byobu-select-backend
-#    Copyright (C) 2011 Dustin Kirkland
+#    byobu-select-session - interactive session select wrapper script
+#    Copyright (C) 2013 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #
@@ -17,47 +17,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 PKG="byobu"
-[ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
-usage () {
-	cat <<EOT
-Usage: $0 [screen|tmux]
-
-    Without any parameters, it runs interactively.
-EOT
-	exit 1
-}
-
-prompt() {
-	local choice
-	echo
-	echo "Select the byobu backend:"
-	echo "  1. tmux"
-	echo "  2. screen"
-	echo
-	printf "Choose 1-2 [1]: "
-	choice=$(head -n1)
-	case $choice in
-		1|"") _RET="tmux" ;;
-		2) _RET="screen" ;;
-		*) prompt ;;
-	esac
-}
-
-case $1 in
-	"")
-		prompt
-		choice="$_RET"
-	;;
-	screen|tmux)
-		choice="$1"
-	;;
-	*)
-		usage
-	;;
-esac
-echo "BYOBU_BACKEND=$choice" > "$BYOBU_CONFIG_DIR/backend"
+${BYOBU_PYTHON} "${BYOBU_PREFIX}/lib/${PKG}/include/select-session.py"

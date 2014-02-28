@@ -1,7 +1,7 @@
-#!/bin/sh -e
+#!/bin/sh
 #
-#    byobu-enable: enable and launch byobu
-#    Copyright (C) 2010 Canonical Ltd.
+#    byobu-quiet - disable the hardstatus and all indicators
+#    Copyright (C) 2011 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #
@@ -19,20 +19,21 @@
 
 PKG="byobu"
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
-byobu-launcher-install
+FLAG="$BYOBU_CONFIG_DIR/status.disable"
 
-echo
-echo "The Byobu window manager will be launched automatically at each text login."
-echo
-echo "To disable this behavior later, just run:"
-echo "  byobu-disable"
-echo
-printf "Press <enter> to continue..."
-$(head -n1)
-
-exec byobu
+# Clean up environment
+$BYOBU_SED -i "/hardstatus/d" "$BYOBU_CONFIG_DIR/keybindings" || true
+if [ "$1" = "--undo" ]; then
+	rm -f "$FLAG"
+else
+	touch "$FLAG"
+	# BUG: Need to make this dynamic and following
+	status="$USER@$(hostname)"
+	echo "hardstatus lastline '$status'" >> "$BYOBU_CONFIG_DIR/keybindings"
+fi
+$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 
 # vi: syntax=sh ts=4 noexpandtab

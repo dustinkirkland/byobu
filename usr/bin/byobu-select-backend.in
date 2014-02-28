@@ -1,7 +1,7 @@
 #!/bin/sh -e
 #
-#    byobu-disable: disable byobu at login
-#    Copyright (C) 2010 Canonical Ltd.
+#    byobu-select-backend
+#    Copyright (C) 2011 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #
@@ -17,25 +17,47 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 PKG="byobu"
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
-byobu-launcher-uninstall
+usage () {
+	cat <<EOT
+Usage: $0 [screen|tmux]
 
-echo
-echo "The Byobu window manager will no longer be launched automatically at login."
-echo
-echo "To re-enable this behavior later, just run:"
-echo "  byobu-enable"
-echo
+    Without any parameters, it runs interactively.
+EOT
+	exit 1
+}
 
-# If we're in a byobu session, let's exit that too
-case "$STY" in
-	*byobu)
-		$BYOBU_BACKEND -X at 0 quit
+prompt() {
+	local choice
+	echo
+	echo "Select the byobu backend:"
+	echo "  1. tmux"
+	echo "  2. screen"
+	echo
+	printf "Choose 1-2 [1]: "
+	choice=$(head -n1)
+	case $choice in
+		1|"") _RET="tmux" ;;
+		2) _RET="screen" ;;
+		*) prompt ;;
+	esac
+}
+
+case $1 in
+	"")
+		prompt
+		choice="$_RET"
+	;;
+	screen|tmux)
+		choice="$1"
+	;;
+	*)
+		usage
 	;;
 esac
-
-# vi: syntax=sh ts=4 noexpandtab
+echo "BYOBU_BACKEND=$choice" > "$BYOBU_CONFIG_DIR/backend"

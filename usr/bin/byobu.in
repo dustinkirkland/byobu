@@ -41,14 +41,14 @@ if [ -z "${BYOBU_PREFIX}" ]; then
 	# Find and export the installation location prefix
 	greadlink -f . >/dev/null 2>&1 && export BYOBU_READLINK="greadlink" || export BYOBU_READLINK="readlink"
 	prefix="$(dirname $(dirname $($BYOBU_READLINK -f $0)))"
-	if [ "$prefix" != "/usr" ]; then
+	if [ "$prefix" != "@prefix@" ]; then
 		echo "export BYOBU_PREFIX='$prefix'" >> "$HOME/.byoburc"
 		. "$HOME/.byoburc"
 	fi
 fi
 export BYOBU_CHARMAP=$(locale charmap)
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
 # Override backend if we can determine intentions from argv[0]

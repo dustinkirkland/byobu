@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/sh -e
 #
-#    byobu-silence - disable the hardstatus, all indicators, and the window list
-#    Copyright (C) 2011 Canonical Ltd.
+#    byobu-enable-prompt
+#    Copyright (C) 2013 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #
@@ -17,21 +17,26 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+[ "$SHELL" = "/bin/bash" ] || exit 1
+
 PKG="byobu"
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
-FLAG="$BYOBU_CONFIG_DIR/status.disable"
 
-# Clean up environment
-$BYOBU_SED -i "/caption/d" "$BYOBU_CONFIG_DIR/keybindings" || true
-if [ "$1" = "--undo" ]; then
-	rm -f "$FLAG"
+prompt="${BYOBU_CONFIG_DIR}/prompt"
+printf ". ${BYOBU_PREFIX}/share/${PKG}/profiles/bashrc  #byobu-prompt#\n" > "$prompt"
+$PKG-disable-prompt --no-reload "$1" || true
+printf "[ -r $prompt ] && . $prompt   #byobu-prompt#\n" >> "$HOME/.bashrc"
+
+if [ -n "$TMUX" ]; then
+	tmux send-keys " . ~/.bashrc" \; send-keys Enter
 else
-	touch "$FLAG"
-	echo "caption splitonly ''" >> "$BYOBU_CONFIG_DIR/keybindings"
+	echo
+	echo "You will need to reload your shell configuration for this to take effect..."
+	echo "  . ~/.bashrc"
+	echo
 fi
-exec byobu-quiet "$@"
 
 # vi: syntax=sh ts=4 noexpandtab

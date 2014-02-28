@@ -52,7 +52,7 @@ BYOBU_CONFIG_DIR = os.getenv("BYOBU_CONFIG_DIR", HOME + "/.byobu")
 BYOBU_RUN_DIR = os.getenv("BYOBU_RUN_DIR", HOME + "/.cache/byobu")
 BYOBU_BACKEND = os.getenv("BYOBU_BACKEND", "tmux")
 BYOBU_SOCKETDIR = os.getenv("SOCKETDIR", "/var/run/screen")
-BYOBU_PREFIX = os.getenv("BYOBU_PREFIX", "/usr")
+BYOBU_PREFIX = os.getenv("BYOBU_PREFIX", "@prefix@")
 SHARE = BYOBU_PREFIX + '/share/' + PKG
 DOC = BYOBU_PREFIX + '/share/doc/' + PKG
 if not os.path.exists(SHARE):

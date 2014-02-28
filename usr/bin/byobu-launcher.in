@@ -22,7 +22,7 @@ PKG="byobu"
 # ie, rather than "sudo byobu", you must run "sudo -H byobu"
 if [ -O "$HOME" ]; then
 	[ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
-	[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+	[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 	. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 	if [ -e "$BYOBU_CONFIG_DIR/disable-autolaunch" ]; then
 		false

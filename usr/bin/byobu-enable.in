@@ -1,7 +1,7 @@
 #!/bin/sh -e
 #
-#    byobu-prompt
-#    Copyright (C) 2013 Dustin Kirkland
+#    byobu-enable: enable and launch byobu
+#    Copyright (C) 2010 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #
@@ -19,19 +19,20 @@
 
 PKG="byobu"
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
+byobu-launcher-install
+
 echo
-echo -n "Do you want to enable Byobu's bash color prompt? [Y/n]: "
-answer=$(head -n1)
+echo "The Byobu window manager will be launched automatically at each text login."
 echo
-case "$answer" in
-	"n"|"N")
-		exec byobu-disable-prompt
-	;;
-	*)
-		exec byobu-enable-prompt
-esac
+echo "To disable this behavior later, just run:"
+echo "  byobu-disable"
+echo
+printf "Press <enter> to continue..."
+$(head -n1)
+
+exec byobu
 
 # vi: syntax=sh ts=4 noexpandtab

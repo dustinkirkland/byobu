@@ -1,7 +1,8 @@
-#!/bin/sh -e
+#!/bin/bash
 #
-#    byobu-select-session - interactive session select wrapper script
-#    Copyright (C) 2013 Dustin Kirkland
+#    byobu-time-notifications: performance testing of byobu's status scripts
+#
+#    Copyright (C) 2009 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #
@@ -17,8 +18,31 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG="byobu"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
-. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
-${BYOBU_PYTHON} "${BYOBU_PREFIX}/lib/${PKG}/include/select-session.py"
+PKG=byobu
+RUNS=100
+[ -z "$BYOBU_PREFIX" ] && BYOBU_PREFIX="@prefix@"
+export BYOBU_PREFIX
+
+loop() {
+	for j in $(seq 1 $RUNS); do
+		usr/lib/$PKG/$1 >/dev/null 2>&1
+	done
+}
+
+TIMEFORMAT="%R"
+if [ -n "$1" ]; then
+	list="$1"
+else
+	list=$(ls /usr/lib/$PKG/)
+fi
+for i in $list; do
+	case "$i" in
+		notify_osd)
+			continue
+		;;
+	esac
+	freq=`grep "byobu-status $i$" /usr/share/$PKG/profiles/common | awk '{print $3}'`
+	printf "%s" "$i $freq "
+	time loop $i
+done

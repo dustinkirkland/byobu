@@ -1,9 +1,10 @@
-#!/bin/sh
+#!/bin/sh -e
 #
-#    byobu-status-detail
+#    byobu-launcher-uninstall
 #    Copyright (C) 2008 Canonical Ltd.
 #
-#    Authors: Dustin Kirkland <kirkland@byobu.co>
+#    Authors: Nick Barcet <nick.barcet@ubuntu.com>
+#             Dustin Kirkland <kirkland@byobu.co>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -19,13 +20,28 @@
 
 PKG="byobu"
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
-if which vim >/dev/null && `vim --version | grep -q +folding`; then
-	byobu-status --detail | vim -c "set foldmethod=indent" -c "set foldminlines=0" -c "set foldnestmax=1"  -c "set foldcolumn=2" -R -
+remove_launcher() {
+	dest=$1
+	if [ -w "$dest" ]; then
+		# keep any comments, and remove lines invoking byobu:
+		$BYOBU_SED -i -e '/^\s*#/n' -e "/\b$PKG-launch\$/d" -e "/ screen-launch/d" "$dest" -e "/byobu-launcher$/d"
+	fi
+}
+
+if [ -f "$1" ]; then
+		remove_launcher "$1"
 else
-	byobu-status --detail | $BYOBU_PAGER
+	for i in ".profile" ".bashrc" ".bash_profile" ".bash_login" ".zprofile" ".config/fish/config.fish"; do
+		remove_launcher "$HOME/$i"
+	done
 fi
+
+mkdir -p "$BYOBU_CONFIG_DIR"
+touch "$BYOBU_CONFIG_DIR/disable-autolaunch"
+# install disabled motd printing; re-enable
+rm -f "$HOME"/.hushlogin
 
 # vi: syntax=sh ts=4 noexpandtab

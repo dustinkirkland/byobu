@@ -1,7 +1,7 @@
-#!/bin/sh -e
+#!/bin/sh
 #
-#    byobu-export
-#    Copyright (C) 2008-2010 Canonical Ltd.
+#    byobu-shell: display the MOTD and launch the default shell
+#    Copyright (C) 2008 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #
@@ -19,18 +19,25 @@
 
 PKG="byobu"
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
-[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="/usr" || export BYOBU_PREFIX
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
-gettext "
-The byobu-export utility is now deprecated.
+FLAG="$BYOBU_CONFIG_DIR/.welcome-displayed"
 
-To install byobu on a system for which byobu is not packaged, or
-where you are not the root user, simply:
- * Download the latest release (>= 3.0) from:
-    https://launchpad.net/byobu/+download
- * And follow the instructions in the README
+[ -r /etc/motd ] && cat /etc/motd
 
-"
+if [ ! -e "$FLAG" ]; then
+	echo
+	echo "Welcome to the light, powerful, text window manager, Byobu."
+	echo "You can toggle the launch of Byobu at login with:"
+	echo "  'byobu-disable' and 'byobu-enable'"
+	echo
+	echo "For tips, tricks, and more information, see:"
+	echo " * http://bit.ly/byobu-help"
+	echo
+	touch "$FLAG"
+fi
+
+[ -n "$SHELL" -a -x "$SHELL" ] && exec "$SHELL" || exec /bin/sh
 
 # vi: syntax=sh ts=4 noexpandtab
