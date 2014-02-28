@@ -10,6 +10,10 @@ byobu (5.74) unreleased; urgency=low
     - add support for yet another batter type (Android)
     - thanks to Felix Krull for the initial patch
 
+  [ Daniel Hahler ]
+  * usr/bin/byobu-keybindings:
+    - fix toggling of f-keys
+
   [ Ryo ONODERA ]
   * configure.ac, etc/profile.d/Z97-byobu.sh => etc/profile.d/Z97-
     byobu.sh.in, usr/bin/byobu-config => usr/bin/byobu-config.in,

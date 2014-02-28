@@ -20,7 +20,7 @@
 
 case "$BYOBU_BACKEND" in
 	"tmux")
-		enabled=$(tmux list-keys | grep "f-keys.tmux.disable$")
+		enabled=$(tmux list-keys | grep "f-keys.tmux.disable ;")
 		if [ -n "$enabled" ]; then
 			tmux source "$BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux.disable"
 			echo "Byobu keybindings: [OFF]"
