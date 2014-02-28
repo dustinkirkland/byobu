@@ -1,6 +1,8 @@
 byobu (5.74) unreleased; urgency=low
 
-  * UNRELEASED
+  * usr/lib/byobu/include/ec2instancespricing.py: LP: #1286367
+    - merged in updated instance pricing script from
+      https://github.com/erans/ec2instancespricing
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Feb 2014 15:07:01 -0600
 
