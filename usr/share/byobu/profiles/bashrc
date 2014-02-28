@@ -24,7 +24,7 @@ case "$TERM" in
 esac
 if [ -n "$TMUX" ] || [ "${TERMCAP#*screen}" != "${TERMCAP}" ]; then
 	# Ensure that we're in bash, in a byobu environment
-	if [ -n "$BYOBU_BACKEND" ] && [ "$SHELL" = "/bin/bash" ]; then
+	if [ -n "$BYOBU_BACKEND" ] && [ -n "$BASH" ]; then
 		byobu_prompt_status() { local e=$?; [ $e != 0 ] && echo -e "$e "; }
 		case "$BYOBU_DISTRO" in
 			"Ubuntu")

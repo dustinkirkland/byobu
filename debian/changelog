@@ -5,6 +5,11 @@ byobu (5.74) unreleased; urgency=low
     - merged in updated instance pricing script from
       https://github.com/erans/ec2instancespricing
 
+  [ Arminius Silvanus ]
+  * usr/share/byobu/profiles/bashrc: LP: #1280550
+    - test the $BASH variable, rather than $SHELL, to tell if we're
+      running in a bash environment
+
   [ Jan Klepek ]
   * usr/lib/byobu/include/config.py: LP: #1286249
     - fall back to using the distro status file, fixes
