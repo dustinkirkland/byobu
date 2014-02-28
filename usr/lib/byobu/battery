@@ -37,9 +37,10 @@ __battery() {
 			/sys/*)
 				if [ -r "$bat/uevent" ]; then
 					. "$bat/uevent"
-					[ "$POWER_SUPPLY_NAME" = "AC" ] && continue
+					case "$POWER_SUPPLY_NAME" in AC|ac|Ac|aC) continue ;; esac
 					present="$POWER_SUPPLY_PRESENT"
-					# Some use "CHARGE", others use "ENERGY"
+					# Some use "CHARGE", others use "ENERGY", still others "CAPACITY"
+					[ -n "$POWER_SUPPLY_CAPACITY" ] && rem="$POWER_SUPPLY_CAPACITY" && full="100"
 					[ -n "$POWER_SUPPLY_CHARGE_FULL" ] && full="$POWER_SUPPLY_CHARGE_FULL"
 					[ -n "$POWER_SUPPLY_ENERGY_FULL" ] && full="$POWER_SUPPLY_ENERGY_FULL"
 					[ -n "$POWER_SUPPLY_CHARGE_NOW" ] && rem="$POWER_SUPPLY_CHARGE_NOW"
@@ -86,10 +87,12 @@ __battery() {
 			bcolor="b G k"
 		fi
 		percent="${percent}${PCT}"
+		# Convert state to lower case
+		state=$(printf "%s" "$state" | $BYOBU_SED 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')
 		case $state in
-			charging|Charging|Unknown) sign="+" ;;
-			discharging|Discharging) sign="-" ;;
-			charged|Unknown|Full) sign="="; percent="" ;;
+			charging) sign="+" ;;
+			discharging) sign="-" ;;
+			charged|unknown|full) sign="=" ;;
 			*) sign="$state" ;;
 		esac
 		if [ -z "$percent" ]; then
