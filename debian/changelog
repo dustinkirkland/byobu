@@ -10,6 +10,10 @@ byobu (5.74) unreleased; urgency=low
     - add support for yet another batter type (Android)
     - thanks to Felix Krull for the initial patch
 
+  [ Chris Johnston ]
+  * usr/share/man/man1/byobu-layout.1: LP: #1288738
+    - fix manpage typo
+
   [ Mike Miller ]
   * usr/lib/byobu/logo: LP: #1278006
     - fix RHEL detection for logo
