@@ -1,3 +1,9 @@
+byobu (5.75) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 16 Mar 2014 12:46:36 -0700
+
 byobu (5.74-0ubuntu1) trusty; urgency=low
 
   [ Dustin Kirkland ]
