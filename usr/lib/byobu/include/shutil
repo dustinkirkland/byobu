@@ -316,6 +316,8 @@ get_distro() {
 	if [ -n "$DISTRO" ]; then
 		# user defined
 		true
+	elif [ -r "/etc/os-release" ]; then
+		distro=$(. /etc/os-release && echo "$NAME")
 	elif [ -r "/etc/issue" ]; then
 		# lsb_release is *really* slow;  try to use /etc/issue first
 		local issue

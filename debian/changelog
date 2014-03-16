@@ -2,6 +2,9 @@ byobu (5.75) unreleased; urgency=medium
 
   * debian/control:
     - bump standards
+  * usr/lib/byobu/include/shutil, usr/lib/byobu/release: LP: #1278016
+    - /etc/issue might be modified to display corporate banners or
+      legal warnings; try to use /etc/os-release if available
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 16 Mar 2014 12:46:36 -0700
 

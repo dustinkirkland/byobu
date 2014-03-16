@@ -28,8 +28,11 @@ __release() {
 	if [ -n "$RELEASE" ]; then
 		# user defined
 		true
+	elif [ -r "/etc/os-release" ]; then
+		# lsb_release is *really* slow;  try to use /etc/os-release
+		release=$(. /etc/os-release && echo "$VERSION_ID")
 	elif [ -r "/etc/issue" ]; then
-		# lsb_release is *really* slow;  try to use /etc/issue first
+		# next try /etc/issue first
 		local issue
 		read issue < /etc/issue
 		case "$issue" in
