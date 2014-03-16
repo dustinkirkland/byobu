@@ -1,4 +1,4 @@
-byobu (5.74) unreleased; urgency=low
+byobu (5.74-0ubuntu1) trusty; urgency=low
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/include/ec2instancespricing.py: LP: #1286367
@@ -70,7 +70,7 @@ byobu (5.74) unreleased; urgency=low
     - fall back to using the distro status file, fixes
       crash in config if status file disappears
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Feb 2014 15:07:01 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 16 Mar 2014 12:46:33 -0700
 
 byobu (5.73-0ubuntu1) trusty; urgency=low
 
