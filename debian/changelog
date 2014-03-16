@@ -9,6 +9,8 @@ byobu (5.74) unreleased; urgency=low
   * usr/lib/byobu/battery: LP: #1270451
     - add support for yet another batter type (Android)
     - thanks to Felix Krull for the initial patch
+  * usr/share/byobu/profiles/tmux: LP: #1270551
+    - enable ctrl-left and ctrl-right to move among words
 
   [ Chris Johnston ]
   * usr/share/man/man1/byobu-layout.1: LP: #1288738

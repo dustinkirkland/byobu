@@ -35,6 +35,7 @@ set -g prefix2 F12
 
 # Byobu's Keybindings
 source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux
+set-window-option -g xterm-keys on
 
 #set-option -g set-titles on
 #set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
