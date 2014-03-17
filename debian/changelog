@@ -84,7 +84,7 @@ byobu (5.74-0ubuntu1) trusty; urgency=low
     usr/lib/byobu/include/dirs.in, usr/lib/byobu/include/toggle-utf8 =>
     usr/lib/byobu/include/toggle-utf8.in, usr/share/byobu/tests/byobu-
     time-notifications => usr/share/byobu/tests/byobu-time-
-    notifications.in:
+    notifications.in: LP: #1264978
     - use @prefix@ rather than hardcoding /usr, makes code
       more portable and easier to build with ./config --prefix
 
