@@ -6,9 +6,6 @@ byobu (5.75) unreleased; urgency=medium
   * usr/lib/byobu/include/shutil, usr/lib/byobu/release: LP: #1278016
     - /etc/issue might be modified to display corporate banners or
       legal warnings; try to use /etc/os-release if available
-  * usr/share/byobu/profiles/bashrc: LP: #1259621
-    - add a visual queue in the PS1 command prompt when running as the
-      root user; prepend "!" in front of "root"
   * usr/bin/byobu-janitor.in, usr/lib/byobu/include/colors,
     usr/lib/byobu/include/constants, usr/lib/byobu/include/Makefile.am,
     usr/lib/byobu/include/shutil, usr/share/byobu/profiles/tmux:
@@ -31,6 +28,9 @@ byobu (5.75) unreleased; urgency=medium
   * usr/bin/byobu-ctrl-a.in: LP: #814172
     - fix issues with F5 refresh in byobu-screen, when the user has changed
       the default escape key
+  * usr/share/byobu/profiles/bashrc: LP: #1259621
+    - ensure that if the root user is in byobu, and we're using the
+      fancy new colored prompt, that we use a # to indicate root
 
   [ Kosuke Asami ]
   * usr/lib/byobu/battery: LP: #1289157, #1289157
