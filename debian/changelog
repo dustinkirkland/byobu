@@ -28,6 +28,9 @@ byobu (5.75) unreleased; urgency=medium
   * usr/bin/byobu-janitor.in, usr/lib/byobu/include/colors,
     usr/lib/byobu/include/constants:
     - fix profile color breakage
+  * usr/bin/byobu-ctrl-a.in: LP: #814172
+    - fix issues with F5 refresh in byobu-screen, when the user has changed
+      the default escape key
 
   [ Kosuke Asami ]
   * usr/lib/byobu/battery: LP: #1289157, #1289157
