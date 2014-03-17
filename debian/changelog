@@ -15,6 +15,9 @@ byobu (5.75) unreleased; urgency=medium
     - have the constants source that file
     - use that file when creating the user's local color palette
     - use a bit more orange
+  * usr/bin/byobu-launcher-uninstall.in, usr/bin/byobu-launch.in: LP: #1292228
+    - allow byobu-launch to pass arguments through to byobu-launcher
+    - fix up the uninstallation of byobu launcher
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 16 Mar 2014 12:46:36 -0700
 
