@@ -3,7 +3,7 @@
 #    trash: show icon (and optionally count) if entries in trash.
 #
 #    Copyright (C) 2011 Canonical Ltd.
-#    Copyright (C) 2011 Dustin Kirkland
+#    Copyright (C) 2011-2014 Dustin Kirkland
 #
 #    Authors: James Hunt <james.hunt@canonical.com>
 #             Dustin Kirkland <kirkland@byobu.co>

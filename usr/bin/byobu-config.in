@@ -1,7 +1,7 @@
 #!/bin/sh -e
 #
 #    byobu-config - interactive byobu configuration wrapper script
-#    Copyright (C) 2013 Dustin Kirkland
+#    Copyright (C) 2013-2014 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #

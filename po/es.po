@@ -1,5 +1,5 @@
 # Byobu
-# Copyright (C) 2008 Dustin Kirkland
+# Copyright (C) 2008-2014 Dustin Kirkland
 # This file is distributed under the same license as the Byobu package.
 # Nicolas Valcarcel <nvalcarcel@ubuntu.com>, 2008.
 #

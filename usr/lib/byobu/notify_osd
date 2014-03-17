@@ -3,7 +3,7 @@
 #    notify_osd: print notify-osd messages in the notification buffer
 #
 #    Copyright (C) 2010 Canonical Ltd.
-#    Copyright (C) 2011 Dustin Kirkland
+#    Copyright (C) 2011-2014 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #             with help from Mathias Gug <mathias.gug@canonical.com>

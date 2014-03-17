@@ -3,7 +3,7 @@
 #    battery: print the state of the battery
 #
 #    Copyright (C) 2009 Raphaël Pinson.
-#    Copyright (C) 2011 Dustin Kirkland
+#    Copyright (C) 2011-2014 Dustin Kirkland
 #
 #    Authors: Raphaël Pinson <raphink@ubuntu.com>
 #             Dustin Kirkland <kirkland@byobu.co>

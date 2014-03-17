@@ -1,7 +1,7 @@
 ###############################################################################
 #    byobu's tmux f-key keybindings
 #
-#    Copyright (C) 2011-2012 Dustin Kirkland <kirkland@byobu.co>
+#    Copyright (C) 2011-2014 Dustin Kirkland <kirkland@byobu.co>
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #

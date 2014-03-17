@@ -15,6 +15,40 @@ byobu (5.75) unreleased; urgency=medium
     - have the constants source that file
     - use that file when creating the user's local color palette
     - use a bit more orange
+  * Applications/Byobu.app/Contents/MacOS/Byobu, debian/copyright,
+    po/es.po, po/fr.po, usr/bin/byobu-config.in, usr/bin/byobu-disable-
+    prompt.in, usr/bin/byobu-enable-prompt.in, usr/bin/byobu.in,
+    usr/bin/byobu-keybindings, usr/bin/byobu-layout.in, usr/bin/byobu-
+    prompt.in, usr/bin/byobu-reconnect-sockets.in, usr/bin/byobu-select-
+    backend.in, usr/bin/byobu-select-session.in, usr/bin/byobu-
+    status.in, usr/lib/byobu/apport, usr/lib/byobu/arch,
+    usr/lib/byobu/battery, usr/lib/byobu/color, usr/lib/byobu/cpu_count,
+    usr/lib/byobu/cpu_freq, usr/lib/byobu/cpu_temp,
+    usr/lib/byobu/custom, usr/lib/byobu/date, usr/lib/byobu/disk,
+    usr/lib/byobu/disk_io, usr/lib/byobu/distro, usr/lib/byobu/ec2_cost,
+    usr/lib/byobu/entropy, usr/lib/byobu/fan_speed,
+    usr/lib/byobu/hostname, usr/lib/byobu/include/common,
+    usr/lib/byobu/include/config.py.in, usr/lib/byobu/include/constants,
+    usr/lib/byobu/include/cycle-status, usr/lib/byobu/include/dirs.in,
+    usr/lib/byobu/include/icons, usr/lib/byobu/include/mondrian,
+    usr/lib/byobu/include/select-session.py,
+    usr/lib/byobu/include/shutil, usr/lib/byobu/include/tmux-detach-all-
+    but-current-client, usr/lib/byobu/include/toggle-utf8.in,
+    usr/lib/byobu/ip_address, usr/lib/byobu/load_average,
+    usr/lib/byobu/logo, usr/lib/byobu/mail, usr/lib/byobu/memory,
+    usr/lib/byobu/menu, usr/lib/byobu/network, usr/lib/byobu/notify_osd,
+    usr/lib/byobu/processes, usr/lib/byobu/raid, usr/lib/byobu/rcs_cost,
+    usr/lib/byobu/reboot_required, usr/lib/byobu/release,
+    usr/lib/byobu/services, usr/lib/byobu/session, usr/lib/byobu/swap,
+    usr/lib/byobu/time, usr/lib/byobu/time_utc, usr/lib/byobu/trash,
+    usr/lib/byobu/updates_available, usr/lib/byobu/uptime,
+    usr/lib/byobu/users, usr/lib/byobu/whoami,
+    usr/lib/byobu/wifi_quality, usr/share/byobu/keybindings/f-
+    keys.screen, usr/share/byobu/keybindings/f-keys.screen.disable,
+    usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/byobu/profiles/bashrc, usr/share/byobu/profiles/tmux:
+    - copyright gardening;  update through 2014
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 16 Mar 2014 12:46:36 -0700
 

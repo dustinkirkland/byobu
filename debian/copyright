@@ -10,7 +10,7 @@ Upstream Authors:
 
 Copyright:
  Copyright (C) 2008-2009 Canonical Ltd.
- Copyright (C) 2009 Dustin Kirkland
+ Copyright (C) 2009-2014 Dustin Kirkland
 
  All rights reserved.
 
@@ -33,5 +33,5 @@ License:
 
 The Ubuntu packaging:
  Copyright (C) 2008-2009 Canonical Ltd.
- Copyright (C) 2009 Dustin Kirkland
+ Copyright (C) 2009-2014 Dustin Kirkland
  released under the GPL-3.

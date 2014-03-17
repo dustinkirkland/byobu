@@ -2,7 +2,7 @@
 #
 #    select-session.py
 #    Copyright (C) 2010 Canonical Ltd.
-#    Copyright (C) 2012-2013 Dustin Kirkland <kirkland@byobu.co>
+#    Copyright (C) 2012-2014 Dustin Kirkland <kirkland@byobu.co>
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
 #             Ryan C. Thompson <rct@thompsonclan.org>

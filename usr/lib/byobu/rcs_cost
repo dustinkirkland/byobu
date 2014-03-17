@@ -3,7 +3,7 @@
 #    rcs_cost: approximate Rackspace Cloud Server cost (USD) of the current instance
 #
 #    Copyright (C) 2009-2010 Jon Bernard
-#    Copyright (C) 2011 Dustin Kirkland
+#    Copyright (C) 2011-2014 Dustin Kirkland
 #
 #    Author(s): Jon Bernard <jbernard@debian.org>
 #               Dustin Kirkland <kirkland@byobu.co>
