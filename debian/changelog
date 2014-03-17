@@ -21,6 +21,10 @@ byobu (5.75) unreleased; urgency=medium
     - fix up the uninstallation of byobu launcher
   * usr/lib/byobu/include/select-session.py: LP: #1279533
     - quick hack to fix crashes when python can't figure out the encoding
+  * usr/bin/byobu-layout.in: LP: #1278277
+    - fix layout saving, which broke in tmux 1.8
+    - incrementally rearrange while building our windows up to restore,
+      as sometimes we run out of room; tiling in between seems to work
 
   [ Kosuke Asami ]
   * usr/lib/byobu/battery: LP: #1289157, #1289157

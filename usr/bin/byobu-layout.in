@@ -47,7 +47,7 @@ list_layouts() {
 
 case "$1" in
 	"save")
-		layout=$(tmux list-windows | grep "(active)$" | sed -e "s/.*\[layout //" -e "s/\] (active)$//")
+		layout=$(tmux list-windows | grep "(active)$" | sed -e "s/.*\[layout //" -e "s/\] .*(active)$//")
 		panes=$(tmux list-panes | wc -l)
 		if [ -n "$2" ]; then
 			name="$2"
@@ -109,6 +109,7 @@ case "$1" in
 		# Create panes if nececessary to restore the layout
 		while [ $(tmux list-panes | wc -l) -lt $panes ]; do
 			tmux split-window
+			tmux select-layout tiled
 		done
 		# Finally, restore the layout and refresh
 		tmux select-layout "$layout"
