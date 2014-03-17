@@ -1,4 +1,4 @@
-byobu (5.75) unreleased; urgency=medium
+byobu (5.75-0ubuntu1) trusty; urgency=medium
 
   [ Dustin Kirkland ]
   * debian/control:
@@ -39,7 +39,7 @@ byobu (5.75) unreleased; urgency=medium
   * usr/lib/byobu/battery: LP: #1289157, #1289157
     - Mac OS X battery indicator support
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 16 Mar 2014 12:46:36 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Mar 2014 13:00:02 +0900
 
 byobu (5.74-0ubuntu1) trusty; urgency=low
 
