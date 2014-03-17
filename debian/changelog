@@ -31,6 +31,9 @@ byobu (5.75) unreleased; urgency=medium
   * usr/share/byobu/profiles/bashrc: LP: #1259621
     - ensure that if the root user is in byobu, and we're using the
       fancy new colored prompt, that we use a # to indicate root
+  * usr/share/man/man1/byobu.1: LP: #1248901
+    - add note to manpage about putty resizing to 1-character tall and
+      causing byobu-screen to crash
 
   [ Kosuke Asami ]
   * usr/lib/byobu/battery: LP: #1289157, #1289157
