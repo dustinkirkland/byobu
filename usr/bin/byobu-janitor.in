@@ -67,7 +67,7 @@ MC=0
 # Seed the configuration
 # Setup initial local user configuration
 [ -r "$BYOBU_CONFIG_DIR/color" ] || printf "BACKGROUND=k\nFOREGROUND=w\nMONOCHROME=$MC" > "$BYOBU_CONFIG_DIR/color"
-[ -r "$BYOBU_CONFIG_DIR/color.tmux" ] || sed -e "s/^#.*//" -e "/^\s*$/d" "$BYOBU_PREFIX/lib/$PKG/include/colors"  > "$BYOBU_CONFIG_DIR/color.tmux"
+[ -r "$BYOBU_CONFIG_DIR/color.tmux" ] || sed -e "s/^#.*//" -e "/^\s*$/d" -e "s/^export //" "$BYOBU_PREFIX/lib/$PKG/include/colors"  > "$BYOBU_CONFIG_DIR/color.tmux"
 [ -r "$BYOBU_CONFIG_DIR/datetime.tmux" ] || printf 'BYOBU_DATE="%%Y-%%m-%%d "\nBYOBU_TIME="%%H:%%M:%%S"\n' > "$BYOBU_CONFIG_DIR/datetime.tmux"
 [ -r "$BYOBU_CONFIG_DIR/profile" ] || echo "source \$BYOBU_PREFIX/share/$PKG/profiles/common" > "$BYOBU_CONFIG_DIR/profile"
 [ -r "$BYOBU_CONFIG_DIR/profile.tmux" ] || echo "source \$BYOBU_PREFIX/share/$PKG/profiles/tmux" > "$BYOBU_CONFIG_DIR/profile.tmux"

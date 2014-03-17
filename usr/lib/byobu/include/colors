@@ -20,10 +20,15 @@
 
 # Default colors
 # Inspired by http://design.ubuntu.com/brand/colour-palette
-export BYOBU_DARK="\#333333"		# Cool grey
-export BYOBU_LIGHT="\#EEEEEE"		# Warm white
-export BYOBU_ACCENT="\#75507B"          # Aubergine
-export BYOBU_HIGHLIGHT="\#DD4814"       # Ubuntu orange
-export BYOBU_WINDOW_NAME="-"
-export BYOBU_DATE="%Y-%m-%d "
-export BYOBU_TIME="%H:%M:%S"
+
+# Cool grey
+export BYOBU_DARK="\#333333"
+
+# Warm white
+export BYOBU_LIGHT="\#EEEEEE"
+
+# Aubergine
+export BYOBU_ACCENT="\#75507B"
+
+# Ubuntu orange
+export BYOBU_HIGHLIGHT="\#DD4814"

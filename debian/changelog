@@ -25,6 +25,9 @@ byobu (5.75) unreleased; urgency=medium
     - fix layout saving, which broke in tmux 1.8
     - incrementally rearrange while building our windows up to restore,
       as sometimes we run out of room; tiling in between seems to work
+  * usr/bin/byobu-janitor.in, usr/lib/byobu/include/colors,
+    usr/lib/byobu/include/constants:
+    - fix profile color breakage
 
   [ Kosuke Asami ]
   * usr/lib/byobu/battery: LP: #1289157, #1289157
