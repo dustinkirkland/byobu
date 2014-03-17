@@ -31,6 +31,7 @@ __battery_detail() {
 
 __battery() {
 	local bat line present sign state percent full rem color bcolor
+	# Linux support
 	for bat in $BATTERY /sys/class/power_supply/* /proc/acpi/battery/*; do
 		present=""; full=""; rem=""; state=""
 		case "$bat" in
@@ -74,6 +75,30 @@ __battery() {
 			;;
 		esac
 	done
+	# Mac OS X support
+	if $BYOBU_TEST /usr/sbin/ioreg >/dev/null 2>&1; then
+		# MacOS support
+		local key
+		for key in CurrentCapacity MaxCapacity ExternalChargeCapable FullyCharged; do
+			line=$(/usr/sbin/ioreg -n AppleSmartBattery -w0 | grep $key | sed -e 's/|//g' | awk '{ print $3 }')
+			case "$key" in
+				CurrentCapacity) rem="$line";;
+				MaxCapacity) full="$line";;
+				ExternalChargeCapable)
+					if [ "${line}" = "Yes" ]; then
+						state="charging"
+					elif [ "${line}" = "No" ]; then
+						state="discharging"
+					fi
+				;;
+				FullyCharged)
+					if [ "${line}" = "Yes" ]; then
+						state="charged"
+					fi
+				;;
+			esac
+		done
+	fi
 	if [ $rem -ge 0 ] && [ $full -gt 0 ]; then
 		percent=$(((100*$rem)/$full))
 		if [ "$percent" -lt 33 ]; then

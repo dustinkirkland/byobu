@@ -1,5 +1,6 @@
 byobu (5.75) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * debian/control:
     - bump standards
   * usr/lib/byobu/include/shutil, usr/lib/byobu/release: LP: #1278016
@@ -18,6 +19,10 @@ byobu (5.75) unreleased; urgency=medium
   * usr/bin/byobu-launcher-uninstall.in, usr/bin/byobu-launch.in: LP: #1292228
     - allow byobu-launch to pass arguments through to byobu-launcher
     - fix up the uninstallation of byobu launcher
+
+  [ Kosuke Asami ]
+  * usr/lib/byobu/battery: LP: #1289157
+    - Mac OS X battery indicator support
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 16 Mar 2014 12:46:36 -0700
 
