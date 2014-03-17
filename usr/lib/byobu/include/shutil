@@ -69,7 +69,7 @@ color_map() {
 		"M") _RET="brightmagenta" ;;
 		"C") _RET="brightcyan" ;;
 		"W") _RET="brightwhite" ;;
-		*) _RET= ;;
+		*) _RET="$1" ;;
 	esac
 }
 

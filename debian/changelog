@@ -8,6 +8,13 @@ byobu (5.75) unreleased; urgency=medium
   * usr/share/byobu/profiles/bashrc: LP: #1259621
     - add a visual queue in the PS1 command prompt when running as the
       root user; prepend "!" in front of "root"
+  * usr/bin/byobu-janitor.in, usr/lib/byobu/include/colors,
+    usr/lib/byobu/include/constants, usr/lib/byobu/include/Makefile.am,
+    usr/lib/byobu/include/shutil, usr/share/byobu/profiles/tmux:
+    - split the color definitions into their own file
+    - have the constants source that file
+    - use that file when creating the user's local color palette
+    - use a bit more orange
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 16 Mar 2014 12:46:36 -0700
 

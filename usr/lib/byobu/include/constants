@@ -21,6 +21,7 @@
 PKG="byobu"
 
 . "${BYOBU_PREFIX}/lib/${PKG}/include/icons"
+. "${BYOBU_PREFIX}/lib/${PKG}/include/colors"
 
 PCT="%"
 
@@ -63,12 +64,3 @@ if [ -z "$BYOBU_PYTHON" ]; then
 		export BYOBU_PYTHON="python"
 	fi
 fi
-
-# Default colors
-export BYOBU_DARK="black"
-export BYOBU_LIGHT="white"
-export BYOBU_ACCENT="#75507B"          # AUBERGINE
-export BYOBU_HIGHLIGHT="#DD4814"       # UBUNTU ORANGE
-export BYOBU_WINDOW_NAME="-"
-export BYOBU_DATE="%Y-%m-%d "
-export BYOBU_TIME="%H:%M:%S"
