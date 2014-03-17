@@ -50,7 +50,9 @@ def get_sessions():
 				raise
 			else:
 				output = cpe.output
-		if not sys.stdout.encoding is None:
+		if sys.stdout.encoding is None:
+			output = output.decode("UTF-8")
+		else:
 			output = output.decode(sys.stdout.encoding)
 		if output:
 			for s in output.splitlines():
@@ -63,7 +65,10 @@ def get_sessions():
 					i += 1
 	if BYOBU_BACKEND == "tmux":
 		output = subprocess.Popen(["tmux", "list-sessions"], stdout=subprocess.PIPE).communicate()[0]
-		output = output.decode(sys.stdout.encoding)
+		if sys.stdout.encoding is None:
+			output = output.decode("UTF-8")
+		else:
+			output = output.decode(sys.stdout.encoding)
 		if output:
 			for s in output.splitlines():
 				if s:

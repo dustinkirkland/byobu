@@ -19,6 +19,8 @@ byobu (5.75) unreleased; urgency=medium
   * usr/bin/byobu-launcher-uninstall.in, usr/bin/byobu-launch.in: LP: #1292228
     - allow byobu-launch to pass arguments through to byobu-launcher
     - fix up the uninstallation of byobu launcher
+  * usr/lib/byobu/include/select-session.py: LP: #1279533
+    - quick hack to fix crashes when python can't figure out the encoding
 
   [ Kosuke Asami ]
   * usr/lib/byobu/battery: LP: #1289157, #1289157
