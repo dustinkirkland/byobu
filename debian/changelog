@@ -1,6 +1,8 @@
 byobu (5.76) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/share/byobu/profiles/tmux:
+    - use nice, subtle, thin pane border, a separate color from the active
+      highlighted one
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Mar 2014 13:00:04 +0900
 
