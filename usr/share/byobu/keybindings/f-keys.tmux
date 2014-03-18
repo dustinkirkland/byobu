@@ -75,7 +75,7 @@ bind-key -n S-F9 command-prompt -p "Send command to all panes:" "run-shell \"$BY
 bind-key -n C-F9 command-prompt -p "Send command to all windows:" "run-shell \"$BYOBU_PREFIX/lib/byobu/include/tmux-send-command-to-all-windows '%%'\""
 bind-key -n M-F11 break-pane
 bind-key -n C-F11 join-pane -h -s :. -t :-1
-bind-key -n S-F11 join-pane -v -s :. -t :-1
+bind-key -n S-F11 resize-pane -Z
 bind-key -n S-F12 source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux.disable \; display-message "Byobu F-keys: DISABLED"
 bind-key -n C-S-F12 new-window $BYOBU_PREFIX/lib/byobu/include/mondrian
 bind-key -n M-F12 source $BYOBU_PREFIX/share/byobu/keybindings/mouse.tmux.enable

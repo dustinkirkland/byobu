@@ -3,6 +3,9 @@ byobu (5.76) unreleased; urgency=medium
   * usr/share/byobu/profiles/tmux:
     - use nice, subtle, thin pane border, a separate color from the active
       highlighted one
+  * usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/doc/byobu/help.tmux.txt: LP: #1294139
+    - change Shift-F11 to zoom in/out of splits
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Mar 2014 13:00:04 +0900
 

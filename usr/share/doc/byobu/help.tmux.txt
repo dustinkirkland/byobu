@@ -39,7 +39,7 @@ and some convenient keybindings:
   F10                            * Used by X11 *
   F11                            * Used by X11 *
     Alt-F11                      Expand split to a full window
-    Shift-F11                    Join window into a horizontal split
+    Shift-F11                    Zoom into a split, zoom out of a split
     Ctrl-F11                     Join window into a vertical split
   F12                            Escape sequence
     Shift-F12                    Toggle on/off Byobu's keybindings
