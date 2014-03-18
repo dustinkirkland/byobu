@@ -1,3 +1,9 @@
+byobu (5.77) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 18 Mar 2014 23:25:08 +0900
+
 byobu (5.76-0ubuntu1) trusty; urgency=medium
 
   * usr/share/byobu/profiles/tmux:
