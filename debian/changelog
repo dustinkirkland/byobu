@@ -1,6 +1,9 @@
 byobu (5.77) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/share/byobu/profiles/dircolors,
+    usr/share/byobu/profiles/Makefile.am,
+    usr/share/byobu/profiles/tmuxrc:
+    - add a dircolors file
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 18 Mar 2014 23:25:08 +0900
 
