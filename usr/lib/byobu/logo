@@ -37,15 +37,15 @@ __logo() {
 			if $MARKUP; then
 				if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
 					if [ ! "$VTE_CJK_WIDTH" = "1" ] && [ !  "$VTE_CJK_WIDTH" = "wide" ] ; then
-						color m W; printf " u "; color -
+						color "colour202" "colour255" ; printf " u "; color -
 					else
-						color m W; printf " U "; color -
+						color m W; printf " u "; color -
 					fi
 				else
-					color m W; printf " U "; color -
+					color m W; printf " u "; color -
 				fi
 			else
-				printf " U "
+				printf " u "
 			fi
 		;;
 		*altlinux*)
