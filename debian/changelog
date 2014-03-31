@@ -1,4 +1,4 @@
-byobu (5.77) unreleased; urgency=medium
+byobu (5.77-0ubuntu1) trusty; urgency=medium
 
   * usr/share/byobu/profiles/dircolors,
     usr/share/byobu/profiles/Makefile.am,
@@ -13,7 +13,7 @@ byobu (5.77) unreleased; urgency=medium
   * usr/lib/byobu/logo: LP: #1299964
     - use an orange background for the UTF-8, 256-colour Ubuntu logo
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 18 Mar 2014 23:25:08 +0900
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 30 Mar 2014 20:42:08 -0500
 
 byobu (5.76-0ubuntu1) trusty; urgency=medium
 
