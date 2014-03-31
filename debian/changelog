@@ -5,11 +5,12 @@ byobu (5.77) unreleased; urgency=medium
     usr/share/byobu/profiles/tmuxrc:
     - add a dircolors file
   * usr/share/byobu/profiles/bashrc, usr/share/byobu/profiles/dircolors:
+    - LP: #1299964
     - swap orange and aubergine on the command prompt
     - aubergine is now the directory, orange is the hostname
     - still working on dircolors, use an aubergine (like our prompt)
       for directories
-  * usr/lib/byobu/logo:
+  * usr/lib/byobu/logo: LP: #1299964
     - use an orange background for the UTF-8, 256-colour Ubuntu logo
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 18 Mar 2014 23:25:08 +0900
