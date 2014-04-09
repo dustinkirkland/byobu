@@ -3,6 +3,7 @@ byobu (5.78) unreleased; urgency=medium
   * usr/share/byobu/profiles/dircolors:
     - give executables just a little more pop
     - use a light grey underline for symlinks
+    - add whitespace before inline comment
   * usr/share/byobu/profiles/bashrc:
     - Ensure that we use ls with colors, and class/type indicators
   * usr/share/byobu/profiles/bashrc:
