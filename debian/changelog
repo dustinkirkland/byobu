@@ -4,6 +4,8 @@ byobu (5.78) unreleased; urgency=medium
     - give executables just a little more pop
   * usr/share/byobu/profiles/bashrc:
     - Ensure that we use ls with colors, and class/type indicators
+  * usr/share/byobu/profiles/bashrc:
+    - Enable Ubuntu-themed dircolors on Ubuntu systems
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 30 Mar 2014 20:42:10 -0500
 

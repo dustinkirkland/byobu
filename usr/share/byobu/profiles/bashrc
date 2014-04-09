@@ -57,6 +57,11 @@ if [ -n "$TMUX" ] || [ "${TERMCAP#*screen}" != "${TERMCAP}" ]; then
 				export LESS_TERMCAP_so=$(printf '\e[03;38;5;202m') # enter standout mode – orange background highlight (or italics)
 				export LESS_TERMCAP_ue=$(printf '\e[0m')           # leave underline mode
 				export LESS_TERMCAP_us=$(printf '\e[04;38;5;139m') # enter underline mode – underline aubergine
+				# Use Ubuntu themed dircolors
+				if [ -e "${BYOBU_PREFIX}/share/byobu/profiles/dircolors" ]; then
+					dircolors "${BYOBU_PREFIX}/share/byobu/profiles/dircolors" > "$BYOBU_RUN_DIR/dircolors"
+					. "$BYOBU_RUN_DIR/dircolors"
+				fi
 			;;
 			*)
 				# Use nice colors (green / red / blue)
