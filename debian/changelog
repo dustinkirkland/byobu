@@ -1,6 +1,7 @@
 byobu (5.78) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/share/byobu/profiles/dircolors:
+    - give executables just a little more pop
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 30 Mar 2014 20:42:10 -0500
 
