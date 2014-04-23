@@ -10,6 +10,8 @@ byobu (5.78) unreleased; urgency=medium
     - Enable Ubuntu-themed dircolors on Ubuntu systems
   * usr/bin/byobu-janitor.in:
     - ensure that windows.tmux exists;  fixes warning with F5
+  * usr/bin/byobu-ctrl-a.in: LP: #1311177
+    - revert r2317 as this is breaking ctrl-a in byobu-screen in a bad way
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 30 Mar 2014 20:42:10 -0500
 

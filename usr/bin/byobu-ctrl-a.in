@@ -117,7 +117,7 @@ case "$bind_to" in
 				$BYOBU_SED -i -e "/^register x /d" -e "/^bindkey \"^\"/d" -e "/^escape /d" "$keybindings"
 				echo "escape \"^${KEY}${key}\"" >> "$keybindings"
 				echo "register x \"^${KEY}\"" >> "$keybindings"
-				echo "bindkey \"^${KEY}\" eval \"process x\"" >> "$keybindings"
+				echo "bindkey \"^${KEY}\" >> "$keybindings"
 				$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 			;;
 			tmux)
