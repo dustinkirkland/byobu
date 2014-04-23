@@ -1,4 +1,4 @@
-byobu (5.78) unreleased; urgency=medium
+byobu (5.78-0ubuntu1) unstable; urgency=medium
 
   * usr/share/byobu/profiles/dircolors:
     - give executables just a little more pop
@@ -11,7 +11,7 @@ byobu (5.78) unreleased; urgency=medium
   * usr/bin/byobu-ctrl-a.in: LP: #1311177, #1274720
     - revert r2317 as this is breaking ctrl-a in byobu-screen in a bad way
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 30 Mar 2014 20:42:10 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Apr 2014 18:24:21 -0500
 
 byobu (5.77-0ubuntu1) trusty; urgency=medium
 
