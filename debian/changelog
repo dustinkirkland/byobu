@@ -1,3 +1,9 @@
+byobu (5.79) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Apr 2014 18:24:26 -0500
+
 byobu (5.78-0ubuntu1) unstable; urgency=medium
 
   * usr/share/byobu/profiles/dircolors:
