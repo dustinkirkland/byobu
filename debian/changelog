@@ -6,7 +6,7 @@ byobu (5.78) unreleased; urgency=medium
     - add whitespace before inline comment
   * usr/share/byobu/profiles/bashrc:
     - Enable Ubuntu-themed dircolors on Ubuntu systems
-  * usr/bin/byobu-janitor.in:
+  * usr/bin/byobu-janitor.in: LP: #1311919
     - ensure that windows.tmux exists;  fixes warning with F5
   * usr/bin/byobu-ctrl-a.in: LP: #1311177, #1274720
     - revert r2317 as this is breaking ctrl-a in byobu-screen in a bad way
