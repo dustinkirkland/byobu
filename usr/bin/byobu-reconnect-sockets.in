@@ -59,7 +59,7 @@ screen_update () {
 	# Ensure that screen's environment variables/values get propagated here
 	# Enable word splitting for zsh:
 	[ "x$ZSH_VERSION" != x ] && setopt local_options sh_word_split
-	tempfile=$(mktemp -q) && {
+	tempfile=$(mktemp -q ${BYOBU_RUN_DIR}/sockets-XXXXXXXX) && {
 		for var in $VARS_TO_UPDATE; do
 			screen sh -c "echo export $var=\$$var >> \"$tempfile\""
 		done

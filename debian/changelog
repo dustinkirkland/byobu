@@ -2,6 +2,8 @@ byobu (5.80) unreleased; urgency=medium
 
   * usr/lib/byobu/include/mondrian:
     - simplify and cleanup the mondrian squares easter egg, and idempotent
+  * usr/bin/byobu-reconnect-sockets.in:
+    - let's make sure that we name our temp directory
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 Apr 2014 09:22:30 -0500
 
