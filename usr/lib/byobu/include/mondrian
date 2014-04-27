@@ -60,6 +60,7 @@ yellow_color=226
 blue_color=57
 white_color=231
 
+tmux kill-window -t mondrian
 tmux new-window -n mondrian "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
 	set-option -g pane-active-border-bg colour231 \; \
 	set-option -g pane-active-border-fg black \; \
