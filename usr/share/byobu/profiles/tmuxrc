@@ -26,5 +26,5 @@ source-file $HOME/.byobu/color.tmux
 source-file $HOME/.byobu/datetime.tmux
 source-file $BYOBU_CONFIG_DIR/profile.tmux
 source-file $BYOBU_CONFIG_DIR/keybindings.tmux
-source-file $BYOBU_CONFIG_DIR/windows.tmux
+#source-file $BYOBU_CONFIG_DIR/windows.tmux
 source-file $BYOBU_CONFIG_DIR/.tmux.conf

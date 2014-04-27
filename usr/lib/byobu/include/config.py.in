@@ -309,7 +309,10 @@ def getesckey():
 
 def setesckey(key):
 	if key.isalpha():
-		subprocess.call(["byobu-ctrl-a", "screen", key])
+		# throw away outputs in order that the view isn't broken
+		nullf = open(os.devnull, "w")
+		subprocess.call(["byobu-ctrl-a", "screen", key], stdout=nullf)
+		nullf.close()
 
 
 def chgesc(snackScreen, size):

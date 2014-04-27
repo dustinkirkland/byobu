@@ -1,8 +1,14 @@
 byobu (5.79) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/bin/byobu-ctrl-a.in: LP: #1313209
     - fix syntax error, remove unnecessary bindkey line
     - also fixes LP: #814172
+  * usr/share/byobu/profiles/tmuxrc:
+    - tmux windows still aren't working right; disable for now
+
+  [ Kosuke Asami ]
+  * usr/lib/byobu/include/config.py.in: LP: #1303218
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Apr 2014 18:24:26 -0500
 
