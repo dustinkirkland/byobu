@@ -1,6 +1,7 @@
 byobu (5.80) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/lib/byobu/include/mondrian:
+    - simplify and cleanup the mondrian squares easter egg
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 Apr 2014 09:22:30 -0500
 

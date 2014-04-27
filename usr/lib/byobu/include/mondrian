@@ -25,20 +25,20 @@ trap "tput reset" EXIT HUP INT QUIT TERM KILL ILL TRAP ABRT BUS FPE USR1 SEGV US
 if [ "$1" = "color" ] && [ -n "$2" ]; then
 	i=0
 	out=
+	sleep 0.2
 	count=$(stty size | awk '{print $1*$2}')
 	perl -e "print color 'reset'; printf \"\x1b[48;5;${2}m%${count}s\", \" \";";
 	head -n1
+	tmux kill-window -t mondrian
 	exit 0
 fi
 
-get_random_pane() {
-	local panes=$(tmux list-panes | wc -l)
-	r=$((RANDOM % 4))
-	while [ $r = "$LAST_PANE" ]; do
-		r=$((RANDOM % 4))
-	done
-	LAST_PANE="$r"
-	printf "%s\n" "$r"
+get_random_direction() {
+	if [ $((RANDOM % 2)) -eq 0 ]; then
+		echo "-v"
+	else
+		echo "-h"
+	fi
 }
 
 get_random_numbers() {
@@ -60,57 +60,31 @@ yellow_color=226
 blue_color=57
 white_color=231
 
-# Get number of splits
-if [ -n "$1" ]; then
-	# Passed in as arg1
-	TOTAL_SPLITS=$1
-else
-	# Choose random number of splits between 10 and 40
-	TOTAL_SPLITS=$((RANDOM % 30 + 10))
-fi
+tmux new-window -n mondrian "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	set-option -g pane-active-border-bg colour231 \; \
+	set-option -g pane-active-border-fg black \; \
+	set-option -g pane-border-bg colour231 \; \
+	set-option -g pane-border-fg black \; \
+	split-window $(get_random_direction) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 2)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 3)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 4)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $red_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 5)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 6)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $yellow_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 7)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 8)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $blue_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 9)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 9)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 10)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 11)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 12)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 13)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 14)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 15)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 16)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 17)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 18)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 19)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
+	split-window $(get_random_direction) -t $((RANDOM % 20)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
 
-# Choose 1 red, 1 yellow, 1 blue
-get_random_numbers "$TOTAL_SPLITS"
-nums="$_RET"
-red=$((RANDOM % TOTAL_SPLITS + 4))
-while [ $red -ge $TOTAL_SPLITS ]; do
-	red=$((RANDOM % TOTAL_SPLITS + 4))
-done
-yellow=$((RANDOM % TOTAL_SPLITS + 4))
-while [ "$yellow" = "$red" ] || [ $yellow -ge $TOTAL_SPLITS ]; do
-	yellow=$((RANDOM % TOTAL_SPLITS + 4))
-done
-blue=$((RANDOM % TOTAL_SPLITS + 4))
-while [ "$blue" = "$yellow" ] || [ "$blue" = "$red" ] || [ $blue -ge $TOTAL_SPLITS ]; do
-	blue=$((RANDOM % TOTAL_SPLITS + 4))
-done
-
-# Create the window, set the border colors
-for i in $(tmux list-windows | grep " mondrian " | awk -F: '{print $1}'); do
-	tmux kill-window -t $i
-done
-tmux new-window -n mondrian "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color"
-tmux set-option -g pane-active-border-bg black
-tmux set-option -g pane-active-border-fg black
-tmux set-option -g pane-border-bg black
-tmux set-option -g pane-border-fg black
-
-# Create and paint the splits
-for i in $(seq 0 $((TOTAL_SPLITS-1))); do
-	case $i in
-		$red) color=$red_color ;;
-		$yellow) color=$yellow_color ;;
-		$blue) color=$blue_color ;;
-		*) color=$white_color ;;
-	esac
-	CMD="$BYOBU_PREFIX/lib/byobu/include/mondrian color $color"
-	[ "$((RANDOM % 2))" = "0" ] && SPLIT="-v" || SPLIT="-h"
-	if ! tmux split-window $SPLIT -t $(get_random_pane) "$CMD" ; then
-		case "$i" in
-			$red) red=$((red+1)) ;;
-			$yellow) yellow=$((yellow+1)) ;;
-			$blue) blue=$((blue+1)) ;;
-		esac
-	fi
-done
 exit 0
