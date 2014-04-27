@@ -2,6 +2,7 @@ byobu (5.79) unreleased; urgency=medium
 
   * usr/bin/byobu-ctrl-a.in: LP: #1313209
     - fix syntax error, remove unnecessary bindkey line
+    - also fixes LP: #814172
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Apr 2014 18:24:26 -0500
 
