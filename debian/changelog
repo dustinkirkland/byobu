@@ -1,4 +1,4 @@
-byobu (5.79) unreleased; urgency=medium
+byobu (5.79-0ubuntu1) unstable; urgency=medium
 
   [ Dustin Kirkland ]
   * usr/bin/byobu-ctrl-a.in: LP: #1313209
@@ -10,7 +10,7 @@ byobu (5.79) unreleased; urgency=medium
   [ Kosuke Asami ]
   * usr/lib/byobu/include/config.py.in: LP: #1303218
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 23 Apr 2014 18:24:26 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 Apr 2014 09:22:25 -0500
 
 byobu (5.78-0ubuntu1) unstable; urgency=medium
 
