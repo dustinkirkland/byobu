@@ -1,3 +1,9 @@
+byobu (5.81) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Apr 2014 09:36:59 -0700
+
 byobu (5.80-0ubuntu1) utopic; urgency=medium
 
   * usr/lib/byobu/include/mondrian:
