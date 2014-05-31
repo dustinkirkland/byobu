@@ -57,8 +57,8 @@ def get_sessions():
 		if output:
 			for s in output.splitlines():
 				s = re.sub(r'\s+', ' ', s)
-				# Ignore hidden sessions (named sessions that start with a ".")
-				if s and s != " " and (s.find(" ") == 0 and len(s) > 1 and s.count("..") == 0):
+				# Ignore hidden sessions (named sessions that start with a "." or a "_")
+				if s and s != " " and (s.find(" ") == 0 and len(s) > 1 and s.count("..") == 0 and s.count("._") == 0):
 					text.append("screen: %s" % s.strip())
 					items = s.split(" ")
 					sessions.append("screen____%s" % items[1])
@@ -71,7 +71,8 @@ def get_sessions():
 			output = output.decode(sys.stdout.encoding)
 		if output:
 			for s in output.splitlines():
-				if s:
+				# Ignore hidden sessions (named sessions that start with a "_")
+				if s and not s.startswith("_"):
 					text.append("tmux: %s" % s.strip())
 					sessions.append("tmux____%s" % s.split(":")[0])
 					i += 1
