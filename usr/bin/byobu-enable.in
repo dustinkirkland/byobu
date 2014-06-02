@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-#    byobu-enable: enable and launch byobu
+#    byobu-enable: enable launch byobu at login
 #    Copyright (C) 2010 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.co>
@@ -30,9 +30,5 @@ echo
 echo "To disable this behavior later, just run:"
 echo "  byobu-disable"
 echo
-printf "Press <enter> to continue..."
-$(head -n1)
-
-exec byobu
 
 # vi: syntax=sh ts=4 noexpandtab
