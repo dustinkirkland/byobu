@@ -6,6 +6,10 @@ byobu (5.81) unreleased; urgency=medium
   * debian/control, usr/bin/ctail, usr/share/man/man1/ctail.1:
     - move the ctail command over to byobu, from bikeshed
     - ctail will tail and colorize log files
+  * debian/control, usr/bin/wifi-status, usr/share/man/man1/wifi-
+    status.1:
+    - move the wifi-status command to byobu, from bikeshed
+    - fantastic demonstration of byobu split screens
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Apr 2014 09:36:59 -0700
 

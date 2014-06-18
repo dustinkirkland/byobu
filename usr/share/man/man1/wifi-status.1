@@ -1,0 +1,42 @@
+.TH wifi-status 1 "27 Sep 2010" byobu "byobu"
+.SH NAME
+wifi-status \- monitor the wireless interface
+
+.SH SYNOPSIS
+\fBwifi-status\fP [INTERFACE]
+
+.SH DESCRIPTION
+\fBwifi-status\fP is a program that monitors a wireless interface.
+
+This is often useful when trying to associate with an access point.
+
+.SH EXAMPLE
+ $ wifi-status
+
+Every 1.0s: iwconfig wlan0; ifconfig wlan0
+
+wlan0     IEEE 802.11abgn  ESSID:"default"
+          Mode:Managed  Frequency:2.462 GHz  Access Point: 00:11:22:33:44:55
+          Bit Rate=81 Mb/s   Tx-Power=15 dBm
+          Retry  long limit:7   RTS thr:off   Fragment thr:off
+          Power Management:on
+          Link Quality=70/70  Signal level=-35 dBm
+          Rx invalid nwid:0  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+
+wlan0     Link encap:Ethernet  HWaddr 00:11:22:33:44:55
+          inet addr:10.10.10.103  Bcast:10.9.8.255  Mask:255.255.255.0
+          inet6 addr: aaaa::bbb:cccc:dddd:eeee/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:10582 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:6383 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:8243607 (8.2 MB)  TX bytes:1077323 (1.0 MB)
+
+.SH SEE ALSO
+\fBiwconfig\fP(8)\fP, \fBifconfig\fP(8)
+
+.SH AUTHOR
+This manpage and the utility was written by Dustin Kirkland <kirkland@ubuntu.com> for Ubuntu systems (but may be used by others).  Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 3 published by the Free Software Foundation.
+
+On Debian systems, the complete text of the GNU General Public License can be found in /usr/share/common-licenses/GPL, or on the web at \fIhttp://www.gnu.org/licenses/gpl.txt\fP.
