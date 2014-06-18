@@ -10,6 +10,9 @@ byobu (5.81) unreleased; urgency=medium
     status.1:
     - move the wifi-status command to byobu, from bikeshed
     - fantastic demonstration of byobu split screens
+  * debian/links, usr/bin/col1, usr/share/man/man1/col1.1:
+    - move the col1..col9 utilities over from bikeshed
+    - super handy, minimal way of awking out a particular column
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Apr 2014 09:36:59 -0700
 

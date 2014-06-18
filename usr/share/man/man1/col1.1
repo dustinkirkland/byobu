@@ -1,0 +1,37 @@
+.TH col1 1 "27 Sep 2010" byobu "byobu"
+.SH NAME
+col1 .. col9, NF \- awk and print a column (based on the name of the program, 1-9)
+
+.SH SYNOPSIS
+.BI "col1 [SEPARATOR]"
+
+.SH DESCRIPTION
+\fBcol1\fP is a simple script that conveniently splits and prints a given column, where the column to print is the name of the script program you're running (col1-col9).  col2-col9 are symlinks to col1; their behavior simply changes based on the name called.
+
+\fBNF\fP can be used to print the last field.
+
+The program takes one optional argument, the input field separator (whitespace, by default).
+
+.SH EXAMPLES
+Rather than:
+ mount | awk '{print $3}'
+
+Try:
+ mount | col3
+
+Instead of:
+ cat /etc/passwd | awk \-F":" '{print $7}'
+
+You can just do:
+ cat /etc/passwd | col7 :
+
+Or
+ cat /etc/passwd | NF :
+
+.SH SEE ALSO
+\fBawk\fP(1)\fP
+
+.SH AUTHOR
+This manpage and the utility was written by Dustin Kirkland <kirkland@ubuntu.com> for Ubuntu systems (but may be used by others).  Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 3 published by the Free Software Foundation.
+
+On Debian systems, the complete text of the GNU General Public License can be found in /usr/share/common-licenses/GPL, or on the web at \fIhttp://www.gnu.org/licenses/gpl.txt\fP.
