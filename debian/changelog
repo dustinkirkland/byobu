@@ -13,6 +13,8 @@ byobu (5.81) unreleased; urgency=medium
   * debian/links, usr/bin/col1, usr/share/man/man1/col1.1:
     - move the col1..col9 utilities over from bikeshed
     - super handy, minimal way of awking out a particular column
+  * usr/bin/Makefile.am, usr/share/man/man1/Makefile.am:
+    - update automake files to install new utilities
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Apr 2014 09:36:59 -0700
 
