@@ -15,6 +15,8 @@ byobu (5.81) unreleased; urgency=medium
     - super handy, minimal way of awking out a particular column
   * usr/bin/Makefile.am, usr/share/man/man1/Makefile.am:
     - update automake files to install new utilities
+  * usr/bin/ctail:
+    - use command -v to test for ccze existence
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Apr 2014 09:36:59 -0700
 
