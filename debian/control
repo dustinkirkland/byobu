@@ -24,6 +24,7 @@ Recommends:
  run-one
 Suggests:
  apport,
+ ccze,
  lsb-release,
  po-debconf,
  ttf-ubuntu-font-family (>= 0.80-0ubuntu1~medium),
@@ -37,11 +38,13 @@ Provides:
 Replaces:
  screen-profiles (<< 2.0),
  screen-profiles-extras (<< 2.0),
- byobu-extras (<< 2.17)
+ byobu-extras (<< 2.17),
+ bikeshed (<< 1.47)
 Breaks:
  screen-profiles (<< 2.0),
  screen-profiles-extras (<< 2.0),
- byobu-extras (<< 2.17)
+ byobu-extras (<< 2.17),
+ bikeshed (<< 1.47)
 Enhances: screen
 Description: powerful, text based window manager and shell multiplexer
  Byobu is Ubuntu's text-based window manager based on GNU Screen.

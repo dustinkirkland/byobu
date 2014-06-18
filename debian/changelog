@@ -3,6 +3,9 @@ byobu (5.81) unreleased; urgency=medium
   * usr/bin/byobu-enable.in, usr/share/man/man1/byobu-enable.1:
     - no need to launch byobu in byobu-enable (no idea why I did it
       that way originally)
+  * debian/control, usr/bin/ctail, usr/share/man/man1/ctail.1:
+    - move the ctail command over to byobu, from bikeshed
+    - ctail will tail and colorize log files
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Apr 2014 09:36:59 -0700
 
