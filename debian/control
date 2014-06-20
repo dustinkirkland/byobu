@@ -47,9 +47,12 @@ Breaks:
  byobu-extras (<< 2.17),
  bikeshed (<< 1.47)
 Enhances: screen
-Description: powerful, text based window manager and shell multiplexer
- Byobu is Ubuntu's text-based window manager based on GNU Screen.
+Description: text window manager, shell multiplexer, integrated DevOps environment
+ Byobu is Ubuntu's powerful text-based window manager, shell multiplexer, and
+ integrated DevOps environment.
+ .
  Using Byobu, you can quickly create and move between different windows
- over a single SSH connection or TTY terminal, monitor dozens of important
- statistics about your system, detach and reattach to sessions later
- while your programs continue to run in the background.
+ over a single SSH connection or TTY terminal, split each of those windows into
+ multiple panes, monitor dozens of important statistics about your system,
+ detach and reattach to sessions later while your programs continue to run in
+ the background.

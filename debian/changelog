@@ -17,6 +17,10 @@ byobu (5.81) unreleased; urgency=medium
     - update automake files to install new utilities
   * usr/bin/ctail:
     - use command -v to test for ccze existence
+  * debian/control, etc/profile.d/Z97-byobu.sh.in (properties changed:
+    +x to -x):
+    - update package description to better reflect modern Byobu
+    - fix lintian complaint about profile script
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Apr 2014 09:36:59 -0700
 
