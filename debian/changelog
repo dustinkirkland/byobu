@@ -1,3 +1,9 @@
+byobu (5.82) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 06 Jul 2014 15:51:18 -0500
+
 byobu (5.81-0ubuntu1) utopic; urgency=medium
 
   * usr/bin/byobu-enable.in, usr/share/man/man1/byobu-enable.1:
