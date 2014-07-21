@@ -1,6 +1,9 @@
 byobu (5.82) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/bin/byobu-ctrl-a.in:
+    - add bindkey line back, this line is *essential*; there was a
+      syntax error in it previously, but removing the line was not
+      the correct fix for LP: #1313209, #814172
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 06 Jul 2014 15:51:18 -0500
 

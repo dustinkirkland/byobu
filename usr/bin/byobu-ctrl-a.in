@@ -115,6 +115,7 @@ case "$bind_to" in
 		case "$BYOBU_BACKEND" in
 			screen)
 				$BYOBU_SED -i -e "/^register x /d" -e "/^bindkey \"^\"/d" -e "/^escape /d" "$keybindings"
+				echo "bindkey \"^${KEY}\"" >> "$keybindings"
 				echo "escape \"^${KEY}${key}\"" >> "$keybindings"
 				echo "register x \"^${KEY}\"" >> "$keybindings"
 				$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
