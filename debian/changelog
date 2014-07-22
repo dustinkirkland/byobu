@@ -1,3 +1,9 @@
+byobu (5.83) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 22 Jul 2014 07:21:56 -0700
+
 byobu (5.82-0ubuntu1) utopic; urgency=medium
 
   * usr/bin/byobu-ctrl-a.in:
