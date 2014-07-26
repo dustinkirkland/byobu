@@ -5,6 +5,8 @@ byobu (5.83) unreleased; urgency=medium
     - hard code LANG=C before launching byobu-config
   * usr/lib/byobu/include/dirs.in: LP: #1346869
     - be little smarter about detecting a usable /dev/shm
+  * === added directory usr/share/appdata,
+    usr/share/appdata/byobu.appdata.xml: LP: #1322556
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 22 Jul 2014 07:21:56 -0700
 

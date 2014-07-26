@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2014 Dustin Kirkland <kirkland@byobu.co> -->
+<application>
+ <id type="desktop">byobu.desktop</id>
+ <metadata_license>GPL-3</metadata_license>
+ <project_license>GPL-3</project_license>
+ <name>Byobu</name>
+ <summary>Text window manager, shell multiplexer, integrated DevOps environment</summary>
+ <description>
+  <p>
+  Byobu is a GPLv3 open source text-based window manager and terminal multiplexer. It was originally designed to provide elegant enhancements to the otherwise functional, plain, practical GNU Screen, for the Ubuntu server distribution. Byobu now includes an enhanced profiles, convenient keybindings, configuration utilities, and toggle-able system status notifications for both the GNU Screen window manager and the more modern Tmux terminal multiplexer, and works on most Linux, BSD, and Mac distributions.
+  </p>
+  <p>
+  Using Byobu, you can quickly create and move between different windows over a single SSH connection or TTY terminal, split each of those windows into multiple panes, monitor dozens of important statistics about your system, detach and reattach to sessions later while your programs continue to run in the background.
+  </p>
+ </description>
+ <screenshots>
+  <screenshot type="default" width="800" height="600">http://byobu.co/img/screenshot.png</screenshot>
+ </screenshots>
+ <url type="homepage">http://byobu.co</url>
+ <updatecontact>kirkland@byobu.co</updatecontact>
+ <project_group>Byobu</project_group>
+</application>
