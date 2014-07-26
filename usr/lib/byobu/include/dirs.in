@@ -59,7 +59,8 @@ if [ -w /dev/shm ]; then
 	if [ ! -d "$BYOBU_RUN_DIR" ] || [ ! -O "$BYOBU_RUN_DIR" ]; then
 		export BYOBU_RUN_DIR=$(mktemp -d /dev/shm/$PKG-$USER-XXXXXXXX)
 	fi
-else
+fi
+if [ ! -d "$BYOBU_RUN_DIR" ] || [ ! -O "$BYOBU_RUN_DIR" ] || [ ! -w "$BYOBU_RUN_DIR" ]; then
 	# For distros that don't have a /dev/shm, use local disk
 	if [ -d "$XDG_CACHE_HOME" ]; then
 		# Use XDG, as some users insist on such nonsense :-)

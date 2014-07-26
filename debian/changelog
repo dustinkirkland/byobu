@@ -1,8 +1,10 @@
 byobu (5.83) unreleased; urgency=medium
 
   [ Dustin Kirkland ]
-  * usr/bin/byobu-config.in:
+  * usr/bin/byobu-config.in: LP: #1316050
     - hard code LANG=C before launching byobu-config
+  * usr/lib/byobu/include/dirs.in: LP: #1346869
+    - be little smarter about detecting a usable /dev/shm
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 22 Jul 2014 07:21:56 -0700
 
