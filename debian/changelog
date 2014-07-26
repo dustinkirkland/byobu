@@ -7,6 +7,8 @@ byobu (5.83) unreleased; urgency=medium
     - be little smarter about detecting a usable /dev/shm
   * === added directory usr/share/appdata,
     usr/share/appdata/byobu.appdata.xml: LP: #1322556
+  * usr/share/byobu/profiles/tmuxrc: LP: #1315204
+    - fix a couple of spots that should use $BYOBU_CONFIG_DIR
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 22 Jul 2014 07:21:56 -0700
 
