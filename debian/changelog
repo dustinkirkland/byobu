@@ -1,6 +1,8 @@
 byobu (5.83) unreleased; urgency=medium
 
-  * UNRELEASED
+  [ Dustin Kirkland ]
+  * usr/bin/byobu-config.in:
+    - hard code LANG=C before launching byobu-config
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 22 Jul 2014 07:21:56 -0700
 
