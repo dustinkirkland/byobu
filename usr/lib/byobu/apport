@@ -43,6 +43,7 @@ __apport() {
 			return
 		fi
 	done
+	rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/apport"*
 }
 
 # vi: syntax=sh ts=4 noexpandtab

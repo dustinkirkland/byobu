@@ -9,6 +9,9 @@ byobu (5.83) unreleased; urgency=medium
     usr/share/appdata/byobu.appdata.xml: LP: #1322556
   * usr/share/byobu/profiles/tmuxrc: LP: #1315204
     - fix a couple of spots that should use $BYOBU_CONFIG_DIR
+  * usr/lib/byobu/apport: LP: #1308696
+    - clear out the apport cache files, to detect when the crashes
+      have been cleared
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 22 Jul 2014 07:21:56 -0700
 
