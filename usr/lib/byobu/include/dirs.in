@@ -40,7 +40,7 @@ else
 	# And to default to good old classic config dir location!
 	export BYOBU_CONFIG_DIR="$HOME/.$PKG"
 fi
-[ -d "$BYOBU_CONFIG_DIR" ] || mkdir -p "$BYOBU_CONFIG_DIR"
+[ -d "$BYOBU_CONFIG_DIR" ] || mkdir -p "$BYOBU_CONFIG_DIR/bin"
 
 # Grab the global, then local socket directory
 [ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir"

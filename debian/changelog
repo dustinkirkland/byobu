@@ -1,6 +1,7 @@
 byobu (5.84) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/lib/byobu/include/dirs.in:
+    - make the custom scripts bin dir
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 26 Jul 2014 16:13:23 -0500
 
