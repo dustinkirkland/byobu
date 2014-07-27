@@ -2,6 +2,8 @@ byobu (5.84) unreleased; urgency=medium
 
   * usr/lib/byobu/include/dirs.in:
     - make the custom scripts bin dir
+  * usr/lib/byobu/custom:
+    - ensure we clear the cache for custom scripts
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 26 Jul 2014 16:13:23 -0500
 

@@ -58,7 +58,10 @@ __custom() {
 			;;
 		esac
 	done
-	[ -n "$output" ] || return
+	if [ -z "$output" ]; then
+		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/custom"*
+		return
+	fi
 	printf "$output" | $BYOBU_SED ':a;N;$!ba;s/\n//g'
 }
 
