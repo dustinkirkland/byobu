@@ -4,6 +4,9 @@ byobu (5.84) unreleased; urgency=medium
     - make the custom scripts bin dir
   * usr/lib/byobu/custom:
     - ensure we clear the cache for custom scripts
+  * usr/bin/byobu-status.in:
+    - restore the ability to toggle date and time on and off from the config
+      interface, as well as hand editing the config file
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 26 Jul 2014 16:13:23 -0500
 

@@ -35,6 +35,7 @@ PKG="byobu"
 for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/status/statusrc" "$BYOBU_CONFIG_DIR/status" "$BYOBU_CONFIG_DIR/statusrc" "$BYOBU_CONFIG_DIR/color" "$BYOBU_CONFIG_DIR/color.tmux"; do
 	[ -r "$i" ] && . "$i"
 done
+[ -r "$BYOBU_CONFIG_DIR/datetime.tmux" ] && . "$BYOBU_CONFIG_DIR/datetime.tmux"
 
 case "$BYOBU_BACKEND" in
 	screen)
@@ -110,6 +111,42 @@ case "$1" in
 	*left|*right)
 		eval items="\$$1"
 		for i in $items; do
+			if [ "$BYOBU_BACKEND" = "tmux" ]; then
+				case "$i" in
+					\#date)
+						if [ -n "$BYOBU_DATE" ]; then
+							$BYOBU_SED -i -e "/BYOBU_DATE=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
+							printf "%s\n" 'BYOBU_DATE=' >> "$BYOBU_CONFIG_DIR/datetime.tmux"
+							touch "$BYOBU_RUN_DIR/reload-required"
+							continue
+						fi
+					;;
+					\#time)
+						if [ -n "$BYOBU_TIME" ]; then
+							$BYOBU_SED -i -e "/BYOBU_TIME=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
+							printf "%s\n" 'BYOBU_TIME=' >> "$BYOBU_CONFIG_DIR/datetime.tmux"
+							touch "$BYOBU_RUN_DIR/reload-required"
+							continue
+						fi
+					;;
+					date)
+						if [ -z "$BYOBU_DATE" ]; then
+							$BYOBU_SED -i -e "/BYOBU_DATE=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
+							printf "%s\n" 'BYOBU_DATE="%Y-%m-%d "' >> "$BYOBU_CONFIG_DIR/datetime.tmux"
+							touch "$BYOBU_RUN_DIR/reload-required"
+							continue
+						fi
+					;;
+					time)
+						if [ -z "$BYOBU_TIME" ]; then
+							$BYOBU_SED -i -e "/BYOBU_TIME=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
+							printf "%s\n" 'BYOBU_TIME="%H:%M:%S"' >> "$BYOBU_CONFIG_DIR/datetime.tmux"
+							touch "$BYOBU_RUN_DIR/reload-required"
+							continue
+						fi
+					;;
+				esac
+			fi
 			case "$i" in \#*) continue ;; esac
 			get_status "$i"
 		done
