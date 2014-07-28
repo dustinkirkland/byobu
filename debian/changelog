@@ -1,4 +1,4 @@
-byobu (5.84) unreleased; urgency=medium
+byobu (5.84-0ubuntu1) utopic; urgency=medium
 
   * usr/lib/byobu/include/dirs.in:
     - make the custom scripts bin dir
@@ -8,7 +8,7 @@ byobu (5.84) unreleased; urgency=medium
     - restore the ability to toggle date and time on and off from the config
       interface, as well as hand editing the config file
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 26 Jul 2014 16:13:23 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Jul 2014 09:12:11 +0100
 
 byobu (5.83-0ubuntu1) utopic; urgency=medium
 
