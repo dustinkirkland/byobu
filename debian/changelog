@@ -1,6 +1,13 @@
 byobu (5.85) unreleased; urgency=medium
 
-  * UNRELEASED
+  [ Pedro Romano ]
+  * usr/lib/byobu/include/select-session.py:
+    - This branch adds named sessions starting with an underscore also as
+      hidden sessions in alternative to named sessions starting with a dot,
+      since tmux doesn't support session names starting with a dot. In the
+      process it also adds support for hidden session in tmux if the
+      session names start with an underscore, adding this feature to tmux
+      based byobu.
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Jul 2014 09:12:13 +0100
 
