@@ -1,4 +1,4 @@
-byobu (5.85) unreleased; urgency=medium
+byobu (5.85-0ubuntu1) utopic; urgency=medium
 
   [ Pedro Romano ]
   * usr/lib/byobu/include/select-session.py:
@@ -17,7 +17,7 @@ byobu (5.85) unreleased; urgency=medium
   * usr/bin/byobu.in, usr/share/man/man1/byobu.1: LP: #907363
     - fix custom window support for byobu-tmux
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Jul 2014 09:12:13 +0100
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 05 Aug 2014 23:21:29 +0200
 
 byobu (5.84-0ubuntu1) utopic; urgency=medium
 
