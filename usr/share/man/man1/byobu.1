@@ -119,11 +119,11 @@ Byobu name screen sessions "byobu", if unspecified.  To hide sessions from \fBby
 
 .SH WINDOWS
 
-Each open window in the screen session is displayed in the upper bar toward the far left.  These are numbered, and include indicators as to activity in the window (see "activity" in \fBscreen\fP(1) for symbol definitions).  The current active window is highlighted by inverting the background/text from the rest of the window bar.
+Each open window in the screen session is displayed in the upper bar toward the far left.  These are numbered, and include indicators as to activity in the window (see "activity" in \fBscreen\fP(1) and \fBtmux\fP(1) for symbol definitions).  The current active window is highlighted by inverting the background/text from the rest of the window bar.
 
-Users can create a list of windows to launch at startup in \fI$BYOBU_CONFIG_DIR/windows\fP.  This file is the same syntax as \fI~/.screenrc\fP, each line specifying a window using the "screen" command, as described in \fBscreen\fP(1).
+Users can create a list of windows to launch at startup in \fI$BYOBU_CONFIG_DIR/windows\fP and \fI$BYOBU_CONFIG_DIR/windows.tmux\fP.  This file is the same syntax as \fI~/.screenrc\fP and \fI~/.tmuxrc\fP, each line specifying a window, as described in \fBscreen\fP(1) or \fBtmux\fP(1).
 
-User can also launch Byobu with unique window sets.  Users can store these as \fI$BYOBU_CONFIG_DIR/windows.[NAME]\fP, and launch Byobu with the environment variable \fBBYOBU_WINDOWS\fP.
+User can also launch Byobu with unique window sets.  Users can store these as \fI$BYOBU_CONFIG_DIR/windows.[NAME]\fP and \fI$BYOBU_CONFIG_DIR/windows.tmux.[NAME]\fP, and launch Byobu with the environment variable \fBBYOBU_WINDOWS\fP=NAME.
 
 For example:
   $ cat $BYOBU_CONFIG_DIR/windows.ssh_sessions
@@ -132,6 +132,16 @@ For example:
   screen \-t beagle ssh root@beagle
   screen \-t collie ssh root@collie
   $ BYOBU_WINDOWS=ssh_sessions byobu
+
+For example:
+  $ cat $BYOBU_CONFIG_DIR/windows.tmux.split4
+  new-session 'bash' ;
+  split-window ;
+  split-window ;
+  split-window ;
+  select-layout tiled ;
+  select-pane -t 0
+  $ BYOBU_WINDOWS=split4 byobu
 
 .SH UNITS OF MEASURE
 byobu uses binary for capacity measurements of KB, MB, GB, and TB.  This means multiples of 1024 rather than multiples of 1000, in accordance with JEDEC Standard 100B.01 for disk and memory capacity measurements.  See:

@@ -13,6 +13,10 @@ byobu (5.85) unreleased; urgency=medium
   * usr/bin/byobu-layout.in:
     - add a list-layouts command
 
+  [ Dustin Kirkland ]
+  * usr/bin/byobu.in, usr/share/man/man1/byobu.1: LP: #907363
+    - fix custom window support for byobu-tmux
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Jul 2014 09:12:13 +0100
 
 byobu (5.84-0ubuntu1) utopic; urgency=medium

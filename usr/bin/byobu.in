@@ -115,6 +115,14 @@ case $BYOBU_BACKEND in
 		BYOBU_PROFILE="-f $BYOBU_PREFIX/share/$PKG/profiles/tmuxrc"
 		DEFAULT_WINDOW="new-session -n $BYOBU_WINDOW_NAME ${BYOBU_PREFIX}/bin/byobu-shell"
 		sessions=$($BYOBU_BACKEND list-sessions 2>/dev/null) || true
+		CUSTOM_WINDOW_SET=0
+		if [ -s "$BYOBU_CONFIG_DIR/windows.tmux.$BYOBU_WINDOWS" ]; then
+			CUSTOM_WINDOW_SET=1
+			BYOBU_WINDOWS="$BYOBU_CONFIG_DIR/windows.tmux.$BYOBU_WINDOWS"
+		elif [ -s "$BYOBU_CONFIG_DIR/windows.tmux" ]; then
+			CUSTOM_WINDOW_SET=1
+			BYOBU_WINDOWS="$BYOBU_CONFIG_DIR/windows.tmux"
+		fi
 	;;
 	screen)
 		# Allow override of default window list, with BYOBU_WINDOWS environment variable
@@ -168,7 +176,7 @@ if [ "$#" = "0" ]; then
 		# Start new custom window set session
 		case $BYOBU_BACKEND in
 			tmux)
-				exec tmux $SCREEN_TERM $BYOBU_PROFILE
+				exec tmux $SCREEN_TERM $BYOBU_PROFILE $(cat "$BYOBU_WINDOWS")
 			;;
 			screen)
 				exec screen $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE
