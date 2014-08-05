@@ -9,6 +9,10 @@ byobu (5.85) unreleased; urgency=medium
       session names start with an underscore, adding this feature to tmux
       based byobu.
 
+  [ Srdjan Grubor ]
+  * usr/bin/byobu-layout.in:
+    - add a list-layouts command
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 28 Jul 2014 09:12:13 +0100
 
 byobu (5.84-0ubuntu1) utopic; urgency=medium

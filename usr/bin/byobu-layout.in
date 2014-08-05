@@ -30,8 +30,6 @@ current_panes=$(tmux list-panes | wc -l)
 
 list_layouts() {
 	echo
-	echo "Restore layout with <shift-F8>, save a layout with <shift-ctrl-F8>"
-	echo
 	echo "Byobu Saved Layouts"
 	local count=0 i= desc= count= p=
 	for i in $PRESETS "$DIR"/*; do
@@ -52,6 +50,8 @@ case "$1" in
 		if [ -n "$2" ]; then
 			name="$2"
 		else
+			echo
+			echo "Restore layout with <shift-F8>, save a layout with <shift-ctrl-F8>"
 			while true; do
 				list_layouts
 				echo -n "Enter a unique name to save this layout: "
@@ -115,8 +115,12 @@ case "$1" in
 		tmux select-layout "$layout"
 		tmux source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
 	;;
+	list)
+		list_layouts
+		exit 0
+	;;
 	*)
-		echo "ERROR: Invalid argument, try [save|restore]" 2>&1
+		echo "ERROR: Invalid argument, try [save|restore|list]" 2>&1
 		exit 1
 	;;
 esac
