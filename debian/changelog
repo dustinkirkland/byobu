@@ -1,6 +1,8 @@
 byobu (5.86) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/bin/byobu.in:
+    - bikeshed scripts broke and quit incrementing the version number,
+      when I moved byobu to byobu.in
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 05 Aug 2014 23:21:35 +0200
 
