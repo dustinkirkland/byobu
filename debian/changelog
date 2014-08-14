@@ -1,10 +1,10 @@
-byobu (5.86) unreleased; urgency=medium
+byobu (5.86-0ubuntu1) utopic; urgency=medium
 
   * usr/bin/byobu.in:
     - bikeshed scripts broke and quit incrementing the version number,
       when I moved byobu to byobu.in
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 05 Aug 2014 23:21:35 +0200
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 Aug 2014 00:34:44 -0500
 
 byobu (5.85-0ubuntu1) utopic; urgency=medium
 
