@@ -72,6 +72,7 @@ unbind-key -n C-S-F8
 unbind-key -n M-S-F8
 unbind-key -n S-F8
 unbind-key -n F9
+unbind-key -n M-F9
 unbind-key -n S-F9
 unbind-key -n C-F9
 unbind-key -n M-F11
