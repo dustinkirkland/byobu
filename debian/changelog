@@ -1,6 +1,10 @@
 byobu (5.87) unreleased; urgency=medium
 
-  * UNRELEASED
+  [ Fazle AREFIN ]
+  * usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/doc/byobu/help.tmux.txt: LP: #1375794
+    - enable toggling of sending input to all splits
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 Aug 2014 00:34:46 -0500
 

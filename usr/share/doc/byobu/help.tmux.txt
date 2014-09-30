@@ -36,6 +36,7 @@ and some convenient keybindings:
   F9                             Launch byobu-config window
     Ctrl-F9                      Enter command and run in all windows
     Shift-F9                     Enter command and run in all splits
+    Alt-F9                       Toggle sending keyboard input to all splits
   F10                            * Used by X11 *
   F11                            * Used by X11 *
     Alt-F11                      Expand split to a full window

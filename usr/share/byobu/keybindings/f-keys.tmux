@@ -73,6 +73,7 @@ bind-key -n C-S-F8 command-prompt -p "Save byobu layout as:" "run-shell \"byobu-
 bind-key -n F9 new-window -k -n config byobu-config
 bind-key -n S-F9 command-prompt -p "Send command to all panes:" "run-shell \"$BYOBU_PREFIX/lib/byobu/include/tmux-send-command-to-all-panes '%%'\""
 bind-key -n C-F9 command-prompt -p "Send command to all windows:" "run-shell \"$BYOBU_PREFIX/lib/byobu/include/tmux-send-command-to-all-windows '%%'\""
+bind-key -n M-F9 display-panes \; setw synchronize-panes
 bind-key -n M-F11 break-pane
 bind-key -n C-F11 join-pane -h -s :. -t :-1
 bind-key -n S-F11 resize-pane -Z
