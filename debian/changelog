@@ -1,4 +1,4 @@
-byobu (5.87) unreleased; urgency=medium
+byobu (5.87-0ubuntu1) utopic; urgency=medium
 
   [ Fazle AREFIN ]
   * usr/share/byobu/keybindings/f-keys.tmux,
@@ -6,7 +6,7 @@ byobu (5.87) unreleased; urgency=medium
     usr/share/doc/byobu/help.tmux.txt: LP: #1375794
     - enable toggling of sending input to all splits
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 Aug 2014 00:34:46 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 30 Sep 2014 08:38:35 -0500
 
 byobu (5.86-0ubuntu1) utopic; urgency=medium
 
