@@ -1,6 +1,10 @@
 byobu (5.88) unreleased; urgency=medium
 
-  * UNRELEASED
+  [ Ruben Laguna ]
+  * usr/share/byobu/keybindings/f-keys.tmux:
+    - The previous binding will not work with shells that don't allow
+      variables as commands (fish shell being one of those)
+    - Use `sh -c` to explicitly use a POSIX shell to interpret the command
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 30 Sep 2014 08:38:40 -0500
 
