@@ -6,6 +6,11 @@ byobu (5.88) unreleased; urgency=medium
       variables as commands (fish shell being one of those)
     - Use `sh -c` to explicitly use a POSIX shell to interpret the command
 
+  [ dmayle ]
+  * usr/bin/byobu.in:
+    - Don't pollute output with title if calling from script
+    - https://github.com/dustinkirkland/byobu/pull/6
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 30 Sep 2014 08:38:40 -0500
 
 byobu (5.87-0ubuntu1) utopic; urgency=medium

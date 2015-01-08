@@ -93,10 +93,12 @@ fi
 # Sanitize the environment
 byobu-janitor --force
 
-# Set the window title
-[ -r "$BYOBU_CONFIG_DIR/statusrc" ] && . "$BYOBU_CONFIG_DIR/statusrc"
-. $BYOBU_PREFIX/lib/$PKG/ip_address
-[ -n "$BYOBU_NO_TITLE" ] || printf "\033]0;${USER}@$(hostname) ($(__ip_address t)) - ${PKG}\007"
+# Set the window title if this is a TTY
+if [ -t 1 ]; then
+	[ -r "$BYOBU_CONFIG_DIR/statusrc" ] && . "$BYOBU_CONFIG_DIR/statusrc"
+	. $BYOBU_PREFIX/lib/$PKG/ip_address
+	[ -n "$BYOBU_NO_TITLE" ] || printf "\033]0;${USER}@$(hostname) ($(__ip_address t)) - ${PKG}\007"
+fi
 
 # Drop a symlink to the ssh socket in $HOME, since we can ensure that exists
 if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ]; then
