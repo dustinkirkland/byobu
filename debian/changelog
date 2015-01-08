@@ -1,4 +1,4 @@
-byobu (5.88) unreleased; urgency=medium
+byobu (5.88-0ubuntu1) vivid; urgency=medium
 
   [ Ruben Laguna ]
   * usr/share/byobu/keybindings/f-keys.tmux:
@@ -11,7 +11,7 @@ byobu (5.88) unreleased; urgency=medium
     - Don't pollute output with title if calling from script
     - https://github.com/dustinkirkland/byobu/pull/6
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 30 Sep 2014 08:38:40 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 08 Jan 2015 16:01:24 -0600
 
 byobu (5.87-0ubuntu1) utopic; urgency=medium
 
