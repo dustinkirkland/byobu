@@ -1,4 +1,4 @@
-byobu (5.89) unreleased; urgency=medium
+byobu (5.89-0ubuntu1) vivid; urgency=medium
 
   * debian/rules, usr/bin/byobu.in, usr/bin/byobu-launcher.in,
     usr/bin/ctail, usr/lib/byobu/include/select-session.py:
@@ -9,7 +9,7 @@ byobu (5.89) unreleased; urgency=medium
       ourselves, and handle it gracefully
     - ensure we have access to 256 colors, even when nesting
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 08 Jan 2015 16:01:27 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 12 Jan 2015 17:39:37 -0600
 
 byobu (5.88-0ubuntu1) vivid; urgency=medium
 
