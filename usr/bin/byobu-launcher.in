@@ -30,9 +30,14 @@ if [ -O "$HOME" ]; then
 		case "$TERM" in
 			*screen*)
 				# Handle nesting
-				if [ -n "$LC_BYOBU" ] && [ "$LC_BYOBU" -gt 1 ]; then
-					# LC_BYOBU > 1, so user explicitly wants nested sessions
-					exec $BYOBU_PREFIX/bin/byobu "$@"
+				if [ -n "$LC_BYOBU" ] && [ "$LC_BYOBU" -gt 0 ]; then
+					# User explicitly wants nested sessions
+					if [ -n "$SSH_CONNECTION" ] && [ "$(printf "$SSH_CONNECTION" | awk '{print $1}')" != "$(printf "$SSH_CONNECTION" | awk '{print $3}')" ]; then
+						# Safeguard against ssh-ing into ourself, which causes an infinite loop
+						exec $BYOBU_PREFIX/bin/byobu "$@"
+					else
+						true
+					fi
 				else
 					true
 				fi

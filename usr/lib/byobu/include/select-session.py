@@ -102,24 +102,6 @@ def attach_session(session):
 	else:
 		os.execvp("screen", ["", "-AOxRR", session_name])
 
-# Confirm nested session, if necessary
-if os.getenv("BYOBU_NESTING", "0") != "1":
-	if (BYOBU_BACKEND == "tmux" and os.getenv("TMUX")) or (BYOBU_BACKEND == "screen" and "screen" in os.getenv("TERM")):
-		sys.stderr.write("WARNING: Sessions should be nested with care.\n")
-		try:
-			nest = raw_input("Are you sure you want to run Byobu inside another session?  [y/N]: ")
-			if nest != "Y" and nest != "y":
-				sys.exit(1)
-			else:
-				if os.getenv("TMUX"):
-					os.unsetenv("TMUX")
-		except KeyboardInterrupt:
-			sys.stdout.write("\n")
-			sys.exit(1)
-		except:
-			sys.stdout.write("\n")
-			sys.exit(1)
-
 sessions = get_sessions()
 
 show_shell = os.path.exists("%s/.always-select" % (BYOBU_CONFIG_DIR))

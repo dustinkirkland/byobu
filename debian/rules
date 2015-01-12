@@ -8,7 +8,7 @@ override_dh_auto_build:
 	# Check shell syntax
 	sh -n `find . -type f -exec grep -l "^\#\!/bin/sh" '{}' \;`
 	# Check for bashisms in shell scripts
-	checkbashisms `find . -type f -exec grep -l "^\#\!/bin/sh" '{}' \;` || true
+	checkbashisms `find . -type f -exec grep -l "^\#\!/bin/sh" '{}' \;` 2>&1 | grep "^possible bashism in " | grep -v "sleep only takes one integer" | grep -v "sourced script with arguments" || true
 	dh_auto_build
 
 override_dh_perl:

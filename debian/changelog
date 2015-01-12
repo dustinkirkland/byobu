@@ -1,6 +1,13 @@
 byobu (5.89) unreleased; urgency=medium
 
-  * UNRELEASED
+  * debian/rules, usr/bin/byobu.in, usr/bin/byobu-launcher.in,
+    usr/bin/ctail, usr/lib/byobu/include/select-session.py:
+    - silence some checkbashisms false positives
+    - handle nesting a bit differently
+    - allow nesting, by default
+    - detect the infinite loop situation, where we're ssh'ing into
+      ourselves, and handle it gracefully
+    - ensure we have access to 256 colors, even when nesting
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 08 Jan 2015 16:01:27 -0600
 
