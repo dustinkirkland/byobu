@@ -88,12 +88,10 @@ def update_environment(session):
 				cmd = ["tmux", "setenv", "-t", session_name, var, value]
 			else:
 				cmd = ["screen", "-S", session_name, "-X", "setenv", var, value]
-			print("Sending variable: %s" % (cmd, ))
 			subprocess.call(cmd, stdout=open(os.devnull, "w"))
 
 
 def attach_session(session):
-	print("Attaching: [%s]\n" % session)
 	update_environment(session)
 	backend, session_name = session.split("____", 2)
 	# must use the binary, not the wrapper!
