@@ -1,10 +1,10 @@
-byobu (5.90) unreleased; urgency=medium
+byobu (5.90-0ubuntu1) vivid; urgency=medium
 
   [ Mike Miller ]
   * usr/lib/byobu/include/select-session.py: LP: #1411122
     - don't print when attaching and restoring environment variables
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 12 Jan 2015 17:39:42 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 15 Jan 2015 08:09:24 -0600
 
 byobu (5.89-0ubuntu1) vivid; urgency=medium
 
