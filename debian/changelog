@@ -1,3 +1,9 @@
+byobu (5.91) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 15 Jan 2015 08:09:27 -0600
+
 byobu (5.90-0ubuntu1) vivid; urgency=medium
 
   [ Mike Miller ]
