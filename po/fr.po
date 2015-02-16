@@ -83,11 +83,11 @@ msgstr "Exécutez \"byobu\" pour activer"
 
 #: byobu-config:83
 msgid "Byobu currently launches at login (toggle off)"
-msgstr "Byobu s'exécute actuellement à la connexion (désactiver)"
+msgstr "Byobu se lance actuellement à la connexion (désactiver)"
 
 #: byobu-config:85
 msgid "Byobu currently does not launch at login (toggle on)"
-msgstr "Byobu ne s'exécute actuellement pas à la connexion (activer)"
+msgstr "Byobu ne se lance actuellement pas à la connexion (activer)"
 
 #: byobu-config:89
 msgid "Help"
@@ -177,7 +177,7 @@ msgstr "Fenêtres :"
 
 #: byobu-config:377
 msgid "Select window(s) to create by default:"
-msgstr "Sélectionner la(es) fenêtre(s) à créer par défaut :"
+msgstr "Sélectionner la(les) fenêtre(s) à créer par défaut :"
 
 #: byobu-config:397
 msgid "Byobu will be launched automatically next time you login."
@@ -187,7 +187,7 @@ msgstr ""
 #: byobu-config:405
 msgid "Byobu will not be used next time you login."
 msgstr ""
-"Byobu ne sera pas utilisé la prochaine fois que vous vous connecterez."
+"Byobu ne sera pas lancé la prochaine fois que vous vous connecterez."
 
 #: byobu-config:407
 msgid "Message"
