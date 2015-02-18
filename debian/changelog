@@ -1,6 +1,12 @@
 byobu (5.91) unreleased; urgency=medium
 
-  * UNRELEASED
+  [ Thibaut Broggi ]
+  * po/fr.po:
+    - Improve french translation
+    - Remove some spelling mistakes and I made it more coherent
+      (sometimes the word "exécuter" was used, sometimes it was
+      "lancer", or "utiliser" ; all of this words mean the same
+      thing in this context).
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 15 Jan 2015 08:09:27 -0600
 

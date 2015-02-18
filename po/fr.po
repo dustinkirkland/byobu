@@ -40,7 +40,7 @@ msgstr "Supprimer le fichier? [y/N] "
 
 #: byobu-export:199
 msgid "Select a color: "
-msgstr "Choisissez une couleur : "
+msgstr "Choisissez une couleur : "
 
 #: byobu-export:237
 msgid "Profile"
@@ -58,7 +58,7 @@ msgstr ""
 
 #: byobu-select-profile:49
 msgid " file exists, but is not a symlink"
-msgstr " fichire existe, mais n'est pas un lien symbolique"
+msgstr "Le fichier existe, mais n'est pas un lien symbolique"
 
 #: byobu-select-profile:80
 msgid "Select a screen profile: "
@@ -66,7 +66,7 @@ msgstr "Sélectionnez un profil screen : "
 
 #: byobu-select-profile:97
 msgid "ERROR: Invalid selection"
-msgstr "ERREUR : Sélection non valide"
+msgstr "ERREUR : Sélection invalide"
 
 #: byobu-select-profile:134
 msgid ""
@@ -75,7 +75,7 @@ msgid ""
 msgstr ""
 "Si vous utilisez la configuration par défaut des raccourcis clavier, appuyez "
 "sur\\n<F5> pour activer ces changements.\\n\\nSinon, quittez cette session "
-"écran et commencez-en une nouvelle."
+"screen et commencez-en une nouvelle."
 
 #: byobu-select-profile:136
 msgid "Run \"byobu\" to activate"
@@ -83,11 +83,11 @@ msgstr "Exécutez \"byobu\" pour activer"
 
 #: byobu-config:83
 msgid "Byobu currently launches at login (toggle off)"
-msgstr "Byobu s'exécute actuellement à la connexion (désactiver)"
+msgstr "Byobu se lance actuellement à la connexion (désactiver)"
 
 #: byobu-config:85
 msgid "Byobu currently does not launch at login (toggle on)"
-msgstr "Byobu ne s'exécute actuellement pas à la connexion (activer)"
+msgstr "Byobu ne se lance actuellement pas à la connexion (activer)"
 
 #: byobu-config:89
 msgid "Help"
@@ -99,7 +99,7 @@ msgstr "Changer les couleurs de Byobu"
 
 #: byobu-config:91
 msgid "Toggle status notifications"
-msgstr "Changer les notification d'état"
+msgstr "Changer les notifications d'état"
 
 #: byobu-config:92
 msgid "Change keybinding set"
@@ -107,7 +107,7 @@ msgstr "Changer d'ensemble de raccourcis clavier"
 
 #: byobu-config:93
 msgid "Change escape sequence"
-msgstr "Changer la séquence d'échapement"
+msgstr "Changer la séquence d'échappement"
 
 #: byobu-config:94
 msgid "Create new windows"
@@ -157,7 +157,7 @@ msgstr "Commande : "
 
 #: byobu-config:179
 msgid "Presets: "
-msgstr "Pré-réglages : "
+msgstr "Réglages prédéfinis : "
 
 #: byobu-config:193
 msgid "Add to default windows"
@@ -165,11 +165,11 @@ msgstr "Ajouter aux fenêtres par défaut"
 
 #: byobu-config:197
 msgid "Create new window(s):"
-msgstr "Créer nouvelle(s) fenêtre(s) :"
+msgstr "Créer de nouvelle(s) fenêtre(s) :"
 
 #: byobu-config:335
 msgid "Toggle status notifications:"
-msgstr "Changer les notifications d'état :"
+msgstr "Changer les notifications d'état :"
 
 #: byobu-config:367
 msgid "Windows:"
@@ -177,7 +177,7 @@ msgstr "Fenêtres :"
 
 #: byobu-config:377
 msgid "Select window(s) to create by default:"
-msgstr "Sélectionner fenêtre(s) à créer par défaut :"
+msgstr "Sélectionner la(les) fenêtre(s) à créer par défaut :"
 
 #: byobu-config:397
 msgid "Byobu will be launched automatically next time you login."
@@ -187,7 +187,7 @@ msgstr ""
 #: byobu-config:405
 msgid "Byobu will not be used next time you login."
 msgstr ""
-"Byobu ne sera pas utilisé la prochaine fois que vous vous connecterez."
+"Byobu ne sera pas lancé la prochaine fois que vous vous connecterez."
 
 #: byobu-config:407
 msgid "Message"
@@ -195,11 +195,11 @@ msgstr "Message"
 
 #: byobu-config:447
 msgid "Escape key: ctrl-"
-msgstr "Séquence d'échapement : ctrl-"
+msgstr "Séquence d'échappement : ctrl-"
 
 #: byobu-config:450
 msgid "Change escape sequence:"
-msgstr "Changer la séquence d'échapement :"
+msgstr "Changer la séquence d'échappement :"
 
 #: byobu-config:487
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
