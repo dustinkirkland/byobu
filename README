@@ -8,7 +8,10 @@ install locally, using the following instructions...
  0) If you pull the source from the upstream bzr or git:
       bzr branch lp:byobu
       git clone git://github.com/dustinkirkland/byobu.git
-    Then you first need to run:
+    Change the directory name to something different like byobu-src,
+    otherwise you will have issues in step 5 make process:
+      mv byobu byobu-src
+    Then you need to run:
       ./debian/rules autoconf
  1) Or download the latest officially released version from:
       https://launchpad.net/byobu/+download
@@ -35,4 +38,4 @@ Note that you will need to have a few dependencies installed:
  * gsed (if your sed implementation doesn't support -i)
 
 Dustin Kirkland <kirkland@byobu.co>
-2013-01-15
+2015-03-01
