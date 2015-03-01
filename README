@@ -12,6 +12,7 @@ install locally, using the following instructions...
     otherwise you will have issues in step 5 make process:
       mv byobu byobu-src
     Then you need to run:
+      cd byobu-src
       ./debian/rules autoconf
  1) Or download the latest officially released version from:
       https://launchpad.net/byobu/+download
