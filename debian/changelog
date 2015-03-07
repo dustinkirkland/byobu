@@ -1,4 +1,4 @@
-byobu (5.91) unreleased; urgency=medium
+byobu (5.91-0ubuntu1) vivid; urgency=medium
 
   [ Thibaut Broggi ]
   * po/fr.po:
@@ -13,7 +13,7 @@ byobu (5.91) unreleased; urgency=medium
     - improve readme build instructions, with thanks to:
       + https://github.com/dustinkirkland/byobu/pull/8
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 15 Jan 2015 08:09:27 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 07 Mar 2015 18:59:35 -0500
 
 byobu (5.90-0ubuntu1) vivid; urgency=medium
 
