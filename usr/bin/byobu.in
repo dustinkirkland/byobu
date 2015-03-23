@@ -35,7 +35,7 @@ fi
 # Source local byobu config
 if [ -r "$HOME/.byoburc" ]; then
 	# Ensure that this configuration is usable
-	. "$HOME/.byoburc" || mv -f "$HOME/.byoburc".orig
+	. "$HOME/.byoburc" || mv -f "$HOME/.byoburc" "$HOME/.byoburc".orig
 fi
 if [ -z "${BYOBU_PREFIX}" ]; then
 	# Find and export the installation location prefix
