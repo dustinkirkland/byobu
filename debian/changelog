@@ -1,3 +1,9 @@
+byobu (5.93) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 Mar 2015 12:50:58 -0500
+
 byobu (5.92-0ubuntu1) vivid; urgency=medium
 
   * usr/bin/byobu-launcher-install.in: LP: #1396959
