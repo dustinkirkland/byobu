@@ -5,6 +5,9 @@ byobu (5.92) unreleased; urgency=medium
   * usr/bin/byobu-config.in: LP: #1383669
     - revert commit to LP: #1316050, which hardcoded LANG=C
     - this should fix rendering of Japanese characters in the menu
+  * usr/share/byobu/keybindings/f-keys.tmux: LP: #1350813
+    - handle tmux 1.9's default path changes, per:
+      https://sourceforge.net/p/tmux/tmux-code/ci/1.9/tree/CHANGES
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 07 Mar 2015 18:59:37 -0500
 
