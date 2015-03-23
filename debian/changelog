@@ -1,6 +1,7 @@
 byobu (5.92) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/bin/byobu-launcher-install.in: LP: #1396959
+    - silence warnings if byobu-launch doesn't exist (e.g., uninstalled it)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 07 Mar 2015 18:59:37 -0500
 

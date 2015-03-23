@@ -44,7 +44,7 @@ update_flag() {
 
 install_launcher() {
 	$PKG-launcher-uninstall "$1" || true
-	printf "_byobu_sourced=1 . ${BYOBU_PREFIX}/bin/byobu-launch\n" >> "$1"
+	printf "_byobu_sourced=1 . ${BYOBU_PREFIX}/bin/byobu-launch 2>/dev/null || true\n" >> "$1"
 }
 
 install_launcher_fish() {
