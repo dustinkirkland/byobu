@@ -59,7 +59,7 @@ byobu (5.89-0ubuntu1) vivid; urgency=medium
 byobu (5.88-0ubuntu1) vivid; urgency=medium
 
   [ Ruben Laguna ]
-  * usr/share/byobu/keybindings/f-keys.tmux:
+  * usr/share/byobu/keybindings/f-keys.tmux: LP: #1392693
     - The previous binding will not work with shells that don't allow
       variables as commands (fish shell being one of those)
     - Use `sh -c` to explicitly use a POSIX shell to interpret the command
