@@ -2,6 +2,9 @@ byobu (5.92) unreleased; urgency=medium
 
   * usr/bin/byobu-launcher-install.in: LP: #1396959
     - silence warnings if byobu-launch doesn't exist (e.g., uninstalled it)
+  * usr/bin/byobu-config.in: LP: #1383669
+    - revert commit to LP: #1316050, which hardcoded LANG=C
+    - this should fix rendering of Japanese characters in the menu
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 07 Mar 2015 18:59:37 -0500
 
