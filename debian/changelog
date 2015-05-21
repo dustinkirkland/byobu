@@ -2,6 +2,8 @@ byobu (5.93) unreleased; urgency=medium
 
   * usr/bin/byobu.in: LP: #1417323
     - fix broken mv call
+  * usr/lib/byobu/swap:
+    - clear swap status when swap usage returns to zero
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 23 Mar 2015 12:50:58 -0500
 

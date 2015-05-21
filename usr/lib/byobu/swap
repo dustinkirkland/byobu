@@ -24,7 +24,7 @@ __swap_detail() {
 }
 
 __swap() {
-	local stotal="" sfree="" name val unit mem f;
+	local stotal="" sfree="" name="" val="" unit="" mem="" f="";
 	while read name val unit; do
 		if [ "$name" = "SwapTotal:" ]; then
 			stotal="$val"
@@ -35,24 +35,28 @@ __swap() {
 		fi
 		[ -n "$stotal" -a -n "$sfree" ] && break;
 	done < /proc/meminfo
-	[ "${stotal:-0}" = "0" ] && return 0
-	mem=${stotal}
-	f=$(((100*($stotal-$sfree))/$stotal))
-	if [ $mem -ge 1048576 ]; then
-	fpdiv "${mem}" 1048576 1
-		mem=${_RET}
-		unit="$ICON_GB"
-	elif [ $mem -ge 1024 ]; then
-		fpdiv "${mem}" 1024 0
-		mem=${_RET}
-		unit="$ICON_MB"
+	if [ "${stotal:-0}" = "0" ]; then
+		printf ""
+		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/swap"
 	else
-		mem="$mem"
-		unit="$ICON_KB"
+		mem=${stotal}
+		f=$(((100*($stotal-$sfree))/$stotal))
+		if [ $mem -ge 1048576 ]; then
+		fpdiv "${mem}" 1048576 1
+			mem=${_RET}
+			unit="$ICON_GB"
+		elif [ $mem -ge 1024 ]; then
+			fpdiv "${mem}" 1024 0
+			mem=${_RET}
+			unit="$ICON_MB"
+		else
+			mem="$mem"
+			unit="$ICON_KB"
+		fi
+		[ -n "$mem" ] || return
+		color b G w; printf "s%s" "$mem"; color -; color G w; printf "%s" "$unit"; color -;
+		color b G w; printf "%s" "$f"; color -; color G w; printf "%s" "$PCT"; color --
 	fi
-	[ -n "$mem" ] || return
-	color b G W; printf "s%s" "$mem"; color -; color G W; printf "%s" "$unit"; color -;
-	color b G W; printf "%s" "$f"; color -; color G W; printf "%s" "$PCT"; color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab
