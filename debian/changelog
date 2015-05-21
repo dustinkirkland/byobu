@@ -1,3 +1,9 @@
+byobu (5.94) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 May 2015 08:27:06 -0700
+
 byobu (5.93-0ubuntu1) wily; urgency=medium
 
   * usr/bin/byobu.in: LP: #1417323
