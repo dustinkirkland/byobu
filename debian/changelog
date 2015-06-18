@@ -5,6 +5,8 @@ byobu (5.94) unreleased; urgency=medium
       so move it over to Bybou from Bikeshed
   * usr/bin/Makefile.am, usr/share/man/man1/Makefile.am:
     - add vigpg to build
+  * usr/share/man/man1/vigpg.1:
+    - fix typo
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 May 2015 08:27:06 -0700
 
