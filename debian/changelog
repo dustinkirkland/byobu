@@ -1,6 +1,8 @@
 byobu (5.94) unreleased; urgency=medium
 
-  * UNRELEASED
+  * debian/control, usr/bin/vigpg, usr/share/man/man1/vigpg.1:
+    - after the Lastpass breach, more people could use vigpg,
+      so move it over to Bybou from Bikeshed
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 21 May 2015 08:27:06 -0700
 

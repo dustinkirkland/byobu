@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+#    vigpg - edit an encrypted file
+#    Copyright (C) 2010-2015 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+set -e
+
+# Create a temporary workspace, in memory
+# Note that this unfortunately is not mlock(2)-able
+cleartext_file=$(mktemp /dev/shm/.vigpg-XXXXXXXXXXXX)
+
+# Ensure that we always remove the cleartext_file on any exit
+trap "shred -f ${cleartext_file} "$cleartext_file".gpg 2>/dev/null || true" EXIT HUP INT QUIT TERM
+
+# Encrypted file from argv
+encrypted_file="$1"
+
+# Define our bail out function
+error() {
+	# Log to stderr
+	echo "ERROR: $1" 1>&2
+	# Remove our cleartext files, just in case the trap misses them somehow
+	rm -f "$cleartext_file" "$cleartext_file".gpg
+	# Exit non-zero to note the error condition
+	exit 1
+}
+
+if ! which gpg >/dev/null 2>&1; then
+	echo "ERROR: gpg not found, hint..." 1>&2
+	echo "  sudo apt-get install gnupg" 2>&1
+	exit 1
+fi
+
+# Try to decrypt the target file
+if [ -e "$encrypted_file" ]; then
+	(cat "$encrypted_file" | gpg -d > "$cleartext_file") 		|| error "Unable to decrypt target"
+fi
+
+# Grab a checksum of the cleartext data before modification
+before=$(sha512sum "$cleartext_file")
+
+# Open the target cleartext file in your editor of choice
+# It's up to this editor to save the file, if edited
+sensible-editor "$cleartext_file"				|| error "Unable to edit target"
+
+# Calculate a checksum afterward, to dectect modification
+after=$(sha512sum "$cleartext_file")
+
+if [ "$before" != "$after" ]; then
+	# File was modified, so we need to re-encrypt and overwrite our previous file
+	run-one-until-success gpg --default-recipient-self -s -e "$cleartext_file"	 	|| error "Unable to re-encrypt target"
+	cat "$cleartext_file".gpg > "$1"				|| error "Unable to write new encrypted file"
+	echo
+	echo "Successfully encrypted update file [$encrypted_file]"
+else
+	# File was not modified, so do not re-encrypt/overwrite
+	echo
+	echo "The encrypted file was not modified [$encrypted_file]"
+fi
