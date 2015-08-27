@@ -1,7 +1,13 @@
 byobu (5.95) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/battery:
     - sum together all batteries
+
+  [ Fortunato Ventre ] 
+  * usr/lib/byobu/include/constants:
+    - Fix check for sed's follow-symlinks feature
+      + https://github.com/dustinkirkland/byobu/pull/9
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jun 2015 20:21:41 -0500
 
