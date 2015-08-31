@@ -36,9 +36,14 @@ if [ -O "$HOME" ]; then
 						# Safeguard against ssh-ing into ourself, which causes an infinite loop
 						exec $BYOBU_PREFIX/bin/byobu "$@"
 					else
+						echo "INFO: Disabling auto-launch of Byobu in this SSH connection, to avoid a potential infinite loop" 1>&2
+						echo "INFO: You can still run 'byobu' manually at the command line, if you know what you're doing" 1>&2
 						true
 					fi
 				else
+					echo "INFO: Disabling auto-launch of Byobu in this nested session, to avoid a potential infinite loop" 1>&2
+					echo "INFO: You can still run 'byobu' manually at the command line, if you know what you're doing" 1>&2
+					echo "INFO: And you can set LC_BYOBU=1 in your environment to override this safeguard.\n" 1>&2
 					true
 				fi
 			;;

@@ -23,6 +23,8 @@ byobu (5.95) unreleased; urgency=medium
   * usr/bin/byobu.in: LP: #1369783
     - respect user's custom default-command and/or default-shell
       in the first window launched
+  * usr/bin/byobu-launcher.in: LP: #1338260
+    - add some helpful information about nested sessions
 
   [ Fortunato Ventre ]
   * usr/lib/byobu/include/constants:
