@@ -9,6 +9,8 @@ byobu (5.95) unreleased; urgency=medium
     - byobu -h|--help enters manpage
   * usr/bin/byobu-shell.in: LP: #1458941
     - find the motd
+  * usr/share/byobu/keybindings/f-keys.tmux.disable: LP: #1453037
+    - ensure that we source user's keybindings
 
   [ Fortunato Ventre ]
   * usr/lib/byobu/include/constants:
