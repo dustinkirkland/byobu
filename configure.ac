@@ -19,7 +19,7 @@ AC_PROG_LN_S
 AC_OUTPUT(Makefile \
 	etc/byobu/Makefile \
 	etc/profile.d/Makefile \
-	etc/profile.d/Z97-byobu.sh
+	usr/share/byobu/profiles/Z97-byobu.sh \
 	usr/share/applications/Makefile \
 	usr/bin/byobu \
 	usr/bin/byobu-config \

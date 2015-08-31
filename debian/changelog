@@ -1,6 +1,12 @@
 byobu (5.96) unreleased; urgency=medium
 
-  * UNRELEASED
+  * configure.ac, debian/install, debian/postinst, debian/postrm,
+    etc/profile.d/Makefile.am, etc/profile.d/Z97-byobu.sh.in =>
+    usr/share/byobu/profiles/Z97-byobu.sh.in, usr/bin/byobu.in,
+    usr/bin/byobu-launcher-install.in,
+    usr/lib/byobu/include/config.py.in,
+    usr/share/byobu/profiles/Makefile.am:
+    - fix some discrepancies between Z97- and Z98-
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Aug 2015 12:03:35 -0500
 
@@ -4155,7 +4161,7 @@ byobu (2.57-0ubuntu1) lucid; urgency=low
 
   * debian/postinst, usr/bin/byobu-config, usr/bin/byobu-launcher,
     usr/bin/byobu-launcher-uninstall: install the profile.d script
-    at Z98-* to ensure that it's sourced last-ish; clean up and check
+    at Z97-* to ensure that it's sourced last-ish; clean up and check
     for the new location; check if shell is interactive before exec'ing
     in the launcher
   * byobu-config: correct logic in determining if byobu is set to auto

@@ -362,7 +362,7 @@ def autolaunch():
 				return 1
 	except:
 		return 0
-	if os.path.exists("/etc/profile.d/Z98-%s.sh" % PKG):
+	if os.path.exists("/etc/profile.d/Z97-%s.sh" % PKG):
 		return 1
 	return 0
 

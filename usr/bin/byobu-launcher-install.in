@@ -56,7 +56,7 @@ install_launcher_fish() {
 $PKG-launcher-uninstall || true
 
 # Handle bourne shells, if not set globally in /etc/profile.d
-if [ ! -h "/etc/profile.d/Z98-$PKG.sh" ]; then
+if [ ! -h "/etc/profile.d/Z97-$PKG.sh" ]; then
 	# Install in $HOME/.profile unconditionally
 	install_launcher "$HOME/.profile"
 	# Now, install in any shell-specific profiles, if they exist

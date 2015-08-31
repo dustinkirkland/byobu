@@ -89,7 +89,7 @@ if [ "$#" = "1" ]; then
 fi
 
 # Check if we're being autolaunched, and this user explicitly does not want it.
-if [ "$0" = "/etc/profile.d/Z98-$PKG.sh" ] && [ -r "$BYOBU_CONFIG_DIR/disable-autolaunch" ]; then
+if [ "$0" = "/etc/profile.d/Z97-$PKG.sh" ] && [ -r "$BYOBU_CONFIG_DIR/disable-autolaunch" ]; then
 	exit 0
 fi
 

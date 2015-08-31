@@ -4,7 +4,7 @@ PKG="byobu"
 
 # If removing Byobu, ensure that we clean up this launch-by-default
 # symlink, if it exists
-rm -f /etc/profile.d/Z98-$PKG.sh
+rm -f /etc/profile.d/Z97-$PKG.sh
 
 # Clean-up obsolete config file
 rm -f /etc/byobu/statusrc || true
