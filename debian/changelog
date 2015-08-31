@@ -1,4 +1,4 @@
-byobu (5.96) unreleased; urgency=medium
+byobu (5.96-0ubuntu1) wily; urgency=medium
 
   * configure.ac, debian/install, debian/postinst, debian/postrm,
     etc/profile.d/Makefile.am, etc/profile.d/Z97-byobu.sh.in =>
@@ -8,7 +8,7 @@ byobu (5.96) unreleased; urgency=medium
     usr/share/byobu/profiles/Makefile.am:
     - fix some discrepancies between Z97- and Z98-
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Aug 2015 12:03:35 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Aug 2015 12:33:09 -0500
 
 byobu (5.95-0ubuntu1) wily; urgency=medium
 
