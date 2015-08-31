@@ -1,3 +1,9 @@
+byobu (5.97) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Aug 2015 12:33:21 -0500
+
 byobu (5.96-0ubuntu1) wily; urgency=medium
 
   * configure.ac, debian/install, debian/postinst, debian/postrm,
