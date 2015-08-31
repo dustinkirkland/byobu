@@ -20,6 +20,9 @@ byobu (5.95) unreleased; urgency=medium
       --follow-symlinks when possible (not always available)
   * usr/lib/byobu/logo:
     - fix minor logic typo (reversed logic)
+  * usr/bin/byobu.in: LP: #1369783
+    - respect user's custom default-command and/or default-shell
+      in the first window launched
 
   [ Fortunato Ventre ]
   * usr/lib/byobu/include/constants:

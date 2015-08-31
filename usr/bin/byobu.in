@@ -118,7 +118,12 @@ case $BYOBU_BACKEND in
 			fi
 		fi
 		BYOBU_PROFILE="-f $BYOBU_PREFIX/share/$PKG/profiles/tmuxrc"
-		DEFAULT_WINDOW="new-session -n $BYOBU_WINDOW_NAME ${BYOBU_PREFIX}/bin/byobu-shell"
+		# Set default window, unless user has overriden
+		if egrep -qs "default-command|default-shell" $HOME/.$PKG/.tmux.conf >/dev/null 2>&1; then
+			DEFAULT_WINDOW=
+		else
+			DEFAULT_WINDOW="new-session -n $BYOBU_WINDOW_NAME ${BYOBU_PREFIX}/bin/byobu-shell"
+		fi
 		sessions=$($BYOBU_BACKEND list-sessions 2>/dev/null) || true
 		CUSTOM_WINDOW_SET=0
 		if [ -s "$BYOBU_CONFIG_DIR/windows.tmux.$BYOBU_WINDOWS" ]; then
