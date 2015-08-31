@@ -5,6 +5,8 @@ byobu (5.95) unreleased; urgency=medium
     - sum together all batteries
   * usr/bin/byobu.in:
     - ensure we start tmux with unicode support, LP: #1268072
+  * usr/bin/byobu.in, usr/share/man/man1/byobu.1: LP: #1483394
+    - byobu -h|--help enters manpage
 
   [ Fortunato Ventre ]
   * usr/lib/byobu/include/constants:

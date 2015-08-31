@@ -21,6 +21,15 @@
 VERSION=5.95
 PKG="byobu"
 
+# Enter manpage if -h|--help is anywhere on the command line
+for i in $@; do
+	case "$i" in
+		-h|--help)
+			exec man $PKG
+		;;
+	esac
+done
+
 # All sorts of things go wrong if you don't own your $HOME dir.
 # This happens under sudo, if you don't use the -H option; Byobu will
 # create a bunch of files in your $HOME which will be owned by root.
