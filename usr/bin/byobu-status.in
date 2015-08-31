@@ -115,7 +115,7 @@ case "$1" in
 				case "$i" in
 					\#date)
 						if [ -n "$BYOBU_DATE" ]; then
-							$BYOBU_SED -i -e "/BYOBU_DATE=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
+							$BYOBU_SED_INLINE -e "/BYOBU_DATE=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
 							printf "%s\n" 'BYOBU_DATE=' >> "$BYOBU_CONFIG_DIR/datetime.tmux"
 							touch "$BYOBU_RUN_DIR/reload-required"
 							continue
@@ -123,7 +123,7 @@ case "$1" in
 					;;
 					\#time)
 						if [ -n "$BYOBU_TIME" ]; then
-							$BYOBU_SED -i -e "/BYOBU_TIME=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
+							$BYOBU_SED_INLINE -e "/BYOBU_TIME=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
 							printf "%s\n" 'BYOBU_TIME=' >> "$BYOBU_CONFIG_DIR/datetime.tmux"
 							touch "$BYOBU_RUN_DIR/reload-required"
 							continue
@@ -131,7 +131,7 @@ case "$1" in
 					;;
 					date)
 						if [ -z "$BYOBU_DATE" ]; then
-							$BYOBU_SED -i -e "/BYOBU_DATE=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
+							$BYOBU_SED_INLINE -e "/BYOBU_DATE=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
 							printf "%s\n" 'BYOBU_DATE="%Y-%m-%d "' >> "$BYOBU_CONFIG_DIR/datetime.tmux"
 							touch "$BYOBU_RUN_DIR/reload-required"
 							continue
@@ -139,7 +139,7 @@ case "$1" in
 					;;
 					time)
 						if [ -z "$BYOBU_TIME" ]; then
-							$BYOBU_SED -i -e "/BYOBU_TIME=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
+							$BYOBU_SED_INLINE -e "/BYOBU_TIME=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
 							printf "%s\n" 'BYOBU_TIME="%H:%M:%S"' >> "$BYOBU_CONFIG_DIR/datetime.tmux"
 							touch "$BYOBU_RUN_DIR/reload-required"
 							continue

@@ -98,12 +98,12 @@ case "$bind_to" in
 	emacs)
 		case "$BYOBU_BACKEND" in
 			screen)
-				$BYOBU_SED -i -e "/^register x /d" -e "/^bindkey /d" -e "/^escape /d" "$keybindings"
+				$BYOBU_SED_INLINE -e "/^register x /d" -e "/^bindkey /d" -e "/^escape /d" "$keybindings"
 				echo "bindkey \"^${KEY}\"" >> "$keybindings"
 				$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 			;;
 			tmux)
-				$BYOBU_SED -i -e "/^set -g prefix/d" -e "/ send-prefix/d" -e "/^unbind-key -n C-${key}/d" "$keybindings"
+				$BYOBU_SED_INLINE -e "/^set -g prefix/d" -e "/ send-prefix/d" -e "/^unbind-key -n C-${key}/d" "$keybindings"
 				echo "set -g prefix F12" >> "$keybindings"
 				echo "unbind-key -n C-${key}" >> "$keybindings"
 				$BYOBU_BACKEND source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
@@ -114,14 +114,14 @@ case "$bind_to" in
 	screen)
 		case "$BYOBU_BACKEND" in
 			screen)
-				$BYOBU_SED -i -e "/^register x /d" -e "/^bindkey \"^\"/d" -e "/^escape /d" "$keybindings"
+				$BYOBU_SED_INLINE -e "/^register x /d" -e "/^bindkey \"^\"/d" -e "/^escape /d" "$keybindings"
 				echo "bindkey \"^${KEY}\"" >> "$keybindings"
 				echo "escape \"^${KEY}${key}\"" >> "$keybindings"
 				echo "register x \"^${KEY}\"" >> "$keybindings"
 				$BYOBU_BACKEND -X at 0 source "$BYOBU_CONFIG_DIR/profile"
 			;;
 			tmux)
-				$BYOBU_SED -i -e "/^set -g prefix/d" -e "/ send-prefix/d" -e "/^unbind-key -n C-${key}/d" "$keybindings"
+				$BYOBU_SED_INLINE -e "/^set -g prefix/d" -e "/ send-prefix/d" -e "/^unbind-key -n C-${key}/d" "$keybindings"
 				echo "unbind-key -n C-${key}" >> "$keybindings"
 				if $BYOBU_BACKEND -V | grep " 1.5"; then
 					# tmux 1.5 supports a list of prefixes

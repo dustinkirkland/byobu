@@ -25,7 +25,7 @@ PKG="byobu"
 FLAG="$BYOBU_CONFIG_DIR/status.disable"
 
 # Clean up environment
-$BYOBU_SED -i "/hardstatus/d" "$BYOBU_CONFIG_DIR/keybindings" || true
+$BYOBU_SED_INLINE "/hardstatus/d" "$BYOBU_CONFIG_DIR/keybindings" || true
 if [ "$1" = "--undo" ]; then
 	rm -f "$FLAG"
 else

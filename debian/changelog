@@ -11,6 +11,13 @@ byobu (5.95) unreleased; urgency=medium
     - find the motd
   * usr/share/byobu/keybindings/f-keys.tmux.disable: LP: #1453037
     - ensure that we source user's keybindings
+  * experimental/byobu-classroom, usr/bin/byobu-ctrl-a.in, usr/bin/byobu-
+    disable-prompt.in, usr/bin/byobu-janitor.in, usr/bin/byobu-launcher-
+    uninstall.in, usr/bin/byobu-quiet.in, usr/bin/byobu-silent.in,
+    usr/bin/byobu-status.in, usr/lib/byobu/include/constants,
+    usr/share/byobu/keybindings/f-keys.screen: LP: #1068580
+    - create BYOBU_SED_INLINE variable, to handle inline sed's, using
+      --follow-symlinks when possible (not always available)
 
   [ Fortunato Ventre ]
   * usr/lib/byobu/include/constants:

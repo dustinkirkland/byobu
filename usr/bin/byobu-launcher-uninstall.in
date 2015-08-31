@@ -27,7 +27,7 @@ remove_launcher() {
 	dest=$1
 	if [ -w "$dest" ]; then
 		# keep any comments, and remove lines invoking byobu:
-		$BYOBU_SED -i -e '/^\s*#/n' -e "/\b$PKG-launch/d" -e "/\bscreen-launch/d" "$dest"
+		$BYOBU_SED_INLINE -e '/^\s*#/n' -e "/\b$PKG-launch/d" -e "/\bscreen-launch/d" "$dest"
 	fi
 }
 

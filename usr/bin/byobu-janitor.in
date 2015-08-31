@@ -84,7 +84,7 @@ for f in status statusrc; do
 		cp -f "$BYOBU_PREFIX/share/$PKG/status/$f" "$BYOBU_CONFIG_DIR/$f"
 		# Enable ec2_cost, if we're in ec2 and seeding a new setup
 		if metadata_available; then
-			$BYOBU_SED -i -e "s/#ec2_cost/ec2_cost/g" "$($BYOBU_READLINK -f $BYOBU_CONFIG_DIR/$f)"
+			$BYOBU_SED_INLINE -e "s/#ec2_cost/ec2_cost/g" "$($BYOBU_READLINK -f $BYOBU_CONFIG_DIR/$f)"
 		fi
 	fi
 done
@@ -98,7 +98,7 @@ fi
 # Affects: Upgrades from <= byobu-2.78 which might have "motd+shell"
 # in their window list; update this to just "shell"
 if grep -qs "motd+shell" "$BYOBU_CONFIG_DIR/windows"; then
-	$BYOBU_SED -i -e "s/motd+shell/shell/g" "$($BYOBU_READLINK -f $BYOBU_CONFIG_DIR/windows)" || true
+	$BYOBU_SED_INLINE -e "s/motd+shell/shell/g" "$($BYOBU_READLINK -f $BYOBU_CONFIG_DIR/windows)" || true
 fi
 
 # Affects: Upgrades from <= byobu 4.3, remove ec2_rates
@@ -106,7 +106,7 @@ rm -f "$BYOBU_CONFIG_DIR/ec2_rates"
 
 # Affects: Upgrades from <= byobu 4.4, update "shell" -> "byobu-shell"
 if grep -qs " shell$" "$BYOBU_CONFIG_DIR/windows"; then
-	$BYOBU_SED -i -e "s/ shell$/ $PKG-shell/g" "$($BYOBU_READLINK -f $BYOBU_CONFIG_DIR/windows)" || true
+	$BYOBU_SED_INLINE -e "s/ shell$/ $PKG-shell/g" "$($BYOBU_READLINK -f $BYOBU_CONFIG_DIR/windows)" || true
 fi
 
 # Affects: Upgrades from <= byobu 4.22
