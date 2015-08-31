@@ -1,9 +1,9 @@
-byobu (5.97) unreleased; urgency=medium
+byobu (5.97-0ubuntu1) wily; urgency=medium
 
   * usr/bin/byobu-launcher.in: LP: #1338260
     - fix byobu autolaunch for TERM=screen-256color users
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Aug 2015 12:33:21 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Aug 2015 13:32:36 -0500
 
 byobu (5.96-0ubuntu1) wily; urgency=medium
 
