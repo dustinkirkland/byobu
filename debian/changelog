@@ -18,6 +18,8 @@ byobu (5.95) unreleased; urgency=medium
     usr/share/byobu/keybindings/f-keys.screen: LP: #1068580
     - create BYOBU_SED_INLINE variable, to handle inline sed's, using
       --follow-symlinks when possible (not always available)
+  * usr/lib/byobu/logo:
+    - fix minor logic typo (reversed logic)
 
   [ Fortunato Ventre ]
   * usr/lib/byobu/include/constants:
