@@ -6,7 +6,7 @@ byobu (5.95) unreleased; urgency=medium
   * usr/bin/byobu.in:
     - ensure we start tmux with unicode support, LP: #1268072
   * usr/bin/byobu.in, usr/share/man/man1/byobu.1: LP: #1483394
-    - byobu -h|--help enters manpage
+    - byobu -h|--help enters manpage, place this code with -v|--version
   * usr/bin/byobu-shell.in: LP: #1458941
     - find the motd
   * usr/share/byobu/keybindings/f-keys.tmux.disable: LP: #1453037

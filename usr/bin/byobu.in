@@ -21,15 +21,6 @@
 VERSION=5.95
 PKG="byobu"
 
-# Enter manpage if -h|--help is anywhere on the command line
-for i in $@; do
-	case "$i" in
-		-h|--help)
-			exec man $PKG
-		;;
-	esac
-done
-
 # All sorts of things go wrong if you don't own your $HOME dir.
 # This happens under sudo, if you don't use the -H option; Byobu will
 # create a bunch of files in your $HOME which will be owned by root.
@@ -76,7 +67,7 @@ export BYOBU_TTY=$(tty)
 # Get the default window name
 [ -n "$BYOBU_WINDOW_NAME" ] || BYOBU_WINDOW_NAME=-
 
-# Add a version argument for debugging purposes
+# Add a version argument for debugging purposes, enter manpage for help
 if [ "$#" = "1" ]; then
 	case "$1" in
 		-v|--version)
@@ -90,6 +81,9 @@ if [ "$#" = "1" ]; then
 			fi
 			exec $BYOBU_BACKEND $BYOBU_ARG_VERSION
 			exit 0
+		;;
+		-h|--help)
+			exec man $PKG
 		;;
 	esac
 fi
