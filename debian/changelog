@@ -3,8 +3,10 @@ byobu (5.95) unreleased; urgency=medium
   [ Dustin Kirkland ]
   * usr/lib/byobu/battery:
     - sum together all batteries
+  * usr/bin/byobu.in:
+    - ensure we start tmux with unicode support, LP: #1268072
 
-  [ Fortunato Ventre ] 
+  [ Fortunato Ventre ]
   * usr/lib/byobu/include/constants:
     - Fix check for sed's follow-symlinks feature
       + https://github.com/dustinkirkland/byobu/pull/9

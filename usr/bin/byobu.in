@@ -178,7 +178,7 @@ if [ "$#" = "0" ]; then
 		# Start new custom window set session
 		case $BYOBU_BACKEND in
 			tmux)
-				exec tmux $SCREEN_TERM $BYOBU_PROFILE $(cat "$BYOBU_WINDOWS")
+				exec tmux -u $SCREEN_TERM $BYOBU_PROFILE $(cat "$BYOBU_WINDOWS")
 			;;
 			screen)
 				exec screen $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE
@@ -194,7 +194,7 @@ if [ "$#" = "0" ]; then
 				# Start new default session
 				case $BYOBU_BACKEND in
 					tmux)
-						exec tmux $SCREEN_TERM $BYOBU_PROFILE $DEFAULT_WINDOW
+						exec tmux -u $SCREEN_TERM $BYOBU_PROFILE $DEFAULT_WINDOW
 					;;
 					screen)
 						exec screen $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE $DEFAULT_WINDOW
@@ -207,10 +207,10 @@ else
 	# Launch with command line args
 	case $BYOBU_BACKEND in
 		tmux)
-			exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_PROFILE "$@"
+			exec tmux -u $SCREEN_TERM $BYOBU_PROFILE "$@"
 		;;
 		screen)
-			exec $BYOBU_BACKEND $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE "$@"
+			exec screen $SCREEN_TERM $BYOBU_SESSION_NAME $BYOBU_PROFILE "$@"
 		;;
 	esac
 fi
