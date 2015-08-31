@@ -1,4 +1,4 @@
-byobu (5.95) unreleased; urgency=medium
+byobu (5.95-0ubuntu1) wily; urgency=medium
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/battery:
@@ -33,7 +33,7 @@ byobu (5.95) unreleased; urgency=medium
     - Fix check for sed's follow-symlinks feature
       + https://github.com/dustinkirkland/byobu/pull/9
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 17 Jun 2015 20:21:41 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Aug 2015 12:03:12 -0500
 
 byobu (5.94-0ubuntu1) wily; urgency=medium
 
