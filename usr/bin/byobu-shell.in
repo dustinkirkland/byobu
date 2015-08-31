@@ -24,7 +24,10 @@ PKG="byobu"
 
 FLAG="$BYOBU_CONFIG_DIR/.welcome-displayed"
 
-[ -r /etc/motd ] && cat /etc/motd
+# Find a MOTD, seems that they're moving around
+for i in /etc/motd /run/motd.dynamic /run/motd; do
+	[ -r $i ] && cat $i && break
+done
 
 if [ ! -e "$FLAG" ]; then
 	echo
