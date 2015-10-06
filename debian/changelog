@@ -1,6 +1,7 @@
 byobu (5.98) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/bin/vigpg:
+    - specify stdin for input file
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Aug 2015 13:32:38 -0500
 
