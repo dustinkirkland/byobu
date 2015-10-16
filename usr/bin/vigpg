@@ -25,7 +25,7 @@ set -e
 cleartext_file=$(mktemp /dev/shm/.vigpg-XXXXXXXXXXXX)
 
 # Ensure that we always remove the cleartext_file on any exit
-trap "shred -f ${cleartext_file} "$cleartext_file".gpg 2>/dev/null || true" EXIT HUP INT QUIT TERM
+trap "shred -f ${cleartext_file} ${cleartext_file}.gpg 2>/dev/null || true" EXIT HUP INT QUIT TERM
 
 # Encrypted file from argv
 encrypted_file="$1"
@@ -48,7 +48,8 @@ fi
 
 # Try to decrypt the target file
 if [ -e "$encrypted_file" ]; then
-	(cat "$encrypted_file" | gpg -d - > "$cleartext_file") 		|| error "Unable to decrypt target"
+	rm -f "$cleartext_file"
+	gpg -o "$cleartext_file" -d "$encrypted_file" 		|| error "Unable to decrypt target"
 fi
 
 # Grab a checksum of the cleartext data before modification
@@ -72,3 +73,4 @@ else
 	echo
 	echo "The encrypted file was not modified [$encrypted_file]"
 fi
+rm -f "$cleartext_file" "$cleartext_file".gpg

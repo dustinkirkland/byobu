@@ -2,6 +2,9 @@ byobu (5.98) unreleased; urgency=medium
 
   * usr/bin/vigpg:
     - specify stdin for input file
+  * usr/bin/vigpg:
+    - get vigpg working with the new release of gpg in wily
+    - clean up encrypted copies of the file
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Aug 2015 13:32:38 -0500
 
