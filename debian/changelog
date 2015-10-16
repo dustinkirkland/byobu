@@ -1,10 +1,15 @@
 byobu (5.98) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/bin/vigpg:
     - specify stdin for input file
   * usr/bin/vigpg:
     - get vigpg working with the new release of gpg in wily
     - clean up encrypted copies of the file
+
+  [ Roman Inflianskas ]
+  * usr/lib/byobu/include/config.py.in:
+    - fix help for openSUSE
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Aug 2015 13:32:38 -0500
 

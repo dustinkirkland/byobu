@@ -58,6 +58,8 @@ DOC = BYOBU_PREFIX + '/share/doc/' + PKG
 if not os.path.exists(SHARE):
 	SHARE = BYOBU_CONFIG_DIR + "/" + SHARE
 if not os.path.exists(DOC):
+	DOC = BYOBU_PREFIX + '/share/doc/packages/' + PKG
+if not os.path.exists(DOC):
 	DOC = BYOBU_CONFIG_DIR + "/" + DOC
 DEF_ESC = "A"
 RELOAD = "If you are using the default set of keybindings, press\n<F5> or <ctrl-a-R> to activate these changes.\n\nOtherwise, exit this session and start a new one."
