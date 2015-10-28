@@ -6,6 +6,8 @@ byobu (5.98) unreleased; urgency=medium
   * usr/bin/vigpg:
     - get vigpg working with the new release of gpg in wily
     - clean up encrypted copies of the file
+  * usr/share/applications/byobu.desktop: LP: #1503418
+    - use byobu icon rather than gnome-terminal
 
   [ Roman Inflianskas ]
   * usr/lib/byobu/include/config.py.in:
