@@ -1,4 +1,4 @@
-byobu (5.98) unreleased; urgency=medium
+byobu (5.98-0ubuntu1) xenial; urgency=medium
 
   [ Dustin Kirkland ]
   * usr/bin/vigpg:
@@ -13,7 +13,7 @@ byobu (5.98) unreleased; urgency=medium
   * usr/lib/byobu/include/config.py.in:
     - fix help for openSUSE
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 31 Aug 2015 13:32:38 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 28 Oct 2015 09:48:44 +0900
 
 byobu (5.97-0ubuntu1) wily; urgency=medium
 
