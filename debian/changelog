@@ -1,6 +1,7 @@
 byobu (5.99) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/share/byobu/pixmaps/byobu.svg:
+    - cleaned up vector image from Nobuto Murata
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 28 Oct 2015 09:48:49 +0900
 
