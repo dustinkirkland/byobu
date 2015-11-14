@@ -21,7 +21,11 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-import urllib2
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
+import urllib.request, urllib.error, urllib.parse
 import argparse
 import datetime
 try:
@@ -280,7 +284,7 @@ def _load_data(url, use_cache=False, cache_class=SimpleResultsCache):
         if result is not None:
             return result
 
-    f = urllib2.urlopen(url)
+    f = urllib.request.urlopen(url)
     result = json.loads(f.read())
 
     if use_cache:
@@ -498,7 +502,7 @@ if __name__ == "__main__":
     try:
         import argparse
     except ImportError:
-        print "ERROR: You are running Python < 2.7. Please use pip to install argparse:   pip install argparse"
+        print("ERROR: You are running Python < 2.7. Please use pip to install argparse:   pip install argparse")
 
 
     parser = argparse.ArgumentParser(add_help=True, description="Print out the current prices of EC2 instances")
@@ -514,7 +518,7 @@ if __name__ == "__main__":
         try:
             from prettytable import PrettyTable
         except ImportError:
-            print "ERROR: Please install 'prettytable' using pip:    pip install prettytable"
+            print("ERROR: Please install 'prettytable' using pip:    pip install prettytable")
 
     data = None
     if args.type == "ondemand":
@@ -523,7 +527,7 @@ if __name__ == "__main__":
         data = get_ec2_reserved_instances_prices(args.filter_region, args.filter_type, args.filter_os_type)
 
     if args.format == "json":
-        print json.dumps(data)
+        print(json.dumps(data))
     elif args.format == "table":
         x = PrettyTable()
 
@@ -561,18 +565,18 @@ if __name__ == "__main__":
                     for term in it["prices"]:
                         x.add_row([region_name, it["type"], it["os"], it["utilization"], term, none_as_string(it["prices"][term]["hourly"]), none_as_string(it["prices"][term]["upfront"])])
 
-        print x
+        print(x)
     elif args.format == "csv":
         if args.type == "ondemand":
-            print "region,type,os,price"
+            print("region,type,os,price")
             for r in data["regions"]:
                 region_name = r["region"]
                 for it in r["instanceTypes"]:
-                    print "%s,%s,%s,%s" % (region_name, it["type"], it["os"], none_as_string(it["price"]))
+                    print("%s,%s,%s,%s" % (region_name, it["type"], it["os"], none_as_string(it["price"])))
         elif args.type == "reserved":
-            print "region,type,os,utilization,term,price,upfront"
+            print("region,type,os,utilization,term,price,upfront")
             for r in data["regions"]:
                 region_name = r["region"]
                 for it in r["instanceTypes"]:
                     for term in it["prices"]:
-                        print "%s,%s,%s,%s,%s,%s,%s" % (region_name, it["type"], it["os"], it["utilization"], term, none_as_string(it["prices"][term]["hourly"]), none_as_string(it["prices"][term]["upfront"]))
+                        print("%s,%s,%s,%s,%s,%s,%s" % (region_name, it["type"], it["os"], it["utilization"], term, none_as_string(it["prices"][term]["hourly"]), none_as_string(it["prices"][term]["upfront"])))

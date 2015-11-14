@@ -23,6 +23,7 @@
 # If you change any strings, please generate localization information with:
 #       ./debian/rules get-po
 
+from __future__ import print_function
 import sys
 import os
 import os.path
@@ -185,7 +186,7 @@ def readstatus():
 				else:
 					status[i] = "1"
 	li = []
-	keys = status.keys()
+	keys = list(status.keys())
 	for i in sorted(keys):
 		window = [int(status[i]), i]
 		li.append(window)
