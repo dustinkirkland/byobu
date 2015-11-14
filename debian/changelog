@@ -1,3 +1,9 @@
+byobu (5.100) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 14 Nov 2015 16:59:57 -0600
+
 byobu (5.99-0ubuntu1) xenial; urgency=medium
 
   * usr/share/byobu/pixmaps/byobu.svg:
