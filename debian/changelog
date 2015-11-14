@@ -1,4 +1,4 @@
-byobu (5.99) unreleased; urgency=medium
+byobu (5.99-0ubuntu1) xenial; urgency=medium
 
   * usr/share/byobu/pixmaps/byobu.svg:
     - cleaned up vector image from Nobuto Murata
@@ -8,7 +8,7 @@ byobu (5.99) unreleased; urgency=medium
     byobu.sh.in:
     - fix some recent regressions on byobu auto launching
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 28 Oct 2015 09:48:49 +0900
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 14 Nov 2015 16:59:53 -0600
 
 byobu (5.98-0ubuntu1) xenial; urgency=medium
 
