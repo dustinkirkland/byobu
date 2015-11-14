@@ -20,6 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from builtins import input
 import os
 import re
 import sys
@@ -118,7 +119,7 @@ if len(sessions) > 1:
 			sys.stdout.write("  %d. %s\n" % (i, s))
 			i += 1
 		try:
-			choice = int(input("\nChoose 1-%d [1]: " % (i - 1)))
+			choice = int(eval(input("\nChoose 1-%d [1]: " % (i - 1))))
 			if choice >= 1 and choice < i:
 				break
 			else:
