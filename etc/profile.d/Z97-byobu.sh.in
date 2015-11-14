@@ -19,16 +19,23 @@
 # Apologies for borrowing the LC_BYOBU namespace, but:
 #  a) it's reasonable to assume that no one else is using LC_BYOBU
 #  b) LC_* is sent and receieved by most /etc/ssh/ssh*_config
-if [ -n "$LC_BYOBU" ] && [ "$LC_BYOBU" -gt 0 ] && [ -r "@prefix@/bin/byobu-launch" ]; then
-	. @prefix@/bin/byobu-launch
-elif [ "$LC_TERMTYPE" = "byobu" ] && [ -r "@prefix@/bin/byobu-launch" ]; then
-	. @prefix@/bin/byobu-launch
-elif [ "$LC_TERMTYPE" = "byobu-screen" ] && [ -r "@prefix@/bin/byobu-launch" ]; then
-	export BYOBU_BACKEND="screen"
-	. @prefix@/bin/byobu-launch
-elif [ "$LC_TERMTYPE" = "byobu-tmux" ] && [ -r "@prefix@/bin/byobu-launch" ]; then
-	export BYOBU_BACKEND="tmux"
-	. @prefix@/bin/byobu-launch
+
+if [ -r "@prefix@/bin/byobu-launch" ]; then
+	if [ "$LC_BYOBU" = "0" ]; then
+		true
+	elif [ "$LC_BYOBU" = "1" ]; then
+		. @prefix@/bin/byobu-launch
+	elif [ -e "/etc/byobu/autolaunch" ]; then
+		. @prefix@/bin/byobu-launch
+	elif [ "$LC_TERMTYPE" = "byobu" ]; then
+		. @prefix@/bin/byobu-launch
+	elif [ "$LC_TERMTYPE" = "byobu-screen" ]; then
+		export BYOBU_BACKEND="screen"
+		. @prefix@/bin/byobu-launch
+	elif [ "$LC_TERMTYPE" = "byobu-tmux" ]; then
+		export BYOBU_BACKEND="tmux"
+		. @prefix@/bin/byobu-launch
+	fi
 fi
 
 # vi: syntax=sh ts=4 noexpandtab

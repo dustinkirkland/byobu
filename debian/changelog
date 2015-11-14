@@ -2,6 +2,11 @@ byobu (5.99) unreleased; urgency=medium
 
   * usr/share/byobu/pixmaps/byobu.svg:
     - cleaned up vector image from Nobuto Murata
+  * configure.ac, debian/install, debian/postinst, debian/postrm,
+    etc/profile.d/Makefile.am, usr/share/byobu/profiles/Makefile.am,
+    usr/share/byobu/profiles/Z97-byobu.sh.in => etc/profile.d/Z97-
+    byobu.sh.in:
+    - fix some recent regressions on byobu auto launching
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 28 Oct 2015 09:48:49 +0900
 

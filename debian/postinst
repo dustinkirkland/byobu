@@ -7,9 +7,9 @@ PKG="byobu"
 
 db_get byobu/launch-by-default || true
 if [ "$RET" = true ]; then
-	ln -sf /usr/share/$PKG/profiles/Z97-$PKG.sh /etc/profile.d/Z97-$PKG.sh
+	touch /etc/$PKG/autolaunch
 else
-	rm -f /etc/profile.d/Z97-$PKG.sh
+	rm -f /etc/$PKG/autolaunch
 fi
 
 # Clean up any old-school screen-profiles diversions of /usr/bin/screen

@@ -1,5 +1,6 @@
 etc/byobu/socketdir etc/byobu/
 etc/byobu/backend etc/byobu/
+etc/profile.d/Z97-byobu.sh etc/profile.d/
 usr/share/byobu/pixmaps/byobu.svg usr/share/icons/hicolor/scalable/apps/
 usr/share/byobu/pixmaps/highcontrast/byobu.svg usr/share/icons/HighContrast/scalable/apps/
 debian/source_byobu.py usr/share/apport/package-hooks
