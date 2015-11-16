@@ -1,6 +1,11 @@
 byobu (5.100) unreleased; urgency=medium
 
-  * UNRELEASED
+  [ David Personette ]
+  * usr/lib/byobu/include/config.py.in,
+    usr/lib/byobu/include/ec2instancespricing.py,
+    usr/lib/byobu/include/select-session.py:
+    - https://github.com/dustinkirkland/byobu/pull/11
+    - Python scripts 'futurize'd to support python3
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 14 Nov 2015 16:59:57 -0600
 
