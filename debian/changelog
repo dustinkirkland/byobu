@@ -1,4 +1,4 @@
-byobu (5.100) unreleased; urgency=medium
+byobu (5.100-0ubuntu1) xenial; urgency=medium
 
   [ David Personette ]
   * usr/lib/byobu/include/config.py.in,
@@ -36,7 +36,7 @@ byobu (5.100) unreleased; urgency=medium
   * usr/lib/byobu/include/select-session.py:
     - fix regression introduced by r2448
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 14 Nov 2015 16:59:57 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 02 Dec 2015 13:44:20 -0600
 
 byobu (5.99-0ubuntu1) xenial; urgency=medium
 
