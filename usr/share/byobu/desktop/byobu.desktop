@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Byobu Terminal
+Comment=Advanced Command Line and Text Window Manager
+Icon=byobu
+Exec=gnome-terminal --app-id us.kirkland.terminals.byobu -e byobu
+Type=Application
+Categories=GNOME;GTK;Utility;
+X-GNOME-Gettext-Domain=byobu

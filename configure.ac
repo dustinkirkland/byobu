@@ -20,7 +20,6 @@ AC_OUTPUT(Makefile \
 	etc/byobu/Makefile \
 	etc/profile.d/Makefile \
 	etc/profile.d/Z97-byobu.sh \
-	usr/share/applications/Makefile \
 	usr/bin/byobu \
 	usr/bin/byobu-config \
 	usr/bin/byobu-ctrl-a \
@@ -51,12 +50,14 @@ AC_OUTPUT(Makefile \
 	usr/lib/byobu/include/dirs \
 	usr/lib/byobu/include/toggle-utf8 \
 	usr/share/byobu/tests/byobu-time-notifications \
+	usr/share/byobu/desktop/Makefile \
 	usr/share/byobu/keybindings/Makefile \
 	usr/share/byobu/pixmaps/Makefile \
 	usr/share/byobu/profiles/Makefile \
 	usr/share/byobu/status/Makefile \
 	usr/share/byobu/tests/Makefile \
 	usr/share/byobu/windows/Makefile \
+	usr/share/dbus-1/services/Makefile \
 	usr/share/doc/byobu/Makefile \
 	usr/lib/byobu/Makefile \
 	usr/lib/byobu/include/Makefile \

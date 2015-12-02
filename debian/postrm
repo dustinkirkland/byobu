@@ -5,6 +5,9 @@ PKG="byobu"
 # Clean-up obsolete config file
 rm -f /etc/byobu/statusrc || true
 
+# Clean-up linked desktop file
+rm -rf /usr/share/applications/$PKG.desktop
+
 #DEBHELPER#
 
 # vi: syntax=sh ts=4 noexpandtab

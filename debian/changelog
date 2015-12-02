@@ -10,7 +10,29 @@ byobu (5.100) unreleased; urgency=medium
   [ Dustin Kirkland ]
   * usr/share/applications/byobu.desktop:
     - Revert upstream .desktop changes to match against
-      gnome-terminal-server
+      gnome-terminal-server, LP: #1512498
+  * === added directory usr/share/byobu/desktop, === added directory
+    usr/share/dbus-1, === added directory usr/share/dbus-1/services,
+    configure.ac, debian/control, debian/postinst, debian/postrm,
+    Makefile.am, usr/share/applications/byobu.desktop =>
+    usr/share/byobu/desktop/byobu.desktop,
+    usr/share/applications/Makefile.am =>
+    usr/share/byobu/desktop/Makefile.am,
+    usr/share/byobu/desktop/byobu.desktop.old, usr/share/dbus-
+    1/services/Makefile.am, usr/share/dbus-
+    1/services/us.kirkland.terminals.byobu.service: LP: #1512498, #1503418
+    - huge work around the mess that is gnome-terminal-server
+    - install two different desktop files to /usr/share/byobu/desktops/*
+    - in postinst, symlink the correct one into /usr/share/applications
+    - clean up that conditionally installed symlink in postinst
+    - suggest gnome-terminal package, as our new desktop file hardcodes
+      gnome-terminal (this kind of sucks)
+    - in byobu.desktop, exec gnome-terminal with a --app-id hint, and
+      drop the Terminal=true, as gnome-terminal will take care of that
+    - install a dbus service, as new gnome-terminal expects to launch
+      via dbus
+    - fqdn namespace that service to us.kirkland.terminals.byobu
+      + this is stupid, btw
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 14 Nov 2015 16:59:57 -0600
 

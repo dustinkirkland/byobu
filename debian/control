@@ -25,6 +25,7 @@ Recommends:
 Suggests:
  apport,
  ccze,
+ gnome-terminal,
  gnupg,
  lsb-release,
  po-debconf,

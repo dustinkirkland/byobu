@@ -12,6 +12,13 @@ else
 	rm -f /etc/$PKG/autolaunch
 fi
 
+# Install correct .desktop file
+if [ -x /usr/lib/gnome-terminal/gnome-terminal-server ]; then
+	ln -sf /usr/share/$PKG/desktop/$PKG.desktop /usr/share/applications/$PKG.desktop
+else
+	ln -sf /usr/share/$PKG/desktop/$PKG.desktop.old /usr/share/applications/$PKG.desktop
+fi
+
 # Clean up any old-school screen-profiles diversions of /usr/bin/screen
 if [ -f /usr/bin/screen ] && [ -f /usr/bin/screen.real ]; then
 	divertpkg=$(dpkg-divert --listpackage /usr/bin/screen || true)
