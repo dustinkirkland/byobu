@@ -7,6 +7,11 @@ byobu (5.100) unreleased; urgency=medium
     - https://github.com/dustinkirkland/byobu/pull/11
     - Python scripts 'futurize'd to support python3
 
+  [ Dustin Kirkland ]
+  * usr/share/applications/byobu.desktop:
+    - Revert upstream .desktop changes to match against
+      gnome-terminal-server
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 14 Nov 2015 16:59:57 -0600
 
 byobu (5.99-0ubuntu1) xenial; urgency=medium

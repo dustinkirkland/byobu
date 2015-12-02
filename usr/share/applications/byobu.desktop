@@ -7,4 +7,3 @@ Type=Application
 Terminal=true
 Categories=GNOME;GTK;Utility;
 X-GNOME-Gettext-Domain=byobu
-StartupWMClass=gnome-terminal-server
