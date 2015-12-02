@@ -20,11 +20,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from builtins import input
 import os
 import re
 import sys
 import subprocess
+try:
+	# For Python3, try and import input from builtins
+	from builtins import input
+except:
+	# But fall back to using the default input
+	True
+
 
 PKG = "byobu"
 SHELL = os.getenv("SHELL", "/bin/bash")

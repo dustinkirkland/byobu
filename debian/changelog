@@ -33,6 +33,8 @@ byobu (5.100) unreleased; urgency=medium
       via dbus
     - fqdn namespace that service to us.kirkland.terminals.byobu
       + this is stupid, btw
+  * usr/lib/byobu/include/select-session.py:
+    - fix regression introduced by r2448
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 14 Nov 2015 16:59:57 -0600
 
