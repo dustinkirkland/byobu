@@ -24,7 +24,7 @@ __arch_detail() {
 }
 
 __arch() {
-	printf "%s" $(uname -m)
+	printf "%s " $(uname -m)
 }
 
 # vi: syntax=sh ts=4 noexpandtab

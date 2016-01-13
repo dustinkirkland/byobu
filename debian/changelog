@@ -1,6 +1,7 @@
 byobu (5.101) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/lib/byobu/arch:
+    - need a trailing whitespace
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 02 Dec 2015 13:44:23 -0600
 
