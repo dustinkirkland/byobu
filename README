@@ -1,5 +1,5 @@
 For more information about this package, please see:
- * http://byobu.co
+ * http://byobu.org
 
 If Byobu is not packaged for your Linux or UNIX OS, or if you do not have
 administrative privileges in order to install Byobu, you may be able to
@@ -33,5 +33,5 @@ Note that you will need to have a few dependencies installed:
  * gsed (if your sed implementation doesn't support -i)
  * coreutils
 
-Dustin Kirkland <kirkland@byobu.co>
+Dustin Kirkland <kirkland@byobu.org>
 2015-03-01

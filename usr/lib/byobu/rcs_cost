@@ -6,10 +6,10 @@
 #    Copyright (C) 2011-2014 Dustin Kirkland
 #
 #    Author(s): Jon Bernard <jbernard@debian.org>
-#               Dustin Kirkland <kirkland@byobu.co>
+#               Dustin Kirkland <kirkland@byobu.org>
 #
 #    Derived from byobu's ec2_cost written by Dustin Kirkland, see
-#    Byobu's project page: http://byobu.co for more information
+#    Byobu's project page: http://byobu.org for more information
 #
 #    This program is free software: you can redistribute it and/or modify it
 #    under the terms of the GNU General Public License as published by the

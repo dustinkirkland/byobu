@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2014 Dustin Kirkland <kirkland@byobu.co> -->
+<!-- Copyright 2014 Dustin Kirkland <kirkland@byobu.org> -->
 <application>
  <id type="desktop">byobu.desktop</id>
  <metadata_license>GPL-3</metadata_license>
@@ -15,9 +15,9 @@
   </p>
  </description>
  <screenshots>
-  <screenshot type="default" width="800" height="600">http://byobu.co/img/screenshot.png</screenshot>
+  <screenshot type="default" width="800" height="600">http://byobu.org/img/screenshot.png</screenshot>
  </screenshots>
- <url type="homepage">http://byobu.co</url>
- <updatecontact>kirkland@byobu.co</updatecontact>
+ <url type="homepage">http://byobu.org</url>
+ <updatecontact>kirkland@byobu.org</updatecontact>
  <project_group>Byobu</project_group>
 </application>
