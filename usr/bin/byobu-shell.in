@@ -26,7 +26,7 @@ FLAG="$BYOBU_CONFIG_DIR/.welcome-displayed"
 
 # Find a MOTD, seems that they're moving around
 for i in /etc/motd /run/motd.dynamic /run/motd; do
-	[ -r $i ] && cat $i && break
+	[ -r $i ] && [ ! -e "$HOME"/.hushlogin ] && cat $i && break
 done
 
 if [ ! -e "$FLAG" ]; then

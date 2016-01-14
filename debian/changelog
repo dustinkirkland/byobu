@@ -4,6 +4,8 @@ byobu (5.101) unreleased; urgency=medium
     - need a trailing whitespace
   * README: LP: #1526844
     - add a note about installing coreutils
+  * usr/bin/byobu-shell.in: LP: #1500109
+    - respect ~/.hushlogin file
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 02 Dec 2015 13:44:23 -0600
 
