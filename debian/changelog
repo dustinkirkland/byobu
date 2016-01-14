@@ -2,7 +2,8 @@ byobu (5.102) unreleased; urgency=medium
 
   * usr/share/byobu/keybindings/mouse.tmux.disable,
     usr/share/byobu/keybindings/mouse.tmux.enable: LP: #1514377
-    - use tmux 2.1's new 'mouse' option
+    - use tmux 2.1's new 'mouse' option, add some comments,
+      support old and new
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 Jan 2016 08:55:27 +0200
 
