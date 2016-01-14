@@ -1,3 +1,9 @@
+byobu (5.102) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 Jan 2016 08:55:27 +0200
+
 byobu (5.101-0ubuntu1) xenial; urgency=medium
 
   * usr/lib/byobu/arch:
