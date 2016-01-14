@@ -31,6 +31,7 @@ Note that you will need to have a few dependencies installed:
  * tmux >= 1.5 and screen
  * python-newt (if you want to use Byobu's configuration utility)
  * gsed (if your sed implementation doesn't support -i)
+ * coreutils
 
 Dustin Kirkland <kirkland@byobu.co>
 2015-03-01
