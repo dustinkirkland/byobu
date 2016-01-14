@@ -1,4 +1,4 @@
-byobu (5.101) unreleased; urgency=medium
+byobu (5.101-0ubuntu1) xenial; urgency=medium
 
   * usr/lib/byobu/arch:
     - need a trailing whitespace
@@ -7,7 +7,7 @@ byobu (5.101) unreleased; urgency=medium
   * usr/bin/byobu-shell.in: LP: #1500109
     - respect ~/.hushlogin file
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 02 Dec 2015 13:44:23 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 Jan 2016 08:55:21 +0200
 
 byobu (5.100-0ubuntu1) xenial; urgency=medium
 
