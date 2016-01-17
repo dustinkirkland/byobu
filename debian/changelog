@@ -1,5 +1,6 @@
 byobu (5.102) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/share/byobu/keybindings/mouse.tmux.disable,
     usr/share/byobu/keybindings/mouse.tmux.enable: LP: #1514377
     - use tmux 2.1's new 'mouse' option, add some comments,
@@ -21,6 +22,12 @@ byobu (5.102) unreleased; urgency=medium
     detail.1, usr/share/man/man1/byobu-tmux.1, usr/share/man/man1/byobu-
     ugraph.1, usr/share/man/man1/byobu-ulevel.1:
     - replace http://byobu.co links to newly registered http://byobu.org
+
+  [ Jeffrey To ]
+  * usr/share/byobu/keybindings/tmux-screen-keys.conf:
+    - This adds '-c "#{pane_current_path}"' to new-window/split-window calls
+      in tmux-screen-keys.conf, matching similar calls in f-keys.tmux.
+
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 Jan 2016 08:55:27 +0200
 
