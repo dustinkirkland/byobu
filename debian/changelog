@@ -1,4 +1,4 @@
-byobu (5.102) unreleased; urgency=medium
+byobu (5.102-0ubuntu1) xenial; urgency=medium
 
   [ Dustin Kirkland ]
   * usr/share/byobu/keybindings/mouse.tmux.disable,
@@ -28,8 +28,7 @@ byobu (5.102) unreleased; urgency=medium
     - This adds '-c "#{pane_current_path}"' to new-window/split-window calls
       in tmux-screen-keys.conf, matching similar calls in f-keys.tmux.
 
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 Jan 2016 08:55:27 +0200
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 04 Feb 2016 16:29:44 -0600
 
 byobu (5.101-0ubuntu1) xenial; urgency=medium
 
