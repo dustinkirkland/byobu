@@ -42,12 +42,12 @@ Replaces:
  screen-profiles (<< 2.0),
  screen-profiles-extras (<< 2.0),
  byobu-extras (<< 2.17),
- bikeshed (<< 1.55)
+ bikeshed (<< 1.64)
 Breaks:
  screen-profiles (<< 2.0),
  screen-profiles-extras (<< 2.0),
  byobu-extras (<< 2.17),
- bikeshed (<< 1.47)
+ bikeshed (<< 1.64)
 Enhances: screen
 Description: text window manager, shell multiplexer, integrated DevOps environment
  Byobu is Ubuntu's powerful text-based window manager, shell multiplexer, and

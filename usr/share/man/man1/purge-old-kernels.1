@@ -1,0 +1,23 @@
+.TH purge-old-kernels 1 "30 Apr 2012" byobu "byobu"
+.SH NAME
+purge-old-kernels - remove old kernel and header packages from the system
+
+.SH SYNOPSIS
+\fBpurge-old-kernels\fP [--keep N] [*]
+
+.SH DESCRIPTION
+This program will remove old kernel and header packages from the system, freeing disk space.  It will never remove the currently running kernel.  By default, it will keep at least the latest 2 kernels, but the user can override that value using the --keep parameter.  Any additional parameters will be passed directly to \fBapt-get\fP(8).
+
+This program requires administrative access.
+
+.SH EXAMPLE
+
+sudo purge-old-kernels --keep 3 -qy
+
+.SH SEE ALSO
+\fBapt-get\fP(8)
+
+.SH AUTHOR
+This manpage and the utility was written by Dustin Kirkland <kirkland@ubuntu.com> for Ubuntu systems (but may be used by others).  Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 3 published by the Free Software Foundation.
+
+On Debian systems, the complete text of the GNU General Public License can be found in /usr/share/common-licenses/GPL, or on the web at \fIhttp://www.gnu.org/licenses/gpl.txt\fP.

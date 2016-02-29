@@ -3,6 +3,10 @@ byobu (5.103) unreleased; urgency=medium
   * usr/bin/Makefile.am, usr/bin/manifest, usr/bin/tmpfsffs,
     usr/share/man/man1/Makefile.am, usr/share/man/man1/manifest.1:
     - added the manifest command
+  * debian/control, usr/bin/Makefile.am, usr/bin/purge-old-kernels,
+    usr/share/man/man1/Makefile.am, usr/share/man/man1/purge-old-
+    kernels.1:
+    - move purge-old-kernels over from bikeshed into byobu
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 04 Feb 2016 16:30:00 -0600
 
