@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+#    tmpfsffs - setup /tmp on tmpfs, for faster seeks
+#    Copyright (C) 2016 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+set -e
+
+if grep -qs "^tmpfs[[:space:]]/tmp[[:space:]]tmpfs" /etc/fstab; then
+	echo "SUCCESS: /tmp is already a tmpfs"
+else
+	echo "tmpfs /tmp tmpfs rw,nosuid,nodev,noexec" >> /etc/fstab
+	dir=$(mktemp -d "/dev/shm/tmp.XXXXXXXXXXXX")
+	mv /tmp/* /tmp/.* "$dir/"
+	mount -a
+	mv "$dir/"* "$dir/."* /tmp/
+fi

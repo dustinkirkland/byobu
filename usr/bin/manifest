@@ -1,0 +1,68 @@
+#!/bin/sh
+#
+#    manifest - import/export a list of packages
+#    Copyright (C) 2016 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@byobu.co>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+set -e
+
+export_packages() {
+	if [ "$OBJECT" = "-" ]; then
+		dpkg -l
+	elif echo "$OBJECT" | grep -qs ".*://.*"; then
+		dpkg -l | lzma -9 -f -c | base64 | pastebinit -b "$OBJECT"
+	else
+		dpkg -l > "$OBJECT"
+	fi
+}
+
+import_packages() {
+	if [ "$OBJECT" = "-" ]; then
+		sudo apt install $(cat /dev/stdin | grep "^ii\s" | col2)
+	elif echo "$OBJECT" | grep -qs ".*://.*"; then
+		sudo apt install $(wget -q -O- "$OBJECT" | grep -A 999999999 '<div class="paste"><pre>' | grep -B 999999999 "^</pre>" | sed -e "s/.*<pre>//" -e "s/^<\/pre>.*//" | base64 -d | lzma -d | grep "^ii\s" | col2)
+	else
+		sudo apt install $(cat "$OBJECT" | grep "^ii\s" | col2)
+	fi
+}
+
+usage() {
+	cat <<EOF
+USAGE:
+  $0 export [-|URL|FILENAME]
+  $0 import -|URL|FILENAME
+EOF
+	exit 0
+}
+
+if [ -n "$1" ]; then
+	ACTION="$1"
+	shift
+else
+	usage
+fi
+if [ -n "$1" ]; then
+	OBJECT="$1"
+	shift
+fi
+if [ "$ACTION" = "import" ]; then
+	import_packages
+elif [ "$ACTION" = "export" ]; then
+	[ -n "$OBJECT" ] || OBJECT="http://paste.ubuntu.com"
+	export_packages
+else
+	usage
+fi

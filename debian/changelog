@@ -1,6 +1,8 @@
 byobu (5.103) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/bin/Makefile.am, usr/bin/manifest, usr/bin/tmpfsffs,
+    usr/share/man/man1/Makefile.am, usr/share/man/man1/manifest.1:
+    - added the manifest command
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 04 Feb 2016 16:30:00 -0600
 
