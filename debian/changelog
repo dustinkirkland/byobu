@@ -1,4 +1,4 @@
-byobu (5.103) unreleased; urgency=medium
+byobu (5.103-0ubuntu1) xenial; urgency=medium
 
   * usr/bin/Makefile.am, usr/bin/manifest, usr/bin/tmpfsffs,
     usr/share/man/man1/Makefile.am, usr/share/man/man1/manifest.1:
@@ -16,7 +16,7 @@ byobu (5.103) unreleased; urgency=medium
     usr/share/man/man1/byobu.1:
     - add an indicator for an unattended upgrade in progress
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 04 Feb 2016 16:30:00 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Feb 2016 23:24:31 -0600
 
 byobu (5.102-0ubuntu1) xenial; urgency=medium
 
