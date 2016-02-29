@@ -7,6 +7,8 @@ byobu (5.103) unreleased; urgency=medium
     usr/share/man/man1/Makefile.am, usr/share/man/man1/purge-old-
     kernels.1:
     - move purge-old-kernels over from bikeshed into byobu
+  * usr/lib/byobu/include/select-session.py: LP: #1550687
+    - make sure input/eval is compatible with both python2 and 3
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 04 Feb 2016 16:30:00 -0600
 
