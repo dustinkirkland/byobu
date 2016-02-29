@@ -1,6 +1,7 @@
 byobu (5.104) unreleased; urgency=medium
 
-  * UNRELEASED
+  * debian/control:
+    - suggest pastebinit, drop w3m
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Feb 2016 23:24:33 -0600
 

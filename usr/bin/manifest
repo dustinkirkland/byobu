@@ -19,11 +19,17 @@
 
 set -e
 
+if ! command -v pastebinit >/dev/null 2>&1; then
+	echo "ERROR: pastebinit not found.  Hint:" 1>&2
+	echo "  sudo apt install pastebinit" 1>&2
+	exit 1
+fi
+
 export_packages() {
 	if [ "$OBJECT" = "-" ]; then
 		dpkg -l
 	elif echo "$OBJECT" | grep -qs ".*://.*"; then
-		dpkg -l | lzma -9 -f -c | base64 | pastebinit -b "$OBJECT"
+		dpkg -l | gzip -9 | base64 | pastebinit -b "$OBJECT"
 	else
 		dpkg -l > "$OBJECT"
 	fi
@@ -33,7 +39,7 @@ import_packages() {
 	if [ "$OBJECT" = "-" ]; then
 		sudo apt install $(cat /dev/stdin | grep "^ii\s" | col2)
 	elif echo "$OBJECT" | grep -qs ".*://.*"; then
-		sudo apt install $(wget -q -O- "$OBJECT" | grep -A 999999999 '<div class="paste"><pre>' | grep -B 999999999 "^</pre>" | sed -e "s/.*<pre>//" -e "s/^<\/pre>.*//" | base64 -d | lzma -d | grep "^ii\s" | col2)
+		sudo apt install $(wget -q -O- "$OBJECT" | grep -A 999999999 '<div class="paste"><pre>' | grep -B 999999999 "^</pre>" | sed -e "s/.*<pre>//" -e "s/^<\/pre>.*//" | base64 -d | gunzip | grep "^ii\s" | col2)
 	else
 		sudo apt install $(cat "$OBJECT" | grep "^ii\s" | col2)
 	fi

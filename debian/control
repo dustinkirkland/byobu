@@ -28,11 +28,11 @@ Suggests:
  gnome-terminal,
  gnupg,
  lsb-release,
+ pastebinit,
  po-debconf,
  ttf-ubuntu-font-family (>= 0.80-0ubuntu1~medium),
  update-notifier-common,
  vim,
- w3m,
  wireless-tools
 Provides:
  screen-profiles,
