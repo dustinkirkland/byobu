@@ -9,6 +9,9 @@ byobu (5.103) unreleased; urgency=medium
     - move purge-old-kernels over from bikeshed into byobu
   * usr/lib/byobu/include/select-session.py: LP: #1550687
     - make sure input/eval is compatible with both python2 and 3
+  * usr/share/byobu/keybindings/f-keys.screen,
+    usr/share/byobu/keybindings/f-keys.tmux: LP: #1543903
+    - use $EDITOR rather than 'view'
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 04 Feb 2016 16:30:00 -0600
 

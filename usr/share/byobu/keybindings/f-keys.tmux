@@ -62,7 +62,7 @@ bind-key -n M-F6 run-shell '$BYOBU_PREFIX/lib/byobu/include/tmux-detach-all-but-
 bind-key -n S-F6 run-shell 'exec touch $BYOBU_RUN_DIR/no-logout' \; detach
 bind-key -n C-F6 kill-pane
 bind-key -n F7 copy-mode
-bind-key -n S-F7 capture-pane -S -32768 \; save-buffer "$BYOBU_RUN_DIR/printscreen" \; delete-buffer \; new-window -n "PRINTSCREEN" "view $BYOBU_RUN_DIR/printscreen"
+bind-key -n S-F7 capture-pane -S -32768 \; save-buffer "$BYOBU_RUN_DIR/printscreen" \; delete-buffer \; new-window -n "PRINTSCREEN" "$EDITOR $BYOBU_RUN_DIR/printscreen"
 bind-key -n M-NPage copy-mode \; send-keys NPage
 bind-key -n M-PPage copy-mode \; send-keys PPage
 bind-key -n F8 command-prompt -p "(rename-window) " "rename-window '%%'"

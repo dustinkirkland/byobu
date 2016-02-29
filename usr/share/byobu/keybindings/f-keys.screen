@@ -74,7 +74,7 @@ bindkey "^[[19;5~" eval 'process x' 'process u'		# Ctrl-F8  | Re-title a session
 # No ctrl-shift-F8 (save layout) in Screen
 bindkey -k k9 $BYOBU_BACKEND -t config 0 byobu-config	# F9  | Configuration
 register s "[g G$>^h"					# Goes with Shift-F7 and F12 ~ definition
-bindkey "^[[18;2~" eval 'process x' 'process s' 'exec $BYOBU_SED_INLINE -e "/./,/^$/!d" $BYOBU_RUN_DIR/printscreen' '$BYOBU_BACKEND -t PRINTSCREEN view $BYOBU_RUN_DIR/printscreen' # Shift-F7 | write the buffer to file, open in a new window
+bindkey "^[[18;2~" eval 'process x' 'process s' 'exec $BYOBU_SED_INLINE -e "/./,/^$/!d" $BYOBU_RUN_DIR/printscreen' '$BYOBU_BACKEND -t PRINTSCREEN $EDITOR $BYOBU_RUN_DIR/printscreen' # Shift-F7 | write the buffer to file, open in a new window
 							# F10 | 'toolbar' in gnome-terminal
 							# F11 | 'Full Screen' in gnome-terminal
 # No alt-F11 (break pane) in Screen
@@ -84,7 +84,7 @@ bindkey -k F2 process x					# F12 | Byobu's escape key
 bind $ $BYOBU_BACKEND -t status 0 byobu-status-detail	# F12 $ | show detailed status
 bind @ $BYOBU_BACKEND -t config 0 byobu-config		# F12 @ | Configuration
 bind R process r					# F12 R | Reload profile
-bind ~ eval 'process x' 'process s' 'exec $BYOBU_SED_INLINE -e "/./,/^$/!d" $BYOBU_RUN_DIR/printscreen' '$BYOBU_BACKEND -t PRINTSCREEN view $BYOBU_RUN_DIR/printscreen' # F12 ~ | write the buffer to file, open in a new window
+bind ~ eval 'process x' 'process s' 'exec $BYOBU_SED_INLINE -e "/./,/^$/!d" $BYOBU_RUN_DIR/printscreen' '$BYOBU_BACKEND -t PRINTSCREEN $EDITOR $BYOBU_RUN_DIR/printscreen' # F12 ~ | write the buffer to file, open in a new window
 
 register d ":source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.screen.disable^M"
 bind ! eval 'process x' 'process d' 'backtick 111 9999999 9999999 byobu-status menu --disable-f-keys'	# F12 ! | toggle on/off f-keys
