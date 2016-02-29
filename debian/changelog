@@ -1,9 +1,9 @@
-byobu (5.104) unreleased; urgency=medium
+byobu (5.104-0ubuntu1) xenial; urgency=medium
 
   * debian/control:
     - suggest pastebinit, drop w3m
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Feb 2016 23:24:33 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Feb 2016 23:46:22 -0600
 
 byobu (5.103-0ubuntu1) xenial; urgency=medium
 
