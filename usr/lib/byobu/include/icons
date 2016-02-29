@@ -35,6 +35,7 @@ if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
 	ICON_WIFI=
 	ICON_REBOOT="⟳"
 	ICON_UPDATES="!"
+	ICON_UPGRADE="⚠"
 	ICON_SECURITY="‼"
 	#ICON_KB="㎅"
 	#ICON_MB="㎆"
@@ -64,6 +65,7 @@ else
 	ICON_WIFI=
 	ICON_REBOOT="(R)"
 	ICON_UPDATES="!"
+	ICON_UPGRADE="/!\\\\\\"
 	ICON_SECURITY="!!"
 	ICON_KB="KB"
 	ICON_MB="MB"

@@ -85,7 +85,7 @@ The background colors of the \fBbyobu\fP status lines can be adjusted by editing
 
 \fBprocesses\fP \- total number of processes running on the system; displayed in the lower bar in white text on a dark yellow background with a trailing '&' indicating 'background processes'
 
-\fBreboot_required\fP \- symbol present if a reboot is required following a system update; displayed in the lower bar white text on a blue background by the symbol '(R)'; additionally, reboot_required will print '<F5>' in white text on a blue background, if Byobu requires you to reload your profile to affect some changes; it will also detect if your system is currently in \fBpowernap\fP(8) state and if so print '.zZ'.
+\fBreboot_required\fP \- symbol present if a reboot is required following a system update; displayed in the lower bar white text on a blue background by the symbol '(R)'; additionally, reboot_required will print '<F5>' in white text on a blue background, if Byobu requires you to reload your profile to affect some changes; it will also detect if your system is currently in \fBpowernap\fP(8) state and if so print '.zZ'; if your system is currently performing an \fBunattended-upgrade\fP(1) you will see a white warning sign on a red background.
 
 \fBrelease\fP \- OS/distribution name of the release running on the current system as reported by \fBlsb_release(1)\fP or \fI/etc/issue\fP; displayed in the lower bar in bold black text toward the left on a grey background; you may override the detected release with RELEASE=Whatever in \fI$BYOBU_CONFIG_DIR/statusrc\fP; you may also abbreviate the release string to N characters by setting RELEASE_ABBREVIATED=N in \fI$BYOBU_CONFIG_DIR/statusrc\fP
 

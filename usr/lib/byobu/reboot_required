@@ -22,6 +22,7 @@
 REBOOT_FLAG="/var/run/reboot-required"
 RELOAD_FLAG="$BYOBU_RUN_DIR/reload-required"
 POWERNAP_FLAG="/var/run/powernap/powersave"
+UNATTENDED_UPGRADE_FLAG="/var/run/unattended-upgrades.pid"
 
 __reboot_required_detail() {
 		[ -e "$REBOOT_FLAG" ] && ls -alF "$REBOOT_FLAG" 2>&1
@@ -32,6 +33,9 @@ __reboot_required_detail() {
 
 __reboot_required() {
 	local status="$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/reboot_required"
+	if [ -e "$UNATTENDED_UPGRADE_FLAG" ]; then
+		color b R W; printf "$ICON_UPGRADE "; color --;
+	fi
 	if [ -e "$REBOOT_FLAG" ]; then
 		color b W; printf "$ICON_REBOOT"; color --;
 	fi
