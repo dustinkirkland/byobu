@@ -1,6 +1,7 @@
 byobu (5.105) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/share/man/man1/byobu.1:
+    - update examples
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Feb 2016 23:46:26 -0600
 
