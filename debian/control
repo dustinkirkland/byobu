@@ -19,6 +19,7 @@ Depends:
  tmux (>= 1.5) | screen,
  gawk
 Recommends:
+ pastebinit,
  screen,
  tmux (>= 1.5),
  run-one
@@ -28,7 +29,6 @@ Suggests:
  gnome-terminal,
  gnupg,
  lsb-release,
- pastebinit,
  po-debconf,
  ttf-ubuntu-font-family (>= 0.80-0ubuntu1~medium),
  update-notifier-common,

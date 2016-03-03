@@ -2,6 +2,8 @@ byobu (5.105) unreleased; urgency=medium
 
   * usr/share/man/man1/byobu.1:
     - update examples
+  * debian/control:
+    - pastebinit needs to be in the recommends
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Feb 2016 23:46:26 -0600
 
