@@ -4,6 +4,9 @@ byobu (5.105) unreleased; urgency=medium
     - update examples
   * debian/control:
     - pastebinit needs to be in the recommends
+  * usr/lib/byobu/swap, usr/share/man/man1/byobu.1:
+    - switch swap to black on green, white on green
+      was unreadable
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Feb 2016 23:46:26 -0600
 

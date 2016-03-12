@@ -54,8 +54,8 @@ __swap() {
 			unit="$ICON_KB"
 		fi
 		[ -n "$mem" ] || return
-		color b G w; printf "s%s" "$mem"; color -; color G w; printf "%s" "$unit"; color -;
-		color b G w; printf "%s" "$f"; color -; color G w; printf "%s" "$PCT"; color --
+		color b G k; printf "s%s" "$mem"; color -; color G k; printf "%s" "$unit"; color -;
+		color b G k; printf "%s" "$f"; color -; color G k; printf "%s" "$PCT"; color --
 	fi
 }
 
