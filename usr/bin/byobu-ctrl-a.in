@@ -50,7 +50,7 @@ case "$BYOBU_BACKEND" in
 			bind_to="emacs"
 		fi
 		# Check for some other escape sequence in tmux keys
-		if tmux list-keys | grep -qs "^bind-key\s\+[^a]\s\+send-prefix"; then
+		if $BYOBU_BACKEND list-keys 2>/dev/null | grep -qs "^bind-key\s\+[^a]\s\+send-prefix"; then
 			bind_to="emacs"
 		fi
 	;;
@@ -106,7 +106,7 @@ case "$bind_to" in
 				$BYOBU_SED_INLINE -e "/^set -g prefix/d" -e "/ send-prefix/d" -e "/^unbind-key -n C-${key}/d" "$keybindings"
 				echo "set -g prefix F12" >> "$keybindings"
 				echo "unbind-key -n C-${key}" >> "$keybindings"
-				$BYOBU_BACKEND source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
+				$BYOBU_BACKEND source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc" 2>/dev/null
 			;;
 		esac
 		echo "INFO: ctrl-a will now operate in emacs mode"
@@ -132,7 +132,7 @@ case "$bind_to" in
 					echo "set -g prefix2 ^${KEY}" >> "$keybindings"
 				fi
 				echo "bind ${key} send-prefix" >> "$keybindings"
-				$BYOBU_BACKEND source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
+				$BYOBU_BACKEND source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc" 2>/dev/null
 			;;
 		esac
 		echo "INFO: ctrl-a will now operate in GNU Screen mode"

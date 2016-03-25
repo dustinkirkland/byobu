@@ -7,6 +7,8 @@ byobu (5.105) unreleased; urgency=medium
   * usr/lib/byobu/swap, usr/share/man/man1/byobu.1:
     - switch swap to black on green, white on green
       was unreadable
+  * usr/bin/byobu-ctrl-a.in:
+    - silence stderr
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Feb 2016 23:46:26 -0600
 
