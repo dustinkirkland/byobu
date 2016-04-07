@@ -1,4 +1,4 @@
-byobu (5.105) unreleased; urgency=medium
+byobu (5.105-0ubuntu1) xenial; urgency=medium
 
   [ Dustin Kirkland ]
   * usr/share/man/man1/byobu.1:
@@ -77,7 +77,7 @@ byobu (5.105) unreleased; urgency=medium
   * usr/lib/byobu/battery:
     - Use `POWER_SUPPLY_CAPACITY` for battery if available
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Feb 2016 23:46:26 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 07 Apr 2016 18:50:55 -0500
 
 byobu (5.104-0ubuntu1) xenial; urgency=medium
 
