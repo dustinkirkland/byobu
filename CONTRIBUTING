@@ -1,0 +1,11 @@
+You may contribute to Byobu by branching the source from Launchpad (ideally), or by forking the project on Github (less ideally):
+
+$ bzr branch lp:byobu
+
+$ git clone git://github.com/dustinkirkland/byobu.git
+
+You commit changes locally, and then propose a merge in Launchpad (ideally), or submit a pull request on Github (less ideally).
+
+As for coding standards, please use tabs, rather than spaces.  Thanks!
+
+:-Dustin
