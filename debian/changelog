@@ -15,6 +15,9 @@ byobu (5.105) unreleased; urgency=medium
   * usr/bin/byobu-janitor.in:
     - no longer default to enabling ec2 status, LP: #1564320
     - institute better timeouts for metadata wgets, LP: #1564320
+  * usr/bin/byobu-select-session.in: LP: #1555446
+    - exec the select-session command, to keep from having an sh
+      hanging around
 
   [ Mark King ]
   * usr/lib/byobu/battery:

@@ -21,4 +21,4 @@ PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
-${BYOBU_PYTHON} "${BYOBU_PREFIX}/lib/${PKG}/include/select-session.py"
+exec ${BYOBU_PYTHON} "${BYOBU_PREFIX}/lib/${PKG}/include/select-session.py"
