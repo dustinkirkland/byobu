@@ -25,14 +25,13 @@ __hostname_detail() {
 
 __hostname() {
 	local h=
+	h=$(hostname -s 2>/dev/null || hostname)
 	if metadata_available; then
 		local cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/hostname"
 		# Background a retrieval of our public hostname
-		wget -q -O- http://169.254.169.254/latest/meta-data/public-hostname </dev/null >"$cache" 2>/dev/null &
+		timeout 0.2 wget -q -O- http://169.254.169.254/latest/meta-data/public-hostname </dev/null >"$cache" 2>/dev/null &
 		sleep 0.02
 		[ -s "$cache" ] && read h < "$cache"
-	else
-		h=$(hostname -s 2>/dev/null || hostname)
 	fi
 	[ -n "$h" ] || return
 	color bold2; printf "%s" "$h"; color --

@@ -218,7 +218,7 @@ metadata_available() {
 		# Must seed the cache
 		if [ -e /etc/ec2_version ] || [ -e /usr/sbin/update-grub-legacy-ec2 ]; then
 			# This *looks* like a machine with metadata, so background a potentially slow check
-			wget -q -O- --timeout=10 --tries=1 http://169.254.169.254 </dev/null >"$cache" 2>/dev/null &
+			timeout 1 wget -q -O- --tries=1 http://169.254.169.254 </dev/null >"$cache" 2>/dev/null &
 			sleep 0.02
 			[ -s "$cache" ] && x=1
 		fi

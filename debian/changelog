@@ -14,6 +14,7 @@ byobu (5.105) unreleased; urgency=medium
     - fix color comment
   * usr/bin/byobu-janitor.in:
     - no longer default to enabling ec2 status, LP: #1564320
+    - institute better timeouts for metadata wgets, LP: #1564320
 
   [ Mark King ]
   * usr/lib/byobu/battery:

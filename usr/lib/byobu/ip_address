@@ -42,7 +42,7 @@ __ip_address() {
 		1|true|yes)
 			if [ "$IP_EXTERNAL" = "1" ]; then
 				# Background an update
-				wget -q -O- http://v6.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
+				timeout 1 wget -q -O- http://v6.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
 				sleep 0.02
 			else
 				# Background an update
@@ -61,12 +61,12 @@ __ip_address() {
 		;;
 		*)
 			if [ "$IP_EXTERNAL" = "1" ]; then
-				wget -q -O- http://v4.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
+				timeout 1 wget -q -O- http://v4.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
 				sleep 0.02
 				[ -s "$cache" ] && read ipaddr < "$cache"
 			elif metadata_available; then
 				# We're in EC2, so get our public IP address
-				wget -q -O- http://169.254.169.254/latest/meta-data/public-ipv4 </dev/null >"$cache" 2>/dev/null &
+				timeout 0.2 wget -q -O- http://169.254.169.254/latest/meta-data/public-ipv4 </dev/null >"$cache" 2>/dev/null &
 				sleep 0.02
 				[ -s "$cache" ] && read ipaddr < "$cache"
 			else
