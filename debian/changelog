@@ -9,6 +9,8 @@ byobu (5.105) unreleased; urgency=medium
       was unreadable
   * usr/bin/byobu-ctrl-a.in:
     - silence stderr
+  * usr/share/byobu/profiles/bashrc:
+    - fix color comment
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 28 Feb 2016 23:46:26 -0600
 

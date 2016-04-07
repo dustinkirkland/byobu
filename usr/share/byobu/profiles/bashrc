@@ -47,7 +47,7 @@ if [ -n "$TMUX" ] || [ "${TERMCAP#*screen}" != "${TERMCAP}" ]; then
 		}
 		case "$BYOBU_DISTRO" in
 			"Ubuntu")
-				# Use Ubuntu colors (grey / aubergine / orange)
+				# Use Ubuntu colors (grey / orange / aubergine)
 				PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;202m\]\$(byobu_prompt_status)\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;172m\]\h\[\e[00m\]:\[\e[38;5;5m\]\w\[\e[00m\]\$(byobu_prompt_symbol) "
 				export GREP_COLORS="ms=01;38;5;202:mc=01;31:sl=:cx=:fn=01;38;5;132:ln=32:bn=32:se=00;38;5;242"
 				export LESS_TERMCAP_mb=$(printf '\e[01;31m')       # enter blinking mode – red
