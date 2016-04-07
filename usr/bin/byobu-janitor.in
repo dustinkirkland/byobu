@@ -82,10 +82,6 @@ for f in status statusrc; do
 	if [ ! -r "$BYOBU_CONFIG_DIR/$f" ]; then
 		# Copy from skeleton, if possible
 		cp -f "$BYOBU_PREFIX/share/$PKG/status/$f" "$BYOBU_CONFIG_DIR/$f"
-		# Enable ec2_cost, if we're in ec2 and seeding a new setup
-		if metadata_available; then
-			$BYOBU_SED_INLINE -e "s/#ec2_cost/ec2_cost/g" "$($BYOBU_READLINK -f $BYOBU_CONFIG_DIR/$f)"
-		fi
 	fi
 done
 

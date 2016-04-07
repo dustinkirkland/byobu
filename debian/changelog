@@ -12,6 +12,8 @@ byobu (5.105) unreleased; urgency=medium
     - silence stderr
   * usr/share/byobu/profiles/bashrc:
     - fix color comment
+  * usr/bin/byobu-janitor.in:
+    - no longer default to enabling ec2 status, LP: #1564320
 
   [ Mark King ]
   * usr/lib/byobu/battery:
