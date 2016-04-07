@@ -1,9 +1,9 @@
 ###############################################################################
 #    byobu's tmux f-key keybindings
 #
-#    Copyright (C) 2011-2014 Dustin Kirkland <kirkland@byobu.co>
+#    Copyright (C) 2011-2014 Dustin Kirkland <kirkland@byobu.org>
 #
-#    Authors: Dustin Kirkland <kirkland@byobu.co>
+#    Authors: Dustin Kirkland <kirkland@byobu.org>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by

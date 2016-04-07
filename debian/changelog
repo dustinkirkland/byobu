@@ -18,6 +18,58 @@ byobu (5.105) unreleased; urgency=medium
   * usr/bin/byobu-select-session.in: LP: #1555446
     - exec the select-session command, to keep from having an sh
       hanging around
+  * Applications/Byobu.app/Contents/MacOS/Byobu, AUTHORS,
+    debian/copyright, debian/source_byobu.py, etc/profile.d/Z97-
+    byobu.sh.in, experimental/byobu-classroom, po/bg.po, po/sv.po,
+    usr/bin/byobu-config.in, usr/bin/byobu-ctrl-a.in, usr/bin/byobu-
+    disable.in, usr/bin/byobu-disable-prompt.in, usr/bin/byobu-
+    enable.in, usr/bin/byobu-enable-prompt.in, usr/bin/byobu-export.in,
+    usr/bin/byobu.in, usr/bin/byobu-janitor.in, usr/bin/byobu-
+    keybindings, usr/bin/byobu-launcher.in, usr/bin/byobu-launcher-
+    install.in, usr/bin/byobu-launcher-uninstall.in, usr/bin/byobu-
+    launch.in, usr/bin/byobu-layout.in, usr/bin/byobu-prompt.in,
+    usr/bin/byobu-quiet.in, usr/bin/byobu-reconnect-sockets.in,
+    usr/bin/byobu-select-backend.in, usr/bin/byobu-select-profile.in,
+    usr/bin/byobu-select-session.in, usr/bin/byobu-shell.in,
+    usr/bin/byobu-silent.in, usr/bin/byobu-status-detail.in,
+    usr/bin/byobu-status.in, usr/bin/manifest, usr/lib/byobu/apport,
+    usr/lib/byobu/arch, usr/lib/byobu/battery, usr/lib/byobu/color,
+    usr/lib/byobu/cpu_count, usr/lib/byobu/cpu_freq,
+    usr/lib/byobu/cpu_temp, usr/lib/byobu/custom, usr/lib/byobu/date,
+    usr/lib/byobu/disk, usr/lib/byobu/disk_io, usr/lib/byobu/distro,
+    usr/lib/byobu/ec2_cost, usr/lib/byobu/entropy,
+    usr/lib/byobu/fan_speed, usr/lib/byobu/hostname,
+    usr/lib/byobu/include/colors, usr/lib/byobu/include/common,
+    usr/lib/byobu/include/config.py.in, usr/lib/byobu/include/constants,
+    usr/lib/byobu/include/cycle-status, usr/lib/byobu/include/dirs.in,
+    usr/lib/byobu/include/icons, usr/lib/byobu/include/mondrian,
+    usr/lib/byobu/include/notify_osd, usr/lib/byobu/include/select-
+    session.py, usr/lib/byobu/include/shutil, usr/lib/byobu/include/tmux-
+    detach-all-but-current-client, usr/lib/byobu/include/tmux-send-
+    command-to-all-panes, usr/lib/byobu/include/tmux-send-command-to-all-
+    windows, usr/lib/byobu/include/toggle-utf8.in,
+    usr/lib/byobu/ip_address, usr/lib/byobu/load_average,
+    usr/lib/byobu/logo, usr/lib/byobu/mail, usr/lib/byobu/memory,
+    usr/lib/byobu/menu, usr/lib/byobu/network, usr/lib/byobu/notify_osd,
+    usr/lib/byobu/processes, usr/lib/byobu/raid,
+    usr/lib/byobu/reboot_required, usr/lib/byobu/release,
+    usr/lib/byobu/services, usr/lib/byobu/session, usr/lib/byobu/swap,
+    usr/lib/byobu/time, usr/lib/byobu/time_utc, usr/lib/byobu/trash,
+    usr/lib/byobu/updates_available, usr/lib/byobu/uptime,
+    usr/lib/byobu/users, usr/lib/byobu/whoami,
+    usr/lib/byobu/wifi_quality, usr/share/byobu/keybindings/f-
+    keys.screen, usr/share/byobu/keybindings/f-keys.screen.disable,
+    usr/share/byobu/keybindings/f-keys.tmux,
+    usr/share/byobu/keybindings/f-keys.tmux.disable,
+    usr/share/byobu/profiles/bashrc, usr/share/byobu/profiles/byoburc,
+    usr/share/byobu/profiles/classroom, usr/share/byobu/profiles/common,
+    usr/share/byobu/profiles/NONE, usr/share/byobu/profiles/screenrc,
+    usr/share/byobu/profiles/tmux, usr/share/byobu/profiles/tmuxrc,
+    usr/share/byobu/status/status, usr/share/byobu/status/statusrc,
+    usr/share/byobu/tests/byobu-time-notifications.in, usr/share/dbus-
+    1/services/us.kirkland.terminals.byobu.service,
+    usr/share/man/man1/byobu-export.1:
+    - update byobu.co email addresses to byobu.org
 
   [ Mark King ]
   * usr/lib/byobu/battery:
