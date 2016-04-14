@@ -17,7 +17,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-for w in $(tmux list-panes | $BYOBU_SED -e "s/:.*//"); do
-	tmux send-keys -t $w "$@"
-	tmux send-keys -t $w Enter
+w=$(tmux list-windows | grep "\*" | awk -F: '{print $1}')
+for p in $(tmux list-panes | $BYOBU_SED -e "s/:.*//"); do
+	tmux send-keys -t $w.$p "$@" || true
+	tmux send-keys -t $w.$p Enter || true
 done
