@@ -1,6 +1,7 @@
 byobu (5.107) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/bin/manifest:
+    - remove http, breaks pastebinit
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 Apr 2016 11:21:51 -0500
 

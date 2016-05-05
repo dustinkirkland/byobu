@@ -67,7 +67,7 @@ fi
 if [ "$ACTION" = "import" ]; then
 	import_packages
 elif [ "$ACTION" = "export" ]; then
-	[ -n "$OBJECT" ] || OBJECT="http://paste.ubuntu.com"
+	[ -n "$OBJECT" ] || OBJECT="paste.ubuntu.com"
 	export_packages
 else
 	usage
