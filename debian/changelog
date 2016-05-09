@@ -2,6 +2,10 @@ byobu (5.107) unreleased; urgency=medium
 
   * usr/bin/manifest:
     - remove http, breaks pastebinit
+  * usr/bin/manifest:
+    - fix manifest url
+  * usr/bin/wifi-status:
+    - use tmux target pane
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 14 Apr 2016 11:21:51 -0500
 

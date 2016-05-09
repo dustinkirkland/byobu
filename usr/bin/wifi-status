@@ -19,8 +19,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+trap "pkill -f -9 wifi-status >/dev/null 2>&1; exit 0" EXIT HUP INT QUIT TERM
+
 if [ -z "$1" ]; then
-	dev=$(iwconfig 2>/dev/null | grep '802.11' | tail -n1 | awk '{print $1}') 
+	dev=$(iwconfig 2>/dev/null | grep '802.11' | tail -n1 | awk '{print $1}')
 else
 	dev="$1"
 fi
@@ -29,9 +31,17 @@ if [ -z "$TMUX" ]; then
 	watch -n1 "iwconfig $dev; ifconfig $dev; route -n; echo; (grep $dev: /var/log/syslog | tail -n 10 | sort -r); echo; ping -I $dev -c 1 8.8.8.8"
 else
 	tmux new-window -n wifi-status "watch -c iwconfig $dev \| ccze -A" \; \
-		split-window -v "watch -c ifconfig $dev \| ccze -A" \; \
-		split-window -v "watch -c route -n \| ccze -A" \; \
-		split-window -h "ping -I $dev 8.8.8.8" \; \
-		split-window -v "watch -c grep $dev: /var/log/syslog \| tail -n 10 \| sort -r \| ccze -A" \; \
-		select-layout tiled
+		split-window -t wifi-status -v "watch -c ifconfig $dev \| ccze -A" \; \
+		split-window -t wifi-status -v "watch -c route -n \| ccze -A" \; \
+		split-window -t wifi-status -h "ping -I $dev 8.8.8.8" \; \
+		split-window -t wifi-status -v "watch -c grep $dev: /var/log/syslog \| tail -n 10 \| sort -r \| ccze -A" \; \
+		select-layout -t wifi-status tiled
 fi
+
+while true; do
+	if [ $(tmux list-panes -t wifi-status | wc -l) -lt 5 ]; then
+		tmux kill-window -t wifi-status
+		exit 0
+	fi
+	sleep 1
+done

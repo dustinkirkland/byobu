@@ -29,7 +29,7 @@ export_packages() {
 	if [ "$OBJECT" = "-" ]; then
 		dpkg -l
 	elif echo "$OBJECT" | grep -qs ".*://.*"; then
-		dpkg -l | gzip -9 | base64 | pastebinit -b "$OBJECT"
+		dpkg -l | gzip -9 | base64 | pastebinit -b "${OBJECT##*/}"
 	else
 		dpkg -l > "$OBJECT"
 	fi
@@ -67,7 +67,7 @@ fi
 if [ "$ACTION" = "import" ]; then
 	import_packages
 elif [ "$ACTION" = "export" ]; then
-	[ -n "$OBJECT" ] || OBJECT="paste.ubuntu.com"
+	[ -n "$OBJECT" ] || OBJECT="http://paste.ubuntu.com"
 	export_packages
 else
 	usage
