@@ -1,6 +1,7 @@
 byobu (5.108) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/lib/byobu/updates_available:
+    - remove trailing whitespace
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 09 May 2016 18:26:22 -0500
 

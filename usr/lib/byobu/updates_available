@@ -103,9 +103,8 @@ ___update_needed() {
 		# we last cached. this may not recognize formulae
 		# installed with HEAD
 		for f in $(brew --prefix)/Cellar/*; do
-			[ "$f" -nt "$mycache" ] && return 0	
+			[ "$f" -nt "$mycache" ] && return 0
 		done
-		
 		# nothing new has been installed, so check wether the
 		# formulae database was updated
 		[ "$(brew --prefix)/Library/Formula" -nt "$mycache" ]
