@@ -45,7 +45,9 @@ __battery() {
 					[ -n "$POWER_SUPPLY_ENERGY_FULL" ] && full=$((POWER_SUPPLY_ENERGY_FULL+full))
 					[ -n "$POWER_SUPPLY_CHARGE_NOW" ] && rem=$((POWER_SUPPLY_CHARGE_NOW+rem))
 					[ -n "$POWER_SUPPLY_ENERGY_NOW" ] && rem=$((POWER_SUPPLY_ENERGY_NOW+rem))
-					[ -n "$POWER_SUPPLY_CAPACITY" ] && rem="$POWER_SUPPLY_CAPACITY" && full="100"
+					if [ -n "$POWER_SUPPLY_CAPACITY" ] && [ ! -n "$POWER_SUPPLY_ENERGY_NOW" ] && [ ! -n "$POWER_SUPPLY_CHARGE_NOW" ]; then
+						rem="$POWER_SUPPLY_CAPACITY" && full="100"
+					fi
 					[ "$POWER_SUPPLY_STATUS" != "Unknown" ] && state="$POWER_SUPPLY_STATUS"
 				fi
 			;;
