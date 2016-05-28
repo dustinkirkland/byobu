@@ -30,18 +30,25 @@ __uptime() {
 	if [ -r /proc/uptime ]; then
 		read u idle < /proc/uptime
 		u=${u%.*}
+	elif [ -x /usr/sbin/sysctl ]; then
+		u=$(/usr/sbin/sysctl -n kern.boottime | cut -f4 -d' ' | cut -d',' -f1)
+		u=$(($(date +%s) - $u))
+	fi
+
+	if [ "$u" ]; then
 		if [ "$u" -gt 86400 ]; then
-			str="$(($u / 86400))d$((($u % 86400) / 3600))h"
+				str="$(($u / 86400))d$((($u % 86400) / 3600))h"
 		elif [ "$u" -gt 3600 ]; then
-			str="$(($u / 3600))h$((($u % 3600) / 60))m"
+				str="$(($u / 3600))h$((($u % 3600) / 60))m"
 		elif [ "$u" -gt 60 ]; then
-			str="$(($u / 60))m"
+				str="$(($u / 60))m"
 		else
-			str="${u}s"
+				str="${u}s"
 		fi
 	else
 		str=$(uptime | sed -e "s/.* up *//" -e "s/ *days, */d/" -e "s/:/h/" -e "s/,.*/m/")
 	fi
+
 	[ -n "$str" ] || return
 	color w b; printf "%s" "${str}"; color --
 }
