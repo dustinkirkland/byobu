@@ -1,11 +1,16 @@
 byobu (5.108) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/updates_available:
     - remove trailing whitespace
   * usr/lib/byobu/battery:
     - only use POWER_SUPPLY_CAPACITY if neither POWER_SUPPLY_ENERGY_NOW nor
       POWER_SUPPLY_CHARGE_NOW are available; important for summing
       multiple batteries
+
+  [ Kevin Mark and Dustin Kirkland ]
+  * usr/lib/byobu/uptime:
+    - fix uptime status on MacOS
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 09 May 2016 18:26:22 -0500
 
