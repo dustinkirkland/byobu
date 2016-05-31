@@ -1,4 +1,4 @@
-byobu (5.108) unreleased; urgency=medium
+byobu (5.108-0ubuntu1) yakkety; urgency=medium
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/updates_available:
@@ -12,7 +12,7 @@ byobu (5.108) unreleased; urgency=medium
   * usr/lib/byobu/uptime:
     - fix uptime status on MacOS
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 09 May 2016 18:26:22 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 May 2016 10:03:12 -0500
 
 byobu (5.107-0ubuntu1) yakkety; urgency=medium
 
