@@ -1,6 +1,7 @@
 byobu (5.109) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/lib/byobu/updates_available:
+    - add an asterisk icon
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 May 2016 10:03:15 -0500
 

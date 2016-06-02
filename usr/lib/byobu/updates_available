@@ -21,6 +21,9 @@
 
 ___print_updates() {
 	local u= s=
+	if [ -n "$(lsmod | grep ^kpatch_livepatch_)" ]; then
+		color b r W; printf "*"; color -
+	fi
 	read u s < "$1"
 	if [ -n "$u" ]; then
 		if [ "$u" -gt 0 ]; then
