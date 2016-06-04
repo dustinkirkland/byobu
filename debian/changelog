@@ -2,6 +2,7 @@ byobu (5.109) unreleased; urgency=medium
 
   * usr/lib/byobu/updates_available:
     - add an asterisk icon
+    - fix formatting again
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 May 2016 10:03:15 -0500
 

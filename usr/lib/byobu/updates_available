@@ -21,12 +21,15 @@
 
 ___print_updates() {
 	local u= s=
-	if [ -n "$(lsmod | grep ^kpatch_livepatch_)" ]; then
-		color b r W; printf "*"; color -
-	fi
 	read u s < "$1"
+	if [ -n "$(lsmod | grep ^kpatch_livepatch_)" ]; then
+		color b r W; printf "*"; color --
+	fi
 	if [ -n "$u" ]; then
 		if [ "$u" -gt 0 ]; then
+			if [ -n "$(lsmod | grep ^kpatch_livepatch_)" ]; then
+				color b r W; printf "*"; color -
+			fi
 			color b r W; printf "%d" "$u"; color -; color r W
 			if [ -n "$s" ] && [ "$s" -gt 0 ]; then
 				printf "$ICON_SECURITY"
