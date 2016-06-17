@@ -85,6 +85,7 @@ def get_sessions():
 					i += 1
 	return sessions
 
+
 def cull_zombies(session_name):
 	# When using tmux session groups, closing a client will leave
 	# unattached "zombie" sessions that will never be reattached.
@@ -109,8 +110,8 @@ def cull_zombies(session_name):
 		# Kill all the matching hidden & unattached sessions
 		pattern = "^_%s-\\d+:.+\\(%s\\)$" % (session_name, master.group(1))
 		for s in re.findall(pattern, output, re.MULTILINE):
-			print("Killing", s.split(":")[0]);
 			subprocess.Popen(["tmux", "kill-session", "-t", s.split(":")[0]])
+
 
 def update_environment(session):
 	backend, session_name = session.split("____", 2)
