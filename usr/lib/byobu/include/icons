@@ -53,7 +53,9 @@ if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
 	#ICON_MBPS="㏔㎰"
 	ICON_MBPS="Mb"
 	ICON_SESSION="〣"
+	ICON_LIVEPATCHED="🗹 "
 else
+	# Only use 0-127 ANSI: http://ascii-table.com/ascii.php
 	ICON_C="C"
 	ICON_F="F"
 	ICON_RD="<"
@@ -76,4 +78,5 @@ else
 	ICON_GHz="GHz"
 	ICON_MBPS="Mbps"
 	ICON_SESSION="|"
+	ICON_LIVEPATCHED="[/]"
 fi

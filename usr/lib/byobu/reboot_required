@@ -33,11 +33,26 @@ __reboot_required_detail() {
 
 __reboot_required() {
 	local status="$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/reboot_required"
+	local livepatched=0
 	if [ -e "$UNATTENDED_UPGRADE_FLAG" ]; then
 		color b R W; printf "$ICON_UPGRADE "; color --;
 	fi
+	while read line; do
+		set -- ${line}
+		case "$line" in
+			kpatch_livepatch_*)
+				color k G; printf "$ICON_LIVEPATCHED"; color -;
+				livepatched=1
+				break
+			;;
+		esac
+	done < /proc/modules
 	if [ -e "$REBOOT_FLAG" ]; then
-		color b W; printf "$ICON_REBOOT"; color --;
+		if [ "$livepatched" = "1" ]; then
+			color k G; printf "$ICON_REBOOT"; color --;
+		else
+			color b k R; printf "$ICON_REBOOT"; color --;
+		fi
 	fi
 	if [ -e "$RELOAD_FLAG" ]; then
 		color b W; printf "<"; color -; color b b W; printf "F5"; color -; color b W; printf ">"; color -; printf " "
