@@ -103,9 +103,9 @@ def attach_session(session):
 	backend, session_name = session.split("____", 2)
 	# must use the binary, not the wrapper!
 	if backend == "tmux":
-		os.execvp("tmux", ["", "-2", "attach", "-t", session_name])
+		os.execvp("tmux", ["tmux", "-2", "attach", "-t", session_name])
 	else:
-		os.execvp("screen", ["", "-AOxRR", session_name])
+		os.execvp("screen", ["screen", "-AOxRR", session_name])
 
 sessions = get_sessions()
 
@@ -153,9 +153,9 @@ if choice >= 1:
 	if sessions[choice - 1] == "NEW":
 		# Create a new session
 		if BYOBU_BACKEND == "tmux":
-			os.execvp("byobu", ["", "new-session", SHELL])
+			os.execvp("byobu", ["byobu", "new-session", SHELL])
 		else:
-			os.execvp("byobu", ["", SHELL])
+			os.execvp("byobu", ["byobu", SHELL])
 	elif sessions[choice - 1] == "SHELL":
 		os.execvp(SHELL, [SHELL])
 	else:
@@ -167,4 +167,4 @@ if BYOBU_BACKEND == "tmux":
 	args = ""
 else:
 	args = "-AOxRR"
-os.execvp("byobu", ["", args])
+os.execvp("byobu", ["byobu", args])
