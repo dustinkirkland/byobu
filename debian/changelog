@@ -5,7 +5,8 @@ byobu (5.109) unreleased; urgency=medium
     usr/lib/byobu/updates_available:
     - add an checkbox icon
     - fix formatting again
-  * usr/share/byobu/desktop/byobu.desktop.old:
+  * usr/share/byobu/desktop/byobu.desktop.old,
+    usr/share/byobu/desktop/Makefile.am:
     - deprecated
 
   [ Grant Likely ]
