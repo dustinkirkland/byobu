@@ -1,4 +1,4 @@
-byobu (5.109) unreleased; urgency=medium
+byobu (5.109-0ubuntu1) yakkety; urgency=medium
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/include/icons, usr/lib/byobu/reboot_required,
@@ -14,7 +14,7 @@ byobu (5.109) unreleased; urgency=medium
     - Add support for tmux grouped sessions
     - select-session.py: Pass command name in argument list
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 31 May 2016 10:03:15 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 05 Jul 2016 10:47:22 -0500
 
 byobu (5.108-0ubuntu1) yakkety; urgency=medium
 
