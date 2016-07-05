@@ -5,6 +5,8 @@ byobu (5.109) unreleased; urgency=medium
     usr/lib/byobu/updates_available:
     - add an checkbox icon
     - fix formatting again
+  * usr/share/byobu/desktop/byobu.desktop.old:
+    - deprecated
 
   [ Grant Likely ]
   * usr/lib/byobu/include/select-session.py:
