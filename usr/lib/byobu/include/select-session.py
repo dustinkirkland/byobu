@@ -86,6 +86,33 @@ def get_sessions():
 	return sessions
 
 
+def cull_zombies(session_name):
+	# When using tmux session groups, closing a client will leave
+	# unattached "zombie" sessions that will never be reattached.
+	# Search for and kill any unattached hidden sessions in the same group
+	if BYOBU_BACKEND == "tmux":
+		output = subprocess.Popen(["tmux", "list-sessions"], stdout=subprocess.PIPE).communicate()[0]
+		if sys.stdout.encoding is None:
+			output = output.decode("UTF-8")
+		else:
+			output = output.decode(sys.stdout.encoding)
+		if not output:
+			return
+
+		# Find the master session to extract the group number. We use
+		# the group number to be extra sure the right session is getting
+		# killed. We don't want to accidentally kill the wrong one
+		pattern = "^%s:.+\\((group \\d+)\\).*$" % session_name
+		master = re.search(pattern, output, re.MULTILINE)
+		if not master:
+			return
+
+		# Kill all the matching hidden & unattached sessions
+		pattern = "^_%s-\\d+:.+\\(%s\\)$" % (session_name, master.group(1))
+		for s in re.findall(pattern, output, re.MULTILINE):
+			subprocess.Popen(["tmux", "kill-session", "-t", s.split(":")[0]])
+
+
 def update_environment(session):
 	backend, session_name = session.split("____", 2)
 	for var in BYOBU_UPDATE_ENVVARS:
@@ -101,9 +128,10 @@ def update_environment(session):
 def attach_session(session):
 	update_environment(session)
 	backend, session_name = session.split("____", 2)
+	cull_zombies(session_name)
 	# must use the binary, not the wrapper!
 	if backend == "tmux":
-		os.execvp("tmux", ["tmux", "-2", "attach", "-t", session_name])
+		os.execvp("tmux", ["tmux", "-2", "new-session", "-t", session_name, "-s", "_%s-%i" % (session_name, os.getpid())])
 	else:
 		os.execvp("screen", ["screen", "-AOxRR", session_name])
 
