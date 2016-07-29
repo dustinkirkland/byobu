@@ -1,5 +1,6 @@
 byobu (5.110) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/logo:
     - added a logo for AlpineLinux, which has published an apk for Byobu
   * usr/share/byobu/status/status, usr/share/byobu/status/statusrc:
@@ -14,6 +15,10 @@ byobu (5.110) unreleased; urgency=medium
     - run autoremove afterwards, to clean up anything else
   * usr/lib/byobu/include/select-session.py: LP: #1583590
     - fix default window selection by just hitting enter
+
+  [ ironstorm ]
+  * usr/lib/byobu/cpu_temp: LP: #1587139
+    - add cpu temp support for rpi1, rpi2, and rpi3
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 05 Jul 2016 10:47:25 -0500
 
