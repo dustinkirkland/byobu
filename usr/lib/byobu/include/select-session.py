@@ -154,9 +154,16 @@ if len(sessions) > 1:
 			i += 1
 		try:
 			try:
-				choice = int(input("\nChoose 1-%d [1]: " % (i - 1)))
+				user_input = input("\nChoose 1-%d [1]: " % (i - 1))
 			except:
-				choice = int(eval(input("\nChoose 1-%d [1]: " % (i - 1))))
+				user_input = ""
+			if not user_input or user_input == "":
+				choice = 1
+				break
+			try:
+				choice = int(user_input)
+			except:
+				choice = int(eval(user_input))
 			if choice >= 1 and choice < i:
 				break
 			else:

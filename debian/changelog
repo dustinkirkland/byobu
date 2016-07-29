@@ -12,6 +12,8 @@ byobu (5.110) unreleased; urgency=medium
       and virtual kernels
   * usr/bin/purge-old-kernels: LP: #1532153
     - run autoremove afterwards, to clean up anything else
+  * usr/lib/byobu/include/select-session.py: LP: #1583590
+    - fix default window selection by just hitting enter
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 05 Jul 2016 10:47:25 -0500
 
