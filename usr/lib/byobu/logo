@@ -48,6 +48,10 @@ __logo() {
 				printf " u "
 			fi
 		;;
+		*alpine*)
+			logo=" /\\\\\\\\ "
+			$MARKUP && printf "$(color b b W)%s$(color -)" "$logo" || printf "$logo"
+		;;
 		*altlinux*)
 			logo="alt"
 			$MARKUP && printf "$(color Y k)%s$(color -)" "$logo" || printf "$logo"
