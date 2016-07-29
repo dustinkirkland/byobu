@@ -15,6 +15,8 @@ byobu (5.110) unreleased; urgency=medium
     - run autoremove afterwards, to clean up anything else
   * usr/lib/byobu/include/select-session.py: LP: #1583590
     - fix default window selection by just hitting enter
+  * usr/share/man/man1/byobu.1:
+    - add some whitespace in the manpage
 
   [ ironstorm ]
   * usr/lib/byobu/cpu_temp: LP: #1587139
