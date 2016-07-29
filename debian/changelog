@@ -7,6 +7,9 @@ byobu (5.110) unreleased; urgency=medium
    - fix DISTRO to BYOBU_DISTRO in template
   * debian/control: LP: #1596364
     - add |xterm to suggests
+  * usr/bin/purge-old-kernels: LP: #1595977
+    - modify the kernel purge algorithm slightly to better handle efi
+      and virtual kernels
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 05 Jul 2016 10:47:25 -0500
 

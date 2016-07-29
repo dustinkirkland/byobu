@@ -45,9 +45,18 @@ while [ ! -z "$1" ]; do
 done
 
 # Build our list of kernel packages to purge
-CANDIDATES=$(ls -tr /boot/vmlinuz-* | head -n -${KEEP} | grep -v "$(uname -r)$" | cut -d- -f2- | awk '{print "linux-image-" $0 " linux-headers-" $0}' )
-for c in $CANDIDATES; do
-	dpkg-query -s "$c" >/dev/null 2>&1 && PURGE="$PURGE $c"
+VERSIONS=$(ls -f /boot/vmlinuz-* | sed -e "s/[^\-]*-//" -e "s/-[^\-]*$//" | sort -rh)
+count=0
+for v in $VERSIONS; do
+	count=$((count+1))
+	if [ $count -le $KEEP ]; then
+		continue
+	fi
+	for k in linux-image linux-headers linux-signed-image linux-image-virtual; do
+		for f in generic lowlatency; do
+			dpkg-query -s "$k-$v-$f" >/dev/null 2>&1 && PURGE="$PURGE $k-$v-$f"
+		done
+	done
 done
 
 if [ -z "$PURGE" ]; then
