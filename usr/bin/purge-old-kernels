@@ -65,3 +65,4 @@ if [ -z "$PURGE" ]; then
 fi
 
 apt $APT_OPTS remove --purge $PURGE
+apt $APT_OPTS autoremove --purge
