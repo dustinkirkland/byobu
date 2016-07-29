@@ -2,6 +2,9 @@ byobu (5.110) unreleased; urgency=medium
 
   * usr/lib/byobu/logo:
     - added a logo for AlpineLinux, which has published an apk for Byobu
+  * usr/share/byobu/status/status, usr/share/byobu/status/statusrc:
+   - default to showing disk space
+   - fix DISTRO to BYOBU_DISTRO in template
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 05 Jul 2016 10:47:25 -0500
 

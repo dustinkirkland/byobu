@@ -25,7 +25,7 @@
 
 # This should be auto-detected for most distro, but setting it here will save
 # some call to lsb_release and the like.
-#DISTRO=Ubuntu
+#BYOBU_DISTRO=Ubuntu
 
 # Default: depends on the distro (which is either auto-detected, either set
 # via $DISTRO)
