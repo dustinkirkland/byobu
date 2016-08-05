@@ -103,8 +103,8 @@ __battery() {
 	if [ $rem -ge 0 ] && [ $full -gt 0 ]; then
 		percent=$(((100*$rem)/$full))
 		if [ "$percent" -lt 33 ]; then
-			color="R k"
-			bcolor="b R k"
+			color="R w"
+			bcolor="b R w"
 		elif [ "$percent" -lt 67 ]; then
 			color="Y k"
 			bcolor="b Y k"

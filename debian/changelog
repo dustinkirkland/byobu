@@ -1,6 +1,8 @@
 byobu (5.111) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/lib/byobu/battery:
+    - battery color when black-on-red is hard to read; change to
+      white on red.
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 29 Jul 2016 12:29:07 -0500
 
