@@ -109,13 +109,36 @@ if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ]; then
 	export SSH_AUTH_SOCK="$BYOBU_CONFIG_DIR/.ssh-agent"
 fi
 
+# Terminfo we will use
+BYOBU_TERM="screen"
+
+# Color terminfo to use, if possible
+BYOBU_COLOR_TERM="screen-256color"
+
+# Check if our terminfo supports 256 colors
+CAN_SHOW_COLORS=
+if $BYOBU_TEST tput >/dev/null 2>&1; then
+	if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then
+		CAN_SHOW_COLORS=1
+	fi
+fi
+
+# Check if the color terminfo is available
+HAS_COLOR_TERM=
+if $BYOBU_TEST infocmp >/dev/null 2>&1; then
+	if infocmp "$BYOBU_COLOR_TERM" >/dev/null 2>&1; then
+		HAS_COLOR_TERM=1
+	fi
+fi
+
 case $BYOBU_BACKEND in
 	tmux)
 		# Use 256 colors if possible
-		if $BYOBU_TEST tput >/dev/null; then
-			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ] || [ "$COLORTERM" = "gnome-terminal" ] || [ "$TERM" = "xterm" ] || [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "screen" ]; then
-				[ -z "$SCREEN_TERM" ] && SCREEN_TERM="-2"
-			fi
+		if [ -n "$CAN_SHOW_COLORS" ] || [ "$COLORTERM" = "gnome-terminal" ] || [ "$TERM" = "xterm" ] || [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "screen" ]; then
+			[ -z "$SCREEN_TERM" ] && SCREEN_TERM="-2"
+		fi
+		if [ -n "$SCREEN_TERM" -a -n "$HAS_COLOR_TERM" ]; then
+			BYOBU_TERM="$BYOBU_COLOR_TERM"
 		fi
 		BYOBU_PROFILE="-f $BYOBU_PREFIX/share/$PKG/profiles/tmuxrc"
 		# Set default window, unless user has overriden
@@ -150,12 +173,11 @@ case $BYOBU_BACKEND in
 		export BYOBU_WINDOWS
 		# Launch shell, unless the user has default windows set to launch
 		uncommented_lines < "$BYOBU_WINDOWS" && DEFAULT_WINDOW= || DEFAULT_WINDOW="${BYOBU_PREFIX}/bin/byobu-shell"
-		# Check if our terminfo supports 256 colors
-		if $BYOBU_TEST tput >/dev/null; then
-			if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then
-				SCREEN_TERM="-T screen-256color"
-			fi
+		# Use 256 colors if possible
+		if [ -n "$CAN_SHOW_COLORS" -a -n "$HAS_COLOR_TERM" ]; then
+			BYOBU_TERM="$BYOBU_COLOR_TERM"
 		fi
+		SCREEN_TERM="-T $BYOBU_TERM"
 		# Some users want to maintain separate configurations
 		# if they use both GNU Screen and byobu on the same system
 		if [ -r "$BYOBU_CONFIG_DIR/.screenrc" ]; then
@@ -175,6 +197,8 @@ case $BYOBU_BACKEND in
 		sessions=$($BYOBU_BACKEND -wipe 2>/dev/null) || true
 	;;
 esac
+
+export BYOBU_TERM
 
 # Save session info
 [ -n "$DBUS_SESSION_BUS_ADDRESS" ] && printf "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS\n" > "$BYOBU_RUN_DIR/sockets"
