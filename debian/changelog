@@ -1,3 +1,9 @@
+byobu (5.112) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Aug 2016 15:23:19 -0500
+
 byobu (5.111-0ubuntu1) yakkety; urgency=medium
 
   [ Dustin Kirkland ]
