@@ -68,10 +68,7 @@ set-window-option -g automatic-rename on
 set-window-option -g aggressive-resize on
 set-window-option -g monitor-activity on
 
-# Cannot use:
-#  - screen-bce, screen-256color-bce: tmux does not support bce
-#  - screen-256color: vim broken without -bce
-set -g default-terminal "screen"
+set -g default-terminal "$BYOBU_TERM"
 
 # The following helps with Shift-PageUp/Shift-PageDown
 set -g terminal-overrides 'xterm*:smcup@:rmcup@'

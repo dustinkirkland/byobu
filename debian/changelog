@@ -1,10 +1,20 @@
-byobu (5.111) unreleased; urgency=medium
+byobu (5.111-0ubuntu1) yakkety; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/battery:
     - battery color when black-on-red is hard to read; change to
       white on red.
+    - test 256 colors with vim (:runtime syntax/colortest.vim) and
+      http://www.robmeerman.co.uk/_media/unix/256colors2.pl
+      + seem to be working okay here
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 29 Jul 2016 12:29:07 -0500
+  [ Jeffery To ]
+  * usr/bin/byobu.in, usr/share/byobu/profiles/tmux:
+    - use screen-256color if possible, for both screen and tmux
+    - allow the user to override our term choices, by setting
+      BYOBU_TERM, BYOBU_DEFAULT_TERM and/or BYOBU_COLOR_TERM
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Aug 2016 15:23:17 -0500
 
 byobu (5.110-0ubuntu1) yakkety; urgency=medium
 
