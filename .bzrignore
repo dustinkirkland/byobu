@@ -41,3 +41,6 @@ Makefile.in
 /usr/lib/byobu/include/dirs
 /usr/lib/byobu/include/toggle-utf8
 /usr/share/byobu/tests/byobu-time-notifications
+
+# produced tarballs
+/byobu-*.tar.gz
