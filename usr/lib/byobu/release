@@ -46,10 +46,10 @@ __release() {
 				RELEASE="$ver"
 			;;
 		esac
-	elif $BYOBU_TEST sw_vers >/dev/null 2>&1; then
+	elif eval $BYOBU_TEST sw_vers >/dev/null 2>&1; then
 		RELEASE="$(sw_vers -productVersion)"
 	fi
-	if [ -z "$RELEASE" ] && $BYOBU_TEST lsb_release >/dev/null 2>&1; then
+	if [ -z "$RELEASE" ] && eval $BYOBU_TEST lsb_release >/dev/null 2>&1; then
 		# If lsb_release is available, use it
 		RELEASE=$(lsb_release -s -r)
 	fi

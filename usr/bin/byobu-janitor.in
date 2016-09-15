@@ -113,11 +113,11 @@ rm -f "$FLAG" "/var/run/screen/S-$USER/$PKG.reload-required"
 
 # Affects: Upgrades from <= byobu 5.50, install byobu prompt if using stock bashrc
 if ! (grep -qs "#byobu-prompt#$" "$HOME/.bashrc") && ! [ -e "$BYOBU_CONFIG_DIR/prompt" ]; then
-	if $BYOBU_TEST diff >/dev/null 2>&1; then
+	if eval $BYOBU_TEST diff >/dev/null 2>&1; then
 		if  diff /etc/skel/.bashrc "$HOME/.bashrc" >/dev/null 2>&1; then
 			printf "[ -r $BYOBU_CONFIG_DIR/prompt ] && . $BYOBU_CONFIG_DIR/prompt   #byobu-prompt#\n" >> "$HOME/.bashrc"
 		fi
-	elif $BYOBU_TEST md5sum >/dev/null 2>&1; then
+	elif eval $BYOBU_TEST md5sum >/dev/null 2>&1; then
 		if [ "$(cat /etc/skel/.bashrc | md5sum)" = "$(cat $HOME/.bashrc | md5sum)" ]; then
 			printf "[ -r $BYOBU_CONFIG_DIR/prompt ] && . $BYOBU_CONFIG_DIR/prompt   #byobu-prompt#\n" >> "$HOME/.bashrc"
 		fi

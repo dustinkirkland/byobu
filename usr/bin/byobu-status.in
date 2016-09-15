@@ -153,11 +153,11 @@ case "$1" in
 	;;
 	--detail)
 		VER=
-		if $BYOBU_TEST dpkg-query >/dev/null; then
+		if eval $BYOBU_TEST dpkg-query >/dev/null; then
 			VER=$(set -- $(dpkg-query --show $PKG); printf "%s\n" "$2")
 		fi
 		printf "$PKG-$VER Detailed Status Navigation\n"
-		if $BYOBU_TEST vim >/dev/null && `vim --version | grep -q +folding`; then
+		if eval $BYOBU_TEST vim >/dev/null && `vim --version | grep -q +folding`; then
 			printf "  Expand all - zr\t\tCollapse all - zm\n  Expand one - zo\t\tCollapse one - zc\n\n"
 		fi
 		for i in "$BYOBU_PREFIX/lib/$PKG"/*; do

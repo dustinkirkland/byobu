@@ -51,7 +51,7 @@ COLORS="default_light \
 
 # Find a hash utility
 for i in md5sum md5 sha512sum sha256sum sha1sum shasum shasum5.12 shasum5.10; do
-	if $BYOBU_TEST $i >/dev/null 2>&1; then
+	if eval $BYOBU_TEST $i >/dev/null 2>&1; then
 		HASH="$i"
 		break
 	fi
@@ -187,7 +187,7 @@ setcolor_screen() {
 get_contrast() {
 	# See section 2.2: http://www.w3.org/TR/AERT#color-contrast
 	local awk="awk"
-	if $BYOBU_TEST gawk >/dev/null 2>&1; then
+	if eval $BYOBU_TEST gawk >/dev/null 2>&1; then
 		awk="gawk"
 	fi
 	local hex="$(echo "$1" | sed -e "s/\(..\)\(..\)\(..\)/\1 \2 \3/")"

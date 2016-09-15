@@ -302,7 +302,7 @@ get_network_interface() {
 			[ "$Mask" = "00000000" ] && break
 		done < /proc/net/route
 		_RET="$Iface"
-	elif $BYOBU_TEST route >/dev/null 2>&1; then
+	elif eval $BYOBU_TEST route >/dev/null 2>&1; then
 		# Route command on path
 		_RET=$(route get default|grep interface:|awk '{print $2}')
 	elif [ -x "/sbin/route" ]; then
@@ -337,7 +337,7 @@ get_distro() {
 				distro="${issue%% *}";
 			;;
 		esac
-	elif $BYOBU_TEST lsb_release >/dev/null 2>&1; then
+	elif eval $BYOBU_TEST lsb_release >/dev/null 2>&1; then
 		# If lsb_release is available, use it
 		local r=$(lsb_release -s -d)
 		case "$r" in
@@ -351,9 +351,9 @@ get_distro() {
 				distro=$(lsb_release -s -i)
 			;;
 		esac
-	elif $BYOBU_TEST sw_vers >/dev/null 2>&1; then
+	elif eval $BYOBU_TEST sw_vers >/dev/null 2>&1; then
 		distro="$(sw_vers -productName)"
-	elif $BYOBU_TEST uname >/dev/null 2>&1; then
+	elif eval $BYOBU_TEST uname >/dev/null 2>&1; then
 		distro="$(uname -s)"
 	else
 		distro="Byobu"

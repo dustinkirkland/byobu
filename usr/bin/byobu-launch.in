@@ -51,7 +51,7 @@ elif [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_
 			*i*)
 				# Attempt to merge shell history across sessions/windows (works with some exceptions)
 				for i in shopt setopt; do
-					if $BYOBU_TEST $i >/dev/null; then
+					if eval $BYOBU_TEST $i >/dev/null; then
 						case $i in
 							shopt) $i -s histappend || true ;;
 							setopt) $i appendhistory || true ;;

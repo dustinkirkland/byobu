@@ -44,15 +44,15 @@ case "$BYOBU_BACKEND" in
 esac
 
 # MacOS Support
-$BYOBU_TEST gsed >/dev/null 2>&1 && export BYOBU_SED="gsed" || export BYOBU_SED="sed"
-$BYOBU_TEST greadlink >/dev/null 2>&1 && export BYOBU_READLINK="greadlink" || export BYOBU_READLINK="readlink"
-$BYOBU_TEST sensible-pager >/dev/null 2>&1 && export BYOBU_PAGER="sensible-pager" || export BYOBU_PAGER="less"
+eval $BYOBU_TEST gsed >/dev/null 2>&1 && export BYOBU_SED="gsed" || export BYOBU_SED="sed"
+eval $BYOBU_TEST greadlink >/dev/null 2>&1 && export BYOBU_READLINK="greadlink" || export BYOBU_READLINK="readlink"
+eval $BYOBU_TEST sensible-pager >/dev/null 2>&1 && export BYOBU_PAGER="sensible-pager" || export BYOBU_PAGER="less"
 
 # Check sed's follow-symlinks feature
 $BYOBU_SED --follow-symlinks "s///" /dev/null 2>/dev/null && BYOBU_SED_INLINE="$BYOBU_SED -i --follow-symlinks" || BYOBU_SED_INLINE="$BYOBU_SED -i"
 
 # Determine if we have ulimit support
-$BYOBU_TEST ulimit >/dev/null 2>&1 && export BYOBU_ULIMIT="ulimit" || export BYOBU_ULIMIT="false"
+eval $BYOBU_TEST ulimit >/dev/null 2>&1 && export BYOBU_ULIMIT="ulimit" || export BYOBU_ULIMIT="false"
 
 # Find a suitable python interpreter, if undefined
 if [ -z "$BYOBU_PYTHON" ]; then

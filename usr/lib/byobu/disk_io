@@ -20,7 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __disk_io_detail() {
-	if $BYOBU_TEST iostat >/dev/null; then
+	if eval $BYOBU_TEST iostat >/dev/null; then
 		iostat -d -m -h
 	else
 		printf "%s\n" "Please install iostat if you want detailed information on your disk throughput"
