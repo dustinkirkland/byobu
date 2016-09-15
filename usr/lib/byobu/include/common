@@ -24,7 +24,7 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 
 	# Find command/type/which
 	for BYOBU_TEST in "command -v" "type" "which"; do
-		$BYOBU_TEST >/dev/null 2>&1 && break || true
+		eval $BYOBU_TEST ls >/dev/null 2>&1 && break || true
 	done
 
 	# If the backend is already set (eg. running `byobu-tmux`), do nothing.
@@ -34,9 +34,9 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 		# Just in case there's no config file at all
 		if [ -z "${BYOBU_BACKEND}" ]; then
 			# New byobu configuration, default to tmux
-			if $BYOBU_TEST tmux >/dev/null; then
+			if eval $BYOBU_TEST tmux >/dev/null; then
 				BYOBU_BACKEND="tmux"
-			elif $BYOBU_TEST screen >/dev/null; then
+			elif eval $BYOBU_TEST screen >/dev/null; then
 				BYOBU_BACKEND="screen"
 			else
 				printf "%s\n" "ERROR: $PKG won't work without tmux or screen installed" 1>&2

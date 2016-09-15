@@ -36,7 +36,7 @@ __memory() {
 			esac
 			[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
 		done < /proc/meminfo
-	elif $BYOBU_TEST vm_stat >/dev/null 2>&1; then
+	elif eval $BYOBU_TEST vm_stat >/dev/null 2>&1; then
 		# MacOS support
 		# calculation borrowed from http://apple.stackexchange.com/a/48195/18857
 		free_blocks=$(vm_stat | grep free | awk '{ print $3 }' | sed -e 's/\.//')

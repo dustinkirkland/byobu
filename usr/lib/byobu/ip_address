@@ -48,7 +48,7 @@ __ip_address() {
 				# Background an update
 				if [ -x /sbin/ip ]; then
 					LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global </dev/null >"$cache" 2>/dev/null &
-				elif $BYOBU_TEST ifconfig >/dev/null 2>&1; then
+				elif eval $BYOBU_TEST ifconfig >/dev/null 2>&1; then
 					LC_ALL=c ifconfig "$interface" | grep "inet6 " | awk '{print $2}' | sed -e "s/%.*//" >"$cache" 2>/dev/null &
 
 				fi
@@ -74,7 +74,7 @@ __ip_address() {
 					ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global 2>/dev/null)
 					ipaddr=${ipaddr#* inet }
 					ipaddr=${ipaddr%%/*}
-				elif $BYOBU_TEST ifconfig >/dev/null 2>&1; then
+				elif eval $BYOBU_TEST ifconfig >/dev/null 2>&1; then
 					ipaddr=$(ifconfig "$interface" | grep "inet " | awk '{print $2}')
 				fi
 			fi

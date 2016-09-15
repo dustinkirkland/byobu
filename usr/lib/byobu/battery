@@ -77,7 +77,7 @@ __battery() {
 		esac
 	done
 	# Mac OS X support
-	if $BYOBU_TEST /usr/sbin/ioreg >/dev/null 2>&1; then
+	if eval $BYOBU_TEST /usr/sbin/ioreg >/dev/null 2>&1; then
 		# MacOS support
 		local key
 		for key in CurrentCapacity MaxCapacity ExternalChargeCapable FullyCharged; do

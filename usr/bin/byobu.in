@@ -72,7 +72,7 @@ if [ "$#" = "1" ]; then
 	case "$1" in
 		-v|--version)
 			echo "$PKG version $VERSION"
-			if $BYOBU_TEST bash >/dev/null 2>&1; then
+			if eval $BYOBU_TEST bash >/dev/null 2>&1; then
 				# Check ulimits
 				u=$(bash -c "ulimit -n")
 				[ "$u" = "unlimited" ] || [ $u -ge 15 ] || echo "WARNING: ulimit -n is too low" 1>&2
@@ -117,7 +117,7 @@ fi
 
 # Check if our terminfo supports 256 colors
 CAN_SHOW_COLORS=
-if $BYOBU_TEST tput >/dev/null 2>&1; then
+if eval $BYOBU_TEST tput >/dev/null 2>&1; then
 	if [ "$(tput colors 2>/dev/null || echo 0)" = "256" ]; then
 		CAN_SHOW_COLORS=1
 	fi
@@ -125,7 +125,7 @@ fi
 
 # Check if the color terminfo is available
 HAS_COLOR_TERM=
-if $BYOBU_TEST infocmp >/dev/null 2>&1; then
+if eval $BYOBU_TEST infocmp >/dev/null 2>&1; then
 	if infocmp "$BYOBU_COLOR_TERM" >/dev/null 2>&1; then
 		HAS_COLOR_TERM=1
 	fi

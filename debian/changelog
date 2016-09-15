@@ -1,6 +1,22 @@
 byobu (5.112) unreleased; urgency=medium
 
-  * UNRELEASED
+  [ Mohamed Elawadi ]
+  * usr/bin/byobu.in, usr/bin/byobu-janitor.in, usr/bin/byobu-launch.in,
+    usr/bin/byobu-select-profile.in, usr/bin/byobu-status.in,
+    usr/lib/byobu/battery, usr/lib/byobu/disk_io,
+    usr/lib/byobu/include/common, usr/lib/byobu/include/constants,
+    usr/lib/byobu/include/shutil, usr/lib/byobu/ip_address,
+    usr/lib/byobu/memory, usr/lib/byobu/release,
+    usr/lib/byobu/updates_available:
+    - https://github.com/dustinkirkland/byobu/pull/15
+    - Fixing BYOBU_TEST issues
+    - The first issue was that command -v, which and type were always
+      returning an error code when executed without an extra argument.
+      so BYOBU_TEST was always falling to which because it was the last one.
+    - The second issue was, command -v didn't work because of a different
+      reason. When executed in a shell (at least my shell) using variable
+      substitution, the shell was trying to find a binary called
+      "command -v" so it was failing.
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Aug 2016 15:23:19 -0500
 
