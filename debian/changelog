@@ -1,4 +1,4 @@
-byobu (5.112) unreleased; urgency=medium
+byobu (5.112-0ubuntu1) yakkety; urgency=medium
 
   [ Mohamed Elawadi ]
   * usr/bin/byobu.in, usr/bin/byobu-janitor.in, usr/bin/byobu-launch.in,
@@ -18,7 +18,7 @@ byobu (5.112) unreleased; urgency=medium
       substitution, the shell was trying to find a binary called
       "command -v" so it was failing.
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Aug 2016 15:23:19 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Sep 2016 10:13:05 -0500
 
 byobu (5.111-0ubuntu1) yakkety; urgency=medium
 
