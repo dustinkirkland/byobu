@@ -1,6 +1,7 @@
 byobu (5.113) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/bin/wifi-status:
+    - ping the router, too, to verify at least local connectivity
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Sep 2016 10:13:08 -0500
 
