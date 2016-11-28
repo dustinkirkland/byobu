@@ -4,6 +4,10 @@ byobu (5.113) unreleased; urgency=medium
     - ping the router, too, to verify at least local connectivity
   * usr/lib/byobu/include/shutil:
     - use a prime here, too
+  * usr/lib/byobu/include/select-session.py: LP: #1548384
+    - when selecting a session, if only empty sessions exist, then create
+      a new one; the bug was that tmux considers a null string argument
+      still an argument
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Sep 2016 10:13:08 -0500
 

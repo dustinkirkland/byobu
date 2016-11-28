@@ -199,7 +199,6 @@ if choice >= 1:
 
 # No valid selection, default to the youngest session, create if necessary
 if BYOBU_BACKEND == "tmux":
-	args = ""
+	os.execvp("tmux", ["tmux"])
 else:
-	args = "-AOxRR"
-os.execvp("byobu", ["byobu", args])
+	os.execvp("screen", ["screen", "-AOxRR"])
