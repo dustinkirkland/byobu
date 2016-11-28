@@ -44,8 +44,9 @@ while [ ! -z "$1" ]; do
 	esac
 done
 
-# Build our list of kernel packages to purge
-VERSIONS=$(ls -f /boot/vmlinuz-* | sed -e "s/[^\-]*-//" -e "s/-[^\-]*$//" | sort -rh)
+# Build our list of kernel packages to purge, make sure we exclude the current running kernel
+current="$(uname -r)"
+VERSIONS=$(ls -f /boot/vmlinuz-* | grep -v "$current$" | sed -e "s/[^\-]*-//" -e "s/-[^\-]*$//" | sort -rh)
 count=0
 for v in $VERSIONS; do
 	count=$((count+1))
