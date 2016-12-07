@@ -1,4 +1,4 @@
-byobu (5.113) unreleased; urgency=medium
+byobu (5.113-0ubuntu1) zesty; urgency=medium
 
   * usr/bin/wifi-status:
     - ping the router, too, to verify at least local connectivity
@@ -17,7 +17,7 @@ byobu (5.113) unreleased; urgency=medium
     - resurrect byobu-desktop.old, which is needed on Debian and other
       systems, where gnome-terminal may not exist
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Sep 2016 10:13:08 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Dec 2016 08:18:09 -0600
 
 byobu (5.112-0ubuntu1) yakkety; urgency=medium
 
