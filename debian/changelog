@@ -10,6 +10,12 @@ byobu (5.113) unreleased; urgency=medium
       still an argument
   * usr/bin/purge-old-kernels:
     - ensure that we keep the current running kernel
+  * usr/share/man/man1/byobu.1:
+    - fix minor nitpick about disk/memory measurement documentation
+  * usr/share/byobu/desktop/byobu.desktop.old,
+    usr/share/byobu/desktop/Makefile.am, usr/share/man/man1/byobu.1: LP: #1639836
+    - resurrect byobu-desktop.old, which is needed on Debian and other
+      systems, where gnome-terminal may not exist
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Sep 2016 10:13:08 -0500
 
