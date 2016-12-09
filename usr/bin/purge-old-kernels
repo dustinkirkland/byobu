@@ -65,5 +65,11 @@ if [ -z "$PURGE" ]; then
 	exit 0
 fi
 
+if ! apt install --fix-broken --dry-run >/dev/null 2>&1; then
+	echo "APT is broken, trying with dpkg"
+	dpkg --purge $PURGE
+	apt install --fix-broken
+fi
+
 apt $APT_OPTS remove --purge $PURGE
 apt $APT_OPTS autoremove --purge
