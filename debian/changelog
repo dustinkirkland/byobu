@@ -1,7 +1,13 @@
 byobu (5.114) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/bin/purge-old-kernels:
     - use apt-get, rather than apt, for compatibility with trusty/precise apt
+
+  [ @alexm ]
+  * usr/bin/purge-old-kernels:
+    - Use dpkg first when APT is broken #16
+    - https://github.com/dustinkirkland/byobu/pull/16
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Dec 2016 08:18:12 -0600
 
