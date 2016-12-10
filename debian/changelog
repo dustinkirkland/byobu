@@ -1,6 +1,7 @@
 byobu (5.114) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/bin/purge-old-kernels:
+    - use apt-get, rather than apt, for compatibility with trusty/precise apt
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Dec 2016 08:18:12 -0600
 

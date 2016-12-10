@@ -65,5 +65,6 @@ if [ -z "$PURGE" ]; then
 	exit 0
 fi
 
-apt $APT_OPTS remove --purge $PURGE
-apt $APT_OPTS autoremove --purge
+# Use apt-get, rather than apt, for compatibility with precise/trusty
+apt-get $APT_OPTS remove --purge $PURGE
+apt-get $APT_OPTS autoremove --purge
