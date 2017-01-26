@@ -135,6 +135,7 @@ def attach_session(session):
 	else:
 		os.execvp("screen", ["screen", "-AOxRR", session_name])
 
+
 sessions = get_sessions()
 
 show_shell = os.path.exists("%s/.always-select" % (BYOBU_CONFIG_DIR))

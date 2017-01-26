@@ -4,6 +4,10 @@ byobu (5.114) unreleased; urgency=medium
   * usr/bin/purge-old-kernels:
     - use apt-get, rather than apt, for compatibility with trusty/precise apt
 
+  [ Simon Quigley ]
+  * usr/lib/byobu/include/select-session.py:
+    - fix pep8 error, E305 expected 2 blank lines...
+
   [ @alexm ]
   * usr/bin/purge-old-kernels:
     - Use dpkg first when APT is broken #16
