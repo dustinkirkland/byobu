@@ -14,6 +14,7 @@ Depends:
  ${misc:Depends}, ${perl:Depends}, ${python:Depends},
  debconf (>= 0.5) | debconf-2.0,
  gettext-base,
+ net-tools,
  python3|python,
  python3-newt|python-newt,
  tmux (>= 1.5) | screen,

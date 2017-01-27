@@ -1,6 +1,7 @@
 byobu (5.115) unreleased; urgency=medium
 
-  * UNRELEASED
+  * debian/control:
+    - depend on net-tools, for ifconfig
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 27 Jan 2017 08:31:01 -0600
 
