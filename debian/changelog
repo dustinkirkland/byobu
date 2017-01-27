@@ -1,4 +1,4 @@
-byobu (5.114) unreleased; urgency=medium
+byobu (5.114-0ubuntu1) zesty; urgency=medium
 
   [ Dustin Kirkland ]
   * usr/bin/purge-old-kernels:
@@ -13,7 +13,7 @@ byobu (5.114) unreleased; urgency=medium
     - Use dpkg first when APT is broken #16
     - https://github.com/dustinkirkland/byobu/pull/16
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 07 Dec 2016 08:18:12 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 27 Jan 2017 08:30:59 -0600
 
 byobu (5.113-0ubuntu1) zesty; urgency=medium
 
