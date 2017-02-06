@@ -1,11 +1,11 @@
-byobu (5.115) unreleased; urgency=medium
+byobu (5.115-0ubuntu1) zesty; urgency=medium
 
   * debian/control:
     - depend on net-tools, for ifconfig
   * usr/bin/purge-old-kernels:
     - fix $APT_OPS position, thanks Benjamin J. Stassart
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 27 Jan 2017 08:31:01 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 06 Feb 2017 12:22:24 -0600
 
 byobu (5.114-0ubuntu1) zesty; urgency=medium
 
