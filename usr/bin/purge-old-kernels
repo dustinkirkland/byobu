@@ -71,5 +71,5 @@ if ! apt-get install --fix-broken --dry-run >/dev/null 2>&1; then
 	dpkg --purge $PURGE
 	apt-get install --fix-broken
 fi
-apt-get $APT_OPTS remove --purge $PURGE
-apt-get $APT_OPTS autoremove --purge
+apt-get remove $APT_OPTS --purge $PURGE
+apt-get autoremove $APT_OPTS --purge
