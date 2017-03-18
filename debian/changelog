@@ -7,6 +7,11 @@ byobu (5.116) unreleased; urgency=medium
     - save 100K lines of scrollback, rather than 10K, which I find gets
       eclipsed too often when you actually need it
 
+  [ janvonde ]
+  * usr/bin/purge-old-kernels, usr/share/man/man1/purge-old-kernels.1:
+    - add a --quiet option for cronjobs
+    - add note in the manpage
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 06 Feb 2017 12:22:26 -0600
 
 byobu (5.115-0ubuntu1) zesty; urgency=medium

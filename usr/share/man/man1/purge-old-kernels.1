@@ -3,10 +3,12 @@
 purge-old-kernels - remove old kernel and header packages from the system
 
 .SH SYNOPSIS
-\fBpurge-old-kernels\fP [--keep N] [*]
+\fBpurge-old-kernels\fP [--keep N] [--quiet] [*]
 
 .SH DESCRIPTION
 This program will remove old kernel and header packages from the system, freeing disk space.  It will never remove the currently running kernel.  By default, it will keep at least the latest 2 kernels, but the user can override that value using the --keep parameter.  Any additional parameters will be passed directly to \fBapt-get\fP(8).
+
+The --quiet option is useful for cronjobs, to ensure silence messages when there's nothing new to do.
 
 This program requires administrative access.
 

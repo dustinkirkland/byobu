@@ -28,10 +28,18 @@ fi
 # NOTE: This script will ALWAYS keep the currently running kernel
 # NOTE: Default is to keep 2 more, user overrides with --keep N
 KEEP=2
+# NOTE: This script will give a hint if no kernels are eligible for removal
+# NOTE: You can disable this with the --quit parameter
+QUIET=0
 # NOTE: Any unrecognized option will be passed straight through to apt
 APT_OPTS=
 while [ ! -z "$1" ]; do
 	case "$1" in
+		--quiet)
+			# No hint on no kernels for removal, better for cronjobs
+			QUIET=1
+			shift 1
+		;;
 		--keep)
 			# User specified the number of kernels to keep
 			KEEP="$2"
@@ -61,8 +69,12 @@ for v in $VERSIONS; do
 done
 
 if [ -z "$PURGE" ]; then
-	echo "No kernels are eligible for removal"
-	exit 0
+        if [ "${QUIET}" -ne "1" ]; then
+                echo "No kernels are eligible for removal"
+                exit 0
+        else
+                exit 0
+        fi
 fi
 
 # Use apt-get, rather than apt, for compatibility with precise/trusty
