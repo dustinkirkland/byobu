@@ -46,7 +46,7 @@ done
 
 # Build our list of kernel packages to purge, make sure we exclude the current running kernel
 current="$(uname -r)"
-VERSIONS=$(ls -f /boot/vmlinuz-* | grep -v "$current$" | sed -e "s/[^\-]*-//" -e "s/-[^\-]*$//" | sort -rh)
+VERSIONS=$(ls -f /boot/vmlinuz-* | grep -v "$current$" | grep -v '.efi.signed' | sed -e "s/[^\-]*-//" -e "s/-[^\-]*$//" | sort -rh)
 count=0
 for v in $VERSIONS; do
 	count=$((count+1))

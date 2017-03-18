@@ -1,6 +1,11 @@
 byobu (5.116) unreleased; urgency=medium
 
-  * UNRELEASED
+  [ Dustin Kirkland ]
+  * usr/bin/purge-old-kernels:
+    - need to do some extra grepping when using efi kernels
+  * usr/share/byobu/profiles/tmux:
+    - save 100K lines of scrollback, rather than 10K, which I find gets
+      eclipsed too often when you actually need it
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 06 Feb 2017 12:22:26 -0600
 
