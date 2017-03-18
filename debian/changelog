@@ -1,4 +1,4 @@
-byobu (5.116) unreleased; urgency=medium
+byobu (5.116-0ubuntu1) zesty; urgency=medium
 
   [ Dustin Kirkland ]
   * usr/bin/purge-old-kernels:
@@ -12,7 +12,7 @@ byobu (5.116) unreleased; urgency=medium
     - add a --quiet option for cronjobs
     - add note in the manpage
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 06 Feb 2017 12:22:26 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 18 Mar 2017 12:05:56 -0500
 
 byobu (5.115-0ubuntu1) zesty; urgency=medium
 
