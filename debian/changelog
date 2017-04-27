@@ -1,3 +1,9 @@
+byobu (5.118) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 27 Apr 2017 16:26:18 -0500
+
 byobu (5.117-0ubuntu1) artful; urgency=medium
 
   * usr/bin/purge-old-kernels, usr/share/man/man1/purge-old-kernels.1: LP: #1686138
