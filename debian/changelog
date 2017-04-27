@@ -1,6 +1,8 @@
 byobu (5.117) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/bin/purge-old-kernels, usr/share/man/man1/purge-old-kernels.1: LP: #1686138
+    - deprecate the logic in purge-old-kernel, as apt autoremove is supposed
+      to work properly now
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 18 Mar 2017 12:05:58 -0500
 
