@@ -1,6 +1,7 @@
 byobu (5.119) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/lib/byobu/include/shutil:
+    - fix regression in distro detection
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 01 Jun 2017 11:45:49 -0500
 

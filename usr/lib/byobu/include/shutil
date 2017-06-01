@@ -317,7 +317,7 @@ get_distro() {
 		# user defined
 		true
 	elif [ -r "/etc/lsb-release" ]; then
-		distro=$(. /etc/lsb-release && echo "$NAME")
+		distro=$(. /etc/lsb-release && echo "$DISTRIB_DESCRIPTION")
 	elif [ -r "/etc/os-release" ]; then
 		distro=$(. /etc/os-release && echo "$NAME")
 	elif [ -r "/etc/issue" ]; then
