@@ -1,8 +1,9 @@
-byobu (5.120) unreleased; urgency=medium
+byobu (5.120-0ubuntu1) artful; urgency=medium
 
-  * UNRELEASED
+  * usr/lib/byobu/include/shutil:
+    - revert the last two changes;  that was a wild goose chase
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 01 Jun 2017 17:18:46 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Jun 2017 11:43:52 -0500
 
 byobu (5.119-0ubuntu1) artful; urgency=medium
 
