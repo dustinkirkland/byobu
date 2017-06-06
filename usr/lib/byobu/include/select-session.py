@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 #    select-session.py
 #    Copyright (C) 2010 Canonical Ltd.
