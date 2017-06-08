@@ -35,9 +35,9 @@ else
 	tmux new-window -n wifi-status "watch -c iwconfig $dev \| ccze -A" \; \
 		split-window -t wifi-status -v "watch -c ifconfig $dev \| ccze -A" \; \
 		split-window -t wifi-status -v "watch -c route -n \| ccze -A" \; \
-		split-window -t wifi-status -h "ping -I $dev $router" \; \
+		split-window -t wifi-status -h "ping -OD -I $dev $router" \; \
 		split-window -t wifi-status -v "watch -c grep $dev: /var/log/syslog \| tail -n 10 \| sort -r \| ccze -A" \; \
-		split-window -t wifi-status -h "ping -I $dev 8.8.8.8" \; \
+		split-window -t wifi-status -h "ping -OD -I $dev 8.8.8.8" \; \
 		select-layout -t wifi-status tiled
 fi
 

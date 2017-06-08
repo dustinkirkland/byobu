@@ -1,6 +1,7 @@
 byobu (5.121) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/bin/wifi-status:
+    - timestamp the pings
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Jun 2017 11:44:03 -0500
 
