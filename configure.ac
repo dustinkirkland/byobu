@@ -2,8 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.61])
-AC_INIT(byobu, 3.0, http://byobu.org)
-AM_INIT_AUTOMAKE(byobu, 3.0)
+AC_INIT([byobu], [5.121], [http://byobu.org])
+AC_CONFIG_SRCDIR([usr/bin/byobu.in])
+AM_INIT_AUTOMAKE([foreign])
 AC_PROG_LN_S
 
 # Checks for programs.

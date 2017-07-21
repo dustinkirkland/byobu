@@ -1,7 +1,15 @@
 byobu (5.121) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/bin/wifi-status:
     - timestamp the pings
+
+  [ Elan Ruusamäe ]
+  * autogen.sh, .bzrignore, configure.ac:
+    - modernize autoconf, add .bzrignore
+    - my intent is to add autogen.sh as next step as seems you currently
+      produce release tarballs manually, so it contains random unneeded
+      crap like autom4te.cache
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Jun 2017 11:44:03 -0500
 
