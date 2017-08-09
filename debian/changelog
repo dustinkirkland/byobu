@@ -3,6 +3,8 @@ byobu (5.121) unreleased; urgency=medium
   [ Dustin Kirkland ]
   * usr/bin/wifi-status:
     - timestamp the pings
+  * debian/control:
+    - lower screen to a suggests
 
   [ Elan Ruusamäe ]
   * autogen.sh, .bzrignore, configure.ac:

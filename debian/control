@@ -17,12 +17,10 @@ Depends:
  net-tools,
  python3|python,
  python3-newt|python-newt,
- tmux (>= 1.5) | screen,
+ tmux (>= 1.5),
  gawk
 Recommends:
  pastebinit,
- screen,
- tmux (>= 1.5),
  run-one
 Suggests:
  apport,
@@ -31,6 +29,7 @@ Suggests:
  gnupg,
  lsb-release,
  po-debconf,
+ screen,
  ttf-ubuntu-font-family (>= 0.80-0ubuntu1~medium),
  update-notifier-common,
  vim,
