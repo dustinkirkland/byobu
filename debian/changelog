@@ -1,4 +1,4 @@
-byobu (5.121) unreleased; urgency=medium
+byobu (5.121-0ubuntu1) artful; urgency=medium
 
   [ Dustin Kirkland ]
   * usr/bin/wifi-status:
@@ -13,7 +13,7 @@ byobu (5.121) unreleased; urgency=medium
       produce release tarballs manually, so it contains random unneeded
       crap like autom4te.cache
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 05 Jun 2017 11:44:03 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Aug 2017 16:53:44 -0500
 
 byobu (5.120-0ubuntu1) artful; urgency=medium
 
