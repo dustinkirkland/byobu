@@ -129,7 +129,7 @@ case "$bind_to" in
 				else
 					# tmux 1.6 and above supports prefix and prefix2
 					echo "set -g prefix ^${KEY}" >> "$keybindings"
-					echo "set -g prefix2 ^${KEY}" >> "$keybindings"
+					echo "set -g prefix2 F12" >> "$keybindings"
 				fi
 				echo "bind ${key} send-prefix" >> "$keybindings"
 				$BYOBU_BACKEND source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc" 2>/dev/null
