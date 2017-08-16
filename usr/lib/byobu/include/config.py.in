@@ -42,7 +42,7 @@ def error(msg):
 try:
 	import snack
 	from snack import *
-except:
+except Exception:
 	error("Could not import the python snack module")
 
 
@@ -81,7 +81,7 @@ def ioctl_GWINSZ(fd):
 		import struct
 		import os
 		cr = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234'))
-	except:
+	except Exception:
 		return None
 	return cr
 
@@ -96,7 +96,7 @@ def reload_required():
 		f.close()
 		if BYOBU_BACKEND == "screen":
 			subprocess.call([BYOBU_BACKEND, "-X", "at", "0", "source", "%s/profile" % BYOBU_CONFIG_DIR])
-	except:
+	except Exception:
 		True
 
 
@@ -110,13 +110,13 @@ def terminal_size():
 			fd = os.open(os.ctermid(), os.O_RDONLY)
 			cr = ioctl_GWINSZ(fd)
 			os.close(fd)
-		except:
+		except Exception:
 			pass
 	if not cr:
 		# env vars or finally defaults
 		try:
 			cr = (env['LINES'], env['COLUMNS'])
-		except:
+		except Exception:
 			cr = (25, 80)
 	# reverse rows, cols
 	return int(cr[1] - 5), int(cr[0] - 5)
@@ -173,7 +173,7 @@ def readstatus():
 		if os.path.exists(f):
 			try:
 				exec(open(f).read(), glo, loc)
-			except:
+			except Exception:
 				error("Invalid configuration [%s]" % f)
 			if BYOBU_BACKEND == "tmux":
 				items = "%s %s" % (loc["tmux_left"], loc["tmux_right"])
@@ -217,13 +217,13 @@ def writestatus(items):
 		if key.startswith(BYOBU_BACKEND):
 			try:
 				f = open(path, "r")
-			except:
+			except Exception:
 				f = open(SHARE + '/status/status', "r")
 			lines = f.readlines()
 			f.close()
 			try:
 				f = open(path, "w")
-			except:
+			except Exception:
 				f = open(path, "a+")
 			for l in lines:
 				if l.startswith("%s=" % key):
@@ -341,7 +341,7 @@ def chgesc(snackScreen, size):
 			try:
 				dummy = int(esc.value())
 				esc.set(DEF_ESC)
-			except:
+			except Exception:
 				# do nothing
 				dummy = "foo"
 		else:
@@ -363,7 +363,7 @@ def autolaunch():
 		for line in open("%s/.profile" % HOME):
 			if "byobu-launch" in line:
 				return 1
-	except:
+	except Exception:
 		return 0
 	if os.path.exists("/etc/profile.d/Z97-%s.sh" % PKG):
 		return 1
