@@ -27,7 +27,7 @@ import subprocess
 try:
 	# For Python3, try and import input from builtins
 	from builtins import input
-except:
+except Exception:
 	# But fall back to using the default input
 	True
 
@@ -156,14 +156,14 @@ if len(sessions) > 1:
 		try:
 			try:
 				user_input = input("\nChoose 1-%d [1]: " % (i - 1))
-			except:
+			except Exception:
 				user_input = ""
 			if not user_input or user_input == "":
 				choice = 1
 				break
 			try:
 				choice = int(user_input)
-			except:
+			except Exception:
 				choice = int(eval(user_input))
 			if choice >= 1 and choice < i:
 				break
@@ -174,7 +174,7 @@ if len(sessions) > 1:
 		except KeyboardInterrupt:
 			sys.stdout.write("\n")
 			sys.exit(0)
-		except:
+		except Exception:
 			if choice == "" or choice == -1:
 				choice = 1
 				break
