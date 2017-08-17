@@ -1,4 +1,4 @@
-byobu (5.122) unreleased; urgency=medium
+byobu (5.122-0ubuntu1) artful; urgency=medium
 
   [ Tiago Stürmer Daitx ]
   * usr/lib/byobu/include/config.py.in, usr/lib/byobu/include/select-
@@ -7,7 +7,7 @@ byobu (5.122) unreleased; urgency=medium
       the newly introduced E722 - ie. a 'try:/except:' block with a
       bare except that should be replaced by a 'try:except Exception:' block.
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 09 Aug 2017 16:53:48 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 17 Aug 2017 18:44:22 -0500
 
 byobu (5.121-0ubuntu1) artful; urgency=medium
 
