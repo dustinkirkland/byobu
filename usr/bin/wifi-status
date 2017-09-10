@@ -22,22 +22,22 @@
 trap "pkill -f -9 wifi-status >/dev/null 2>&1; exit 0" EXIT HUP INT QUIT TERM
 
 if [ -z "$1" ]; then
-	dev=$(iwconfig 2>/dev/null | grep '802.11' | tail -n1 | awk '{print $1}')
+	dev=$(iw dev|grep Interface|awk '{print $2}')
 else
 	dev="$1"
 fi
 
-router=$(route -n | grep "^0.0.0.0" | awk '{print $2}')
+router=$(ip route show|head -n 1|awk '{print $3}')
 
 if [ -z "$TMUX" ]; then
-	watch -n1 "iwconfig $dev; ifconfig $dev; route -n; echo; (grep $dev: /var/log/syslog | tail -n 10 | sort -r); echo; ping -I $dev -c 1 8.8.8.8"
+	watch -n1 "iw $dev info; ip link show $dev; ip route; echo; (journalctl -b --no-pager -q | grep -i $dev | tail -n 10 | sort -r); echo; ping -I $dev -c 1 8.8.8.8"
 else
-	tmux new-window -n wifi-status "watch -c iwconfig $dev \| ccze -A" \; \
-		split-window -t wifi-status -v "watch -c ifconfig $dev \| ccze -A" \; \
-		split-window -t wifi-status -v "watch -c route -n \| ccze -A" \; \
-		split-window -t wifi-status -h "ping -OD -I $dev $router" \; \
-		split-window -t wifi-status -v "watch -c grep $dev: /var/log/syslog \| tail -n 10 \| sort -r \| ccze -A" \; \
-		split-window -t wifi-status -h "ping -OD -I $dev 8.8.8.8" \; \
+	tmux new-window -n wifi-status "watch -c iw $dev info \| ccze -A" \; \
+		split-window -t wifi-status -v "watch -c ip link show $dev \| ccze -A" \; \
+		split-window -t wifi-status -v "watch -c ip route \| ccze -A" \; \
+		split-window -t wifi-status -h "ping -I $dev $router" \; \
+		split-window -t wifi-status -v "watch -c journalctl -b --no-pager -q \| grep -i $dev \| tail -n 10 \| sort -r \| ccze -A" \; \
+		split-window -t wifi-status -h "ping -I $dev 8.8.8.8" \; \
 		select-layout -t wifi-status tiled
 fi
 
