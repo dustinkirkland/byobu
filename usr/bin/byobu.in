@@ -100,7 +100,8 @@ byobu-janitor --force
 if [ -t 1 ]; then
 	[ -r "$BYOBU_CONFIG_DIR/statusrc" ] && . "$BYOBU_CONFIG_DIR/statusrc"
 	. $BYOBU_PREFIX/lib/$PKG/ip_address
-	[ -n "$BYOBU_NO_TITLE" ] || printf "\033]0;${USER}@$(hostname) ($(__ip_address t)) - ${PKG}\007"
+	BYOBU_TITLE=${BYOBU_ALT_TITLE:-'${USER}@${HOSTNAME:-$(hostname)} ($(__ip_address t)) - ${PKG}'}
+	[ -n "$BYOBU_NO_TITLE" ] || eval printf \"\\033\]0\;${BYOBU_TITLE}\\007\"
 fi
 
 # Drop a symlink to the ssh socket in $HOME, since we can ensure that exists
