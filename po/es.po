@@ -24,7 +24,7 @@ msgstr "Menú"
 #: byobu-export:68 byobu-export:71 byobu-select-profile:104
 #: byobu-select-profile:107
 msgid "Choose"
-msgstr "Eleccion"
+msgstr "Elección"
 
 #: byobu-export:171
 msgid "File exists"
@@ -72,8 +72,8 @@ msgid ""
 "If you are using the default set of keybindings, press\\n<F5> to activate "
 "these changes.\\n\\nOtherwise, exit this screen session and start a new one."
 msgstr ""
-"Si estas usando el conjunto por defecto de atajos de teclado, presiona\\n "
-"<F5> para activar estos cambios. \\n\\n De no ser así, sal de esta sesion de "
+"Si estás usando el conjunto por defecto de atajos de teclado, presiona\\n "
+"<F5> para activar estos cambios. \\n\\n De no ser así, sal de esta sesión de "
 "\"screen\" y inicia otra nueva."
 
 #: byobu-select-profile:136
@@ -82,11 +82,11 @@ msgstr "Ejecute «byobu» para activar"
 
 #: byobu-config:83
 msgid "Byobu currently launches at login (toggle off)"
-msgstr "Byobu actulamente se lanza en el inicio (cambiar)"
+msgstr "Byobu actualmente se lanza en el inicio (cambiar)"
 
 #: byobu-config:85
 msgid "Byobu currently does not launch at login (toggle on)"
-msgstr "Byobu actulamente no se lanza en el inicio (cambiar)"
+msgstr "Byobu actualmente no se lanza en el inicio (cambiar)"
 
 #: byobu-config:89
 msgid "Help"
