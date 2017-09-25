@@ -16,6 +16,10 @@ byobu (5.123) unreleased; urgency=medium
       set an alternate window title for their byobu session
     - https://github.com/dustinkirkland/byobu/pull/23
 
+  [ Mitsuya Shibata ]
+  * usr/bin/byobu-ctrl-a.in: LP: #1710780
+    - set prefix2 to F12 in screen-compat ctrl-a mode
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 17 Aug 2017 18:44:26 -0500
 
 byobu (5.122-0ubuntu1) artful; urgency=medium
