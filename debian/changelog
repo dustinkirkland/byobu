@@ -1,3 +1,9 @@
+byobu (5.124) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 25 Sep 2017 10:28:42 -0500
+
 byobu (5.123-0ubuntu1) artful; urgency=medium
 
   [ @cripton ]
