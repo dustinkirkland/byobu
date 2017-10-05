@@ -102,7 +102,7 @@ def cull_zombies(session_name):
 		# Find the master session to extract the group number. We use
 		# the group number to be extra sure the right session is getting
 		# killed. We don't want to accidentally kill the wrong one
-		pattern = "^%s:.+\\((group \\d+)\\).*$" % session_name
+		pattern = "^%s:.+\\((group [^\\)]+)\\).*$" % session_name
 		master = re.search(pattern, output, re.MULTILINE)
 		if not master:
 			return
