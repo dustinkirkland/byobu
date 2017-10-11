@@ -30,6 +30,7 @@ Suggests:
  lsb-release,
  po-debconf,
  screen,
+ speedometer,
  ttf-ubuntu-font-family (>= 0.80-0ubuntu1~medium),
  update-notifier-common,
  vim,

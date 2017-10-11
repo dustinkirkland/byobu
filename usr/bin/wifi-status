@@ -32,12 +32,14 @@ router=$(ip route show|head -n 1|awk '{print $3}')
 if [ -z "$TMUX" ]; then
 	watch -n1 "iw $dev info; ip addr show $dev; ip route; echo; (journalctl -b --no-pager -q | grep -i $dev | tail -n 10 | sort -r); echo; ping -I $dev -c 1 8.8.8.8"
 else
+	# Note that the speedometer item will silently fail, if the speedometer command is not found;  I don't want byobu to depend on speedometer, but it can suggest it
 	tmux new-window -n wifi-status "watch -c iw $dev info \| ccze -A" \; \
 		split-window -t wifi-status -v "watch -c ip addr show $dev \| ccze -A" \; \
 		split-window -t wifi-status -v "watch -c ip route \| ccze -A" \; \
 		split-window -t wifi-status -h "ping -I $dev $router" \; \
 		split-window -t wifi-status -v "watch -c journalctl -b --no-pager -q \| grep -i $dev \| tail -n 10 \| sort -r \| ccze -A" \; \
 		split-window -t wifi-status -h "ping -I $dev 8.8.8.8" \; \
+		split-window -t wifi-status -v "speedometer -t $dev -r $dev" \; \
 		select-layout -t wifi-status tiled
 fi
 

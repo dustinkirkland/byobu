@@ -1,6 +1,10 @@
 byobu (5.124) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/bin/wifi-status:
+    - add a speedometer split
+  * debian/control, usr/bin/wifi-status,
+    usr/share/byobu/profiles/bashrc:
+    - kill the double bracket;  doesn't always print nicely
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 25 Sep 2017 10:28:42 -0500
 
