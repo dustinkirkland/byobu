@@ -5,6 +5,8 @@ byobu (5.124) unreleased; urgency=medium
   * debian/control, usr/bin/wifi-status,
     usr/share/byobu/profiles/bashrc:
     - kill the double bracket;  doesn't always print nicely
+  * === added directory snap, snap/snapcraft.yaml:
+    - initial crack at snap packaging
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 25 Sep 2017 10:28:42 -0500
 

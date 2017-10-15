@@ -1,0 +1,26 @@
+name: byobu
+version: 5.124
+summary: text window manager, shell multiplexer, integrated DevOps environment
+description: >
+    Byobu is Ubuntu's powerful text-based window manager, shell multiplexer, and
+    integrated DevOps environment.
+    Using Byobu, you can quickly create and move between different windows
+    over a single SSH connection or TTY terminal, split each of those windows into
+    multiple panes, monitor dozens of important statistics about your system,
+    detach and reattach to sessions later while your programs continue to run in
+    the background.
+confinement: classic
+grade: stable
+
+parts:
+  byobu:
+    plugin: nil
+    stage-packages: [byobu]
+    stage:
+        - -bin/byobu
+    snap:
+        - -bin/byobu
+
+apps:
+   byobu:
+     command: byobu
