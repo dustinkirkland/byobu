@@ -1,5 +1,6 @@
 byobu (5.124) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/bin/wifi-status:
     - add a speedometer split
   * debian/control, usr/bin/wifi-status,
@@ -7,6 +8,10 @@ byobu (5.124) unreleased; urgency=medium
     - kill the double bracket;  doesn't always print nicely
   * === added directory snap, snap/snapcraft.yaml:
     - initial crack at snap packaging
+
+  [ Charles Alva ]
+  * usr/bin/purge-old-kernels:
+    - make sure we pass through the -f|-y apt options
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 25 Sep 2017 10:28:42 -0500
 

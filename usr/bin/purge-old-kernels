@@ -26,4 +26,4 @@
 # If you still have old kernels lying around after this, please
 # file a bug against apt: https://bugs.launchpad.net/ubuntu/+source/apt/+filebug
 
-sudo apt-get autoremove
+sudo apt-get $@ autoremove
