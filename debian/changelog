@@ -9,6 +9,11 @@ byobu (5.124) unreleased; urgency=medium
   * === added directory snap, snap/snapcraft.yaml:
     - initial crack at snap packaging
 
+  [ Ari Pollak ]
+  * usr/lib/byobu/include/select-session.py:
+    - Fix culling sessions with named groups (#25)
+    - https://github.com/dustinkirkland/byobu/pull/25
+
   [ Charles Alva ]
   * usr/bin/purge-old-kernels:
     - make sure we pass through the -f|-y apt options
