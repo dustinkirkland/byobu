@@ -18,6 +18,10 @@ byobu (5.124) unreleased; urgency=medium
   * usr/bin/purge-old-kernels:
     - make sure we pass through the -f|-y apt options
 
+  [ Matthias Klose ]
+  * Build-depend on dh-python.
+  * Drop the alternative python2 dependencies. LP: #1735348.
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 25 Sep 2017 10:28:42 -0500
 
 byobu (5.123-0ubuntu1) artful; urgency=medium
