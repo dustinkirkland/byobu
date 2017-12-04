@@ -1,3 +1,9 @@
+byobu (5.125) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 04 Dec 2017 07:46:48 -0600
+
 byobu (5.124-0ubuntu1) bionic; urgency=medium
 
   [ Dustin Kirkland ]
