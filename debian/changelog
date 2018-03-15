@@ -4,6 +4,13 @@ byobu (5.125) unreleased; urgency=medium
   * usr/share/byobu/profiles/dircolors: LP: #1752352
     - fix blinking symlinks
 
+  [ Chow Loong Jin ]
+  * usr/lib/byobu/include/select-session.py:
+   - Fix cull_zombies() so that we properly cull zombies of sessions that
+     have non-numeric session names
+   - Allow the dynamic session-creation behaviour to be disabled by
+     creating ~/.byobu/.reuse-session
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 04 Dec 2017 07:46:48 -0600
 
 byobu (5.124-0ubuntu1) bionic; urgency=medium
