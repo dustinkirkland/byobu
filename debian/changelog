@@ -1,6 +1,8 @@
 byobu (5.125) unreleased; urgency=medium
 
-  * UNRELEASED
+  [ Jean-Baptiste Lallement ]
+  * usr/share/byobu/profiles/dircolors: LP: #1752352
+    - fix blinking symlinks
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 04 Dec 2017 07:46:48 -0600
 
