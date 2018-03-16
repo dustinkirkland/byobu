@@ -11,6 +11,10 @@ byobu (5.125) unreleased; urgency=medium
    - Allow the dynamic session-creation behaviour to be disabled by
      creating ~/.byobu/.reuse-session
 
+  [ Dustin Kirkland ]
+  * debian/control:
+    - need sensible-utils
+
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 04 Dec 2017 07:46:48 -0600
 
 byobu (5.124-0ubuntu1) bionic; urgency=medium

@@ -3,7 +3,7 @@ Section: misc
 Priority: optional
 Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 Uploaders: Antoine Beaupré <anarcat@koumbit.org>
-Standards-Version: 3.9.6
+Standards-Version: 4.1.3
 Build-Depends: debhelper (>= 7.0.50~), gettext-base, automake, autoconf, pep8, dh-python
 Homepage: http://byobu.org
 Vcs-Bzr: http://bazaar.launchpad.net/~kirkland/byobu/trunk
@@ -21,6 +21,7 @@ Depends:
  gawk
 Recommends:
  pastebinit,
+ sensible-utils,
  run-one
 Suggests:
  apport,
