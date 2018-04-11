@@ -26,7 +26,7 @@ __session() {
 	# Note: This will only work in byobu-tmux
 	case "$BYOBU_BACKEND" in
 		tmux)
-			local count=$(tmux list-sessions 2>/dev/null | wc -l)
+			local count=$(tmux list-sessions 2>/dev/null | grep -v "^_" | wc -l)
 			if [ $count -gt 1 ]; then
 				color u W k; printf "${ICON_SESSION}#S"; color --
 			else

@@ -8,6 +8,9 @@ byobu (5.126) unreleased; urgency=medium
     - use $BYOBU_EDITOR with Shift-F7 to open the printscreen buffer in
       a new window;  this fixes a bug on some distros where $EDITOR might
       be undefined
+  * usr/lib/byobu/session:
+    - don't count sessions that start with _
+    - BUG: #892489
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Mar 2018 10:09:57 -0700
 
