@@ -47,6 +47,9 @@ esac
 eval $BYOBU_TEST gsed >/dev/null 2>&1 && export BYOBU_SED="gsed" || export BYOBU_SED="sed"
 eval $BYOBU_TEST greadlink >/dev/null 2>&1 && export BYOBU_READLINK="greadlink" || export BYOBU_READLINK="readlink"
 eval $BYOBU_TEST sensible-pager >/dev/null 2>&1 && export BYOBU_PAGER="sensible-pager" || export BYOBU_PAGER="less"
+eval $BYOBU_TEST sensible-editor >/dev/null 2>&1 && export BYOBU_EDITOR="sensible-editor" || export BYOBU_EDITOR="$EDITOR"
+eval $BYOBU_TEST "$BYOBU_EDITOR" >/dev/null 2>&1 || export BYOBU_EDITOR="vim"
+
 
 # Check sed's follow-symlinks feature
 $BYOBU_SED --follow-symlinks "s///" /dev/null 2>/dev/null && BYOBU_SED_INLINE="$BYOBU_SED -i --follow-symlinks" || BYOBU_SED_INLINE="$BYOBU_SED -i"

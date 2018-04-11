@@ -1,6 +1,13 @@
 byobu (5.126) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/lib/byobu/include/constants, usr/share/byobu/keybindings/f-
+    keys.screen, usr/share/byobu/keybindings/f-keys.tmux:
+    - create a $BYOBU_EDITOR variable, using "sensible-editor" if found
+      (it will be on Debian/Ubuntu systems), or $EDITOR if not, and falling
+      back to "vim" in the case where none are found
+    - use $BYOBU_EDITOR with Shift-F7 to open the printscreen buffer in
+      a new window;  this fixes a bug on some distros where $EDITOR might
+      be undefined
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Mar 2018 10:09:57 -0700
 
