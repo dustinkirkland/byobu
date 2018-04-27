@@ -318,6 +318,11 @@ get_distro() {
 		true
 	elif [ -r "/etc/os-release" ]; then
 		distro=$(. /etc/os-release && echo "$NAME")
+		case "$distro" in
+			Debian*)
+				distro=$(. /etc/lsb-release && [ -n "$GOOGLE_ID" ] && echo "gLinux" || echo "Debian")
+			;;
+		esac
 	elif [ -r "/etc/issue" ]; then
 		# lsb_release is *really* slow;  try to use /etc/issue first
 		local issue

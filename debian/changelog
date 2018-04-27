@@ -11,6 +11,8 @@ byobu (5.126) unreleased; urgency=medium
   * usr/lib/byobu/session:
     - don't count sessions that start with _
     - BUG: #892489
+  * usr/lib/byobu/include/shutil, usr/lib/byobu/logo:
+    - add a logo for gLinux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Mar 2018 10:09:57 -0700
 

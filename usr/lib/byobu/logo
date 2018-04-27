@@ -84,6 +84,11 @@ __logo() {
 			logo=" > "
 			$MARKUP && printf "$(color b c w)%s$(color -)" "$logo" || printf "$logo"
 		;;
+		*glinux*)
+			#$MARKUP && printf "$(color W b)g$(color W r)L$(color W y)i$(color W b)n$(color W g)u$(color W r)x$(color -)" "$logo" || printf "$logo"
+			logo="gLinux"
+			$MARKUP && printf "$(color W b)%s$(color -)" "$logo" || printf "$logo"
+		;;
 		*mac*|*darwin*)
 			if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
 				# The Apple option character
