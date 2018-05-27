@@ -50,7 +50,7 @@ ___update_cache() {
 	# Ensure that no more than one of these run at a given time
 	if [ -x /usr/lib/update-notifier/apt-check ]; then
 		# If apt-check binary exists, use it
-		flock -xn "$flock" /usr/lib/update-notifier/apt-check 2>&1 | awk '-F;' 'END { print $1, $2 }' >"$mycache" 2>/dev/null &
+		flock -xn "$flock" sh -c "(/usr/lib/update-notifier/apt-check 2>&1 | awk '-F;' 'END { print \$1, \$2 }' >\"${mycache}-x\" 2>/dev/null ; mv \"${mycache}-x\" \"$mycache\")" &
 	elif eval $BYOBU_TEST apt-get >/dev/null; then
 		# If apt-get exists, use it
 		flock -xn "$flock" apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst >$mycache 2>/dev/null &
@@ -85,8 +85,17 @@ ___update_needed() {
 	[ ! -e "$mycache" ] && return 0
 	if eval $BYOBU_TEST apt-get >/dev/null; then
 		# Debian/ubuntu
-		[ "/var/lib/apt" -nt "$mycache" ] || [ "/var/lib/apt/lists" -nt "$mycache" ]
-		return $?
+		d0=$(($(stat -c %Y $mycache 2>/dev/null)-5))
+		d1=$(stat -c %Y /var/lib/apt)
+		d2=$(stat -c %Y /var/lib/apt/lists)
+		d3=$(stat -c %Y /var/log/dpkg.log)
+		now=$(date +%s)
+		delta=$(($now-$d0))
+		if [ $d0 -lt 0 ] || [ $d0 -lt $d1 ] || [ $d0 -lt $d2 ] || [ $d0 -lt $d3 ] || [ 3605 -lt $delta ] ; then
+			return 0
+		else
+			return 1
+		fi
 	elif [ -e "/var/lib/PackageKit/transactions.db" ]; then
 		[ "/var/lib/PackageKit/transactions.db" -nt "$mycache" ]
 		return $?

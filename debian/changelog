@@ -14,8 +14,11 @@ byobu (5.126) unreleased; urgency=medium
     - BUG: #892489
   * usr/lib/byobu/include/shutil, usr/lib/byobu/logo:
     - add a logo for gLinux
-  * usr/lib/byobu/updates_available,
-    usr/share/byobu/desktop/byobu.desktop:
+
+  [ Mark Kelly ]
+  * usr/lib/byobu/updates_available:
+    - Fix rare race condition for update_needed and cache file (#26)
+    - https://github.com/dustinkirkland/byobu/pull/26
 
   [ Didier Roche ]
   * byobu.desktop:
