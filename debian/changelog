@@ -1,5 +1,6 @@
 byobu (5.126) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/lib/byobu/include/constants, usr/share/byobu/keybindings/f-
     keys.screen, usr/share/byobu/keybindings/f-keys.tmux:
     - create a $BYOBU_EDITOR variable, using "sensible-editor" if found
@@ -13,6 +14,13 @@ byobu (5.126) unreleased; urgency=medium
     - BUG: #892489
   * usr/lib/byobu/include/shutil, usr/lib/byobu/logo:
     - add a logo for gLinux
+  * usr/lib/byobu/updates_available,
+    usr/share/byobu/desktop/byobu.desktop:
+
+  [ Didier Roche ]
+  * byobu.desktop:
+    - give some hints for GNOME Shell to correctly match byobu desktop file
+      (LP: #1718482); partial fix, not entirely working yet
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Mar 2018 10:09:57 -0700
 
