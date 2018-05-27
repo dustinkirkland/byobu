@@ -1,4 +1,4 @@
-byobu (5.126) unreleased; urgency=medium
+byobu (5.126-0ubuntu1) cosmic; urgency=medium
 
   [ Dustin Kirkland ]
   * usr/lib/byobu/include/constants, usr/share/byobu/keybindings/f-
@@ -25,7 +25,7 @@ byobu (5.126) unreleased; urgency=medium
     - give some hints for GNOME Shell to correctly match byobu desktop file
       (LP: #1718482); partial fix, not entirely working yet
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 16 Mar 2018 10:09:57 -0700
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 May 2018 18:07:09 -0500
 
 byobu (5.125-0ubuntu1) bionic; urgency=medium
 
