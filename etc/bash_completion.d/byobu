@@ -1,0 +1,17 @@
+#!/bin/bash
+
+_byobu() {
+	source <(sed 's/^/local /' "${HOME}/.byobu/backend")
+
+	if [ "${BYOBU_BACKEND}" == tmux ] ; then
+		_tmux "$@"
+	elif [ "${BYOBU_BACKEND}" == screen ] ; then
+		_screen "$@"
+	else
+		return 1
+	fi
+}
+
+complete -F _byobu byobu
+complete -F _tmux byobu-tmux
+complete -F _screen byobu-screen

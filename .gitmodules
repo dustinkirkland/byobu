@@ -1,0 +1,6 @@
+[submodule "bash-completion"]
+	path = bash-completion
+	url = https://github.com/GArik/bash-completion.git
+[submodule "tmux-bash-completion"]
+	path = tmux-bash-completion
+	url = https://github.com/imomaliev/tmux-bash-completion.git
