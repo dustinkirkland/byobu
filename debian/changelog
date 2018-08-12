@@ -4,6 +4,9 @@ byobu (5.127) unreleased; urgency=medium
     - Googley PS1 for non-Ubuntu distros
   * usr/lib/byobu/logo, usr/share/byobu/profiles/bashrc:
     - use Google lego logo for gLinux
+  * usr/lib/byobu/logo: LP: #1769676
+    - don't use the Ubuntu logo in the status line, as this breaks ssh
+      clients coming to Ubuntu from other OSes without the Ubuntu font
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 May 2018 18:07:11 -0500
 

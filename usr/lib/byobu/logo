@@ -37,7 +37,10 @@ __logo() {
 			if $MARKUP; then
 				if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
 					if [ ! "$VTE_CJK_WIDTH" = "1" ] && [ !  "$VTE_CJK_WIDTH" = "wide" ] ; then
-						color "colour202" "colour255" ; printf " u "; color -
+						# color "colour202" "colour255" ; printf " u "; color -
+						# Ubuntu's logo doesn't display anywhere, except for on Ubuntu itself, which has the Ubuntu font with the logo
+						# which breaks when you ssh into Ubuntu from elsewhere (Windows, Debian, Mac)
+						color "colour202" "colour255" ; printf " u "; color -
 					else
 						color m W; printf " u "; color -
 					fi
