@@ -261,7 +261,6 @@ status_freq() {
 		notify_osd)	_RET=9999991 ;;
 		processes)	_RET=7 ;;
 		raid)		_RET=59 ;;
-		rcs_cost)	_RET=613 ;;
 		reboot_required) _RET=5 ;;
 		release)	_RET=599 ;;
 		services)	_RET=53 ;;
