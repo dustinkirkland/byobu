@@ -43,6 +43,11 @@ byobu (5.127) unreleased; urgency=medium
     - add a comment about motd printing
   * usr/share/man/man1/byobu.1: LP: #1618185
     - update documentation on setting a logo
+  * debian/compat, debian/control:
+  * debian/compat, debian/control, usr/lib/byobu/include/config.py.in,
+    usr/lib/byobu/include/select-session.py:
+    - neverending fight with lintian
+    - hardcode python3 as our interpreter
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 May 2018 18:07:11 -0500
 
