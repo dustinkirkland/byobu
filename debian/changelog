@@ -27,6 +27,11 @@ byobu (5.127) unreleased; urgency=medium
   * usr/share/byobu/desktop/byobu.desktop: LP: #1739708
     - update categories so that Byobu can show up in Cinnamon/Mint's
       preferred applications list
+  * usr/share/byobu/pixmaps/byobu.14.png,
+    usr/share/byobu/pixmaps/byobu.192.png,
+    usr/share/byobu/pixmaps/byobu.64.png,
+    usr/share/byobu/pixmaps/byobu.png:
+    - re-render png's, as Chrome started rendering middle color wrong
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 May 2018 18:07:11 -0500
 
