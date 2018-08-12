@@ -39,7 +39,8 @@ else
 	export BYOBU_CHARMAP=UTF-8
 fi
 if [ -n "$TMUX" ]; then
-	tmux send-keys " export BYOBU_CHARMAP=$BYOBU_CHARMAP ; . ~/.bashrc" \; send-keys Enter
+	RC_FILE=$(echo "$SHELL" | $BYOBU_SED "s:.*/::")
+	tmux send-keys " export BYOBU_CHARMAP=$BYOBU_CHARMAP ; . ~/.${RC_FILE}rc" \; send-keys Enter
 fi
 
 # vi: syntax=sh ts=4 noexpandtab
