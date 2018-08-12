@@ -125,4 +125,7 @@ if ! (grep -qs "#byobu-prompt#$" "$HOME/.bashrc") && ! [ -e "$BYOBU_CONFIG_DIR/p
 fi
 [ -r "$BYOBU_CONFIG_DIR/prompt" ] || printf "[ -r ${BYOBU_PREFIX}/share/${PKG}/profiles/bashrc ] && . ${BYOBU_PREFIX}/share/${PKG}/profiles/bashrc  #byobu-prompt#\n" > "$BYOBU_CONFIG_DIR/prompt"
 
+# Affects: Upgrades from <= byobu 5.126, clear out ec2/rcs cost statuses
+rm -f "$BYOBU_RUN_DIR"/cache.tmux/ec2_cost* "$BYOBU_RUN_DIR"/cache.tmux/rcs_cost* "$BYOBU_RUN_DIR"/status.tmux/ec2_cost* "$BYOBU_RUN_DIR"/status.tmux/rcs_cost*
+
 # vi: syntax=sh ts=4 noexpandtab
