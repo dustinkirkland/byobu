@@ -48,6 +48,8 @@ byobu (5.127) unreleased; urgency=medium
     usr/lib/byobu/include/select-session.py:
     - neverending fight with lintian
     - hardcode python3 as our interpreter
+  * usr/lib/byobu/include/shutil:
+    - check for lsb-release before using (not present on Debian)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 May 2018 18:07:11 -0500
 

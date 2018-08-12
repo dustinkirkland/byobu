@@ -318,7 +318,7 @@ get_distro() {
 		distro=$(. /etc/os-release && echo "$NAME")
 		case "$distro" in
 			Debian*)
-				distro=$(. /etc/lsb-release && [ -n "$GOOGLE_ID" ] && echo "gLinux" || echo "Debian")
+				[ -r /etc/lsb-release ] && distro=$(. /etc/lsb-release && [ -n "$GOOGLE_ID" ] && echo "gLinux" || echo "Debian")
 			;;
 		esac
 	elif [ -r "/etc/issue" ]; then
