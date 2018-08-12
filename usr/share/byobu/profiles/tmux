@@ -75,6 +75,8 @@ set -g terminal-overrides 'xterm*:smcup@:rmcup@'
 
 # Must set default-command to $SHELL, in order to not source ~/.profile
 # BUG: Should *not* hardcode /bin/bash here
+# Use byobu-shell here, to show MOTD, but would do so with every new window and split
+#set -g default-command 'exec byobu-shell'
 set -g default-command $SHELL
 
 set -g status-bg $BYOBU_DARK

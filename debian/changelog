@@ -39,6 +39,8 @@ byobu (5.127) unreleased; urgency=medium
     - try to support zsh and other shells in addition to bash
   * usr/bin/byobu-shell.in:
     - update getting started to byobu.org
+  * usr/share/byobu/profiles/tmux:
+    - add a comment about motd printing
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 May 2018 18:07:11 -0500
 
