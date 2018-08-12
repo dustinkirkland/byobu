@@ -1,3 +1,9 @@
+byobu (5.128) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Aug 2018 11:37:11 -0500
+
 byobu (5.127-0ubuntu1) cosmic; urgency=medium
 
   * usr/share/byobu/profiles/bashrc:
