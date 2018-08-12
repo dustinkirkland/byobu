@@ -36,7 +36,7 @@ if [ ! -e "$FLAG" ]; then
 	echo "  'byobu-disable' and 'byobu-enable'"
 	echo
 	echo "For tips, tricks, and more information, see:"
-	echo " * http://bit.ly/byobu-help"
+	echo " * https://bit.ly/byobu-tips"
 	echo
 	touch "$FLAG"
 fi
