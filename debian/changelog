@@ -50,6 +50,8 @@ byobu (5.127) unreleased; urgency=medium
     - hardcode python3 as our interpreter
   * usr/lib/byobu/include/shutil:
     - check for lsb-release before using (not present on Debian)
+  * usr/share/byobu/profiles/bashrc:
+    - fix missing bash 256 ps1 colors
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 May 2018 18:07:11 -0500
 
