@@ -247,7 +247,6 @@ status_freq() {
 		disk)		_RET=13 ;;
 		disk_io)	_RET=3 ;;
 		distro)		_RET=9999991 ;;
-		ec2_cost)	_RET=601 ;;
 		entropy)	_RET=5 ;;
 		fan_speed)	_RET=23 ;;
 		hostname)	_RET=607 ;;

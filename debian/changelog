@@ -10,7 +10,13 @@ byobu (5.127) unreleased; urgency=medium
   * usr/lib/byobu/include/shutil, usr/lib/byobu/Makefile.am,
     usr/lib/byobu/rcs_cost, usr/share/byobu/status/status,
     usr/share/man/man1/byobu.1:
-    - deprecate some unmaintained functionality
+    usr/lib/byobu/ec2_cost,
+    usr/lib/byobu/include/ec2instancespricing.py,
+    usr/lib/byobu/include/Makefile.am, usr/lib/byobu/include/shutil,
+    usr/lib/byobu/Makefile.am, usr/share/byobu/status/status,
+    usr/share/man/man1/byobu.1:
+    - deprecate unmaintained ec2/rcs pricing functionality
+    - this never really worked well, and these prices are constantly changing
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 May 2018 18:07:11 -0500
 
