@@ -20,7 +20,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __ip_address_detail() {
-	[ -x /sbin/ifconfig ] && /sbin/ifconfig
 	if [ -x /sbin/ip ]; then
 		/sbin/ip -4 addr list
 		/sbin/ip -6 addr list

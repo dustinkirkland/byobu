@@ -19,6 +19,11 @@ byobu (5.127) unreleased; urgency=medium
     - deprecate unmaintained ec2/rcs pricing functionality
     - this never really worked well, and these prices are constantly changing
     - clear out stale status cache
+  * debian/control, usr/lib/byobu/ip_address, usr/lib/byobu/network,
+    usr/share/man/man1/wifi-status.1: LP: #1748956
+    - switch entirely to iproute2, away from net-tools and ifconfig
+    - only remaining ifconfig is fall-back logic, in case /sbin/ip is
+      not found
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 May 2018 18:07:11 -0500
 
