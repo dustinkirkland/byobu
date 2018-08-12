@@ -85,9 +85,9 @@ __logo() {
 			$MARKUP && printf "$(color b c w)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*glinux*)
-			#$MARKUP && printf "$(color W b)g$(color W r)L$(color W y)i$(color W b)n$(color W g)u$(color W r)x$(color -)" "$logo" || printf "$logo"
-			logo="gLinux"
-			$MARKUP && printf "$(color W b)%s$(color -)" "$logo" || printf "$logo"
+			logo=" G "
+			# Green: 3cba54=71, Yellow: f4c20d=214, Red: db3236=167, Blue: 4885ed=69
+			$MARKUP && printf "$(color colour0 colour69)██$(color colour0 colour167)■$(color colour0 colour214)■$(color colour0 colour69)▄$(color colour0 colour71)█$(color colour0 colour167)■$(color -)" || printf "$logo"
 		;;
 		*mac*|*darwin*)
 			if [ "$BYOBU_BACKEND" = "tmux" ] && [ "$BYOBU_CHARMAP" = "UTF-8" ]; then

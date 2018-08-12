@@ -1,6 +1,9 @@
 byobu (5.127) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/share/byobu/profiles/bashrc:
+    - Googley PS1 for non-Ubuntu distros
+  * usr/lib/byobu/logo, usr/share/byobu/profiles/bashrc:
+    - use Google lego logo for gLinux
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 May 2018 18:07:11 -0500
 
