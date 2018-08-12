@@ -1,4 +1,4 @@
-byobu (5.127) unreleased; urgency=medium
+byobu (5.127-0ubuntu1) cosmic; urgency=medium
 
   * usr/share/byobu/profiles/bashrc:
     - Googley PS1 for non-Ubuntu distros
@@ -53,7 +53,7 @@ byobu (5.127) unreleased; urgency=medium
   * usr/share/byobu/profiles/bashrc:
     - fix missing bash 256 ps1 colors
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 27 May 2018 18:07:11 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Aug 2018 11:37:06 -0500
 
 byobu (5.126-0ubuntu1) cosmic; urgency=medium
 
