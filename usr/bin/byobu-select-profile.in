@@ -59,13 +59,14 @@ done
 
 usage () {
     cat <<EOT
-Usage: $0 [(-l|--list)][(-h|--help)]
-    -l,--list           list available profiles
-    -b,--background	set the background color
-    -f,--foreground     set the foreground color
-    -h,--help           this help
-
-    Without any parameters, runs interactively.
+Usage: $0 [OPTION]
+    -l,--list                list available profiles
+    -b,--background COLOR    set the background color
+    -f,--foreground COLOR    set the foreground color
+    -h,--hostnmae            set the colors based on a hash of the hostname
+    -i,--ip                  set the colors based on a hash of the ip
+    -r,--random              set the colors randomly
+    --help                   this help
 EOT
 }
 
@@ -80,60 +81,6 @@ listprofiles() {
 	# Display list of profiles, one per line
 	for x in $COLORS; do
 		echo "$x"
-	done
-}
-
-prompt() {
-	which="$1"
-	count=1
-	selected=-1
-	while /bin/true; do
-		if [ $count -gt 5 ]; then
-			echo `gettext "ERROR: Invalid selection"`
-			exit 1
-		fi
-		count=$(expr $count + 1)
-		echo
-		if [ "$which" = "foreground" ]; then
-			echo `gettext 'Select the foreground color: '`
-			simple="white"
-		else
-			echo `gettext 'Select the background color: '`
-			simple="black"
-		fi
-		i=1
-		for x in $COLORS; do
-			test $i -lt 10 2>/dev/null && printf "  " || printf " "
-			echo "$i. $x"
-			i=$(expr $i + 1)
-			[ "$simple" = "$x" ] && simple=$i
-		done
-		echo
-		if [ -z "$selected" -a -n "$simple" ]; then
-			selected="$simple"
-		elif ! test $selected -gt 0 2>/dev/null; then
-			printf "`gettext 'Choose'` 1-$i [$simple]: "
-			selected=`head -n1`
-		elif ! test $selected -le $i 2>/dev/null; then
-			printf "`gettext 'Choose'` 1-$i [$simple]: "
-			selected=`head -n1`
-		else
-			i=1
-			for color in $COLORS; do
-				[ "$i" = "$selected" ] && break
-				i=$(expr $i + 1)
-			done
-			echo `gettext "Selected"` "$which [$color]"
-			case "$BYOBU_BACKEND" in
-				screen)
-					setcolor_screen "$which" "$color"
-				;;
-				tmux|*)
-					setcolor_tmux "$color"
-				;;
-			esac
-			return 0
-		fi
 	done
 }
 
@@ -214,12 +161,7 @@ setcolor_tmux() {
 }
 
 if [ $# -eq 0 ]; then
-	prompt "background"
-	case "$BYOBU_BACKEND" in
-		screen)
-			prompt "foreground"
-		;;
-	esac
+	usage
 else
 	while true; do
 		case "$1" in
@@ -230,11 +172,6 @@ else
 			-f|--foreground)
 				setcolor_screen "foreground" "$2"
 				shift 2
-			;;
-			-l|--list)
-				listprofiles
-				shift
-				break
 			;;
 			-h|--hostname)
 				color=$(hostname | $HASH | head -c 6)
