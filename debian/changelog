@@ -6,6 +6,11 @@ byobu (5.128) unreleased; urgency=medium
     - https://github.com/dustinkirkland/byobu/pull/31
   * usr/lib/byobu/logo:
     - "SuSE" name is an outdated version of it. Use the modern one: SUSE
+  * usr/lib/byobu/include/config.py.in, usr/lib/byobu/include/select-
+    session.py:
+    - use env python3 for portability to other Linux and Mac systems
+      (hopefully that's still okay for Debian / Ubuntu?)
+    - https://github.com/dustinkirkland/byobu/pull/29
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Aug 2018 11:37:11 -0500
 
