@@ -40,7 +40,7 @@ __wifi_quality() {
 	if [ -z "$quality" ] || [ "$quality" = "0" ]; then
 		quality="0"
 	fi
-	if [ "$bitrate" = "0" ] || [ "$quality" = "0" ] || [ -z "$bitrate" ] || [ -z "$quality"]; then
+	if [ "$bitrate" = "0" ] || [ "$quality" = "0" ] || [ -z "$bitrate" ] || [ -z "$quality" ]; then
 		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/wifi_quality"*
 		return
 	fi
