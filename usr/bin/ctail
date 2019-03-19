@@ -20,7 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 if which ccze >/dev/null 2>&1; then
-	tail -F $@ | ccze -A
+	tail -F "$@" | ccze -A
 else
 	echo "ERROR: ccze not found, hint..." 1>&2
 	echo "  sudo apt-get install ccze" 2>&1
