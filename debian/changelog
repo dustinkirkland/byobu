@@ -11,6 +11,12 @@ byobu (5.128) unreleased; urgency=medium
     - use env python3 for portability to other Linux and Mac systems
       (hopefully that's still okay for Debian / Ubuntu?)
     - https://github.com/dustinkirkland/byobu/pull/29
+  * usr/share/byobu/profiles/bashrc:
+    - Unescaping colors in bash prompt causes problems with scrolling
+      history in bash prompt. you can see leftovers from previous
+      commands when going back by history.
+      All colors in command prompt should be escaped with [ ]
+    - https://github.com/dustinkirkland/byobu/pull/30
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Aug 2018 11:37:11 -0500
 
