@@ -124,7 +124,7 @@ __logo() {
 			$MARKUP && printf "$(color u B k)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*suse*)
-			logo="SuSE"
+			logo="SUSE"
 			$MARKUP && printf "$(color W g)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*xandros*)

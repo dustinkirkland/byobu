@@ -4,6 +4,8 @@ byobu (5.128) unreleased; urgency=medium
     - Quotes are needed around "$@" to keep parameters from splitting
       on spaces.
     - https://github.com/dustinkirkland/byobu/pull/31
+  * usr/lib/byobu/logo:
+    - "SuSE" name is an outdated version of it. Use the modern one: SUSE
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Aug 2018 11:37:11 -0500
 
