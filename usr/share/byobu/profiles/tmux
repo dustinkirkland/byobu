@@ -52,18 +52,18 @@ set-option -g mode-keys vi
 set-option -g mode-style bg=$BYOBU_ACCENT
 set-option -g mode-style fg=$BYOBU_LIGHT
 
-set-window-option -g window-status-style attr=default
+set-window-option -g window-status-style default
 set-window-option -g window-status-style bg=$BYOBU_DARK
 set-window-option -g window-status-style fg=$BYOBU_LIGHT
-set-window-option -g window-status-current-style attr=reverse
+set-window-option -g window-status-current-style reverse
 set-window-option -g window-status-current-style bg=$BYOBU_DARK
 set-window-option -g window-status-current-style fg=$BYOBU_LIGHT
 #set-window-option -g window-status-alert-style bg=$BYOBU_DARK
 #set-window-option -g window-status-alert-style fg=$BYOBU_LIGHT
-#set-window-option -g window-status-alert-style attr=bold
+#set-window-option -g window-status-alert-style bold
 set-window-option -g window-status-activity-style bg=$BYOBU_DARK
 set-window-option -g window-status-activity-style fg=$BYOBU_LIGHT
-set-window-option -g window-status-activity-style attr=bold
+set-window-option -g window-status-activity-style bold
 set-window-option -g automatic-rename on
 set-window-option -g aggressive-resize on
 set-window-option -g monitor-activity on
