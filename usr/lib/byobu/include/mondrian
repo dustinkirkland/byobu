@@ -62,10 +62,10 @@ white_color=231
 
 tmux kill-window -t mondrian
 tmux new-window -n mondrian "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
-	set-option -g pane-active-border-bg colour231 \; \
-	set-option -g pane-active-border-fg black \; \
-	set-option -g pane-border-bg colour231 \; \
-	set-option -g pane-border-fg black \; \
+	set-option -g pane-active-border-style bg=colour231 \; \
+	set-option -g pane-active-border-style fg=black \; \
+	set-option -g pane-border-style bg=colour231 \; \
+	set-option -g pane-border-style fg=black \; \
 	split-window $(get_random_direction) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
 	split-window $(get_random_direction) -t $((RANDOM % 2)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
 	split-window $(get_random_direction) -t $((RANDOM % 3)) "$BYOBU_PREFIX/lib/byobu/include/mondrian color $white_color" \; \
