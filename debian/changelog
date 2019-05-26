@@ -50,6 +50,9 @@ byobu (5.128) unreleased; urgency=medium
     - Fix screen session regex
   * usr/lib/byobu/updates_available:
     - Add support for opkg (OpenWrt)
+  * usr/lib/byobu/users:
+    - Handle stderr for ps, e.g. unsupported options
+    - Fix trailing '#' sign
   * usr/lib/byobu/whoami:
     - Use id if the whoami command is not available
     - Read from /etc/passwd if the getent command is not available
