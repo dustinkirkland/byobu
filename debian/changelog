@@ -26,6 +26,9 @@ byobu (5.128) unreleased; urgency=medium
       creating it)
   * usr/lib/byobu/disk_io:
     - Ensure the detected mount point device exists
+  * usr/lib/byobu/hostname:
+    - Read from /proc/sys/kernel/hostname if the hostname command is not
+      available
   * usr/lib/byobu/logo:
     - Add logo for OpenWrt
   * usr/share/byobu/keybindings/f-keys.tmux:
