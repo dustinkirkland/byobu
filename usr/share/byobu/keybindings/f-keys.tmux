@@ -31,7 +31,7 @@ bind-key -n S-F1 new-window -n help "sh -c '$BYOBU_PAGER $BYOBU_PREFIX/share/doc
 bind-key -n F2 new-window -c "#{pane_current_path}" \; rename-window "-"
 bind-key -n C-F2 display-panes \; split-window -h -c "#{pane_current_path}"
 bind-key -n S-F2 display-panes \; split-window -v -c "#{pane_current_path}"
-bind-key -n C-S-F2 new-session
+bind-key -n C-S-F2 new-session \; rename-window "-"
 bind-key -n F3 previous-window
 bind-key -n F4 next-window
 bind-key -n M-Left previous-window

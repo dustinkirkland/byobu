@@ -31,6 +31,7 @@ byobu (5.128) unreleased; urgency=medium
       -t <target-window> had no effect. In tmux 2.8, -k without -t will
       not trigger a new window; the given command is executed in the
       current window instead.
+    - Rename the new window created after adding a new session
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Aug 2018 11:37:11 -0500
 
