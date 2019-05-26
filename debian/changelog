@@ -40,6 +40,8 @@ byobu (5.128) unreleased; urgency=medium
     - Fix typo
   * usr/lib/byobu/services:
     - Fix reading services from $BYOBU_CONFIG_DIR/statusrc
+  * usr/lib/byobu/session:
+    - Fix screen session regex
   * usr/lib/byobu/updates_available:
     - Add support for opkg (OpenWrt)
   * usr/lib/byobu/whoami:
