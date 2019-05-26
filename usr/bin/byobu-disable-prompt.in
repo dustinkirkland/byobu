@@ -22,6 +22,8 @@ PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
+[ -w "$HOME/.bashrc" ] || exit 1
+
 $BYOBU_SED_INLINE -e "/#byobu-prompt#$/d" "$HOME/.bashrc"
 
 if [ "$1" != "--no-reload" ]; then

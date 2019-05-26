@@ -20,6 +20,10 @@ byobu (5.128) unreleased; urgency=medium
     - https://github.com/dustinkirkland/byobu/pull/30
 
   [ Jeffery To ]
+  * usr/bin/byobu-disable-prompt.in,
+    usr/bin/byobu-janitor.in:
+    - Test if $HOME/.bashrc exists before modifying it (and potentially
+      creating it)
   * usr/lib/byobu/logo:
     - Add logo for OpenWrt
 
