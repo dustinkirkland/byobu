@@ -31,6 +31,9 @@ byobu (5.128) unreleased; urgency=medium
       available
   * usr/lib/byobu/logo:
     - Add logo for OpenWrt
+  * usr/lib/byobu/processes:
+    - Handle stderr for ps, e.g. unsupported options
+    - Remove unnecessary awk call; wc -l only outputs one value
   * usr/share/byobu/keybindings/f-keys.tmux:
     - Remove -k for new-window. In older versions of tmux, -k without
       -t <target-window> had no effect. In tmux 2.8, -k without -t will
