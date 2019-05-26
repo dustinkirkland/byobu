@@ -24,6 +24,8 @@ byobu (5.128) unreleased; urgency=medium
     usr/bin/byobu-janitor.in:
     - Test if $HOME/.bashrc exists before modifying it (and potentially
       creating it)
+  * usr/bin/byobu-export.in:
+    - Use echo if the gettext command is not available
   * usr/bin/byobu.in:
     - Use readlink if the tty command is not available
   * usr/bin/byobu-janitor.in:
