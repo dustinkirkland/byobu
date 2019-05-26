@@ -26,6 +26,11 @@ byobu (5.128) unreleased; urgency=medium
       creating it)
   * usr/lib/byobu/logo:
     - Add logo for OpenWrt
+  * usr/share/byobu/keybindings/f-keys.tmux:
+    - Remove -k for new-window. In older versions of tmux, -k without
+      -t <target-window> had no effect. In tmux 2.8, -k without -t will
+      not trigger a new window; the given command is executed in the
+      current window instead.
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Aug 2018 11:37:11 -0500
 
