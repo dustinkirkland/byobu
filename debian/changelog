@@ -43,6 +43,9 @@ byobu (5.128) unreleased; urgency=medium
   * usr/lib/byobu/whoami:
     - Use id if the whoami command is not available
     - Read from /etc/passwd if the getent command is not available
+  * usr/lib/byobu/wifi_quality:
+    - Add support for iw (preferred over iwconfig)
+    - Make logic more similar to other status notifications
   * usr/share/byobu/keybindings/f-keys.tmux:
     - Remove -k for new-window. In older versions of tmux, -k without
       -t <target-window> had no effect. In tmux 2.8, -k without -t will
