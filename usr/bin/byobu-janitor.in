@@ -41,7 +41,14 @@ DEFAULT_PROFILE="light"
 PROFILE="$BYOBU_CONFIG_DIR/profile"
 
 # Create byobu-exchange buffer file, with secure permissions, if it doesn't exist
-[ -e "$BYOBU_RUN_DIR/printscreen" ] || install -m 600 /dev/null "$BYOBU_RUN_DIR/printscreen"
+if ! [ -e "$BYOBU_RUN_DIR/printscreen" ]; then
+	if eval $BYOBU_TEST install >/dev/null 2>&1; then
+		install -m 600 /dev/null "$BYOBU_RUN_DIR/printscreen"
+	else
+		cp /dev/null "$BYOBU_RUN_DIR/printscreen"
+		chmod 600 "$BYOBU_RUN_DIR/printscreen"
+	fi
+fi
 
 # Affects: users who launched using sudo, such that their config dir
 # is not writable by them
