@@ -24,6 +24,7 @@ __raid_detail() {
 }
 
 __raid() {
+	[ -r /proc/mdstat ] || return
 	while read line; do
 		local p msg
 		# Errors in your raid

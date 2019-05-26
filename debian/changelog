@@ -34,6 +34,8 @@ byobu (5.128) unreleased; urgency=medium
   * usr/lib/byobu/processes:
     - Handle stderr for ps, e.g. unsupported options
     - Remove unnecessary awk call; wc -l only outputs one value
+  * usr/lib/byobu/raid:
+    - Ensure /proc/mdstat is readable
   * usr/lib/byobu/release:
     - Fix typo
   * usr/lib/byobu/services:
