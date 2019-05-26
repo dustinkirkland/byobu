@@ -1,5 +1,6 @@
 byobu (5.128) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/bin/ctail:
     - Quotes are needed around "$@" to keep parameters from splitting
       on spaces.
@@ -17,6 +18,10 @@ byobu (5.128) unreleased; urgency=medium
       commands when going back by history.
       All colors in command prompt should be escaped with [ ]
     - https://github.com/dustinkirkland/byobu/pull/30
+
+  [ Jeffery To ]
+  * usr/lib/byobu/logo:
+    - Add logo for OpenWrt
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Aug 2018 11:37:11 -0500
 
