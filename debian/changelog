@@ -36,6 +36,8 @@ byobu (5.128) unreleased; urgency=medium
     - Remove unnecessary awk call; wc -l only outputs one value
   * usr/lib/byobu/release:
     - Fix typo
+  * usr/lib/byobu/services:
+    - Fix reading services from $BYOBU_CONFIG_DIR/statusrc
   * usr/share/byobu/keybindings/f-keys.tmux:
     - Remove -k for new-window. In older versions of tmux, -k without
       -t <target-window> had no effect. In tmux 2.8, -k without -t will
