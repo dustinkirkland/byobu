@@ -38,6 +38,8 @@ byobu (5.128) unreleased; urgency=medium
     - Fix typo
   * usr/lib/byobu/services:
     - Fix reading services from $BYOBU_CONFIG_DIR/statusrc
+  * usr/lib/byobu/updates_available:
+    - Add support for opkg (OpenWrt)
   * usr/share/byobu/keybindings/f-keys.tmux:
     - Remove -k for new-window. In older versions of tmux, -k without
       -t <target-window> had no effect. In tmux 2.8, -k without -t will
