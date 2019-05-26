@@ -26,6 +26,8 @@ byobu (5.128) unreleased; urgency=medium
       creating it)
   * usr/bin/byobu.in:
     - Use readlink if the tty command is not available
+  * usr/bin/byobu-launch.in:
+    - Don't autolaunch for ARM serial consoles
   * usr/lib/byobu/disk_io:
     - Ensure the detected mount point device exists
   * usr/lib/byobu/hostname:
