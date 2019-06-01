@@ -21,6 +21,10 @@ byobu (5.128) unreleased; urgency=medium
   * usr/lib/byobu/wifi_quality:
     - prefer iwconfig over iw for now, iw is not working for me
 
+  [ Paride Legovini ]
+  * debian/source_byobu.py:
+    - Do not include the user's .screenrc in the apport generated crash report
+
   [ Jeffery To ]
   * usr/bin/byobu-disable-prompt.in,
     usr/bin/byobu-janitor.in:
