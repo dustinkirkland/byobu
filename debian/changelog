@@ -1,5 +1,6 @@
 byobu (5.128) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * usr/bin/ctail:
     - Quotes are needed around "$@" to keep parameters from splitting
       on spaces.
@@ -17,6 +18,55 @@ byobu (5.128) unreleased; urgency=medium
       commands when going back by history.
       All colors in command prompt should be escaped with [ ]
     - https://github.com/dustinkirkland/byobu/pull/30
+
+  [ Jeffery To ]
+  * usr/bin/byobu-disable-prompt.in,
+    usr/bin/byobu-janitor.in:
+    - Test if $HOME/.bashrc exists before modifying it (and potentially
+      creating it)
+  * usr/bin/byobu-export.in:
+    - Use echo if the gettext command is not available
+  * usr/bin/byobu.in:
+    - Use readlink if the tty command is not available
+  * usr/bin/byobu-janitor.in:
+    - Add fallback if the install command is not available
+  * usr/bin/byobu-launch.in:
+    - Don't autolaunch for ARM serial consoles
+  * usr/lib/byobu/disk_io:
+    - Ensure the detected mount point device exists
+  * usr/lib/byobu/hostname:
+    - Read from /proc/sys/kernel/hostname if the hostname command is not
+      available
+  * usr/lib/byobu/logo:
+    - Add logo for OpenWrt
+  * usr/lib/byobu/processes:
+    - Handle stderr for ps, e.g. unsupported options
+    - Remove unnecessary awk call; wc -l only outputs one value
+  * usr/lib/byobu/raid:
+    - Ensure /proc/mdstat is readable
+  * usr/lib/byobu/release:
+    - Fix typo
+  * usr/lib/byobu/services:
+    - Fix reading services from $BYOBU_CONFIG_DIR/statusrc
+  * usr/lib/byobu/session:
+    - Fix screen session regex
+  * usr/lib/byobu/updates_available:
+    - Add support for opkg (OpenWrt)
+  * usr/lib/byobu/users:
+    - Handle stderr for ps, e.g. unsupported options
+    - Fix trailing '#' sign
+  * usr/lib/byobu/whoami:
+    - Use id if the whoami command is not available
+    - Read from /etc/passwd if the getent command is not available
+  * usr/lib/byobu/wifi_quality:
+    - Add support for iw (preferred over iwconfig)
+    - Make logic more similar to other status notifications
+  * usr/share/byobu/keybindings/f-keys.tmux:
+    - Remove -k for new-window. In older versions of tmux, -k without
+      -t <target-window> had no effect. In tmux 2.8, -k without -t will
+      not trigger a new window; the given command is executed in the
+      current window instead.
+    - Rename the new window created after adding a new session
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 12 Aug 2018 11:37:11 -0500
 

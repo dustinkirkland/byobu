@@ -41,7 +41,14 @@ DEFAULT_PROFILE="light"
 PROFILE="$BYOBU_CONFIG_DIR/profile"
 
 # Create byobu-exchange buffer file, with secure permissions, if it doesn't exist
-[ -e "$BYOBU_RUN_DIR/printscreen" ] || install -m 600 /dev/null "$BYOBU_RUN_DIR/printscreen"
+if ! [ -e "$BYOBU_RUN_DIR/printscreen" ]; then
+	if eval $BYOBU_TEST install >/dev/null 2>&1; then
+		install -m 600 /dev/null "$BYOBU_RUN_DIR/printscreen"
+	else
+		cp /dev/null "$BYOBU_RUN_DIR/printscreen"
+		chmod 600 "$BYOBU_RUN_DIR/printscreen"
+	fi
+fi
 
 # Affects: users who launched using sudo, such that their config dir
 # is not writable by them
@@ -112,7 +119,8 @@ killall -u $USER byobu-statusd >/dev/null 2>&1 || true
 rm -f "$FLAG" "/var/run/screen/S-$USER/$PKG.reload-required"
 
 # Affects: Upgrades from <= byobu 5.50, install byobu prompt if using stock bashrc
-if ! (grep -qs "#byobu-prompt#$" "$HOME/.bashrc") && ! [ -e "$BYOBU_CONFIG_DIR/prompt" ]; then
+if [ -r /etc/skel/.bashrc ] && [ -r "$HOME/.bashrc" ] && [ -w "$HOME/.bashrc" ] && \
+		! (grep -qs "#byobu-prompt#$" "$HOME/.bashrc") && ! [ -e "$BYOBU_CONFIG_DIR/prompt" ]; then
 	if eval $BYOBU_TEST diff >/dev/null 2>&1; then
 		if  diff /etc/skel/.bashrc "$HOME/.bashrc" >/dev/null 2>&1; then
 			printf "[ -r $BYOBU_CONFIG_DIR/prompt ] && . $BYOBU_CONFIG_DIR/prompt   #byobu-prompt#\n" >> "$HOME/.bashrc"

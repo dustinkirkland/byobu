@@ -62,7 +62,11 @@ esac
 export BYOBU_BACKEND
 
 # Store the parent tty
-export BYOBU_TTY=$(tty)
+if eval $BYOBU_TEST tty >/dev/null 2>&1; then
+	export BYOBU_TTY=$(tty)
+else
+	export BYOBU_TTY=$(readlink /proc/$$/fd/0)
+fi
 
 # Get the default window name
 [ -n "$BYOBU_WINDOW_NAME" ] || BYOBU_WINDOW_NAME=-

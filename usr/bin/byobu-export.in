@@ -22,7 +22,13 @@ PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
-gettext "
+if eval $BYOBU_TEST gettext >/dev/null 2>&1; then
+	command=gettext
+else
+	command=echo
+fi
+
+$command "
 The byobu-export utility is now deprecated.
 
 To install byobu on a system for which byobu is not packaged, or
