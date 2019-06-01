@@ -18,6 +18,8 @@ byobu (5.128) unreleased; urgency=medium
       commands when going back by history.
       All colors in command prompt should be escaped with [ ]
     - https://github.com/dustinkirkland/byobu/pull/30
+  * usr/lib/byobu/wifi_quality:
+    - prefer iwconfig over iw for now, iw is not working for me
 
   [ Jeffery To ]
   * usr/bin/byobu-disable-prompt.in,

@@ -42,7 +42,19 @@ __wifi_quality_detail() {
 
 __wifi_quality() {
 	local out bitrate quality
-	if eval $BYOBU_TEST iw >/dev/null 2>&1; then
+	if eval $BYOBU_TEST iwconfig >/dev/null 2>&1; then
+		# iwconfig is expected to output lines like:
+		#    Bit Rate=54 Mb/s   Tx-Power=15 dBm
+		#    Link Quality=60/70  Signal level=-50 dBm
+		# the awk below tokenizes the output and prints shell evalable results
+		out=`iwconfig $MONITORED_NETWORK 2>/dev/null |
+			awk '$0 ~ /[ ]*Link Quality./ {
+			    sub(/.*=/,"",$2); split($2,a,"/");
+			    printf "quality=%.0f\n", 100*a[1]/a[2] };
+			    $0 ~ /[ ]*Bit Rate/ { sub(/.*[:=]/,"",$2); printf("bitrate=%s\n", $2); }
+			    '`
+		eval "$out"
+	elif eval $BYOBU_TEST iw >/dev/null 2>&1; then
 		local dev
 		for dev in $(___get_dev_list); do
 			# iw is expected to output lines like:
@@ -57,18 +69,6 @@ __wifi_quality() {
 			eval "$out"
 			[ -z "$bitrate" ] || [ -z "$quality" ] || break
 		done
-	elif eval $BYOBU_TEST iwconfig >/dev/null 2>&1; then
-		# iwconfig is expected to output lines like:
-		#    Bit Rate=54 Mb/s   Tx-Power=15 dBm
-		#    Link Quality=60/70  Signal level=-50 dBm
-		# the awk below tokenizes the output and prints shell evalable results
-		out=`iwconfig $MONITORED_NETWORK 2>/dev/null |
-			awk '$0 ~ /[ ]*Link Quality./ {
-			    sub(/.*=/,"",$2); split($2,a,"/");
-			    printf "quality=%.0f\n", 100*a[1]/a[2] };
-			    $0 ~ /[ ]*Bit Rate/ { sub(/.*[:=]/,"",$2); printf("bitrate=%s\n", $2); }
-			    '`
-		eval "$out"
 	fi
 	[ -n "$bitrate" ] || bitrate=0
 	[ -n "$quality" ] || quality=0
