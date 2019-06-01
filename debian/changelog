@@ -20,6 +20,8 @@ byobu (5.128) unreleased; urgency=medium
     - https://github.com/dustinkirkland/byobu/pull/30
   * usr/lib/byobu/wifi_quality:
     - prefer iwconfig over iw for now, iw is not working for me
+  * usr/share/byobu/profiles/tmux:
+    - flatten some of our color configuration to match the new tmux format
 
   [ Fede Luzzi ]
   * usr/lib/byobu/include/mondrian, usr/share/byobu/profiles/tmux:
