@@ -21,6 +21,14 @@ byobu (5.128) unreleased; urgency=medium
   * usr/lib/byobu/wifi_quality:
     - prefer iwconfig over iw for now, iw is not working for me
 
+  [ Fede Luzzi ]
+  * usr/lib/byobu/include/mondrian, usr/share/byobu/profiles/tmux:
+    - On tmux version 1.9 all the styles *-bg/fg/attr were deprecated and
+      replaced with *-style bg=/ fg=/ attribute
+      In the upcoming version 2.9, this commands are gone and will break
+      byobu style. this fix that issue and mantain compatibility with upcoming
+      tmux versions.
+
   [ Paride Legovini ]
   * debian/source_byobu.py:
     - Do not include the user's .screenrc in the apport generated crash report
