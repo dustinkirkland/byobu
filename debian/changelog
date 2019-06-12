@@ -1,9 +1,9 @@
-byobu (5.129) unreleased; urgency=medium
+byobu (5.129-0ubuntu1) eoan; urgency=medium
 
   * debian/control:
     - recommend less package, for BYOBU_PAGER
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 11 Jun 2019 19:56:15 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 12 Jun 2019 18:41:07 -0500
 
 byobu (5.128-0ubuntu1) eoan; urgency=medium
 
