@@ -132,11 +132,7 @@ def attach_session(session):
 	cull_zombies(session_name)
 	# must use the binary, not the wrapper!
 	if backend == "tmux":
-		if reuse_sessions:
-			os.execvp("tmux", ["tmux", "attach", "-t", session_name])
-		else:
-			os.execvp("tmux", ["tmux", "-2", "new-session", "-t", session_name, "-s", "_%s-%i" % (session_name, os.getpid())])
-
+		os.execvp("tmux", ["tmux", "attach", "-t", session_name])
 	else:
 		os.execvp("screen", ["screen", "-AOxRR", session_name])
 

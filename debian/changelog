@@ -25,6 +25,9 @@ byobu (5.128) unreleased; urgency=medium
   * usr/lib/byobu/disk_io:
     - ensure some values are set to zero, if unreadable
     - fixes a bug where disk_io causes the rest of the status line to fail
+  * usr/lib/byobu/include/select-session.py: LP: #1750430
+    - fix bug creating a mess of sessions, where cycling through a bunch
+      of copies of the same session
 
   [ Fede Luzzi ]
   * usr/lib/byobu/include/mondrian, usr/share/byobu/profiles/tmux:
