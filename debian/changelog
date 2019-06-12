@@ -1,6 +1,7 @@
 byobu (5.129) unreleased; urgency=medium
 
-  * UNRELEASED
+  * debian/control:
+    - recommend less package, for BYOBU_PAGER
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 11 Jun 2019 19:56:15 -0500
 

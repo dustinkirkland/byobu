@@ -18,8 +18,9 @@ Depends:
  python3,
  python3-newt,
  tmux (>= 1.5),
- gawk
+ gawk,
 Recommends:
+ less,
  pastebinit,
  sensible-utils,
  run-one
