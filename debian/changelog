@@ -22,6 +22,9 @@ byobu (5.128) unreleased; urgency=medium
     - prefer iwconfig over iw for now, iw is not working for me
   * usr/share/byobu/profiles/tmux:
     - flatten some of our color configuration to match the new tmux format
+  * usr/lib/byobu/disk_io:
+    - ensure some values are set to zero, if unreadable
+    - fixes a bug where disk_io causes the rest of the status line to fail
 
   [ Fede Luzzi ]
   * usr/lib/byobu/include/mondrian, usr/share/byobu/profiles/tmux:

@@ -62,15 +62,15 @@ __disk_io() {
 		if [ $t2 -le $t1 ]; then
 			rate=0
 		else
-			[ -r "$cache" ] && read x1 < "$cache"
+			[ -r "$cache" ] && read x1 < "$cache" || x1=0
 			local a1= a2= a3= a4= a5= a6= a7= a8= a9= a10=
 			read a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 other < "/sys/block/$disk/stat"
 			if [ "$i" = "read" ]; then
 				symbol="$ICON_RD"
-				x2="$a3"
+				[ -n "$a3" ] && x2="$a3" || x2=0
 			else
 				symbol="$ICON_WR"
-				x2="$a7"
+				[ -n "$a7" ] && x2="$a7" || x2=0
 			fi
 			printf "%s" "$x2" > "$cache"
 			rate=$((($x2 - $x1) / ($t2 - $t1) * 512 / 1024))
