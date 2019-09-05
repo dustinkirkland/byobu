@@ -132,7 +132,7 @@ def attach_session(session):
 	cull_zombies(session_name)
 	# must use the binary, not the wrapper!
 	if backend == "tmux":
-		os.execvp("tmux", ["tmux", "attach", "-t", session_name])
+		os.execvp("tmux", ["tmux", "-u", "attach", "-t", session_name])
 	else:
 		os.execvp("screen", ["screen", "-AOxRR", session_name])
 
