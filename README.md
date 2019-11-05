@@ -7,28 +7,42 @@ If *Byobu* is not packaged for your Linux or UNIX OS, or if you do not have
 administrative privileges in order to install Byobu, you may be able to
 install locally, using the following instructions...
 
+### INSTALATION
  1. If you pull the source from the upstream bzr or git:
+
      ` bzr branch lp:byobu && cd byobu`
-      `git clone git://github.com/dustinkirkland/byobu.git byobu-src`
-	  `cd byobu-src ./debian/rules autoconf`
+     `git clone git://github.com/dustinkirkland/byobu.git byobu-src`
+	`cd byobu-src ./debian/rules autoconf`
+ 
  2. Or download the latest officially released version from:
       https://launchpad.net/byobu/+download
+ 
  3.  Extract:
-     ` tar zxvf byobu*.tar.gz && cd byobu*`
+     
+     `tar zxvf byobu*.tar.gz && cd byobu*`
+
  4. Configure:
+
       `./configure --prefix="$HOME/byobu"`
 
-       ***OPTIONAL*** : You may use python from your environment, rather than from your disto
-	   `echo "export BYOBU_PYTHON='/usr/bin/env python'" >> $HOME/.bashrc`
- 
+       ***OPTIONAL*** : You may use python from your environment, rather than from your distro
+       
+       ***echo "export BYOBU_PYTHON='/usr/bin/env python'" >> $HOME/.bashrc***
+
  5. Build:
-      `make`
+       `make`
+
  6. Install:
+
       `make install`
- 7. Update your PATH and BYOBU_PREFIX environment variables
-      `echo "export PATH=$HOME/byobu/bin:$PATH" >> $HOME/.bashrc
-      . $HOME/.bashrc`
+
+ 7. Update your `PATH` and `BYOBU_PREFIX` environment variables
+
+      `echo "export PATH=$HOME/byobu/bin:$PATH" >> $HOME/.bashrc`
+      `. $HOME/.bashrc`
+
  8. Run:
+
       `byobu`
 
 > Note that you will need to have a few dependencies installed:
