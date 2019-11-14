@@ -53,7 +53,7 @@ __cpu_freq() {
 			freq="$_RET"
 		fi
 	elif hz=$(sysctl -n hw.cpufrequency 2>/dev/null); then
-		'fpdiv $hz "1000000000" 1 # 1Ghz
+		fpdiv $hz "1000000000" 1 # 1Ghz
 		freq="$_RET"
 	fi
 	[ -n "$freq" ] || return
