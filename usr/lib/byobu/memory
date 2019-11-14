@@ -36,6 +36,18 @@ __memory() {
 			esac
 			[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
 		done < /proc/meminfo
+	elif [ $(uname) = 'FreeBSD']; then
+		# FreeBSD support
+		# Adapted from https://www.cyberciti.biz/files/scripts/freebsd-memory.pl.txt
+		# Copyright (c) 2003-2004 Ralf S. Engelschall <rse@engelschall.com>
+		total=$(($(sysctl -n hw.physmem)/1024))
+		page_size=$(sysctl -n hw.pagesize)
+		vm_inactive=$(($(sysctl -n vm.stats.vm.v_inactive_count)*$page_size))
+		vm_cached=$(($(sysctl -n vm.stats.vm.v_cache_count)*$page_size))
+		vm_free=$(($(sysctl -n vm.stats.vm.v_free_count)*$page_size))
+		free=$((($vm_cached+$vm_free+$vm_inactive)/1024))
+		buffers=0
+		cached=0
 	elif eval $BYOBU_TEST vm_stat >/dev/null 2>&1; then
 		# MacOS support
 		# calculation borrowed from http://apple.stackexchange.com/a/48195/18857
@@ -48,12 +60,12 @@ __memory() {
 		buffers=0
 		cached=0
 	fi
-        kb_main_used=$(($total-$free))
-        buffers_plus_cached=$(($buffers+$cached))
-        # "free output" buffers and cache (output from 'free')
-        fo_buffers=$(($kb_main_used - $buffers_plus_cached))
-        fpdiv $((100*${fo_buffers})) "${total}" 0;
-        usage=${_RET}
+	kb_main_used=$(($total-$free))
+	buffers_plus_cached=$(($buffers+$cached))
+	# "free output" buffers and cache (output from 'free')
+	fo_buffers=$(($kb_main_used - $buffers_plus_cached))
+	fpdiv $((100*${fo_buffers})) "${total}" 0;
+	usage=${_RET}
 	if [ $total -ge 1048576 ]; then
 		fpdiv "$total" 1048567 1
 		total=${_RET}
