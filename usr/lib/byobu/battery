@@ -99,6 +99,19 @@ __battery() {
 				;;
 			esac
 		done
+	elif [ $(uname -s) = 'FreeBSD' ]; then
+		bat_state=$(sysctl -n hw.acpi.battery.state)
+		if [ "$?" -eq 0 ]; then
+			full=100
+			rem=$(sysctl -n hw.acpi.battery.life)
+			if [ "$bat_state" -eq 1 ]; then
+				state="discharging"
+			elif [ "$bat_state" -eq 2 ]; then
+				state="charging"
+			else
+				state="unknown"
+			fi
+		fi
 	fi
 	if [ $rem -ge 0 ] && [ $full -gt 0 ]; then
 		percent=$(((100*$rem)/$full))

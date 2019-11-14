@@ -36,7 +36,7 @@ __memory() {
 			esac
 			[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
 		done < /proc/meminfo
-	elif [ $(uname) = 'FreeBSD' ]; then
+	elif [ $(uname -s) = 'FreeBSD' ]; then
 		# FreeBSD support
 		# Adapted from https://www.cyberciti.biz/files/scripts/freebsd-memory.pl.txt
 		# Copyright (c) 2003-2004 Ralf S. Engelschall <rse@engelschall.com>

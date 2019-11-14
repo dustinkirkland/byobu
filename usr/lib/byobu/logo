@@ -83,6 +83,10 @@ __logo() {
 			logo="<@>"
 			$MARKUP && printf "$(color b W g)%s$(color -)" "$logo" || printf "$logo"
 		;;
+		*freebsd*)
+			logo="^O^"
+			$MARKUP && printf "$(color R k b)%s$(color -)" "$logo" || printf "$logo"
+		;;
 		*gentoo*)
 			logo=" > "
 			$MARKUP && printf "$(color b c w)%s$(color -)" "$logo" || printf "$logo"

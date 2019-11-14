@@ -20,12 +20,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __cpu_count_detail() {
-	grep -i "^model name" /proc/cpuinfo
+	if [ $(uname -s) = 'Linux' ]; then
+		grep -i "^model name" /proc/cpuinfo
+	elif [ $(uname -s) = 'FreeBSD' ]; then
+		sysctl -n hw.model | gsed 's/\s\+/ /g'
+	fi
 }
 
 __cpu_count() {
 	local c
-	c=$(getconf _NPROCESSORS_ONLN 2>/dev/null || grep -ci "^processor" /proc/cpuinfo)
+	if [ $(uname -s) = 'Linux' ]; then
+		c=$(getconf _NPROCESSORS_ONLN 2>/dev/null || grep -ci "^processor" /proc/cpuinfo)
+	elif [ $(uname -s) = 'FreeBSD' ]; then
+		c=$(sysctl -n hw.ncpu)
+	fi
 	[ "$c" = "1" ] || printf "%sx" "$c"
 }
 
