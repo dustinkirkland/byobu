@@ -15,7 +15,12 @@ byobu (5.130) unreleased; urgency=medium
     - ignore new pep8 rules around hard tabs and whitespaces, related
       to bug 1843729
 
- -- Dustin Kirkland <kirkland@x250>  Fri, 29 Nov 2019 15:25:25 -0600
+  [ saroj990 and Dustin Kirkland ]
+  * AUTHORS, CONTRIBUTING, NEWS, README, README.md:
+    - Flatten these files into a single README.md
+    - Minor updates in the process
+
+ -- Dustin Kirkland <kirkland@x250>  Fri, 29 Nov 2019 15:33:34 -0600
 
 byobu (5.129-0ubuntu1) eoan; urgency=medium
 
