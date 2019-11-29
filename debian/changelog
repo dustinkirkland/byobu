@@ -20,7 +20,7 @@ byobu (5.130) unreleased; urgency=medium
     - Flatten these files into a single README.md
     - Minor updates in the process
 
- -- Dustin Kirkland <kirkland@x250>  Fri, 29 Nov 2019 15:33:34 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 29 Nov 2019 15:33:34 -0600
 
 byobu (5.129-0ubuntu1) eoan; urgency=medium
 
