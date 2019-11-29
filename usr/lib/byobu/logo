@@ -115,6 +115,10 @@ __logo() {
 			logo="OWrt"
 			$MARKUP && printf "$(color b colour66 W)%s$(color -)" "$logo" || printf "$logo"
 		;;
+		*raspbian*)
+			logo=" @ "
+			$MARKUP && printf "$(color colour125 colour15)%s$(color -)" "$logo" || printf "$logo"
+		;;
 		*red*hat*|*rhel*)
 			logo=" RH "
 			$MARKUP && printf "$(color R k)%s$(color -)" "$logo" || printf "$logo"
