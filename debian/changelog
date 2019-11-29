@@ -10,7 +10,12 @@ byobu (5.130) unreleased; urgency=medium
     - Force UTF-8 when attaching in `select-session.py`
     - https://github.com/dustinkirkland/byobu/pull/35
 
- -- Dustin Kirkland <kirkland@x250>  Fri, 29 Nov 2019 15:18:53 -0600
+  [ Dustin Kirkland ]
+  * debian/rules:
+    - ignore new pep8 rules around hard tabs and whitespaces, related
+      to bug 1843729
+
+ -- Dustin Kirkland <kirkland@x250>  Fri, 29 Nov 2019 15:25:25 -0600
 
 byobu (5.129-0ubuntu1) eoan; urgency=medium
 
