@@ -45,8 +45,8 @@ __disk() {
 		t*|T*) unit="$ICON_TB" ;;
 	esac
 	[ -n "$size" ] || return
-	color b M W; printf "%s" "$size"; color -; color M W; printf "%s" "$unit"; color -;
-	color b M W; printf "%s" "$pct";  color -; color M W; printf "%s" "$PCT"; color --;
+	color b M k; printf "%s" "$size"; color -; color M k; printf "%s" "$unit"; color -;
+	color b M k; printf "%s" "$pct";  color -; color M k; printf "%s" "$PCT"; color --;
 }
 
 # vi: syntax=sh ts=4 noexpandtab
