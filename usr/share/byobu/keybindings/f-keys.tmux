@@ -46,8 +46,8 @@ bind-key -n S-Left display-panes \; select-pane -L
 bind-key -n S-Right display-panes \; select-pane -R
 bind-key -n C-F3 display-panes \; swap-pane -s :. -t :.- \; select-pane -t :.-
 bind-key -n C-F4 display-panes \; swap-pane -s :. -t :.+ \; select-pane -t :.+
-bind-key -n C-S-F3 swap-window -t :-1
-bind-key -n C-S-F4 swap-window -t :+1
+bind-key -n C-S-F3 swap-window -t :-1 -d
+bind-key -n C-S-F4 swap-window -t :+1 -d
 bind-key -n M-S-Up resize-pane -U
 bind-key -n M-S-Down resize-pane -D
 bind-key -n M-S-Left resize-pane -L
