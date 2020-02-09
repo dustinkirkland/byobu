@@ -1,6 +1,6 @@
 byobu (5.131) unreleased; urgency=medium
 
-  * debian/control:
+  * debian/control: Closes: #949941
     - build-depend on python3-pep8, rather than pep8 transitional package
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 09 Feb 2020 10:06:01 -0600
