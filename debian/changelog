@@ -4,12 +4,20 @@ byobu (5.131) unreleased; urgency=medium
   * debian/control: Closes: #949941
     - build-depend on python3-pep8, rather than pep8 transitional package
 
+  [ github.com/llitz ]
+  * usr/lib/byobu/include/select-session.py: LP: #1750430
+    - commit edeae41 fixed the excessive creation of sessions by not
+      creating different sessions. This commit adjust the behavior in a way
+      that having .reuse-sessions enabled tmux will properly attach and remove
+      sessions when dettaching and will also kill the last session available
+    - When more than two sessions exist, tmux asks which session to use
+
   [ Chris Coulson ]
   * usr/share/byobu/keybindings/f-keys.tmux: LP: #1861555
     - Update usage of tmux swap-window so that focus stays with the
       original window.
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 09 Feb 2020 10:25:20 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 09 Feb 2020 10:34:14 -0600
 
 byobu (5.130-0ubuntu1) focal; urgency=medium
 

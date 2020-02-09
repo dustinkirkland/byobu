@@ -80,7 +80,7 @@ def get_sessions():
 		if output:
 			for s in output.splitlines():
 				# Ignore hidden sessions (named sessions that start with a "_")
-				if s and not s.startswith("_"):
+				if s and not s.startswith("_") and s.find("-") == -1:
 					text.append("tmux: %s" % s.strip())
 					sessions.append("tmux____%s" % s.split(":")[0])
 					i += 1
@@ -132,7 +132,10 @@ def attach_session(session):
 	cull_zombies(session_name)
 	# must use the binary, not the wrapper!
 	if backend == "tmux":
-		os.execvp("tmux", ["tmux", "-u", "attach", "-t", session_name])
+		if reuse_sessions:
+			os.execvp("tmux", ["tmux", "-u", "new-session", "-t", session_name, ";", "set-option", "destroy-unattached"])
+		else:
+			os.execvp("tmux", ["tmux", "-u", "attach", "-t", session_name])
 	else:
 		os.execvp("screen", ["screen", "-AOxRR", session_name])
 
