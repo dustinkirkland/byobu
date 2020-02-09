@@ -1,4 +1,4 @@
-byobu (5.131) unreleased; urgency=medium
+byobu (5.131-0ubuntu1) focal; urgency=medium
 
   [ Dustin Kirkland ]
   * debian/control: Closes: #949941
@@ -20,7 +20,7 @@ byobu (5.131) unreleased; urgency=medium
     - Update usage of tmux swap-window so that focus stays with the
       original window.
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 09 Feb 2020 10:49:26 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 09 Feb 2020 10:51:11 -0600
 
 byobu (5.130-0ubuntu1) focal; urgency=medium
 
