@@ -1,9 +1,15 @@
 byobu (5.131) unreleased; urgency=medium
 
+  [ Dustin Kirkland ]
   * debian/control: Closes: #949941
     - build-depend on python3-pep8, rather than pep8 transitional package
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 09 Feb 2020 10:06:01 -0600
+  [ Chris Coulson ]
+  * usr/share/byobu/keybindings/f-keys.tmux: LP: #1861555
+    - Update usage of tmux swap-window so that focus stays with the
+      original window.
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 09 Feb 2020 10:25:20 -0600
 
 byobu (5.130-0ubuntu1) focal; urgency=medium
 
