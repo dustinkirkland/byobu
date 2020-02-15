@@ -1,9 +1,9 @@
-byobu (5.132) unreleased; urgency=medium
+byobu (5.132-0ubuntu1) focal; urgency=medium
 
   * debian/control, debian/rules:
     - pep8 binary is gone from Debian, disable for now
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 15 Feb 2020 11:50:59 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 15 Feb 2020 11:52:39 -0600
 
 byobu (5.131-0ubuntu1) focal; urgency=medium
 
