@@ -1,9 +1,9 @@
-byobu (5.133) unreleased; urgency=medium
+byobu (5.133-0ubuntu1) focal; urgency=medium
 
   * debian/docs: Closes: #951455
     - fix FTBFS on README
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Feb 2020 08:11:50 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 17 Feb 2020 08:15:02 -0600
 
 byobu (5.132-0ubuntu1) focal; urgency=medium
 
