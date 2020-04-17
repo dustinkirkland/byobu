@@ -74,7 +74,7 @@ fi
 # Add a version argument for debugging purposes, enter manpage for help
 if [ "$#" = "1" ]; then
 	case "$1" in
-		-v|--version)
+		-V|--version)
 			echo "$PKG version $VERSION"
 			if eval $BYOBU_TEST bash >/dev/null 2>&1; then
 				# Check ulimits
