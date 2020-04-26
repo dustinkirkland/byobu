@@ -2,7 +2,7 @@
 Name=Byobu Terminal
 Comment=Advanced Command Line and Text Window Manager
 Icon=byobu
-Exec=gnome-terminal --app-id us.kirkland.terminals.byobu --class=us.kirkland.terminals.byobu -- byobu
+Exec=gnome-terminal --app-id us.kirkland.terminals.byobu --class=us.kirkland.terminals.byobu -- byobu -S new-session
 Type=Application
 Categories=GNOME;GTK;System;Utility;TerminalEmulator;
 StartupWMClass=us.kirkland.terminals.byobu
