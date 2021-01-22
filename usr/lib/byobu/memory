@@ -26,16 +26,32 @@ __memory_detail() {
 __memory() {
 	local free="" total="" buffers="" cached=""
 	local kb_main_used=0 buffers_plus_cached=0 fo_buffers=0 fo_cached=0
+
 	if [ -r /proc/meminfo ]; then
-		while read tok val unit; do
-			case "$tok" in
-				MemTotal:) total=${val};;
-				MemFree:) free=${val};;
-				Buffers:) buffers=${val};;
-				Cached:) cached=${val};;
-			esac
-			[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
-		done < /proc/meminfo
+		if [ $(uname) != "FreeBSD"]; then
+			while read tok val unit; do
+				case "$tok" in
+					MemTotal:) total=${val};;
+					MemFree:) free=${val};;
+					Buffers:) buffers=${val};;
+					Cached:) cached=${val};;
+				esac
+				[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
+			done < /proc/meminfo
+		else
+			# FreeBSD support
+			page_size=$(sysctl vm.stats.vm.v_page_size | awk '{print $2'})
+			page_count=$(sysctl vm.stats.vm.v_page_count | awk '{print $2'})
+			total=$((($page_count*$page_size)/1024))
+
+			cache_pages=$(sysctl vm.stats.vm.v_cache_count | awk '{print $2'})
+			inact_pages=$(sysctl vm.stats.vm.v_inactive_count | awk '{print $2'})
+			free_pages=$(sysctl vm.stats.vm.v_free_count | awk '{print $2'})
+			free=$(((($cache_pages+$inact_pages+$free_pages)*$page_size)/1024))
+
+			buffers=0
+			cached=0
+		fi
 	elif eval $BYOBU_TEST vm_stat >/dev/null 2>&1; then
 		# MacOS support
 		# calculation borrowed from http://apple.stackexchange.com/a/48195/18857
@@ -44,16 +60,18 @@ __memory() {
 		speculative_blocks=$(vm_stat | grep speculative | awk '{ print $3 }' | sed -e 's/\.//')
 		free=$((($free_blocks+speculative_blocks)*4))
 		inactive=$(($inactive_blocks*4))
-		total=$((($free+$inactive)))
+		total=$(($free+$inactive))
 		buffers=0
 		cached=0
 	fi
-        kb_main_used=$(($total-$free))
-        buffers_plus_cached=$(($buffers+$cached))
-        # "free output" buffers and cache (output from 'free')
-        fo_buffers=$(($kb_main_used - $buffers_plus_cached))
-        fpdiv $((100*${fo_buffers})) "${total}" 0;
-        usage=${_RET}
+
+	kb_main_used=$(($total-$free))
+	buffers_plus_cached=$(($buffers+$cached))
+	# "free output" buffers and cache (output from 'free')
+	fo_buffers=$(($kb_main_used - $buffers_plus_cached))
+	fpdiv $((100*${fo_buffers})) "${total}" 0;
+	usage=${_RET}
+
 	if [ $total -ge 1048576 ]; then
 		fpdiv "$total" 1048567 1
 		total=${_RET}
