@@ -30,6 +30,9 @@ __uptime() {
 	if [ -r /proc/uptime ]; then
 		read u idle < /proc/uptime
 		u=${u%.*}
+	elif [ $(uname) = "FreeBSD" ]; then
+		u=$( sysctl -n kern.boottime | sed -En 's:.*sec = ([[:digit:]]+),.*:\1:p' )
+		u=$(($(date +%s) - $u))
 	elif [ -x /usr/sbin/sysctl ]; then
 		# MacOS support
 		u=$(/usr/sbin/sysctl -n kern.boottime | cut -f4 -d' ' | cut -d',' -f1)
@@ -52,5 +55,3 @@ __uptime() {
 	[ -n "$str" ] || return
 	color w b; printf "%s" "${str}"; color --
 }
-
-# vi: syntax=sh ts=4 noexpandtab
