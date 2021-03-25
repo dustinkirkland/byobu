@@ -20,7 +20,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __disk_detail() {
-	df -h -P
+	if [ $(uname) = "FreeBSD" ]; then
+		df -h
+	else
+		df -h -P
+	fi
 }
 
 __disk() {
@@ -32,7 +36,11 @@ __disk() {
 	esac
 	# this could be done faster with 'stat --file-system --format'
 	# but then we'd have to do blocks -> human units ourselves
-	out=$({ df -h -P "$MP" 2>/dev/null || df -h "$MP"; } | awk 'END { printf("%s %s", $2, $5); }')
+	if [ $(uname) = "FreeBSD" ]; then
+		out=$({ df -h "$MP" 2>/dev/null || df -h "$MP"; } | awk 'END { printf("%s %s", $2, $5); }')
+	else
+		out=$({ df -h -P "$MP" 2>/dev/null || df -h "$MP"; } | awk 'END { printf("%s %s", $2, $5); }')
+	fi
 	set -- ${out}
 	size=${1}; pct=${2};
 	unit=${size#${size%?}} # get the unit (last char)
@@ -48,5 +56,3 @@ __disk() {
 	color b m W; printf "%s" "$size"; color -; color m W; printf "%s" "$unit"; color -;
 	color b m W; printf "%s" "$pct";  color -; color m W; printf "%s" "$PCT"; color --;
 }
-
-# vi: syntax=sh ts=4 noexpandtab

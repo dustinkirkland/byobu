@@ -25,7 +25,11 @@ __cpu_freq_detail() {
 
 __cpu_freq() {
 	local hz freq count
-	if [ -r "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq" ]; then
+	if [ $(uname) = "FreeBSD" ]; then
+		hz=$(sysctl -n machdep.tsc_freq)
+		fpdiv $hz "1000000000" 1
+		freq="$_RET"
+	elif [ -r "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq" ]; then
 		read hz < /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
 		fpdiv $hz "1000000" 1 # 1Ghz
 		freq="$_RET"
@@ -45,5 +49,3 @@ __cpu_freq() {
 	[ -n "$freq" ] || return
 	color b c W; printf "%s" "$freq"; color -; color c W; printf "%s" "$ICON_GHz"; color --
 }
-
-# vi: syntax=sh ts=4 noexpandtab

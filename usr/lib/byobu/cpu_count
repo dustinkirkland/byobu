@@ -24,9 +24,11 @@ __cpu_count_detail() {
 }
 
 __cpu_count() {
-	local c
-	c=$(getconf _NPROCESSORS_ONLN 2>/dev/null || grep -ci "^processor" /proc/cpuinfo)
+	if [ $(uname) = "FreeBSD" ]; then
+		c=$(sysctl -n hw.ncpu)
+	else
+		local c
+		c=$(getconf _NPROCESSORS_ONLN 2>/dev/null || grep -ci "^processor" /proc/cpuinfo)
+	fi
 	[ "$c" = "1" ] || printf "%sx" "$c"
 }
-
-# vi: syntax=sh ts=4 noexpandtab

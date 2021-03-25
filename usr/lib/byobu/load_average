@@ -34,5 +34,3 @@ __load_average() {
 	[ -n "$one" ] || return
 	color Y k; printf "$one"; color --
 }
-
-# vi: syntax=sh ts=4 noexpandtab
