@@ -31,7 +31,7 @@ __uptime() {
 		read u idle < /proc/uptime
 		u=${u%.*}
 	elif [ $(uname) = "FreeBSD" ]; then
-		u=$( sysctl -n kern.boottime | sed -En 's:.*sec = ([[:digit:]]+),.*:\1:p' )
+		u=$(sysctl -n kern.boottime | sed -En 's:.*sec = ([[:digit:]]+),.*:\1:p')
 		u=$(($(date +%s) - $u))
 	elif [ -x /usr/sbin/sysctl ]; then
 		# MacOS support
