@@ -55,3 +55,5 @@ __uptime() {
 	[ -n "$str" ] || return
 	color w b; printf "%s" "${str}"; color --
 }
+
+# vi: syntax=sh ts=4 noexpandtab

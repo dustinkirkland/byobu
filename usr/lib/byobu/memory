@@ -95,3 +95,5 @@ __memory() {
 	[ -n "$total" ] || return
 	color b g W; printf "%s" "$total"; color -; color g W; printf "%s" "$unit"; color -; color b g "$fg"; printf "%s" "$usage"; color -; color g "$fg"; printf "%s" "$PCT"; color --
 }
+
+# vi: syntax=sh ts=4 noexpandtab

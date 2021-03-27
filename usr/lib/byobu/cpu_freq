@@ -49,3 +49,5 @@ __cpu_freq() {
 	[ -n "$freq" ] || return
 	color b c W; printf "%s" "$freq"; color -; color c W; printf "%s" "$ICON_GHz"; color --
 }
+
+# vi: syntax=sh ts=4 noexpandtab

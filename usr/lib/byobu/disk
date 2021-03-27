@@ -56,3 +56,5 @@ __disk() {
 	color b m W; printf "%s" "$size"; color -; color m W; printf "%s" "$unit"; color -;
 	color b m W; printf "%s" "$pct";  color -; color m W; printf "%s" "$PCT"; color --;
 }
+
+# vi: syntax=sh ts=4 noexpandtab

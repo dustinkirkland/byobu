@@ -172,3 +172,5 @@ fi
 color k w
 printf "%s" "$display_time"
 color --
+
+# vi: syntax=sh ts=4 noexpandtab
