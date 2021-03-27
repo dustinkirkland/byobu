@@ -25,7 +25,9 @@ __cpu_count_detail() {
 
 __cpu_count() {
 	local c
-	c=$(getconf _NPROCESSORS_ONLN 2>/dev/null || grep -ci "^processor" /proc/cpuinfo)
+	c=$(getconf _NPROCESSORS_ONLN 2>/dev/null || \
+		grep -ci "^processor" /proc/cpuinfo || \
+		sysctl -n hw.ncpu)
 	[ "$c" = "1" ] || printf "%sx" "$c"
 }
 
