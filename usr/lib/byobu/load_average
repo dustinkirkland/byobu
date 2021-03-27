@@ -26,6 +26,8 @@ __load_average_detail() {
 __load_average() {
 	if [ -r "/proc/loadavg" ]; then
 		read one five fifteen other < /proc/loadavg
+	elif [ $(uname) = "FreeBSD" ]; then
+		one=$(uptime | sed -En 's:.*averages\: ([[:digit:]]+\.[[:digit:]]+),.*:\1:p')
 	else
 		one=$(uptime | sed -e "s/.*://" | awk '{print $1}')
 	fi
