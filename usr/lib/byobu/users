@@ -40,3 +40,5 @@ __users() {
 		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/users"*
 	fi
 }
+
+# vi: syntax=sh ts=4 noexpandtab
