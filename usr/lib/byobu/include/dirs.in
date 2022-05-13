@@ -25,22 +25,19 @@ PKG="byobu"
 [ -n "$BYOBU_PREFIX" ] || BYOBU_PREFIX="@prefix@"
 
 # Create and export the user configuration directory
-if [ -d "$BYOBU_CONFIG_DIR" ]; then
-	export BYOBU_CONFIG_DIR="$BYOBU_CONFIG_DIR"
-elif [ -d "$XDG_CONFIG_HOME" ]; then
-	# Use XDG, as some users insist on such nonsense :-)
-	export BYOBU_CONFIG_DIR="$XDG_CONFIG_HOME/$PKG"
-elif [ -d "$HOME/.config/$PKG" ]; then
-	# Use XDG config directory, if it exists
-	export BYOBU_CONFIG_DIR="$HOME/.config/$PKG"
-elif [ -d "$HOME/.local/share/$PKG" ]; then
-	# Use XDG local directory, if it exists
-	export BYOBU_CONFIG_DIR="$HOME/.local/share/$PKG"
-else
-	# And to default to good old classic config dir location!
-	export BYOBU_CONFIG_DIR="$HOME/.$PKG"
+# BYOBU_CONFIG_DIR if set, ~/.byobu if it exists, otherwise XDG_CONFIG_HOME/byobu
+if [ -z "$BYOBU_CONFIG_DIR" ]; then
+	if [ -d "$HOME/.$PKG" ]; then
+		export BYOBU_CONFIG_DIR="$HOME/.$PKG"
+	else
+		_xdg="${XDG_CONFIG_HOME:-"$HOME"/.config}"
+		# Spec says XDG_CONFIG_HOME must not be world-readable
+		[ -d "$_xdg" ] || mkdir -p -m 700 "$_xdg"
+		export BYOBU_CONFIG_DIR="$_xdg/$PKG"
+		unset _xdg
+	fi
 fi
-[ -d "$BYOBU_CONFIG_DIR" ] || mkdir -p "$BYOBU_CONFIG_DIR/bin"
+[ -d "$BYOBU_CONFIG_DIR/bin" ] || mkdir -p "$BYOBU_CONFIG_DIR/bin"
 
 # Grab the global, then local socket directory
 [ -r "/etc/$PKG/socketdir" ] && . "/etc/$PKG/socketdir"
