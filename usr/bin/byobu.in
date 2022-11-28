@@ -52,7 +52,7 @@ export BYOBU_CHARMAP=$(locale charmap)
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
 # Override backend if we can determine intentions from argv[0]
-[ -r "$HOME/.$PKG/backend" ] && . "$HOME/.$PKG/backend"
+[ -r "$BYOBU_CONFIG_DIR/backend" ] && . "$BYOBU_CONFIG_DIR/backend"
 case "$0" in
 	*byobu-screen) BYOBU_BACKEND="screen" ;;
 	*byobu-tmux) BYOBU_BACKEND="tmux" ;;
@@ -151,7 +151,7 @@ case $BYOBU_BACKEND in
 		fi
 		BYOBU_PROFILE="-f $BYOBU_PREFIX/share/$PKG/profiles/tmuxrc"
 		# Set default window, unless user has overriden
-		if egrep -qs "default-command|default-shell" $HOME/.$PKG/.tmux.conf >/dev/null 2>&1; then
+		if egrep -qs "default-command|default-shell" $BYOBU_CONFIG_DIR/.tmux.conf >/dev/null 2>&1; then
 			DEFAULT_WINDOW=
 		else
 			DEFAULT_WINDOW="new-session -n $BYOBU_WINDOW_NAME ${BYOBU_PREFIX}/bin/byobu-shell"
