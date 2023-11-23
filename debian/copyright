@@ -1,16 +1,14 @@
 This package was debianized by Dustin Kirkland <kirkland@byobu.org>
 Sun, 14 Dec 2008 13:11:37 -0600
 
-It was downloaded from: https://launchpad.net/byobu/+download
+It was downloaded from: https://github.com/dustinkirkland/byobu
 
 Upstream Authors:
  Dustin Kirkland <kirkland@byobu.org>
- Dustin Kirkland <kirkland@byobu.org>
- Nick Barcet <nick.barcet@ubuntu.com>
 
 Copyright:
  Copyright (C) 2008-2009 Canonical Ltd.
- Copyright (C) 2009-2014 Dustin Kirkland
+ Copyright (C) 2009-2023 Dustin Kirkland
 
  All rights reserved.
 

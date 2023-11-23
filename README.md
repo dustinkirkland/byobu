@@ -6,14 +6,13 @@ For more information about this package, please visit:
 If *Byobu* is not packaged for your Linux or UNIX OS, or if you do not have administrative privileges in order to install Byobu, you may be able to install locally, using the following instructions...
 
 ### INSTALATION
- 1. If you pull the source from the upstream bzr or git:
+ 1. If you want to pull the source from the upstream git:
 
-     ` bzr branch lp:byobu && cd byobu`
      `git clone git://github.com/dustinkirkland/byobu.git byobu-src`
 	`cd byobu-src ./debian/rules autoconf`
 
  2. Or download the latest officially released version from:
-      https://launchpad.net/byobu/+download
+      https://github.com/dustinkirkland/byobu
 
  3.  Extract:
 
@@ -50,9 +49,7 @@ If *Byobu* is not packaged for your Linux or UNIX OS, or if you do not have admi
 
 ### CONTRIBUTION
 
-You may contribute to Byobu by branching the source from Launchpad (ideally), or by forking the project on Github (less ideally):
-
-$ bzr branch lp:byobu
+You may contribute to Byobu by forking the project on Github:
 
 $ git clone git://github.com/dustinkirkland/byobu.git
 
@@ -61,10 +58,8 @@ You commit changes locally, and then propose a merge in Launchpad (ideally), or 
 As for coding standards, please use tabs, rather than spaces.  Thanks!
 
 ### AUTHORS
-Dustin Kirkland <kirkland@byobu.org>
-Nick Barcet <nick.barcet@ubuntu.com>
-Raphaël Pinson <raphink@ubuntu.com>
-Derek Carter <goozbach@friocorte.com>
+ * Primary: Dustin Kirkland <kirkland@byobu.org>
+ * Emeritus: Nick Barcet <nick.barcet@ubuntu.com>, Raphaël Pinson <raphink@ubuntu.com>, Derek Carter <goozbach@friocorte.com>
 
 ### LICENSE:
 https://github.com/dustinkirkland/byobu/blob/master/COPYING

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+#wget http://ipinfo.io/ip -qO -
+
+curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//'

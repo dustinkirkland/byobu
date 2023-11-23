@@ -2,6 +2,7 @@
 #
 #    byobu-export
 #    Copyright (C) 2008-2010 Canonical Ltd.
+#    Copyright (C) 2023 Dustin Kirkland <dustin.kirkland@gmail.com>
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.org>
 #
@@ -34,7 +35,7 @@ The byobu-export utility is now deprecated.
 To install byobu on a system for which byobu is not packaged, or
 where you are not the root user, simply:
  * Download the latest release (>= 3.0) from:
-    https://launchpad.net/byobu/+download
+    https://github.com/dustinkirkland/byobu
  * And follow the instructions in the README
 
 "
