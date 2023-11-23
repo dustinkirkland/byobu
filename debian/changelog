@@ -9,8 +9,10 @@ byobu (5.134) unreleased; urgency=medium
   * debian/control, debian/copyright, README.md, usr/bin/byobu-
     export.in, usr/share/man/man1/byobu-export.1:
     - moving upstream Byobu from Launchpad.net to Github.com
+  * README.md:
+    - bumped date
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 Nov 2023 22:08:17 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 Nov 2023 22:10:13 -0600
 
 byobu (5.133-0ubuntu1) focal; urgency=medium
 
