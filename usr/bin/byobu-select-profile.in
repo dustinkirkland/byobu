@@ -63,7 +63,7 @@ Usage: $0 [OPTION]
     -l,--list                list available profiles
     -b,--background COLOR    set the background color
     -f,--foreground COLOR    set the foreground color
-    -h,--hostnmae            set the colors based on a hash of the hostname
+    -h,--hostname            set the colors based on a hash of the hostname
     -i,--ip                  set the colors based on a hash of the ip
     -r,--random              set the colors randomly
     --help                   this help
