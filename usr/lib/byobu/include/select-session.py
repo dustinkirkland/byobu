@@ -133,9 +133,9 @@ def attach_session(session):
 	# must use the binary, not the wrapper!
 	if backend == "tmux":
 		if reuse_sessions:
-			os.execvp("tmux", ["tmux", "-u", "new-session", "-t", session_name, ";", "set-option", "destroy-unattached"])
-		else:
 			os.execvp("tmux", ["tmux", "-u", "attach", "-t", session_name])
+		else:
+			os.execvp("tmux", ["tmux", "-u", "new-session", "-t", session_name, ";", "set-option", "destroy-unattached"])
 	else:
 		os.execvp("screen", ["screen", "-AOxRR", session_name])
 

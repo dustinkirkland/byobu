@@ -13,8 +13,10 @@ byobu (5.134) unreleased; urgency=medium
     - bumped date
   * usr/bin/byobu-select-profile.in: LP: #1828296
     - add missing listprofiles logic
+  * usr/lib/byobu/include/select-session.py:
+    - fix inverted logic on session reuse
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 Nov 2023 23:16:45 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 Nov 2023 23:25:56 -0600
 
 byobu (5.133-0ubuntu1) focal; urgency=medium
 
