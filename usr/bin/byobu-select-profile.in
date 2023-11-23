@@ -187,6 +187,11 @@ else
 				shift
 				break
 			;;
+			-l|--list)
+				listprofiles
+				shift
+				break
+			;;
 			-r|--random)
 				color=$(head -c 10 /dev/urandom | $HASH | head -c 6)
 				setcolor_tmux "\#$color"
