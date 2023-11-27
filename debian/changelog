@@ -15,8 +15,10 @@ byobu (5.134) unreleased; urgency=medium
     - add missing listprofiles logic
   * usr/lib/byobu/include/select-session.py:
     - fix inverted logic on session reuse
+  * usr/lib/byobu/logo:
+    - added a logo for Wolfi
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 22 Nov 2023 23:25:56 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Nov 2023 10:11:15 -0600
 
 byobu (5.133-0ubuntu1) focal; urgency=medium
 

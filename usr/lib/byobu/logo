@@ -3,7 +3,7 @@
 #    logo: determine which logo to use
 #
 #    Copyright (C) 2008 Canonical Ltd.
-#    Copyright (C) 2011-2014 Dustin Kirkland
+#    Copyright (C) 2011-2023 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.org>
 #
@@ -134,6 +134,10 @@ __logo() {
 		*suse*)
 			logo="SUSE"
 			$MARKUP && printf "$(color W g)%s$(color -)" "$logo" || printf "$logo"
+		;;
+		*wolfi*)
+			logo=" * "
+			$MARKUP && printf "$(color m W)%s$(color -)" "$logo" || printf "$logo"
 		;;
 		*xandros*)
 			logo=" X "
