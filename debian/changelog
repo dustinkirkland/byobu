@@ -17,8 +17,11 @@ byobu (5.134) unreleased; urgency=medium
     - fix inverted logic on session reuse
   * usr/lib/byobu/logo:
     - added a logo for Wolfi
+  * usr/lib/byobu/include/shutil, usr/lib/byobu/release:
+    - Wolfi doesn't really have versions, so just use the distro
+      name rather than version id
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 27 Nov 2023 10:11:15 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Nov 2023 20:32:40 -0600
 
 byobu (5.133-0ubuntu1) focal; urgency=medium
 

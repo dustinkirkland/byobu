@@ -320,6 +320,10 @@ get_distro() {
 			Debian*)
 				[ -r /etc/lsb-release ] && distro=$(. /etc/lsb-release && [ -n "$GOOGLE_ID" ] && echo "gLinux" || echo "Debian")
 			;;
+			*)
+				# assume first field is what we want
+				distro="${issue%% *}";
+			;;
 		esac
 	elif [ -r "/etc/issue" ]; then
 		# lsb_release is *really* slow;  try to use /etc/issue first

@@ -28,6 +28,9 @@ __release() {
 	if [ -n "$RELEASE" ]; then
 		# user defined
 		true
+	elif [ "$BYOBU_DISTRO" = "Wolfi" ]; then
+		# Wolfi, and perhaps other distroless distros don't really have release versions
+		RELEASE="Wolfi"
 	elif [ -r "/etc/os-release" ]; then
 		# lsb_release is *really* slow;  try to use /etc/os-release
 		RELEASE=$(. /etc/os-release && echo "$VERSION_ID")
