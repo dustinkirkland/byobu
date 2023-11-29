@@ -2,7 +2,7 @@
 #
 #    shutil: some shared utilities used by all status scripts
 #
-#    Copyright (C) 2011-2014 Dustin Kirkland
+#    Copyright (C) 2011-2023 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.org>
 #             Scott Moser <smoser@ubuntu.com>

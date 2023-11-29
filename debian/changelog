@@ -21,7 +21,7 @@ byobu (5.134) unreleased; urgency=medium
     - Wolfi doesn't really have versions, so just use the distro
       name rather than version id
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Nov 2023 20:32:40 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Nov 2023 20:35:36 -0600
 
 byobu (5.133-0ubuntu1) focal; urgency=medium
 
