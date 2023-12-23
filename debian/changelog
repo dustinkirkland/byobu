@@ -1,3 +1,10 @@
+byobu (6.1) released; urgency=medium
+
+  * usr/lib/byobu/include/shutil:
+    - fix distro getting from /etc/os-release
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 23 Dec 2023 15:09:29 -0600
+
 byobu (6.0) released; urgency=medium
 
   * usr/lib/byobu/disk:
@@ -21,7 +28,7 @@ byobu (6.0) released; urgency=medium
     - Wolfi doesn't really have versions, so just use the distro
       name rather than version id
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 28 Nov 2023 20:35:36 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 23 Dec 2023 15:09:09 -0600
 
 byobu (5.133-0ubuntu1) focal; urgency=medium
 

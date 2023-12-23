@@ -322,7 +322,7 @@ get_distro() {
 			;;
 			*)
 				# assume first field is what we want
-				distro="${issue%% *}";
+				distro="${distro%% *}";
 			;;
 		esac
 	elif [ -r "/etc/issue" ]; then
