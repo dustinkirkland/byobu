@@ -1,4 +1,4 @@
-byobu (5.134) unreleased; urgency=medium
+byobu (6.0) released; urgency=medium
 
   * usr/lib/byobu/disk:
     - drop the -P from df which is breaking MacOS
