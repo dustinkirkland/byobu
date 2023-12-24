@@ -25,6 +25,9 @@ PKG="byobu"
 
 PCT="%"
 
+# Some shell(s) don't set the USER environment value (looking at you, ash)
+[ -z "$USER" ] && export USER=$(whoami)
+
 # Support two different backends (screen/tmux)
 if [ -z "$BYOBU_BACKEND" ]; then
 	[ -r "/etc/byobu/backend" ] && . "/etc/byobu/backend"
