@@ -3,7 +3,7 @@
 #    updates_available: calculate and cache the number of updates available
 #
 #    Copyright (C) 2008 Canonical Ltd.
-#    Copyright (C) 2011-2014 Dustin Kirkland
+#    Copyright (C) 2011-2023 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.org>
 #
@@ -81,6 +81,10 @@ ___update_cache() {
 		else
 			brew outdated | wc -l >$mycache &
 		fi
+	elif eval $BYOBU_TEST apk >/dev/null; then
+		# Wolfi updates are cheap (~1s); so update cache every time
+		apk update
+		apk upgrade --simulate | grep -c " Upgrading " >$mycache 2>/dev/null &
 	fi
 }
 
