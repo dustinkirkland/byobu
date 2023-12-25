@@ -1,0 +1,53 @@
+#!/bin/sh -e
+#
+#    packages: count the number of packages installed
+#
+#    Copyright (C) 2023 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@byobu.org>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+__packages_detail() {
+	if eval $BYOBU_TEST dpkg >/dev/null 2>&1; then
+		dpkg -l | grep ^ii
+	fi
+	if eval $BYOBU_TEST snap >/dev/null 2>&1; then
+		snap list
+	fi
+	if eval $BYOBU_TEST apk >/dev/null 2>&1; then
+		apk info
+	fi
+	return
+}
+
+__packages() {
+	local packages=0
+	if eval $BYOBU_TEST dpkg >/dev/null 2>&1; then
+		count=$(dpkg -l | grep -c ^ii)
+		packages=$((packages+count))
+	fi
+	if eval $BYOBU_TEST snap >/dev/null 2>&1; then
+		count=$(snap list | grep -c -v "^Name\s")
+		packages=$((packages+count))
+	fi
+	if eval $BYOBU_TEST apk >/dev/null 2>&1; then
+		count=$(apk info | wc -l)
+		packages=$((packages+count))
+	fi
+	[ -n "$packages" ] || return
+	color w y; printf "[%s]" "$count"; color -;
+
+}
+
+# vi: syntax=sh ts=4 noexpandtab

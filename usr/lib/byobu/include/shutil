@@ -258,6 +258,7 @@ status_freq() {
 		menu)		_RET=9999991 ;;
 		network)	_RET=3 ;;
 		notify_osd)	_RET=9999991 ;;
+		packages)	_RET=211 ;;
 		processes)	_RET=7 ;;
 		raid)		_RET=59 ;;
 		reboot_required) _RET=5 ;;
