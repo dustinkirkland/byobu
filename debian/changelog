@@ -2,8 +2,10 @@ byobu (6.3) jammy; urgency=medium
 
   * usr/bin/byobu-janitor.in, usr/share/byobu/status/status:
     - within Wolfi, default to our 2nd status line
+  * usr/lib/byobu/updates_available:
+    - silence apk update
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 02 Jan 2024 19:08:20 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 02 Jan 2024 19:09:57 -0600
 
 byobu (6.2) released; urgency=medium
 

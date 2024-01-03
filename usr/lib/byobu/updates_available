@@ -83,7 +83,7 @@ ___update_cache() {
 		fi
 	elif eval $BYOBU_TEST apk >/dev/null; then
 		# Wolfi updates are cheap (~1s); so update cache every time
-		apk update
+		apk update 2>&1 >/dev/null
 		apk upgrade --simulate | grep -c " Upgrading " >$mycache 2>/dev/null &
 	fi
 }
