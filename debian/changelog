@@ -4,8 +4,10 @@ byobu (6.3) jammy; urgency=medium
     - within Wolfi, default to our 2nd status line
   * usr/lib/byobu/updates_available:
     - silence apk update
+  * usr/share/byobu/profiles/bashrc:
+    - support ash for colorized prompt
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 02 Jan 2024 19:09:57 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 02 Jan 2024 19:22:05 -0600
 
 byobu (6.2) released; urgency=medium
 

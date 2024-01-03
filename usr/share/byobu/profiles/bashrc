@@ -24,8 +24,8 @@ case "$TERM" in
 	;;
 esac
 if [ -n "$TMUX" ] || [ "${TERMCAP#*screen}" != "${TERMCAP}" ]; then
-	# Ensure that we're in bash, in a byobu environment
-	if [ -n "$BYOBU_BACKEND" ] && [ -n "$BASH" ]; then
+	# Ensure that we're in bash or ash, in a byobu environment
+	if [ -n "$BYOBU_BACKEND" ] && [ -n "$BASH" ] || [ "$SHELL" = "/bin/ash" ]; then
 		byobu_prompt_status() { local e=$?; [ $e != 0 ] && echo -e " $e "; }
 		[ -n "$BYOBU_CHARMAP" ] || BYOBU_CHARMAP=$(locale charmap 2>/dev/null || echo)
 		byobu_prompt_symbol() {
