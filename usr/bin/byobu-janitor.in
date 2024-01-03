@@ -4,6 +4,7 @@
 #                    environtment and smooth upgrades
 #
 #    Copyright (C) 2009 Canonical Ltd.
+#    Copyright (C) 2024 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.org>
 #
@@ -89,6 +90,8 @@ for f in status statusrc; do
 	if [ ! -r "$BYOBU_CONFIG_DIR/$f" ]; then
 		# Copy from skeleton, if possible
 		cp -f "$BYOBU_PREFIX/share/$PKG/status/$f" "$BYOBU_CONFIG_DIR/$f"
+		# If we're running in Wolfi for the first time, cycle to the 2nd status
+		[ "$f" = "status" ] && [ "$BYOBU_DISTRO" = "Wolfi" ] && $BYOBU_PREFIX/lib/byobu/include/cycle-status
 	fi
 done
 

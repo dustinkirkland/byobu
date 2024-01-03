@@ -1,3 +1,10 @@
+byobu (6.3) jammy; urgency=medium
+
+  * usr/bin/byobu-janitor.in, usr/share/byobu/status/status:
+    - within Wolfi, default to our 2nd status line
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 02 Jan 2024 19:08:20 -0600
+
 byobu (6.2) released; urgency=medium
 
   * add a package count status item, useful for minimal containers
@@ -5,7 +12,7 @@ byobu (6.2) released; urgency=medium
   * added a status line customized for containers
   * add wolfi color schemed PS1 prompt
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 31 Dec 2023 09:00:42 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 02 Jan 2024 19:08:03 -0600
 
 byobu (6.1) released; urgency=medium
 
