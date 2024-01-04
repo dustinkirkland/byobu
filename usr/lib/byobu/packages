@@ -46,7 +46,7 @@ __packages() {
 		packages=$((packages+count))
 	fi
 	[ -n "$packages" ] || return
-	color w y; printf "[%s]" "$count"; color -;
+	color w y; printf "[%s]" "$count"; color --;
 
 }
 

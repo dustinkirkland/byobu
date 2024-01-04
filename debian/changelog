@@ -1,4 +1,11 @@
-byobu (6.3) jammy; urgency=medium
+byobu (6.4) unreleased; urgency=medium
+
+  * usr/lib/byobu/packages:
+    - add missing trailing whitespace
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 04 Jan 2024 13:31:36 -0600
+
+byobu (6.3) released; urgency=medium
 
   * usr/bin/byobu-janitor.in, usr/share/byobu/status/status:
     - within Wolfi, default to our 2nd status line
@@ -7,7 +14,7 @@ byobu (6.3) jammy; urgency=medium
   * usr/share/byobu/profiles/bashrc:
     - support ash for colorized prompt
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 02 Jan 2024 19:22:05 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 02 Jan 2024 19:23:28 -0600
 
 byobu (6.2) released; urgency=medium
 
