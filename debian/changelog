@@ -1,11 +1,11 @@
-byobu (6.4) unreleased; urgency=medium
+byobu (6.4) released; urgency=medium
 
   * usr/lib/byobu/packages:
     - add missing trailing whitespace
   * usr/bin/byobu-janitor.in:
     - enable colorized prompt for Wolfi ash shells
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 07 Jan 2024 16:09:05 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 07 Jan 2024 16:09:39 -0600
 
 byobu (6.3) released; urgency=medium
 
