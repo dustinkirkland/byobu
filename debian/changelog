@@ -1,3 +1,9 @@
+byobu (6.5) UNRELEASED; urgency=medium
+
+  * 
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 07 Jan 2024 16:10:43 -0600
+
 byobu (6.4) released; urgency=medium
 
   * usr/lib/byobu/packages:
