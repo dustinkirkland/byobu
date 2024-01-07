@@ -136,6 +136,14 @@ if [ -r /etc/skel/.bashrc ] && [ -r "$HOME/.bashrc" ] && [ -w "$HOME/.bashrc" ] 
 fi
 [ -r "$BYOBU_CONFIG_DIR/prompt" ] || printf "[ -r ${BYOBU_PREFIX}/share/${PKG}/profiles/bashrc ] && . ${BYOBU_PREFIX}/share/${PKG}/profiles/bashrc  #byobu-prompt#\n" > "$BYOBU_CONFIG_DIR/prompt"
 
+# Affects: New Wolfi installs -- add colorized prompt to local .profile
+if [ "$BYOBU_DISTRO" = "Wolfi" ]; then
+	# Wolfi defaults to "ash", which uses .profile
+	if ! (grep -qs "#byobu-prompt#$" "$HOME/.profile"); then
+		printf "[ -r $BYOBU_CONFIG_DIR/prompt ] && . $BYOBU_CONFIG_DIR/prompt   #byobu-prompt#\n" >> "$HOME/.profile"
+	fi
+fi
+
 # Affects: Upgrades from <= byobu 5.126, clear out ec2/rcs cost statuses
 rm -f "$BYOBU_RUN_DIR"/cache.tmux/ec2_cost* "$BYOBU_RUN_DIR"/cache.tmux/rcs_cost* "$BYOBU_RUN_DIR"/status.tmux/ec2_cost* "$BYOBU_RUN_DIR"/status.tmux/rcs_cost*
 
