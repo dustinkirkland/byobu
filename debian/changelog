@@ -1,4 +1,4 @@
-byobu (6.5) unreleased; urgency=medium
+byobu (6.5) released; urgency=medium
 
   * usr/share/byobu/profiles/bashrc:
     - drop debian chroot from wolfi ps1
@@ -6,7 +6,7 @@ byobu (6.5) unreleased; urgency=medium
   * usr/bin/byobu-shell.in:
     - need a -l login shell to source profiles and colorize PS1
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Jan 2024 07:24:53 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Jan 2024 07:32:57 -0600
 
 byobu (6.4) released; urgency=medium
 
