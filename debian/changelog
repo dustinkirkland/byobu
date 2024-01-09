@@ -1,8 +1,9 @@
-byobu (6.5) UNRELEASED; urgency=medium
+byobu (6.5) unreleased; urgency=medium
 
-  * 
+  * usr/share/byobu/profiles/bashrc:
+    - drop debian chroot from wolfi ps1
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sun, 07 Jan 2024 16:10:43 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 08 Jan 2024 21:31:05 -0600
 
 byobu (6.4) released; urgency=medium
 
