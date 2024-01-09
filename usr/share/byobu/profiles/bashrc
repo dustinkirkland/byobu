@@ -1,6 +1,6 @@
 #    byobu's bashrc -- colorize the prompt
 #    Copyright (C) 2014 Dustin Kirkland
-#    Copyright (C) 2023 Dustin Kirkland
+#    Copyright (C) 2023, 2024 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.org>
 #
@@ -23,47 +23,37 @@ case "$TERM" in
 		export TERM="xterm-256color"
 	;;
 esac
-if [ -n "$TMUX" ] || [ "${TERMCAP#*screen}" != "${TERMCAP}" ]; then
-	# Ensure that we're in bash or ash, in a byobu environment
-	if [ -n "$BYOBU_BACKEND" ] && [ -n "$BASH" ] || [ "$SHELL" = "/bin/ash" ]; then
-		byobu_prompt_status() { local e=$?; [ $e != 0 ] && echo -e " $e "; }
-		[ -n "$BYOBU_CHARMAP" ] || BYOBU_CHARMAP=$(locale charmap 2>/dev/null || echo)
-		byobu_prompt_symbol() {
-			if [ "$USER" = "root" ]; then
-				printf "%s" "#";
-			else
-				printf "%s" "\$"
-			fi
-		}
-		case "$BYOBU_DISTRO" in
-			"Ubuntu")
-				# Use Ubuntu colors (grey / orange / aubergine)
-				PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;202m\]\$(byobu_prompt_status)\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;172m\]\h\[\e[00m\]:\[\e[38;5;5m\]\w\[\e[00m\]\$(byobu_prompt_symbol) "
-				export GREP_COLORS="ms=01;38;5;202:mc=01;31:sl=:cx=:fn=01;38;5;132:ln=32:bn=32:se=00;38;5;242"
-				export LESS_TERMCAP_mb=$(printf '\e[01;31m')       # enter blinking mode – red
-				export LESS_TERMCAP_md=$(printf '\e[01;38;5;180m') # enter double-bright mode – bold light orange
-				export LESS_TERMCAP_me=$(printf '\e[0m')           # turn off all appearance modes (mb, md, so, us)
-				export LESS_TERMCAP_se=$(printf '\e[0m')           # leave standout mode
-				export LESS_TERMCAP_so=$(printf '\e[03;38;5;202m') # enter standout mode – orange background highlight (or italics)
-				export LESS_TERMCAP_ue=$(printf '\e[0m')           # leave underline mode
-				export LESS_TERMCAP_us=$(printf '\e[04;38;5;139m') # enter underline mode – underline aubergine
-				# Use Ubuntu themed dircolors
-				if [ -e "${BYOBU_PREFIX}/share/byobu/profiles/dircolors" ]; then
-					dircolors "${BYOBU_PREFIX}/share/byobu/profiles/dircolors" > "$BYOBU_RUN_DIR/dircolors"
-					. "$BYOBU_RUN_DIR/dircolors"
-				fi
-			;;
-			"Wolfi")
-				# Use Wolfi colors (pink / purple / grey)
-				# For reference: https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg
-				# Convert hex to 256: https://gist.githubusercontent.com/MicahElliott/719710/raw/73d047f0a3ffc35f0655488547e7f24fa3f04ea6/colortrans.py
-				# Use Wolfi colors (pink=170 / purple=98 / blue=63); flashing error code on previous command non-zero exit
-				PS1="\[\e[03;5;15;54m\]\$(byobu_prompt_status)\[\e[00m\]\[\e[38;5;170m\]\u\[\e[00m\]@\[\e[38;5;98m\]\h\[\e[00m\]:\[\e[38;5;63m\]\w\[\e[00m\]\$(byobu_prompt_symbol) "     
-			;;
-			*)
-				# Use Googley colors (blue / red / yellow / blue / green / red )
-                                PS1="${debian_chroot:+($debian_chroot)}\[\e[31m\]\$(byobu_prompt_status)\[\e[38;5;69m\]\u\[\e[38;5;214m\]@\[\e[38;5;167m\]\h\[\e[38;5;214m\]:\[\e[38;5;71m\]\w\[\e[38;5;214m\]\$(byobu_prompt_symbol)\[\e[00m\] "
-			;;
-		esac
-	fi
-fi
+[ -n "$BYOBU_CHARMAP" ] || BYOBU_CHARMAP=$(locale charmap 2>/dev/null || echo)
+[ -z "$USER" ] && export USER=$(whoami)
+byobu_prompt_status() { local e=$?; [ $e != 0 ] && echo -e " $e "; }
+byobu_prompt_symbol() { [ "$USER" = "root" ] && printf "%s" "#" || printf "%s" "\$"; }
+case "$BYOBU_DISTRO" in
+	"Ubuntu")
+		# Use Ubuntu colors (grey / orange / aubergine)
+		PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;202m\]\$(byobu_prompt_status)\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;172m\]\h\[\e[00m\]:\[\e[38;5;5m\]\w\[\e[00m\]\$(byobu_prompt_symbol) "
+		export GREP_COLORS="ms=01;38;5;202:mc=01;31:sl=:cx=:fn=01;38;5;132:ln=32:bn=32:se=00;38;5;242"
+		export LESS_TERMCAP_mb=$(printf '\e[01;31m')       # enter blinking mode – red
+		export LESS_TERMCAP_md=$(printf '\e[01;38;5;180m') # enter double-bright mode – bold light orange
+		export LESS_TERMCAP_me=$(printf '\e[0m')           # turn off all appearance modes (mb, md, so, us)
+		export LESS_TERMCAP_se=$(printf '\e[0m')           # leave standout mode
+		export LESS_TERMCAP_so=$(printf '\e[03;38;5;202m') # enter standout mode – orange background highlight (or italics)
+		export LESS_TERMCAP_ue=$(printf '\e[0m')           # leave underline mode
+		export LESS_TERMCAP_us=$(printf '\e[04;38;5;139m') # enter underline mode – underline aubergine
+		# Use Ubuntu themed dircolors
+		if [ -e "${BYOBU_PREFIX}/share/byobu/profiles/dircolors" ]; then
+			dircolors "${BYOBU_PREFIX}/share/byobu/profiles/dircolors" > "$BYOBU_RUN_DIR/dircolors"
+			. "$BYOBU_RUN_DIR/dircolors"
+		fi
+	;;
+	"Wolfi")
+		# Use Wolfi colors (pink / purple / grey)
+		# For reference: https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg
+		# Convert hex to 256: https://gist.githubusercontent.com/MicahElliott/719710/raw/73d047f0a3ffc35f0655488547e7f24fa3f04ea6/colortrans.py
+		# Use Wolfi colors (pink=170 / purple=98 / blue=63); flashing error code on previous command non-zero exit
+		PS1="\[\e[03;5;15;54m\]\$(byobu_prompt_status)\[\e[00m\]\[\e[38;5;170m\]\u\[\e[00m\]@\[\e[38;5;98m\]\h\[\e[00m\]:\[\e[38;5;63m\]\w\[\e[00m\]\$(byobu_prompt_symbol) "     
+	;;
+	*)
+		# Use Googley colors (blue / red / yellow / blue / green / red )
+		PS1="${debian_chroot:+($debian_chroot)}\[\e[31m\]\$(byobu_prompt_status)\[\e[38;5;69m\]\u\[\e[38;5;214m\]@\[\e[38;5;167m\]\h\[\e[38;5;214m\]:\[\e[38;5;71m\]\w\[\e[38;5;214m\]\$(byobu_prompt_symbol)\[\e[00m\] "
+	;;
+esac
