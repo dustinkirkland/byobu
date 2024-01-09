@@ -41,6 +41,8 @@ if [ ! -e "$FLAG" ]; then
 	touch "$FLAG"
 fi
 
-[ -n "$SHELL" -a -x "$SHELL" ] && exec "$SHELL" || exec /bin/sh
+# This needs to be a -l login shell, in order to source profiles
+# and colorize the prompt
+[ -n "$SHELL" -a -x "$SHELL" ] && exec "$SHELL" -l || exec /bin/sh -l
 
 # vi: syntax=sh ts=4 noexpandtab
