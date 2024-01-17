@@ -1,4 +1,4 @@
-byobu (6.6) unreleased; urgency=medium
+byobu (6.6) released; urgency=medium
 
   * usr/share/byobu/profiles/bashrc:
     - export PS1
@@ -8,7 +8,7 @@ byobu (6.6) unreleased; urgency=medium
     - add a bash timer, that shows the runtime of the previous command
       at the beginning of the prompt
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jan 2024 20:10:22 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jan 2024 20:11:10 -0600
 
 byobu (6.5) released; urgency=medium
 
