@@ -4,8 +4,11 @@ byobu (6.6) unreleased; urgency=medium
     - export PS1
   * usr/bin/byobu-janitor.in:
     - add byobu prompt to .bashrc in Wolfi
+  * usr/share/byobu/profiles/bashrc, usr/share/man/man1/byobu-prompt.1:
+    - add a bash timer, that shows the runtime of the previous command
+      at the beginning of the prompt
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jan 2024 19:14:10 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jan 2024 20:10:22 -0600
 
 byobu (6.5) released; urgency=medium
 

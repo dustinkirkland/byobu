@@ -27,10 +27,48 @@ esac
 [ -z "$USER" ] && export USER=$(whoami)
 byobu_prompt_status() { local e=$?; [ $e != 0 ] && echo -e " $e "; }
 byobu_prompt_symbol() { [ "$USER" = "root" ] && printf "%s" "#" || printf "%s" "\$"; }
+byobu_prompt_runtime() {
+	# Calculate the approximate runtime of the previous command
+	# Uses bash 5.0's EPOCHREALTIME
+	local starttime endtime duration days hours minutes seconds microseconds nanoseconds str
+	[ ! -r $BYOBU_RUN_DIR/timer.$$ ] && printf "[0.000s]" && return
+	read starttime < $BYOBU_RUN_DIR/timer.$$ 2>/dev/null || true
+	endtime=${EPOCHREALTIME/./}
+	starttime=${starttime/./}
+	duration=$((endtime - starttime))
+	days=$((duration/1000000/60/60/24))
+	hours=$((duration/1000000/60/60%24))
+	minutes=$((duration/1000000/60%60))
+	seconds=$((duration/1000000%60))
+	nanoseconds=$((duration-days*1000000*60*60*24-hours*1000000*60*60-minutes*1000000*60-seconds*1000000))
+	nanoseconds=$(printf "%.6d" ${nanoseconds})
+	microseconds=${nanoseconds:0:3}
+	# Shorten our string as much as possible
+	if [ "$days" = "0" ]; then
+		days=
+		if [ "$hours" = "0" ]; then
+			hours=
+			if [ "$minutes" = "0" ]; then
+				minutes=
+			else
+				minutes="${minutes}m "
+			fi
+		else
+			hours="${hours}h "
+		fi
+	else
+		days="${days}d "
+	fi
+	str="${days}${hours}${minutes}${seconds}.${microseconds}s"
+	printf "[%s]" "$str" 1>&2
+}
+# Requires Bash 4.x
+export PS0='$(printf "%s" ${EPOCHREALTIME/./} >"$BYOBU_RUN_DIR/timer.$$")'
+
 case "$BYOBU_DISTRO" in
 	"Ubuntu")
 		# Use Ubuntu colors (grey / orange / aubergine)
-		export PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;202m\]\$(byobu_prompt_status)\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;172m\]\h\[\e[00m\]:\[\e[38;5;5m\]\w\[\e[00m\]\$(byobu_prompt_symbol) "
+		export PS1="${debian_chroot:+($debian_chroot)}\[\e[38;5;202m\]\$(byobu_prompt_status)\[\e[00m\]\$(byobu_prompt_runtime) \[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;172m\]\h\[\e[00m\]:\[\e[38;5;5m\]\w\[\e[00m\]\$(byobu_prompt_symbol) "
 		export GREP_COLORS="ms=01;38;5;202:mc=01;31:sl=:cx=:fn=01;38;5;132:ln=32:bn=32:se=00;38;5;242"
 		export LESS_TERMCAP_mb=$(printf '\e[01;31m')       # enter blinking mode – red
 		export LESS_TERMCAP_md=$(printf '\e[01;38;5;180m') # enter double-bright mode – bold light orange
@@ -50,10 +88,10 @@ case "$BYOBU_DISTRO" in
 		# For reference: https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg
 		# Convert hex to 256: https://gist.githubusercontent.com/MicahElliott/719710/raw/73d047f0a3ffc35f0655488547e7f24fa3f04ea6/colortrans.py
 		# Use Wolfi colors (pink=170 / purple=98 / blue=63); flashing error code on previous command non-zero exit
-		export PS1="\[\e[03;5;15;54m\]\$(byobu_prompt_status)\[\e[00m\]\[\e[38;5;170m\]\u\[\e[00m\]@\[\e[38;5;98m\]\h\[\e[00m\]:\[\e[38;5;63m\]\w\[\e[00m\]\$(byobu_prompt_symbol) "     
+		PS1="\[\e[03;5;15;54m\]\$(byobu_prompt_status)\[\e[00m\]\$(byobu_prompt_runtime) \[\e[38;5;170m\]\u\[\e[00m\]@\[\e[38;5;98m\]\h\[\e[00m\]:\[\e[38;5;63m\]\w\[\e[00m\]\$(byobu_prompt_symbol) "
 	;;
 	*)
 		# Use Googley colors (blue / red / yellow / blue / green / red )
-		export PS1="${debian_chroot:+($debian_chroot)}\[\e[31m\]\$(byobu_prompt_status)\[\e[38;5;69m\]\u\[\e[38;5;214m\]@\[\e[38;5;167m\]\h\[\e[38;5;214m\]:\[\e[38;5;71m\]\w\[\e[38;5;214m\]\$(byobu_prompt_symbol)\[\e[00m\] "
+		PS1="${debian_chroot:+($debian_chroot)}\[\e[31m\]\$(byobu_prompt_status)\[\e[38;5;69m\]\u\[\e[38;5;214m\]@\[\e[38;5;167m\]\h\[\e[38;5;214m\]:\[\e[38;5;71m\]\w\[\e[38;5;214m\]\$(byobu_prompt_symbol)\[\e[00m\] "
 	;;
 esac

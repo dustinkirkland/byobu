@@ -1,6 +1,6 @@
-.TH byobu-prompt 1 "26 July 2013" byobu "byobu"
+.TH byobu-prompt 1 "16 January 2024" byobu "byobu"
 .SH NAME
-byobu-prompt, byobu-enable-prompt, byobu-disable-prompt \- add and remove a nice color prompt to your shell configuration
+byobu-prompt, byobu-enable-prompt, byobu-disable-prompt \- add and remove a nice color prompt with a previous command timer to your shell configuration
 
 .SH SYNOPSIS
 \fBbyobu-prompt\fP
@@ -11,7 +11,7 @@ byobu-prompt, byobu-enable-prompt, byobu-disable-prompt \- add and remove a nice
 
 .SH DESCRIPTION
 
-Byobu provides a special PS1 prompt command, compatible with Bash shells.  It will display the previous command's exit code, if it's not zero.  It will use 3 separate colors for the local username, hostname, and the current working directory.
+Byobu provides a special PS0 and PS1 prompt command, compatible with Bash shells.  It will display the previous command's total runtime and exit code, if it's not zero.  It will use 3 separate colors for the local username, hostname, and the current working directory.
 
 \fBbyobu-enable-prompt\fP will add one line to your \fI~/.bashrc\fP.
 
