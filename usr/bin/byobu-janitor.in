@@ -142,6 +142,10 @@ if [ "$BYOBU_DISTRO" = "Wolfi" ]; then
 	if ! (grep -qs "#byobu-prompt#$" "$HOME/.profile"); then
 		printf "[ -r $BYOBU_CONFIG_DIR/prompt ] && . $BYOBU_CONFIG_DIR/prompt   #byobu-prompt#\n" >> "$HOME/.profile"
 	fi
+	# Wolfi also has bash, which uses .bashrc
+	if ! (grep -qs "#byobu-prompt#$" "$HOME/.bashrc"); then
+		printf "[ -r $BYOBU_CONFIG_DIR/prompt ] && . $BYOBU_CONFIG_DIR/prompt   #byobu-prompt#\n" >> "$HOME/.bashrc"
+	fi
 fi
 
 # Affects: Upgrades from <= byobu 5.126, clear out ec2/rcs cost statuses

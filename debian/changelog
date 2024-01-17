@@ -1,9 +1,11 @@
-byobu (6.6) jammy; urgency=medium
+byobu (6.6) unreleased; urgency=medium
 
   * usr/share/byobu/profiles/bashrc:
     - export PS1
+  * usr/bin/byobu-janitor.in:
+    - add byobu prompt to .bashrc in Wolfi
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jan 2024 13:04:22 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 16 Jan 2024 19:14:10 -0600
 
 byobu (6.5) released; urgency=medium
 
