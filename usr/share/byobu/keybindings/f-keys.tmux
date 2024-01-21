@@ -1,7 +1,7 @@
 ###############################################################################
 #    byobu's tmux f-key keybindings
 #
-#    Copyright (C) 2011-2014 Dustin Kirkland <kirkland@byobu.org>
+#    Copyright (C) 2011-2024 Dustin Kirkland <kirkland@byobu.org>
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.org>
 #
@@ -26,7 +26,7 @@ source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux.disable
 
 # Byobu's Keybindings
 # Documented in: $BYOBU_PREFIX/share/doc/byobu/help.tmux.txt
-bind-key -n F1 new-window -n config byobu-config
+bind-key -n F1 new-window -n help "sh -c '$BYOBU_PAGER $BYOBU_PREFIX/share/doc/byobu/help.tmux.txt'"
 bind-key -n S-F1 new-window -n help "sh -c '$BYOBU_PAGER $BYOBU_PREFIX/share/doc/byobu/help.tmux.txt'"
 bind-key -n F2 new-window -c "#{pane_current_path}" \; rename-window "-"
 bind-key -n C-F2 display-panes \; split-window -h -c "#{pane_current_path}"
