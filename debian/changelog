@@ -1,3 +1,10 @@
+byobu (6.7) unreleased; urgency=medium
+
+  * usr/bin/byobu.in:
+    - if we're in a busybox/ash shell, but real bash is available, use bash
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 20 Jan 2024 20:49:21 -0600
+
 byobu (6.6) released; urgency=medium
 
   * usr/share/byobu/profiles/bashrc:

@@ -2,7 +2,7 @@
 #
 #    byobu - wrapper script
 #    Copyright (C) 2008-2009 Canonical Ltd.
-#    Copyright (C) 2008-2014 Dustin Kirkland
+#    Copyright (C) 2008-2024 Dustin Kirkland
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.org>
 #
@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-VERSION=5.134
+VERSION=6.7
 PKG="byobu"
 
 # All sorts of things go wrong if you don't own your $HOME dir.
@@ -30,6 +30,13 @@ if [ ! -O "$HOME" ]; then
 		echo "To run $PKG under sudo, you MUST use 'sudo -H'" 1>&2
 	fi
 	exit 1
+fi
+
+# If we're in a busybox/ash shell (or shell is undefined),
+# and a full bash shell is available, then please let's use bash in byobu.
+# Other shells are supported, but your mileage may vary...
+if [ "$SHELL" = "/bin/ash" ] || [ "$SHELL" = "ash" ] || [ -z "$SHELL" ]; then
+	[ -x "/bin/bash" ] && export SHELL="/bin/bash"
 fi
 
 # Source local byobu config
