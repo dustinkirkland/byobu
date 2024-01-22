@@ -1,9 +1,9 @@
-byobu (6.10) jammy; urgency=medium
+byobu (6.10) unreleased; urgency=medium
 
   * debian/compat, debian/control:
-    - bump compat, fix vcs lintian warning
+    - bump compat, fix vcs lintian warning, fix debhelper warnings
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 22 Jan 2024 10:25:40 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 22 Jan 2024 10:29:06 -0600
 
 byobu (6.9-0ubuntu1) noble; urgency=medium
 
