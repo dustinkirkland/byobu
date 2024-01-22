@@ -1,9 +1,15 @@
-byobu (6.9) unreleased; urgency=medium
+byobu (6.10) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 22 Jan 2024 09:45:50 -0600
+
+byobu (6.9-0ubuntu1) noble; urgency=medium
 
   * snap:
     - removing, unused, never finished
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 22 Jan 2024 09:38:52 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 22 Jan 2024 09:45:44 -0600
 
 byobu (6.8-0ubuntu1) noble; urgency=medium
 
