@@ -1,4 +1,4 @@
-byobu (6.8) jammy; urgency=medium
+byobu (6.8) unreleased; urgency=medium
 
   * usr/share/byobu/keybindings/f-keys.tmux:
     - have F1 pull up the keybindings text
