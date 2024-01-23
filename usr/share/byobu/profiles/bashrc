@@ -44,21 +44,9 @@ byobu_prompt_runtime() {
 	nanoseconds=$(printf "%.6d" ${nanoseconds})
 	microseconds=${nanoseconds:0:3}
 	# Shorten our string as much as possible
-	if [ "$days" = "0" ]; then
-		days=
-		if [ "$hours" = "0" ]; then
-			hours=
-			if [ "$minutes" = "0" ]; then
-				minutes=
-			else
-				minutes="${minutes}m "
-			fi
-		else
-			hours="${hours}h "
-		fi
-	else
-		days="${days}d "
-	fi
+	[ "$days" = "0" ] && days= || days="${days}d "
+	[ "$hours" = "0" ] && hours= || hours="${hours}h "
+	[ "$minutes" = "0" ] && minutes= || minutes="${minutes}m "
 	str="${days}${hours}${minutes}${seconds}.${microseconds}s"
 	printf "[%s]" "$str" 1>&2
 }
