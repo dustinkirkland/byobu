@@ -1,11 +1,17 @@
-byobu (6.10) unreleased; urgency=medium
+byobu (6.11) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jan 2024 09:43:10 -0600
+
+byobu (6.10-0ubuntu1) noble; urgency=medium
 
   * debian/compat, debian/control:
     - bump compat, fix vcs lintian warning, fix debhelper warnings
   * usr/share/byobu/profiles/bashrc:
     - fix timer string logic
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jan 2024 09:03:16 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jan 2024 09:43:03 -0600
 
 byobu (6.9-0ubuntu1) noble; urgency=medium
 
