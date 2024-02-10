@@ -1,4 +1,10 @@
-byobu (6.11) unreleased; urgency=medium
+byobu (6.12) unreleased; urgency=medium
+
+  * UNRELEASED
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Feb 2024 11:24:14 -0600
+
+byobu (6.11-0ubuntu1) noble; urgency=medium
 
   * usr/share/byobu/profiles/bashrc:
     - fix BYOBU_RUN_DIR and BYOBU_PREFIX issue
@@ -11,7 +17,7 @@ byobu (6.11) unreleased; urgency=medium
     - added support for dnf package manager
     - https://code.launchpad.net/~sanjay-ankur/byobu/byobu/+merge/415959
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Feb 2024 11:03:36 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Feb 2024 11:24:04 -0600
 
 byobu (6.10-0ubuntu1) noble; urgency=medium
 
