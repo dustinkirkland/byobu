@@ -7,8 +7,11 @@ byobu (6.11) unreleased; urgency=medium
   * usr/bin/byobu-launcher-install.in:
     - Fix for VSCode, fish and byobu installations
     - https://github.com/dustinkirkland/byobu/commit/f917d2169afdec623f5b32723d93bfd91d34b92f#commitcomment-137955113
+  * usr/lib/byobu/updates_available:
+    - added support for dnf package manager
+    - https://code.launchpad.net/~sanjay-ankur/byobu/byobu/+merge/415959
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Feb 2024 10:56:13 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Feb 2024 11:03:36 -0600
 
 byobu (6.10-0ubuntu1) noble; urgency=medium
 

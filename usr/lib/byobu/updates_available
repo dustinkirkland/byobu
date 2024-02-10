@@ -85,6 +85,9 @@ ___update_cache() {
 		# Wolfi updates are cheap (~1s); so update cache every time
 		apk update 2>&1 >/dev/null
 		apk upgrade --simulate | grep -c " Upgrading " >$mycache 2>/dev/null &
+	elif eval $BYOBU_TEST dnf >/dev/null; then
+		# If dnf exists, use it
+		flock -xn "$flock" dnf list --upgrades -q -y | grep -vc "Available Upgrades" >$mycache 2>/dev/null &
 	fi
 }
 
@@ -140,6 +143,9 @@ ___update_needed() {
 		# nothing new has been installed, so check wether the
 		# formulae database was updated
 		[ "$(brew --prefix)/Library/Formula" -nt "$mycache" ]
+		return $?
+	elif [ -e "/var/cache/dnf/packages.db" ]; then
+		[ "/var/cache/dnf/packages.db" -nt "$mycache" ]
 		return $?
 	fi
 	return 1
