@@ -1,8 +1,11 @@
 byobu (6.11) unreleased; urgency=medium
 
-  * UNRELEASED
+  * usr/share/byobu/profiles/bashrc:
+    - fix BYOBU_RUN_DIR and BYOBU_PREFIX issue
+    - https://github.com/dustinkirkland/byobu/pull/62
+    - https://launchpad.net/bugs/2051995 LP: #2051995
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 23 Jan 2024 09:43:10 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 10 Feb 2024 10:49:43 -0600
 
 byobu (6.10-0ubuntu1) noble; urgency=medium
 

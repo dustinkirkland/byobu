@@ -25,6 +25,9 @@ case "$TERM" in
 esac
 [ -n "$BYOBU_CHARMAP" ] || BYOBU_CHARMAP=$(locale charmap 2>/dev/null || echo)
 [ -z "$USER" ] && export USER=$(whoami)
+[ -d "$BYOBU_PREFIX" ] || BYOBU_PREFIX="/usr"
+[ -r "$BYOBU_PREFIX/lib/byobu/include/dirs" ] && . "$BYOBU_PREFIX/lib/byobu/include/dirs"
+
 byobu_prompt_status() { local e=$?; [ $e != 0 ] && echo -e " $e "; }
 byobu_prompt_symbol() { [ "$USER" = "root" ] && printf "%s" "#" || printf "%s" "\$"; }
 byobu_prompt_runtime() {
