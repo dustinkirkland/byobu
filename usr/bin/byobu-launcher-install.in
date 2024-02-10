@@ -49,8 +49,8 @@ install_launcher() {
 
 install_launcher_fish() {
 	$PKG-launcher-uninstall "$1" || true
-	printf "if not set -q VSCODE_CWD" >> "$1"
-	printf "  status --is-login; and status --is-interactive; and exec byobu-launcher" >> "$1"
+	printf "if not set -q VSCODE_CWD; " >> "$1"
+	printf "  status --is-login; and status --is-interactive; and exec byobu-launcher;" >> "$1"
 	printf "end" >> "$1"
 }
 
