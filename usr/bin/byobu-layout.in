@@ -31,7 +31,7 @@ current_panes=$(tmux list-panes | wc -l)
 list_layouts() {
 	echo
 	echo "Byobu Saved Layouts"
-	local count=0 i= desc= count= p=
+	local count=0 i= desc= p=
 	for i in $PRESETS "$DIR"/*; do
 		desc=${i##*/}
 		count=$(expr $count + 1)
