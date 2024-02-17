@@ -1,9 +1,9 @@
-byobu (6.12) unreleased; urgency=medium
+byobu (6.12-0ubuntu1) noble; urgency=medium
 
   * usr/share/byobu/profiles/bashrc:
     - added git branch to bash ps1 prompt
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 17 Feb 2024 06:18:47 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 17 Feb 2024 07:25:02 -0600
 
 byobu (6.11-0ubuntu1) noble; urgency=medium
 
