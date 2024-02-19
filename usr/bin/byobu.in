@@ -24,8 +24,8 @@ PKG="byobu"
 # All sorts of things go wrong if you don't own your $HOME dir.
 # This happens under sudo, if you don't use the -H option; Byobu will
 # create a bunch of files in your $HOME which will be owned by root.
-if [ ! -O "$HOME" ]; then
-	echo "Cannot run $PKG because [$USER] does not own [$HOME]" 1>&2
+if [ ! -O "$HOME" ] && [ ! -O "$HOME/.profile" ]; then
+	echo "Cannot run $PKG because [$USER] does not own [$HOME] or [$HOME/.profile]" 1>&2
 	if [ -n "$SUDO_USER" ]; then
 		echo "To run $PKG under sudo, you MUST use 'sudo -H'" 1>&2
 	fi
