@@ -28,6 +28,8 @@ esac
 [ -d "$BYOBU_PREFIX" ] || BYOBU_PREFIX="/usr"
 [ -r "$BYOBU_PREFIX/lib/byobu/include/dirs" ] && . "$BYOBU_PREFIX/lib/byobu/include/dirs"
 
+decimal_point=$(locale decimal_point)
+
 byobu_prompt_git() { git branch 2>/dev/null | sed -e "/^[^*]/d" -e "s/* \(.*\)/ (\1)/"; }
 byobu_prompt_status() { local e=$?; [ $e != 0 ] && echo -e " $e "; }
 byobu_prompt_symbol() { [ "$USER" = "root" ] && printf "%s" "#" || printf "%s" "\$"; }
@@ -37,8 +39,8 @@ byobu_prompt_runtime() {
 	local starttime endtime duration days hours minutes seconds microseconds nanoseconds str
 	[ ! -r $BYOBU_RUN_DIR/timer.$$ ] && printf "[0.000s]" && return
 	read starttime < $BYOBU_RUN_DIR/timer.$$ 2>/dev/null || true
-	endtime=${EPOCHREALTIME/./}
-	starttime=${starttime/./}
+	endtime=${EPOCHREALTIME/$decimal_point/}
+	starttime=${starttime/$decimal_point/}
 	duration=$((endtime - starttime))
 	days=$((duration/1000000/60/60/24))
 	hours=$((duration/1000000/60/60%24))
@@ -55,7 +57,7 @@ byobu_prompt_runtime() {
 	printf "[%s] " "$str" 1>&2
 }
 # Requires Bash 4.x
-export PS0='$(printf "%s" ${EPOCHREALTIME/./} >"$BYOBU_RUN_DIR/timer.$$")'
+export PS0='$(printf "%s" ${EPOCHREALTIME/$decimal_point/} >"$BYOBU_RUN_DIR/timer.$$")'
 
 case "$BYOBU_DISTRO" in
 	"Ubuntu")
