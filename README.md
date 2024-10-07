@@ -5,7 +5,7 @@ For more information about this package, please visit:
 
 If *Byobu* is not packaged for your Linux or UNIX OS, or if you do not have administrative privileges in order to install Byobu, you may be able to install locally, using the following instructions...
 
-### INSTALATION
+### INSTALLATION
  1. If you want to pull the source from the upstream git:
 
      `git clone git://github.com/dustinkirkland/byobu.git byobu-src`
