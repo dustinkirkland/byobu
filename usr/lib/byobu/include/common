@@ -53,3 +53,8 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 	export BYOBU_DISTRO="$_RET"
 	BYOBU_INCLUDED_LIBS=1
 fi
+
+case "$1" in
+	-v|--version) [ "$(basename $0)" != "byobu" ] && exec byobu -v ;;
+	-h|--help) exec man $(basename $0) ;;
+esac
