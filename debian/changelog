@@ -2,8 +2,10 @@ byobu (6.13) unreleased; urgency=medium
 
   * usr/lib/byobu/include/common:
     - added -v|--version and -h|--help to most executables
+  * usr/share/byobu/profiles/bashrc:
+    - fix PS1 ANSI escape sequences causing line wrap errors
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 17 Sep 2024 19:46:50 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 29 Mar 2025 19:53:42 -0500
 
 byobu (6.12-0ubuntu1) noble; urgency=medium
 

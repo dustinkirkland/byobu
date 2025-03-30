@@ -29,7 +29,7 @@ esac
 [ -r "$BYOBU_PREFIX/lib/byobu/include/dirs" ] && . "$BYOBU_PREFIX/lib/byobu/include/dirs"
 
 byobu_prompt_git() { git branch 2>/dev/null | sed -e "/^[^*]/d" -e "s/* \(.*\)/ (\1)/"; }
-byobu_prompt_status() { local e=$?; [ $e != 0 ] && echo -e " $e "; }
+byobu_prompt_status() { printf "%s" "[$?]"; }
 byobu_prompt_symbol() { [ "$USER" = "root" ] && printf "%s" "#" || printf "%s" "\$"; }
 byobu_prompt_runtime() {
 	# Calculate the approximate runtime of the previous command
@@ -53,7 +53,7 @@ byobu_prompt_runtime() {
 	[ "$hours" = "0" ] && hours= || hours="${hours}h "
 	[ "$minutes" = "0" ] && minutes= || minutes="${minutes}m "
 	str="${days}${hours}${minutes}${seconds}.${microseconds}s"
-	printf "[%s] " "$str" 1>&2
+	printf "[%s]" "$str" 1>&2
 }
 # Requires Bash 4.x
 export PS0='$(printf "%s" ${EPOCHREALTIME/[^0-9]/} >"$BYOBU_RUN_DIR/timer.$$")'
@@ -61,7 +61,7 @@ export PS0='$(printf "%s" ${EPOCHREALTIME/[^0-9]/} >"$BYOBU_RUN_DIR/timer.$$")'
 case "$BYOBU_DISTRO" in
 	"Ubuntu")
 		# Use Ubuntu colors (grey / orange / aubergine)
-		export PS1="${debian_chroot:+($debian_chroot)}\[\e[03;5;15;202m\]\$(byobu_prompt_status)\[\e[00m\]\$(byobu_prompt_runtime)\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;172m\]\h\[\e[00m\]:\[\e[38;5;5m\]\w\[\e[00m\]\e[38;5;102m\]\$(byobu_prompt_git)\e[00m\]\$(byobu_prompt_symbol) "
+		export PS1="\$(byobu_prompt_runtime) --> \$(byobu_prompt_status)\n\[\e[38;5;245m\]\u\[\e[00m\]@\[\e[38;5;172m\]\h\[\e[00m\]:\[\e[38;5;5m\]\w\[\e[00m\]\$(byobu_prompt_git)\$(byobu_prompt_symbol) "
 		export GREP_COLORS="ms=01;38;5;202:mc=01;31:sl=:cx=:fn=01;38;5;132:ln=32:bn=32:se=00;38;5;242"
 		export LESS_TERMCAP_mb=$(printf '\e[01;31m')       # enter blinking mode – red
 		export LESS_TERMCAP_md=$(printf '\e[01;38;5;180m') # enter double-bright mode – bold light orange
@@ -81,10 +81,10 @@ case "$BYOBU_DISTRO" in
 		# For reference: https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg
 		# Convert hex to 256: https://gist.githubusercontent.com/MicahElliott/719710/raw/73d047f0a3ffc35f0655488547e7f24fa3f04ea6/colortrans.py
 		# Use Wolfi colors (pink=170 / purple=98 / blue=63); flashing error code on previous command non-zero exit
-		PS1="\[\e[03;5;15;54m\]\$(byobu_prompt_status)\[\e[00m\]\$(byobu_prompt_runtime)\[\e[38;5;170m\]\u\[\e[00m\]@\[\e[38;5;98m\]\h\[\e[00m\]:\[\e[38;5;63m\]\w\[\e[00m\]\e[38;5;45m\]\$(byobu_prompt_git)\e[00m\]\$(byobu_prompt_symbol) "
+		export PS1="\$(byobu_prompt_runtime) --> \$(byobu_prompt_status)\n\[\e[38;5;170m\]\u\[\e[00m\]@\[\e[38;5;98m\]\h\[\e[00m\]:\[\e[38;5;63m\]\w\[\e[00m\]\$(byobu_prompt_git)\$(byobu_prompt_symbol) "
 	;;
 	*)
-		# Use Googley colors (blue / red / yellow / blue / green / red )
-		PS1="${debian_chroot:+($debian_chroot)}\[\e[31m\]\$(byobu_prompt_status)\[\e[38;5;69m\]\u\[\e[38;5;214m\]@\[\e[38;5;167m\]\h\[\e[38;5;214m\]:\[\e[38;5;71m\]\w\[\e[38;5;214m\]\$(byobu_prompt_git)\$(byobu_prompt_symbol)\[\e[00m\] "
+		# Use primary colors (blue / yellow / red )
+		export PS1="\$(byobu_prompt_runtime) --> \$(byobu_prompt_status)\n\[\e[38;5;69m\]\u\[\e[00m\]@\[\e[38;5;214m\]\h\[\e[00m\]:\[\e[38;5;167m\]\w\[\e[00m\]\$(byobu_prompt_git)\$(byobu_prompt_symbol) "
 	;;
 esac
