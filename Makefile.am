@@ -3,6 +3,7 @@ SUBDIRS = etc/byobu \
 	usr/share/byobu/desktop \
 	usr/share/byobu/keybindings \
 	usr/share/byobu/pixmaps \
+	usr/share/byobu/pixmaps/highcontrast \
 	usr/share/byobu/profiles \
 	usr/share/byobu/status \
 	usr/share/byobu/tests \
@@ -12,4 +13,5 @@ SUBDIRS = etc/byobu \
 	usr/lib/byobu \
 	usr/lib/byobu/include \
 	usr/share/man/man1 \
+	usr/share/sounds/byobu \
 	usr/bin
