@@ -1,3 +1,5 @@
+# Byobu
+
 Byobu is a GPLv3 open source text-based window manager and terminal multiplexer. It was originally designed to provide elegant enhancements to the otherwise functional, plain, practical GNU Screen, for the Ubuntu server distribution. Byobu now includes an enhanced profiles, convenient keybindings, configuration utilities, and toggle-able system status notifications for both the GNU Screen window manager and the more modern Tmux terminal multiplexer, and works on most Linux, BSD, and Mac distributions.
 
 For more information about this package, please visit:
@@ -5,47 +7,53 @@ For more information about this package, please visit:
 
 If *Byobu* is not packaged for your Linux or UNIX OS, or if you do not have administrative privileges in order to install Byobu, you may be able to install locally, using the following instructions...
 
-### INSTALATION
- 1. If you want to pull the source from the upstream git:
+### INSTALLATION
 
-     `git clone git://github.com/dustinkirkland/byobu.git byobu-src`
-	`cd byobu-src ./debian/rules autoconf`
+1. Clone the GitHub repo:
+   ```bash
+   git clone git://github.com/dustinkirkland/byobu.git byobu-src
+   cd byobu-src
+   ```
 
- 2. Or download the latest officially released version from:
-      https://github.com/dustinkirkland/byobu
+2. Or download the latest official release, either manually from [here](https://github.com/dustinkirkland/byobu/releases/latest), or with the commands below:
+   ```bash
+   TAG=$(curl --silent "https://api.github.com/repos/dustinkirkland/byobu/releases/latest" | jq -r '.tag_name')
+   wget "https://github.com/dustinkirkland/byobu/archive/refs/tags/${TAG}.tar.gz"
+   tar xvf "${TAG}.tar.gz"
+   cd "byobu-${TAG}"
+   ```
 
- 3.  Extract:
+3. Configure:
+   ```bash
+   ./autogen.sh
+   ./configure --prefix="${HOME}/byobu"
+   ```
+   **OPTIONAL:** You may use python from your environment, rather than from your distro
+   ```bash
+   echo "export BYOBU_PYTHON='/usr/bin/env python'" >> "${HOME}/.bashrc"
+   ```
 
-     `tar zxvf byobu*.tar.gz && cd byobu*`
+4. Build and install:
+   ```bash
+   make
+   make install
+   ```
 
- 4. Configure:
+5. Update your `PATH`:
+   ```bash
+   echo 'export PATH="${HOME}/byobu/bin:${PATH}"' >> "${HOME}/.bashrc"
+   source "${HOME}/.bashrc"
+   ```
 
-      `./configure --prefix="$HOME/byobu"`
+6. Run:
+   ```bash
+   byobu
+   ```
 
-       ***OPTIONAL*** : You may use python from your environment, rather than from your distro
-
-       ***echo "export BYOBU_PYTHON='/usr/bin/env python'" >> $HOME/.bashrc***
-
- 5. Build:
-       `make`
-
- 6. Install:
-
-      `make install`
-
- 7. Update your `PATH` and `BYOBU_PREFIX` environment variables
-
-      `echo "export PATH=$HOME/byobu/bin:$PATH" >> $HOME/.bashrc`
-      `. $HOME/.bashrc`
-
- 8. Run:
-
-      `byobu`
-
-> Note that you will need to have a few dependencies installed:
- * tmux >= 1.5 and screen
- * python-newt (if you want to use Byobu's configuration utility)
- * gsed (if your sed implementation doesn't support -i)
+Note that you will need to have a few dependencies installed:
+- `tmux` >= 1.5 and `screen`
+- `python-newt` (if you want to use Byobu's configuration utility)
+- `gsed` (if your sed implementation doesn't support -i)
 
 ### CONTRIBUTION
 
