@@ -34,6 +34,10 @@ byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
   * usr/lib/byobu/logo:
     - add Oracle Linux logo support
     - https://github.com/dustinkirkland/byobu/pull/74
+  * Makefile.am, configure.ac, */Makefile.am:
+    - add automake dist_ directives for proper distribution tarball creation
+    - fixes "make distclean" to create buildable distributions
+    - https://github.com/dustinkirkland/byobu/pull/69
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Feb 2026 00:00:00 -0600
 

@@ -54,6 +54,7 @@ AC_OUTPUT(Makefile \
 	usr/share/byobu/desktop/Makefile \
 	usr/share/byobu/keybindings/Makefile \
 	usr/share/byobu/pixmaps/Makefile \
+	usr/share/byobu/pixmaps/highcontrast/Makefile \
 	usr/share/byobu/profiles/Makefile \
 	usr/share/byobu/status/Makefile \
 	usr/share/byobu/tests/Makefile \
@@ -62,4 +63,5 @@ AC_OUTPUT(Makefile \
 	usr/share/doc/byobu/Makefile \
 	usr/lib/byobu/Makefile \
 	usr/lib/byobu/include/Makefile \
+	usr/share/sounds/byobu/Makefile \
 	usr/share/man/man1/Makefile usr/bin/Makefile)
