@@ -28,6 +28,9 @@ byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
     - use OpenDNS for faster external IP detection when dig is available
     - falls back to ipv6-test.com if dig is unavailable or fails
     - based on https://github.com/dustinkirkland/byobu/pull/36
+  * usr/lib/byobu/logo:
+    - add Oracle Linux logo support
+    - https://github.com/dustinkirkland/byobu/pull/74
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Feb 2026 00:00:00 -0600
 
