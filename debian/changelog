@@ -1,3 +1,30 @@
+byobu (6.15-0ubuntu1) UNRELEASED; urgency=medium
+
+  * usr/lib/byobu/disk_io:
+    - fix stale disk_io status notifications when I/O drops below threshold
+    - fix crash on NVMe and MMC devices due to partition naming (nvme0n1p2)
+    - fix cache read failure causing incorrect statistics display
+    - LP: #1658524
+    - Closes: #992984
+  * usr/lib/byobu/users:
+    - fix trailing hash display for screen backend (tmux needs ##, screen needs #)
+  * usr/lib/byobu/memory:
+    - add FreeBSD support using sysctl for memory statistics
+  * usr/lib/byobu/fan_speed:
+    - fix fan speed stuck at last non-zero value when dropping to 0 RPM
+    - LP: #1897540
+  * usr/lib/byobu/cpu_freq:
+    - add dmidecode fallback for zero bogomips CPUs (Ampere Altra processors)
+    - LP: #2051288
+  * usr/bin/byobu-shell.in:
+    - fix infinite loop with fish shell autostart
+    - LP: #2064030
+  * usr/bin/purge-old-kernels:
+    - note: this script was already deprecated/simplified to call apt autoremove
+    - Closes: #935681
+
+ -- Dustin Kirkland <dustin.kirkland@chainguard.dev>  Sun, 15 Feb 2026 17:08:47 -0600
+
 byobu (6.14-0ubuntu1) resolute; urgency=medium
 
   * usr/share/byobu/profiles/bashrc:
