@@ -50,6 +50,8 @@ byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
     - fix Arch Linux updates detection to check pacman.log for installed packages
     - prevents false positive "updates available" after packages are installed
     - https://github.com/dustinkirkland/byobu/issues/73
+  * usr/bin/byobu-shell.in:
+    - update bit.ly/byobu-tips URL to https://byobu.org
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Feb 2026 00:00:00 -0600
 
