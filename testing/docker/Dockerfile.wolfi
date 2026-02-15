@@ -1,0 +1,34 @@
+FROM cgr.dev/chainguard/wolfi-base:latest
+
+# Install dependencies
+RUN apk add --no-cache \
+    tmux \
+    bash \
+    git \
+    automake \
+    autoconf \
+    make \
+    gawk \
+    python-3 \
+    coreutils \
+    grep \
+    sed
+
+# Copy byobu source
+COPY . /tmp/byobu-src
+WORKDIR /tmp/byobu-src
+
+# Build and install
+RUN ./autogen.sh && \
+    ./configure --prefix=/usr --sysconfdir=/etc && \
+    make && \
+    make install
+
+# Create a test user (Wolfi/Chainguard uses nonroot by default)
+USER nonroot
+WORKDIR /home/nonroot
+
+# Enable byobu
+RUN byobu-launcher-install || true
+
+CMD ["/bin/bash", "-l"]
