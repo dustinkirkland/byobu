@@ -47,7 +47,7 @@ __wifi_quality() {
 		#    Bit Rate=54 Mb/s   Tx-Power=15 dBm
 		#    Link Quality=60/70  Signal level=-50 dBm
 		# the awk below tokenizes the output and prints shell evalable results
-		out=`iwconfig $MONITORED_NETWORK 2>/dev/null |
+		out=`iwconfig "$MONITORED_NETWORK" 2>/dev/null |
 			awk '$0 ~ /[ ]*Link Quality./ {
 			    sub(/.*=/,"",$2); split($2,a,"/");
 			    printf "quality=%.0f\n", 100*a[1]/a[2] };
