@@ -22,6 +22,12 @@ byobu (6.15-0ubuntu1) UNRELEASED; urgency=medium
   * usr/bin/purge-old-kernels:
     - note: this script was already deprecated/simplified to call apt autoremove
     - Closes: #935681
+  * Document bash requirement for decimal sleep values:
+    - add bash to Depends in debian/control
+    - change shebang to #!/bin/bash in scripts using decimal sleep
+    - add documentation comments explaining necessity of decimal sleeps
+    - fixes: hostname, ip_address, shutil, byobu-launch.in
+    - Closes: #772221
 
  -- Dustin Kirkland <dustin.kirkland@chainguard.dev>  Sun, 15 Feb 2026 17:08:47 -0600
 
