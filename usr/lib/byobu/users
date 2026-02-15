@@ -26,7 +26,13 @@ __users_detail() {
 }
 
 __users() {
-	local count=0
+	local count=0 sign=
+	# tmux interprets # as a special character, so ## is needed for a literal #
+	# screen displays # literally, so only one # is needed
+	case "$BYOBU_BACKEND" in
+		tmux) sign="##" ;;
+		*) sign="#" ;;
+	esac
 	if [ "$USERS_DISTINCT" = "1" ]; then
 		count=$(pgrep -fl 'sshd:.*@' | cut -f3 -d\ | cut -f1 -d@ | sort -u | wc -l)
 	else
@@ -35,7 +41,7 @@ __users() {
 		count=$(pgrep -f "^sshd:.*@|^/usr/sbin/sshd -i" | wc -l) || return
 	fi
 	if [ $count -gt 0 ]; then
-		color b w r; printf "%d" "$count"; color -; color w r; printf "##"; color --
+		color b w r; printf "%d" "$count"; color -; color w r; printf "%s" "$sign"; color --
 	else
 		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/users"*
 	fi
