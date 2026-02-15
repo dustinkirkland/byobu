@@ -13,6 +13,9 @@ byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
   * README.md:
     - fix typo: INSTALATION -> INSTALLATION
     - https://github.com/dustinkirkland/byobu/pull/67
+    - fix installation instructions to use ./autogen.sh instead of ./debian/rules
+    - works without debhelper/root access, fixes syntax error
+    - addresses issue raised in https://github.com/dustinkirkland/byobu/pull/86
   * configure.ac, usr/bin/byobu.in:
     - use autoconf @VERSION@ substitution for consistent version management
     - https://github.com/dustinkirkland/byobu/pull/70

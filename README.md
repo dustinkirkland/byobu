@@ -9,16 +9,22 @@ If *Byobu* is not packaged for your Linux or UNIX OS, or if you do not have admi
  1. If you want to pull the source from the upstream git:
 
      `git clone git://github.com/dustinkirkland/byobu.git byobu-src`
-	`cd byobu-src ./debian/rules autoconf`
+     `cd byobu-src`
 
  2. Or download the latest officially released version from:
       https://github.com/dustinkirkland/byobu
 
- 3.  Extract:
+ 3. Extract:
 
      `tar zxvf byobu*.tar.gz && cd byobu*`
 
- 4. Configure:
+ 4. Generate the configure script (if it doesn't exist):
+
+     `./autogen.sh`
+
+     Note: GitHub release tarballs require this step. Official release tarballs from Launchpad already include `./configure` and can skip this step.
+
+ 5. Configure:
 
       `./configure --prefix="$HOME/byobu"`
 
@@ -26,19 +32,19 @@ If *Byobu* is not packaged for your Linux or UNIX OS, or if you do not have admi
 
        ***echo "export BYOBU_PYTHON='/usr/bin/env python'" >> $HOME/.bashrc***
 
- 5. Build:
+ 6. Build:
        `make`
 
- 6. Install:
+ 7. Install:
 
       `make install`
 
- 7. Update your `PATH` and `BYOBU_PREFIX` environment variables
+ 8. Update your `PATH` and `BYOBU_PREFIX` environment variables
 
       `echo "export PATH=$HOME/byobu/bin:$PATH" >> $HOME/.bashrc`
       `. $HOME/.bashrc`
 
- 8. Run:
+ 9. Run:
 
       `byobu`
 
