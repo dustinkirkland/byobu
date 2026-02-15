@@ -16,6 +16,10 @@ byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
   * configure.ac, usr/bin/byobu.in:
     - use autoconf @VERSION@ substitution for consistent version management
     - https://github.com/dustinkirkland/byobu/pull/70
+  * usr/bin/byobu.in:
+    - extend home directory ownership test for non-standard setups
+    - allows byobu to work in networked environments where $HOME is root-owned
+    - https://github.com/dustinkirkland/byobu/pull/55
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Feb 2026 00:00:00 -0600
 
