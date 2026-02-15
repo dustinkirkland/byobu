@@ -1,4 +1,4 @@
-byobu (6.15-0ubuntu1) UNRELEASED; urgency=medium
+byobu (6.15) released; urgency=medium
 
   * usr/lib/byobu/disk_io:
     - fix stale disk_io status notifications when I/O drops below threshold
