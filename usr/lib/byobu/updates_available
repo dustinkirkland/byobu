@@ -119,6 +119,8 @@ ___update_needed() {
 		for db in /var/lib/pacman/sync/*.db; do
 			[ "$db" -nt "$mycache" ] && return 0
 		done
+		# Also check if packages were actually installed
+		[ -f "/var/log/pacman.log" ] && [ "/var/log/pacman.log" -nt "$mycache" ] && return 0
 		return 1
 	elif eval $BYOBU_TEST opkg >/dev/null; then
 		# OpenWrt
