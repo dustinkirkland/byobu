@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 #
 #    shutil: some shared utilities used by all status scripts
+#    Note: Uses decimal sleep (0.02) which requires bash
 #
 #    Copyright (C) 2011-2023 Dustin Kirkland
 #
@@ -219,6 +220,7 @@ metadata_available() {
 		if [ -e /etc/ec2_version ] || [ -e /usr/sbin/update-grub-legacy-ec2 ]; then
 			# This *looks* like a machine with metadata, so background a potentially slow check
 			timeout 1 wget -q -O- --tries=1 http://169.254.169.254 </dev/null >"$cache" 2>/dev/null &
+			# Brief sleep for cold-start metadata detection (requires bash)
 			sleep 0.02
 			[ -s "$cache" ] && x=1
 		fi

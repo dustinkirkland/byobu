@@ -1,6 +1,7 @@
-#!/bin/sh -e
+#!/bin/bash -e
 #
 #    hostname: report a host's name
+#    Note: Uses decimal sleep (0.02) which requires bash
 #
 #    Copyright (C) 2008-2011 Canonical Ltd.
 #    Copyright (C) 2011-2014 Dustin Kirkland
@@ -34,6 +35,7 @@ __hostname() {
 		local cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/hostname"
 		# Background a retrieval of our public hostname
 		timeout 0.2 wget -q -O- http://169.254.169.254/latest/meta-data/public-hostname </dev/null >"$cache" 2>/dev/null &
+		# Brief sleep allows background wget to complete for immediate display (requires bash)
 		sleep 0.02
 		[ -s "$cache" ] && read h < "$cache"
 	fi

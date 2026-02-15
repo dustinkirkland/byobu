@@ -1,6 +1,7 @@
-#!/bin/sh -e
+#!/bin/bash -e
 #
 #    ip_address: report a host's ip address
+#    Note: Uses decimal sleep (0.02, 0.1) which requires bash
 #
 #    Copyright (C) 2008-2011 Canonical Ltd.
 #    Copyright (C) 2011-2014 Dustin Kirkland
@@ -42,6 +43,7 @@ __ip_address() {
 			if [ "$IP_EXTERNAL" = "1" ]; then
 				# Background an update
 				timeout 1 wget -q -O- http://v6.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
+				# Brief sleep for cold-start display optimization (requires bash)
 				sleep 0.02
 			else
 				# Background an update
@@ -63,17 +65,20 @@ __ip_address() {
 				# Try dig with OpenDNS first (faster), fall back to wget
 				if command -v dig >/dev/null 2>&1; then
 					timeout 1 dig +short myip.opendns.com @resolver1.opendns.com </dev/null 2>/dev/null | tr -d '\n' >"$cache" &
+					# Brief sleep for cold-start display optimization (requires bash)
 					sleep 0.1
 				fi
 				# Fall back to wget if dig didn't work
 				if [ ! -s "$cache" ]; then
 					timeout 1 wget -q -O- http://v4.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
+					# Brief sleep for cold-start display optimization (requires bash)
 					sleep 0.02
 				fi
 				[ -s "$cache" ] && read ipaddr < "$cache"
 			elif metadata_available; then
 				# We're in EC2, so get our public IP address
 				timeout 0.2 wget -q -O- http://169.254.169.254/latest/meta-data/public-ipv4 </dev/null >"$cache" 2>/dev/null &
+				# Brief sleep for cold-start display optimization (requires bash)
 				sleep 0.02
 				[ -s "$cache" ] && read ipaddr < "$cache"
 			else

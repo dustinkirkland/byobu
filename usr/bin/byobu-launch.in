@@ -1,6 +1,7 @@
-#!/bin/sh -e
+#!/bin/bash -e
 #
 #    byobu-launch - call the launcher if we're in an interactive shell
+#    Note: Uses decimal sleep (0.1) which requires bash
 #    Copyright (C) 2010 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.org>
@@ -63,6 +64,7 @@ elif [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_
 				[ -z "$_byobu_sourced" ] && [ -r "$HOME/.profile" ] && . "$HOME/.profile"
 				if byobu-launcher "$@" ; then
 					# Wait very briefly for the no-logout flag to get written?
+					# Brief sleep prevents race condition with Shift-F6 detach (requires bash)
 					sleep 0.1
 					if [ -e "$BYOBU_CONFIG_DIR/no-logout-on-detach" ] || [ -e "$BYOBU_RUN_DIR/no-logout" ]; then
 						# The user does not want to logout on byobu detach
