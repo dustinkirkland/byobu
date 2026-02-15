@@ -35,8 +35,22 @@ getdisk() {
 	else
 		t="$1"
 	fi
-	t="${t##*/}";
-	[ -h "/sys/block/$t" ] && _RET="$t" || rtrim "$t" "0-9"
+	t="${t##*/}"
+	# If it's already a block device, use it as-is
+	if [ -h "/sys/block/$t" ]; then
+		_RET="$t"
+	else
+		# Strip partition number (trailing digits)
+		rtrim "$t" "0-9"
+		t="$_RET"
+		# For NVMe (nvme0n1p2), MMC (mmcblk0p2), etc., also strip the 'p'
+		# that precedes the partition number. If it ends with 'p' after
+		# removing digits, it's likely this naming scheme.
+		case "$t" in
+			*p) _RET="${t%p}" ;;
+			*) _RET="$t" ;;
+		esac
+	fi
 }
 
 __disk_io() {
