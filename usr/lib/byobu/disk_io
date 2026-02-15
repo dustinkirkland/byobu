@@ -54,6 +54,7 @@ __disk_io() {
 	getdisk "$part"
 	local disk=${_RET}
 	local t2=$(date +%s) t1=
+	local over_threshold=0
 	for i in "read" "write"; do
 		local cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/disk.$i"
 		t1=$(stat -c %Y "$cache") 2>/dev/null || t1=0
@@ -74,10 +75,7 @@ __disk_io() {
 			fi
 			printf "%s" "$x2" > "$cache"
 			rate=$((($x2 - $x1) / ($t2 - $t1) * 512 / 1024))
-			if [ $rate -lt $DISK_IO_THRESHOLD ]; then
-				# Below threshold, don't print
-				continue
-			elif [ "$rate" -lt 0 ]; then
+			if [ "$rate" -lt 0 ]; then
 				rate=0
 			elif [ "$rate" -gt 1048576 ]; then
 				unit="GB/s"
@@ -91,12 +89,14 @@ __disk_io() {
 				unit="kB/s"
 			fi
 		fi
-		if [ -z "$rate" ] || [ "$rate" = "0" ]; then
-			rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/disk_io"*
-		else
+		if [ -n "$rate" ] && [ "$rate" != "0" ] && [ $rate -ge $DISK_IO_THRESHOLD ]; then
+			over_threshold=1
 			color b M W; printf "%s%s" "$symbol" "$rate"; color -; color M W; printf "%s" "$unit"; color --
 		fi
 	done
+	if [ "$over_threshold" = "0" ]; then
+		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/disk_io"*
+	fi
 }
 
 # vi: syntax=sh ts=4 noexpandtab
