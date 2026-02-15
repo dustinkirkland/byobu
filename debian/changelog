@@ -20,6 +20,10 @@ byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
     - extend home directory ownership test for non-standard setups
     - allows byobu to work in networked environments where $HOME is root-owned
     - https://github.com/dustinkirkland/byobu/pull/55
+  * usr/lib/byobu/services:
+    - add systemd support to services status script
+    - now checks systemd before falling back to upstart/sysvinit
+    - https://github.com/dustinkirkland/byobu/pull/42
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Feb 2026 00:00:00 -0600
 

@@ -24,7 +24,17 @@ __services_detail() {
 }
 
 service_running() {
-	if [ -f "/etc/init/$1.conf" ]; then
+	if [ -f "/sbin/service" ]; then
+		# Use systemd
+		case "$(/sbin/service $1 status 2>/dev/null)" in
+			*running*)
+				true
+			;;
+			*)
+				false
+			;;
+		esac
+	elif [ -f "/etc/init/$1.conf" ]; then
 		# Use upstart
 		case "$(status $1 2>/dev/null)" in
 			*running*)
