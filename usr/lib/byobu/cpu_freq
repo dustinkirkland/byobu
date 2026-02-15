@@ -37,6 +37,10 @@ __cpu_freq() {
 			count=$(getconf _NPROCESSORS_ONLN 2>/dev/null || grep -ci "^processor" /proc/cpuinfo)
 			freq=$(egrep -i -m 1 "^bogomips" /proc/cpuinfo | awk -F"[:.]" '{ print $2 }')
 			freq=$(printf "%s %s" "$freq" "$count" | awk '{printf "%01.1f\n", $1/$2/1000}')
+			# If bogomips returns 0 (e.g., Ampere Altra processors), fall back to dmidecode
+			if [ "$freq" = "0.0" ] && eval $BYOBU_TEST dmidecode >/dev/null 2>&1; then
+				freq=$(dmidecode -t processor 2>/dev/null | awk -F': ' '/Current Speed:/ { print $2; exit }' | awk '{ printf "%01.1f", $1 / 1000 }')
+			fi
 		fi
 	elif hz=$(sysctl -n hw.cpufrequency 2>/dev/null); then
 		fpdiv $hz "1000000000" 1 # 1Ghz
