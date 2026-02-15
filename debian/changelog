@@ -7,6 +7,9 @@ byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
   * usr/bin/byobu-layout.in:
     - fix expr: syntax error by removing duplicate variable declaration
     - https://github.com/dustinkirkland/byobu/pull/63
+  * usr/share/byobu/keybindings/f-keys.tmux:
+    - prevent help screen from disappearing if user has set $LESS
+    - https://github.com/dustinkirkland/byobu/pull/64
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Feb 2026 00:00:00 -0600
 
