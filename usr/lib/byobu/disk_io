@@ -87,7 +87,7 @@ __disk_io() {
 				symbol="$ICON_WR"
 				[ -n "$a7" ] && x2="$a7" || x2=0
 			fi
-			printf "%s" "$x2" > "$cache"
+			printf "%s\n" "$x2" > "$cache"
 			rate=$((($x2 - $x1) / ($t2 - $t1) * 512 / 1024))
 			if [ "$rate" -lt 0 ]; then
 				rate=0
