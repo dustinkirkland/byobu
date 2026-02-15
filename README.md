@@ -8,7 +8,7 @@ If *Byobu* is not packaged for your Linux or UNIX OS, or if you do not have admi
 ### INSTALLATION
  1. If you want to pull the source from the upstream git:
 
-     `git clone git://github.com/dustinkirkland/byobu.git byobu-src`
+     `git clone https://github.com/dustinkirkland/byobu.git byobu-src`
      `cd byobu-src`
 
  2. Or download the latest officially released version from:
@@ -57,7 +57,7 @@ If *Byobu* is not packaged for your Linux or UNIX OS, or if you do not have admi
 
 You may contribute to Byobu by forking the project on Github:
 
-$ git clone git://github.com/dustinkirkland/byobu.git
+$ git clone https://github.com/dustinkirkland/byobu.git
 
 You commit changes locally, and then propose a merge in Launchpad (ideally), or submit a pull request on Github (less ideally).
 

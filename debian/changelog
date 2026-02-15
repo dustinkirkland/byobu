@@ -18,6 +18,8 @@ byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
     - fix installation instructions to use ./autogen.sh instead of ./debian/rules
     - works without debhelper/root access, fixes syntax error
     - addresses issue raised in https://github.com/dustinkirkland/byobu/pull/86
+    - update git clone URL from git:// to https:// (git:// protocol disabled by GitHub)
+    - https://github.com/dustinkirkland/byobu/issues/72
   * configure.ac, usr/bin/byobu.in:
     - use autoconf @VERSION@ substitution for consistent version management
     - https://github.com/dustinkirkland/byobu/pull/70
