@@ -1,4 +1,4 @@
-byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
+byobu (6.14-0ubuntu1) resolute; urgency=medium
 
   * usr/share/byobu/profiles/bashrc:
     - don't output byobu_prompt_runtime to stderr
@@ -53,7 +53,7 @@ byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
   * usr/bin/byobu-shell.in:
     - update bit.ly/byobu-tips URL to https://byobu.org
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Feb 2026 00:00:00 -0600
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 14 Feb 2026 20:27:44 -0600
 
 byobu (6.13-0ubuntu1) plucky; urgency=medium
 
