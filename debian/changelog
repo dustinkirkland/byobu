@@ -38,6 +38,10 @@ byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
     - add automake dist_ directives for proper distribution tarball creation
     - fixes "make distclean" to create buildable distributions
     - https://github.com/dustinkirkland/byobu/pull/69
+  * usr/lib/byobu/include/common:
+    - fix byobu -v not producing output when file ends with case block
+    - add true statement after esac to restore stdout
+    - https://github.com/dustinkirkland/byobu/issues/83
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Feb 2026 00:00:00 -0600
 

@@ -58,3 +58,5 @@ case "$1" in
 	-v|--version) [ "$(basename $0)" != "byobu" ] && exec byobu -v ;;
 	-h|--help) exec man $(basename $0) ;;
 esac
+# Workaround: ending with esac breaks stdout, so add a no-op
+true
