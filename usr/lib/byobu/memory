@@ -36,6 +36,17 @@ __memory() {
 			esac
 			[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
 		done < /proc/meminfo
+	elif [ "$(uname -s)" = "FreeBSD" ]; then
+		# FreeBSD support
+		page_size=$(sysctl -n vm.stats.vm.v_page_size)
+		page_count=$(sysctl -n vm.stats.vm.v_page_count)
+		free_count=$(sysctl -n vm.stats.vm.v_free_count)
+		cache_count=$(sysctl -n vm.stats.vm.v_cache_count)
+		inactive_count=$(sysctl -n vm.stats.vm.v_inactive_count)
+		total=$(((${page_size} * ${page_count}) / 1024))
+		free=$(((${page_size} * (${free_count} + ${cache_count} + ${inactive_count})) / 1024))
+		buffers=0
+		cached=0
 	elif eval $BYOBU_TEST vm_stat >/dev/null 2>&1; then
 		# MacOS support
 		# calculation borrowed from http://apple.stackexchange.com/a/48195/18857
