@@ -60,8 +60,16 @@ __ip_address() {
 		;;
 		*)
 			if [ "$IP_EXTERNAL" = "1" ]; then
-				timeout 1 wget -q -O- http://v4.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
-				sleep 0.02
+				# Try dig with OpenDNS first (faster), fall back to wget
+				if command -v dig >/dev/null 2>&1; then
+					timeout 1 dig +short myip.opendns.com @resolver1.opendns.com </dev/null 2>/dev/null | tr -d '\n' >"$cache" &
+					sleep 0.1
+				fi
+				# Fall back to wget if dig didn't work
+				if [ ! -s "$cache" ]; then
+					timeout 1 wget -q -O- http://v4.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
+					sleep 0.02
+				fi
 				[ -s "$cache" ] && read ipaddr < "$cache"
 			elif metadata_available; then
 				# We're in EC2, so get our public IP address
