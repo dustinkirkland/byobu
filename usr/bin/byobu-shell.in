@@ -43,6 +43,21 @@ fi
 
 # This needs to be a -l login shell, in order to source profiles
 # and colorize the prompt
-[ -n "$SHELL" -a -x "$SHELL" ] && exec "$SHELL" -l || exec /bin/sh -l
+# However, fish shell has issues with -l in byobu autostart context (LP#2064030)
+# Fish uses "status --is-login" to detect if it should run autostart, which would
+# create an infinite loop if we launch it with -l
+if [ -n "$SHELL" ] && [ -x "$SHELL" ]; then
+	case "$SHELL" in
+		*/fish)
+			# For fish, don't use -l to avoid autostart loop
+			exec "$SHELL"
+			;;
+		*)
+			exec "$SHELL" -l
+			;;
+	esac
+else
+	exec /bin/sh -l
+fi
 
 # vi: syntax=sh ts=4 noexpandtab
