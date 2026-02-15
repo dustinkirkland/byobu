@@ -56,7 +56,8 @@ byobu_prompt_runtime() {
 	printf "[%s]" "$str"
 }
 # Requires Bash 4.x
-export PS0='$(printf "%s" ${EPOCHREALTIME/[^0-9]/} >"$BYOBU_RUN_DIR/timer.$$")'
+# Only set PS0 if BYOBU_RUN_DIR is set (i.e., inside byobu)
+[ -d "$BYOBU_RUN_DIR" ] && export PS0='$(printf "%s" ${EPOCHREALTIME/[^0-9]/} >"$BYOBU_RUN_DIR/timer.$$")'
 
 case "$BYOBU_DISTRO" in
 	"Ubuntu")

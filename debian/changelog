@@ -4,6 +4,8 @@ byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
     - don't output byobu_prompt_runtime to stderr
     - fixes Ubuntu #2067490
     - https://github.com/dustinkirkland/byobu/pull/68
+    - only set PS0 when BYOBU_RUN_DIR exists (prevents errors outside byobu)
+    - https://github.com/dustinkirkland/byobu/issues/75
   * usr/bin/byobu-layout.in:
     - fix expr: syntax error by removing duplicate variable declaration
     - https://github.com/dustinkirkland/byobu/pull/63
