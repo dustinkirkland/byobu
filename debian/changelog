@@ -1,3 +1,12 @@
+byobu (6.14-0ubuntu1) UNRELEASED; urgency=medium
+
+  * usr/share/byobu/profiles/bashrc:
+    - don't output byobu_prompt_runtime to stderr
+    - fixes Ubuntu #2067490
+    - https://github.com/dustinkirkland/byobu/pull/68
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 14 Feb 2026 00:00:00 -0600
+
 byobu (6.13-0ubuntu1) plucky; urgency=medium
 
   * usr/lib/byobu/include/common:
