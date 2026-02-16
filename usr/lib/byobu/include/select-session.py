@@ -80,7 +80,7 @@ def get_sessions():
 		if output:
 			for s in output.splitlines():
 				# Ignore hidden sessions (named sessions that start with a "_")
-				if s and not s.startswith("_") and s.find("-") == -1:
+				if s and not s.startswith("_"):
 					text.append("tmux: %s" % s.strip())
 					sessions.append("tmux____%s" % s.split(":")[0])
 					i += 1
