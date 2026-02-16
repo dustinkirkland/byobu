@@ -4,6 +4,10 @@ byobu (6.16-0ubuntu1) UNRELEASED; urgency=medium
     - add STATUS ICONS section documenting Unicode and ASCII icons
     - clarifies meaning of symbols like ⚠, ⟳, ‼, and 🗹
     - https://github.com/dustinkirkland/byobu/issues/79
+  * usr/bin/byobu-launcher.in:
+    - prevent nested tmux sessions when Fish shell (or other shells) already run tmux
+    - fixes "sessions should be nested with care" error on login
+    - https://github.com/dustinkirkland/byobu/issues/76
 
  -- Dustin Kirkland <dustin.kirkland@chainguard.dev>  Sat, 15 Feb 2026 19:30:00 -0600
 
