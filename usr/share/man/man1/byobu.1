@@ -109,6 +109,59 @@ The background colors of the \fBbyobu\fP status lines can be adjusted by editing
 
 \fBwifi_quality\fP \- the connection rate and signal quality of the wifi connection; displayed in the lower bar toward the right in black text on a cyan background; the connection rate is in 'Mb/s' and the signal quality is as a percentage with a trailing '%'; override the default interface by specifying an alternate interface with MONITORED_NETWORK=wlan0 in \fI$BYOBU_CONFIG_DIR/statusrc\fP
 
+.SH STATUS ICONS
+
+\fBbyobu\fP displays status indicators using different icons depending on your terminal encoding. When using \fBbyobu\-tmux\fP(1) with UTF-8 encoding, Unicode symbols are displayed. Otherwise, ASCII\-only icons are used (such as with \fBbyobu\-screen\fP(1) or non\-UTF\-8 terminals).
+
+.TP
+\fBUnicode Icons\fP (displayed when BYOBU_BACKEND=tmux and BYOBU_CHARMAP=UTF\-8):
+.TP
+.B updates_available:
+! = regular updates available; ⚠ = distribution upgrades available; ‼ = security updates available
+.TP
+.B reboot_required:
+⟳ = system reboot required; ⚠ = unattended upgrade in progress; 🗹 = kernel is live\-patched
+.TP
+.B disk_io:
+◂ = disk read activity; ▸ = disk write activity
+.TP
+.B network:
+▴ = network upload activity; ▾ = network download activity
+.TP
+.B mail:
+⍌ = new mail waiting
+.TP
+.B session:
+〣 = session indicator
+.TP
+.B trash:
+♸ = items in trash
+.TP
+\fBASCII Icons\fP (displayed with screen backend or non\-UTF\-8 terminals):
+.TP
+.B updates_available:
+! = regular updates; /!\\\\ = upgrades; !! = security updates
+.TP
+.B reboot_required:
+(R) = reboot required; /!\\\\ = upgrade running; [/] = live\-patched
+.TP
+.B disk_io:
+< = read; > = write
+.TP
+.B network:
+^ = upload; v = download
+.TP
+.B mail:
+[M] = new mail
+.TP
+.B session:
+| = session indicator
+.TP
+.B trash:
+T = trash
+.TP
+To see detailed explanations of all active status indicators, press \fBCtrl\-a $\fP while running byobu.
+
 .SH SESSIONS
 
 Byobu name screen sessions "byobu", if unspecified.  To hide sessions from \fBbyobu-select-session\fP(1), prepend a "." to the beginning of the session name, like:
