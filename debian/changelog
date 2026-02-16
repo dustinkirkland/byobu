@@ -11,6 +11,9 @@ byobu (6.16-0ubuntu1) UNRELEASED; urgency=medium
   * usr/lib/byobu/include/select-session.py:
     - fix byobu-select-session filtering out hyphenated session names
     - remove overly broad hyphen check that broke sessions like "project-foo-bar"
+  * debian/po/sv.po:
+    - add Swedish translation for Debian installation templates
+    - thanks to Luna Jernberg for the translation
 
  -- Dustin Kirkland <dustin.kirkland@chainguard.dev>  Sat, 15 Feb 2026 19:30:00 -0600
 
