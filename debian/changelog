@@ -8,6 +8,9 @@ byobu (6.16-0ubuntu1) UNRELEASED; urgency=medium
     - prevent nested tmux sessions when Fish shell (or other shells) already run tmux
     - fixes "sessions should be nested with care" error on login
     - https://github.com/dustinkirkland/byobu/issues/76
+  * usr/lib/byobu/include/select-session.py:
+    - fix byobu-select-session filtering out hyphenated session names
+    - remove overly broad hyphen check that broke sessions like "project-foo-bar"
 
  -- Dustin Kirkland <dustin.kirkland@chainguard.dev>  Sat, 15 Feb 2026 19:30:00 -0600
 
