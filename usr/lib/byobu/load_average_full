@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+#    load_average: grab the current load average (three values)
+#
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011-2014 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@byobu.co>
+#             Diego Lago <diego.lago.gonzalez@gmail.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+COLOR_THRESHOLD_MEDIUM=0
+COLOR_THRESHOLD_HIGH=1
+
+__calc_color() {
+	[ -n "$1" ] || echo g
+	local loadint="$(echo $1 | cut -d'.' -f1)"
+	local bgcolor=g
+	[ $loadint -gt $COLOR_THRESHOLD_MEDIUM ] && bgcolor=y
+	[ $loadint -gt $COLOR_THRESHOLD_HIGH ] && bgcolor=r
+	color $bgcolor w
+}
+
+__load_average_detail() {
+	cat /proc/loadavg
+}
+
+__load_average() {
+	if [ -r "/proc/loadavg" ]; then
+		read one five fifteen other < /proc/loadavg
+	else
+		read one five fifteen <<< $(uptime | sed -e 's/.*://' -e 's/,\ /\ /g' | awk '{print $1" "$2" "$3}')
+	fi
+	[ -n "$one" ] || return
+	local color_reset=$(color --)
+	local color_one=$(__calc_color $one)
+	local color_five=$(__calc_color $five)
+	local color_fifteen=$(__calc_color $fifteen)
+	printf "$color_one$one$color_reset$color_five$five$color_reset$color_fifteen$fifteen$color_reset "
+}
+
+# vi: syntax=sh ts=4 noexpandtab
