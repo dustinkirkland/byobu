@@ -26,6 +26,12 @@ if [ -O "$HOME" ]; then
 	. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 	if [ -e "$BYOBU_CONFIG_DIR/disable-autolaunch" ]; then
 		false
+	elif [ -n "$TMUX" ]; then
+		# Already in a tmux session (e.g., from Fish shell or manual tmux)
+		# Prevent nested tmux sessions which cause "sessions should be nested with care" errors
+		echo "INFO: Byobu auto-launch disabled: already running in a tmux session" 1>&2
+		echo "INFO: If you want to use Byobu, exit tmux first and run 'byobu' manually" 1>&2
+		false
 	else
 		case "$TERM" in
 			*screen*)
