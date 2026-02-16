@@ -1,0 +1,51 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: byobu\n"
+"Report-Msgid-Bugs-To: byobu@packages.debian.org\n"
+"POT-Creation-Date: 2013-01-24 18:31-0600\n"
+"PO-Revision-Date: 2020-03-29 19:27+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: sv\n"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid "Do you want to launch Byobu at shell login for all users?"
+msgstr "Vill du starta Byobu vid skal inloggning för alla användare?"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"Byobu can launch automatically at login (e.g. console, ssh), providing an "
+"attachable/detachable window manager on the command line."
+msgstr ""
+"Byobu kan starta automatiskt vid inloggning (t.e.x) konsol, ssh), "
+"tillhandahåller en påkopplingsbar/ner kopplingsbar fönsterhanterare för "
+"kommandoraden."
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"If you select this option, Byobu will install a symlink in /etc/profile.d. "
+"This setting is system-wide, for all users logging into the system. "
+"Individual users can disable this by touching ~/.byobu/disable-autolaunch, "
+"or configuring with 'byobu-config'."
+msgstr ""
+"Om du väljer detta alternativ så kommer, Byobu installera en symlänk i /"
+"etc/profile.d. Denna inställning kommer ska på hela systemet, för alla "
+"användare som loggar in på systemet. Individuella användare kan inaktivera "
+"detta genom att peta på ~/.byobu/disable-autolaunch, eller konfigurera med "
+"'byobu-config'."
