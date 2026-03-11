@@ -48,10 +48,10 @@ __cpu_freq() {
 		fi
 	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ] && hz=$(sysctl -n hw.cpuspeed 2>/dev/null) && [ -n "$hz" ]; then
 		# OpenBSD: hw.cpuspeed is in MHz
-		fpdiv $hz "1000" 1
+		fpdiv "$hz" "1000" 1
 		freq="$_RET"
 	elif hz=$(sysctl -n hw.cpufrequency 2>/dev/null) && [ -n "$hz" ]; then
-		fpdiv $hz "1000000000" 1 # 1Ghz
+		fpdiv "$hz" "1000000000" 1 # 1Ghz
 		freq="$_RET"
 	fi
 	[ -n "$freq" ] || return

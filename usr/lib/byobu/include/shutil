@@ -288,10 +288,12 @@ get_now() {
 		read s c < /proc/uptime
 		_RET=${s%.*}
 	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
-		local btsec
-		btsec=$(sysctl -n kern.boottime 2>/dev/null)
-		if [ -n "$btsec" ]; then
-			_RET=$(( $(date +%s) - btsec ))
+		# Cache kern.boottime since it is constant
+		if [ -z "$_BYOBU_BOOTTIME" ]; then
+			_BYOBU_BOOTTIME=$(sysctl -n kern.boottime 2>/dev/null)
+		fi
+		if [ -n "$_BYOBU_BOOTTIME" ]; then
+			_RET=$(( $(date +%s) - _BYOBU_BOOTTIME ))
 		else
 			_RET=$(date +%s)
 		fi

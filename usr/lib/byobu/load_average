@@ -23,7 +23,7 @@ __load_average_detail() {
 	if [ -r /proc/loadavg ]; then
 		cat /proc/loadavg
 	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
-		sysctl vm.loadavg 2>/dev/null
+		sysctl -n vm.loadavg 2>/dev/null
 	else
 		uptime
 	fi

@@ -31,6 +31,23 @@ __raid_detail() {
 }
 
 __raid() {
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
+		# OpenBSD: check softraid status via bioctl
+		local msg=""
+		local line
+		bioctl softraid0 2>/dev/null | while read line; do
+			case "$line" in
+				*Degraded*|*Failed*|*Rebuild*)
+					msg="RAID"
+					break
+				;;
+			esac
+		done
+		if [ -n "$msg" ]; then
+			color B w r; printf "%s" "$msg"; color --
+		fi
+		return
+	fi
 	[ -r /proc/mdstat ] || return
 	while read line; do
 		local p msg

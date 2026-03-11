@@ -23,7 +23,9 @@ ___get_dev_list() {
 	if [ -n "$MONITORED_NETWORK" ]; then
 		echo "$MONITORED_NETWORK"
 	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
-		# OpenBSD: list wireless interfaces
+		# OpenBSD: list wireless interfaces by known driver prefixes.
+		# Update this list when new wireless drivers are added to OpenBSD.
+		# See: man 4 iwx, man 4 iwm, etc. in the OpenBSD kernel source.
 		for _if in $(ifconfig 2>/dev/null | grep '^[a-z]' | cut -d: -f1); do
 			case "$_if" in
 				iwn*|iwm*|iwx*|athn*|ath*|rum*|run*|urtwn*|rtwn*) echo "$_if" ;;

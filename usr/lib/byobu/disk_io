@@ -62,14 +62,14 @@ __disk_io_openbsd() {
 	[ -n "$part" ] || return
 	disk="${part##*/}"
 	# Strip partition letter (sd0a -> sd0)
-	disk=$(echo "$disk" | sed 's/[a-p]$//')
+	disk="${disk%[a-p]}"
 	# Parse iostat -DI for cumulative KB transferred for this disk
 	# Output format: disk_name  KB  xfr  time
 	local iostat_line
 	iostat_line=$(iostat -DI 2>/dev/null | awk -v d="$disk" '$1 == d { print $2; exit }')
 	[ -n "$iostat_line" ] || return
 	# iostat -DI gives total KB transferred (read+write combined)
-	x2=$(echo "$iostat_line" | awk '{ printf "%d", $1 }')
+	x2="$iostat_line"
 	[ -n "$x2" ] || return
 	cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/disk.io"
 	t2=$(date +%s)
@@ -86,7 +86,8 @@ __disk_io_openbsd() {
 		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/disk_io"*
 		return
 	fi
-	symbol="$ICON_RD"
+	# Combined read+write from iostat; show both direction symbols
+	symbol="${ICON_RD}${ICON_WR}"
 	if [ "$rate" -gt 1048576 ]; then
 		unit="GB/s"
 		fpdiv "$rate" 1048576 0
@@ -114,7 +115,7 @@ __disk_io() {
 	fi
 	# Default to disk providing /, but let users override with MONITORED_DISK
 	[ -z "$MONITORED_DISK" ] && mount_point="/" ||  mount_point="$MONITORED_DISK"
-	# By default, we won't bug the user with the display of network traffic
+	# By default, we won't bug the user with the display of disk throughput
 	# below DISK_IO_THRESHOLD in kB/s; override in $BYOBU_CONFIG_DIR/status
 	[ -n "$DISK_IO_THRESHOLD" ] || DISK_IO_THRESHOLD=50
 	case "$mount_point" in
