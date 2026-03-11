@@ -54,9 +54,37 @@ __network() {
 			fi
 			[ -n "$nb" ] && x2="$nb" || x2=0
 			printf "%s" "$x2" > "$cache"
+			[ "${t:-0}" -gt 0 ] 2>/dev/null || continue
 			rate=$((8*($x2 - $x1) / $t / 1024))  # in kbps
 			[ "$rate" -lt 0 ] && rate=0
-			if [ $rate -gt $NETWORK_THRESHOLD ]; then
+			if [ "$rate" -gt "$NETWORK_THRESHOLD" ]; then
+				case "$NETWORK_UNITS" in
+					bytes)
+						rate=$(($rate/8))
+						if [ "$rate" -gt 1048576 ]; then
+							fpdiv "$rate" 1048576 1
+							rate=${_RET}
+							unit="GB/s"
+						elif [ "$rate" -gt 1024 ]; then
+							fpdiv "$rate" 1024 1
+							rate=${_RET}
+							unit="MB/s"
+						else
+							unit="kB/s"
+						fi
+					;;
+					*)
+						if [ "$rate" -gt 1000000 ]; then
+							fpdiv "$rate" 1000000 1
+							rate=${_RET}
+							unit="Gb"
+						elif [ "$rate" -gt 1000 ]; then
+							fpdiv "$rate" 1000 1
+							rate=${_RET}
+							unit="Mb"
+						fi
+					;;
+				esac
 				[ -n "$rate" ] || continue
 				color b m w; printf "%s%s" "$symbol" "$rate"; color -; color m w; printf "%s" "$unit"; color --
 			else
