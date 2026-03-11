@@ -54,9 +54,10 @@ __memory() {
 	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		# OpenBSD support: use sysctl and vmstat
 		local physmem pagesize free_pages
-		physmem=$(sysctl -n hw.physmem)
+		physmem=$(sysctl -n hw.physmem 2>/dev/null)
+		[ -n "$physmem" ] || return
 		total=$((physmem / 1024))
-		pagesize=$(sysctl -n hw.pagesize)
+		pagesize=$(sysctl -n hw.pagesize 2>/dev/null)
 		free_pages=$(vmstat -s 2>/dev/null | awk '/pages free$/ { print $1; exit }')
 		if [ -n "$free_pages" ] && [ -n "$pagesize" ]; then
 			free=$(( free_pages * pagesize / 1024 ))

@@ -36,7 +36,7 @@ __swap() {
 		if [ -n "$swapline" ]; then
 			stotal=$(echo "$swapline" | awk '{ print $2 }')
 			sused=$(echo "$swapline" | awk '{ print $3 }')
-			sfree=$((stotal - sused))
+			sfree=$((${stotal:-0} - ${sused:-0}))
 		fi
 	elif [ -r /proc/meminfo ]; then
 		while read name val unit; do

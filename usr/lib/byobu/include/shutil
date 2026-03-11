@@ -289,8 +289,12 @@ get_now() {
 		_RET=${s%.*}
 	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		local btsec
-		btsec=$(sysctl -n kern.boottime)
-		_RET=$(( $(date +%s) - btsec ))
+		btsec=$(sysctl -n kern.boottime 2>/dev/null)
+		if [ -n "$btsec" ]; then
+			_RET=$(( $(date +%s) - btsec ))
+		else
+			_RET=$(date +%s)
+		fi
 	else
 		_RET=$(date +%s);
 	fi

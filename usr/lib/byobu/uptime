@@ -33,8 +33,8 @@ __uptime() {
 	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		# OpenBSD: kern.boottime is epoch seconds directly
 		local bt
-		bt=$(sysctl -n kern.boottime)
-		u=$(($(date +%s) - $bt))
+		bt=$(sysctl -n kern.boottime 2>/dev/null)
+		[ -n "$bt" ] && u=$(($(date +%s) - bt))
 	elif [ -x /usr/sbin/sysctl ]; then
 		# MacOS support
 		u=$(/usr/sbin/sysctl -n kern.boottime | cut -f4 -d' ' | cut -d',' -f1)
