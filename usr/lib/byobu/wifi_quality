@@ -22,6 +22,13 @@
 ___get_dev_list() {
 	if [ -n "$MONITORED_NETWORK" ]; then
 		echo "$MONITORED_NETWORK"
+	elif [ "$(uname -s)" = "OpenBSD" ]; then
+		# OpenBSD: list wireless interfaces
+		for _if in $(ifconfig 2>/dev/null | grep '^[a-z]' | cut -d: -f1); do
+			case "$_if" in
+				iwn*|iwm*|iwx*|athn*|ath*|rum*|run*|urtwn*|rtwn*) echo "$_if" ;;
+			esac
+		done
 	else
 		iw dev | grep Interface | cut -f2 -d\ 
 	fi
@@ -42,7 +49,21 @@ __wifi_quality_detail() {
 
 __wifi_quality() {
 	local out bitrate quality
-	if eval $BYOBU_TEST iwconfig >/dev/null 2>&1; then
+	# OpenBSD: parse ifconfig for signal strength
+	if [ "$(uname -s)" = "OpenBSD" ]; then
+		local dev sig
+		for dev in $(___get_dev_list); do
+			sig=$(ifconfig "$dev" 2>/dev/null | awk '/ [0-9-]+dBm/ { for(i=1;i<=NF;i++) if ($i ~ /dBm$/) { gsub(/dBm/,"",$i); print $i; exit } }')
+			if [ -n "$sig" ]; then
+				# Convert dBm to quality percentage
+				quality=$(awk "BEGIN { a = 100 * ($sig + 110) / 70; if (a>100) a=100; if (a<0) a=0; printf \"%%.0f\", a }")
+				bitrate=$(ifconfig "$dev" 2>/dev/null | awk '/media:.*Mb/ { for(i=1;i<=NF;i++) if ($i ~ /Mb/) { gsub(/Mb.*/,"",$i); print $i; exit } }')
+				[ -n "$bitrate" ] || bitrate=0
+				break
+			fi
+		done
+	fi
+	if [ -z "$quality" ] && eval $BYOBU_TEST iwconfig >/dev/null 2>&1; then
 		# iwconfig is expected to output lines like:
 		#    Bit Rate=54 Mb/s   Tx-Power=15 dBm
 		#    Link Quality=60/70  Signal level=-50 dBm

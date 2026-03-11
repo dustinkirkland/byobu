@@ -21,7 +21,11 @@
 
 __network_detail() {
 	get_network_interface; local interface="$_RET"
-	LC_ALL=C /sbin/ip addr show "$interface" | $BYOBU_SED 's/\s*$//'
+	if [ -x /sbin/ip ]; then
+		LC_ALL=C /sbin/ip addr show "$interface" | $BYOBU_SED 's/\s*$//'
+	else
+		ifconfig "$interface" 2>/dev/null
+	fi
 }
 
 __network() {
@@ -40,6 +44,26 @@ __network() {
 		esac
 		cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/network.$i"
 		[ -r "$cache" ] && read x1 < "$cache" || tx1=0
+		if [ "$(uname -s)" = "OpenBSD" ]; then
+			# OpenBSD: use netstat -ibn to get byte counts
+			local nb
+			if [ "$i" = "up" ]; then
+				nb=$(netstat -ibn 2>/dev/null | awk -v iface="$interface" '$1 == iface && $3 ~ /^[0-9a-f]*:/ { print $10; exit }')
+			else
+				nb=$(netstat -ibn 2>/dev/null | awk -v iface="$interface" '$1 == iface && $3 ~ /^[0-9a-f]*:/ { print $7; exit }')
+			fi
+			[ -n "$nb" ] && x2="$nb" || x2=0
+			printf "%s" "$x2" > "$cache"
+			rate=$((8*($x2 - $x1) / $t / 1024))  # in kbps
+			[ "$rate" -lt 0 ] && rate=0
+			if [ $rate -gt $NETWORK_THRESHOLD ]; then
+				[ -n "$rate" ] || continue
+				color b m w; printf "%s%s" "$symbol" "$rate"; color -; color m w; printf "%s" "$unit"; color --
+			else
+				rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/network"*
+			fi
+			continue
+		fi
 		local iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed
 		cat /proc/net/dev > "$cache".dev
 		while read iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed; do
