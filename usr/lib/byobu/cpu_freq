@@ -42,7 +42,7 @@ __cpu_freq() {
 				freq=$(dmidecode -t processor 2>/dev/null | awk -F': ' '/Current Speed:/ { print $2; exit }' | awk '{ printf "%01.1f", $1 / 1000 }')
 			fi
 		fi
-	elif hz=$(sysctl -n hw.cpufrequency 2>/dev/null); then
+	elif hz=$(sysctl -n hw.cpufrequency 2>/dev/null) && [ -n "$hz" ]; then
 		fpdiv $hz "1000000000" 1 # 1Ghz
 		freq="$_RET"
 	fi
