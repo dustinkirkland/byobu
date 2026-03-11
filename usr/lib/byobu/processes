@@ -20,11 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __processes_detail() {
-	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
-		ps -ax 2>/dev/null
-	else
-		ps -ej 2>/dev/null
-	fi
+	ps -ej 2>/dev/null || ps -ax 2>/dev/null
 }
 
 __processes() {

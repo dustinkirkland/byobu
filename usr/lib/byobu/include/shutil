@@ -304,9 +304,6 @@ get_network_interface() {
         if [ -n "$MONITORED_NETWORK" ]; then
 		# Manual override
                 _RET="$MONITORED_NETWORK"
-	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
-		# OpenBSD: use route to find the default interface
-		_RET=$(route -n get default 2>/dev/null | awk '/interface:/ { print $2 }')
         elif [ -e /proc/net/route ]; then
 		# Linux systems, read route and interface from procfs
 		local Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT
@@ -315,11 +312,10 @@ get_network_interface() {
 		done < /proc/net/route
 		_RET="$Iface"
 	elif eval $BYOBU_TEST route >/dev/null 2>&1; then
-		# Route command on path
-		_RET=$(route get default|grep interface:|awk '{print $2}')
+		# BSD/macOS: use route to find the default interface
+		_RET=$(route -n get default 2>/dev/null | awk '/interface:/ { print $2 }')
 	elif [ -x "/sbin/route" ]; then
-		# Mac OSX, shell out to the route command
-		_RET=$(/sbin/route get default|grep interface:|awk '{print $2}')
+		_RET=$(/sbin/route -n get default 2>/dev/null | awk '/interface:/ { print $2 }')
 	fi
 }
 
