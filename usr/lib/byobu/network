@@ -44,7 +44,7 @@ __network() {
 		esac
 		cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/network.$i"
 		[ -r "$cache" ] && read x1 < "$cache" || tx1=0
-		if [ "$(uname -s)" = "OpenBSD" ]; then
+		if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 			# OpenBSD: use netstat -ibn to get byte counts
 			local nb
 			if [ "$i" = "up" ]; then

@@ -22,14 +22,14 @@
 __swap_detail() {
 	if [ -r /proc/meminfo ]; then
 		cat /proc/meminfo
-	elif [ "$(uname -s)" = "OpenBSD" ]; then
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		swapctl -l 2>/dev/null
 	fi
 }
 
 __swap() {
 	local stotal="" sfree="" name="" val="" unit="" mem="" f="";
-	if [ "$(uname -s)" = "OpenBSD" ]; then
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		# OpenBSD: use swapctl -sk for summary in kB
 		local swapline sused
 		swapline=$(swapctl -sk 2>/dev/null | tail -1)

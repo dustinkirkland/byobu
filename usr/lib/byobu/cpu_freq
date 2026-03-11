@@ -22,7 +22,7 @@
 __cpu_freq_detail() {
 	if [ -r /proc/cpuinfo ]; then
 		cat /proc/cpuinfo
-	elif [ "$(uname -s)" = "OpenBSD" ]; then
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		sysctl hw.cpuspeed hw.setperf 2>/dev/null
 	fi
 }
@@ -46,7 +46,7 @@ __cpu_freq() {
 				freq=$(dmidecode -t processor 2>/dev/null | awk -F': ' '/Current Speed:/ { print $2; exit }' | awk '{ printf "%01.1f", $1 / 1000 }')
 			fi
 		fi
-	elif [ "$(uname -s)" = "OpenBSD" ] && hz=$(sysctl -n hw.cpuspeed 2>/dev/null) && [ -n "$hz" ]; then
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ] && hz=$(sysctl -n hw.cpuspeed 2>/dev/null) && [ -n "$hz" ]; then
 		# OpenBSD: hw.cpuspeed is in MHz
 		fpdiv $hz "1000" 1
 		freq="$_RET"

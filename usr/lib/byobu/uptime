@@ -30,7 +30,7 @@ __uptime() {
 	if [ -r /proc/uptime ]; then
 		read u idle < /proc/uptime
 		u=${u%.*}
-	elif [ "$(uname -s)" = "OpenBSD" ]; then
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		# OpenBSD: kern.boottime is epoch seconds directly
 		local bt
 		bt=$(sysctl -n kern.boottime)

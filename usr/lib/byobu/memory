@@ -40,7 +40,7 @@ __memory() {
 			esac
 			[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
 		done < /proc/meminfo
-	elif [ "$(uname -s)" = "FreeBSD" ]; then
+	elif [ "$BYOBU_OSTYPE" = "FreeBSD" ]; then
 		# FreeBSD support
 		page_size=$(sysctl -n vm.stats.vm.v_page_size)
 		page_count=$(sysctl -n vm.stats.vm.v_page_count)
@@ -51,7 +51,7 @@ __memory() {
 		free=$(((${page_size} * (${free_count} + ${cache_count} + ${inactive_count})) / 1024))
 		buffers=0
 		cached=0
-	elif [ "$(uname -s)" = "OpenBSD" ]; then
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		# OpenBSD support: use sysctl and vmstat
 		local physmem pagesize free_pages
 		physmem=$(sysctl -n hw.physmem)

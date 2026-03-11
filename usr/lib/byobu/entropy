@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __entropy_detail() {
-	if [ "$(uname -s)" = "OpenBSD" ]; then
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		printf "%s\n" "OpenBSD uses arc4random(3) -- always seeded, no pool metric."
 	else
 		cat /proc/sys/kernel/random/entropy_avail 2>/dev/null
@@ -27,7 +27,7 @@ __entropy_detail() {
 }
 
 __entropy() {
-	if [ "$(uname -s)" = "OpenBSD" ]; then
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		color K Y; printf "e%s" "N/A"; color --
 	elif [ -r /proc/sys/kernel/random/entropy_avail ]; then
 		local e=$(cat /proc/sys/kernel/random/entropy_avail)

@@ -22,7 +22,7 @@
 ___get_dev_list() {
 	if [ -n "$MONITORED_NETWORK" ]; then
 		echo "$MONITORED_NETWORK"
-	elif [ "$(uname -s)" = "OpenBSD" ]; then
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		# OpenBSD: list wireless interfaces
 		for _if in $(ifconfig 2>/dev/null | grep '^[a-z]' | cut -d: -f1); do
 			case "$_if" in
@@ -50,7 +50,7 @@ __wifi_quality_detail() {
 __wifi_quality() {
 	local out bitrate quality
 	# OpenBSD: parse ifconfig for signal strength
-	if [ "$(uname -s)" = "OpenBSD" ]; then
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		local dev sig
 		for dev in $(___get_dev_list); do
 			sig=$(ifconfig "$dev" 2>/dev/null | awk '/ [0-9-]+dBm/ { for(i=1;i<=NF;i++) if ($i ~ /dBm$/) { gsub(/dBm/,"",$i); print $i; exit } }')

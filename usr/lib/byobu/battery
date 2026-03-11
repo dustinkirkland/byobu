@@ -22,7 +22,7 @@
 
 __battery_detail() {
 	local bat
-	if [ "$(uname -s)" = "OpenBSD" ]; then
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		apm 2>/dev/null || true
 		return
 	fi
@@ -38,7 +38,7 @@ __battery() {
 	# Linux support
 	present=""; full="0"; rem="0"; state=""
 	# OpenBSD support via apm(8)
-	if [ "$(uname -s)" = "OpenBSD" ] && eval $BYOBU_TEST apm >/dev/null 2>&1; then
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ] && eval $BYOBU_TEST apm >/dev/null 2>&1; then
 		local apm_pct apm_ac
 		apm_pct=$(apm -l 2>/dev/null)
 		apm_ac=$(apm -a 2>/dev/null)

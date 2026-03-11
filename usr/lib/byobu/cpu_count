@@ -22,7 +22,7 @@
 __cpu_count_detail() {
 	if [ -r /proc/cpuinfo ]; then
 		grep -i "^model name" /proc/cpuinfo
-	elif [ "$(uname -s)" = "OpenBSD" ]; then
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		sysctl -n hw.model 2>/dev/null
 	fi
 }

@@ -21,7 +21,7 @@
 
 __cpu_temp_detail() {
 	local i
-	if [ "$(uname -s)" = "OpenBSD" ]; then
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		sysctl hw.sensors 2>/dev/null | grep -i temp
 		return
 	fi
@@ -34,7 +34,7 @@ __cpu_temp_detail() {
 
 __cpu_temp() {
 	local i t unit
-	if [ "$(uname -s)" = "OpenBSD" ]; then
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		# OpenBSD: read CPU temperature from hw.sensors
 		t=$(sysctl hw.sensors 2>/dev/null | awk -F'[=.]' '/cpu[0-9]*\.temp[0-9]/ { print $2; exit }')
 		if [ -z "$t" ]; then

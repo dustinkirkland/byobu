@@ -287,7 +287,7 @@ get_now() {
 		local s c
 		read s c < /proc/uptime
 		_RET=${s%.*}
-	elif [ "$(uname -s)" = "OpenBSD" ]; then
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		local btsec
 		btsec=$(sysctl -n kern.boottime)
 		_RET=$(( $(date +%s) - btsec ))
@@ -300,7 +300,7 @@ get_network_interface() {
         if [ -n "$MONITORED_NETWORK" ]; then
 		# Manual override
                 _RET="$MONITORED_NETWORK"
-	elif [ "$(uname -s)" = "OpenBSD" ]; then
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		# OpenBSD: use route to find the default interface
 		_RET=$(route -n get default 2>/dev/null | awk '/interface:/ { print $2 }')
         elif [ -e /proc/net/route ]; then
@@ -371,7 +371,7 @@ get_distro() {
 	elif eval $BYOBU_TEST sw_vers >/dev/null 2>&1; then
 		distro="$(sw_vers -productName)"
 	elif eval $BYOBU_TEST uname >/dev/null 2>&1; then
-		distro="$(uname -s)"
+		distro="$BYOBU_OSTYPE"
 	else
 		distro="Byobu"
 	fi

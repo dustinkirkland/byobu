@@ -54,6 +54,10 @@ eval $BYOBU_TEST sensible-editor >/dev/null 2>&1 && export BYOBU_EDITOR="sensibl
 eval $BYOBU_TEST "$BYOBU_EDITOR" >/dev/null 2>&1 || export BYOBU_EDITOR="vim"
 
 
+# Cache the OS name to avoid repeated uname forks in status scripts.
+# uname is POSIX-mandated and present on all supported platforms.
+BYOBU_OSTYPE=$(uname -s 2>/dev/null)
+
 # Check sed's follow-symlinks feature
 $BYOBU_SED --follow-symlinks "s///" /dev/null 2>/dev/null && BYOBU_SED_INLINE="$BYOBU_SED -i --follow-symlinks" || BYOBU_SED_INLINE="$BYOBU_SED -i"
 

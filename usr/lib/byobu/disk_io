@@ -109,7 +109,7 @@ __disk_io_openbsd() {
 __disk_io() {
 	local part= i=
 	# OpenBSD: use iostat -DI instead of /sys/block
-	if [ "$(uname -s)" = "OpenBSD" ]; then
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		__disk_io_openbsd
 		return
 	fi
