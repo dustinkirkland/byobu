@@ -20,7 +20,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __raid_detail() {
-	[ -r /proc/mdstat ] && cat /proc/mdstat || true
+	if [ -r /proc/mdstat ]; then
+		cat /proc/mdstat
+	elif [ "$(uname -s)" = "OpenBSD" ]; then
+		# OpenBSD uses bioctl(8) for RAID
+		bioctl softraid0 2>/dev/null || true
+	else
+		true
+	fi
 }
 
 __raid() {

@@ -53,8 +53,66 @@ getdisk() {
 	fi
 }
 
+__disk_io_openbsd() {
+	local mount_point disk part kb xfr t2 t1 cache x1 x2 rate symbol unit
+	[ -z "$MONITORED_DISK" ] && mount_point="/" || mount_point="$MONITORED_DISK"
+	[ -n "$DISK_IO_THRESHOLD" ] || DISK_IO_THRESHOLD=50
+	# Find the disk device for the mount point (e.g., /dev/sd0a -> sd0)
+	part=$(mount | awk -v mp="$mount_point" '$3 == mp { print $1; exit }')
+	[ -n "$part" ] || return
+	disk="${part##*/}"
+	# Strip partition letter (sd0a -> sd0)
+	disk=$(echo "$disk" | sed 's/[a-p]$//')
+	# Parse iostat -DI for cumulative KB transferred for this disk
+	# Output format: disk_name  KB  xfr  time
+	local iostat_line
+	iostat_line=$(iostat -DI 2>/dev/null | awk -v d="$disk" '$1 == d { print $2; exit }')
+	[ -n "$iostat_line" ] || return
+	# iostat -DI gives total KB transferred (read+write combined)
+	x2=$(echo "$iostat_line" | awk '{ printf "%d", $1 }')
+	[ -n "$x2" ] || return
+	cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/disk.io"
+	t2=$(date +%s)
+	t1=$(stat -f %m "$cache" 2>/dev/null) || t1=0
+	x1=0
+	[ -r "$cache" ] && read x1 < "$cache"
+	printf "%s" "$x2" > "$cache"
+	if [ "$t2" -le "$t1" ] || [ "$t1" -eq 0 ]; then
+		return
+	fi
+	rate=$(( (x2 - x1) / (t2 - t1) ))
+	if [ "$rate" -lt "$DISK_IO_THRESHOLD" ]; then
+		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/disk_io"*
+		return
+	elif [ "$rate" -lt 0 ]; then
+		rate=0
+	fi
+	symbol="$ICON_RD"
+	if [ "$rate" -gt 1048576 ]; then
+		unit="GB/s"
+		fpdiv "$rate" 1048576 0
+		rate=${_RET}
+	elif [ "$rate" -gt 1024 ]; then
+		unit="MB/s"
+		fpdiv "$rate" 1024 0
+		rate=${_RET}
+	else
+		unit="kB/s"
+	fi
+	if [ -z "$rate" ] || [ "$rate" = "0" ]; then
+		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/disk_io"*
+	else
+		color b M W; printf "%s%s" "$symbol" "$rate"; color -; color M W; printf "%s" "$unit"; color --
+	fi
+}
+
 __disk_io() {
 	local part= i=
+	# OpenBSD: use iostat -DI instead of /sys/block
+	if [ "$(uname -s)" = "OpenBSD" ]; then
+		__disk_io_openbsd
+		return
+	fi
 	# Default to disk providing /, but let users override with MONITORED_DISK
 	[ -z "$MONITORED_DISK" ] && mount_point="/" ||  mount_point="$MONITORED_DISK"
 	# By default, we won't bug the user with the display of network traffic
