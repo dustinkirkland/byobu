@@ -20,7 +20,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __memory_detail() {
-	free
+	if eval $BYOBU_TEST free >/dev/null 2>&1; then
+		free
+	else
+		vmstat
+	fi
 }
 
 __memory() {
@@ -45,6 +49,20 @@ __memory() {
 		inactive_count=$(sysctl -n vm.stats.vm.v_inactive_count)
 		total=$(((${page_size} * ${page_count}) / 1024))
 		free=$(((${page_size} * (${free_count} + ${cache_count} + ${inactive_count})) / 1024))
+		buffers=0
+		cached=0
+	elif [ "$(uname -s)" = "OpenBSD" ]; then
+		# OpenBSD support: use sysctl and vmstat
+		local physmem pagesize free_pages
+		physmem=$(sysctl -n hw.physmem)
+		total=$((physmem / 1024))
+		pagesize=$(sysctl -n hw.pagesize)
+		free_pages=$(vmstat -s 2>/dev/null | awk '/pages free$/ { print $1; exit }')
+		if [ -n "$free_pages" ] && [ -n "$pagesize" ]; then
+			free=$(( free_pages * pagesize / 1024 ))
+		else
+			free=0
+		fi
 		buffers=0
 		cached=0
 	elif eval $BYOBU_TEST vm_stat >/dev/null 2>&1; then
