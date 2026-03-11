@@ -56,7 +56,7 @@ __wifi_quality() {
 			sig=$(ifconfig "$dev" 2>/dev/null | awk '/ [0-9-]+dBm/ { for(i=1;i<=NF;i++) if ($i ~ /dBm$/) { gsub(/dBm/,"",$i); print $i; exit } }')
 			if [ -n "$sig" ]; then
 				# Convert dBm to quality percentage
-				quality=$(awk "BEGIN { a = 100 * ($sig + 110) / 70; if (a>100) a=100; if (a<0) a=0; printf \"%%.0f\", a }")
+				quality=$(awk -v s="$sig" 'BEGIN { a = 100 * (s + 110) / 70; if (a>100) a=100; if (a<0) a=0; printf "%.0f", a }')
 				bitrate=$(ifconfig "$dev" 2>/dev/null | awk '/media:.*Mb/ { for(i=1;i<=NF;i++) if ($i ~ /Mb/) { gsub(/Mb.*/,"",$i); print $i; exit } }')
 				[ -n "$bitrate" ] || bitrate=0
 				break

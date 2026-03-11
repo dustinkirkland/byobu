@@ -81,11 +81,10 @@ __disk_io_openbsd() {
 		return
 	fi
 	rate=$(( (x2 - x1) / (t2 - t1) ))
+	[ "$rate" -lt 0 ] && rate=0
 	if [ "$rate" -lt "$DISK_IO_THRESHOLD" ]; then
 		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/disk_io"*
 		return
-	elif [ "$rate" -lt 0 ]; then
-		rate=0
 	fi
 	symbol="$ICON_RD"
 	if [ "$rate" -gt 1048576 ]; then

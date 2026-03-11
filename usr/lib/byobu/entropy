@@ -28,7 +28,8 @@ __entropy_detail() {
 
 __entropy() {
 	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
-		color K Y; printf "e%s" "N/A"; color --
+		# OpenBSD uses arc4random(3); entropy is always sufficient
+		return
 	elif [ -r /proc/sys/kernel/random/entropy_avail ]; then
 		local e=$(cat /proc/sys/kernel/random/entropy_avail)
 		[ -n "$e" ] || return
