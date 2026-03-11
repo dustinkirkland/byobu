@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [master, 'fix/*', 'feature/*', 'ci/*']
+  pull_request:
+    branches: [master]
+
+jobs:
+  syntax:
+    name: Syntax validation (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install bats
+        run: sudo apt-get update && sudo apt-get install -y bats
+      - name: Run syntax tests
+        run: bats tests/syntax.bats
+
+  smoke-linux:
+    name: Smoke tests (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install bats
+        run: sudo apt-get update && sudo apt-get install -y bats
+      - name: Run smoke tests
+        run: bats tests/smoke.bats
+
+  smoke-macos:
+    name: Smoke tests (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install bats
+        run: brew install bats-core
+      - name: Run syntax tests
+        run: bats tests/syntax.bats
+      - name: Run smoke tests
+        run: bats tests/smoke.bats
+
+  openbsd:
+    name: Full suite (OpenBSD)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests on OpenBSD
+        uses: vmactions/openbsd-vm@v1
+        with:
+          release: "7.6"
+          prepare: |
+            pkg_add bats
+          run: |
+            bats tests/syntax.bats
+            bats tests/smoke.bats
+            bats tests/openbsd.bats
