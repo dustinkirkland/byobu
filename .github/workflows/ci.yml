@@ -45,15 +45,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run tests on OpenBSD
-        uses: vmactions/openbsd-vm@v1
+        uses: cross-platform-actions/action@v0.32.0
         with:
-          release: "7.6"
-          prepare: |
-            pkg_add bash
-            ftp -o /tmp/bats.tar.gz https://github.com/bats-core/bats-core/archive/refs/tags/v1.11.1.tar.gz
-            cd /tmp && tar xzf bats.tar.gz && cd bats-core-1.11.1 && ./install.sh /usr/local
+          operating_system: openbsd
+          version: "7.6"
           run: |
-            export PATH="/usr/local/bin:$PATH"
+            set -e
+            sudo pkg_add -I bash
+            if ! command -v bats >/dev/null 2>&1; then
+              git clone --depth 1 https://github.com/bats-core/bats-core.git /tmp/bats
+              sudo /tmp/bats/install.sh /usr/local
+            fi
             bats tests/syntax.bats
             bats tests/smoke.bats
             bats tests/openbsd.bats

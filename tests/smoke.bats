@@ -35,11 +35,16 @@ run_status() {
 	local stderr_file="$BYOBU_RUN_DIR/stderr.$$"
 	# Scripts may return non-zero when hardware/data is unavailable;
 	# that is normal, not a failure. We only check for unexpected stderr.
+	# Use a subshell with explicit exit 0 to prevent set -e propagation.
+	(
+		set +e
+		. "$BYOBU_LIB/$script"
+		"$func" 2>"$stderr_file"
+		exit 0
+	)
 	local err=""
-	. "$BYOBU_LIB/$script"
-	"$func" >"$BYOBU_RUN_DIR/stdout.$$" 2>"$stderr_file" || true
 	[ -f "$stderr_file" ] && err=$(cat "$stderr_file")
-	rm -f "$stderr_file" "$BYOBU_RUN_DIR/stdout.$$"
+	rm -f "$stderr_file"
 	if [ -n "$err" ]; then
 		# Filter: "not found" from missing optional commands is expected
 		filtered=$(printf '%s\n' "$err" | grep -v -i 'not found' | grep -v -i 'No such file' | grep -v 'cannot open' || true)
