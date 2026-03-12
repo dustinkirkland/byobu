@@ -25,14 +25,14 @@ PKG="byobu"
 
 if [ "$BYOBU_CHARMAP" = "UTF-8" ]; then
 	if grep -qs "^BYOBU_CHARMAP=" $BYOBU_CONFIG_DIR/statusrc 2>/dev/null; then
-		sed -i -e "s/^BYOBU_CHARMAP=.*/BYOBU_CHARMAP=x/" $BYOBU_CONFIG_DIR/statusrc
+		$BYOBU_SED_INLINE -e "s/^BYOBU_CHARMAP=.*/BYOBU_CHARMAP=x/" $BYOBU_CONFIG_DIR/statusrc
 	else
 		echo "BYOBU_CHARMAP=x" >> $BYOBU_CONFIG_DIR/statusrc
 	fi
 	export BYOBU_CHARMAP=x
 else
 	if grep -qs "^BYOBU_CHARMAP=" $BYOBU_CONFIG_DIR/statusrc 2>/dev/null; then
-		sed -i -e "s/^BYOBU_CHARMAP=.*/BYOBU_CHARMAP=UTF-8/" $BYOBU_CONFIG_DIR/statusrc
+		$BYOBU_SED_INLINE -e "s/^BYOBU_CHARMAP=.*/BYOBU_CHARMAP=UTF-8/" $BYOBU_CONFIG_DIR/statusrc
 	else
 		echo "BYOBU_CHARMAP=UTF-8" >> $BYOBU_CONFIG_DIR/statusrc
 	fi

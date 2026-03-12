@@ -21,6 +21,10 @@
 
 __cpu_temp_detail() {
 	local i
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
+		sysctl hw.sensors 2>/dev/null | grep -i temp
+		return
+	fi
 	for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/device/temp*_input /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/thermal /proc/acpi/thermal_zone/*/temperature /sys/class/thermal/thermal_zone*/temp; do
 		[ -r "$i" ] || continue
 		printf "%s\n" "$i:"
@@ -30,6 +34,25 @@ __cpu_temp_detail() {
 
 __cpu_temp() {
 	local i t unit
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
+		# OpenBSD: read CPU temperature from hw.sensors
+		# Match CPU temp sensors: cpu (Intel coretemp), km/ksmn (AMD),
+		# inteldrm, or acpitz as fallback
+		t=$(sysctl hw.sensors 2>/dev/null | awk -F'[=.]' '
+			/(cpu|km|ksmn|inteldrm)[0-9]*\.temp[0-9]/ { print $2; exit }
+			/acpitz[0-9]*\.temp[0-9]/ { if (!f) f=$2 }
+			END { if (f) print f }
+		')
+		if [ -n "$t" ] && [ "$t" -gt 0 ] 2>/dev/null; then
+			unit="$ICON_C"
+			if [ "$TEMP" = "F" ]; then
+				t=$(($t*9/5 + 32))
+				unit="$ICON_F"
+			fi
+			color b k Y; printf "%s" "$t"; color -; color k Y; printf "%s" "$unit"; color --
+		fi
+		return
+	fi
 	for i in $MONITORED_TEMP /sys/class/hwmon/hwmon*/device/temp*_input /sys/class/hwmon/hwmon*/temp*_input /proc/acpi/ibm/thermal /proc/acpi/thermal_zone/*/temperature /sys/class/thermal/thermal_zone*/temp; do
 		case "$i" in
 			*temp*_input|*thermal_zone*/temp)

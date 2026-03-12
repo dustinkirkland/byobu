@@ -20,21 +20,38 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __swap_detail() {
-	cat /proc/meminfo
+	if [ -r /proc/meminfo ]; then
+		cat /proc/meminfo
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
+		swapctl -l 2>/dev/null
+	fi
 }
 
 __swap() {
 	local stotal="" sfree="" name="" val="" unit="" mem="" f="";
-	while read name val unit; do
-		if [ "$name" = "SwapTotal:" ]; then
-			stotal="$val"
-		elif [ "$name" = "SwapFree:" ]; then
-			sfree="$val"
-		else
-			continue
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
+		# OpenBSD: use swapctl -sk for summary in kB
+		local swapline sused
+		swapline=$(swapctl -sk 2>/dev/null | tail -1)
+		if [ -n "$swapline" ]; then
+			# Output: "total: 524288 1k-blocks allocated, 0 used, 524288 available"
+			set -- $swapline
+			stotal="${2:-0}"
+			sused="${5:-0}"
+			sfree=$(($stotal - $sused))
 		fi
-		[ -n "$stotal" -a -n "$sfree" ] && break;
-	done < /proc/meminfo
+	elif [ -r /proc/meminfo ]; then
+		while read name val unit; do
+			if [ "$name" = "SwapTotal:" ]; then
+				stotal="$val"
+			elif [ "$name" = "SwapFree:" ]; then
+				sfree="$val"
+			else
+				continue
+			fi
+			[ -n "$stotal" -a -n "$sfree" ] && break;
+		done < /proc/meminfo
+	fi
 	if [ "${stotal:-0}" = "0" ]; then
 		printf ""
 		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/swap"

@@ -20,10 +20,24 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __raid_detail() {
-	[ -r /proc/mdstat ] && cat /proc/mdstat || true
+	if [ -r /proc/mdstat ]; then
+		cat /proc/mdstat
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
+		# OpenBSD uses bioctl(8) for RAID
+		bioctl softraid0 2>/dev/null || true
+	else
+		true
+	fi
 }
 
 __raid() {
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
+		# OpenBSD: check softraid status via bioctl
+		if bioctl softraid0 2>/dev/null | grep -qE 'Degraded|Failed|Rebuild'; then
+			color B w r; printf "%s" "RAID"; color --
+		fi
+		return
+	fi
 	[ -r /proc/mdstat ] || return
 	while read line; do
 		local p msg
