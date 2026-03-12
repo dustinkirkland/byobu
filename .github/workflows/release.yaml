@@ -47,7 +47,7 @@ jobs:
           content=$(printf 'SHA256 (%s) = %s\nSIZE (%s) = %s\n' \
             "$tarball" "$sha256" "$tarball" "$size")
           sha=$(gh api repos/${{ github.repository }}/contents/openbsd/distinfo \
-            --jq '.sha' -q)
+            --jq '.sha')
           gh api repos/${{ github.repository }}/contents/openbsd/distinfo \
             -X PUT \
             -f message="Update OpenBSD distinfo for ${{ inputs.version }}" \
