@@ -37,6 +37,23 @@ jobs:
           autoreconf -fi
           ./configure
           make dist
+      - name: Update OpenBSD distinfo
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tarball=$(ls byobu-*.tar.xz)
+          sha256=$(sha256sum "$tarball" | awk '{print $1}')
+          size=$(stat --format=%s "$tarball")
+          content=$(printf 'SHA256 (%s) = %s\nSIZE (%s) = %s\n' \
+            "$tarball" "$sha256" "$tarball" "$size")
+          sha=$(gh api repos/${{ github.repository }}/contents/openbsd/distinfo \
+            --jq '.sha' -q)
+          gh api repos/${{ github.repository }}/contents/openbsd/distinfo \
+            -X PUT \
+            -f message="Update OpenBSD distinfo for ${{ inputs.version }}" \
+            -f content="$(echo "$content" | base64 -w0)" \
+            -f branch=master \
+            -f sha="$sha"
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
