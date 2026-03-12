@@ -34,9 +34,10 @@ __swap() {
 		local swapline sused
 		swapline=$(swapctl -sk 2>/dev/null | tail -1)
 		if [ -n "$swapline" ]; then
+			# Output: "total: 524288 1k-blocks allocated, 0 used, 524288 available"
 			set -- $swapline
 			stotal="${2:-0}"
-			sused="${3:-0}"
+			sused="${5:-0}"
 			sfree=$(($stotal - $sused))
 		fi
 	elif [ -r /proc/meminfo ]; then

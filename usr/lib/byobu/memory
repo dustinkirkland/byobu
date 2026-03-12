@@ -62,7 +62,7 @@ __memory() {
 		free_pages=$(vmstat -s 2>/dev/null | awk '/pages free$/ { f=$1 } /pages inactive$/ { i=$1 } END { print f+0, i+0 }')
 		if [ -n "$free_pages" ] && [ -n "$pagesize" ]; then
 			set -- $free_pages
-			free=$(( ($1 + $2) * pagesize / 1024 ))
+			free=$(( (${1:-0} + ${2:-0}) * pagesize / 1024 ))
 		else
 			free=0
 		fi
