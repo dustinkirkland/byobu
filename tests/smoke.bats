@@ -33,16 +33,13 @@ teardown() {
 run_status() {
 	local script="$1" func="$2"
 	local stderr_file="$BYOBU_RUN_DIR/stderr.$$"
-	(
-		. "$BYOBU_LIB/$script"
-		"$func" 2>"$stderr_file" || true
-	)
-	local err=""
-	[ -f "$stderr_file" ] && err=$(cat "$stderr_file")
-	rm -f "$stderr_file"
 	# Scripts may return non-zero when hardware/data is unavailable;
-	# that is normal, not a failure. We only fail on unexpected stderr.
-	# No unexpected errors on stderr (filter out known harmless messages)
+	# that is normal, not a failure. We only check for unexpected stderr.
+	local err=""
+	. "$BYOBU_LIB/$script"
+	"$func" >"$BYOBU_RUN_DIR/stdout.$$" 2>"$stderr_file" || true
+	[ -f "$stderr_file" ] && err=$(cat "$stderr_file")
+	rm -f "$stderr_file" "$BYOBU_RUN_DIR/stdout.$$"
 	if [ -n "$err" ]; then
 		# Filter: "not found" from missing optional commands is expected
 		filtered=$(printf '%s\n' "$err" | grep -v -i 'not found' | grep -v -i 'No such file' | grep -v 'cannot open' || true)
