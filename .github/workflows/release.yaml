@@ -54,10 +54,14 @@ jobs:
             -f content="$(echo "$content" | base64 -w0)" \
             -f branch=master \
             -f sha="$sha"
+      - name: Delete existing release if present
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release delete ${{ inputs.version }} --yes --cleanup-tag 2>/dev/null || true
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.version }}
-          name: byobu ${{ inputs.version }} (revision ${{ inputs.revision }})
+          name: byobu ${{ inputs.version }}
           files: byobu-*.tar.xz
           generate_release_notes: true
