@@ -22,6 +22,10 @@
 
 __battery_detail() {
 	local bat
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
+		apm 2>/dev/null || true
+		return
+	fi
 	for bat in /proc/acpi/battery/*; do
 		cat "$bat/info"
 		cat "$bat/state"
@@ -33,6 +37,24 @@ __battery() {
 	local bat line present sign state percent full rem color bcolor
 	# Linux support
 	present=""; full="0"; rem="0"; state=""
+	# OpenBSD support via apm(8)
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ] && eval $BYOBU_TEST apm >/dev/null 2>&1; then
+		local apm_pct apm_ac
+		apm_pct=$(apm -l 2>/dev/null)
+		apm_ac=$(apm -a 2>/dev/null)
+		if [ -n "$apm_pct" ] && [ "$apm_pct" != "255" ]; then
+			rem="$apm_pct"
+			full="100"
+			present="1"
+			case "$apm_ac" in
+				0) state="discharging" ;;
+				1) state="charging" ;;
+				2) state="charged" ;;
+				*) state="unknown" ;;
+			esac
+		fi
+	fi
+	if [ -z "$present" ]; then
 	for bat in $BATTERY /sys/class/power_supply/* /proc/acpi/battery/*; do
 		case "$bat" in
 			/sys/*)
@@ -100,6 +122,7 @@ __battery() {
 			esac
 		done
 	fi
+	fi  # end non-OpenBSD block
 	# Android Termux support
 	if eval $BYOBU_TEST termux-battery-status -h >/dev/null 2>&1; then
 		BATTERY_STATUS=$(termux-battery-status)

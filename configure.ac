@@ -4,7 +4,7 @@
 AC_PREREQ([2.61])
 AC_INIT([byobu], [6.14], [http://byobu.org])
 AC_CONFIG_SRCDIR([usr/bin/byobu.in])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip])
 AC_PROG_LN_S
 
 # Checks for programs.

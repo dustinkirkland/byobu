@@ -1,0 +1,33 @@
+@comment $OpenBSD$
+bin/byobu
+bin/byobu-config
+bin/byobu-ctrl-a
+bin/byobu-disable
+bin/byobu-disable-prompt
+bin/byobu-enable
+bin/byobu-enable-prompt
+bin/byobu-export
+bin/byobu-janitor
+bin/byobu-launch
+bin/byobu-launcher
+bin/byobu-launcher-install
+bin/byobu-launcher-uninstall
+bin/byobu-layout
+bin/byobu-prompt
+bin/byobu-quiet
+bin/byobu-reconnect-sockets
+bin/byobu-screen
+bin/byobu-select-backend
+bin/byobu-select-profile
+bin/byobu-select-session
+bin/byobu-shell
+bin/byobu-silent
+bin/byobu-status
+bin/byobu-status-detail
+bin/byobu-tmux
+bin/byobu-ugraph
+bin/byobu-ulevel
+@dir etc/byobu
+lib/byobu/
+share/byobu/
+share/man/man1/byobu.1

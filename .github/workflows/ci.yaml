@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [master, 'fix/*', 'feature/*', 'ci/*', 'cd/*']
+  pull_request:
+    branches: [master]
+
+jobs:
+  syntax:
+    name: Syntax validation (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install bats
+        run: sudo apt-get update && sudo apt-get install -y bats
+      - name: Run syntax tests
+        run: bats tests/syntax.bats
+
+  smoke-linux:
+    name: Smoke tests (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install bats
+        run: sudo apt-get update && sudo apt-get install -y bats
+      - name: Run smoke tests
+        run: bats tests/smoke.bats
+
+  smoke-macos:
+    name: Smoke tests (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install bats
+        run: brew install bats-core
+      - name: Run syntax tests
+        run: bats tests/syntax.bats
+      - name: Run smoke tests
+        run: bats tests/smoke.bats
+
+  openbsd:
+    name: Full suite (OpenBSD)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests on OpenBSD
+        uses: cross-platform-actions/action@v0.32.0
+        with:
+          operating_system: openbsd
+          version: "7.6"
+          run: |
+            set -e
+            sudo pkg_add -I bash git
+            if ! command -v bats >/dev/null 2>&1; then
+              git clone --depth 1 https://github.com/bats-core/bats-core.git /tmp/bats
+              sudo /tmp/bats/install.sh /usr/local
+            fi
+            bats tests/syntax.bats
+            bats tests/smoke.bats
+            bats tests/openbsd.bats
