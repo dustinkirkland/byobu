@@ -33,21 +33,14 @@ jobs:
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y autoconf automake xz-utils
       - name: Build release tarball
-        env:
-          VERSION: ${{ inputs.version }}
-          REVISION: ${{ inputs.revision }}
         run: |
           autoreconf -fi
           ./configure
           make dist
-          # Rename to include revision
-          for f in byobu-*.tar.xz; do
-            mv "$f" "byobu-${VERSION}r${REVISION}.tar.xz"
-          done
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.version }}r${{ inputs.revision }}
+          tag_name: ${{ inputs.version }}
           name: byobu ${{ inputs.version }} (revision ${{ inputs.revision }})
           files: byobu-*.tar.xz
           generate_release_notes: true
