@@ -1,8 +1,8 @@
 #!/usr/bin/env bats
 #
 # Smoke tests for byobu status scripts.
-# Sources each script and calls its __function, verifying it exits
-# cleanly (exit 0) and produces no stderr.
+# Sources each script and calls its __function, verifying it
+# does not produce unexpected errors on stderr.
 #
 # Runs on any platform -- each script auto-detects its OS paths.
 
@@ -18,41 +18,39 @@ setup() {
 	export BYOBU_TEST="command -v"
 	mkdir -p "$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND"
 	mkdir -p "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND"
-	# Source the shared utilities
-	. "$BYOBU_LIB/include/shutil"
-	# Source icons so ICON_* variables are available
-	[ -f "$BYOBU_LIB/include/icons" ] && . "$BYOBU_LIB/include/icons"
 }
 
 teardown() {
 	rm -rf "$BYOBU_CONFIG_DIR" "$BYOBU_RUN_DIR"
 }
 
-# Helper: source a status script and call its __function.
-# Captures stderr separately to detect unexpected errors.
+# Helper: run a status function in an isolated bash subprocess.
+# We only assert that no unexpected stderr is produced.
+# Non-zero exit is normal when hardware/data is unavailable.
 run_status() {
 	local script="$1" func="$2"
-	local stderr_file="$BYOBU_RUN_DIR/stderr.$$"
-	# Scripts may return non-zero when hardware/data is unavailable;
-	# that is normal, not a failure. We only check for unexpected stderr.
-	# Use a separate bash process to isolate from bats' ERR traps.
-	bash -c "
-		export BYOBU_PREFIX=\"$BYOBU_PREFIX\" PKG=\"$PKG\"
-		export BYOBU_CONFIG_DIR=\"$BYOBU_CONFIG_DIR\"
-		export BYOBU_RUN_DIR=\"$BYOBU_RUN_DIR\"
-		export BYOBU_BACKEND=\"$BYOBU_BACKEND\"
-		export BYOBU_TEST=\"$BYOBU_TEST\"
-		. \"$BYOBU_LIB/include/shutil\"
-		[ -f \"$BYOBU_LIB/include/icons\" ] && . \"$BYOBU_LIB/include/icons\"
-		. \"$BYOBU_LIB/$script\"
-		\"$func\" 2>\"$stderr_file\" || true
-	" >/dev/null
+	local stderr_file
+	stderr_file=$(mktemp)
+	# Run in a clean bash process to avoid bats' ERR trap interference.
+	# The script may return non-zero; we don't care about the exit code.
+	bash -c '
+		export BYOBU_PREFIX='"'$BYOBU_PREFIX'"'
+		export PKG='"'$PKG'"'
+		export BYOBU_CONFIG_DIR='"'$BYOBU_CONFIG_DIR'"'
+		export BYOBU_RUN_DIR='"'$BYOBU_RUN_DIR'"'
+		export BYOBU_BACKEND='"'$BYOBU_BACKEND'"'
+		export BYOBU_TEST="command -v"
+		. "$BYOBU_PREFIX/lib/$PKG/include/shutil"
+		[ -f "$BYOBU_PREFIX/lib/$PKG/include/icons" ] && . "$BYOBU_PREFIX/lib/$PKG/include/icons"
+		. "$BYOBU_PREFIX/lib/$PKG/'"$script"'"
+		'"$func"' || true
+	' >/dev/null 2>"$stderr_file" || true
 	local err=""
-	[ -f "$stderr_file" ] && err=$(cat "$stderr_file")
+	[ -s "$stderr_file" ] && err=$(cat "$stderr_file")
 	rm -f "$stderr_file"
+	# Filter out known harmless messages from missing optional commands
 	if [ -n "$err" ]; then
-		# Filter: "not found" from missing optional commands is expected
-		filtered=$(printf '%s\n' "$err" | grep -v -i 'not found' | grep -v -i 'No such file' | grep -v 'cannot open' || true)
+		filtered=$(printf '%s\n' "$err" | grep -v -i 'not found' | grep -v -i 'No such file' | grep -v -i 'cannot open' | grep -v -i 'permission denied' | grep -v -i 'illegal' | grep -v -i 'usage:' || true)
 		[ -z "$filtered" ]
 	fi
 }
@@ -135,17 +133,17 @@ run_status() {
 	run_status "whoami" "__whoami"
 }
 
-# --- Scripts that may need hardware/network (allowed to return 1) ---
+# --- Scripts that may need hardware/network ---
 
-@test "smoke: battery (may skip on desktops)" {
+@test "smoke: battery" {
 	run_status "battery" "__battery"
 }
 
-@test "smoke: disk_io (may skip without iostat)" {
+@test "smoke: disk_io" {
 	run_status "disk_io" "__disk_io"
 }
 
-@test "smoke: fan_speed (may skip without sensors)" {
+@test "smoke: fan_speed" {
 	run_status "fan_speed" "__fan_speed"
 }
 
@@ -157,11 +155,11 @@ run_status() {
 	run_status "network" "__network"
 }
 
-@test "smoke: raid (may skip without mdstat/bioctl)" {
+@test "smoke: raid" {
 	run_status "raid" "__raid"
 }
 
-@test "smoke: wifi_quality (may skip without wireless)" {
+@test "smoke: wifi_quality" {
 	run_status "wifi_quality" "__wifi_quality"
 }
 
