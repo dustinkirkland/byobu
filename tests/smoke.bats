@@ -35,13 +35,18 @@ run_status() {
 	local stderr_file="$BYOBU_RUN_DIR/stderr.$$"
 	# Scripts may return non-zero when hardware/data is unavailable;
 	# that is normal, not a failure. We only check for unexpected stderr.
-	# Use a subshell with explicit exit 0 to prevent set -e propagation.
-	(
-		set +e
-		. "$BYOBU_LIB/$script"
-		"$func" 2>"$stderr_file"
-		exit 0
-	)
+	# Use a separate bash process to isolate from bats' ERR traps.
+	bash -c "
+		export BYOBU_PREFIX=\"$BYOBU_PREFIX\" PKG=\"$PKG\"
+		export BYOBU_CONFIG_DIR=\"$BYOBU_CONFIG_DIR\"
+		export BYOBU_RUN_DIR=\"$BYOBU_RUN_DIR\"
+		export BYOBU_BACKEND=\"$BYOBU_BACKEND\"
+		export BYOBU_TEST=\"$BYOBU_TEST\"
+		. \"$BYOBU_LIB/include/shutil\"
+		[ -f \"$BYOBU_LIB/include/icons\" ] && . \"$BYOBU_LIB/include/icons\"
+		. \"$BYOBU_LIB/$script\"
+		\"$func\" 2>\"$stderr_file\" || true
+	" >/dev/null
 	local err=""
 	[ -f "$stderr_file" ] && err=$(cat "$stderr_file")
 	rm -f "$stderr_file"

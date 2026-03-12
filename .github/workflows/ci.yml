@@ -51,7 +51,7 @@ jobs:
           version: "7.6"
           run: |
             set -e
-            sudo pkg_add -I bash
+            sudo pkg_add -I bash git
             if ! command -v bats >/dev/null 2>&1; then
               git clone --depth 1 https://github.com/bats-core/bats-core.git /tmp/bats
               sudo /tmp/bats/install.sh /usr/local
