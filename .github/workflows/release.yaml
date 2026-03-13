@@ -6,10 +6,6 @@ on:
       version:
         description: 'Upstream version (e.g. 6.14)'
         required: true
-      revision:
-        description: 'Port revision (e.g. 0, 1, 2)'
-        required: true
-        default: '0'
 
 jobs:
   release:
@@ -28,23 +24,6 @@ jobs:
           autoreconf -fi
           ./configure
           make dist
-      - name: Update OpenBSD distinfo
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          tarball=$(ls byobu-*.tar.xz)
-          sha256=$(sha256sum "$tarball" | awk '{print $1}')
-          size=$(stat --format=%s "$tarball")
-          content=$(printf 'SHA256 (%s) = %s\nSIZE (%s) = %s\n' \
-            "$tarball" "$sha256" "$tarball" "$size")
-          sha=$(gh api repos/${{ github.repository }}/contents/openbsd/distinfo \
-            --jq '.sha')
-          gh api repos/${{ github.repository }}/contents/openbsd/distinfo \
-            -X PUT \
-            -f message="Update OpenBSD distinfo for ${{ inputs.version }}" \
-            -f content="$(echo "$content" | base64 -w0)" \
-            -f branch=master \
-            -f sha="$sha"
       - name: Delete existing release if present
         env:
           GH_TOKEN: ${{ github.token }}
