@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Upstream version (e.g. 6.14)'
+        description: 'Release version (e.g. 6.14, 6.14.1)'
         required: true
 
 jobs:
@@ -19,8 +19,9 @@ jobs:
           ref: master
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y autoconf automake xz-utils
-      - name: Build release tarball
+      - name: Set version and build release tarball
         run: |
+          sed -i "s/AC_INIT(\[byobu\], \[[^]]*\]/AC_INIT([byobu], [${{ inputs.version }}]/" configure.ac
           autoreconf -fi
           ./configure
           make dist
