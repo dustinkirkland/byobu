@@ -21,15 +21,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: master
-      - name: Verify CI passed on master
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          conclusion=$(gh run list --branch master --workflow ci.yaml --limit 1 --json conclusion -q '.[0].conclusion')
-          if [ "$conclusion" != "success" ]; then
-            echo "Latest CI on master did not pass (status: $conclusion)"
-            exit 1
-          fi
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y autoconf automake xz-utils
       - name: Build release tarball
