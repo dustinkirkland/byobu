@@ -41,7 +41,10 @@ __battery() {
 		case "$bat" in
 			/sys/*)
 				if [ -r "$bat/uevent" ]; then
-					. "$bat/uevent"
+					TMP_FILE=$(mktemp)
+					sed 's/=/="/; s/$/"/' < "$bat/uevent" > "$TMP_FILE"
+					. "$TMP_FILE"
+					rm -f "$TMP_FILE"
 					case "$POWER_SUPPLY_NAME" in AC|ac|Ac|aC) continue ;; esac
 					present="$POWER_SUPPLY_PRESENT"
 					# Some use "CHARGE", others use "ENERGY", still others "CAPACITY"
