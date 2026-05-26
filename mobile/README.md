@@ -1,173 +1,153 @@
 # byobu-mobile
 
-A mobile companion for [Byobu](https://byobu.org) / tmux sessions. Run a lightweight daemon on your workstation; monitor and interact with your terminal sessions from any phone browser over your Tailscale network.
+A mobile companion for [Byobu](https://byobu.org) / tmux sessions. Run a lightweight daemon on your workstation; monitor and interact with your terminal sessions from your phone over your Tailscale network.
+
+Two tiers:
+- **Free** — PWA (Progressive Web App). One installable icon per machine, with the machine hostname in the app name. Full session/window/pane control included now; window/pane switching will move to the paid tier in a future release.
+- **Paid** — Native Flutter app (`github.com/dustinkirkland/byobu-mobile`, private). Multi-machine management, session/window/pane switching, biometric auth.
 
 ---
 
-## Design philosophy
+## Architecture
 
-**byobu-mobile requires Tailscale and uses HTTPS by default.**
-
-This is an opinionated choice. Tailscale provides:
-- A WireGuard-encrypted private network — your daemon is never reachable from the public internet
-- `tailscale serve` — automatic HTTPS with a valid Let's Encrypt certificate, no cert management required
-- Node-level authentication — only devices on your tailnet can reach the daemon at all
-
-Running HTTPS over WireGuard is technically double-encryption. We do it anyway because HTTPS unlocks PWA features (service workers, "Add to Home Screen", push notifications) and avoids an entire class of browser security warnings. A plain-HTTP fallback exists for development, but HTTPS is the supported path.
-
----
-
-## Requirements
-
-- **Byobu + tmux** installed and working
-- **Python 3.10+** (3.12+ recommended)
-- **[uv](https://docs.astral.sh/uv/)** — fast Python package manager (recommended) or `pip`
-- **[Tailscale](https://tailscale.com)** — must be installed, running, and connected to your tailnet
-
----
-
-## Setup (one-time)
-
-### 1. Install Python dependencies
-
-From the `mobile/` directory:
-
-```bash
-uv venv
-uv pip install -r requirements.txt
+```
+Phone (browser / Flutter app)
+  │  HTTPS / WSS over Tailscale WireGuard
+  ▼
+tailscale serve  (Let's Encrypt cert, reverse proxy)
+  │  HTTP / WS on 127.0.0.1:7432
+  ▼
+byobu_mobile.py  (Tornado daemon)
+  │  subprocess
+  ▼
+tmux CLI  (capture-pane, send-keys, list-sessions…)
 ```
 
-Or with pip:
+- **Transport:** Tailscale WireGuard (encrypted) + `tailscale serve` (HTTPS/TLS)
+- **Auth:** one-time 6-digit pairing code → permanent session token stored in `~/.config/byobu-mobile/tokens.json` (mode 0600); token sent as `byobu_mobile_session` cookie (browser) or `?token=` query param (native app)
+- **Terminal output:** `tmux capture-pane -p [-e]`; `-e` flag used when client sends `"ansi": true` in subscribe message (native app with xterm renderer)
+- **Admin channel:** Unix socket `~/.config/byobu-mobile/byobu-mobile.sock` (mode 0600); pair/unpair tools talk to the daemon here — no TCP exposure
+
+---
+
+## Packaging
+
+byobu-mobile ships as a separate Debian binary package alongside `byobu`:
+
+```
+byobu_7.0_all.deb          — core byobu package
+byobu-mobile_7.0_all.deb   — mobile daemon + web UI
+```
+
+Built from the `byobu` source tree (`mobile/` directory) via `debian/` packaging rules. The daemon installs to `/usr/bin/byobu-mobile-*` and the static web assets to `/usr/share/byobu-mobile/static/`.
+
+---
+
+## Install (from .deb)
 
 ```bash
+sudo dpkg -i byobu-mobile_7.0_all.deb
+byobu-mobile-enable    # configure tailscale serve + start daemon
+byobu-mobile-pair      # generate pairing code; enter on phone
+```
+
+### Enable / disable
+
+```bash
+byobu-mobile-enable    # set up tailscale serve, start daemon on login
+byobu-mobile-disable   # stop daemon, remove tailscale serve config
+```
+
+`byobu-mobile-enable` auto-runs `sudo tailscale set --operator=$USER` if needed, then `tailscale serve --bg 7432`.
+
+### Daily control
+
+```bash
+byobu-mobile-ctl start      # start daemon
+byobu-mobile-ctl stop       # stop daemon
+byobu-mobile-ctl restart    # restart daemon
+byobu-mobile-ctl status     # show running status and URL
+byobu-mobile-ctl log        # tail daemon log
+
+byobu-mobile-pair           # generate a new pairing code
+byobu-mobile-unpair         # list paired devices and remove them
+```
+
+---
+
+## Setup (from source / dev tree)
+
+```bash
+cd mobile/
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-```
-
-### 2. Enable Tailscale Serve on your tailnet
-
-`tailscale serve` provisions a Let's Encrypt cert for your machine's tailnet hostname and proxies HTTPS traffic to the local daemon port. It requires a one-time opt-in from the Tailscale admin console.
-
-```bash
-tailscale serve --bg 7432
-```
-
-If Serve isn't yet enabled on your tailnet, Tailscale prints an authorization URL:
-
-```
-Serve is not enabled on your tailnet.
-To enable, visit:
-    https://login.tailscale.com/f/serve?node=...
-```
-
-Visit that URL, approve it in the Tailscale admin console, then re-run the command. You should see:
-
-```
-Available within your tailnet:
-https://your-machine.tail1234.ts.net/
-|-- proxy http://127.0.0.1:7432
-```
-
-This step only needs to be done once per tailnet. The serve configuration persists across reboots.
-
-### 3. Start the daemon
-
-```bash
-./byobu-mobile-ctl start
-```
-
-Expected output:
-
-```
-Configuring tailscale serve: https://your-machine.tail1234.ts.net → localhost:7432
-Starting byobu-mobile (HTTPS mode)...
-byobu-mobile started (pid 12345)
-Connect from phone: https://your-machine.tail1234.ts.net
-```
-
-### 4. Pair your phone
-
-On the workstation, generate a one-time pairing code:
-
-```bash
+./byobu-mobile-enable
 ./byobu-mobile-pair
 ```
 
-```
-══════════════════════════════════════════════════
-  Byobu Mobile pairing code:  123-456  (valid 5 min)
-══════════════════════════════════════════════════
-```
-
-On your phone, open `https://your-machine.tail1234.ts.net` in a browser. You'll be prompted for the 6-digit code. Enter it and tap **Pair device**. The session token is stored permanently — you won't need to re-pair unless you explicitly unpair or clear tokens.
-
-> **Note:** Your phone must be connected to the same Tailscale network as your workstation. Install the [Tailscale app](https://tailscale.com/download) on your phone if you haven't already.
+The `byobu-mobile-ctl` script auto-detects whether it's running from a dev tree or an installed package and sets paths accordingly.
 
 ---
 
-## Daily use
+## PWA features
 
-```bash
-./byobu-mobile-ctl start      # start daemon (HTTPS via tailscale serve)
-./byobu-mobile-ctl stop       # stop daemon
-./byobu-mobile-ctl restart    # restart daemon
-./byobu-mobile-ctl status     # show running status and HTTPS URL
-./byobu-mobile-ctl log        # tail the daemon log
-
-./byobu-mobile-pair           # generate a new pairing code for a device
-./byobu-mobile-unpair         # list paired devices and remove them
-```
+- **Per-machine install:** `manifest.json` is generated dynamically with `socket.gethostname()` in `name`/`short_name`, so each machine installs as a distinct PWA icon (e.g. "byobu · claude").
+- **Fixed layout:** header (logo, hostname, clock, S/W/P pickers) and bottom bar (byobu status chips + input) are fixed; only the terminal output area scrolls. Uses `position:fixed; inset:0` on the app container and `overscroll-behavior:contain` on the output div.
+- **Byobu status line:** reads `~/.config/byobu/status` for `tmux_left`/`tmux_right` config; reads chip data from `/dev/shm/byobu-{user}-*/status.tmux/`; renders colored chips matching the terminal statusline appearance.
+- **Password masking:** `input_mode` WebSocket message with `echo: false` masks the input field.
+- **Nav pickers:** abbreviated `S:` / `W:` / `P:` prefixes to save space; placeholders remain "Session…" / "Window…" / "Pane…".
 
 ---
 
-## Automated setup
+## Native app (Flutter) — paid tier
 
-The `setup` subcommand handles steps 1–2 above in one shot:
+Repo: `github.com/dustinkirkland/byobu-mobile` (private, proprietary license)
 
-```bash
-./byobu-mobile-ctl setup
-```
+- xterm Flutter package for full VT100/ANSI rendering
+- Token passed as `?token=` query param on WebSocket (Android Cookie headers unreliable)
+- Daemon sends `tmux capture-pane -e` when client requests `"ansi": true` in subscribe message
+- FlutterSecureStorage (Android encryptedSharedPreferences) for session tokens
+- Session/window/pane picker as a bottom sheet (paid feature)
+- Sticky Ctrl key + long-press Ctrl menu for common shortcuts
 
-This creates the Python virtual environment, installs dependencies, and enables Tailscale Serve. After setup, run `./byobu-mobile-ctl start` to launch the daemon.
+### Monetization boundary
 
----
-
-## Troubleshooting
-
-### 502 Bad Gateway after accepting the certificate
-The Tailscale Serve proxy is running but the daemon isn't. Start it:
-```bash
-./byobu-mobile-ctl start
-```
-
-### `Serve is not enabled on your tailnet`
-Visit the authorization URL printed by `tailscale serve --bg 7432`. If you've lost it, just re-run that command — it will print the URL again.
-
-### `byobu-mobile-pair` connection refused / reset
-Check that the daemon is running: `./byobu-mobile-ctl status`
-
-### Phone can't reach the URL
-Make sure Tailscale is active on your phone. The daemon is only reachable within your tailnet — it is not accessible from the public internet.
-
-### Re-pairing after changing HTTPS mode or URL
-Changing the URL (e.g., switching from direct HTTP to HTTPS) changes the cookie origin, so existing browser sessions won't carry over. Run `./byobu-mobile-pair` and enter the new code on the new URL. Existing tokens in `~/.config/byobu-mobile/tokens.json` remain valid.
+| Feature | Free PWA | Paid Flutter |
+|---|---|---|
+| View terminal output | ✓ | ✓ |
+| Send keys / commands | ✓ | ✓ |
+| Password input masking | ✓ | ✓ |
+| Per-machine PWA install | ✓ | — |
+| Session/window/pane switching | ✓ now → paid later | ✓ |
+| ANSI colors in terminal | — | ✓ |
+| Biometric auth | — | ✓ |
+| Multi-machine in one app | — | ✓ |
 
 ---
 
-## Configuration
+## Security
+
+- Daemon binds to `127.0.0.1:7432` only; all external traffic goes through `tailscaled` over WireGuard
+- No new inbound firewall holes; Tailscale is the only externally-reachable surface
+- Pairing codes: 6-digit, 5-minute TTL, max 10 attempts, single-use (invalidated on first success)
+- Session tokens: `secrets.token_urlsafe(32)`, stored at mode 0600, validated on every WebSocket message
+- WebSocket: `del raw` after JSON parse, `del keys` after `tmux send-keys` (sensitive content released early)
+- Rate limiting: 20 messages/second per WebSocket connection
+- Admin socket: mode 0600 Unix socket; pair/unpair never touch TCP
+- CSP header: `default-src 'self'`; no CDN dependencies; all assets served from daemon
+
+---
+
+## Configuration files
 
 | Path | Purpose |
 |---|---|
 | `~/.config/byobu-mobile/tokens.json` | Paired device session tokens (mode 0600) |
-| `~/.config/byobu-mobile/byobu-mobile.sock` | Admin Unix socket — pair/unpair tools only (mode 0600) |
+| `~/.config/byobu-mobile/byobu-mobile.sock` | Admin Unix socket (mode 0600) |
 | `~/.config/byobu-mobile/byobu-mobile.log` | Daemon log (mode 0600) |
 | `~/.config/byobu-mobile/machines.json` | Optional: sibling machines for the machine selector |
 
 ### Multiple machines
-
-If you run byobu-mobile on more than one machine (personal workstation, work machine, server…), you can add sibling machines to each daemon's config so the UI shows a machine selector dropdown. Each machine gets its own PWA install, but the selector lets you jump between them without leaving the app.
-
-Create `~/.config/byobu-mobile/machines.json` on each machine listing the other machines:
 
 ```json
 [
@@ -176,94 +156,37 @@ Create `~/.config/byobu-mobile/machines.json` on each machine listing the other 
 ]
 ```
 
-The machine the browser is currently connected to is always shown as the selected option. The selector is hidden when only one machine is configured.
+The machine the browser is currently connected to is always the selected option. The selector is hidden when only one machine is configured.
 
 ---
 
-## Security and network exposure
+## Access modes
 
-### How exposed is the daemon?
-
-Less than you might think. In the default HTTPS mode:
-
-- `byobu_mobile.py` binds to **`127.0.0.1:7432` only** — loopback, not reachable from the network
-- `tailscaled` (the Tailscale daemon) handles all external traffic over WireGuard
-- From a firewall or IT perspective: one already-present process (`tailscaled`) has an outbound WireGuard connection; the byobu-mobile daemon is invisible to the network — just another localhost service, no different from a local dev server
-
-No new inbound firewall holes. No new externally-reachable ports. The only meaningful policy question is whether Tailscale itself is permitted on your machine.
-
-### Can I run this on a locked-down work machine?
-
-If Tailscale is allowed (and it often is — many corporate IT teams approve it), the answer is yes. The daemon's network footprint is entirely contained within the already-approved Tailscale connection.
-
-If Tailscale is not available, see [start-local mode](#start-local-loopback-only--ssh-tunnel) below.
-
-### Why Tailscale is the recommended transport
-
-byobu-mobile is opinionated about Tailscale for good reasons:
-
-- **WireGuard encryption** — all traffic is encrypted end-to-end between your devices
-- **Node authentication** — only devices on your tailnet can reach the daemon; there is no public attack surface
-- **Automatic HTTPS** — `tailscale serve` provisions a valid Let's Encrypt cert with no cert management
-- **No port forwarding** — Tailscale's NAT traversal works through firewalls and CGNAT without opening router ports
-- **PWA support** — HTTPS is required for service workers, "Add to Home Screen", and push notifications
-
----
-
-## Alternative access modes
-
-### `start-local` — loopback-only + SSH tunnel
-
-For machines where Tailscale is unavailable. The daemon binds to `127.0.0.1` only and is accessed via SSH local port forwarding from the phone.
-
-```bash
-./byobu-mobile-ctl start-local
-```
-
-Then from your phone's SSH app (Termius or Blink Shell both support port forwarding):
-
-```bash
-ssh -L 7432:localhost:7432 user@workstation
-```
-
-Open `http://localhost:7432` in the phone browser while the SSH session is active.
-
-**Security profile:** only SSH port 22 is involved. The daemon never touches the network. IT sees a normal SSH session.
-
-**Limitations:** the web UI is served over HTTP (no HTTPS on loopback), so PWA features won't work. The tunnel drops if the SSH session is interrupted.
-
-### `start-direct` — plain HTTP over Tailscale IP
-
-Binds directly to your Tailscale IP without using `tailscale serve`. WireGuard still encrypts the transport, but there is no TLS cert and PWA features won't work. For development and debugging only.
-
-```bash
-./byobu-mobile-ctl start-direct
-```
-
-### What about SSH directly to tmux?
-
-SSH + `byobu attach` works and requires no daemon at all:
-
-```bash
-ssh user@workstation -t "byobu attach"
-```
-
-The limitation is the mobile keyboard. SSH terminal apps (Termius, Blink Shell, JuiceSSH) are functional but none of them solve the fundamental problem of typing shell commands — Ctrl, Esc, function keys, and arrow keys — on a touchscreen without a purpose-built toolbar. This is fine for monitoring; painful for doing real work. byobu-mobile's web UI was built specifically to address this. Native SSH support may be added in a future release.
-
-### Summary
-
-| Mode | Command | Transport | HTTPS | Requires |
+| Mode | Command | Transport | HTTPS | PWA |
 |---|---|---|---|---|
-| **Default (recommended)** | `start` | Tailscale WireGuard | ✓ via tailscale serve | Tailscale |
-| Local + SSH tunnel | `start-local` | SSH port forward | — | SSH app with forwarding |
-| Direct HTTP | `start-direct` | Tailscale WireGuard | — | Tailscale |
-| Raw terminal | SSH + byobu attach | SSH | — | SSH app |
+| **Default (recommended)** | `start` | Tailscale WireGuard | ✓ tailscale serve | ✓ |
+| Local + SSH tunnel | `start-local` | SSH port forward | — | — |
+| Direct HTTP | `start-direct` | Tailscale WireGuard | — | — |
 
 ---
 
-## Development / plain HTTP fallback
+## Tests
 
-To remove the Tailscale Serve configuration entirely:
 ```bash
-tailscale serve reset
+cd mobile/
+python3 -m unittest tests.test_daemon -v
 ```
+
+50 tests covering: ANSI stripping, tmux ID validation, tmux output parsing (panes/windows), byobu status config parsing, pair code generation, HTTP handlers (ping, pair, manifest, status), and `tmux capture-pane` ANSI flag behavior. Uses stdlib `unittest` + `tornado.testing` — no extra dependencies.
+
+---
+
+## Troubleshooting
+
+**502 Bad Gateway** — tailscale serve is running but daemon isn't: `byobu-mobile-ctl start`
+
+**Serve not enabled** — visit the URL printed by `tailscale serve --bg 7432`
+
+**Phone can't reach URL** — ensure Tailscale is active on the phone
+
+**Re-pairing after URL change** — changing the URL changes the cookie origin; run `byobu-mobile-pair` again on the new URL
