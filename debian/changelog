@@ -9,6 +9,23 @@ byobu (7.0) UNRELEASED; urgency=medium
     - multi-machine selector: jump between byobu-mobile daemons from a single UI
     - byobu-mobile-enable / byobu-mobile-disable: start/stop daemon and install login hook
     - daemon built on python3-tornado (Ubuntu Main); zero new runtime deps for packaged users
+    - accept ?token= query parameter in addition to cookie for WebSocket and ping auth
+    - ansi: true subscribe flag passes tmux capture-pane -e for full VT100 colour output
+  * usr/share/byobu/tests/test_byobu.sh:
+    - add 113-test shell test suite covering byobu core utilities
+    - tests: fpdiv, rtrim, color_map, attr_map, uncommented_lines, status_freq,
+      color_tmux, newest, uptime formatting, memory/swap unit thresholds,
+      battery percentage/colour thresholds/state signs, disk units,
+      get_distro, config dir resolution, cpu count, byobu-ulevel
+  * mobile/tests/test_daemon_extended.py:
+    - add 84-test extended daemon suite (134 Python tests total)
+    - covers: token persistence (mode 0600, roundtrip), security headers on all
+      endpoints, all static file handlers, MachinesHandler, tmux write ops,
+      _make_chip colour mapping, read_byobu_status, admin socket protocol,
+      WebSocket handler (auth, rate limiting, all message types)
+  * debian/rules:
+    - add override_dh_auto_test: runs 113 shell + 134 Python tests (247 total)
+      on every dpkg-buildpackage / debuild invocation
 
  -- Dustin Kirkland <dustin.kirkland@chainguard.dev>  Tue, 26 May 2026 11:53:03 -0500
 
