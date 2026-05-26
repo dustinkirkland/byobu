@@ -32,6 +32,70 @@ print(name)
 }
 
 case "${1:-}" in
+  setup)
+    # One-time setup: create venv, install deps, enable tailscale serve.
+    echo "=== byobu-mobile setup ==="
+    echo ""
+
+    # 1. Python venv
+    if [ -d "$DIR/.venv" ]; then
+        echo "✓ Python venv already exists ($DIR/.venv)"
+    else
+        echo "Creating Python virtual environment..."
+        if command -v uv &>/dev/null; then
+            uv venv "$DIR/.venv"
+            uv pip install --python "$DIR/.venv/bin/python" -r "$DIR/requirements.txt"
+        elif command -v python3 &>/dev/null; then
+            python3 -m venv "$DIR/.venv"
+            "$DIR/.venv/bin/pip" install -r "$DIR/requirements.txt"
+        else
+            echo "Error: neither uv nor python3 found in PATH" >&2
+            exit 1
+        fi
+        echo "✓ Python venv created and dependencies installed"
+    fi
+
+    # 2. Tailscale check
+    if ! command -v tailscale &>/dev/null; then
+        echo ""
+        echo "Error: tailscale not found in PATH." >&2
+        echo "Install Tailscale from https://tailscale.com/download, connect to your tailnet," >&2
+        echo "then re-run setup." >&2
+        exit 1
+    fi
+    TS_HOST=$(_ts_host)
+    if [ -z "$TS_HOST" ]; then
+        echo ""
+        echo "Error: Tailscale is installed but not connected (no hostname found)." >&2
+        echo "Run 'tailscale up' to connect, then re-run setup." >&2
+        exit 1
+    fi
+    echo "✓ Tailscale connected as $TS_HOST"
+
+    # 3. Enable tailscale serve
+    echo "Enabling tailscale serve (HTTPS → localhost:$PORT)..."
+    if tailscale serve status 2>/dev/null | grep -q ":${PORT}"; then
+        echo "✓ tailscale serve already configured for port $PORT"
+    else
+        tailscale serve --bg "$PORT" || {
+            echo ""
+            echo "tailscale serve returned an error (see above)." >&2
+            echo "If you see an authorization URL, visit it, then re-run:" >&2
+            echo "  tailscale serve --bg $PORT" >&2
+            echo "  $0 start" >&2
+            exit 1
+        }
+        echo "✓ tailscale serve configured"
+    fi
+
+    echo ""
+    echo "Setup complete. Next steps:"
+    echo ""
+    echo "  1. Start the daemon:      $0 start"
+    echo "  2. Generate pairing code: $(dirname "$0")/byobu-mobile-pair"
+    echo "  3. Open on your phone:    https://$TS_HOST"
+    ;;
+
   start|serve)
     # Default mode: HTTPS via tailscale serve.
     # tailscale serve provisions a Let's Encrypt cert and proxies
@@ -133,8 +197,9 @@ case "${1:-}" in
     ;;
 
   *)
-    echo "Usage: $0 {start|start-direct|stop|restart|status|log}"
+    echo "Usage: $0 {setup|start|start-direct|stop|restart|status|log}"
     echo ""
+    echo "  setup         One-time setup: venv, deps, tailscale serve"
     echo "  start         Start daemon via tailscale serve (HTTPS — default)"
     echo "  start-direct  Start daemon direct to Tailscale IP (HTTP — dev only)"
     echo "  stop          Stop daemon (tailscale serve config persists)"
