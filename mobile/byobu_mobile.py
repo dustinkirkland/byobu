@@ -205,9 +205,13 @@ def tmux_list_panes(window_id: str) -> list[dict]:
         })
     return panes
 
-def tmux_capture_pane(pane_id: str, history_lines: int = 200) -> str:
-    raw = _tmux("capture-pane", "-t", pane_id, "-p", "-S", f"-{history_lines}")
-    return strip_ansi(raw)
+def tmux_capture_pane(pane_id: str, history_lines: int = 200, ansi: bool = False) -> str:
+    if ansi:
+        raw = _tmux("capture-pane", "-t", pane_id, "-p", "-e", "-S", f"-{history_lines}")
+    else:
+        raw = _tmux("capture-pane", "-t", pane_id, "-p", "-S", f"-{history_lines}")
+        raw = strip_ansi(raw)
+    return raw
 
 def tmux_new_session(name: str) -> None:
     _tmux("new-session", "-d", "-s", name)
@@ -427,7 +431,8 @@ class IconHandler(BaseHandler):
 
 class PingHandler(BaseHandler):
     def get(self):
-        token = self.get_cookie("byobu_mobile_session") or ""
+        token = (self.get_cookie("byobu_mobile_session")
+                 or self.get_argument("token", ""))
         if _valid_session_token(token):
             self.json({"auth": True, "hostname": socket.gethostname()})
         else:
@@ -536,7 +541,8 @@ class WsHandler(tornado.websocket.WebSocketHandler):
     """
 
     def open(self):
-        token = self.get_cookie("byobu_mobile_session") or ""
+        token = (self.get_cookie("byobu_mobile_session")
+                 or self.get_argument("token", ""))
         if not _valid_session_token(token):
             self.close(4401, "unauthorized")
             return
@@ -563,14 +569,14 @@ class WsHandler(tornado.websocket.WebSocketHandler):
         sessions = await asyncio.to_thread(tmux_list_sessions)
         self._send({"type": "sessions", "data": sessions})
 
-    async def _stream_pane(self, pane_id: str, history_lines: int):
+    async def _stream_pane(self, pane_id: str, history_lines: int, ansi: bool = False):
         try:
-            content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines)
+            content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi)
             self._send({"type": "snapshot", "pane_id": pane_id, "data": content})
             last = content
             while True:
                 await asyncio.sleep(0.5)
-                content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines)
+                content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi)
                 if content != last:
                     self._send({"type": "update", "pane_id": pane_id, "data": content})
                     last = content
@@ -626,11 +632,12 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                         lines = max(1, min(int(msg.get("lines", 300)), _MAX_HISTORY_LINES))
                     except (ValueError, TypeError):
                         lines = 300
+                    ansi = bool(msg.get("ansi", False))
                     if self._stream_task:
                         self._stream_task.cancel()
                         await asyncio.gather(self._stream_task, return_exceptions=True)
                     self._stream_task = asyncio.ensure_future(
-                        self._stream_pane(pane_id, lines)
+                        self._stream_pane(pane_id, lines, ansi)
                     )
 
             elif mtype == "new_session":
