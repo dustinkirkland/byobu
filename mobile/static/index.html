@@ -37,16 +37,21 @@
 
     /* ── header / picker bar ── */
     #header {
-      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      display: flex; flex-direction: column; gap: 6px;
       padding: 8px 10px; background: var(--bg2);
       border-bottom: 1px solid var(--border); flex-shrink: 0;
     }
-    #header h1 { font-size: 15px; color: var(--accent); letter-spacing: 2px; margin-right: 4px; }
+    #header-top {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    #header-pickers {
+      display: flex; gap: 6px; align-items: center;
+    }
 
     .byobu-logo { height: 22px; width: auto; flex-shrink: 0; opacity: 0.85; }
 
     /* ── picker groups (select + add button) ── */
-    .picker-group { display: flex; gap: 3px; align-items: center; flex: 1; min-width: 90px; }
+    .picker-group { display: flex; gap: 3px; align-items: center; flex: 1; min-width: 0; }
     .picker-group select { flex: 1; min-width: 0; }
 
     select {
@@ -197,30 +202,34 @@
 <div id="app">
 
   <div id="header">
-    <a href="https://byobu.org" target="_blank" rel="noopener"
-       style="display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;">
-      <img src="/byobu.svg" class="byobu-logo" alt="Byobu">
-      <span style="font-size:15px;color:var(--accent);letter-spacing:2px;">byobu mobile</span>
-    </a>
-    <div class="picker-group">
-      <select id="sel-session" title="Session">
-        <option value="">Session…</option>
-      </select>
-      <button class="add-btn" id="btn-new-session" title="New session">+</button>
+    <div id="header-top">
+      <a href="https://byobu.org" target="_blank" rel="noopener"
+         style="display:flex;align-items:center;gap:7px;text-decoration:none;">
+        <img src="/byobu.svg" class="byobu-logo" alt="Byobu">
+        <span style="font-size:15px;color:var(--accent);letter-spacing:2px;">byobu mobile</span>
+      </a>
+      <button class="icon-btn" id="btn-refresh" title="Refresh session list">↺</button>
     </div>
-    <div class="picker-group">
-      <select id="sel-window" title="Window" disabled>
-        <option value="">Window…</option>
-      </select>
-      <button class="add-btn" id="btn-new-window" title="New window" disabled>+</button>
+    <div id="header-pickers">
+      <div class="picker-group">
+        <select id="sel-session" title="Session">
+          <option value="">Session…</option>
+        </select>
+        <button class="add-btn" id="btn-new-session" title="New session">+</button>
+      </div>
+      <div class="picker-group">
+        <select id="sel-window" title="Window" disabled>
+          <option value="">Window…</option>
+        </select>
+        <button class="add-btn" id="btn-new-window" title="New window" disabled>+</button>
+      </div>
+      <div class="picker-group">
+        <select id="sel-pane" title="Pane" disabled>
+          <option value="">Pane…</option>
+        </select>
+        <button class="add-btn" id="btn-new-pane" title="New pane" disabled>+</button>
+      </div>
     </div>
-    <div class="picker-group">
-      <select id="sel-pane" title="Pane" disabled>
-        <option value="">Pane…</option>
-      </select>
-      <button class="add-btn" id="btn-new-pane" title="New pane" disabled>+</button>
-    </div>
-    <button class="icon-btn" id="btn-refresh" title="Refresh session list">↺</button>
   </div>
 
   <div id="statusbar">
