@@ -131,6 +131,31 @@ case "${1:-}" in
     fi
     ;;
 
+  start-local)
+    # Loopback-only mode for SSH tunnel access.
+    # Daemon binds to 127.0.0.1 only — no network exposure whatsoever.
+    # Access via: ssh -L 7432:localhost:7432 user@this-machine
+    # then open http://localhost:7432 in the phone browser.
+    if p=$(pid); then
+        echo "byobu-mobile already running (pid $p)"
+        exit 1
+    fi
+    _ensure_dir
+    echo "Starting byobu-mobile (loopback only — SSH tunnel access)..."
+    nohup "$VENV" "$DIR/$DAEMON" --host 127.0.0.1 --port "$PORT" \
+        >> "$LOGFILE" 2>&1 &
+    echo $! > "$PIDFILE"
+    sleep 0.5
+    if p=$(pid); then
+        echo "byobu-mobile started (pid $p)"
+        echo "Access via SSH tunnel: ssh -L ${PORT}:localhost:${PORT} user@\$(hostname -f)"
+        echo "Then open: http://localhost:${PORT}"
+    else
+        echo "byobu-mobile failed to start — check $LOGFILE"
+        exit 1
+    fi
+    ;;
+
   start-direct)
     # Plain HTTP bound directly to Tailscale IP.
     # WireGuard encrypts the transport, but no TLS cert — dev/debug only.
@@ -197,14 +222,15 @@ case "${1:-}" in
     ;;
 
   *)
-    echo "Usage: $0 {setup|start|start-direct|stop|restart|status|log}"
+    echo "Usage: $0 {setup|start|start-local|start-direct|stop|restart|status|log}"
     echo ""
     echo "  setup         One-time setup: venv, deps, tailscale serve"
     echo "  start         Start daemon via tailscale serve (HTTPS — default)"
+    echo "  start-local   Start daemon loopback-only for SSH tunnel access"
     echo "  start-direct  Start daemon direct to Tailscale IP (HTTP — dev only)"
     echo "  stop          Stop daemon (tailscale serve config persists)"
     echo "  restart       Restart daemon"
-    echo "  status        Show running status and HTTPS URL"
+    echo "  status        Show running status and URL"
     echo "  log           Tail the log"
     echo ""
     echo "  To remove tailscale serve config: tailscale serve reset"

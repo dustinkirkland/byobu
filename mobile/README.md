@@ -164,13 +164,88 @@ Changing the URL (e.g., switching from direct HTTP to HTTPS) changes the cookie 
 
 ---
 
-## Development / plain HTTP fallback
+## Security and network exposure
 
-If Tailscale Serve isn't available (older Tailscale version, air-gapped machine), you can run the daemon bound directly to your Tailscale IP over plain HTTP. WireGuard still encrypts the transport, but PWA features won't work.
+### How exposed is the daemon?
+
+Less than you might think. In the default HTTPS mode:
+
+- `byobu_mobile.py` binds to **`127.0.0.1:7432` only** — loopback, not reachable from the network
+- `tailscaled` (the Tailscale daemon) handles all external traffic over WireGuard
+- From a firewall or IT perspective: one already-present process (`tailscaled`) has an outbound WireGuard connection; the byobu-mobile daemon is invisible to the network — just another localhost service, no different from a local dev server
+
+No new inbound firewall holes. No new externally-reachable ports. The only meaningful policy question is whether Tailscale itself is permitted on your machine.
+
+### Can I run this on a locked-down work machine?
+
+If Tailscale is allowed (and it often is — many corporate IT teams approve it), the answer is yes. The daemon's network footprint is entirely contained within the already-approved Tailscale connection.
+
+If Tailscale is not available, see [start-local mode](#start-local-loopback-only--ssh-tunnel) below.
+
+### Why Tailscale is the recommended transport
+
+byobu-mobile is opinionated about Tailscale for good reasons:
+
+- **WireGuard encryption** — all traffic is encrypted end-to-end between your devices
+- **Node authentication** — only devices on your tailnet can reach the daemon; there is no public attack surface
+- **Automatic HTTPS** — `tailscale serve` provisions a valid Let's Encrypt cert with no cert management
+- **No port forwarding** — Tailscale's NAT traversal works through firewalls and CGNAT without opening router ports
+- **PWA support** — HTTPS is required for service workers, "Add to Home Screen", and push notifications
+
+---
+
+## Alternative access modes
+
+### `start-local` — loopback-only + SSH tunnel
+
+For machines where Tailscale is unavailable. The daemon binds to `127.0.0.1` only and is accessed via SSH local port forwarding from the phone.
+
+```bash
+./byobu-mobile-ctl start-local
+```
+
+Then from your phone's SSH app (Termius or Blink Shell both support port forwarding):
+
+```bash
+ssh -L 7432:localhost:7432 user@workstation
+```
+
+Open `http://localhost:7432` in the phone browser while the SSH session is active.
+
+**Security profile:** only SSH port 22 is involved. The daemon never touches the network. IT sees a normal SSH session.
+
+**Limitations:** the web UI is served over HTTP (no HTTPS on loopback), so PWA features won't work. The tunnel drops if the SSH session is interrupted.
+
+### `start-direct` — plain HTTP over Tailscale IP
+
+Binds directly to your Tailscale IP without using `tailscale serve`. WireGuard still encrypts the transport, but there is no TLS cert and PWA features won't work. For development and debugging only.
 
 ```bash
 ./byobu-mobile-ctl start-direct
 ```
+
+### What about SSH directly to tmux?
+
+SSH + `byobu attach` works and requires no daemon at all:
+
+```bash
+ssh user@workstation -t "byobu attach"
+```
+
+The limitation is the mobile keyboard. SSH terminal apps (Termius, Blink Shell, JuiceSSH) are functional but none of them solve the fundamental problem of typing shell commands — Ctrl, Esc, function keys, and arrow keys — on a touchscreen without a purpose-built toolbar. This is fine for monitoring; painful for doing real work. byobu-mobile's web UI was built specifically to address this. Native SSH support may be added in a future release.
+
+### Summary
+
+| Mode | Command | Transport | HTTPS | Requires |
+|---|---|---|---|---|
+| **Default (recommended)** | `start` | Tailscale WireGuard | ✓ via tailscale serve | Tailscale |
+| Local + SSH tunnel | `start-local` | SSH port forward | — | SSH app with forwarding |
+| Direct HTTP | `start-direct` | Tailscale WireGuard | — | Tailscale |
+| Raw terminal | SSH + byobu attach | SSH | — | SSH app |
+
+---
+
+## Development / plain HTTP fallback
 
 To remove the Tailscale Serve configuration entirely:
 ```bash
