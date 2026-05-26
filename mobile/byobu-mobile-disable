@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+#    byobu-mobile-disable: stop byobu-mobile daemon and remove login hook
+#    Copyright (C) 2026 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@byobu.org>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+
+set -euo pipefail
+
+DIR="$(cd "$(dirname "$0")" && pwd)"
+CTL="$DIR/byobu-mobile-ctl"
+
+_remove_hook() {
+    local dest="$1"
+    [ -w "$dest" ] || return 0
+    # Remove any line that invokes byobu-mobile-ctl (regardless of full path).
+    sed -i '/byobu-mobile-ctl/d' "$dest"
+}
+
+_remove_hook "$HOME/.profile"
+_remove_hook "$HOME/.bash_profile"
+_remove_hook "$HOME/.bash_login"
+_remove_hook "$HOME/.zprofile"
+
+# Stop the daemon right now (non-fatal: may not be running).
+"$CTL" stop 2>/dev/null || true
+
+echo
+echo "Byobu Mobile daemon stopped. It will no longer start automatically at login."
+echo
+echo "Paired device tokens are preserved in ~/.config/byobu-mobile/tokens.json."
+echo
+echo "To re-enable later, run:"
+echo "  byobu-mobile-enable"
+echo

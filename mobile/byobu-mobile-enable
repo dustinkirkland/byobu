@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+#    byobu-mobile-enable: start byobu-mobile daemon and enable it at login
+#    Copyright (C) 2026 Canonical Ltd.
+#
+#    Authors: Dustin Kirkland <kirkland@byobu.org>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+
+set -euo pipefail
+
+DIR="$(cd "$(dirname "$0")" && pwd)"
+CTL="$DIR/byobu-mobile-ctl"
+
+# Resolve to the installed binary if available in PATH, else use local path.
+if command -v byobu-mobile-ctl >/dev/null 2>&1; then
+    CTL_CMD="byobu-mobile-ctl"
+else
+    CTL_CMD="$CTL"
+fi
+
+_install_hook() {
+    local dest="$1"
+    [ -f "$dest" ] || return 0
+    # Idempotent: don't add a second hook if already present.
+    grep -q "byobu-mobile-ctl" "$dest" 2>/dev/null && return 0
+    printf '\n%s start 2>/dev/null || true\n' "$CTL_CMD" >> "$dest"
+}
+
+# Install in ~/.profile unconditionally (covers bash, dash, most login shells).
+_install_hook "$HOME/.profile"
+
+# Install in shell-specific login files only if they already exist.
+for f in ".bash_profile" ".bash_login"; do
+    [ -f "$HOME/$f" ] && _install_hook "$HOME/$f" || true
+done
+
+# Install in zprofile if the default shell is zsh.
+case "${SHELL:-}" in
+    *zsh) _install_hook "$HOME/.zprofile" ;;
+esac
+
+# Start the daemon right now (non-fatal: already running, tailscale not up, etc.)
+"$CTL" start 2>/dev/null || true
+
+echo
+echo "Byobu Mobile daemon started and will launch automatically at each login."
+echo
+echo "Pair a device (if you haven't already):"
+echo "  $(dirname "$CTL_CMD")/byobu-mobile-pair  (or just: byobu-mobile-pair)"
+echo
+echo "To stop and disable later, run:"
+echo "  byobu-mobile-disable"
+echo
