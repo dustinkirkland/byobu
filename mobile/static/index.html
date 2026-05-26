@@ -115,7 +115,7 @@
 
     /* ── input bar ── */
     #inputbar {
-      display: flex; gap: 6px; align-items: center;
+      display: flex; gap: 6px; align-items: flex-end;
       padding: 8px 10px; background: var(--bg2);
       border-top: 1px solid var(--border); flex-shrink: 0;
       /* clear Android home indicator / notch */
@@ -126,11 +126,21 @@
       flex: 1; background: var(--bg3); color: var(--text);
       border: 1px solid var(--border); border-radius: 4px;
       padding: 8px 10px; font-size: 13px; font-family: var(--font);
-      outline: none;
+      outline: none; resize: none; line-height: 1.45;
+      min-height: 38px; max-height: 160px; overflow-y: auto;
     }
     #cmd:focus { border-color: var(--accent); }
     #cmd:disabled { opacity: 0.4; }
     #cmd::placeholder { color: var(--dim); }
+
+    #btn-send {
+      background: var(--accent); color: #fff; border: none;
+      border-radius: 4px; padding: 8px 14px; cursor: pointer;
+      font-size: 16px; flex-shrink: 0; line-height: 1;
+      height: 38px;
+    }
+    #btn-send:disabled { opacity: 0.3; cursor: default; }
+    #btn-send:active:not(:disabled) { filter: brightness(0.85); }
 
 
     /* ── pairing overlay ── */
@@ -187,11 +197,10 @@
 <div id="app">
 
   <div id="header">
-    <h1>byobu mobile</h1>
     <a href="https://byobu.org" target="_blank" rel="noopener"
-       style="display:flex;align-items:center;gap:5px;text-decoration:none;flex-shrink:0;">
+       style="display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;">
       <img src="/byobu.svg" class="byobu-logo" alt="Byobu">
-      <span style="font-size:13px;color:var(--dim);letter-spacing:1px;">Byobu</span>
+      <span style="font-size:15px;color:var(--accent);letter-spacing:2px;">byobu mobile</span>
     </a>
     <div class="picker-group">
       <select id="sel-session" title="Session">
@@ -224,9 +233,10 @@
   <div id="statusline"></div>
 
   <div id="inputbar">
-    <input id="cmd" type="text" placeholder="Send keys to pane…"
-           autocomplete="off" autocorrect="off" autocapitalize="off"
-           spellcheck="false" disabled>
+    <textarea id="cmd" rows="2" placeholder="Send keys to pane… (Enter = send, Shift+Enter = newline)"
+              autocomplete="off" autocorrect="off" autocapitalize="none"
+              spellcheck="false" disabled></textarea>
+    <button id="btn-send" title="Send" disabled>↵</button>
   </div>
 
 </div>
@@ -256,6 +266,7 @@ const output        = document.getElementById('output');
 const statusbar     = document.getElementById('statusbar');
 const statusText    = document.getElementById('status-text');
 const cmdInput      = document.getElementById('cmd');
+const btnSend       = document.getElementById('btn-send');
 
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
@@ -390,6 +401,7 @@ function onWindowChange(auto = false) {
 function onPaneChange() {
   const pid = selPane.value;
   cmdInput.disabled = !pid;
+  btnSend.disabled  = !pid;
   if (!pid) return;
 
   currentPane = pid;
@@ -411,6 +423,7 @@ function sendKeys() {
   if (!keys || !currentPane) return;
   send({ type: 'send_keys', pane_id: currentPane, keys, enter: true });
   cmdInput.value = '';
+  cmdInput.style.height = 'auto';
 }
 
 // ── events ─────────────────────────────────────────────────────────────────
@@ -418,7 +431,14 @@ selSession.addEventListener('change', () => onSessionChange(true));
 selWindow.addEventListener('change',  () => onWindowChange(true));
 selPane.addEventListener('change',    onPaneChange);
 btnRefresh.addEventListener('click',  () => send({ type: 'list_sessions' }));
-cmdInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendKeys(); });
+cmdInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendKeys(); }
+});
+cmdInput.addEventListener('input', () => {
+  cmdInput.style.height = 'auto';
+  cmdInput.style.height = Math.min(cmdInput.scrollHeight, 160) + 'px';
+});
+btnSend.addEventListener('click', sendKeys);
 
 // ── create session / window / pane ────────────────────────────────────────
 btnNewSession.addEventListener('click', () => {
