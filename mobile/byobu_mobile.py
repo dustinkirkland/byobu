@@ -35,7 +35,9 @@ CONFIG_DIR    = Path.home() / ".config" / "byobu-mobile"
 TOKENS_FILE   = CONFIG_DIR / "tokens.json"
 ADMIN_SOCK    = CONFIG_DIR / "byobu-mobile.sock"
 MACHINES_FILE = CONFIG_DIR / "machines.json"
-STATIC        = Path(__file__).parent / "static"
+_INSTALLED_STATIC = Path("/usr/share/byobu-mobile/static")
+_DEV_STATIC       = Path(__file__).parent / "static"
+STATIC            = _INSTALLED_STATIC if _INSTALLED_STATIC.is_dir() else _DEV_STATIC
 
 def _load_tokens() -> None:
     if not TOKENS_FILE.exists():

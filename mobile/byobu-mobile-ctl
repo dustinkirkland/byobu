@@ -1,11 +1,23 @@
 #!/bin/bash
 set -euo pipefail
 
-DAEMON="byobu_mobile.py"
 PORT=7432
 DIR="$(cd "$(dirname "$0")" && pwd)"
-VENV="$DIR/.venv/bin/python"
 PIDFILE="/tmp/byobu-mobile.pid"
+
+# Detect installed vs dev-tree.
+# Installed: script is in /usr/bin/, daemon is in /usr/lib/byobu-mobile/.
+# Dev tree:  script is alongside byobu_mobile.py in mobile/.
+if [ -f "$DIR/byobu_mobile.py" ]; then
+    DAEMON="$DIR/byobu_mobile.py"
+    PYTHON="${DIR}/.venv/bin/python"
+    [ ! -x "$PYTHON" ] && PYTHON="python3"
+    _DEV_TREE=1
+else
+    DAEMON="/usr/lib/byobu-mobile/byobu_mobile.py"
+    PYTHON="python3"
+    _DEV_TREE=0
+fi
 
 CONFIG_DIR="$HOME/.config/byobu-mobile"
 LOGFILE="$CONFIG_DIR/byobu-mobile.log"
@@ -40,22 +52,26 @@ case "${1:-}" in
     echo "=== byobu-mobile setup ==="
     echo ""
 
-    # 1. Python venv
-    if [ -d "$DIR/.venv" ]; then
-        echo "✓ Python venv already exists ($DIR/.venv)"
-    else
-        echo "Creating Python virtual environment..."
-        if command -v uv &>/dev/null; then
-            uv venv "$DIR/.venv"
-            uv pip install --python "$DIR/.venv/bin/python" -r "$DIR/requirements.txt"
-        elif command -v python3 &>/dev/null; then
-            python3 -m venv "$DIR/.venv"
-            "$DIR/.venv/bin/pip" install -r "$DIR/requirements.txt"
+    # 1. Python / tornado
+    if [ "$_DEV_TREE" = "1" ]; then
+        if [ -d "$DIR/.venv" ]; then
+            echo "✓ Python venv already exists ($DIR/.venv)"
         else
-            echo "Error: neither uv nor python3 found in PATH" >&2
-            exit 1
+            echo "Creating Python virtual environment..."
+            if command -v uv &>/dev/null; then
+                uv venv "$DIR/.venv"
+                uv pip install --python "$DIR/.venv/bin/python" -r "$DIR/requirements.txt"
+            elif command -v python3 &>/dev/null; then
+                python3 -m venv "$DIR/.venv"
+                "$DIR/.venv/bin/pip" install -r "$DIR/requirements.txt"
+            else
+                echo "Error: neither uv nor python3 found in PATH" >&2
+                exit 1
+            fi
+            echo "✓ Python venv created and dependencies installed"
         fi
-        echo "✓ Python venv created and dependencies installed"
+    else
+        echo "✓ Running installed (system python3 + python3-tornado)"
     fi
 
     # 2. Tailscale check
@@ -125,7 +141,7 @@ case "${1:-}" in
     fi
     _ensure_dir
     echo "Starting byobu-mobile (HTTPS mode)..."
-    nohup "$VENV" "$DIR/$DAEMON" --host 127.0.0.1 --port "$PORT" --https \
+    nohup "$PYTHON" "$DAEMON" --host 127.0.0.1 --port "$PORT" --https \
         >> "$LOGFILE" 2>&1 &
     echo $! > "$PIDFILE"
     sleep 0.5
@@ -149,7 +165,7 @@ case "${1:-}" in
     fi
     _ensure_dir
     echo "Starting byobu-mobile (loopback only — SSH tunnel access)..."
-    nohup "$VENV" "$DIR/$DAEMON" --host 127.0.0.1 --port "$PORT" \
+    nohup "$PYTHON" "$DAEMON" --host 127.0.0.1 --port "$PORT" \
         >> "$LOGFILE" 2>&1 &
     echo $! > "$PIDFILE"
     sleep 0.5
@@ -172,7 +188,7 @@ case "${1:-}" in
     fi
     _ensure_dir
     echo "Starting byobu-mobile (direct HTTP — dev/debug only)..."
-    nohup "$VENV" "$DIR/$DAEMON" --port "$PORT" \
+    nohup "$PYTHON" "$DAEMON" --port "$PORT" \
         >> "$LOGFILE" 2>&1 &
     echo $! > "$PIDFILE"
     sleep 0.5
@@ -231,7 +247,7 @@ case "${1:-}" in
   *)
     echo "Usage: $0 {setup|start|start-local|start-direct|stop|restart|status|log}"
     echo ""
-    echo "  setup         One-time setup: venv, deps, tailscale serve"
+    echo "  setup         One-time setup: python check, tailscale serve"
     echo "  start         Start daemon via tailscale serve (HTTPS — default)"
     echo "  start-local   Start daemon loopback-only for SSH tunnel access"
     echo "  start-direct  Start daemon direct to Tailscale IP (HTTP — dev only)"
