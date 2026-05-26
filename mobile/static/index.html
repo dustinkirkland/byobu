@@ -59,6 +59,27 @@
     }
     #machine-select:hover { color: var(--text); }
     #machine-select option { color: var(--text); }
+
+    #btn-install {
+      background: var(--accent); color: #fff;
+      border: none; border-radius: 4px;
+      padding: 4px 9px; font-size: 11px; font-family: var(--font);
+      cursor: pointer; flex-shrink: 0; white-space: nowrap;
+    }
+    #btn-install:active { filter: brightness(0.85); }
+
+    #ios-install-tip {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--bg2); border: 1px solid var(--accent);
+      border-radius: 10px; padding: 14px 18px;
+      font-size: 13px; color: var(--text); text-align: center;
+      max-width: 280px; z-index: 200; box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+      line-height: 1.6;
+    }
+    #ios-install-tip .close-tip {
+      display: block; margin-top: 10px; font-size: 11px;
+      color: var(--dim); cursor: pointer;
+    }
     #header-pickers {
       display: flex; gap: 6px; align-items: center;
     }
@@ -214,6 +235,12 @@
   </div>
 </div>
 
+<div id="ios-install-tip" style="display:none">
+  Tap the <strong>Share</strong> button&nbsp;⎋ below,<br>
+  then <strong>"Add to Home Screen"</strong>
+  <span class="close-tip" id="close-tip">Dismiss</span>
+</div>
+
 <div id="app">
 
   <div id="header">
@@ -224,6 +251,7 @@
         <span style="font-size:15px;color:var(--accent);letter-spacing:2px;">byobu mobile</span>
       </a>
       <select id="machine-select" title="Switch machine" style="display:none"></select>
+      <button id="btn-install" title="Install as app" style="display:none">+ Install app</button>
       <button class="icon-btn" id="btn-refresh" title="Refresh session list">↺</button>
     </div>
     <div id="header-pickers">
@@ -292,7 +320,9 @@ const statusbar     = document.getElementById('statusbar');
 const statusText    = document.getElementById('status-text');
 const cmdInput      = document.getElementById('cmd');
 const btnSend       = document.getElementById('btn-send');
-const machineSelect = document.getElementById('machine-select');
+const machineSelect  = document.getElementById('machine-select');
+const btnInstall     = document.getElementById('btn-install');
+const iosInstallTip  = document.getElementById('ios-install-tip');
 
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
@@ -559,6 +589,43 @@ async function submitPair() {
     pairError.textContent = 'Network error — is the daemon running?';
   } finally {
     pairBtn.disabled = false;
+  }
+}
+
+// ── PWA install prompt ────────────────────────────────────────────────────
+const isIOS        = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                     || navigator.standalone === true;
+let deferredInstallPrompt = null;
+
+if (!isStandalone) {
+  if (isIOS) {
+    // iOS Safari: no beforeinstallprompt — show button that explains manual steps.
+    btnInstall.style.display = '';
+    btnInstall.addEventListener('click', () => {
+      iosInstallTip.style.display = '';
+    });
+    document.getElementById('close-tip').addEventListener('click', () => {
+      iosInstallTip.style.display = 'none';
+    });
+  } else {
+    // Android/Chrome: capture the prompt and fire it on button click.
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      btnInstall.style.display = '';
+    });
+    btnInstall.addEventListener('click', async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      btnInstall.style.display = 'none';
+    });
+    window.addEventListener('appinstalled', () => {
+      btnInstall.style.display = 'none';
+      deferredInstallPrompt = null;
+    });
   }
 }
 
