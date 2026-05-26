@@ -1,15 +1,4 @@
-# Files installed by autotools make install into debian/tmp
-usr/bin/*
-usr/lib/byobu/*
-usr/share/byobu/*
-usr/share/man/man1/*
-usr/share/sounds/byobu/*
-usr/share/dbus-1/services/*
-usr/share/doc/byobu/*
-etc/byobu/*
-etc/profile.d/Z97-byobu.sh
-
-# Extra placements (icon dirs, apport hook)
+# Extra placements not handled by autotools make install
 usr/share/byobu/pixmaps/byobu.svg             usr/share/icons/hicolor/scalable/apps/
 usr/share/byobu/pixmaps/highcontrast/byobu.svg usr/share/icons/HighContrast/scalable/apps/
 debian/source_byobu.py                         usr/share/apport/package-hooks
