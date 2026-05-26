@@ -31,17 +31,19 @@
     }
 
     html, body {
-      height: 100%; background: var(--bg); color: var(--text);
+      height: 100%; overflow: hidden;
+      background: var(--bg); color: var(--text);
       font-family: var(--font); font-size: 13px;
     }
 
     /* ── layout ──
-       100dvh = dynamic viewport height: accounts for Android Chrome's
-       address bar appearing/disappearing. Falls back to 100vh on older
-       browsers. overflow on #output (not here) handles scrolling. */
+       position:fixed + inset:0 is the most reliable way to fill exactly
+       the viewport on Android standalone PWAs — avoids dvh calculation
+       issues and prevents any accidental body scroll. */
     #app {
+      position: fixed; inset: 0;
       display: flex; flex-direction: column;
-      height: 100vh; height: 100dvh;
+      overflow: hidden;
     }
 
     /* ── header / picker bar ── */
@@ -147,8 +149,9 @@
       padding: 10px 12px;
       white-space: pre; font-family: var(--font); font-size: 12px;
       line-height: 1.45; color: var(--text);
-      /* smooth scroll feel on mobile */
+      /* smooth scroll on mobile; contain stops scroll bleeding to page */
       -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
     #output.placeholder { white-space: normal; color: var(--dim); font-style: italic; }
 
