@@ -604,6 +604,8 @@ class WsHandler(tornado.websocket.WebSocketHandler):
         except json.JSONDecodeError:
             self._send({"type": "error", "message": "invalid JSON"})
             return
+        finally:
+            del raw  # drop the raw WebSocket frame as early as possible
         if not isinstance(msg, dict):
             self._send({"type": "error", "message": "invalid JSON"})
             return
@@ -668,6 +670,7 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     keys = str(msg.get("keys", ""))[:4096]
                     enter = bool(msg.get("enter", True))
                     await asyncio.to_thread(tmux_send_keys, pane_id, keys, enter)
+                    del keys  # release sensitive content as early as possible
 
         except Exception as e:
             self._send({"type": "error", "message": f"command failed: {e}"})
