@@ -4,6 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>byobu mobile</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#141414">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="byobu">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -44,6 +51,14 @@
     #header-top {
       display: flex; align-items: center; gap: 8px;
     }
+    #machine-select {
+      background: var(--bg3); color: var(--dim);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 4px 6px; font-size: 11px; font-family: var(--font);
+      cursor: pointer; max-width: 140px;
+    }
+    #machine-select:hover { color: var(--text); }
+    #machine-select option { color: var(--text); }
     #header-pickers {
       display: flex; gap: 6px; align-items: center;
     }
@@ -204,10 +219,11 @@
   <div id="header">
     <div id="header-top">
       <a href="https://byobu.org" target="_blank" rel="noopener"
-         style="display:flex;align-items:center;gap:7px;text-decoration:none;">
+         style="display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;">
         <img src="/byobu.svg" class="byobu-logo" alt="Byobu">
         <span style="font-size:15px;color:var(--accent);letter-spacing:2px;">byobu mobile</span>
       </a>
+      <select id="machine-select" title="Switch machine" style="display:none"></select>
       <button class="icon-btn" id="btn-refresh" title="Refresh session list">↺</button>
     </div>
     <div id="header-pickers">
@@ -276,6 +292,7 @@ const statusbar     = document.getElementById('statusbar');
 const statusText    = document.getElementById('status-text');
 const cmdInput      = document.getElementById('cmd');
 const btnSend       = document.getElementById('btn-send');
+const machineSelect = document.getElementById('machine-select');
 
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
@@ -545,6 +562,28 @@ async function submitPair() {
   }
 }
 
+// ── machine selector ──────────────────────────────────────────────────────
+async function loadMachines() {
+  try {
+    const machines = await fetch('/machines').then(r => r.json());
+    if (!Array.isArray(machines) || machines.length < 2) return;
+    machineSelect.innerHTML = '';
+    machines.forEach(m => {
+      const o = document.createElement('option');
+      o.value = m.url;
+      o.textContent = m.current ? m.name + ' ✓' : m.name;
+      if (m.current) o.selected = true;
+      machineSelect.appendChild(o);
+    });
+    machineSelect.style.display = '';
+  } catch { /* /machines not configured — selector stays hidden */ }
+}
+
+machineSelect.addEventListener('change', () => {
+  const url = machineSelect.value;
+  if (url) window.location.href = url;
+});
+
 // ── init: check auth, then connect or show pair screen ────────────────────
 async function init() {
   setStatus('connecting…', 'connecting');
@@ -554,6 +593,7 @@ async function init() {
       hidePairScreen();
       connect();
       startStatusPolling();
+      loadMachines();
     } else {
       showPairScreen();
     }
@@ -562,6 +602,10 @@ async function init() {
   }
 }
 init();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
 </script>
 </body>
 </html>

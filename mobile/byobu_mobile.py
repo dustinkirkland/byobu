@@ -96,7 +96,10 @@ def _valid_session(request: Request) -> bool:
 
 @app.middleware("http")
 async def auth_and_headers(request: Request, call_next):
-    public = {"/", "/pair", "/ping", "/byobu.svg"}
+    public = {"/", "/pair", "/ping", "/byobu.svg",
+              "/manifest.json", "/sw.js", "/machines"}
+    if request.url.path.startswith("/icons/"):
+        public.add(request.url.path)
     if request.url.path not in public and not _valid_session(request):
         return JSONResponse({"error": "unauthorized"}, status_code=401)
     response = await call_next(request)
@@ -388,6 +391,7 @@ def read_byobu_status() -> list[dict]:
 # ---------------------------------------------------------------------------
 
 STATIC = Path(__file__).parent / "static"
+MACHINES_FILE = CONFIG_DIR / "machines.json"
 
 @app.get("/")
 async def index():
@@ -400,6 +404,57 @@ async def byobu_svg():
     content = await asyncio.to_thread((STATIC / "byobu.svg").read_bytes)
     return Response(content=content, media_type="image/svg+xml",
                     headers={"Cache-Control": "max-age=86400"})
+
+@app.get("/manifest.json")
+async def manifest():
+    from fastapi.responses import Response
+    content = await asyncio.to_thread((STATIC / "manifest.json").read_bytes)
+    return Response(content=content, media_type="application/manifest+json",
+                    headers={"Cache-Control": "max-age=3600"})
+
+@app.get("/sw.js")
+async def service_worker():
+    from fastapi.responses import Response
+    content = await asyncio.to_thread((STATIC / "sw.js").read_bytes)
+    # Service workers must not be cached aggressively — browsers re-check on every load.
+    return Response(content=content, media_type="application/javascript",
+                    headers={"Cache-Control": "no-cache"})
+
+@app.get("/icons/{filename}")
+async def icons(filename: str):
+    from fastapi.responses import Response
+    if not re.match(r'^[\w\-]+\.png$', filename):
+        return JSONResponse({"error": "not found"}, status_code=404)
+    path = STATIC / "icons" / filename
+    if not path.exists():
+        return JSONResponse({"error": "not found"}, status_code=404)
+    content = await asyncio.to_thread(path.read_bytes)
+    return Response(content=content, media_type="image/png",
+                    headers={"Cache-Control": "max-age=86400"})
+
+@app.get("/machines")
+async def machines(request: Request):
+    """Return this machine + any configured siblings for the machine selector."""
+    try:
+        host = request.headers.get("host", "").split(":")[0]
+        current_url = f"{'https' if _https_mode else 'http'}://{request.headers.get('host', 'localhost')}"
+        siblings = []
+        if MACHINES_FILE.exists():
+            raw = json.loads(await asyncio.to_thread(MACHINES_FILE.read_text))
+            if isinstance(raw, list):
+                siblings = [s for s in raw if isinstance(s, dict) and "name" in s and "url" in s]
+        result = [{"name": "this machine", "url": current_url, "current": True}] + [
+            {"name": s["name"], "url": s["url"].rstrip("/"), "current": False}
+            for s in siblings
+        ]
+        # Give the current machine a better name if siblings define one for this host
+        for s in siblings:
+            if s.get("url", "").rstrip("/") == current_url.rstrip("/"):
+                result[0]["name"] = s["name"]
+                break
+        return JSONResponse(result)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
 
 @app.get("/status")
 async def status():

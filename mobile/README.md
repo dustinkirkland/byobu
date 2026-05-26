@@ -161,6 +161,22 @@ Changing the URL (e.g., switching from direct HTTP to HTTPS) changes the cookie 
 | `~/.config/byobu-mobile/tokens.json` | Paired device session tokens (mode 0600) |
 | `~/.config/byobu-mobile/byobu-mobile.sock` | Admin Unix socket — pair/unpair tools only (mode 0600) |
 | `~/.config/byobu-mobile/byobu-mobile.log` | Daemon log (mode 0600) |
+| `~/.config/byobu-mobile/machines.json` | Optional: sibling machines for the machine selector |
+
+### Multiple machines
+
+If you run byobu-mobile on more than one machine (personal workstation, work machine, server…), you can add sibling machines to each daemon's config so the UI shows a machine selector dropdown. Each machine gets its own PWA install, but the selector lets you jump between them without leaving the app.
+
+Create `~/.config/byobu-mobile/machines.json` on each machine listing the other machines:
+
+```json
+[
+  { "name": "work",     "url": "https://work-machine.tail1234.ts.net" },
+  { "name": "personal", "url": "https://personal.tail1234.ts.net" }
+]
+```
+
+The machine the browser is currently connected to is always shown as the selected option. The selector is hidden when only one machine is configured.
 
 ---
 
