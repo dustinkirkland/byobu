@@ -43,6 +43,35 @@ print(name)
 " 2>/dev/null || true
 }
 
+_ensure_ts_serve() {
+    # Idempotent: already configured.
+    if tailscale serve status 2>/dev/null | grep -q ":${PORT}"; then
+        echo "✓ tailscale serve already configured for port $PORT"
+        return 0
+    fi
+    echo "Enabling tailscale serve (HTTPS → localhost:$PORT)..."
+    # First attempt without sudo (works if user is already a tailscale operator).
+    if tailscale serve --bg "$PORT" 2>/dev/null; then
+        echo "✓ tailscale serve configured"
+        return 0
+    fi
+    # Likely not an operator yet — set it and retry.
+    echo "  (requires operator permission — running: sudo tailscale set --operator=$USER)"
+    if sudo tailscale set --operator="$USER"; then
+        echo "✓ $USER is now a Tailscale operator"
+        if tailscale serve --bg "$PORT"; then
+            echo "✓ tailscale serve configured"
+            return 0
+        fi
+    fi
+    echo "" >&2
+    echo "Error: could not configure tailscale serve." >&2
+    echo "Try manually:" >&2
+    echo "  sudo tailscale set --operator=\$USER" >&2
+    echo "  tailscale serve --bg $PORT" >&2
+    return 1
+}
+
 case "${1:-}" in
   setup)
     # One-time setup: create venv, install deps, enable tailscale serve.
@@ -92,20 +121,7 @@ case "${1:-}" in
     echo "✓ Tailscale connected as $TS_HOST"
 
     # 3. Enable tailscale serve
-    echo "Enabling tailscale serve (HTTPS → localhost:$PORT)..."
-    if tailscale serve status 2>/dev/null | grep -q ":${PORT}"; then
-        echo "✓ tailscale serve already configured for port $PORT"
-    else
-        tailscale serve --bg "$PORT" || {
-            echo ""
-            echo "tailscale serve returned an error (see above)." >&2
-            echo "If you see an authorization URL, visit it, then re-run:" >&2
-            echo "  tailscale serve --bg $PORT" >&2
-            echo "  $0 start" >&2
-            exit 1
-        }
-        echo "✓ tailscale serve configured"
-    fi
+    _ensure_ts_serve || exit 1
 
     if [ "$SETUP_QUIET" = "0" ]; then
         echo ""
@@ -135,10 +151,7 @@ case "${1:-}" in
         echo "Error: cannot determine Tailscale hostname (is tailscale up?)" >&2
         exit 1
     fi
-    if ! tailscale serve status 2>/dev/null | grep -q ":${PORT}"; then
-        echo "Configuring tailscale serve: https://$TS_HOST → localhost:$PORT"
-        tailscale serve --bg "$PORT"
-    fi
+    _ensure_ts_serve || exit 1
     _ensure_dir
     echo "Starting byobu-mobile (HTTPS mode)..."
     nohup "$PYTHON" "$DAEMON" --host 127.0.0.1 --port "$PORT" --https \
