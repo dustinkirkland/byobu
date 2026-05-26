@@ -381,11 +381,26 @@ class SvgHandler(BaseHandler):
 
 
 class ManifestHandler(BaseHandler):
-    async def get(self):
-        content = await asyncio.to_thread((STATIC / "manifest.json").read_bytes)
+    def get(self):
+        hostname = socket.gethostname()
+        manifest = {
+            "name":             f"byobu · {hostname}",
+            "short_name":       f"byobu · {hostname}",
+            "description":      "Monitor and interact with your Byobu tmux sessions from your phone.",
+            "start_url":        "/",
+            "display":          "standalone",
+            "background_color": "#141414",
+            "theme_color":      "#141414",
+            "icons": [
+                {"src": "/icons/icon-192.png", "sizes": "192x192",
+                 "type": "image/png", "purpose": "any"},
+                {"src": "/icons/icon-512.png", "sizes": "512x512",
+                 "type": "image/png", "purpose": "any maskable"},
+            ],
+        }
         self.set_header("Content-Type", "application/manifest+json")
-        self.set_header("Cache-Control", "max-age=3600")
-        self.finish(content)
+        self.set_header("Cache-Control", "no-cache")
+        self.finish(json.dumps(manifest))
 
 
 class ServiceWorkerHandler(BaseHandler):
