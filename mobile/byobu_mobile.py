@@ -13,13 +13,10 @@ import secrets
 import subprocess
 import time
 from pathlib import Path
-from typing import Optional
 
-import uvicorn
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse, JSONResponse
-
-app = FastAPI()
+import tornado.httpserver
+import tornado.web
+import tornado.websocket
 
 # ---------------------------------------------------------------------------
 # Pairing & session state
@@ -30,13 +27,15 @@ _pair_code_expiry: float = 0.0        # wall-clock time, for human display only
 _pair_code_mono_expiry: float = 0.0   # monotonic time, for expiry check
 _pair_attempts: int = 0
 _MAX_PAIR_ATTEMPTS: int = 10
-_PAIR_CODE_TTL: int = 300           # 5 minutes
-_sessions: dict[str, dict] = {}    # token → {ip, paired_at, label}
-_https_mode: bool = False           # set by --https; enables Secure cookie
+_PAIR_CODE_TTL: int = 300             # 5 minutes
+_sessions: dict[str, dict] = {}      # token → {ip, paired_at, label}
+_https_mode: bool = False             # set by --https; enables Secure cookie
 
-CONFIG_DIR  = Path.home() / ".config" / "byobu-mobile"
-TOKENS_FILE = CONFIG_DIR / "tokens.json"
-ADMIN_SOCK  = CONFIG_DIR / "byobu-mobile.sock"
+CONFIG_DIR    = Path.home() / ".config" / "byobu-mobile"
+TOKENS_FILE   = CONFIG_DIR / "tokens.json"
+ADMIN_SOCK    = CONFIG_DIR / "byobu-mobile.sock"
+MACHINES_FILE = CONFIG_DIR / "machines.json"
+STATIC        = Path(__file__).parent / "static"
 
 def _load_tokens() -> None:
     if not TOKENS_FILE.exists():
@@ -73,8 +72,8 @@ def _save_tokens() -> None:
 def _generate_pair_code() -> str:
     global _pair_code, _pair_code_expiry, _pair_code_mono_expiry, _pair_attempts
     _pair_code = f"{secrets.randbelow(1000000):06d}"
-    _pair_code_expiry = time.time() + _PAIR_CODE_TTL       # wall clock, display only
-    _pair_code_mono_expiry = time.monotonic() + _PAIR_CODE_TTL  # monotonic, expiry check
+    _pair_code_expiry = time.time() + _PAIR_CODE_TTL
+    _pair_code_mono_expiry = time.monotonic() + _PAIR_CODE_TTL
     _pair_attempts = 0
     return _pair_code
 
@@ -86,94 +85,8 @@ def _print_pair_code() -> None:
     print(f"  Byobu Mobile pairing code:  {fmt}  (expires {expiry})")
     print(f"{bar}\n", flush=True)
 
-def _valid_session(request: Request) -> bool:
-    token = request.cookies.get("byobu_mobile_session", "")
+def _valid_session_token(token: str) -> bool:
     return bool(token and token in _sessions)
-
-# ---------------------------------------------------------------------------
-# Auth + security headers middleware
-# ---------------------------------------------------------------------------
-
-@app.middleware("http")
-async def auth_and_headers(request: Request, call_next):
-    public = {"/", "/pair", "/ping", "/byobu.svg",
-              "/manifest.json", "/sw.js", "/machines"}
-    if request.url.path.startswith("/icons/"):
-        public.add(request.url.path)
-    if request.url.path not in public and not _valid_session(request):
-        return JSONResponse({"error": "unauthorized"}, status_code=401)
-    response = await call_next(request)
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Content-Security-Policy"] = (
-        "default-src 'self'; "
-        "script-src 'unsafe-inline'; "
-        "style-src 'unsafe-inline'; "
-        "connect-src 'self'; "
-        "img-src 'self'"
-    )
-    response.headers["Referrer-Policy"] = "no-referrer"
-    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
-    return response
-
-# ---------------------------------------------------------------------------
-# Auth endpoints
-# ---------------------------------------------------------------------------
-
-@app.get("/ping")
-async def ping(request: Request):
-    if _valid_session(request):
-        return JSONResponse({"auth": True})
-    return JSONResponse({"auth": False}, status_code=401)
-
-@app.post("/pair")
-async def pair(request: Request):
-    global _pair_attempts, _pair_code, _pair_code_expiry, _pair_code_mono_expiry
-    if not _pair_code:
-        return JSONResponse({"error": "no pairing code active — run byobu-mobile-pair"}, status_code=403)
-    if time.monotonic() > _pair_code_mono_expiry:
-        _pair_code = ""
-        return JSONResponse({"error": "pairing code expired — run byobu-mobile-pair again"}, status_code=403)
-    if _pair_attempts >= _MAX_PAIR_ATTEMPTS:
-        return JSONResponse({"error": "too many attempts — run byobu-mobile-pair again"}, status_code=429)
-    body_bytes = await request.body()
-    if len(body_bytes) > 1024:
-        return JSONResponse({"error": "request too large"}, status_code=413)
-    try:
-        body = json.loads(body_bytes)
-    except json.JSONDecodeError:
-        return JSONResponse({"error": "invalid JSON"}, status_code=400)
-    if not isinstance(body, dict):
-        return JSONResponse({"error": "invalid JSON"}, status_code=400)
-    code = re.sub(r"\D", "", body.get("code", ""))
-    if code != _pair_code:
-        _pair_attempts += 1
-        left = _MAX_PAIR_ATTEMPTS - _pair_attempts
-        return JSONResponse({"error": f"wrong code — {left} attempts left"}, status_code=403)
-    # Valid — issue permanent session token; invalidate code (one device per code)
-    token = secrets.token_urlsafe(32)
-    label = request.headers.get("user-agent", "")[:120]
-    ip = request.client.host if request.client else "unknown"
-    _sessions[token] = {
-        "ip": ip,
-        "paired_at": time.time(),
-        "label": label,
-    }
-    _save_tokens()
-    _pair_code = ""
-    _pair_code_expiry = 0.0
-    _pair_code_mono_expiry = 0.0
-    _pair_attempts = 0
-    print(f"✓ Byobu Mobile: device paired ({ip})", flush=True)
-    resp = JSONResponse({"ok": True})
-    resp.set_cookie(
-        "byobu_mobile_session", token,
-        max_age=10 * 365 * 86400,
-        httponly=True,
-        samesite="strict",
-        secure=_https_mode,
-    )
-    return resp
 
 # ---------------------------------------------------------------------------
 # Tailscale IP detection
@@ -200,7 +113,10 @@ def _tailscale_ip() -> str | None:
         pass
     return None
 
-# Strip ANSI escape sequences and carriage returns from terminal output
+# ---------------------------------------------------------------------------
+# ANSI stripping
+# ---------------------------------------------------------------------------
+
 ANSI_RE = re.compile(
     r'\x1b\[[0-9;]*[mGKHFJABCDsuhrPX@L]'
     r'|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)'
@@ -357,7 +273,6 @@ def read_byobu_status() -> list[dict]:
     status_dir = shm / "status.tmux"
     if not status_dir.is_dir():
         return []
-
     chips = []
     for name in BYOBU_METRICS:
         fpath = status_dir / name
@@ -367,246 +282,352 @@ def read_byobu_status() -> list[dict]:
             raw = fpath.read_text()
         except OSError:
             continue
-
         text = _TMUX_ATTR.sub("", raw).strip()
         text = re.sub(r'([A-Za-z])(\d)', r'\1 \2', text)
         if not text:
             continue
-
         bg_name = _first_attr(raw, "bg=")
         if bg_name and _CSS_HEX_RE.match(bg_name):
             bg_css = bg_name
         else:
             bg_css = _BG.get(bg_name or "", "#2d2d2d")
-
         text_css = "#111111" if bg_name in _LIGHT_BG else "#eeeeee"
         chips.append({"label": name, "text": text, "bg": bg_css, "color": text_css})
-
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     chips.insert(0, {"label": "datetime", "text": now, "bg": "#2d2d2d", "color": "#eeeeee"})
     return chips
 
 # ---------------------------------------------------------------------------
-# HTTP endpoints
+# Tornado HTTP handlers
 # ---------------------------------------------------------------------------
 
-STATIC = Path(__file__).parent / "static"
-MACHINES_FILE = CONFIG_DIR / "machines.json"
+_CSP = (
+    "default-src 'self'; "
+    "script-src 'unsafe-inline'; "
+    "style-src 'unsafe-inline'; "
+    "connect-src 'self'; "
+    "img-src 'self'"
+)
 
-@app.get("/")
-async def index():
-    content = await asyncio.to_thread((STATIC / "index.html").read_text)
-    return HTMLResponse(content)
+class BaseHandler(tornado.web.RequestHandler):
+    """All handlers inherit this for security headers."""
 
-@app.get("/byobu.svg")
-async def byobu_svg():
-    from fastapi.responses import Response
-    content = await asyncio.to_thread((STATIC / "byobu.svg").read_bytes)
-    return Response(content=content, media_type="image/svg+xml",
-                    headers={"Cache-Control": "max-age=86400"})
+    def set_default_headers(self):
+        self.set_header("X-Content-Type-Options", "nosniff")
+        self.set_header("X-Frame-Options", "DENY")
+        self.set_header("Content-Security-Policy", _CSP)
+        self.set_header("Referrer-Policy", "no-referrer")
+        self.set_header("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
 
-@app.get("/manifest.json")
-async def manifest():
-    from fastapi.responses import Response
-    content = await asyncio.to_thread((STATIC / "manifest.json").read_bytes)
-    return Response(content=content, media_type="application/manifest+json",
-                    headers={"Cache-Control": "max-age=3600"})
+    def json(self, obj: object, status: int = 200):
+        self.set_status(status)
+        self.set_header("Content-Type", "application/json")
+        self.finish(json.dumps(obj))
 
-@app.get("/sw.js")
-async def service_worker():
-    from fastapi.responses import Response
-    content = await asyncio.to_thread((STATIC / "sw.js").read_bytes)
-    # Service workers must not be cached aggressively — browsers re-check on every load.
-    return Response(content=content, media_type="application/javascript",
-                    headers={"Cache-Control": "no-cache"})
 
-@app.get("/icons/{filename}")
-async def icons(filename: str):
-    from fastapi.responses import Response
-    if not re.match(r'^[\w\-]+\.png$', filename):
-        return JSONResponse({"error": "not found"}, status_code=404)
-    path = STATIC / "icons" / filename
-    if not path.exists():
-        return JSONResponse({"error": "not found"}, status_code=404)
-    content = await asyncio.to_thread(path.read_bytes)
-    return Response(content=content, media_type="image/png",
-                    headers={"Cache-Control": "max-age=86400"})
+class BaseAuthHandler(BaseHandler):
+    """Protected handlers inherit this; unauthenticated requests get 401."""
 
-@app.get("/machines")
-async def machines(request: Request):
-    """Return this machine + any configured siblings for the machine selector."""
-    try:
-        host = request.headers.get("host", "").split(":")[0]
-        current_url = f"{'https' if _https_mode else 'http'}://{request.headers.get('host', 'localhost')}"
-        siblings = []
-        if MACHINES_FILE.exists():
-            raw = json.loads(await asyncio.to_thread(MACHINES_FILE.read_text))
-            if isinstance(raw, list):
-                siblings = [s for s in raw if isinstance(s, dict) and "name" in s and "url" in s]
-        result = [{"name": "this machine", "url": current_url, "current": True}] + [
-            {"name": s["name"], "url": s["url"].rstrip("/"), "current": False}
-            for s in siblings
-        ]
-        # Give the current machine a better name if siblings define one for this host
-        for s in siblings:
-            if s.get("url", "").rstrip("/") == current_url.rstrip("/"):
-                result[0]["name"] = s["name"]
-                break
-        return JSONResponse(result)
-    except Exception as e:
-        return JSONResponse({"error": str(e)}, status_code=500)
+    def prepare(self):
+        token = self.get_cookie("byobu_mobile_session") or ""
+        if not _valid_session_token(token):
+            self.json({"error": "unauthorized"}, 401)
 
-@app.get("/status")
-async def status():
-    chips = await asyncio.to_thread(read_byobu_status)
-    return JSONResponse(chips)
+
+# ── public endpoints ─────────────────────────────────────────────────────────
+
+class IndexHandler(BaseHandler):
+    async def get(self):
+        content = await asyncio.to_thread((STATIC / "index.html").read_text)
+        self.set_header("Content-Type", "text/html; charset=utf-8")
+        self.finish(content)
+
+
+class SvgHandler(BaseHandler):
+    async def get(self):
+        content = await asyncio.to_thread((STATIC / "byobu.svg").read_bytes)
+        self.set_header("Content-Type", "image/svg+xml")
+        self.set_header("Cache-Control", "max-age=86400")
+        self.finish(content)
+
+
+class ManifestHandler(BaseHandler):
+    async def get(self):
+        content = await asyncio.to_thread((STATIC / "manifest.json").read_bytes)
+        self.set_header("Content-Type", "application/manifest+json")
+        self.set_header("Cache-Control", "max-age=3600")
+        self.finish(content)
+
+
+class ServiceWorkerHandler(BaseHandler):
+    async def get(self):
+        content = await asyncio.to_thread((STATIC / "sw.js").read_bytes)
+        self.set_header("Content-Type", "application/javascript")
+        # Service workers must not be cached — browser re-checks on every load.
+        self.set_header("Cache-Control", "no-cache")
+        self.finish(content)
+
+
+class IconHandler(BaseHandler):
+    async def get(self, filename: str):
+        if not re.match(r'^[\w\-]+\.png$', filename):
+            return self.json({"error": "not found"}, 404)
+        path = STATIC / "icons" / filename
+        if not path.exists():
+            return self.json({"error": "not found"}, 404)
+        content = await asyncio.to_thread(path.read_bytes)
+        self.set_header("Content-Type", "image/png")
+        self.set_header("Cache-Control", "max-age=86400")
+        self.finish(content)
+
+
+class PingHandler(BaseHandler):
+    def get(self):
+        token = self.get_cookie("byobu_mobile_session") or ""
+        if _valid_session_token(token):
+            self.json({"auth": True})
+        else:
+            self.json({"auth": False}, 401)
+
+
+class PairHandler(BaseHandler):
+    async def post(self):
+        global _pair_attempts, _pair_code, _pair_code_expiry, _pair_code_mono_expiry
+        if not _pair_code:
+            return self.json({"error": "no pairing code active — run byobu-mobile-pair"}, 403)
+        if time.monotonic() > _pair_code_mono_expiry:
+            _pair_code = ""
+            return self.json({"error": "pairing code expired — run byobu-mobile-pair again"}, 403)
+        if _pair_attempts >= _MAX_PAIR_ATTEMPTS:
+            return self.json({"error": "too many attempts — run byobu-mobile-pair again"}, 429)
+        body_bytes = self.request.body
+        if len(body_bytes) > 1024:
+            return self.json({"error": "request too large"}, 413)
+        try:
+            body = json.loads(body_bytes)
+        except json.JSONDecodeError:
+            return self.json({"error": "invalid JSON"}, 400)
+        if not isinstance(body, dict):
+            return self.json({"error": "invalid JSON"}, 400)
+        code = re.sub(r"\D", "", body.get("code", ""))
+        if code != _pair_code:
+            _pair_attempts += 1
+            left = _MAX_PAIR_ATTEMPTS - _pair_attempts
+            return self.json({"error": f"wrong code — {left} attempts left"}, 403)
+        # Valid — issue permanent session token; invalidate code (one device per code)
+        token = secrets.token_urlsafe(32)
+        label = self.request.headers.get("User-Agent", "")[:120]
+        ip = self.request.remote_ip  # respects xheaders automatically
+        _sessions[token] = {
+            "ip": ip,
+            "paired_at": time.time(),
+            "label": label,
+        }
+        await asyncio.to_thread(_save_tokens)
+        _pair_code = ""
+        _pair_code_expiry = 0.0
+        _pair_code_mono_expiry = 0.0
+        _pair_attempts = 0
+        print(f"✓ Byobu Mobile: device paired ({ip})", flush=True)
+        self.set_cookie(
+            "byobu_mobile_session", token,
+            expires_days=10 * 365,
+            httponly=True,
+            samesite="Strict",
+            secure=_https_mode,
+        )
+        self.json({"ok": True})
+
+
+class MachinesHandler(BaseHandler):
+    async def get(self):
+        try:
+            current_url = f"{self.request.protocol}://{self.request.host}"
+            siblings = []
+            if MACHINES_FILE.exists():
+                raw = json.loads(await asyncio.to_thread(MACHINES_FILE.read_text))
+                if isinstance(raw, list):
+                    siblings = [s for s in raw
+                                if isinstance(s, dict) and "name" in s and "url" in s]
+            result = [{"name": "this machine", "url": current_url, "current": True}] + [
+                {"name": s["name"], "url": s["url"].rstrip("/"), "current": False}
+                for s in siblings
+            ]
+            for s in siblings:
+                if s.get("url", "").rstrip("/") == current_url.rstrip("/"):
+                    result[0]["name"] = s["name"]
+                    break
+            self.json(result)
+        except Exception as e:
+            self.json({"error": str(e)}, 500)
+
+
+# ── protected endpoints ───────────────────────────────────────────────────────
+
+class StatusHandler(BaseAuthHandler):
+    async def get(self):
+        chips = await asyncio.to_thread(read_byobu_status)
+        self.json(chips)
+
 
 # ---------------------------------------------------------------------------
-# WebSocket — one connection per browser tab
+# WebSocket handler
 # ---------------------------------------------------------------------------
 
 _MAX_HISTORY_LINES = 10_000
 _TMUX_ID_RE = re.compile(r"^[$@%]\d+$")
-
 _WS_RATE_WINDOW = 1.0   # seconds
 _WS_RATE_LIMIT  = 20    # max messages per window
 
 def _valid_tmux_id(s: str) -> bool:
     return bool(s and _TMUX_ID_RE.match(s))
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    token = websocket.cookies.get("byobu_mobile_session", "")
-    await websocket.accept()
-    if not token or token not in _sessions:
-        await websocket.close(code=4401)
-        return
-    stream_task: Optional[asyncio.Task] = None
 
-    # Per-connection rate limiting
-    _rate_window_start = time.monotonic()
-    _rate_count = 0
+class WsHandler(tornado.websocket.WebSocketHandler):
+    """One WebSocket connection per browser tab.
 
-    async def send(obj: dict):
-        await websocket.send_text(json.dumps(obj))
+    check_origin() is intentionally left at Tornado's default, which requires
+    Origin == Host. This is a security measure against cross-site WebSocket
+    hijacking and is correct for our setup in all modes.
+    """
 
-    async def stream_pane(pane_id: str, history_lines: int):
+    def open(self):
+        token = self.get_cookie("byobu_mobile_session") or ""
+        if not _valid_session_token(token):
+            self.close(4401, "unauthorized")
+            return
+        self._token = token
+        self._stream_task: asyncio.Task | None = None
+        self._rate_window_start = time.monotonic()
+        self._rate_count = 0
+        asyncio.ensure_future(self._send_sessions())
+
+    def on_message(self, raw):
+        asyncio.ensure_future(self._handle(raw))
+
+    def on_close(self):
+        if getattr(self, "_stream_task", None):
+            self._stream_task.cancel()
+
+    def _send(self, obj: dict):
+        try:
+            self.write_message(json.dumps(obj))
+        except tornado.websocket.WebSocketClosedError:
+            pass
+
+    async def _send_sessions(self):
+        sessions = await asyncio.to_thread(tmux_list_sessions)
+        self._send({"type": "sessions", "data": sessions})
+
+    async def _stream_pane(self, pane_id: str, history_lines: int):
         try:
             content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines)
-            await send({"type": "snapshot", "pane_id": pane_id, "data": content})
+            self._send({"type": "snapshot", "pane_id": pane_id, "data": content})
             last = content
             while True:
                 await asyncio.sleep(0.5)
                 content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines)
                 if content != last:
-                    await send({"type": "update", "pane_id": pane_id, "data": content})
+                    self._send({"type": "update", "pane_id": pane_id, "data": content})
                     last = content
         except asyncio.CancelledError:
             raise
         except Exception as e:
-            await send({"type": "error", "message": f"pane stream lost: {e}"})
+            self._send({"type": "error", "message": f"pane stream lost: {e}"})
 
-    try:
-        sessions = await asyncio.to_thread(tmux_list_sessions)
-        await send({"type": "sessions", "data": sessions})
+    async def _handle(self, raw: str):
+        # Re-check token on every message — catches revocation mid-session
+        if not _valid_session_token(getattr(self, "_token", "")):
+            self.close(4401, "unauthorized")
+            return
 
-        async for raw in websocket.iter_text():
-            # Re-check token on every message — catches revocation mid-session
-            if token not in _sessions:
-                await websocket.close(code=4401)
-                return
+        # Rate limiting: fixed window, per connection
+        now = time.monotonic()
+        if now - self._rate_window_start >= _WS_RATE_WINDOW:
+            self._rate_window_start = now
+            self._rate_count = 0
+        self._rate_count += 1
+        if self._rate_count > _WS_RATE_LIMIT:
+            self._send({"type": "error", "message": "rate limit exceeded"})
+            return
 
-            # Rate limiting: max _WS_RATE_LIMIT messages per _WS_RATE_WINDOW seconds
-            now = time.monotonic()
-            if now - _rate_window_start >= _WS_RATE_WINDOW:
-                _rate_window_start = now
-                _rate_count = 0
-            _rate_count += 1
-            if _rate_count > _WS_RATE_LIMIT:
-                await send({"type": "error", "message": "rate limit exceeded"})
-                continue
+        if len(raw) > 16_384:
+            self._send({"type": "error", "message": "message too large"})
+            return
 
-            if len(raw) > 16_384:
-                await send({"type": "error", "message": "message too large"})
-                continue
+        try:
+            msg = json.loads(raw)
+        except json.JSONDecodeError:
+            self._send({"type": "error", "message": "invalid JSON"})
+            return
+        if not isinstance(msg, dict):
+            self._send({"type": "error", "message": "invalid JSON"})
+            return
 
-            try:
-                msg = json.loads(raw)
-            except json.JSONDecodeError:
-                await send({"type": "error", "message": "invalid JSON"})
-                continue
-            if not isinstance(msg, dict):
-                await send({"type": "error", "message": "invalid JSON"})
-                continue
+        mtype = msg.get("type")
 
-            mtype = msg.get("type")
+        try:
+            if mtype == "list_sessions":
+                sessions = await asyncio.to_thread(tmux_list_sessions)
+                self._send({"type": "sessions", "data": sessions})
 
-            try:
-                if mtype == "list_sessions":
-                    sessions = await asyncio.to_thread(tmux_list_sessions)
-                    await send({"type": "sessions", "data": sessions})
+            elif mtype == "subscribe":
+                pane_id = msg.get("pane_id", "")
+                if not _valid_tmux_id(pane_id):
+                    self._send({"type": "error", "message": "invalid pane_id"})
+                else:
+                    try:
+                        lines = max(1, min(int(msg.get("lines", 300)), _MAX_HISTORY_LINES))
+                    except (ValueError, TypeError):
+                        lines = 300
+                    if self._stream_task:
+                        self._stream_task.cancel()
+                        await asyncio.gather(self._stream_task, return_exceptions=True)
+                    self._stream_task = asyncio.ensure_future(
+                        self._stream_pane(pane_id, lines)
+                    )
 
-                elif mtype == "subscribe":
-                    pane_id = msg.get("pane_id", "")
-                    if not _valid_tmux_id(pane_id):
-                        await send({"type": "error", "message": "invalid pane_id"})
-                    else:
-                        try:
-                            lines = max(1, min(int(msg.get("lines", 300)), _MAX_HISTORY_LINES))
-                        except (ValueError, TypeError):
-                            lines = 300
-                        if stream_task:
-                            stream_task.cancel()
-                            await asyncio.gather(stream_task, return_exceptions=True)
-                        stream_task = asyncio.create_task(stream_pane(pane_id, lines))
+            elif mtype == "new_session":
+                name = str(msg.get("name", "")).strip()[:128]
+                if name:
+                    await asyncio.to_thread(tmux_new_session, name)
+                    sessions_list = await asyncio.to_thread(tmux_list_sessions)
+                    new_id = next((s["id"] for s in sessions_list if s["name"] == name), None)
+                    self._send({"type": "sessions", "data": sessions_list, "new_session": new_id})
+                else:
+                    self._send({"type": "error", "message": "session name required"})
 
-                elif mtype == "new_session":
+            elif mtype == "new_window":
+                sid = msg.get("session_id", "")
+                if not _valid_tmux_id(sid):
+                    self._send({"type": "error", "message": "invalid session_id"})
+                else:
                     name = str(msg.get("name", "")).strip()[:128]
-                    if name:
-                        await asyncio.to_thread(tmux_new_session, name)
-                        sessions_list = await asyncio.to_thread(tmux_list_sessions)
-                        new_id = next((s["id"] for s in sessions_list if s["name"] == name), None)
-                        await send({"type": "sessions", "data": sessions_list, "new_session": new_id})
-                    else:
-                        await send({"type": "error", "message": "session name required"})
+                    await asyncio.to_thread(tmux_new_window, sid, name)
+                    sessions_list = await asyncio.to_thread(tmux_list_sessions)
+                    self._send({"type": "sessions", "data": sessions_list})
 
-                elif mtype == "new_window":
-                    sid = msg.get("session_id", "")
-                    if not _valid_tmux_id(sid):
-                        await send({"type": "error", "message": "invalid session_id"})
-                    else:
-                        name = str(msg.get("name", "")).strip()[:128]
-                        await asyncio.to_thread(tmux_new_window, sid, name)
-                        sessions_list = await asyncio.to_thread(tmux_list_sessions)
-                        await send({"type": "sessions", "data": sessions_list})
+            elif mtype == "new_pane":
+                wid = msg.get("window_id", "")
+                if not _valid_tmux_id(wid):
+                    self._send({"type": "error", "message": "invalid window_id"})
+                else:
+                    await asyncio.to_thread(tmux_new_pane, wid)
+                    sessions_list = await asyncio.to_thread(tmux_list_sessions)
+                    self._send({"type": "sessions", "data": sessions_list})
 
-                elif mtype == "new_pane":
-                    wid = msg.get("window_id", "")
-                    if not _valid_tmux_id(wid):
-                        await send({"type": "error", "message": "invalid window_id"})
-                    else:
-                        await asyncio.to_thread(tmux_new_pane, wid)
-                        sessions_list = await asyncio.to_thread(tmux_list_sessions)
-                        await send({"type": "sessions", "data": sessions_list})
+            elif mtype == "send_keys":
+                pane_id = msg.get("pane_id", "")
+                if not _valid_tmux_id(pane_id):
+                    self._send({"type": "error", "message": "invalid pane_id"})
+                else:
+                    keys = str(msg.get("keys", ""))[:4096]
+                    enter = bool(msg.get("enter", True))
+                    await asyncio.to_thread(tmux_send_keys, pane_id, keys, enter)
 
-                elif mtype == "send_keys":
-                    pane_id = msg.get("pane_id", "")
-                    if not _valid_tmux_id(pane_id):
-                        await send({"type": "error", "message": "invalid pane_id"})
-                    else:
-                        keys = str(msg.get("keys", ""))[:4096]
-                        enter = bool(msg.get("enter", True))
-                        await asyncio.to_thread(tmux_send_keys, pane_id, keys, enter)
+        except Exception as e:
+            self._send({"type": "error", "message": f"command failed: {e}"})
 
-            except Exception as e:
-                await send({"type": "error", "message": f"command failed: {e}"})
-
-    except WebSocketDisconnect:
-        pass
-    finally:
-        if stream_task:
-            stream_task.cancel()
-            await asyncio.gather(stream_task, return_exceptions=True)
 
 # ---------------------------------------------------------------------------
 # Admin Unix socket — byobu-mobile-pair / byobu-mobile-unpair only
@@ -680,6 +701,7 @@ async def _handle_admin(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
         writer.close()
         await writer.wait_closed()
 
+
 async def _run_admin_server() -> None:
     if ADMIN_SOCK.exists():
         ADMIN_SOCK.unlink()
@@ -695,6 +717,26 @@ async def _run_admin_server() -> None:
     finally:
         ADMIN_SOCK.unlink(missing_ok=True)
 
+
+# ---------------------------------------------------------------------------
+# Application wiring
+# ---------------------------------------------------------------------------
+
+def _make_app() -> tornado.web.Application:
+    return tornado.web.Application([
+        (r"/",               IndexHandler),
+        (r"/byobu\.svg",     SvgHandler),
+        (r"/manifest\.json", ManifestHandler),
+        (r"/sw\.js",         ServiceWorkerHandler),
+        (r"/icons/(.+)",     IconHandler),
+        (r"/ping",           PingHandler),
+        (r"/pair",           PairHandler),
+        (r"/machines",       MachinesHandler),
+        (r"/status",         StatusHandler),
+        (r"/ws",             WsHandler),
+    ])
+
+
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
@@ -702,24 +744,22 @@ async def _run_admin_server() -> None:
 async def _amain(host: str, port: int, https: bool) -> None:
     global _https_mode
     _https_mode = https
-    config = uvicorn.Config(
-        app,
-        host=host,
-        port=port,
-        log_level="warning",
-        proxy_headers=https,
-        forwarded_allow_ips="127.0.0.1" if https else None,
-    )
-    server = uvicorn.Server(config)
+    app = _make_app()
+    # xheaders=True: trust X-Forwarded-For/Proto from tailscale serve proxy.
+    # Only set in --https mode; in direct mode leave False to prevent spoofing.
+    server = tornado.httpserver.HTTPServer(app, xheaders=https)
+    server.listen(port, address=host)
     admin_task = asyncio.create_task(_run_admin_server())
     try:
-        await server.serve()
+        await asyncio.Event().wait()   # run until cancelled (Ctrl-C / SIGTERM)
     finally:
         admin_task.cancel()
         try:
             await admin_task
         except asyncio.CancelledError:
             pass
+        server.stop()
+
 
 def main():
     parser = argparse.ArgumentParser(description="Byobu Mobile daemon")
@@ -736,7 +776,6 @@ def main():
     host = args.host
     if not host:
         if args.https:
-            # In HTTPS mode the daemon sits behind tailscale serve on localhost
             host = "127.0.0.1"
             print("Byobu Mobile: HTTPS mode — binding to localhost (tailscale serve proxy)")
         else:
@@ -749,6 +788,7 @@ def main():
 
     print(f"Byobu Mobile daemon on {host}:{args.port} — run 'byobu-mobile-pair' to pair a device.", flush=True)
     asyncio.run(_amain(host, args.port, args.https))
+
 
 if __name__ == "__main__":
     main()
