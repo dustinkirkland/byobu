@@ -29,28 +29,58 @@ _install_hook() {
     printf '\n%s start 2>/dev/null || true\n' "$CTL_CMD" >> "$dest"
 }
 
-# Install in ~/.profile unconditionally (covers bash, dash, most login shells).
+# ---------------------------------------------------------------------------
+# First-time setup wizard
+# Runs setup unconditionally — it is idempotent and skips steps already done.
+# Exits with a clear message if a prerequisite (Tailscale, Python) is missing.
+# ---------------------------------------------------------------------------
+"$CTL" setup --quiet || {
+    echo
+    echo "First-time setup did not complete. Fix the issue above, then re-run:"
+    echo "  byobu-mobile-enable"
+    exit 1
+}
+
+# ---------------------------------------------------------------------------
+# Install the login hook
+# ---------------------------------------------------------------------------
 _install_hook "$HOME/.profile"
 
-# Install in shell-specific login files only if they already exist.
 for f in ".bash_profile" ".bash_login"; do
     [ -f "$HOME/$f" ] && _install_hook "$HOME/$f" || true
 done
 
-# Install in zprofile if the default shell is zsh.
 case "${SHELL:-}" in
     *zsh) _install_hook "$HOME/.zprofile" ;;
 esac
 
-# Start the daemon right now (non-fatal: already running, tailscale not up, etc.)
-"$CTL" start 2>/dev/null || true
+# ---------------------------------------------------------------------------
+# Start the daemon now (skip if already running)
+# ---------------------------------------------------------------------------
+if "$CTL" start 2>/dev/null; then
+    STARTED=1
+else
+    STARTED=0
+fi
 
 echo
-echo "Byobu Mobile daemon started and will launch automatically at each login."
+if [ "$STARTED" = "1" ]; then
+    echo "Byobu Mobile daemon started and will launch automatically at each login."
+else
+    echo "Byobu Mobile daemon is already running and will launch automatically at each login."
+fi
 echo
-echo "Pair a device (if you haven't already):"
-echo "  $(dirname "$CTL_CMD")/byobu-mobile-pair  (or just: byobu-mobile-pair)"
-echo
+
+# Hint to pair if no tokens file exists yet (never paired any device).
+TOKENS="$HOME/.config/byobu-mobile/tokens.json"
+if [ ! -s "$TOKENS" ]; then
+    echo "Next step — pair your phone:"
+    echo "  byobu-mobile-pair"
+    echo
+    echo "Open the URL printed above in your phone's browser, enter the code, and tap Pair."
+    echo
+fi
+
 echo "To stop and disable later, run:"
 echo "  byobu-mobile-disable"
 echo

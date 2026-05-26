@@ -34,6 +34,9 @@ print(name)
 case "${1:-}" in
   setup)
     # One-time setup: create venv, install deps, enable tailscale serve.
+    # Pass --quiet to suppress the "Next steps" section (used by byobu-mobile-enable).
+    SETUP_QUIET=0
+    [ "${2:-}" = "--quiet" ] && SETUP_QUIET=1
     echo "=== byobu-mobile setup ==="
     echo ""
 
@@ -88,12 +91,14 @@ case "${1:-}" in
         echo "✓ tailscale serve configured"
     fi
 
-    echo ""
-    echo "Setup complete. Next steps:"
-    echo ""
-    echo "  1. Start the daemon:      $0 start"
-    echo "  2. Generate pairing code: $(dirname "$0")/byobu-mobile-pair"
-    echo "  3. Open on your phone:    https://$TS_HOST"
+    if [ "$SETUP_QUIET" = "0" ]; then
+        echo ""
+        echo "Setup complete. Next steps:"
+        echo ""
+        echo "  1. Start the daemon:      $0 start"
+        echo "  2. Generate pairing code: $(dirname "$0")/byobu-mobile-pair"
+        echo "  3. Open on your phone:    https://$TS_HOST"
+    fi
     ;;
 
   start|serve)
@@ -114,8 +119,10 @@ case "${1:-}" in
         echo "Error: cannot determine Tailscale hostname (is tailscale up?)" >&2
         exit 1
     fi
-    echo "Configuring tailscale serve: https://$TS_HOST → localhost:$PORT"
-    tailscale serve --bg "$PORT"
+    if ! tailscale serve status 2>/dev/null | grep -q ":${PORT}"; then
+        echo "Configuring tailscale serve: https://$TS_HOST → localhost:$PORT"
+        tailscale serve --bg "$PORT"
+    fi
     _ensure_dir
     echo "Starting byobu-mobile (HTTPS mode)..."
     nohup "$VENV" "$DIR/$DAEMON" --host 127.0.0.1 --port "$PORT" --https \
