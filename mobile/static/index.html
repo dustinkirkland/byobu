@@ -411,7 +411,7 @@ function rebuildSessionList() {
   sessions.forEach(s => {
     const o = document.createElement('option');
     o.value = s.id;
-    o.textContent = s.attached ? `Session: ● ${s.name}` : `Session: ${s.name}`;
+    o.textContent = s.attached ? `S: ● ${s.name}` : `S: ${s.name}`;
     selSession.appendChild(o);
   });
 
@@ -445,7 +445,7 @@ function onSessionChange(auto = false) {
   sess.windows.forEach(w => {
     const o = document.createElement('option');
     o.value = w.id;
-    o.textContent = `Window: ${w.index}: ${w.name}`;
+    o.textContent = `W: ${w.index}: ${w.name}`;
     if (w.active) { o.textContent += ' ●'; activeWid = w.id; }
     selWindow.appendChild(o);
   });
@@ -471,7 +471,7 @@ function onWindowChange(auto = false) {
   win.panes.forEach(p => {
     const o = document.createElement('option');
     o.value = p.id;
-    o.textContent = `Pane: ${p.index}: ${p.command}`;
+    o.textContent = `P: ${p.index}: ${p.command}`;
     if (p.active) { o.textContent += ' ●'; activePid = p.id; }
     selPane.appendChild(o);
   });
