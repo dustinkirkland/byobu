@@ -1,3 +1,17 @@
+byobu (7.0) UNRELEASED; urgency=medium
+
+  * mobile/*:
+    - introduce byobu-mobile: a mobile companion daemon for Byobu/tmux sessions
+    - monitor and interact with tmux sessions from any phone browser over Tailscale
+    - HTTPS by default via tailscale serve (Let's Encrypt cert, no management required)
+    - pairing flow: 6-digit one-time code, permanent session tokens, per-device revocation
+    - PWA support: manifest.json, service worker, Add to Home Screen on Android and iOS
+    - multi-machine selector: jump between byobu-mobile daemons from a single UI
+    - byobu-mobile-enable / byobu-mobile-disable: start/stop daemon and install login hook
+    - daemon built on python3-tornado (Ubuntu Main); zero new runtime deps for packaged users
+
+ -- Dustin Kirkland <dustin.kirkland@chainguard.dev>  Tue, 26 May 2026 11:53:03 -0500
+
 byobu (6.16-0ubuntu1) UNRELEASED; urgency=medium
 
   * usr/share/man/man1/byobu.1:
