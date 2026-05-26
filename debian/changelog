@@ -1,4 +1,4 @@
-byobu (6.16-0ubuntu1) UNRELEASED; urgency=medium
+byobu (6.16) released; urgency=medium
 
   * usr/share/man/man1/byobu.1:
     - add STATUS ICONS section documenting Unicode and ASCII icons
@@ -15,7 +15,7 @@ byobu (6.16-0ubuntu1) UNRELEASED; urgency=medium
     - add Swedish translation for Debian installation templates
     - thanks to Luna Jernberg for the translation
 
- -- Dustin Kirkland <dustin.kirkland@chainguard.dev>  Sat, 15 Feb 2026 19:30:00 -0600
+ -- Dustin Kirkland <dustin.kirkland@chainguard.dev>  Tue, 26 May 2026 11:53:03 -0500
 
 byobu (6.15) released; urgency=medium
 
