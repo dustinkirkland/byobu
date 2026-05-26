@@ -10,6 +10,7 @@ import json
 import os
 import re
 import secrets
+import socket
 import subprocess
 import time
 from pathlib import Path
@@ -229,12 +230,6 @@ def tmux_send_keys(pane_id: str, keys: str, enter: bool = True) -> None:
 # Byobu status line — reads pre-computed cache from /dev/shm
 # ---------------------------------------------------------------------------
 
-BYOBU_METRICS = [
-    "hostname", "ip_address", "release", "uptime",
-    "load_average", "cpu_freq", "cpu_temp",
-    "memory", "disk", "network",
-]
-
 _BG = {
     "black": "#1e1e1e",   "red": "#b03030",    "green": "#2a7a2a",
     "yellow": "#8a8000",  "blue": "#2050b0",    "magenta": "#7a2a7a",
@@ -268,36 +263,68 @@ def _byobu_shm() -> Path | None:
             continue
     return None
 
-def read_byobu_status() -> list[dict]:
-    shm = _byobu_shm()
-    if not shm:
-        return []
-    status_dir = shm / "status.tmux"
-    if not status_dir.is_dir():
-        return []
-    chips = []
-    for name in BYOBU_METRICS:
-        fpath = status_dir / name
-        if not fpath.exists():
+def _read_byobu_status_config() -> tuple[list[str], list[str]]:
+    """Parse user's byobu status config; return (left_metrics, right_metrics)."""
+    left_raw  = "logo release session"
+    right_raw = "uptime load_average cpu_count cpu_freq memory disk date time"
+    for path in [
+        Path.home() / ".config" / "byobu" / "status",
+        Path.home() / ".byobu" / "status",
+        Path("/usr/share/byobu/status/status"),
+    ]:
+        if not path.exists():
             continue
         try:
-            raw = fpath.read_text()
+            for line in path.read_text().splitlines():
+                line = line.strip()
+                if line.startswith("tmux_left="):
+                    left_raw = line.split("=", 1)[1].strip().strip('"')
+                elif line.startswith("tmux_right=") and not line.startswith("#"):
+                    right_raw = line.split("=", 1)[1].strip().strip('"')
+            break
         except OSError:
             continue
-        text = _TMUX_ATTR.sub("", raw).strip()
-        text = re.sub(r'([A-Za-z])(\d)', r'\1 \2', text)
-        if not text:
-            continue
-        bg_name = _first_attr(raw, "bg=")
-        if bg_name and _CSS_HEX_RE.match(bg_name):
-            bg_css = bg_name
-        else:
-            bg_css = _BG.get(bg_name or "", "#2d2d2d")
-        text_css = "#111111" if bg_name in _LIGHT_BG else "#eeeeee"
-        chips.append({"label": name, "text": text, "bg": bg_css, "color": text_css})
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    chips.insert(0, {"label": "datetime", "text": now, "bg": "#2d2d2d", "color": "#eeeeee"})
-    return chips
+
+    def _parse(raw: str) -> list[str]:
+        return [m for m in raw.split() if m and not m.startswith("#")]
+
+    return _parse(left_raw), _parse(right_raw)
+
+def _make_chip(name: str, shm: Path) -> dict | None:
+    if name == "logo":
+        return None
+    status_dir = shm / "status.tmux"
+    if not status_dir.is_dir():
+        return None
+    fpath = status_dir / name
+    if not fpath.exists():
+        return None
+    try:
+        raw = fpath.read_text()
+    except OSError:
+        return None
+    text = _TMUX_ATTR.sub("", raw).strip()
+    text = re.sub(r'([A-Za-z])(\d)', r'\1 \2', text)
+    if not text:
+        return None
+    bg_name = _first_attr(raw, "bg=")
+    if bg_name and _CSS_HEX_RE.match(bg_name):
+        bg_css = bg_name
+    else:
+        bg_css = _BG.get(bg_name or "", "#2d2d2d")
+    text_css = "#111111" if bg_name in _LIGHT_BG else "#eeeeee"
+    return {"label": name, "text": text, "bg": bg_css, "color": text_css}
+
+def read_byobu_status() -> dict:
+    shm = _byobu_shm()
+    left_names, right_names = _read_byobu_status_config()
+
+    def _chips(names: list[str]) -> list[dict]:
+        if not shm:
+            return []
+        return [c for name in names if (c := _make_chip(name, shm))]
+
+    return {"left": _chips(left_names), "right": _chips(right_names)}
 
 # ---------------------------------------------------------------------------
 # Tornado HTTP handlers
@@ -387,7 +414,7 @@ class PingHandler(BaseHandler):
     def get(self):
         token = self.get_cookie("byobu_mobile_session") or ""
         if _valid_session_token(token):
-            self.json({"auth": True})
+            self.json({"auth": True, "hostname": socket.gethostname()})
         else:
             self.json({"auth": False}, 401)
 

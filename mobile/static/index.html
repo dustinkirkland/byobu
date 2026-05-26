@@ -114,6 +114,16 @@
     }
     .icon-btn:active { background: var(--border); }
 
+    /* ── header hostname / clock ── */
+    #hostname-display {
+      margin-left: auto; font-size: 11px; color: var(--accent);
+      white-space: nowrap; flex-shrink: 0; letter-spacing: 0.03em;
+    }
+    #header-clock {
+      font-size: 11px; color: var(--dim);
+      white-space: nowrap; flex-shrink: 0;
+    }
+
     /* ── status bar ── */
     #statusbar {
       display: flex; align-items: center; gap: 8px;
@@ -142,12 +152,16 @@
 
     /* ── byobu status line ── */
     #statusline {
-      display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 5px;
-      padding: 5px 10px; background: var(--bg2);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 10px; background: var(--bg2);
       border-top: 1px solid var(--border); flex-shrink: 0;
-      scrollbar-width: none;
+      overflow-x: auto; scrollbar-width: none; gap: 6px;
     }
     #statusline::-webkit-scrollbar { display: none; }
+    #statusline-left, #statusline-right {
+      display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;
+    }
+    #statusline-right { margin-left: auto; }
     .chip {
       display: inline-block; padding: 2px 8px; border-radius: 10px;
       font-size: 11px; white-space: nowrap; font-family: var(--font);
@@ -253,6 +267,8 @@
       <select id="machine-select" title="Switch machine" style="display:none"></select>
       <button id="btn-install" title="Install as app" style="display:none">+ Install app</button>
       <button class="icon-btn" id="btn-refresh" title="Refresh session list">↺</button>
+      <span id="hostname-display"></span>
+      <span id="header-clock"></span>
     </div>
     <div id="header-pickers">
       <div class="picker-group">
@@ -283,7 +299,10 @@
 
   <div id="output" class="placeholder">Select a session → window → pane above.</div>
 
-  <div id="statusline"></div>
+  <div id="statusline">
+    <div id="statusline-left"></div>
+    <div id="statusline-right"></div>
+  </div>
 
   <div id="inputbar">
     <textarea id="cmd" rows="2" placeholder="Send keys to pane… (Enter = send, Shift+Enter = newline)"
@@ -320,9 +339,13 @@ const statusbar     = document.getElementById('statusbar');
 const statusText    = document.getElementById('status-text');
 const cmdInput      = document.getElementById('cmd');
 const btnSend       = document.getElementById('btn-send');
-const machineSelect  = document.getElementById('machine-select');
-const btnInstall     = document.getElementById('btn-install');
-const iosInstallTip  = document.getElementById('ios-install-tip');
+const machineSelect    = document.getElementById('machine-select');
+const btnInstall       = document.getElementById('btn-install');
+const iosInstallTip    = document.getElementById('ios-install-tip');
+const hostnameDisplay  = document.getElementById('hostname-display');
+const headerClock      = document.getElementById('header-clock');
+const statuslineLeft   = document.getElementById('statusline-left');
+const statuslineRight  = document.getElementById('statusline-right');
 
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
@@ -516,24 +539,39 @@ btnNewPane.addEventListener('click', () => {
   send({ type: 'new_pane', window_id: wid });
 });
 
+// ── header clock ──────────────────────────────────────────────────────────
+function startClock() {
+  function tick() {
+    const now = new Date();
+    const date = now.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+    const time = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+    headerClock.textContent = `${date} ${time}`;
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
 // ── byobu status line ─────────────────────────────────────────────────────
-const statusline = document.getElementById('statusline');
+function makeChip(c) {
+  const el = document.createElement('span');
+  el.className = 'chip';
+  el.textContent = c.text;
+  el.title = c.label;
+  el.style.background = c.bg;
+  el.style.color = c.color;
+  return el;
+}
 
 async function fetchByobuStatus() {
   try {
-    const chips = await fetch('/status').then(r => r.json());
-    if (!Array.isArray(chips)) return;
-    statusline.innerHTML = '';
-    chips.forEach(c => {
-      const el = document.createElement('span');
-      el.className = 'chip';
-      el.textContent = c.text;
-      el.title = c.label;
-      el.style.background = c.bg;
-      el.style.color = c.color;
-      statusline.appendChild(el);
-    });
-  } catch { /* byobu not running or daemon unreachable */ }
+    const data = await fetch('/status').then(r => r.json());
+    const left  = data.left  || [];
+    const right = data.right || [];
+    statuslineLeft.innerHTML  = '';
+    statuslineRight.innerHTML = '';
+    left.forEach(c  => statuslineLeft.appendChild(makeChip(c)));
+    right.forEach(c => statuslineRight.appendChild(makeChip(c)));
+  } catch { /* byobu not running */ }
 }
 
 function startStatusPolling() {
@@ -578,6 +616,7 @@ async function submitPair() {
     const data = await r.json();
     if (r.ok) {
       hidePairScreen();
+      applyHostname();
       connect();
       startStatusPolling();
     } else {
@@ -651,12 +690,22 @@ machineSelect.addEventListener('change', () => {
   if (url) window.location.href = url;
 });
 
+async function applyHostname() {
+  try {
+    const data = await fetch('/ping').then(r => r.json());
+    if (data.hostname) hostnameDisplay.textContent = data.hostname;
+  } catch { /* ignore */ }
+}
+
 // ── init: check auth, then connect or show pair screen ────────────────────
 async function init() {
   setStatus('connecting…', 'connecting');
+  startClock();
   try {
     const r = await fetch('/ping');
+    const data = await r.json();
     if (r.ok) {
+      if (data.hostname) hostnameDisplay.textContent = data.hostname;
       hidePairScreen();
       connect();
       startStatusPolling();
