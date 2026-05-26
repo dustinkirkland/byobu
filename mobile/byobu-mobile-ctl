@@ -1,0 +1,129 @@
+#!/bin/bash
+set -euo pipefail
+
+DAEMON="byobu_mobile.py"
+PORT=7432
+DIR="$(cd "$(dirname "$0")" && pwd)"
+VENV="$DIR/.venv/bin/python"
+PIDFILE="/tmp/byobu-mobile.pid"
+
+# Log goes under the same restricted directory as tokens/socket
+CONFIG_DIR="$HOME/.config/byobu-mobile"
+LOGFILE="$CONFIG_DIR/byobu-mobile.log"
+
+_ensure_dir() {
+    mkdir -p "$CONFIG_DIR"
+    chmod 700 "$CONFIG_DIR"
+    touch "$LOGFILE"
+    chmod 600 "$LOGFILE"
+}
+
+pid() {
+    lsof -ti:"$PORT" 2>/dev/null | head -1
+}
+
+case "${1:-}" in
+  start)
+    if p=$(pid); then
+        echo "byobu-mobile already running (pid $p)"
+        exit 1
+    fi
+    _ensure_dir
+    echo "Starting byobu-mobile on port $PORT..."
+    nohup "$VENV" "$DIR/$DAEMON" --port "$PORT" \
+        >> "$LOGFILE" 2>&1 &
+    echo $! > "$PIDFILE"
+    sleep 0.5
+    if p=$(pid); then
+        echo "byobu-mobile started (pid $p) — check $LOGFILE for bound address"
+    else
+        echo "byobu-mobile failed to start — check $LOGFILE"
+        exit 1
+    fi
+    ;;
+
+  stop)
+    if p=$(pid); then
+        # Cross-check: only kill if the PID matches what we launched.
+        # This prevents killing an unrelated process that happens to own the port.
+        if [ -f "$PIDFILE" ] && [ "$(cat "$PIDFILE")" != "$p" ]; then
+            echo "Error: pid $p owns port $PORT but does not match $PIDFILE ($(cat "$PIDFILE"))" >&2
+            echo "Refusing to kill. Remove $PIDFILE manually if byobu-mobile is truly stopped." >&2
+            exit 1
+        fi
+        kill "$p"
+        echo "byobu-mobile stopped (pid $p)"
+        rm -f "$PIDFILE"
+    else
+        echo "byobu-mobile not running"
+        rm -f "$PIDFILE"
+    fi
+    ;;
+
+  restart)
+    "$0" stop 2>/dev/null || true
+    sleep 0.5
+    "$0" start
+    ;;
+
+  status)
+    if p=$(pid); then
+        echo "byobu-mobile running (pid $p) — port $PORT"
+    else
+        echo "byobu-mobile not running"
+    fi
+    ;;
+
+  log)
+    tail -f "$LOGFILE"
+    ;;
+
+  serve)
+    # Set up tailscale serve (HTTPS termination) then restart daemon in --https mode.
+    # tailscale serve proxies https://<your-tailnet-hostname> → http://localhost:PORT
+    if ! command -v tailscale &>/dev/null; then
+        echo "Error: tailscale not found in PATH"
+        exit 1
+    fi
+    TS_HOST=$(tailscale status --json 2>/dev/null \
+        | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+name = d.get('Self', {}).get('DNSName', '').rstrip('.')
+print(name)
+" 2>/dev/null || true)
+    if [ -z "$TS_HOST" ]; then
+        echo "Error: cannot determine Tailscale hostname (is tailscale up?)"
+        exit 1
+    fi
+    echo "Configuring tailscale serve: https://$TS_HOST → localhost:$PORT"
+    tailscale serve --bg "$PORT"
+    "$0" stop 2>/dev/null || true
+    sleep 0.5
+    _ensure_dir
+    echo "Starting byobu-mobile in HTTPS mode (--https)..."
+    nohup "$VENV" "$DIR/$DAEMON" --host 127.0.0.1 --port "$PORT" --https \
+        >> "$LOGFILE" 2>&1 &
+    echo $! > "$PIDFILE"
+    sleep 0.5
+    if p=$(pid); then
+        echo "byobu-mobile started (pid $p)"
+        echo "Connect from phone: https://$TS_HOST"
+    else
+        echo "byobu-mobile failed to start — check $LOGFILE"
+        exit 1
+    fi
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop|restart|status|log|serve}"
+    echo ""
+    echo "  start    Start daemon (direct Tailscale IP access, HTTP)"
+    echo "  stop     Stop daemon"
+    echo "  restart  Restart daemon"
+    echo "  status   Show running status"
+    echo "  log      Tail the log"
+    echo "  serve    Configure tailscale serve (HTTPS) and restart"
+    exit 1
+    ;;
+esac

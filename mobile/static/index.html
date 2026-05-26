@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>byobu mobile</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #141414;
+      --bg2:      #1e1e1e;
+      --bg3:      #282828;
+      --border:   #333;
+      --text:     #d4d4d4;
+      --dim:      #666;
+      --accent:   #4e9de0;
+      --green:    #4ec94e;
+      --amber:    #e0a040;
+      --red:      #e05050;
+      --font:     'SF Mono', 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+    }
+
+    html, body {
+      height: 100%; background: var(--bg); color: var(--text);
+      font-family: var(--font); font-size: 13px;
+    }
+
+    /* ── layout ──
+       100dvh = dynamic viewport height: accounts for Android Chrome's
+       address bar appearing/disappearing. Falls back to 100vh on older
+       browsers. overflow on #output (not here) handles scrolling. */
+    #app {
+      display: flex; flex-direction: column;
+      height: 100vh; height: 100dvh;
+    }
+
+    /* ── header / picker bar ── */
+    #header {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      padding: 8px 10px; background: var(--bg2);
+      border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    #header h1 { font-size: 15px; color: var(--accent); letter-spacing: 2px; margin-right: 4px; }
+
+    .byobu-logo { height: 22px; width: auto; flex-shrink: 0; opacity: 0.85; }
+
+    /* ── picker groups (select + add button) ── */
+    .picker-group { display: flex; gap: 3px; align-items: center; flex: 1; min-width: 90px; }
+    .picker-group select { flex: 1; min-width: 0; }
+
+    select {
+      background: var(--bg3); color: var(--text);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 5px 8px; font-size: 12px; font-family: var(--font);
+      cursor: pointer;
+    }
+    select:disabled { opacity: 0.4; cursor: default; }
+
+    .add-btn {
+      background: var(--bg3); color: var(--accent);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 4px 8px; cursor: pointer; font-size: 18px;
+      line-height: 1; flex-shrink: 0;
+    }
+    .add-btn:disabled { opacity: 0.3; cursor: default; }
+    .add-btn:active:not(:disabled) { background: var(--border); }
+
+    .icon-btn {
+      background: var(--bg3); color: var(--dim);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 5px 10px; cursor: pointer; font-size: 14px; flex-shrink: 0;
+    }
+    .icon-btn:active { background: var(--border); }
+
+    /* ── status bar ── */
+    #statusbar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 3px 10px; background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px; color: var(--dim); flex-shrink: 0;
+    }
+    #statusbar .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--dim); flex-shrink: 0;
+    }
+    #statusbar.connected .dot { background: var(--green); }
+    #statusbar.connecting .dot { background: var(--amber); }
+    #statusbar.error .dot { background: var(--red); }
+
+    /* ── output area ── */
+    #output {
+      flex: 1; overflow-y: auto; overflow-x: auto;
+      padding: 10px 12px;
+      white-space: pre; font-family: var(--font); font-size: 12px;
+      line-height: 1.45; color: var(--text);
+      /* smooth scroll feel on mobile */
+      -webkit-overflow-scrolling: touch;
+    }
+    #output.placeholder { white-space: normal; color: var(--dim); font-style: italic; }
+
+    /* ── byobu status line ── */
+    #statusline {
+      display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 5px;
+      padding: 5px 10px; background: var(--bg2);
+      border-top: 1px solid var(--border); flex-shrink: 0;
+      scrollbar-width: none;
+    }
+    #statusline::-webkit-scrollbar { display: none; }
+    .chip {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 11px; white-space: nowrap; font-family: var(--font);
+      letter-spacing: 0.02em;
+    }
+
+    /* ── input bar ── */
+    #inputbar {
+      display: flex; gap: 6px; align-items: center;
+      padding: 8px 10px; background: var(--bg2);
+      border-top: 1px solid var(--border); flex-shrink: 0;
+      /* clear Android home indicator / notch */
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+
+    #cmd {
+      flex: 1; background: var(--bg3); color: var(--text);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 8px 10px; font-size: 13px; font-family: var(--font);
+      outline: none;
+    }
+    #cmd:focus { border-color: var(--accent); }
+    #cmd:disabled { opacity: 0.4; }
+    #cmd::placeholder { color: var(--dim); }
+
+
+    /* ── pairing overlay ── */
+    #pair-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(10,10,10,0.97);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #pair-box {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; padding: 36px 28px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; max-width: 320px; width: 90%;
+      text-align: center;
+    }
+    #pair-box h2 { font-size: 18px; color: var(--accent); letter-spacing: 2px; }
+    #pair-prompt { color: var(--dim); font-size: 12px; line-height: 1.55; }
+    #pair-code {
+      width: 100%; text-align: center;
+      background: var(--bg3); color: var(--text);
+      border: 2px solid var(--border); border-radius: 8px;
+      padding: 12px 8px; font-size: 30px; font-family: var(--font);
+      letter-spacing: 0.18em; outline: none;
+    }
+    #pair-code:focus { border-color: var(--accent); }
+    #pair-error { color: var(--red); font-size: 11px; min-height: 14px; }
+    #pair-btn {
+      background: var(--accent); color: #fff; border: none;
+      border-radius: 8px; padding: 11px 0; width: 100%;
+      font-size: 15px; font-family: var(--font); cursor: pointer;
+    }
+    #pair-btn:disabled { opacity: 0.45; cursor: default; }
+    #pair-btn:active:not(:disabled) { filter: brightness(0.85); }
+  </style>
+</head>
+<body>
+
+<!-- ── pairing overlay (shown until device is authenticated) ── -->
+<div id="pair-overlay" style="display:none">
+  <div id="pair-box">
+    <a href="https://byobu.org" target="_blank" rel="noopener" style="display:block">
+      <img src="/byobu.svg" style="height:52px;width:auto;opacity:0.9;" alt="Byobu">
+    </a>
+    <h2>byobu mobile</h2>
+    <p id="pair-prompt">Enter the pairing code<br>shown in the terminal:</p>
+    <input id="pair-code" type="text" inputmode="numeric" placeholder="XXX-XXX"
+           autocomplete="off" autocorrect="off" autocapitalize="off"
+           spellcheck="false" maxlength="7">
+    <p id="pair-error"></p>
+    <button id="pair-btn">Pair device</button>
+  </div>
+</div>
+
+<div id="app">
+
+  <div id="header">
+    <h1>byobu mobile</h1>
+    <a href="https://byobu.org" target="_blank" rel="noopener"
+       style="display:flex;align-items:center;gap:5px;text-decoration:none;flex-shrink:0;">
+      <img src="/byobu.svg" class="byobu-logo" alt="Byobu">
+      <span style="font-size:13px;color:var(--dim);letter-spacing:1px;">Byobu</span>
+    </a>
+    <div class="picker-group">
+      <select id="sel-session" title="Session">
+        <option value="">Session…</option>
+      </select>
+      <button class="add-btn" id="btn-new-session" title="New session">+</button>
+    </div>
+    <div class="picker-group">
+      <select id="sel-window" title="Window" disabled>
+        <option value="">Window…</option>
+      </select>
+      <button class="add-btn" id="btn-new-window" title="New window" disabled>+</button>
+    </div>
+    <div class="picker-group">
+      <select id="sel-pane" title="Pane" disabled>
+        <option value="">Pane…</option>
+      </select>
+      <button class="add-btn" id="btn-new-pane" title="New pane" disabled>+</button>
+    </div>
+    <button class="icon-btn" id="btn-refresh" title="Refresh session list">↺</button>
+  </div>
+
+  <div id="statusbar">
+    <span class="dot"></span>
+    <span id="status-text">connecting…</span>
+  </div>
+
+  <div id="output" class="placeholder">Select a session → window → pane above.</div>
+
+  <div id="statusline"></div>
+
+  <div id="inputbar">
+    <input id="cmd" type="text" placeholder="Send keys to pane…"
+           autocomplete="off" autocorrect="off" autocapitalize="off"
+           spellcheck="false" disabled>
+  </div>
+
+</div>
+<script>
+'use strict';
+
+// ── state ──────────────────────────────────────────────────────────────────
+let ws = null;
+let sessions = [];
+let currentPane = null;
+let forcedSessionId = null; // set after creating a new session
+let statusInterval = null;
+
+// ── DOM refs ───────────────────────────────────────────────────────────────
+const pairOverlay   = document.getElementById('pair-overlay');
+const pairCodeInput = document.getElementById('pair-code');
+const pairBtn       = document.getElementById('pair-btn');
+const pairError     = document.getElementById('pair-error');
+const selSession    = document.getElementById('sel-session');
+const selWindow     = document.getElementById('sel-window');
+const selPane       = document.getElementById('sel-pane');
+const btnRefresh    = document.getElementById('btn-refresh');
+const btnNewSession = document.getElementById('btn-new-session');
+const btnNewWindow  = document.getElementById('btn-new-window');
+const btnNewPane    = document.getElementById('btn-new-pane');
+const output        = document.getElementById('output');
+const statusbar     = document.getElementById('statusbar');
+const statusText    = document.getElementById('status-text');
+const cmdInput      = document.getElementById('cmd');
+
+// ── status ─────────────────────────────────────────────────────────────────
+function setStatus(msg, cls) {
+  statusText.textContent = msg;
+  statusbar.className = cls || '';
+}
+
+// ── WebSocket ──────────────────────────────────────────────────────────────
+function connect() {
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(`${proto}//${location.host}/ws`);
+
+  ws.onopen  = () => setStatus('connected', 'connected');
+  ws.onclose = (evt) => {
+    if (evt.code === 4401) {
+      showPairScreen();
+      return;
+    }
+    setStatus('disconnected — reconnecting…', 'error');
+    setTimeout(connect, 3000);
+  };
+  ws.onerror = () => setStatus('connection error', 'error');
+
+  ws.onmessage = (evt) => {
+    let msg;
+    try { msg = JSON.parse(evt.data); } catch { return; }
+
+    if (msg.type === 'sessions') {
+      sessions = msg.data || [];
+      if (msg.new_session) forcedSessionId = msg.new_session;
+      rebuildSessionList();
+    } else if (msg.type === 'snapshot') {
+      renderOutput(msg.data, /*scroll=*/true);
+    } else if (msg.type === 'update') {
+      const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
+      renderOutput(msg.data, atBottom);
+    } else if (msg.type === 'error') {
+      setStatus(`error: ${msg.message}`, 'error');
+    }
+  };
+}
+
+function send(obj) {
+  if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
+}
+
+// ── session / window / pane pickers ───────────────────────────────────────
+
+// Pick the most relevant session: attached > single > first.
+function bestSessionId() {
+  if (!sessions.length) return null;
+  return (sessions.find(s => s.attached) ?? sessions[0]).id;
+}
+
+function rebuildSessionList() {
+  const prev = selSession.value;
+  selSession.innerHTML = '<option value="">Session…</option>';
+  sessions.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.id;
+    o.textContent = s.attached ? `Session: ● ${s.name}` : `Session: ${s.name}`;
+    selSession.appendChild(o);
+  });
+
+  // Forced selection (after creating a new session) takes priority.
+  if (forcedSessionId && sessions.find(s => s.id === forcedSessionId)) {
+    selSession.value = forcedSessionId;
+    forcedSessionId = null;
+    onSessionChange(/*auto=*/true);
+  } else if (prev && sessions.find(s => s.id === prev)) {
+    selSession.value = prev;
+    onSessionChange(/*auto=*/true); // always auto so new windows/panes get selected
+  } else {
+    selSession.value = bestSessionId() ?? '';
+    onSessionChange(/*auto=*/true);
+  }
+}
+
+function onSessionChange(auto = false) {
+  const sid = selSession.value;
+  selWindow.innerHTML = '<option value="">Window…</option>';
+  selWindow.disabled     = !sid;
+  btnNewWindow.disabled  = !sid;
+  selPane.innerHTML    = '<option value="">Pane…</option>';
+  selPane.disabled       = true;
+  btnNewPane.disabled    = true;
+
+  const sess = sessions.find(s => s.id === sid);
+  if (!sess) return;
+
+  let activeWid = null;
+  sess.windows.forEach(w => {
+    const o = document.createElement('option');
+    o.value = w.id;
+    o.textContent = `Window: ${w.index}: ${w.name}`;
+    if (w.active) { o.textContent += ' ●'; activeWid = w.id; }
+    selWindow.appendChild(o);
+  });
+
+  if (auto) {
+    selWindow.value = activeWid ?? (sess.windows.length === 1 ? sess.windows[0].id : '');
+  }
+  onWindowChange(auto);
+}
+
+function onWindowChange(auto = false) {
+  const sid = selSession.value;
+  const wid = selWindow.value;
+  selPane.innerHTML  = '<option value="">Pane…</option>';
+  selPane.disabled      = !wid;
+  btnNewPane.disabled   = !wid;
+
+  const sess = sessions.find(s => s.id === sid);
+  const win  = sess?.windows.find(w => w.id === wid);
+  if (!win) return;
+
+  let activePid = null;
+  win.panes.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p.id;
+    o.textContent = `Pane: ${p.index}: ${p.command}`;
+    if (p.active) { o.textContent += ' ●'; activePid = p.id; }
+    selPane.appendChild(o);
+  });
+
+  if (auto) {
+    selPane.value = activePid ?? (win.panes.length === 1 ? win.panes[0].id : '');
+  }
+  onPaneChange();
+}
+
+function onPaneChange() {
+  const pid = selPane.value;
+  cmdInput.disabled = !pid;
+  if (!pid) return;
+
+  currentPane = pid;
+  output.className = '';
+  output.textContent = 'loading…';
+  send({ type: 'subscribe', pane_id: pid, lines: 300 });
+}
+
+// ── output rendering ───────────────────────────────────────────────────────
+function renderOutput(text, scrollToBottom) {
+  output.className = '';
+  output.textContent = text;
+  if (scrollToBottom) output.scrollTop = output.scrollHeight;
+}
+
+// ── send keys ─────────────────────────────────────────────────────────────
+function sendKeys() {
+  const keys = cmdInput.value;
+  if (!keys || !currentPane) return;
+  send({ type: 'send_keys', pane_id: currentPane, keys, enter: true });
+  cmdInput.value = '';
+}
+
+// ── events ─────────────────────────────────────────────────────────────────
+selSession.addEventListener('change', () => onSessionChange(true));
+selWindow.addEventListener('change',  () => onWindowChange(true));
+selPane.addEventListener('change',    onPaneChange);
+btnRefresh.addEventListener('click',  () => send({ type: 'list_sessions' }));
+cmdInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendKeys(); });
+
+// ── create session / window / pane ────────────────────────────────────────
+btnNewSession.addEventListener('click', () => {
+  const name = window.prompt('New session name:');
+  if (!name?.trim()) return;
+  send({ type: 'new_session', name: name.trim() });
+});
+
+btnNewWindow.addEventListener('click', () => {
+  const sid = selSession.value;
+  if (!sid) return;
+  const name = window.prompt('New window name (optional):') ?? '';
+  send({ type: 'new_window', session_id: sid, name: name.trim() });
+});
+
+btnNewPane.addEventListener('click', () => {
+  const wid = selWindow.value;
+  if (!wid) return;
+  send({ type: 'new_pane', window_id: wid });
+});
+
+// ── byobu status line ─────────────────────────────────────────────────────
+const statusline = document.getElementById('statusline');
+
+async function fetchByobuStatus() {
+  try {
+    const chips = await fetch('/status').then(r => r.json());
+    if (!Array.isArray(chips)) return;
+    statusline.innerHTML = '';
+    chips.forEach(c => {
+      const el = document.createElement('span');
+      el.className = 'chip';
+      el.textContent = c.text;
+      el.title = c.label;
+      el.style.background = c.bg;
+      el.style.color = c.color;
+      statusline.appendChild(el);
+    });
+  } catch { /* byobu not running or daemon unreachable */ }
+}
+
+function startStatusPolling() {
+  if (!statusInterval) {
+    fetchByobuStatus();
+    statusInterval = setInterval(fetchByobuStatus, 10000);
+  }
+}
+
+// ── pairing screen ─────────────────────────────────────────────────────────
+function showPairScreen() {
+  pairOverlay.style.display = 'flex';
+  pairCodeInput.value = '';
+  pairError.textContent = '';
+  if (statusInterval) { clearInterval(statusInterval); statusInterval = null; }
+  setTimeout(() => pairCodeInput.focus(), 80);
+}
+
+function hidePairScreen() {
+  pairOverlay.style.display = 'none';
+}
+
+pairCodeInput.addEventListener('input', () => {
+  let digits = pairCodeInput.value.replace(/\D/g, '').slice(0, 6);
+  pairCodeInput.value = digits.length > 3 ? `${digits.slice(0,3)}-${digits.slice(3)}` : digits;
+});
+
+pairCodeInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitPair(); });
+pairBtn.addEventListener('click', submitPair);
+
+async function submitPair() {
+  const code = pairCodeInput.value;
+  if (!code) return;
+  pairBtn.disabled = true;
+  pairError.textContent = '';
+  try {
+    const r = await fetch('/pair', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ code }),
+    });
+    const data = await r.json();
+    if (r.ok) {
+      hidePairScreen();
+      connect();
+      startStatusPolling();
+    } else {
+      pairError.textContent = data.error ?? 'Pairing failed.';
+      pairCodeInput.value = '';
+      pairCodeInput.focus();
+    }
+  } catch {
+    pairError.textContent = 'Network error — is the daemon running?';
+  } finally {
+    pairBtn.disabled = false;
+  }
+}
+
+// ── init: check auth, then connect or show pair screen ────────────────────
+async function init() {
+  setStatus('connecting…', 'connecting');
+  try {
+    const r = await fetch('/ping');
+    if (r.ok) {
+      hidePairScreen();
+      connect();
+      startStatusPolling();
+    } else {
+      showPairScreen();
+    }
+  } catch {
+    showPairScreen();
+  }
+}
+init();
+</script>
+</body>
+</html>

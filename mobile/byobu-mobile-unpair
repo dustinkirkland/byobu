@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+"""byobu-mobile-unpair — list and remove paired devices."""
+import json
+import socket
+import sys
+from pathlib import Path
+
+SOCK = Path.home() / ".config" / "byobu-mobile" / "byobu-mobile.sock"
+
+
+def admin(cmd: dict) -> object:
+    if not SOCK.exists():
+        print("Error: byobu-mobile daemon not running (socket not found)", file=sys.stderr)
+        sys.exit(1)
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+        try:
+            s.connect(str(SOCK))
+        except OSError as e:
+            print(f"Error: cannot connect to byobu-mobile daemon: {e}", file=sys.stderr)
+            sys.exit(1)
+        s.sendall(json.dumps(cmd).encode() + b"\n")
+        s.shutdown(socket.SHUT_WR)
+        s.settimeout(10)
+        chunks = []
+        try:
+            while True:
+                chunk = s.recv(4096)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+        except OSError as e:
+            print(f"Error: timeout waiting for daemon response: {e}", file=sys.stderr)
+            sys.exit(1)
+        try:
+            return json.loads(b"".join(chunks))
+        except json.JSONDecodeError as e:
+            print(f"Error: malformed response from daemon: {e}", file=sys.stderr)
+            sys.exit(1)
+
+
+def _ua_short(label: str) -> str:
+    if not label:
+        return "unknown"
+    for keyword in ("Mobile", "Chrome", "Firefox", "Safari"):
+        if keyword in label:
+            return keyword
+    return label[:30]
+
+
+def main():
+    sessions = admin({"action": "sessions_list"})
+    if not isinstance(sessions, list):
+        print(f"Error: {sessions}", file=sys.stderr)
+        sys.exit(1)
+
+    if not sessions:
+        print("No paired clients.")
+        return
+
+    print()
+    print("Paired clients:")
+    print()
+    for i, s in enumerate(sessions, 1):
+        ua = _ua_short(s.get("label", ""))
+        print(f"  {i}.  {s['ip']:<20}  {ua:<12}  paired: {s['paired_at']}")
+    print()
+    print("  A  Remove all")
+    print("  Q  Quit")
+    print()
+
+    try:
+        choice = input(f"Select [1-{len(sessions)} / A / Q]: ").strip()
+    except (KeyboardInterrupt, EOFError):
+        print("\nCancelled.")
+        return
+
+    if not choice or choice.upper() == "Q":
+        print("Cancelled.")
+
+    elif choice.upper() == "A":
+        result = admin({"action": "sessions_delete"})
+        if isinstance(result, dict) and result.get("ok"):
+            print(f"Removed {result.get('removed', 0)} paired client(s).")
+        else:
+            print(f"Error: {result}", file=sys.stderr)
+            sys.exit(1)
+
+    elif choice.isdigit() and 1 <= int(choice) <= len(sessions):
+        idx = int(choice) - 1
+        token = sessions[idx]["token_full"]
+        ip = sessions[idx]["ip"]
+        result = admin({"action": "sessions_delete", "token": token})
+        if isinstance(result, dict) and result.get("ok"):
+            print(f"Client {ip} unpaired.")
+        else:
+            print(f"Error: {result}", file=sys.stderr)
+            sys.exit(1)
+
+    else:
+        print("Invalid selection.")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

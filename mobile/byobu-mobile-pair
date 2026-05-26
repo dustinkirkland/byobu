@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""byobu-mobile-pair — generate a one-time pairing code for a new device."""
+import json
+import socket
+import sys
+from pathlib import Path
+
+SOCK = Path.home() / ".config" / "byobu-mobile" / "byobu-mobile.sock"
+
+
+def admin(cmd: dict) -> object:
+    if not SOCK.exists():
+        print("Error: byobu-mobile daemon not running (socket not found)", file=sys.stderr)
+        sys.exit(1)
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+        try:
+            s.connect(str(SOCK))
+        except OSError as e:
+            print(f"Error: cannot connect to byobu-mobile daemon: {e}", file=sys.stderr)
+            sys.exit(1)
+        s.sendall(json.dumps(cmd).encode() + b"\n")
+        s.shutdown(socket.SHUT_WR)
+        s.settimeout(10)
+        chunks = []
+        try:
+            while True:
+                chunk = s.recv(4096)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+        except OSError as e:
+            print(f"Error: timeout waiting for daemon response: {e}", file=sys.stderr)
+            sys.exit(1)
+        try:
+            return json.loads(b"".join(chunks))
+        except json.JSONDecodeError as e:
+            print(f"Error: malformed response from daemon: {e}", file=sys.stderr)
+            sys.exit(1)
+
+
+def main():
+    data = admin({"action": "pair_generate"})
+    if not isinstance(data, dict) or "error" in data:
+        print(f"Error: {data.get('error', data)}", file=sys.stderr)
+        sys.exit(1)
+    code = data["code"]
+    mins = data["expires_in"] // 60
+    bar = "═" * 50
+    print(f"\n{bar}")
+    print(f"  Byobu Mobile pairing code:  {code}  (valid {mins} min)")
+    print(f"{bar}\n")
+
+
+if __name__ == "__main__":
+    main()
