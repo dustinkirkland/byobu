@@ -2,9 +2,41 @@
 
 A mobile companion for [Byobu](https://byobu.org) / tmux sessions. Run a lightweight daemon on your workstation; monitor and interact with your terminal sessions from your phone over your Tailscale network.
 
+**Supports both tmux and byobu.** The daemon talks directly to the tmux CLI, so any tmux session works — with or without byobu. Byobu users get the live status bar chips; plain tmux users get an empty status bar and everything else works identically.
+
 Two tiers:
 - **Free** — PWA (Progressive Web App). One installable icon per machine, with the machine hostname in the app name. Full session/window/pane control included now; window/pane switching will move to the paid tier in a future release.
 - **Paid** — Native Flutter app (`github.com/dustinkirkland/byobu-mobile`, private). Multi-machine management, session/window/pane switching, biometric auth.
+
+---
+
+## Market and product strategy
+
+### tmux vs byobu user base
+
+Data gathered May 2026 from Homebrew analytics, Debian popcon, and GitHub:
+
+| Signal | tmux | byobu | Ratio |
+|---|---|---|---|
+| GitHub stars | 46,000 | 1,600 | ~29× |
+| Homebrew 30-day installs | 59,203 | 283 | ~209× |
+| Homebrew 365-day installs | 455,468 | 4,557 | ~100× |
+| Debian popcon installs | 44,364 | 4,357 | ~10× |
+| Debian popcon active users | 25,265 | 1,285 | ~20× |
+
+**Central estimate: tmux's active user base is ~20–30× larger than byobu's.** Byobu's Debian popcon number is inflated by Ubuntu Server pre-installs; intentional adoption is lower. The macOS/Homebrew gap (100–200×) reflects byobu's weaker foothold outside the Linux server world.
+
+Byobu users are a self-selected power-user cohort — people who deliberately layered byobu on tmux for the UX enhancements. High conversion potential, but a small absolute TAM (low tens of thousands of active users globally).
+
+### Strategy: build on tmux, brand as byobu
+
+The daemon already talks directly to the tmux CLI (`tmux capture-pane`, `tmux send-keys`, `tmux list-sessions`) with no byobu dependency. Byobu's status chips degrade gracefully to empty when byobu isn't running. This means:
+
+- **Full tmux compatibility at zero additional cost** — the addressable market expands from ~tens of thousands (byobu) to the full tmux user base
+- **Byobu branding retained** — the byobu name, logo, and color palette differentiate the product and signal quality to the target audience
+- **Status bar is a byobu bonus**, not a requirement — plain tmux users get everything except the colored chips
+
+This is the recommended product position: **a tmux mobile client that happens to be made by the byobu team, with first-class byobu integration when present.**
 
 ---
 
