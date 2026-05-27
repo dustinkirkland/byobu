@@ -12,9 +12,7 @@ const pairOverlay   = document.getElementById('pair-overlay');
 const pairCodeInput = document.getElementById('pair-code');
 const pairBtn       = document.getElementById('pair-btn');
 const pairError     = document.getElementById('pair-error');
-const selSession    = document.getElementById('sel-session');
-const selWindow     = document.getElementById('sel-window');
-const selPane       = document.getElementById('sel-pane');
+const selPaneTree   = document.getElementById('sel-pane-tree');
 const btnRefresh    = document.getElementById('btn-refresh');
 const output        = document.getElementById('output');
 const statusbar     = document.getElementById('statusbar');
@@ -70,7 +68,7 @@ function connect() {
     if (msg.type === 'sessions') {
       sessions = msg.data || [];
       if (msg.new_session) forcedSessionId = msg.new_session;
-      rebuildSessionList();
+      rebuildPaneTree();
     } else if (msg.type === 'snapshot') {
       renderOutput(msg.data, /*scroll=*/true);
     } else if (msg.type === 'update') {
@@ -86,98 +84,64 @@ function send(obj) {
   if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
 }
 
-// ── session / window / pane pickers ───────────────────────────────────────
+// ── unified pane-tree picker ───────────────────────────────────────────────
+function rebuildPaneTree() {
+  const prev = selPaneTree.value;
+  selPaneTree.innerHTML = '<option value="">— select pane —</option>';
 
-// Pick the most relevant session: attached > single > first.
-function bestSessionId() {
-  if (!sessions.length) return null;
-  return (sessions.find(s => s.attached) ?? sessions[0]).id;
-}
+  let autoTarget = null;
+  const forced = forcedSessionId;
+  if (forced) forcedSessionId = null;
 
-function rebuildSessionList() {
-  const prev = selSession.value;
-  selSession.innerHTML = '<option value="">Session…</option>';
-  sessions.forEach(s => {
-    const o = document.createElement('option');
-    o.value = s.id;
-    o.textContent = s.attached ? `S: ● ${s.name}` : `S: ${s.name}`;
-    selSession.appendChild(o);
-  });
+  for (const s of sessions) {
+    const grp = document.createElement('optgroup');
+    grp.label = s.attached ? `${s.name} ●` : s.name;
 
-  // Forced selection (after creating a new session) takes priority.
-  if (forcedSessionId && sessions.find(s => s.id === forcedSessionId)) {
-    selSession.value = forcedSessionId;
-    forcedSessionId = null;
-    onSessionChange(/*auto=*/true);
-  } else if (prev && sessions.find(s => s.id === prev)) {
-    selSession.value = prev;
-    onSessionChange(/*auto=*/true); // always auto so new windows/panes get selected
-  } else {
-    selSession.value = bestSessionId() ?? '';
-    onSessionChange(/*auto=*/true);
+    for (const w of s.windows) {
+      const wHdr = document.createElement('option');
+      wHdr.disabled = true;
+      wHdr.textContent = `  W${w.index}: ${w.name}${w.active ? ' ●' : ''}`;
+      grp.appendChild(wHdr);
+
+      for (const p of w.panes) {
+        const opt = document.createElement('option');
+        const val = `${s.id}|${w.id}|${p.id}`;
+        opt.value = val;
+        opt.textContent = `    ${p.index}: ${p.command}${p.active ? ' ●' : ''}`;
+        grp.appendChild(opt);
+        if (forced === s.id && !autoTarget) autoTarget = val;
+        if (!autoTarget && s.attached && w.active && p.active) autoTarget = val;
+      }
+    }
+    selPaneTree.appendChild(grp);
   }
-}
 
-function onSessionChange(auto = false) {
-  const sid = selSession.value;
-  selWindow.innerHTML = '<option value="">Window…</option>';
-  selWindow.disabled     = !sid;
-  selPane.innerHTML    = '<option value="">Pane…</option>';
-  selPane.disabled       = true;
-
-  const sess = sessions.find(s => s.id === sid);
-  if (!sess) return;
-
-  let activeWid = null;
-  sess.windows.forEach(w => {
-    const o = document.createElement('option');
-    o.value = w.id;
-    o.textContent = `W: ${w.index}: ${w.name}`;
-    if (w.active) { o.textContent += ' ●'; activeWid = w.id; }
-    selWindow.appendChild(o);
-  });
-
-  if (auto) {
-    selWindow.value = activeWid ?? (sess.windows.length === 1 ? sess.windows[0].id : '');
+  const allVals = new Set([...selPaneTree.options].map(o => o.value).filter(Boolean));
+  if (prev && allVals.has(prev)) {
+    selPaneTree.value = prev;
+  } else if (autoTarget) {
+    selPaneTree.value = autoTarget;
   }
-  onWindowChange(auto);
+
+  onPaneTreeChange();
 }
 
-function onWindowChange(auto = false) {
-  const sid = selSession.value;
-  const wid = selWindow.value;
-  selPane.innerHTML  = '<option value="">Pane…</option>';
-  selPane.disabled      = !wid;
-
-  const sess = sessions.find(s => s.id === sid);
-  const win  = sess?.windows.find(w => w.id === wid);
-  if (!win) return;
-
-  let activePid = null;
-  win.panes.forEach(p => {
-    const o = document.createElement('option');
-    o.value = p.id;
-    o.textContent = `P: ${p.index}: ${p.command}`;
-    if (p.active) { o.textContent += ' ●'; activePid = p.id; }
-    selPane.appendChild(o);
-  });
-
-  if (auto) {
-    selPane.value = activePid ?? (win.panes.length === 1 ? win.panes[0].id : '');
+function onPaneTreeChange() {
+  const val = selPaneTree.value;
+  if (!val) {
+    currentPane = null;
+    cmdInput.disabled = true;
+    btnSend.disabled  = true;
+    return;
   }
-  onPaneChange();
-}
-
-function onPaneChange() {
-  const pid = selPane.value;
-  cmdInput.disabled = !pid;
-  btnSend.disabled  = !pid;
-  if (!pid) return;
-
-  currentPane = pid;
-  output.className = '';
+  const [, , paneId] = val.split('|');
+  if (paneId === currentPane) return;
+  currentPane = paneId;
+  cmdInput.disabled = false;
+  btnSend.disabled  = false;
+  output.className  = '';
   output.textContent = 'loading…';
-  send({ type: 'subscribe', pane_id: pid, lines: 300 });
+  send({ type: 'subscribe', pane_id: paneId, lines: 300 });
 }
 
 // ── output rendering ───────────────────────────────────────────────────────
@@ -197,9 +161,7 @@ function sendKeys() {
 }
 
 // ── events ─────────────────────────────────────────────────────────────────
-selSession.addEventListener('change', () => onSessionChange(true));
-selWindow.addEventListener('change',  () => onWindowChange(true));
-selPane.addEventListener('change',    onPaneChange);
+selPaneTree.addEventListener('change', onPaneTreeChange);
 btnRefresh.addEventListener('click',  () => send({ type: 'list_sessions' }));
 cmdInput.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendKeys(); }
@@ -251,12 +213,8 @@ function flatPaneList() {
 }
 
 function navigateTo(sessionId, windowId, paneId) {
-  selSession.value = sessionId;
-  onSessionChange(false);   // rebuilds window options
-  selWindow.value = windowId;
-  onWindowChange(false);    // rebuilds pane options
-  selPane.value = paneId;
-  onPaneChange();            // subscribes
+  selPaneTree.value = `${sessionId}|${windowId}|${paneId}`;
+  onPaneTreeChange();
 }
 
 function navigateRelative(delta) {
@@ -293,11 +251,12 @@ output.addEventListener('touchend', e => {
 
 // ── context menu ──────────────────────────────────────────────────────────
 function showCtxMenu() {
-  const sess = sessions.find(s => s.id === selSession.value);
-  const win  = sess?.windows.find(w => w.id === selWindow.value);
+  const [sessionId, windowId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
+  const sess = sessions.find(s => s.id === sessionId);
+  const win  = sess?.windows.find(w => w.id === windowId);
   const isSingle = (win?.panes.length ?? 0) === 1;
   ctxKill.textContent = isSingle ? '✕  Kill window' : '✕  Kill pane';
-  ctxKill.style.display = currentPane ? '' : 'none';
+  ctxKill.style.display = selPaneTree.value ? '' : 'none';
   ctxMain.style.display = '';
   ctxConfirm.style.display = 'none';
   ctxOverlay.style.display = 'flex';
@@ -309,26 +268,28 @@ ctxCancel.addEventListener('click', hideCtxMenu);
 ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtxMenu(); });
 
 ctxKill.addEventListener('click', () => {
-  const sess = sessions.find(s => s.id === selSession.value);
-  const win  = sess?.windows.find(w => w.id === selWindow.value);
+  const [sessionId, windowId, paneId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
+  const sess = sessions.find(s => s.id === sessionId);
+  const win  = sess?.windows.find(w => w.id === windowId);
   const isSingle = (win?.panes.length ?? 0) === 1;
-  const pane = win?.panes.find(p => p.id === currentPane);
+  const pane = win?.panes.find(p => p.id === paneId);
   const label = isSingle
-    ? `window "${win?.name ?? selWindow.value}"`
-    : `pane ${pane?.command ?? currentPane}`;
+    ? `window "${win?.name ?? windowId}"`
+    : `pane ${pane?.command ?? paneId}`;
   ctxConfirmMsg.textContent = `Kill ${label}?`;
   ctxMain.style.display = 'none';
   ctxConfirm.style.display = '';
 });
 
 ctxConfirmYes.addEventListener('click', () => {
-  const sess = sessions.find(s => s.id === selSession.value);
-  const win  = sess?.windows.find(w => w.id === selWindow.value);
+  const [sessionId, windowId, paneId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
+  const sess = sessions.find(s => s.id === sessionId);
+  const win  = sess?.windows.find(w => w.id === windowId);
   const isSingle = (win?.panes.length ?? 0) === 1;
   if (isSingle) {
-    send({ type: 'kill_window', window_id: selWindow.value });
+    send({ type: 'kill_window', window_id: windowId });
   } else {
-    send({ type: 'kill_pane', pane_id: currentPane });
+    send({ type: 'kill_pane', pane_id: paneId });
   }
   hideCtxMenu();
 });
@@ -339,17 +300,17 @@ ctxConfirmNo.addEventListener('click', () => {
 });
 
 ctxNewPane.addEventListener('click', () => {
-  const wid = selWindow.value;
-  if (wid) send({ type: 'new_pane', window_id: wid });
+  const [, windowId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
+  if (windowId) send({ type: 'new_pane', window_id: windowId });
   hideCtxMenu();
 });
 
 ctxNewWindow.addEventListener('click', () => {
   hideCtxMenu();
-  const sid = selSession.value;
-  if (!sid) return;
+  const [sessionId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
+  if (!sessionId) return;
   const name = window.prompt('New window name (optional):') ?? '';
-  send({ type: 'new_window', session_id: sid, name: name.trim() });
+  send({ type: 'new_window', session_id: sessionId, name: name.trim() });
 });
 
 // ── status bar clock (only ticks when connected — frozen clock = disconnected) ─
