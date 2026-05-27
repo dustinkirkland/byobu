@@ -1,86 +1,15 @@
-#!/bin/bash
-#
-#    trustmux-enable: start byobu-mobile daemon and enable it at login
-#    Copyright (C) 2026 Canonical Ltd.
-#
-#    Authors: Dustin Kirkland <kirkland@byobu.org>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, version 3 of the License.
+#!/usr/bin/env python3
+"""trustmux-enable — start Trustmux daemon and enable it at login."""
+import sys
+import os
 
-set -euo pipefail
+_here = os.path.dirname(os.path.abspath(__file__))
+if os.path.isdir(os.path.join(_here, "trustmux")):
+    sys.path.insert(0, _here)
+else:
+    sys.path.insert(0, "/usr/lib/trustmux")
 
-DIR="$(cd "$(dirname "$0")" && pwd)"
-CTL="$DIR/trustmux-ctl"
+from trustmux._enable import main
 
-# Resolve to the installed binary if available in PATH, else use local path.
-if command -v trustmux-ctl >/dev/null 2>&1; then
-    CTL_CMD="trustmux-ctl"
-else
-    CTL_CMD="$CTL"
-fi
-
-_install_hook() {
-    local dest="$1"
-    [ -f "$dest" ] || return 0
-    # Idempotent: don't add a second hook if already present.
-    grep -q "trustmux-ctl" "$dest" 2>/dev/null && return 0
-    printf '\n%s start 2>/dev/null || true\n' "$CTL_CMD" >> "$dest"
-}
-
-# ---------------------------------------------------------------------------
-# First-time setup wizard
-# Runs setup unconditionally — it is idempotent and skips steps already done.
-# Exits with a clear message if a prerequisite (Tailscale, Python) is missing.
-# ---------------------------------------------------------------------------
-"$CTL" setup --quiet || {
-    echo
-    echo "First-time setup did not complete. Fix the issue above, then re-run:"
-    echo "  trustmux-enable"
-    exit 1
-}
-
-# ---------------------------------------------------------------------------
-# Install the login hook
-# ---------------------------------------------------------------------------
-_install_hook "$HOME/.profile"
-
-for f in ".bash_profile" ".bash_login"; do
-    [ -f "$HOME/$f" ] && _install_hook "$HOME/$f" || true
-done
-
-case "${SHELL:-}" in
-    *zsh) _install_hook "$HOME/.zprofile" ;;
-esac
-
-# ---------------------------------------------------------------------------
-# Start the daemon now (skip if already running)
-# ---------------------------------------------------------------------------
-if "$CTL" start 2>/dev/null; then
-    STARTED=1
-else
-    STARTED=0
-fi
-
-echo
-if [ "$STARTED" = "1" ]; then
-    echo "Trustmux daemon started and will launch automatically at each login."
-else
-    echo "Trustmux daemon is already running and will launch automatically at each login."
-fi
-echo
-
-# Hint to pair if no tokens file exists yet (never paired any device).
-TOKENS="$HOME/.config/trustmux/tokens.json"
-if [ ! -s "$TOKENS" ]; then
-    echo "Next step — pair your phone:"
-    echo "  trustmux-pair"
-    echo
-    echo "Open the URL printed above in your phone's browser, enter the code, and tap Pair."
-    echo
-fi
-
-echo "To stop and disable later, run:"
-echo "  trustmux-disable"
-echo
+if __name__ == "__main__":
+    main()

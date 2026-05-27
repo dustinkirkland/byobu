@@ -1,39 +1,15 @@
-#!/bin/bash
-#
-#    trustmux-disable: stop byobu-mobile daemon and remove login hook
-#    Copyright (C) 2026 Canonical Ltd.
-#
-#    Authors: Dustin Kirkland <kirkland@byobu.org>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, version 3 of the License.
+#!/usr/bin/env python3
+"""trustmux-disable — stop Trustmux daemon and remove login hook."""
+import sys
+import os
 
-set -euo pipefail
+_here = os.path.dirname(os.path.abspath(__file__))
+if os.path.isdir(os.path.join(_here, "trustmux")):
+    sys.path.insert(0, _here)
+else:
+    sys.path.insert(0, "/usr/lib/trustmux")
 
-DIR="$(cd "$(dirname "$0")" && pwd)"
-CTL="$DIR/trustmux-ctl"
+from trustmux._disable import main
 
-_remove_hook() {
-    local dest="$1"
-    [ -w "$dest" ] || return 0
-    # Remove any line that invokes trustmux-ctl (regardless of full path).
-    sed -i '/trustmux-ctl/d' "$dest"
-}
-
-_remove_hook "$HOME/.profile"
-_remove_hook "$HOME/.bash_profile"
-_remove_hook "$HOME/.bash_login"
-_remove_hook "$HOME/.zprofile"
-
-# Stop the daemon right now (non-fatal: may not be running).
-"$CTL" stop 2>/dev/null || true
-
-echo
-echo "Trustmux daemon stopped. It will no longer start automatically at login."
-echo
-echo "Paired device tokens are preserved in ~/.config/trustmux/tokens.json."
-echo
-echo "To re-enable later, run:"
-echo "  trustmux-enable"
-echo
+if __name__ == "__main__":
+    main()
