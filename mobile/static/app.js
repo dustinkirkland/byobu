@@ -16,7 +16,6 @@ const selSession    = document.getElementById('sel-session');
 const selWindow     = document.getElementById('sel-window');
 const selPane       = document.getElementById('sel-pane');
 const btnRefresh    = document.getElementById('btn-refresh');
-const btnNewSession = document.getElementById('btn-new-session');
 const output        = document.getElementById('output');
 const statusbar     = document.getElementById('statusbar');
 const statusText    = document.getElementById('status-text');
@@ -37,7 +36,6 @@ const ctxConfirmMsg = document.getElementById('ctx-confirm-msg');
 const ctxKill       = document.getElementById('ctx-kill');
 const ctxNewPane    = document.getElementById('ctx-new-pane');
 const ctxNewWindow  = document.getElementById('ctx-new-window');
-const ctxNewSession = document.getElementById('ctx-new-session');
 const ctxCancel     = document.getElementById('ctx-cancel');
 const ctxConfirmYes = document.getElementById('ctx-confirm-yes');
 const ctxConfirmNo  = document.getElementById('ctx-confirm-no');
@@ -124,10 +122,8 @@ function onSessionChange(auto = false) {
   const sid = selSession.value;
   selWindow.innerHTML = '<option value="">Window…</option>';
   selWindow.disabled     = !sid;
-  btnNewWindow.disabled  = !sid;
   selPane.innerHTML    = '<option value="">Pane…</option>';
   selPane.disabled       = true;
-  btnNewPane.disabled    = true;
 
   const sess = sessions.find(s => s.id === sid);
   if (!sess) return;
@@ -152,7 +148,6 @@ function onWindowChange(auto = false) {
   const wid = selWindow.value;
   selPane.innerHTML  = '<option value="">Pane…</option>';
   selPane.disabled      = !wid;
-  btnNewPane.disabled   = !wid;
 
   const sess = sessions.find(s => s.id === sid);
   const win  = sess?.windows.find(w => w.id === wid);
@@ -272,36 +267,28 @@ function navigateRelative(delta) {
   navigateTo(next.sessionId, next.windowId, next.paneId);
 }
 
-// ── unified touch handler: long press (context menu) + swipe (navigation) ─
+// ── unified touch handler: double-tap (context menu) + swipe (navigation) ─
 let _touchX = 0, _touchY = 0;
-let _longPressTimer = null, _longPressTriggered = false;
+let _lastTap = 0;
 
 output.addEventListener('touchstart', e => {
   _touchX = e.touches[0].clientX;
   _touchY = e.touches[0].clientY;
-  _longPressTriggered = false;
-  _longPressTimer = setTimeout(() => {
-    _longPressTimer = null;
-    _longPressTriggered = true;
-    showCtxMenu();
-  }, 500);
-}, { passive: true });
-
-output.addEventListener('touchmove', e => {
-  if (_longPressTimer) {
-    const dx = Math.abs(e.touches[0].clientX - _touchX);
-    const dy = Math.abs(e.touches[0].clientY - _touchY);
-    if (dx > 10 || dy > 10) { clearTimeout(_longPressTimer); _longPressTimer = null; }
-  }
 }, { passive: true });
 
 output.addEventListener('touchend', e => {
-  if (_longPressTimer) { clearTimeout(_longPressTimer); _longPressTimer = null; }
-  if (_longPressTriggered) return;
   const dx = e.changedTouches[0].clientX - _touchX;
   const dy = e.changedTouches[0].clientY - _touchY;
-  if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 2) return;
-  navigateRelative(dx < 0 ? 1 : -1);
+  if (Math.abs(dx) >= 60 && Math.abs(dx) >= Math.abs(dy) * 2) {
+    navigateRelative(dx < 0 ? 1 : -1);
+    _lastTap = 0;
+    return;
+  }
+  if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
+    const now = Date.now();
+    if (now - _lastTap < 300) { showCtxMenu(); _lastTap = 0; }
+    else { _lastTap = now; }
+  }
 }, { passive: true });
 
 // ── context menu ──────────────────────────────────────────────────────────
@@ -363,13 +350,6 @@ ctxNewWindow.addEventListener('click', () => {
   if (!sid) return;
   const name = window.prompt('New window name (optional):') ?? '';
   send({ type: 'new_window', session_id: sid, name: name.trim() });
-});
-
-ctxNewSession.addEventListener('click', () => {
-  hideCtxMenu();
-  const name = window.prompt('New session name:');
-  if (!name?.trim()) return;
-  send({ type: 'new_session', name: name.trim() });
 });
 
 // ── status bar clock (only ticks when connected — frozen clock = disconnected) ─
