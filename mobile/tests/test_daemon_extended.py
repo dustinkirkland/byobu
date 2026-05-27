@@ -15,7 +15,7 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock, AsyncMock
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-import trustmux as bm
+import trustmux._daemon as bm
 
 from tornado.testing import AsyncHTTPTestCase, gen_test
 from tornado.websocket import websocket_connect

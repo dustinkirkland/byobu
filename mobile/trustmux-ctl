@@ -5,19 +5,32 @@ PORT=7432
 DIR="$(cd "$(dirname "$0")" && pwd)"
 PIDFILE="/tmp/trustmux.pid"
 
-# Detect installed vs dev-tree.
-# Installed: script is in /usr/bin/, daemon is in /usr/lib/byobu-mobile/.
-# Dev tree:  script is alongside trustmux.py in mobile/.
-if [ -f "$DIR/trustmux.py" ]; then
-    DAEMON="$DIR/trustmux.py"
+# Detect installation context.
+# Dev tree:       trustmux/ package directory sits alongside this script.
+# pip-installed:  trustmux package is on the Python path (no PYTHONPATH needed).
+# Debian/system:  package installed to /usr/lib/trustmux/.
+if [ -d "$DIR/trustmux" ]; then
     PYTHON="${DIR}/.venv/bin/python"
     [ ! -x "$PYTHON" ] && PYTHON="python3"
+    TRUSTMUX_PYTHONPATH="$DIR"
     _DEV_TREE=1
-else
-    DAEMON="/usr/lib/trustmux/trustmux.py"
+elif python3 -c "import trustmux._daemon" 2>/dev/null; then
     PYTHON="python3"
+    TRUSTMUX_PYTHONPATH=""
+    _DEV_TREE=0
+else
+    PYTHON="python3"
+    TRUSTMUX_PYTHONPATH="/usr/lib/trustmux"
     _DEV_TREE=0
 fi
+
+_run_daemon() {
+    if [ -n "${TRUSTMUX_PYTHONPATH:-}" ]; then
+        PYTHONPATH="$TRUSTMUX_PYTHONPATH" "$PYTHON" -m trustmux "$@"
+    else
+        "$PYTHON" -m trustmux "$@"
+    fi
+}
 
 CONFIG_DIR="$HOME/.config/trustmux"
 LOGFILE="$CONFIG_DIR/trustmux.log"
@@ -154,7 +167,7 @@ case "${1:-}" in
     _ensure_ts_serve || exit 1
     _ensure_dir
     echo "Starting trustmux (HTTPS mode)..."
-    nohup "$PYTHON" "$DAEMON" --host 127.0.0.1 --port "$PORT" --https \
+    nohup _run_daemon --host 127.0.0.1 --port "$PORT" --https \
         >> "$LOGFILE" 2>&1 &
     echo $! > "$PIDFILE"
     sleep 0.5
@@ -178,7 +191,7 @@ case "${1:-}" in
     fi
     _ensure_dir
     echo "Starting trustmux (loopback only — SSH tunnel access)..."
-    nohup "$PYTHON" "$DAEMON" --host 127.0.0.1 --port "$PORT" \
+    nohup _run_daemon --host 127.0.0.1 --port "$PORT" \
         >> "$LOGFILE" 2>&1 &
     echo $! > "$PIDFILE"
     sleep 0.5
@@ -201,7 +214,7 @@ case "${1:-}" in
     fi
     _ensure_dir
     echo "Starting trustmux (direct HTTP — dev/debug only)..."
-    nohup "$PYTHON" "$DAEMON" --port "$PORT" \
+    nohup _run_daemon --port "$PORT" \
         >> "$LOGFILE" 2>&1 &
     echo $! > "$PIDFILE"
     sleep 0.5

@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-import trustmux as bm
+import trustmux._daemon as bm
 
 from tornado.testing import AsyncHTTPTestCase
 
@@ -317,7 +317,7 @@ class TestPairHandler(AsyncHTTPTestCase):
 
     def test_valid_code_returns_200_and_sets_cookie(self):
         code = bm._generate_pair_code()
-        with patch('trustmux._save_tokens'):
+        with patch('trustmux._daemon._save_tokens'):
             resp = self._post({'code': code})
         self.assertEqual(resp.code, 200)
         self.assertTrue(json.loads(resp.body).get('ok'))
@@ -328,7 +328,7 @@ class TestPairHandler(AsyncHTTPTestCase):
     def test_valid_code_with_dashes(self):
         code = bm._generate_pair_code()
         dashed = f'{code[:3]}-{code[3:]}'
-        with patch('trustmux._save_tokens'):
+        with patch('trustmux._daemon._save_tokens'):
             resp = self._post({'code': dashed})
         self.assertEqual(resp.code, 200)
 
@@ -397,7 +397,7 @@ class TestStatusHandler(AsyncHTTPTestCase):
 
     def test_authenticated_returns_dict_with_left_right(self):
         tok = _add_session()
-        with patch('trustmux.read_byobu_status', return_value={'left': [], 'right': []}):
+        with patch('trustmux._daemon.read_byobu_status', return_value={'left': [], 'right': []}):
             resp = self.fetch('/status', headers={'Cookie': f'trustmux_session={tok}'})
         self.assertEqual(resp.code, 200)
         data = json.loads(resp.body)
