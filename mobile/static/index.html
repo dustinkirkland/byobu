@@ -592,11 +592,22 @@ function showPairScreen() {
   pairCodeInput.value = '';
   pairError.textContent = '';
   if (statusInterval) { clearInterval(statusInterval); statusInterval = null; }
-  setTimeout(() => pairCodeInput.focus(), 80);
+  const autoCode = new URLSearchParams(window.location.search).get('pair');
+  if (autoCode && /^\d{6}$/.test(autoCode)) {
+    pairCodeInput.value = `${autoCode.slice(0,3)}-${autoCode.slice(3)}`;
+    setTimeout(submitPair, 400);
+  } else {
+    setTimeout(() => pairCodeInput.focus(), 80);
+  }
 }
 
 function hidePairScreen() {
   pairOverlay.style.display = 'none';
+  const url = new URL(window.location);
+  if (url.searchParams.has('pair')) {
+    url.searchParams.delete('pair');
+    history.replaceState(null, '', url);
+  }
 }
 
 pairCodeInput.addEventListener('input', () => {

@@ -113,7 +113,7 @@ def main():
     print(f"{bar}\n")
 
     if url:
-        _print_qr(url)
+        _print_qr(f"{url}?pair={code}")
         print()
 
     _wait_and_clear()
