@@ -24,6 +24,7 @@ const statusbar     = document.getElementById('statusbar');
 const statusText    = document.getElementById('status-text');
 const cmdInput      = document.getElementById('cmd');
 const btnSend       = document.getElementById('btn-send');
+const btnKbdMode    = document.getElementById('btn-kbd-mode');
 const machineSelect    = document.getElementById('machine-select');
 const btnInstall       = document.getElementById('btn-install');
 const iosInstallTip    = document.getElementById('ios-install-tip');
@@ -203,6 +204,33 @@ cmdInput.addEventListener('input', () => {
   cmdInput.style.height = Math.min(cmdInput.scrollHeight, 160) + 'px';
 });
 btnSend.addEventListener('click', sendKeys);
+
+// ── keyboard mode toggle (terminal ↔ text) ────────────────────────────────
+let textMode = false;
+function applyKbdMode() {
+  if (textMode) {
+    cmdInput.setAttribute('spellcheck', 'true');
+    cmdInput.setAttribute('autocorrect', 'on');
+    cmdInput.setAttribute('autocapitalize', 'sentences');
+    btnKbdMode.textContent = 'Aa';
+    btnKbdMode.title = 'Text mode — tap for terminal mode';
+    btnKbdMode.style.color = 'var(--accent)';
+  } else {
+    cmdInput.setAttribute('spellcheck', 'false');
+    cmdInput.setAttribute('autocorrect', 'off');
+    cmdInput.setAttribute('autocapitalize', 'none');
+    btnKbdMode.textContent = '$_';
+    btnKbdMode.title = 'Terminal mode — tap to enable spell check';
+    btnKbdMode.style.color = '';
+  }
+}
+btnKbdMode.addEventListener('click', () => {
+  textMode = !textMode;
+  applyKbdMode();
+  // blur + refocus so Android keyboard re-evaluates spellcheck state
+  cmdInput.blur();
+  setTimeout(() => cmdInput.focus(), 50);
+});
 
 // ── create session / window / pane ────────────────────────────────────────
 btnNewSession.addEventListener('click', () => {
