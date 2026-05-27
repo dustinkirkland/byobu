@@ -243,6 +243,26 @@ _BG = {
     "brightcyan": "#44bbbb",   "brightwhite": "#dddddd",
 }
 _LIGHT_BG = {"white", "brightwhite", "brightgreen", "brightyellow", "brightcyan", "brightblue"}
+
+def _colour256_to_css(name: str) -> str | None:
+    """Convert a tmux colour<N> 256-color name to a CSS hex string."""
+    if not name.startswith("colour"):
+        return None
+    try:
+        n = int(name[6:])
+    except ValueError:
+        return None
+    if 16 <= n <= 231:
+        # 6×6×6 RGB cube
+        n -= 16
+        levels = (0, 95, 135, 175, 215, 255)
+        r, g, b = levels[n // 36], levels[(n % 36) // 6], levels[n % 6]
+        return f"#{r:02x}{g:02x}{b:02x}"
+    if 232 <= n <= 255:
+        # grayscale ramp
+        v = 8 + (n - 232) * 10
+        return f"#{v:02x}{v:02x}{v:02x}"
+    return None
 _TMUX_ATTR = re.compile(r"#\[[^\]]*\]")
 _CSS_HEX_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
 
@@ -295,8 +315,6 @@ def _read_byobu_status_config() -> tuple[list[str], list[str]]:
     return _parse(left_raw), _parse(right_raw)
 
 def _make_chip(name: str, shm: Path) -> dict | None:
-    if name == "logo":
-        return None
     status_dir = shm / "status.tmux"
     if not status_dir.is_dir():
         return None
@@ -314,6 +332,8 @@ def _make_chip(name: str, shm: Path) -> dict | None:
     bg_name = _first_attr(raw, "bg=")
     if bg_name and _CSS_HEX_RE.match(bg_name):
         bg_css = bg_name
+    elif bg_name and bg_name.startswith("colour"):
+        bg_css = _colour256_to_css(bg_name) or "#2d2d2d"
     else:
         bg_css = _BG.get(bg_name or "", "#2d2d2d")
     text_css = "#111111" if bg_name in _LIGHT_BG else "#eeeeee"

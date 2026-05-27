@@ -412,8 +412,31 @@ class TestMakeChip(unittest.TestCase):
     def _write_chip(self, name, content):
         (self._status_dir / name).write_text(content)
 
-    def test_logo_returns_none(self):
+    def test_logo_returns_chip_when_file_exists(self):
+        self._write_chip('logo', '#[default]#[fg=colour255,bg=colour202] u #[default]')
+        chip = bm._make_chip('logo', self._shm)
+        self.assertIsNotNone(chip)
+        self.assertEqual(chip['label'], 'logo')
+        self.assertEqual(chip['text'], 'u')
+        self.assertEqual(chip['bg'], '#ff5f00')   # colour202 = Ubuntu orange
+        self.assertEqual(chip['color'], '#eeeeee') # light text on dark bg
+
+    def test_logo_returns_none_when_file_missing(self):
         self.assertIsNone(bm._make_chip('logo', self._shm))
+
+    def test_colour256_cube_maps_correctly(self):
+        self.assertEqual(bm._colour256_to_css('colour202'), '#ff5f00')
+        self.assertEqual(bm._colour256_to_css('colour255'), '#eeeeee')
+        self.assertEqual(bm._colour256_to_css('colour16'),  '#000000')
+
+    def test_colour256_greyscale_maps_correctly(self):
+        self.assertEqual(bm._colour256_to_css('colour232'), '#080808')
+        self.assertEqual(bm._colour256_to_css('colour244'), '#808080')
+
+    def test_colour256_chip_uses_correct_css(self):
+        self._write_chip('logo', '#[fg=colour255,bg=colour202] u ')
+        chip = bm._make_chip('logo', self._shm)
+        self.assertEqual(chip['bg'], '#ff5f00')
 
     def test_missing_status_dir_returns_none(self):
         shm2 = Path(self._tmpdir.name + '_2')
@@ -495,13 +518,15 @@ class TestReadByobuStatus(unittest.TestCase):
         self.assertEqual(result['left'], [])
         self.assertEqual(result['right'], [])
 
-    def test_logo_is_filtered_out(self):
+    def test_logo_chip_included_when_file_present(self):
+        status_dir = self._shm / 'status.tmux'
+        (status_dir / 'logo').write_text('#[fg=colour255,bg=colour202] u ')
         with patch.object(bm, '_byobu_shm', return_value=self._shm):
             with patch.object(bm, '_read_byobu_status_config',
                               return_value=(['logo', 'uptime'], [])):
                 result = bm.read_byobu_status()
         labels = [c['label'] for c in result['left']]
-        self.assertNotIn('logo', labels)
+        self.assertIn('logo', labels)
         self.assertIn('uptime', labels)
 
     def test_missing_chip_file_skipped(self):
