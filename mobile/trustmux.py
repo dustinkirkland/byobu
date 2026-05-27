@@ -378,7 +378,7 @@ class IndexHandler(BaseHandler):
 
 class SvgHandler(BaseHandler):
     async def get(self):
-        content = await asyncio.to_thread((STATIC / "byobu.svg").read_bytes)
+        content = await asyncio.to_thread((STATIC / "trustmux.svg").read_bytes)
         self.set_header("Content-Type", "image/svg+xml")
         self.set_header("Cache-Control", "max-age=86400")
         self.finish(content)
@@ -779,7 +779,7 @@ async def _run_admin_server() -> None:
 def _make_app() -> tornado.web.Application:
     return tornado.web.Application([
         (r"/",               IndexHandler),
-        (r"/byobu\.svg",     SvgHandler),
+        (r"/trustmux\.svg",  SvgHandler),
         (r"/manifest\.json", ManifestHandler),
         (r"/sw\.js",         ServiceWorkerHandler),
         (r"/icons/(.+)",     IconHandler),

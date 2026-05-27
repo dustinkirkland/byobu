@@ -5,7 +5,8 @@ mobile/trustmux-unpair          usr/bin/
 mobile/trustmux-enable          usr/bin/
 mobile/trustmux-disable         usr/bin/
 mobile/static/index.html            usr/share/trustmux/static/
-mobile/static/byobu.svg             usr/share/trustmux/static/
+mobile/static/trustmux.svg          usr/share/trustmux/static/
+mobile/static/trustmux-logo.svg     usr/share/trustmux/static/
 mobile/static/sw.js                 usr/share/trustmux/static/
 mobile/static/icons/icon-192.png    usr/share/trustmux/static/icons/
 mobile/static/icons/icon-512.png    usr/share/trustmux/static/icons/
