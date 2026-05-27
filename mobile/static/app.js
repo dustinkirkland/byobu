@@ -232,6 +232,48 @@ btnKbdMode.addEventListener('click', () => {
   setTimeout(() => cmdInput.focus(), 50);
 });
 
+// ── swipe navigation (depth-first: panes → windows → sessions) ───────────
+function flatPaneList() {
+  const list = [];
+  for (const s of sessions) {
+    for (const w of (s.windows || [])) {
+      for (const p of (w.panes || [])) {
+        list.push({ sessionId: s.id, windowId: w.id, paneId: p.id });
+      }
+    }
+  }
+  return list;
+}
+
+function navigateTo(sessionId, windowId, paneId) {
+  selSession.value = sessionId;
+  onSessionChange(false);   // rebuilds window options
+  selWindow.value = windowId;
+  onWindowChange(false);    // rebuilds pane options
+  selPane.value = paneId;
+  onPaneChange();            // subscribes
+}
+
+function navigateRelative(delta) {
+  const list = flatPaneList();
+  if (list.length < 2) return;
+  const idx = list.findIndex(e => e.paneId === currentPane);
+  const next = list[((idx < 0 ? 0 : idx) + delta + list.length) % list.length];
+  navigateTo(next.sessionId, next.windowId, next.paneId);
+}
+
+let _swipeX = 0, _swipeY = 0;
+output.addEventListener('touchstart', e => {
+  _swipeX = e.touches[0].clientX;
+  _swipeY = e.touches[0].clientY;
+}, { passive: true });
+output.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - _swipeX;
+  const dy = e.changedTouches[0].clientY - _swipeY;
+  if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 2) return;
+  navigateRelative(dx < 0 ? 1 : -1);
+}, { passive: true });
+
 // ── create session / window / pane ────────────────────────────────────────
 btnNewSession.addEventListener('click', () => {
   const name = window.prompt('New session name:');
