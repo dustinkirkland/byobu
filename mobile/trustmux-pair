@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """trustmux-pair — generate a one-time pairing code for a new device."""
 import json
+import shutil
 import socket
+import subprocess
 import sys
 from pathlib import Path
 
-SOCK = Path.home() / ".config" / "byobu-mobile" / "byobu-mobile.sock"
+SOCK = Path.home() / ".config" / "trustmux" / "trustmux.sock"
 
 
 def admin(cmd: dict) -> object:
@@ -38,6 +40,44 @@ def admin(cmd: dict) -> object:
             sys.exit(1)
 
 
+def _ts_url() -> str:
+    """Return the HTTPS URL from tailscale serve, or empty string if unavailable."""
+    try:
+        out = subprocess.check_output(
+            ["tailscale", "status", "--json"],
+            stderr=subprocess.DEVNULL, timeout=5
+        )
+        d = json.loads(out)
+        name = d.get("Self", {}).get("DNSName", "").rstrip(".")
+        if name:
+            return f"https://{name}/"
+    except Exception:
+        pass
+    return ""
+
+
+def _print_qr(url: str) -> None:
+    """Print a QR code for url using qrencode if available, else skip."""
+    if shutil.which("qrencode"):
+        try:
+            subprocess.run(
+                ["qrencode", "-t", "UTF8", "-m", "1", url],
+                check=True
+            )
+            return
+        except Exception:
+            pass
+    # qrcode Python library fallback
+    try:
+        import qrcode  # type: ignore
+        qr = qrcode.QRCode(border=1)
+        qr.add_data(url)
+        qr.make(fit=True)
+        qr.print_ascii(invert=True)
+    except ImportError:
+        pass
+
+
 def main():
     data = admin({"action": "pair_generate"})
     if not isinstance(data, dict) or "error" in data:
@@ -45,10 +85,18 @@ def main():
         sys.exit(1)
     code = data["code"]
     mins = data["expires_in"] // 60
-    bar = "═" * 50
+    url = _ts_url()
+
+    bar = "═" * 52
     print(f"\n{bar}")
     print(f"  Trustmux pairing code:  {code}  (valid {mins} min)")
+    if url:
+        print(f"  Open on your phone:     {url}")
     print(f"{bar}\n")
+
+    if url:
+        _print_qr(url)
+        print()
 
 
 if __name__ == "__main__":
