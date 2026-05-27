@@ -448,7 +448,7 @@ rm -f "$_ULEVEL"
 echo ""
 echo "byobu tests: ${PASS} passed, ${FAIL} failed"
 if [ "$FAIL" -gt 0 ]; then
-	printf "\nFailures:\n${_FAILURES}"
+	printf '\nFailures:\n%b' "${_FAILURES}"
 	exit 1
 fi
 exit 0

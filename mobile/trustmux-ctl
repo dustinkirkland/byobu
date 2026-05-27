@@ -3,24 +3,24 @@ set -euo pipefail
 
 PORT=7432
 DIR="$(cd "$(dirname "$0")" && pwd)"
-PIDFILE="/tmp/byobu-mobile.pid"
+PIDFILE="/tmp/trustmux.pid"
 
 # Detect installed vs dev-tree.
 # Installed: script is in /usr/bin/, daemon is in /usr/lib/byobu-mobile/.
-# Dev tree:  script is alongside byobu_mobile.py in mobile/.
-if [ -f "$DIR/byobu_mobile.py" ]; then
-    DAEMON="$DIR/byobu_mobile.py"
+# Dev tree:  script is alongside trustmux.py in mobile/.
+if [ -f "$DIR/trustmux.py" ]; then
+    DAEMON="$DIR/trustmux.py"
     PYTHON="${DIR}/.venv/bin/python"
     [ ! -x "$PYTHON" ] && PYTHON="python3"
     _DEV_TREE=1
 else
-    DAEMON="/usr/lib/byobu-mobile/byobu_mobile.py"
+    DAEMON="/usr/lib/trustmux/trustmux.py"
     PYTHON="python3"
     _DEV_TREE=0
 fi
 
-CONFIG_DIR="$HOME/.config/byobu-mobile"
-LOGFILE="$CONFIG_DIR/byobu-mobile.log"
+CONFIG_DIR="$HOME/.config/trustmux"
+LOGFILE="$CONFIG_DIR/trustmux.log"
 
 _ensure_dir() {
     mkdir -p "$CONFIG_DIR"
@@ -78,7 +78,7 @@ case "${1:-}" in
     # Pass --quiet to suppress the "Next steps" section (used by byobu-mobile-enable).
     SETUP_QUIET=0
     [ "${2:-}" = "--quiet" ] && SETUP_QUIET=1
-    echo "=== byobu-mobile setup ==="
+    echo "=== trustmux setup ==="
     echo ""
 
     # 1. Python / tornado
@@ -128,7 +128,7 @@ case "${1:-}" in
         echo "Setup complete. Next steps:"
         echo ""
         echo "  1. Start the daemon:      $0 start"
-        echo "  2. Generate pairing code: $(dirname "$0")/byobu-mobile-pair"
+        echo "  2. Generate pairing code: $(dirname "$0")/trustmux-pair"
         echo "  3. Open on your phone:    https://$TS_HOST"
     fi
     ;;
@@ -138,7 +138,7 @@ case "${1:-}" in
     # tailscale serve provisions a Let's Encrypt cert and proxies
     # https://<tailnet-hostname> → http://localhost:PORT.
     if p=$(pid); then
-        echo "byobu-mobile already running (pid $p)"
+        echo "trustmux already running (pid $p)"
         exit 1
     fi
     if ! command -v tailscale &>/dev/null; then
@@ -153,16 +153,16 @@ case "${1:-}" in
     fi
     _ensure_ts_serve || exit 1
     _ensure_dir
-    echo "Starting byobu-mobile (HTTPS mode)..."
+    echo "Starting trustmux (HTTPS mode)..."
     nohup "$PYTHON" "$DAEMON" --host 127.0.0.1 --port "$PORT" --https \
         >> "$LOGFILE" 2>&1 &
     echo $! > "$PIDFILE"
     sleep 0.5
     if p=$(pid); then
-        echo "byobu-mobile started (pid $p)"
+        echo "trustmux started (pid $p)"
         echo "Connect from phone: https://$TS_HOST"
     else
-        echo "byobu-mobile failed to start — check $LOGFILE"
+        echo "trustmux failed to start — check $LOGFILE"
         exit 1
     fi
     ;;
@@ -173,21 +173,21 @@ case "${1:-}" in
     # Access via: ssh -L 7432:localhost:7432 user@this-machine
     # then open http://localhost:7432 in the phone browser.
     if p=$(pid); then
-        echo "byobu-mobile already running (pid $p)"
+        echo "trustmux already running (pid $p)"
         exit 1
     fi
     _ensure_dir
-    echo "Starting byobu-mobile (loopback only — SSH tunnel access)..."
+    echo "Starting trustmux (loopback only — SSH tunnel access)..."
     nohup "$PYTHON" "$DAEMON" --host 127.0.0.1 --port "$PORT" \
         >> "$LOGFILE" 2>&1 &
     echo $! > "$PIDFILE"
     sleep 0.5
     if p=$(pid); then
-        echo "byobu-mobile started (pid $p)"
+        echo "trustmux started (pid $p)"
         echo "Access via SSH tunnel: ssh -L ${PORT}:localhost:${PORT} user@\$(hostname -f)"
         echo "Then open: http://localhost:${PORT}"
     else
-        echo "byobu-mobile failed to start — check $LOGFILE"
+        echo "trustmux failed to start — check $LOGFILE"
         exit 1
     fi
     ;;
@@ -196,19 +196,19 @@ case "${1:-}" in
     # Plain HTTP bound directly to Tailscale IP.
     # WireGuard encrypts the transport, but no TLS cert — dev/debug only.
     if p=$(pid); then
-        echo "byobu-mobile already running (pid $p)"
+        echo "trustmux already running (pid $p)"
         exit 1
     fi
     _ensure_dir
-    echo "Starting byobu-mobile (direct HTTP — dev/debug only)..."
+    echo "Starting trustmux (direct HTTP — dev/debug only)..."
     nohup "$PYTHON" "$DAEMON" --port "$PORT" \
         >> "$LOGFILE" 2>&1 &
     echo $! > "$PIDFILE"
     sleep 0.5
     if p=$(pid); then
-        echo "byobu-mobile started (pid $p) — check $LOGFILE for bound address"
+        echo "trustmux started (pid $p) — check $LOGFILE for bound address"
     else
-        echo "byobu-mobile failed to start — check $LOGFILE"
+        echo "trustmux failed to start — check $LOGFILE"
         exit 1
     fi
     ;;
@@ -224,10 +224,10 @@ case "${1:-}" in
             exit 1
         fi
         kill "$p"
-        echo "byobu-mobile stopped (pid $p)"
+        echo "trustmux stopped (pid $p)"
         rm -f "$PIDFILE"
     else
-        echo "byobu-mobile not running"
+        echo "trustmux not running"
         rm -f "$PIDFILE"
     fi
     ;;
@@ -240,7 +240,7 @@ case "${1:-}" in
 
   status)
     if p=$(pid); then
-        echo "byobu-mobile running (pid $p) — port $PORT"
+        echo "trustmux running (pid $p) — port $PORT"
         # Show HTTPS URL only if tailscale serve is actually proxying to this port
         if tailscale serve status 2>/dev/null | grep -q ":${PORT}"; then
             TS_HOST=$(_ts_host)
@@ -249,7 +249,7 @@ case "${1:-}" in
             echo "Connect: http://$(tailscale ip -4 2>/dev/null || echo localhost):$PORT  (direct HTTP)"
         fi
     else
-        echo "byobu-mobile not running"
+        echo "trustmux not running"
     fi
     ;;
 

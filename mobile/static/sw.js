@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE = 'byobu-mobile-v1';
+const CACHE = 'trustmux-v1';
 
 // Static shell — load instantly from cache on repeat visits.
 const SHELL = ['/', '/byobu.svg', '/manifest.json',

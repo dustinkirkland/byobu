@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""byobu-mobile daemon — mobile companion for Byobu/tmux sessions."""
+"""Trustmux daemon — mobile companion for Byobu/tmux sessions."""
 
 import argparse
 import asyncio
@@ -32,11 +32,11 @@ _PAIR_CODE_TTL: int = 300             # 5 minutes
 _sessions: dict[str, dict] = {}      # token → {ip, paired_at, label}
 _https_mode: bool = False             # set by --https; enables Secure cookie
 
-CONFIG_DIR    = Path.home() / ".config" / "byobu-mobile"
+CONFIG_DIR    = Path.home() / ".config" / "trustmux"
 TOKENS_FILE   = CONFIG_DIR / "tokens.json"
-ADMIN_SOCK    = CONFIG_DIR / "byobu-mobile.sock"
+ADMIN_SOCK    = CONFIG_DIR / "trustmux.sock"
 MACHINES_FILE = CONFIG_DIR / "machines.json"
-_INSTALLED_STATIC = Path("/usr/share/byobu-mobile/static")
+_INSTALLED_STATIC = Path("/usr/share/trustmux/static")
 _DEV_STATIC       = Path(__file__).parent / "static"
 STATIC            = _INSTALLED_STATIC if _INSTALLED_STATIC.is_dir() else _DEV_STATIC
 
@@ -85,7 +85,7 @@ def _print_pair_code() -> None:
     expiry = datetime.fromtimestamp(_pair_code_expiry).strftime("%H:%M:%S")
     bar = "═" * 50
     print(f"\n{bar}")
-    print(f"  Byobu Mobile pairing code:  {fmt}  (expires {expiry})")
+    print(f"  Trustmux pairing code:  {fmt}  (expires {expiry})")
     print(f"{bar}\n", flush=True)
 
 def _valid_session_token(token: str) -> bool:
@@ -362,7 +362,7 @@ class BaseAuthHandler(BaseHandler):
     """Protected handlers inherit this; unauthenticated requests get 401."""
 
     def prepare(self):
-        token = self.get_cookie("byobu_mobile_session") or ""
+        token = self.get_cookie("trustmux_session") or ""
         if not _valid_session_token(token):
             self.json({"error": "unauthorized"}, 401)
 
@@ -388,8 +388,8 @@ class ManifestHandler(BaseHandler):
     def get(self):
         hostname = socket.gethostname()
         manifest = {
-            "name":             f"byobu · {hostname}",
-            "short_name":       f"byobu · {hostname}",
+            "name":             f"trustmux · {hostname}",
+            "short_name":       f"trustmux · {hostname}",
             "description":      "Monitor and interact with your Byobu tmux sessions from your phone.",
             "start_url":        "/",
             "display":          "standalone",
@@ -431,7 +431,7 @@ class IconHandler(BaseHandler):
 
 class PingHandler(BaseHandler):
     def get(self):
-        token = (self.get_cookie("byobu_mobile_session")
+        token = (self.get_cookie("trustmux_session")
                  or self.get_argument("token", ""))
         if _valid_session_token(token):
             self.json({"auth": True, "hostname": socket.gethostname()})
@@ -443,12 +443,12 @@ class PairHandler(BaseHandler):
     async def post(self):
         global _pair_attempts, _pair_code, _pair_code_expiry, _pair_code_mono_expiry
         if not _pair_code:
-            return self.json({"error": "no pairing code active — run byobu-mobile-pair"}, 403)
+            return self.json({"error": "no pairing code active — run trustmux-pair"}, 403)
         if time.monotonic() > _pair_code_mono_expiry:
             _pair_code = ""
-            return self.json({"error": "pairing code expired — run byobu-mobile-pair again"}, 403)
+            return self.json({"error": "pairing code expired — run trustmux-pair again"}, 403)
         if _pair_attempts >= _MAX_PAIR_ATTEMPTS:
-            return self.json({"error": "too many attempts — run byobu-mobile-pair again"}, 429)
+            return self.json({"error": "too many attempts — run trustmux-pair again"}, 429)
         body_bytes = self.request.body
         if len(body_bytes) > 1024:
             return self.json({"error": "request too large"}, 413)
@@ -477,9 +477,9 @@ class PairHandler(BaseHandler):
         _pair_code_expiry = 0.0
         _pair_code_mono_expiry = 0.0
         _pair_attempts = 0
-        print(f"✓ Byobu Mobile: device paired ({ip})", flush=True)
+        print(f"✓ Trustmux: device paired ({ip})", flush=True)
         self.set_cookie(
-            "byobu_mobile_session", token,
+            "trustmux_session", token,
             expires_days=10 * 365,
             httponly=True,
             samesite="Strict",
@@ -541,7 +541,7 @@ class WsHandler(tornado.websocket.WebSocketHandler):
     """
 
     def open(self):
-        token = (self.get_cookie("byobu_mobile_session")
+        token = (self.get_cookie("trustmux_session")
                  or self.get_argument("token", ""))
         if not _valid_session_token(token):
             self.close(4401, "unauthorized")
@@ -684,7 +684,7 @@ class WsHandler(tornado.websocket.WebSocketHandler):
 
 
 # ---------------------------------------------------------------------------
-# Admin Unix socket — byobu-mobile-pair / byobu-mobile-unpair only
+# Admin Unix socket — trustmux-pair / trustmux-unpair only
 # Socket is 0o600; only the owning user can connect.
 # No TCP exposure: management traffic never touches the network.
 # ---------------------------------------------------------------------------
@@ -816,7 +816,7 @@ async def _amain(host: str, port: int, https: bool) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Byobu Mobile daemon")
+    parser = argparse.ArgumentParser(description="Trustmux daemon")
     parser.add_argument("--host", default=None,
                         help="Bind address (default: Tailscale IP; 127.0.0.1 with --https)")
     parser.add_argument("--port", type=int, default=7432,
@@ -831,16 +831,16 @@ def main():
     if not host:
         if args.https:
             host = "127.0.0.1"
-            print("Byobu Mobile: HTTPS mode — binding to localhost (tailscale serve proxy)")
+            print("Trustmux: HTTPS mode — binding to localhost (tailscale serve proxy)")
         else:
             host = _tailscale_ip()
             if host:
-                print(f"Byobu Mobile: binding to Tailscale IP {host}")
+                print(f"Trustmux: binding to Tailscale IP {host}")
             else:
                 host = "127.0.0.1"
-                print("Byobu Mobile: Tailscale not found, binding to localhost only")
+                print("Trustmux: Tailscale not found, binding to localhost only")
 
-    print(f"Byobu Mobile daemon on {host}:{args.port} — run 'byobu-mobile-pair' to pair a device.", flush=True)
+    print(f"Trustmux daemon on {host}:{args.port} — run 'trustmux-pair' to pair a device.", flush=True)
     asyncio.run(_amain(host, args.port, args.https))
 
 

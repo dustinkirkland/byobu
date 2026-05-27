@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#    byobu-mobile-disable: stop byobu-mobile daemon and remove login hook
+#    trustmux-disable: stop byobu-mobile daemon and remove login hook
 #    Copyright (C) 2026 Canonical Ltd.
 #
 #    Authors: Dustin Kirkland <kirkland@byobu.org>
@@ -12,13 +12,13 @@
 set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
-CTL="$DIR/byobu-mobile-ctl"
+CTL="$DIR/trustmux-ctl"
 
 _remove_hook() {
     local dest="$1"
     [ -w "$dest" ] || return 0
-    # Remove any line that invokes byobu-mobile-ctl (regardless of full path).
-    sed -i '/byobu-mobile-ctl/d' "$dest"
+    # Remove any line that invokes trustmux-ctl (regardless of full path).
+    sed -i '/trustmux-ctl/d' "$dest"
 }
 
 _remove_hook "$HOME/.profile"
@@ -30,10 +30,10 @@ _remove_hook "$HOME/.zprofile"
 "$CTL" stop 2>/dev/null || true
 
 echo
-echo "Byobu Mobile daemon stopped. It will no longer start automatically at login."
+echo "Trustmux daemon stopped. It will no longer start automatically at login."
 echo
-echo "Paired device tokens are preserved in ~/.config/byobu-mobile/tokens.json."
+echo "Paired device tokens are preserved in ~/.config/trustmux/tokens.json."
 echo
 echo "To re-enable later, run:"
-echo "  byobu-mobile-enable"
+echo "  trustmux-enable"
 echo

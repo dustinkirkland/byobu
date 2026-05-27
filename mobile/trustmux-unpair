@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""byobu-mobile-unpair — list and remove paired devices."""
+"""trustmux-unpair — list and remove paired devices."""
 import json
 import socket
 import sys
@@ -10,13 +10,13 @@ SOCK = Path.home() / ".config" / "byobu-mobile" / "byobu-mobile.sock"
 
 def admin(cmd: dict) -> object:
     if not SOCK.exists():
-        print("Error: byobu-mobile daemon not running (socket not found)", file=sys.stderr)
+        print("Error: Trustmux daemon not running (socket not found)", file=sys.stderr)
         sys.exit(1)
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
         try:
             s.connect(str(SOCK))
         except OSError as e:
-            print(f"Error: cannot connect to byobu-mobile daemon: {e}", file=sys.stderr)
+            print(f"Error: cannot connect to Trustmux daemon: {e}", file=sys.stderr)
             sys.exit(1)
         s.sendall(json.dumps(cmd).encode() + b"\n")
         s.shutdown(socket.SHUT_WR)

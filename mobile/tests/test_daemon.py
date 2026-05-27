@@ -1,4 +1,4 @@
-"""Tests for byobu_mobile daemon — runs locally with stdlib unittest + tornado."""
+"""Tests for Trustmux daemon — runs locally with stdlib unittest + tornado."""
 
 import json
 import os
@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-import byobu_mobile as bm
+import trustmux as bm
 
 from tornado.testing import AsyncHTTPTestCase
 
@@ -256,7 +256,7 @@ class TestPingHandler(AsyncHTTPTestCase):
 
     def test_authenticated_via_cookie_returns_200(self):
         tok = _add_session()
-        resp = self.fetch('/ping', headers={'Cookie': f'byobu_mobile_session={tok}'})
+        resp = self.fetch('/ping', headers={'Cookie': f'trustmux_session={tok}'})
         self.assertEqual(resp.code, 200)
         data = json.loads(resp.body)
         self.assertTrue(data['auth'])
@@ -270,7 +270,7 @@ class TestPingHandler(AsyncHTTPTestCase):
 
     def test_wrong_token_returns_401(self):
         _add_session('correct_token')
-        resp = self.fetch('/ping', headers={'Cookie': 'byobu_mobile_session=wrong_token'})
+        resp = self.fetch('/ping', headers={'Cookie': 'trustmux_session=wrong_token'})
         self.assertEqual(resp.code, 401)
 
 
@@ -317,18 +317,18 @@ class TestPairHandler(AsyncHTTPTestCase):
 
     def test_valid_code_returns_200_and_sets_cookie(self):
         code = bm._generate_pair_code()
-        with patch('byobu_mobile._save_tokens'):
+        with patch('trustmux._save_tokens'):
             resp = self._post({'code': code})
         self.assertEqual(resp.code, 200)
         self.assertTrue(json.loads(resp.body).get('ok'))
-        self.assertIn('byobu_mobile_session', resp.headers.get('Set-Cookie', ''))
+        self.assertIn('trustmux_session', resp.headers.get('Set-Cookie', ''))
         # Code consumed — one-time use
         self.assertEqual(bm._pair_code, '')
 
     def test_valid_code_with_dashes(self):
         code = bm._generate_pair_code()
         dashed = f'{code[:3]}-{code[3:]}'
-        with patch('byobu_mobile._save_tokens'):
+        with patch('trustmux._save_tokens'):
             resp = self._post({'code': dashed})
         self.assertEqual(resp.code, 200)
 
@@ -397,8 +397,8 @@ class TestStatusHandler(AsyncHTTPTestCase):
 
     def test_authenticated_returns_dict_with_left_right(self):
         tok = _add_session()
-        with patch('byobu_mobile.read_byobu_status', return_value={'left': [], 'right': []}):
-            resp = self.fetch('/status', headers={'Cookie': f'byobu_mobile_session={tok}'})
+        with patch('trustmux.read_byobu_status', return_value={'left': [], 'right': []}):
+            resp = self.fetch('/status', headers={'Cookie': f'trustmux_session={tok}'})
         self.assertEqual(resp.code, 200)
         data = json.loads(resp.body)
         self.assertIn('left', data)

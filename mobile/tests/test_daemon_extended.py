@@ -1,4 +1,4 @@
-"""Extended test suite for byobu_mobile daemon.
+"""Extended test suite for Trustmux daemon.
 
 Covers: token persistence, security headers, static handlers, MachinesHandler,
 tmux list/write ops, byobu status chips, admin socket protocol, WebSocket handler.
@@ -15,7 +15,7 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock, AsyncMock
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-import byobu_mobile as bm
+import trustmux as bm
 
 from tornado.testing import AsyncHTTPTestCase, gen_test
 from tornado.websocket import websocket_connect
@@ -48,7 +48,7 @@ class TestTokenPersistence(unittest.TestCase):
         self._tmpdir = tempfile.TemporaryDirectory()
         self._orig_config = bm.CONFIG_DIR
         self._orig_tokens = bm.TOKENS_FILE
-        bm.CONFIG_DIR = Path(self._tmpdir.name) / 'byobu-mobile'
+        bm.CONFIG_DIR = Path(self._tmpdir.name) / 'trustmux'
         bm.TOKENS_FILE = bm.CONFIG_DIR / 'tokens.json'
 
     def tearDown(self):
