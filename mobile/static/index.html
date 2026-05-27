@@ -141,13 +141,15 @@
       border-bottom: 1px solid var(--border);
       font-size: 11px; color: var(--dim); flex-shrink: 0;
     }
+    #status-right {
+      margin-left: auto; display: flex; gap: 6px; align-items: center; flex-shrink: 0;
+    }
     #hostname-display {
-      margin-left: auto; font-size: 11px; color: var(--accent);
-      white-space: nowrap; flex-shrink: 0; letter-spacing: 0.03em;
+      font-size: 11px; color: var(--accent);
+      white-space: nowrap; letter-spacing: 0.03em;
     }
     #header-clock {
-      font-size: 11px; color: var(--dim);
-      white-space: nowrap; flex-shrink: 0;
+      font-size: 11px; color: var(--dim); white-space: nowrap;
     }
     #statusbar .dot {
       width: 7px; height: 7px; border-radius: 50%;
@@ -330,8 +332,10 @@
   <div id="statusbar">
     <span class="dot"></span>
     <span id="status-text">connecting…</span>
-    <span id="hostname-display"></span>
-    <span id="header-clock"></span>
+    <span id="status-right">
+      <span id="hostname-display"></span>
+      <span id="header-clock"></span>
+    </span>
   </div>
 
   <div id="output" class="placeholder">Select a session → window → pane above.</div>
