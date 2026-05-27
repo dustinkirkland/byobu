@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """trustmux-pair — generate a one-time pairing code for a new device."""
 import json
+import os
 import shutil
 import socket
 import subprocess
 import sys
+import termios
+import tty
 from pathlib import Path
 
 SOCK = Path.home() / ".config" / "trustmux" / "trustmux.sock"
@@ -78,6 +81,21 @@ def _print_qr(url: str) -> None:
         pass
 
 
+def _wait_and_clear() -> None:
+    """Wait for a keypress, then clear the screen."""
+    if not sys.stdin.isatty():
+        return
+    print("  [ press any key to clear ]")
+    fd = sys.stdin.fileno()
+    old = termios.tcgetattr(fd)
+    try:
+        tty.setraw(fd)
+        sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old)
+    print("\033[2J\033[H", end="", flush=True)
+
+
 def main():
     data = admin({"action": "pair_generate"})
     if not isinstance(data, dict) or "error" in data:
@@ -97,6 +115,8 @@ def main():
     if url:
         _print_qr(url)
         print()
+
+    _wait_and_clear()
 
 
 if __name__ == "__main__":
