@@ -95,11 +95,11 @@ class TestTmuxListPanes(unittest.TestCase):
             return bm.tmux_list_panes('@0')
 
     def test_parses_two_panes(self):
-        out = '%0\t0\t1\tbash\t1234\n%1\t1\t0\tvim\t5678\n'
+        out = '%0\t0\t1\tbash\t1234\t0\n%1\t1\t0\tvim\t5678\t1\n'
         panes = self._run(out)
         self.assertEqual(len(panes), 2)
-        self.assertEqual(panes[0], {'id': '%0', 'index': 0, 'active': True,  'command': 'bash'})
-        self.assertEqual(panes[1], {'id': '%1', 'index': 1, 'active': False, 'command': 'vim'})
+        self.assertEqual(panes[0], {'id': '%0', 'index': 0, 'active': True,  'command': 'bash', 'dead': False})
+        self.assertEqual(panes[1], {'id': '%1', 'index': 1, 'active': False, 'command': 'vim',  'dead': True})
 
     def test_empty_output(self):
         self.assertEqual(self._run(''), [])

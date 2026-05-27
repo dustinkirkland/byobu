@@ -184,7 +184,7 @@ def tmux_list_windows(session_id: str) -> list[dict]:
 
 def tmux_list_panes(window_id: str) -> list[dict]:
     raw = _tmux("list-panes", "-t", window_id, "-F",
-                "#{pane_id}\t#{pane_index}\t#{pane_active}\t#{pane_current_command}\t#{pane_pid}")
+                "#{pane_id}\t#{pane_index}\t#{pane_active}\t#{pane_current_command}\t#{pane_pid}\t#{pane_dead}")
     panes = []
     for line in raw.splitlines():
         parts = line.split("\t")
@@ -197,11 +197,13 @@ def tmux_list_panes(window_id: str) -> list[dict]:
             continue
         active = parts[2] == "1"
         cmd = parts[3] if len(parts) > 3 else ""
+        dead = parts[5] == "1" if len(parts) > 5 else False
         panes.append({
             "id": pane_id_str,
             "index": idx,
             "active": active,
             "command": cmd,
+            "dead": dead,
         })
     return panes
 
@@ -230,6 +232,9 @@ def tmux_kill_pane(pane_id: str) -> None:
 
 def tmux_kill_window(window_id: str) -> None:
     _tmux("kill-window", "-t", window_id)
+
+def tmux_kill_session(session_id: str) -> None:
+    _tmux("kill-session", "-t", session_id)
 
 def tmux_send_keys(pane_id: str, keys: str, enter: bool = True) -> None:
     _tmux("send-keys", "-t", pane_id, "-l", keys)
@@ -719,6 +724,15 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     self._send({"type": "error", "message": "invalid window_id"})
                 else:
                     await asyncio.to_thread(tmux_kill_window, wid)
+                    sessions_list = await asyncio.to_thread(tmux_list_sessions)
+                    self._send({"type": "sessions", "data": sessions_list})
+
+            elif mtype == "kill_session":
+                sid = msg.get("session_id", "")
+                if not _valid_tmux_id(sid):
+                    self._send({"type": "error", "message": "invalid session_id"})
+                else:
+                    await asyncio.to_thread(tmux_kill_session, sid)
                     sessions_list = await asyncio.to_thread(tmux_list_sessions)
                     self._send({"type": "sessions", "data": sessions_list})
 

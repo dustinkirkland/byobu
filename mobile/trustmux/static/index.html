@@ -93,8 +93,8 @@
     }
     select:disabled { opacity: 0.4; cursor: default; }
 
-    /* ── context menu (long press on output) ── */
-    #ctx-overlay {
+    /* ── context menu + create overlay ── */
+    #ctx-overlay, #create-overlay {
       position: fixed; inset: 0; z-index: 200;
       background: rgba(0,0,0,0.72);
       display: flex; align-items: center; justify-content: center;
@@ -261,22 +261,47 @@
   </div>
 </div>
 
-<!-- ── long-press context menu ── -->
+<!-- ── double-tap kill menu ── -->
 <div id="ctx-overlay" style="display:none">
   <div id="ctx-box">
     <div id="ctx-main">
-      <button class="ctx-btn ctx-danger" id="ctx-kill">✕  Kill pane</button>
-      <div class="ctx-sep"></div>
-      <button class="ctx-btn" id="ctx-new-pane">⊞  New pane</button>
-      <button class="ctx-btn" id="ctx-new-window">+  New window</button>
+      <button class="ctx-btn ctx-danger" id="ctx-kill-pane"></button>
+      <button class="ctx-btn ctx-danger" id="ctx-kill-window"></button>
+      <button class="ctx-btn ctx-danger" id="ctx-kill-session"></button>
       <div class="ctx-sep"></div>
       <button class="ctx-btn ctx-dim" id="ctx-cancel">Cancel</button>
     </div>
     <div id="ctx-confirm" style="display:none">
       <p id="ctx-confirm-msg"></p>
+      <div id="ctx-confirm-detail" style="padding:0 16px 10px;font-size:11px;color:var(--dim);text-align:center;font-family:var(--font)"></div>
       <button class="ctx-btn ctx-danger" id="ctx-confirm-yes">Yes, kill it</button>
       <div class="ctx-sep"></div>
       <button class="ctx-btn ctx-dim" id="ctx-confirm-no">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── create new pane / window / session ── -->
+<div id="create-overlay" style="display:none">
+  <div id="ctx-box">
+    <div id="create-main">
+      <button class="ctx-btn" id="create-pane">⊞  New pane</button>
+      <button class="ctx-btn" id="create-window">⬜  New window</button>
+      <button class="ctx-btn" id="create-session">⧉  New session</button>
+      <div class="ctx-sep"></div>
+      <button class="ctx-btn ctx-dim" id="create-cancel">Cancel</button>
+    </div>
+    <div id="create-name-form" style="display:none">
+      <p id="create-name-label" style="padding:12px 16px;color:var(--dim);font-size:13px;font-family:var(--font);text-align:center"></p>
+      <div style="padding:0 10px 6px">
+        <input id="create-name-input" type="text"
+               autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+               style="width:100%;background:var(--bg3);color:var(--text);border:1px solid var(--border);
+                      border-radius:6px;padding:10px 12px;font-size:14px;font-family:var(--font);outline:none">
+      </div>
+      <button class="ctx-btn" id="create-name-confirm" style="color:var(--accent)">Create</button>
+      <div class="ctx-sep"></div>
+      <button class="ctx-btn ctx-dim" id="create-name-back">← Back</button>
     </div>
   </div>
 </div>
@@ -300,6 +325,7 @@
     </select>
     <select id="machine-select" title="Switch machine" style="display:none"></select>
     <button id="btn-install" title="Install as app" style="display:none">+ Install app</button>
+    <button class="icon-btn" id="btn-new" title="New pane / window / session">+</button>
     <button class="icon-btn" id="btn-refresh" title="Refresh session list">↺</button>
   </div>
 

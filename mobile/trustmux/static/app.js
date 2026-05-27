@@ -27,16 +27,23 @@ const hostnameDisplay  = document.getElementById('hostname-display');
 const headerClock      = document.getElementById('header-clock');
 const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
-const ctxOverlay    = document.getElementById('ctx-overlay');
-const ctxMain       = document.getElementById('ctx-main');
-const ctxConfirm    = document.getElementById('ctx-confirm');
-const ctxConfirmMsg = document.getElementById('ctx-confirm-msg');
-const ctxKill       = document.getElementById('ctx-kill');
-const ctxNewPane    = document.getElementById('ctx-new-pane');
-const ctxNewWindow  = document.getElementById('ctx-new-window');
-const ctxCancel     = document.getElementById('ctx-cancel');
-const ctxConfirmYes = document.getElementById('ctx-confirm-yes');
-const ctxConfirmNo  = document.getElementById('ctx-confirm-no');
+const ctxOverlay       = document.getElementById('ctx-overlay');
+const ctxMain          = document.getElementById('ctx-main');
+const ctxConfirm       = document.getElementById('ctx-confirm');
+const ctxConfirmMsg    = document.getElementById('ctx-confirm-msg');
+const ctxConfirmDetail = document.getElementById('ctx-confirm-detail');
+const ctxKillPane      = document.getElementById('ctx-kill-pane');
+const ctxKillWindow    = document.getElementById('ctx-kill-window');
+const ctxKillSession   = document.getElementById('ctx-kill-session');
+const ctxCancel        = document.getElementById('ctx-cancel');
+const ctxConfirmYes    = document.getElementById('ctx-confirm-yes');
+const ctxConfirmNo     = document.getElementById('ctx-confirm-no');
+const createOverlay    = document.getElementById('create-overlay');
+const createMain       = document.getElementById('create-main');
+const createNameForm   = document.getElementById('create-name-form');
+const createNameLabel  = document.getElementById('create-name-label');
+const createNameInput  = document.getElementById('create-name-input');
+const btnNew           = document.getElementById('btn-new');
 
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
@@ -94,23 +101,28 @@ function rebuildPaneTree() {
   if (forced) forcedSessionId = null;
 
   for (const s of sessions) {
+    const sNum = s.id.replace('$', '');
     const grp = document.createElement('optgroup');
-    grp.label = s.attached ? `${s.name} ●` : s.name;
+    grp.label = `S${sNum} · ${s.name}${s.attached ? ' ●' : ''}`;
 
     for (const w of s.windows) {
       const wHdr = document.createElement('option');
       wHdr.disabled = true;
-      wHdr.textContent = `  W${w.index}: ${w.name}${w.active ? ' ●' : ''}`;
+      wHdr.textContent = `  W${w.index} · ${w.name}${w.active ? ' ●' : ''}`;
       grp.appendChild(wHdr);
 
       for (const p of w.panes) {
         const opt = document.createElement('option');
         const val = `${s.id}|${w.id}|${p.id}`;
         opt.value = val;
-        opt.textContent = `    ${p.index}: ${p.command}${p.active ? ' ●' : ''}`;
+        const deadMark = p.dead ? ' [dead]' : '';
+        opt.textContent = `    P${p.index} · ${p.command}${p.active ? ' ●' : ''}${deadMark}`;
+        if (p.dead) opt.style.color = 'var(--dim)';
         grp.appendChild(opt);
-        if (forced === s.id && !autoTarget) autoTarget = val;
-        if (!autoTarget && s.attached && w.active && p.active) autoTarget = val;
+        if (!p.dead) {
+          if (forced === s.id && !autoTarget) autoTarget = val;
+          if (!autoTarget && s.attached && w.active && p.active) autoTarget = val;
+        }
       }
     }
     selPaneTree.appendChild(grp);
@@ -207,7 +219,7 @@ function flatPaneList() {
   for (const s of sessions) {
     for (const w of (s.windows || [])) {
       for (const p of (w.panes || [])) {
-        list.push({ sessionId: s.id, windowId: w.id, paneId: p.id });
+        if (!p.dead) list.push({ sessionId: s.id, windowId: w.id, paneId: p.id });
       }
     }
   }
@@ -251,69 +263,138 @@ output.addEventListener('touchend', e => {
   }
 }, { passive: true });
 
-// ── context menu ──────────────────────────────────────────────────────────
+// ── kill menu (double-tap) ────────────────────────────────────────────────
+let _pendingKill = null; // { type, id }
+
 function showCtxMenu() {
-  const [sessionId, windowId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
+  if (!selPaneTree.value) return;
+  const [sessionId, windowId, paneId] = selPaneTree.value.split('|');
   const sess = sessions.find(s => s.id === sessionId);
   const win  = sess?.windows.find(w => w.id === windowId);
-  const isSingle = (win?.panes.length ?? 0) === 1;
-  ctxKill.textContent = isSingle ? '✕  Kill window' : '✕  Kill pane';
-  ctxKill.style.display = selPaneTree.value ? '' : 'none';
+  const pane = win?.panes.find(p => p.id === paneId);
+  const sNum = sessionId.replace('$', '');
+
+  ctxKillPane.textContent    = `✕  Kill pane P${pane?.index ?? '?'} · ${pane?.command || 'dead'}`;
+  ctxKillWindow.textContent  = `✕  Kill window W${win?.index ?? '?'} · ${win?.name ?? '?'} (${win?.panes.length ?? '?'} pane${(win?.panes.length ?? 0) !== 1 ? 's' : ''})`;
+  ctxKillSession.textContent = `✕  Kill session S${sNum} · ${sess?.name ?? '?'} (${sess?.windows.length ?? '?'} window${(sess?.windows.length ?? 0) !== 1 ? 's' : ''})`;
+
   ctxMain.style.display = '';
   ctxConfirm.style.display = 'none';
   ctxOverlay.style.display = 'flex';
 }
 
-function hideCtxMenu() { ctxOverlay.style.display = 'none'; }
+function hideCtxMenu() { ctxOverlay.style.display = 'none'; _pendingKill = null; }
+
+function showKillConfirm(type, id, msg, detail) {
+  _pendingKill = { type, id };
+  ctxConfirmMsg.textContent    = msg;
+  ctxConfirmDetail.textContent = detail;
+  ctxMain.style.display    = 'none';
+  ctxConfirm.style.display = '';
+}
 
 ctxCancel.addEventListener('click', hideCtxMenu);
 ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtxMenu(); });
 
-ctxKill.addEventListener('click', () => {
-  const [sessionId, windowId, paneId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
-  const sess = sessions.find(s => s.id === sessionId);
-  const win  = sess?.windows.find(w => w.id === windowId);
-  const isSingle = (win?.panes.length ?? 0) === 1;
+ctxKillPane.addEventListener('click', () => {
+  const [, windowId, paneId] = selPaneTree.value.split('|');
+  const win  = sessions.flatMap(s => s.windows).find(w => w.id === windowId);
   const pane = win?.panes.find(p => p.id === paneId);
-  const label = isSingle
-    ? `window "${win?.name ?? windowId}"`
-    : `pane ${pane?.command ?? paneId}`;
-  ctxConfirmMsg.textContent = `Kill ${label}?`;
-  ctxMain.style.display = 'none';
-  ctxConfirm.style.display = '';
+  showKillConfirm('kill_pane', paneId,
+    `Kill pane P${pane?.index ?? '?'}?`,
+    `"${pane?.command || 'dead'}" — this pane only.`);
+});
+
+ctxKillWindow.addEventListener('click', () => {
+  const [, windowId] = selPaneTree.value.split('|');
+  const win = sessions.flatMap(s => s.windows).find(w => w.id === windowId);
+  const n = win?.panes.length ?? 0;
+  showKillConfirm('kill_window', windowId,
+    `Kill window W${win?.index ?? '?'} "${win?.name ?? '?'}"?`,
+    `Closes ${n} pane${n !== 1 ? 's' : ''}.`);
+});
+
+ctxKillSession.addEventListener('click', () => {
+  const [sessionId] = selPaneTree.value.split('|');
+  const sess = sessions.find(s => s.id === sessionId);
+  const sNum = sessionId.replace('$', '');
+  const m = sess?.windows.length ?? 0;
+  showKillConfirm('kill_session', sessionId,
+    `Kill session S${sNum} "${sess?.name ?? '?'}"?`,
+    `Closes ${m} window${m !== 1 ? 's' : ''} and all their panes.`);
 });
 
 ctxConfirmYes.addEventListener('click', () => {
-  const [sessionId, windowId, paneId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
-  const sess = sessions.find(s => s.id === sessionId);
-  const win  = sess?.windows.find(w => w.id === windowId);
-  const isSingle = (win?.panes.length ?? 0) === 1;
-  if (isSingle) {
-    send({ type: 'kill_window', window_id: windowId });
-  } else {
-    send({ type: 'kill_pane', pane_id: paneId });
-  }
+  if (!_pendingKill) return;
+  const { type, id } = _pendingKill;
+  if      (type === 'kill_pane')    send({ type, pane_id:    id });
+  else if (type === 'kill_window')  send({ type, window_id:  id });
+  else if (type === 'kill_session') send({ type, session_id: id });
   hideCtxMenu();
 });
 
 ctxConfirmNo.addEventListener('click', () => {
   ctxConfirm.style.display = 'none';
   ctxMain.style.display = '';
+  _pendingKill = null;
 });
 
-ctxNewPane.addEventListener('click', () => {
+// ── create overlay (+ button) ─────────────────────────────────────────────
+let _createType = null; // 'pane' | 'window' | 'session'
+
+function showCreateOverlay() {
+  createMain.style.display = '';
+  createNameForm.style.display = 'none';
+  createNameInput.value = '';
+  createOverlay.style.display = 'flex';
+}
+
+function hideCreateOverlay() { createOverlay.style.display = 'none'; _createType = null; }
+
+function showCreateNameForm(type) {
+  _createType = type;
+  createNameLabel.textContent = type === 'session'
+    ? 'New session name:'
+    : `New ${type} name (optional):`;
+  createNameInput.placeholder = type === 'session' ? 'e.g. work' : 'optional';
+  createMain.style.display = 'none';
+  createNameForm.style.display = '';
+  setTimeout(() => createNameInput.focus(), 80);
+}
+
+btnNew.addEventListener('click', showCreateOverlay);
+createOverlay.addEventListener('click', e => { if (e.target === createOverlay) hideCreateOverlay(); });
+
+document.getElementById('create-cancel').addEventListener('click', hideCreateOverlay);
+document.getElementById('create-name-back').addEventListener('click', () => {
+  createNameForm.style.display = 'none';
+  createMain.style.display = '';
+  _createType = null;
+});
+
+document.getElementById('create-pane').addEventListener('click', () => {
   const [, windowId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
   if (windowId) send({ type: 'new_pane', window_id: windowId });
-  hideCtxMenu();
+  hideCreateOverlay();
 });
 
-ctxNewWindow.addEventListener('click', () => {
-  hideCtxMenu();
-  const [sessionId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
-  if (!sessionId) return;
-  const name = window.prompt('New window name (optional):') ?? '';
-  send({ type: 'new_window', session_id: sessionId, name: name.trim() });
-});
+document.getElementById('create-window').addEventListener('click', () => showCreateNameForm('window'));
+document.getElementById('create-session').addEventListener('click', () => showCreateNameForm('session'));
+
+function submitCreate() {
+  const name = createNameInput.value.trim();
+  if (_createType === 'session') {
+    if (!name) { createNameInput.focus(); return; }
+    send({ type: 'new_session', name });
+  } else if (_createType === 'window') {
+    const [sessionId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
+    if (sessionId) send({ type: 'new_window', session_id: sessionId, name });
+  }
+  hideCreateOverlay();
+}
+
+document.getElementById('create-name-confirm').addEventListener('click', submitCreate);
+createNameInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitCreate(); });
 
 // ── status bar clock (only ticks when connected — frozen clock = disconnected) ─
 let _clockInterval = null;
