@@ -90,7 +90,7 @@
 
     .byobu-logo { height: 22px; width: auto; flex-shrink: 0; opacity: 0.85; }
 
-    /* ── picker groups (select + add button) ── */
+    /* ── picker groups ── */
     .picker-group { display: flex; gap: 3px; align-items: center; flex: 1; min-width: 0; }
     .picker-group select { flex: 1; min-width: 0; }
 
@@ -102,14 +102,30 @@
     }
     select:disabled { opacity: 0.4; cursor: default; }
 
-    .add-btn {
-      background: var(--bg3); color: var(--accent);
-      border: 1px solid var(--border); border-radius: 4px;
-      padding: 4px 8px; cursor: pointer; font-size: 18px;
-      line-height: 1; flex-shrink: 0;
+    /* ── context menu (long press on output) ── */
+    #ctx-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.72);
+      display: flex; align-items: center; justify-content: center;
     }
-    .add-btn:disabled { opacity: 0.3; cursor: default; }
-    .add-btn:active:not(:disabled) { background: var(--border); }
+    #ctx-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 6px;
+      min-width: 220px; max-width: 280px; width: 78%;
+      display: flex; flex-direction: column;
+    }
+    .ctx-btn {
+      background: transparent; color: var(--text);
+      border: none; border-radius: 9px;
+      padding: 14px 16px; font-size: 15px; font-family: var(--font);
+      cursor: pointer; text-align: left; width: 100%;
+    }
+    .ctx-btn:active { background: var(--bg3); }
+    .ctx-sep { height: 1px; background: var(--border); margin: 2px 0; }
+    .ctx-danger { color: var(--red); }
+    .ctx-dim { color: var(--dim); text-align: center; font-size: 14px; }
+    #ctx-confirm-msg { padding: 12px 16px; color: var(--dim); font-size: 13px;
+                       font-family: var(--font); text-align: center; }
 
     .icon-btn {
       background: var(--bg3); color: var(--dim);
@@ -254,6 +270,27 @@
   </div>
 </div>
 
+<!-- ── long-press context menu ── -->
+<div id="ctx-overlay" style="display:none">
+  <div id="ctx-box">
+    <div id="ctx-main">
+      <button class="ctx-btn ctx-danger" id="ctx-kill">✕  Kill pane</button>
+      <div class="ctx-sep"></div>
+      <button class="ctx-btn" id="ctx-new-pane">⊞  New pane</button>
+      <button class="ctx-btn" id="ctx-new-window">+  New window</button>
+      <button class="ctx-btn" id="ctx-new-session">+  New session</button>
+      <div class="ctx-sep"></div>
+      <button class="ctx-btn ctx-dim" id="ctx-cancel">Cancel</button>
+    </div>
+    <div id="ctx-confirm" style="display:none">
+      <p id="ctx-confirm-msg"></p>
+      <button class="ctx-btn ctx-danger" id="ctx-confirm-yes">Yes, kill it</button>
+      <div class="ctx-sep"></div>
+      <button class="ctx-btn ctx-dim" id="ctx-confirm-no">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div id="ios-install-tip" style="display:none">
   Tap the <strong>Share</strong> button&nbsp;⎋ below,<br>
   then <strong>"Add to Home Screen"</strong>
@@ -280,19 +317,16 @@
         <select id="sel-session" title="Session">
           <option value="">Session…</option>
         </select>
-        <button class="add-btn" id="btn-new-session" title="New session">+</button>
       </div>
       <div class="picker-group">
         <select id="sel-window" title="Window" disabled>
           <option value="">Window…</option>
         </select>
-        <button class="add-btn" id="btn-new-window" title="New window" disabled>+</button>
       </div>
       <div class="picker-group">
         <select id="sel-pane" title="Pane" disabled>
           <option value="">Pane…</option>
         </select>
-        <button class="add-btn" id="btn-new-pane" title="New pane" disabled>+</button>
       </div>
     </div>
   </div>

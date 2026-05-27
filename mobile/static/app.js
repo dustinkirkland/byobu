@@ -17,8 +17,6 @@ const selWindow     = document.getElementById('sel-window');
 const selPane       = document.getElementById('sel-pane');
 const btnRefresh    = document.getElementById('btn-refresh');
 const btnNewSession = document.getElementById('btn-new-session');
-const btnNewWindow  = document.getElementById('btn-new-window');
-const btnNewPane    = document.getElementById('btn-new-pane');
 const output        = document.getElementById('output');
 const statusbar     = document.getElementById('statusbar');
 const statusText    = document.getElementById('status-text');
@@ -32,6 +30,17 @@ const hostnameDisplay  = document.getElementById('hostname-display');
 const headerClock      = document.getElementById('header-clock');
 const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
+const ctxOverlay    = document.getElementById('ctx-overlay');
+const ctxMain       = document.getElementById('ctx-main');
+const ctxConfirm    = document.getElementById('ctx-confirm');
+const ctxConfirmMsg = document.getElementById('ctx-confirm-msg');
+const ctxKill       = document.getElementById('ctx-kill');
+const ctxNewPane    = document.getElementById('ctx-new-pane');
+const ctxNewWindow  = document.getElementById('ctx-new-window');
+const ctxNewSession = document.getElementById('ctx-new-session');
+const ctxCancel     = document.getElementById('ctx-cancel');
+const ctxConfirmYes = document.getElementById('ctx-confirm-yes');
+const ctxConfirmNo  = document.getElementById('ctx-confirm-no');
 
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
@@ -262,36 +271,104 @@ function navigateRelative(delta) {
   navigateTo(next.sessionId, next.windowId, next.paneId);
 }
 
-let _swipeX = 0, _swipeY = 0;
+// ── unified touch handler: long press (context menu) + swipe (navigation) ─
+let _touchX = 0, _touchY = 0;
+let _longPressTimer = null, _longPressTriggered = false;
+
 output.addEventListener('touchstart', e => {
-  _swipeX = e.touches[0].clientX;
-  _swipeY = e.touches[0].clientY;
+  _touchX = e.touches[0].clientX;
+  _touchY = e.touches[0].clientY;
+  _longPressTriggered = false;
+  _longPressTimer = setTimeout(() => {
+    _longPressTimer = null;
+    _longPressTriggered = true;
+    showCtxMenu();
+  }, 500);
 }, { passive: true });
+
+output.addEventListener('touchmove', e => {
+  if (_longPressTimer) {
+    const dx = Math.abs(e.touches[0].clientX - _touchX);
+    const dy = Math.abs(e.touches[0].clientY - _touchY);
+    if (dx > 10 || dy > 10) { clearTimeout(_longPressTimer); _longPressTimer = null; }
+  }
+}, { passive: true });
+
 output.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - _swipeX;
-  const dy = e.changedTouches[0].clientY - _swipeY;
+  if (_longPressTimer) { clearTimeout(_longPressTimer); _longPressTimer = null; }
+  if (_longPressTriggered) return;
+  const dx = e.changedTouches[0].clientX - _touchX;
+  const dy = e.changedTouches[0].clientY - _touchY;
   if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 2) return;
   navigateRelative(dx < 0 ? 1 : -1);
 }, { passive: true });
 
-// ── create session / window / pane ────────────────────────────────────────
-btnNewSession.addEventListener('click', () => {
-  const name = window.prompt('New session name:');
-  if (!name?.trim()) return;
-  send({ type: 'new_session', name: name.trim() });
+// ── context menu ──────────────────────────────────────────────────────────
+function showCtxMenu() {
+  const sess = sessions.find(s => s.id === selSession.value);
+  const win  = sess?.windows.find(w => w.id === selWindow.value);
+  const isSingle = (win?.panes.length ?? 0) === 1;
+  ctxKill.textContent = isSingle ? '✕  Kill window' : '✕  Kill pane';
+  ctxKill.style.display = currentPane ? '' : 'none';
+  ctxMain.style.display = '';
+  ctxConfirm.style.display = 'none';
+  ctxOverlay.style.display = 'flex';
+}
+
+function hideCtxMenu() { ctxOverlay.style.display = 'none'; }
+
+ctxCancel.addEventListener('click', hideCtxMenu);
+ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtxMenu(); });
+
+ctxKill.addEventListener('click', () => {
+  const sess = sessions.find(s => s.id === selSession.value);
+  const win  = sess?.windows.find(w => w.id === selWindow.value);
+  const isSingle = (win?.panes.length ?? 0) === 1;
+  const pane = win?.panes.find(p => p.id === currentPane);
+  const label = isSingle
+    ? `window "${win?.name ?? selWindow.value}"`
+    : `pane ${pane?.command ?? currentPane}`;
+  ctxConfirmMsg.textContent = `Kill ${label}?`;
+  ctxMain.style.display = 'none';
+  ctxConfirm.style.display = '';
 });
 
-btnNewWindow.addEventListener('click', () => {
+ctxConfirmYes.addEventListener('click', () => {
+  const sess = sessions.find(s => s.id === selSession.value);
+  const win  = sess?.windows.find(w => w.id === selWindow.value);
+  const isSingle = (win?.panes.length ?? 0) === 1;
+  if (isSingle) {
+    send({ type: 'kill_window', window_id: selWindow.value });
+  } else {
+    send({ type: 'kill_pane', pane_id: currentPane });
+  }
+  hideCtxMenu();
+});
+
+ctxConfirmNo.addEventListener('click', () => {
+  ctxConfirm.style.display = 'none';
+  ctxMain.style.display = '';
+});
+
+ctxNewPane.addEventListener('click', () => {
+  const wid = selWindow.value;
+  if (wid) send({ type: 'new_pane', window_id: wid });
+  hideCtxMenu();
+});
+
+ctxNewWindow.addEventListener('click', () => {
+  hideCtxMenu();
   const sid = selSession.value;
   if (!sid) return;
   const name = window.prompt('New window name (optional):') ?? '';
   send({ type: 'new_window', session_id: sid, name: name.trim() });
 });
 
-btnNewPane.addEventListener('click', () => {
-  const wid = selWindow.value;
-  if (!wid) return;
-  send({ type: 'new_pane', window_id: wid });
+ctxNewSession.addEventListener('click', () => {
+  hideCtxMenu();
+  const name = window.prompt('New session name:');
+  if (!name?.trim()) return;
+  send({ type: 'new_session', name: name.trim() });
 });
 
 // ── header clock ──────────────────────────────────────────────────────────

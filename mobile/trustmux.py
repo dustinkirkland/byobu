@@ -225,6 +225,12 @@ def tmux_new_window(session_id: str, name: str = "") -> None:
 def tmux_new_pane(window_id: str) -> None:
     _tmux("split-window", "-t", window_id)
 
+def tmux_kill_pane(pane_id: str) -> None:
+    _tmux("kill-pane", "-t", pane_id)
+
+def tmux_kill_window(window_id: str) -> None:
+    _tmux("kill-window", "-t", window_id)
+
 def tmux_send_keys(pane_id: str, keys: str, enter: bool = True) -> None:
     _tmux("send-keys", "-t", pane_id, "-l", keys)
     if enter:
@@ -695,6 +701,24 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     self._send({"type": "error", "message": "invalid window_id"})
                 else:
                     await asyncio.to_thread(tmux_new_pane, wid)
+                    sessions_list = await asyncio.to_thread(tmux_list_sessions)
+                    self._send({"type": "sessions", "data": sessions_list})
+
+            elif mtype == "kill_pane":
+                pane_id = msg.get("pane_id", "")
+                if not _valid_tmux_id(pane_id):
+                    self._send({"type": "error", "message": "invalid pane_id"})
+                else:
+                    await asyncio.to_thread(tmux_kill_pane, pane_id)
+                    sessions_list = await asyncio.to_thread(tmux_list_sessions)
+                    self._send({"type": "sessions", "data": sessions_list})
+
+            elif mtype == "kill_window":
+                wid = msg.get("window_id", "")
+                if not _valid_tmux_id(wid):
+                    self._send({"type": "error", "message": "invalid window_id"})
+                else:
+                    await asyncio.to_thread(tmux_kill_window, wid)
                     sessions_list = await asyncio.to_thread(tmux_list_sessions)
                     self._send({"type": "sessions", "data": sessions_list})
 
