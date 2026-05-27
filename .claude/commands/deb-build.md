@@ -19,28 +19,34 @@ docker --version
 
 3. Run the build — mount the source tree read-only, write output to a temp dir:
 ```bash
-# From the byobu source root
+mkdir -p /tmp/byobu-debs
 docker run --rm \
-  -v "$(pwd)":/src:ro \
+  -v /home/kirkland/src/byobu:/src:ro \
   -v /tmp/byobu-debs:/out \
   ubuntu:noble \
   bash -c "
     set -e
     apt-get update -qq
     apt-get install -y --no-install-recommends \
-      dpkg-dev debhelper dh-python \
+      build-essential dpkg-dev debhelper dh-python \
       gettext-base automake autoconf \
       python3 python3-all python3-tornado \
-      checkbashisms \
+      devscripts bc \
       ca-certificates
     cp -a /src /build
     cd /build
-    dpkg-buildpackage -us -uc -b
+    DEB_BUILD_OPTIONS=parallel=1 dpkg-buildpackage -us -uc -b
     cp /build/../*.deb /out/
     echo '=== Built packages ==='
     ls -lh /out/*.deb
   "
 ```
+
+**Why these packages:**
+- `build-essential` — provides `make`, `gcc`, etc. (not implicit in Ubuntu minimal)
+- `devscripts` — provides `checkbashisms` (it's not a standalone package)
+- `bc` — required by `byobu-ulevel` tests
+- `DEB_BUILD_OPTIONS=parallel=1` — avoids a race condition in `make install` that fails if two jobs install the same file simultaneously
 
 4. Report the resulting `.deb` files from `/tmp/byobu-debs/`.
 

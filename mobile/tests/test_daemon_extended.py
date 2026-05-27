@@ -189,12 +189,12 @@ class TestStaticHandlers(AsyncHTTPTestCase):
         self.assertIn('javascript', resp.headers.get('Content-Type', ''))
 
     def test_svg_content_type(self):
-        resp = self.fetch('/byobu.svg')
+        resp = self.fetch('/trustmux.svg')
         self.assertEqual(resp.code, 200)
         self.assertIn('svg', resp.headers.get('Content-Type', ''))
 
     def test_svg_has_cache_header(self):
-        resp = self.fetch('/byobu.svg')
+        resp = self.fetch('/trustmux.svg')
         self.assertIn('max-age', resp.headers.get('Cache-Control', ''))
 
     def test_icon_invalid_name_returns_404(self):
@@ -202,7 +202,7 @@ class TestStaticHandlers(AsyncHTTPTestCase):
         self.assertEqual(resp.code, 404)
 
     def test_icon_path_traversal_blocked(self):
-        resp = self.fetch('/icons/../byobu.svg')
+        resp = self.fetch('/icons/../trustmux.svg')
         # Tornado routing won't match this; should 404
         self.assertIn(resp.code, (404, 400))
 
