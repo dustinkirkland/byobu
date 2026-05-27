@@ -217,7 +217,7 @@ class TestStaticHandlers(AsyncHTTPTestCase):
 
     def test_icon_cache_header(self):
         resp = self.fetch('/icons/icon-192.png')
-        self.assertIn('max-age', resp.headers.get('Cache-Control', ''))
+        self.assertIn('no-cache', resp.headers.get('Cache-Control', ''))
 
 
 # ---------------------------------------------------------------------------

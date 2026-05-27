@@ -1,10 +1,10 @@
 'use strict';
 
-const CACHE = 'trustmux-v2';
+const CACHE = 'trustmux-v4';
 
 // Static shell — load instantly from cache on repeat visits.
 const SHELL = ['/', '/trustmux.svg', '/manifest.json',
-               '/icons/icon-192.png', '/icons/icon-512.png'];
+               '/icons/icon-192.png?v=3', '/icons/icon-512.png?v=3'];
 
 // These are always fetched from the network — never cache.
 const NETWORK_ONLY = ['/ws', '/pair', '/ping', '/status', '/machines'];
