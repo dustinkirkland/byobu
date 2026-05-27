@@ -356,7 +356,7 @@ def read_byobu_status() -> dict:
 
 _CSP = (
     "default-src 'self'; "
-    "script-src 'unsafe-inline'; "
+    "script-src 'self'; "
     "style-src 'unsafe-inline'; "
     "connect-src 'self'; "
     "img-src 'self'"
@@ -432,6 +432,14 @@ class ServiceWorkerHandler(BaseHandler):
         content = await asyncio.to_thread((STATIC / "sw.js").read_bytes)
         self.set_header("Content-Type", "application/javascript")
         # Service workers must not be cached — browser re-checks on every load.
+        self.set_header("Cache-Control", "no-cache")
+        self.finish(content)
+
+
+class AppJsHandler(BaseHandler):
+    async def get(self):
+        content = await asyncio.to_thread((STATIC / "app.js").read_bytes)
+        self.set_header("Content-Type", "application/javascript")
         self.set_header("Cache-Control", "no-cache")
         self.finish(content)
 
@@ -517,7 +525,8 @@ class MachinesHandler(BaseHandler):
                 raw = json.loads(await asyncio.to_thread(MACHINES_FILE.read_text))
                 if isinstance(raw, list):
                     siblings = [s for s in raw
-                                if isinstance(s, dict) and "name" in s and "url" in s]
+                                if isinstance(s, dict) and "name" in s and "url" in s
+                                and re.match(r'^https?://', s["url"])]
             result = [{"name": "this machine", "url": current_url, "current": True}] + [
                 {"name": s["name"], "url": s["url"].rstrip("/"), "current": False}
                 for s in siblings
@@ -527,8 +536,8 @@ class MachinesHandler(BaseHandler):
                     result[0]["name"] = s["name"]
                     break
             self.json(result)
-        except Exception as e:
-            self.json({"error": str(e)}, 500)
+        except Exception:
+            self.json({"error": "internal error"}, 500)
 
 
 # ── protected endpoints ───────────────────────────────────────────────────────
@@ -802,6 +811,7 @@ def _make_app() -> tornado.web.Application:
         (r"/trustmux\.svg",  SvgHandler),
         (r"/manifest\.json", ManifestHandler),
         (r"/sw\.js",         ServiceWorkerHandler),
+        (r"/app\.js",        AppJsHandler),
         (r"/icons/(.+)",     IconHandler),
         (r"/ping",           PingHandler),
         (r"/pair",           PairHandler),

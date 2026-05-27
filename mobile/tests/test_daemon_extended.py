@@ -144,7 +144,10 @@ class TestSecurityHeaders(AsyncHTTPTestCase):
     def _assert_security_headers(self, resp):
         h = resp.headers
         self.assertIn('DENY', h.get('X-Frame-Options', ''), 'X-Frame-Options missing')
-        self.assertIn('default-src', h.get('Content-Security-Policy', ''), 'CSP missing')
+        csp = h.get('Content-Security-Policy', '')
+        self.assertIn('default-src', csp, 'CSP missing')
+        self.assertNotIn("'unsafe-inline'", csp.split('script-src')[1].split(';')[0]
+                         if 'script-src' in csp else '', 'script-src must not allow unsafe-inline')
         self.assertIn('no-referrer', h.get('Referrer-Policy', ''), 'Referrer-Policy missing')
         self.assertIn('nosniff', h.get('X-Content-Type-Options', ''), 'X-Content-Type-Options missing')
 
@@ -219,6 +222,19 @@ class TestStaticHandlers(AsyncHTTPTestCase):
         resp = self.fetch('/icons/icon-192.png')
         self.assertIn('no-cache', resp.headers.get('Cache-Control', ''))
 
+    def test_app_js_returns_200_with_js_content_type(self):
+        resp = self.fetch('/app.js')
+        self.assertEqual(resp.code, 200)
+        self.assertIn('javascript', resp.headers.get('Content-Type', ''))
+
+    def test_app_js_no_cache(self):
+        resp = self.fetch('/app.js')
+        self.assertIn('no-cache', resp.headers.get('Cache-Control', ''))
+
+    def test_app_js_contains_strict_mode(self):
+        resp = self.fetch('/app.js')
+        self.assertIn(b"'use strict'", resp.body)
+
 
 # ---------------------------------------------------------------------------
 # MachinesHandler
@@ -279,6 +295,24 @@ class TestMachinesHandler(AsyncHTTPTestCase):
         bm.MACHINES_FILE.write_text('not valid json!!!')
         resp = self.fetch('/machines')
         self.assertEqual(resp.code, 500)
+
+    def test_corrupt_json_error_is_generic(self):
+        bm.MACHINES_FILE.write_text('not valid json!!!')
+        resp = self.fetch('/machines')
+        data = json.loads(resp.body)
+        self.assertEqual(data.get('error'), 'internal error')
+
+    def test_javascript_url_in_machines_file_is_filtered(self):
+        siblings = [
+            {'name': 'good', 'url': 'https://good.ts.net'},
+            {'name': 'evil', 'url': 'javascript:alert(1)'},
+        ]
+        bm.MACHINES_FILE.write_text(json.dumps(siblings))
+        resp = self.fetch('/machines')
+        data = json.loads(resp.body)
+        urls = [m['url'] for m in data]
+        self.assertNotIn('javascript:alert(1)', urls)
+        self.assertIn('https://good.ts.net', urls)
 
 
 # ---------------------------------------------------------------------------
