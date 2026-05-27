@@ -61,7 +61,7 @@ def _print_qr(url: str) -> None:
     if shutil.which("qrencode"):
         try:
             subprocess.run(
-                ["qrencode", "-t", "UTF8", "-m", "1", url],
+                ["qrencode", "-t", "ANSIUTF8", "-m", "2", url],
                 check=True
             )
             return
