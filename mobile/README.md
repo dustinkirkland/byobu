@@ -18,12 +18,38 @@ Two tiers:
 
 ---
 
-## Install (from .deb)
+## Install
+
+### Homebrew (macOS / Linux)
+
+```bash
+brew tap dustinkirkland/trustmux
+brew install trustmux
+trustmux-enable    # configure tailscale serve + start daemon
+trustmux-pair      # generate pairing code; enter on phone
+```
+
+### pip (PyPI)
+
+```bash
+pip install trustmux
+trustmux-enable
+trustmux-pair
+```
+
+### Debian / Ubuntu (.deb)
 
 ```bash
 sudo dpkg -i trustmux_7.0_all.deb
-trustmux-enable    # configure tailscale serve + start daemon
-trustmux-pair      # generate pairing code; enter on phone
+trustmux-enable
+trustmux-pair
+```
+
+Add the PPA for automatic updates:
+
+```bash
+sudo add-apt-repository ppa:dustinkirkland/trustmux
+sudo apt install trustmux
 ```
 
 ---
