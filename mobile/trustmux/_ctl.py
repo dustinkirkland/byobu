@@ -98,19 +98,27 @@ def _ensure_ts_serve() -> bool:
     return False
 
 
-def _launch(extra_args: list[str]) -> bool:
-    """Launch daemon as a detached background process. Returns True if it comes up."""
+def _launch(extra_args: list[str]) -> int | None:
+    """Launch daemon as a detached background process. Returns PID or None."""
     _ensure_dir()
+    # Ensure the package directory is on the subprocess's Python path so that
+    # `python3 -m trustmux` resolves correctly regardless of how Python was
+    # invoked (e.g. bare /usr/bin/python3 from a .deb shim).
+    pkg_parent = str(Path(__file__).parent.parent)
+    env = os.environ.copy()
+    existing = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = f"{pkg_parent}:{existing}" if existing else pkg_parent
     with LOGFILE.open("a") as log:
         proc = subprocess.Popen(
             [sys.executable, "-m", "trustmux", "--port", str(PORT)] + extra_args,
             stdout=log, stderr=log,
             stdin=subprocess.DEVNULL,
             start_new_session=True,
+            env=env,
         )
     PIDFILE.write_text(str(proc.pid))
     time.sleep(0.5)
-    return _pid() is not None
+    return _pid()
 
 
 def cmd_setup(quiet: bool = False) -> int:
@@ -172,25 +180,28 @@ def cmd_start(mode: str = "serve") -> int:
         if not _ensure_ts_serve():
             return 1
         print("Starting trustmux (HTTPS mode)...")
-        ok = _launch(["--host", "127.0.0.1", "--https"])
+        pid = _launch(["--host", "127.0.0.1", "--https"])
+        ok = pid is not None
         if ok:
-            print(f"trustmux started (pid {_pid()})")
+            print(f"trustmux started (pid {pid})")
             print(f"Connect from phone: https://{ts_host}")
 
     elif mode == "start-local":
         print("Starting trustmux (loopback only — SSH tunnel access)...")
-        ok = _launch(["--host", "127.0.0.1"])
+        pid = _launch(["--host", "127.0.0.1"])
+        ok = pid is not None
         if ok:
             fqdn = socket.getfqdn()
-            print(f"trustmux started (pid {_pid()})")
+            print(f"trustmux started (pid {pid})")
             print(f"Access via SSH tunnel: ssh -L {PORT}:localhost:{PORT} user@{fqdn}")
             print(f"Then open: http://localhost:{PORT}")
 
     elif mode == "start-direct":
         print("Starting trustmux (direct HTTP — dev/debug only)...")
-        ok = _launch([])
+        pid = _launch([])
+        ok = pid is not None
         if ok:
-            print(f"trustmux started (pid {_pid()}) — check {LOGFILE} for bound address")
+            print(f"trustmux started (pid {pid}) — check {LOGFILE} for bound address")
 
     else:
         print(f"Unknown mode: {mode}", file=sys.stderr)

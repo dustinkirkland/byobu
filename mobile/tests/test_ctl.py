@@ -252,21 +252,21 @@ class TestCmdStart(unittest.TestCase):
                         self.assertEqual(ctl.cmd_start('serve'), 1)
 
     def test_serve_mode_success(self):
-        with patch('trustmux._ctl._pid', side_effect=[None, 5678]):
+        with patch('trustmux._ctl._pid', return_value=None):
             with patch('trustmux._ctl.subprocess.run'):
                 with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
                     with patch('trustmux._ctl._ensure_ts_serve', return_value=True):
-                        with patch('trustmux._ctl._launch', return_value=True):
+                        with patch('trustmux._ctl._launch', return_value=5678):
                             self.assertEqual(ctl.cmd_start('serve'), 0)
 
     def test_start_local_success(self):
-        with patch('trustmux._ctl._pid', side_effect=[None, 5678]):
-            with patch('trustmux._ctl._launch', return_value=True):
+        with patch('trustmux._ctl._pid', return_value=None):
+            with patch('trustmux._ctl._launch', return_value=5678):
                 self.assertEqual(ctl.cmd_start('start-local'), 0)
 
     def test_start_direct_success(self):
-        with patch('trustmux._ctl._pid', side_effect=[None, 5678]):
-            with patch('trustmux._ctl._launch', return_value=True):
+        with patch('trustmux._ctl._pid', return_value=None):
+            with patch('trustmux._ctl._launch', return_value=5678):
                 self.assertEqual(ctl.cmd_start('start-direct'), 0)
 
     def test_returns_1_when_launch_fails(self):
@@ -274,7 +274,7 @@ class TestCmdStart(unittest.TestCase):
             with patch('trustmux._ctl.subprocess.run'):
                 with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
                     with patch('trustmux._ctl._ensure_ts_serve', return_value=True):
-                        with patch('trustmux._ctl._launch', return_value=False):
+                        with patch('trustmux._ctl._launch', return_value=None):
                             self.assertEqual(ctl.cmd_start('serve'), 1)
 
     def test_unknown_mode_returns_1(self):
