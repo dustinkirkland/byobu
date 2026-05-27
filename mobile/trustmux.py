@@ -408,17 +408,17 @@ class ManifestHandler(BaseHandler):
     def get(self):
         hostname = socket.gethostname()
         manifest = {
-            "name":             f"trustmux · {hostname}",
-            "short_name":       f"trustmux · {hostname}",
-            "description":      "Monitor and interact with your Byobu tmux sessions from your phone.",
+            "name":             f"Trustmux · {hostname}",
+            "short_name":       "Trustmux",
+            "description":      "Monitor and interact with your tmux/Byobu sessions from your phone.",
             "start_url":        "/",
             "display":          "standalone",
             "background_color": "#141414",
             "theme_color":      "#141414",
             "icons": [
-                {"src": "/icons/icon-192.png", "sizes": "192x192",
+                {"src": "/icons/icon-192.png?v=3", "sizes": "192x192",
                  "type": "image/png", "purpose": "any"},
-                {"src": "/icons/icon-512.png", "sizes": "512x512",
+                {"src": "/icons/icon-512.png?v=3", "sizes": "512x512",
                  "type": "image/png", "purpose": "any maskable"},
             ],
         }
@@ -445,7 +445,7 @@ class IconHandler(BaseHandler):
             return self.json({"error": "not found"}, 404)
         content = await asyncio.to_thread(path.read_bytes)
         self.set_header("Content-Type", "image/png")
-        self.set_header("Cache-Control", "max-age=86400")
+        self.set_header("Cache-Control", "no-cache")
         self.finish(content)
 
 
