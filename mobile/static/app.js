@@ -53,8 +53,9 @@ function connect() {
   const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
   ws = new WebSocket(`${proto}//${location.host}/ws`);
 
-  ws.onopen  = () => setStatus('connected', 'connected');
+  ws.onopen  = () => { setStatus('connected', 'connected'); startClock(); };
   ws.onclose = (evt) => {
+    stopClock();
     if (evt.code === 4401) {
       showPairScreen();
       return;
@@ -371,8 +372,11 @@ ctxNewSession.addEventListener('click', () => {
   send({ type: 'new_session', name: name.trim() });
 });
 
-// ── header clock ──────────────────────────────────────────────────────────
+// ── status bar clock (only ticks when connected — frozen clock = disconnected) ─
+let _clockInterval = null;
+
 function startClock() {
+  if (_clockInterval) return;
   function tick() {
     const now = new Date();
     const date = now.toLocaleDateString('en-US', {month:'short', day:'numeric'});
@@ -380,7 +384,11 @@ function startClock() {
     headerClock.textContent = `${date} ${time}`;
   }
   tick();
-  setInterval(tick, 1000);
+  _clockInterval = setInterval(tick, 1000);
+}
+
+function stopClock() {
+  if (_clockInterval) { clearInterval(_clockInterval); _clockInterval = null; }
 }
 
 // ── byobu status line ─────────────────────────────────────────────────────
@@ -543,7 +551,6 @@ async function applyHostname() {
 // ── init: check auth, then connect or show pair screen ────────────────────
 async function init() {
   setStatus('connecting…', 'connecting');
-  startClock();
   try {
     const r = await fetch('/ping');
     const data = await r.json();

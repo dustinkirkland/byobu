@@ -134,7 +134,13 @@
     }
     .icon-btn:active { background: var(--border); }
 
-    /* ── header hostname / clock ── */
+    /* ── status bar ── */
+    #statusbar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 3px 10px; background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px; color: var(--dim); flex-shrink: 0;
+    }
     #hostname-display {
       margin-left: auto; font-size: 11px; color: var(--accent);
       white-space: nowrap; flex-shrink: 0; letter-spacing: 0.03em;
@@ -142,14 +148,6 @@
     #header-clock {
       font-size: 11px; color: var(--dim);
       white-space: nowrap; flex-shrink: 0;
-    }
-
-    /* ── status bar ── */
-    #statusbar {
-      display: flex; align-items: center; gap: 8px;
-      padding: 3px 10px; background: var(--bg2);
-      border-bottom: 1px solid var(--border);
-      font-size: 11px; color: var(--dim); flex-shrink: 0;
     }
     #statusbar .dot {
       width: 7px; height: 7px; border-radius: 50%;
@@ -309,8 +307,6 @@
       <select id="machine-select" title="Switch machine" style="display:none"></select>
       <button id="btn-install" title="Install as app" style="display:none">+ Install app</button>
       <button class="icon-btn" id="btn-refresh" title="Refresh session list">↺</button>
-      <span id="hostname-display"></span>
-      <span id="header-clock"></span>
     </div>
     <div id="header-pickers">
       <div class="picker-group">
@@ -334,6 +330,8 @@
   <div id="statusbar">
     <span class="dot"></span>
     <span id="status-text">connecting…</span>
+    <span id="hostname-display"></span>
+    <span id="header-clock"></span>
   </div>
 
   <div id="output" class="placeholder">Select a session → window → pane above.</div>
