@@ -179,6 +179,7 @@ function applyKbdMode() {
     cmdInput.setAttribute('spellcheck', 'true');
     cmdInput.setAttribute('autocorrect', 'on');
     cmdInput.setAttribute('autocapitalize', 'sentences');
+    output.style.whiteSpace = 'pre-wrap';
     btnKbdMode.textContent = 'Aa';
     btnKbdMode.title = 'Text mode — tap for terminal mode';
     btnKbdMode.style.color = 'var(--accent)';
@@ -186,6 +187,7 @@ function applyKbdMode() {
     cmdInput.setAttribute('spellcheck', 'false');
     cmdInput.setAttribute('autocorrect', 'off');
     cmdInput.setAttribute('autocapitalize', 'none');
+    output.style.whiteSpace = 'pre';
     btnKbdMode.textContent = '$_';
     btnKbdMode.title = 'Terminal mode — tap to enable spell check';
     btnKbdMode.style.color = '';
