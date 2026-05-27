@@ -412,10 +412,10 @@ class SvgHandler(BaseHandler):
 
 class ManifestHandler(BaseHandler):
     def get(self):
-        hostname = socket.gethostname()
+        hostname = socket.gethostname().split('.')[0]
         manifest = {
             "name":             f"Trustmux · {hostname}",
-            "short_name":       "Trustmux",
+            "short_name":       hostname,
             "description":      "Monitor and interact with your tmux/Byobu sessions from your phone.",
             "start_url":        "/",
             "display":          "standalone",

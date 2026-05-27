@@ -364,9 +364,9 @@ class TestManifestHandler(AsyncHTTPTestCase):
         resp = self.fetch('/manifest.json')
         self.assertEqual(resp.code, 200)
         data = json.loads(resp.body)
-        hostname = socket.gethostname()
+        hostname = socket.gethostname().split('.')[0]
         self.assertIn(hostname, data['name'])
-        self.assertEqual(data['short_name'], 'Trustmux')
+        self.assertEqual(data['short_name'], hostname)
 
     def test_manifest_has_required_fields(self):
         resp = self.fetch('/manifest.json')
