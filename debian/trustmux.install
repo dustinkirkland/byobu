@@ -6,7 +6,6 @@ mobile/trustmux/_pair.py                usr/lib/trustmux/trustmux/
 mobile/trustmux/_unpair.py              usr/lib/trustmux/trustmux/
 mobile/trustmux/_enable.py              usr/lib/trustmux/trustmux/
 mobile/trustmux/_disable.py             usr/lib/trustmux/trustmux/
-mobile/trustmux-daemon                  usr/bin/trustmux
 mobile/trustmux-ctl                     usr/bin/
 mobile/trustmux-pair                    usr/bin/
 mobile/trustmux-unpair                  usr/bin/
