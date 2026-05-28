@@ -625,6 +625,12 @@ chmod +x "$OUTDIR/sign-and-upload.sh"
 
 ---
 
+## After a final release
+
+Run `/open-dev` immediately after `/release final` to bump the version and open the next development cycle on `master`.
+
+---
+
 ## Notes
 
 - **Never run `debsign` or `dput` directly** — both require interactive GPG; that's what sign-and-upload.sh is for.
