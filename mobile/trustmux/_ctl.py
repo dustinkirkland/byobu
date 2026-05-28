@@ -200,10 +200,18 @@ def cmd_start(mode: str = "serve") -> int:
 
     elif mode == "start-direct":
         print("Starting trustmux (direct HTTP — dev/debug only)...")
-        pid = _launch([])
+        pid = _launch(["--host", "0.0.0.0"])
         ok = pid is not None
         if ok:
-            print(f"trustmux started (pid {pid}) — check {LOGFILE} for bound address")
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                local_ip = s.getsockname()[0]
+                s.close()
+            except Exception:
+                local_ip = "localhost"
+            print(f"trustmux started (pid {pid})")
+            print(f"Connect from phone: http://{local_ip}:{PORT}")
 
     else:
         print(f"Unknown mode: {mode}", file=sys.stderr)
