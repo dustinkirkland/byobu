@@ -203,18 +203,21 @@ import re, sys
 
 formula = open('Formula/trustmux.rb').read()
 
-# Replace url line
+# Replace only the top-level url line (2-space indent, not inside a resource block)
 formula = re.sub(
-    r'  url "https://files\.pythonhosted\.org/[^"]*"',
+    r'^  url "https://files\.pythonhosted\.org/[^"]*"',
     f'  url "{TARBALL_URL}"',
-    formula
-)
-# Replace the first sha256 line (the package sha256, not the tornado resource sha256)
-formula = re.sub(
-    r'(  sha256 ")[a-f0-9]+"',
-    f'\\g<1>{TARBALL_SHA256}"',
     formula,
-    count=1
+    count=1,
+    flags=re.MULTILINE
+)
+# Replace only the top-level sha256 line (2-space indent)
+formula = re.sub(
+    r'^  sha256 "[a-f0-9]+"',
+    f'  sha256 "{TARBALL_SHA256}"',
+    formula,
+    count=1,
+    flags=re.MULTILINE
 )
 
 open('Formula/trustmux.rb', 'w').write(formula)
