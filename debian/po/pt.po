@@ -1,28 +1,33 @@
-# Portuguese translation for byobu
+# Translation of byobu debconf messages to European Portuguese
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the byobu package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#
+# Tiago Silva <Unknown>, 2010.
+# Américo Monteiro <a_monteiro@gmx.com>, 2025.
 msgid ""
 msgstr ""
-"Project-Id-Version: byobu\n"
+"Project-Id-Version: byobu 5.133-1.1\n"
 "Report-Msgid-Bugs-To: byobu@packages.debian.org\n"
 "POT-Creation-Date: 2013-01-24 18:31-0600\n"
-"PO-Revision-Date: 2010-04-05 13:18+0000\n"
-"Last-Translator: Tiago Silva <Unknown>\n"
-"Language-Team: Portuguese <pt@li.org>\n"
+"PO-Revision-Date: 2025-06-07 18:51+0100\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
+"Language-Team: Portuguese <>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2010-04-06 04:02+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Generator: Lokalize 22.12.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Type: boolean
 #. Description
 #: ../templates:1001
 msgid "Do you want to launch Byobu at shell login for all users?"
-msgstr "Deseja lançar Byobu na entrada em shell para todos os utilizadores?"
+msgstr ""
+"Deseja lançar o Byobu no inicio de sessão de shell para todos os "
+"utilizadores?"
 
 #. Type: boolean
 #. Description
@@ -31,6 +36,9 @@ msgid ""
 "Byobu can launch automatically at login (e.g. console, ssh), providing an "
 "attachable/detachable window manager on the command line."
 msgstr ""
+"O Byobu pode arrancar automaticamente no inicio de sessão (ex. consola, "
+"ssh), fornecendo um gestor de janelas acoplável/desacoplável na linha de "
+"comandos."
 
 #. Type: boolean
 #. Description
@@ -41,3 +49,8 @@ msgid ""
 "Individual users can disable this by touching ~/.byobu/disable-autolaunch, "
 "or configuring with 'byobu-config'."
 msgstr ""
+"Se você selecionar esta opção, o Byobu irá instalar um link simbólico em "
+"/etc/profile.d. Esta definição é para todo-o-sistema, para todos os "
+"utilizadores que iniciem sessão no sistema. Os utilizadores individuais "
+"podem desactivar isto ao mexer em ~/.byobu/disable-autolaunch, ou ao "
+"configurarem com 'byobu-config'."

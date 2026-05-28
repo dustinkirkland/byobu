@@ -14,7 +14,7 @@ else
 fi
 
 # Install correct .desktop file
-if [ -x /usr/lib/gnome-terminal/gnome-terminal-server ]; then
+if [ -x /usr/libexec/gnome-terminal-server ] || [ -x /usr/lib/gnome-terminal/gnome-terminal-server ]; then
 	ln -sf /usr/share/$PKG/desktop/$PKG.desktop /usr/share/applications/$PKG.desktop
 else
 	ln -sf /usr/share/$PKG/desktop/$PKG.desktop.old /usr/share/applications/$PKG.desktop

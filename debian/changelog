@@ -7,6 +7,49 @@ byobu (7.1) UNRELEASED; urgency=medium
       the real exit code into _byobu_exit_code via a new _byobu_save_exit()
       function prepended to PROMPT_COMMAND, which fires before PS1 rendering
       while $? still holds the exit code of the last user command
+  * debian/postinst:
+    - update gnome-terminal server binary path check from the old
+      /usr/lib/gnome-terminal/gnome-terminal-server to the current
+      /usr/libexec/gnome-terminal-server, following the gnome-terminal
+      3.34.0+ migration; old path is also checked for backward compatibility;
+      ensures byobu.desktop (with --app-id hint) is installed on modern
+      systems rather than falling back to byobu.desktop.old; byobu.desktop.old
+      remains present and valid for systems without gnome-terminal
+      Closes: #857223
+  * debian/po/pt.po:
+    - update Portuguese debconf translation; the 2010 Tiago Silva version
+      left two of three msgstr entries untranslated; Américo Monteiro
+      provided a complete translation in 2025
+      Closes: #1107443
+  * usr/lib/byobu/disk_io:
+    - fix cache read failure causing incorrect I/O statistics: the Linux
+      path wrote the cache file without a trailing newline (printf "%s"),
+      causing POSIX read to always fail and reset x1=0, displaying
+      cumulative totals instead of instantaneous rates; fixed in
+      commit 2ba3b295 (February 2026)
+      Closes: #992984
+  * usr/bin/byobu.in:
+    - fix inverted text rendering as italics under tmux: prefer tmux-256color
+      terminfo over screen-256color when available; screen-256color defines
+      smso=\E[3m (the italic escape) with no sitm capability, causing tmux
+      to map italic requests to standout which outer terminals render as
+      reverse video; tmux-256color correctly separates smso=\E[7m and
+      sitm=\E[3m; fixed in commit 66a6d3b8 (byobu 7.0)
+      Closes: #760431
+  * debian/po/sv.po:
+    - add Swedish debconf template translation from Martin Bagge;
+      commit ec7562da (February 2026)
+      Closes: #1071729
+  * close obsolete/wontfix bugs:
+    - #735178 (tmux starts infinite threads): byobu-status has been
+      substantially hardened since the 5.87 era with process guards and
+      exit-code checking; moreinfo was requested in 2015 with no response
+      in over ten years; closing as obsolete
+    - #772221 (bashism fractional sleep): debian/rules build explicitly
+      suppresses this warning via grep -v "sleep only takes one integer";
+      GNU coreutils sleep supports fractional arguments on all supported
+      Debian and Ubuntu architectures; not a real portability concern
+      Closes: #735178, #772221
 
  -- Dustin Kirkland <dustin.kirkland@gmail.com>  Thu, 28 May 2026 04:29:24 -0500
 
