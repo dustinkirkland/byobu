@@ -54,12 +54,24 @@ Build an unsigned source package for every currently-supported Ubuntu series in 
    ```
    Extract `PKG` (e.g. `byobu`) and `BASE_VER` (e.g. `7.0`).
 
-5. Determine the next PPA iteration by scanning `debian/changelog` for existing `~ppaN` entries:
+5. Determine the next PPA iteration by querying the Launchpad API for the highest already-published `~ppaN` version:
    ```bash
-   grep -oP '\(.*~ppa\K[0-9]+(?=~|\))' /home/kirkland/src/byobu/debian/changelog | sort -n | tail -1
+   EXISTING_ITER=$(python3 -c "
+   import urllib.request, json, re
+   url = 'https://api.launchpad.net/1.0/~byobu/+archive/ubuntu/ppa?ws.op=getPublishedSources&source_name=byobu'
+   try:
+       d = json.loads(urllib.request.urlopen(url).read())
+       versions = [e['source_package_version'] for e in d.get('entries', [])]
+       iters = [int(m.group(1)) for v in versions for m in [re.search(r'~ppa(\d+)', v)] if m]
+       print(max(iters) if iters else 0)
+   except Exception as e:
+       print(0)
+   " 2>/dev/null)
+   ITER=$((EXISTING_ITER + 1))
+   echo "ITER=$ITER (last published was ppa${EXISTING_ITER})"
    ```
-   If nothing found, `ITER=1`. Otherwise `ITER=last+1`. This auto-increments so repeated
-   `/ppa-build` runs produce `~ppa1`, `~ppa2`, etc. without manual bookkeeping.
+   This queries Launchpad directly so repeated `/ppa-build` runs auto-increment even though
+   the Docker build never writes back to the host changelog.
 
 ## Version scheme
 
