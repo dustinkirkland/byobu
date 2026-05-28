@@ -27,6 +27,10 @@ __battery_detail() {
 		cat "$bat/state"
 	done
 	# FIXME: do the same thing with the /sys interface
+	if eval $BYOBU_TEST /usr/bin/upower >/dev/null 2>&1; then
+		dev=$(upower -e | grep devices/ups | head -1)
+		[ -n "$dev" ] && upower -i "$dev"
+	fi
 }
 
 __battery() {
@@ -37,7 +41,12 @@ __battery() {
 		case "$bat" in
 			/sys/*)
 				if [ -r "$bat/uevent" ]; then
-					. "$bat/uevent"
+					TMP_FILE=$(mktemp)
+					if [ -n "$TMP_FILE" ] && [ -r "$TMP_FILE" ]; then
+						sed 's/=/="/; s/$/"/' < "$bat/uevent" > "$TMP_FILE"
+						. "$TMP_FILE"
+						rm -f "$TMP_FILE"
+					fi
 					case "$POWER_SUPPLY_NAME" in AC|ac|Ac|aC) continue ;; esac
 					present="$POWER_SUPPLY_PRESENT"
 					# Some use "CHARGE", others use "ENERGY", still others "CAPACITY"
@@ -76,6 +85,19 @@ __battery() {
 			;;
 		esac
 	done
+	# upower fallback if /proc and /sys didn't work, e.g., with an APC UPS via USB HID
+	if [ $full -eq 0 ] && [ $rem -eq 0 ] && [ -z "$present" -a -z "$state" ]; then
+		if eval $BYOBU_TEST /usr/bin/upower >/dev/null 2>&1; then
+			dev=$(upower -e | grep devices/ups | head -1)
+			if [ -n "$dev" ]; then
+				BATTERY_STATUS=$(upower -i "$dev")
+				full="100"
+				present=$(printf "%s" "$BATTERY_STATUS" | awk '/present/ { print $2}')
+				rem=$(printf "%s" "$BATTERY_STATUS" | awk '/percentage/ { gsub(/[^0-9]/, "", $2); print $2}')
+				state=$(printf "%s" "$BATTERY_STATUS" | awk '/state/ { print $2}')
+			fi
+		fi
+	fi
 	# Mac OS X support
 	if eval $BYOBU_TEST /usr/sbin/ioreg >/dev/null 2>&1; then
 		# MacOS support
@@ -125,7 +147,7 @@ __battery() {
 		case $state in
 			charging) sign="+" ;;
 			discharging) sign="-" ;;
-			charged|unknown|full) sign="=" ;;
+			charged|unknown|full|fully-charged) sign="=" ;;
 			*) sign="$state" ;;
 		esac
 		if [ -z "$percent" ]; then
