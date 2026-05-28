@@ -382,6 +382,8 @@ class BaseHandler(tornado.web.RequestHandler):
         self.set_header("Content-Security-Policy", _CSP)
         self.set_header("Referrer-Policy", "no-referrer")
         self.set_header("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        if _https_mode:
+            self.set_header("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
 
     def json(self, obj: object, status: int = 200):
         self.set_status(status)
@@ -571,6 +573,11 @@ _WS_RATE_LIMIT  = 20    # max messages per window
 def _valid_tmux_id(s: str) -> bool:
     return bool(s and _TMUX_ID_RE.match(s))
 
+_TMUX_NAME_BAD = re.compile(r'[:.@%\n\r]')
+
+def _valid_tmux_name(s: str) -> bool:
+    return bool(s) and not _TMUX_NAME_BAD.search(s)
+
 
 class WsHandler(tornado.websocket.WebSocketHandler):
     """One WebSocket connection per browser tab.
@@ -623,8 +630,8 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     last = content
         except asyncio.CancelledError:
             raise
-        except Exception as e:
-            self._send({"type": "error", "message": f"pane stream lost: {e}"})
+        except Exception:
+            self._send({"type": "error", "message": "pane stream error"})
 
     async def _handle(self, raw: str):
         # Re-check token on every message — catches revocation mid-session
@@ -683,13 +690,15 @@ class WsHandler(tornado.websocket.WebSocketHandler):
 
             elif mtype == "new_session":
                 name = str(msg.get("name", "")).strip()[:128]
-                if name:
+                if not name:
+                    self._send({"type": "error", "message": "session name required"})
+                elif not _valid_tmux_name(name):
+                    self._send({"type": "error", "message": "invalid session name"})
+                else:
                     await asyncio.to_thread(tmux_new_session, name)
                     sessions_list = await asyncio.to_thread(tmux_list_sessions)
                     new_id = next((s["id"] for s in sessions_list if s["name"] == name), None)
                     self._send({"type": "sessions", "data": sessions_list, "new_session": new_id})
-                else:
-                    self._send({"type": "error", "message": "session name required"})
 
             elif mtype == "new_window":
                 sid = msg.get("session_id", "")
@@ -697,6 +706,9 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     self._send({"type": "error", "message": "invalid session_id"})
                 else:
                     name = str(msg.get("name", "")).strip()[:128]
+                    if name and not _valid_tmux_name(name):
+                        self._send({"type": "error", "message": "invalid window name"})
+                        return
                     await asyncio.to_thread(tmux_new_window, sid, name)
                     sessions_list = await asyncio.to_thread(tmux_list_sessions)
                     self._send({"type": "sessions", "data": sessions_list})
@@ -747,8 +759,8 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     await asyncio.to_thread(tmux_send_keys, pane_id, keys, enter)
                     del keys  # release sensitive content as early as possible
 
-        except Exception as e:
-            self._send({"type": "error", "message": f"command failed: {e}"})
+        except Exception:
+            self._send({"type": "error", "message": "command failed"})
 
 
 # ---------------------------------------------------------------------------
@@ -816,8 +828,8 @@ async def _handle_admin(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
             resp = {"error": f"unknown action: {action!r}"}
 
         writer.write(json.dumps(resp).encode() + b"\n")
-    except Exception as e:
-        writer.write(json.dumps({"error": f"internal error: {e}"}).encode() + b"\n")
+    except Exception:
+        writer.write(b'{"error":"internal error"}\n')
     finally:
         await writer.drain()
         writer.close()
@@ -865,7 +877,7 @@ def _make_app() -> tornado.web.Application:
 # ---------------------------------------------------------------------------
 
 def _ensure_self_signed_cert(lan_ip: str) -> tuple:
-    """Generate a self-signed TLS cert for lan_ip. Returns (cert_path, key_path)."""
+    """Generate a self-signed TLS cert for lan_ip. Returns (cert_path, ssl_ctx)."""
     import ssl as _ssl
     cert = CONFIG_DIR / "cert.pem"
     key  = CONFIG_DIR / "key.pem"
@@ -873,7 +885,8 @@ def _ensure_self_signed_cert(lan_ip: str) -> tuple:
     san = f"IP:{lan_ip},IP:127.0.0.1,DNS:localhost"
     try:
         subprocess.run([
-            "openssl", "req", "-x509", "-newkey", "rsa:2048",
+            "openssl", "req", "-x509",
+            "-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:P-256",
             "-keyout", str(key), "-out", str(cert),
             "-days", "3650", "-nodes",
             "-subj", "/CN=trustmux",
@@ -885,6 +898,7 @@ def _ensure_self_signed_cert(lan_ip: str) -> tuple:
         print(f"Warning: openssl failed ({e}); falling back to plain HTTP", flush=True)
         return None, None
     ctx = _ssl.SSLContext(_ssl.PROTOCOL_TLS_SERVER)
+    ctx.minimum_version = _ssl.TLSVersion.TLSv1_2
     ctx.load_cert_chain(str(cert), str(key))
     print(f"Trustmux: self-signed TLS cert generated for {lan_ip}", flush=True)
     return cert, ctx
