@@ -396,6 +396,10 @@ class BaseHandler(tornado.web.RequestHandler):
 class BaseAuthHandler(BaseHandler):
     """Protected handlers inherit this; unauthenticated requests get 401."""
 
+    def set_default_headers(self):
+        super().set_default_headers()
+        self.set_header("Cache-Control", "no-store")
+
     def prepare(self):
         token = self.get_cookie("trustmux_session") or ""
         if not _valid_session_token(token):
@@ -474,6 +478,7 @@ class IconHandler(BaseHandler):
 
 class PingHandler(BaseHandler):
     def get(self):
+        self.set_header("Cache-Control", "no-store")
         token = self.get_cookie("trustmux_session") or ""
         if _valid_session_token(token):
             self.json({"auth": True, "hostname": socket.gethostname()})
