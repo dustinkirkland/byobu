@@ -116,13 +116,14 @@ def main():
     mins = data["expires_in"] // 60
     url = _ts_url() or _direct_url()
 
+    pair_url = f"{url}?pair={code}"
     bar = "═" * 52
     print(f"\n{bar}")
     print(f"  Trustmux pairing code:  {code}  (valid {mins} min)")
-    print(f"  Connect:                {url}")
+    print(f"  Connect:                {pair_url}")
     print(f"{bar}\n")
 
-    _print_qr(f"{url}?pair={code}")
+    _print_qr(pair_url)
     print()
 
     _wait_and_clear()
