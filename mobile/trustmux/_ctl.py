@@ -173,7 +173,7 @@ def cmd_start(mode: str = "serve") -> int:
         except (FileNotFoundError, subprocess.CalledProcessError):
             print("Error: tailscale not found.", file=sys.stderr)
             print("Install: https://tailscale.com/kb/1347/installation", file=sys.stderr)
-            print("Use 'start-direct' for plain HTTP without Tailscale.", file=sys.stderr)
+            print("Or use 'start-direct' for plain HTTP without Tailscale.", file=sys.stderr)
             return 1
         ts_host = _ts_host()
         if not ts_host:
