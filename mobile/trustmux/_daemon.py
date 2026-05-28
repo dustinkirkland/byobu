@@ -917,7 +917,8 @@ async def _amain(host: str, port: int, https: bool, ssl_ctx=None) -> None:
     # xheaders=True: trust X-Forwarded-For/Proto from tailscale serve proxy.
     # Only set in --https mode; in direct mode leave False to prevent spoofing.
     server = tornado.httpserver.HTTPServer(app, xheaders=https,
-                                           ssl_options=ssl_ctx)
+                                           ssl_options=ssl_ctx,
+                                           max_body_size=65536)
     server.listen(port, address=host)
     admin_task = asyncio.create_task(_run_admin_server())
     try:
