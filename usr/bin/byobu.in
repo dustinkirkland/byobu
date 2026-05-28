@@ -125,7 +125,17 @@ fi
 [ -z "$BYOBU_DEFAULT_TERM" ] && BYOBU_DEFAULT_TERM="screen"
 
 # Color terminfo to use, if possible
-[ -z "$BYOBU_COLOR_TERM" ] && BYOBU_COLOR_TERM="screen-256color"
+# Prefer tmux-256color over screen-256color for the tmux backend: screen-256color
+# defines smso=\E[3m (standout = italic escape code) with no sitm, causing tmux
+# to map italic requests to standout mode which renders as reverse video on the
+# outer terminal. tmux-256color correctly separates smso=\E[7m and sitm=\E[3m.
+if [ -z "$BYOBU_COLOR_TERM" ]; then
+	if [ "$BYOBU_BACKEND" = "tmux" ] && infocmp tmux-256color >/dev/null 2>&1; then
+		BYOBU_COLOR_TERM="tmux-256color"
+	else
+		BYOBU_COLOR_TERM="screen-256color"
+	fi
+fi
 
 # Check if our terminfo supports 256 colors
 CAN_SHOW_COLORS=

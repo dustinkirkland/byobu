@@ -1,5 +1,14 @@
 byobu (7.0) UNRELEASED; urgency=medium
 
+  * usr/bin/byobu.in:
+    - fix italic text rendered as reverse video inside byobu/tmux
+    - screen-256color terminfo defines smso=\E[3m (the italic escape) with no
+      sitm capability; tmux maps italic requests to standout, which the outer
+      terminal renders as reverse video
+    - prefer tmux-256color (when available) as BYOBU_COLOR_TERM for the tmux
+      backend; tmux-256color correctly separates smso=\E[7m and sitm=\E[3m
+    - falls back to screen-256color on systems without tmux-256color terminfo
+    - https://github.com/dustinkirkland/byobu/issues/96
   * mobile/*: rename byobu-mobile → Trustmux across all files
     - introduce trustmux: mobile companion daemon for tmux/Byobu sessions
     - monitor and interact with tmux sessions from any phone browser
