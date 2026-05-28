@@ -314,9 +314,10 @@ def main() -> None:
         sys.exit(1)
 
     if not shutil.which("tmux"):
-        print("Warning: tmux not found in PATH — trustmux requires tmux to be installed.",
+        print("Warning: tmux not found in PATH — tmux (or Byobu) must be installed and running.",
               file=sys.stderr)
-        print("Install: https://github.com/tmux/tmux/wiki/Installing", file=sys.stderr)
+        print("Install tmux:  https://github.com/tmux/tmux/wiki/Installing", file=sys.stderr)
+        print("Install Byobu: https://byobu.org", file=sys.stderr)
 
     cmd = args.cmd
     if cmd == "setup":
