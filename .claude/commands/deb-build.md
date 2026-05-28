@@ -39,6 +39,7 @@ docker run --rm \
     cp /build/../*.deb /out/
     echo '=== Built packages ==='
     ls -lh /out/*.deb
+    chown -R $(stat -c '%u:%g' /out) /out/
   "
 ```
 

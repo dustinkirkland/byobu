@@ -305,6 +305,7 @@ docker run --rm \
     echo ""
     echo "=== All series built ==="
     ls -lh /out/
+    chown -R $(stat -c '%u:%g' /out) /out/
   '
 ```
 
