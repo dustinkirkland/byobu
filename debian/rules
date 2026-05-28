@@ -12,6 +12,17 @@ override_dh_auto_build:
 	checkbashisms `find . -type f -exec grep -l "^\#\!/bin/sh" '{}' \;` 2>&1 | grep "^possible bashism in " | grep -v "sleep only takes one integer" | grep -v "sourced script with arguments" || true
 	dh_auto_build
 
+override_dh_auto_test:
+	bash usr/share/byobu/tests/test_byobu.sh
+	python3 -m unittest discover -s mobile/tests -v
+
+override_dh_auto_install:
+	dh_auto_install --destdir=debian/byobu
+
+override_dh_install:
+	dh_install
+	install -Dm755 mobile/trustmux-daemon debian/trustmux/usr/bin/trustmux
+
 override_dh_perl:
 	dh_perl -d
 

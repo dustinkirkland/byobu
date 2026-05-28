@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="phoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A2744"/>
+      <stop offset="100%" style="stop-color:#0D1520"/>
+    </linearGradient>
+    <linearGradient id="strokeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5C3"/>
+      <stop offset="100%" style="stop-color:#3B82F6"/>
+    </linearGradient>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- Phone body centered in 120x120: 84*0.9=76px wide, 162*0.9≈146px tall, centered at 60,60 → x=22, y=7 -->
+  <rect x="22" y="7" width="76" height="106" rx="14"
+        fill="url(#phoneGrad)" stroke="url(#strokeGrad)" stroke-width="3"/>
+
+  <!-- Dynamic island pill -->
+  <rect x="46" y="15" width="28" height="7" rx="3.5"
+        fill="#0A0E18"/>
+
+  <!-- Home bar -->
+  <rect x="48" y="105" width="24" height="4" rx="2"
+        fill="#1E2D45"/>
+
+  <!-- $ and block centered in phone: center y=57 -->
+  <text x="32" y="72"
+        font-family="'Space Mono', 'Courier New', monospace"
+        font-size="38" font-weight="700"
+        fill="#00E5C3">$</text>
+
+  <!-- cursor block: same height as $, top=40, height=28 -->
+  <rect x="68" y="43" width="20" height="28" rx="3"
+        fill="#3B82F6" opacity="0.9"/>
+
+</svg>

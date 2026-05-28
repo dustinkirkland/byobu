@@ -1,5 +1,5 @@
 pixmapsdir = $(datadir)/@PACKAGE@/pixmaps
-pixmaps_DATA =                                  \
+dist_pixmaps_DATA =                                  \
         byobu.14.png                            \
         byobu.192.png                           \
         byobu.64.png                            \
@@ -7,4 +7,3 @@ pixmaps_DATA =                                  \
         byobu-banner.svg                        \
         byobu.png                               \
         byobu.svg
-dist_pixmaps_DATA = $(pixmaps_DATA)

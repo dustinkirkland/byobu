@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 Uploaders: Antoine Beaupré <anarcat@koumbit.org>
 Standards-Version: 4.1.3
-Build-Depends: debhelper (>= 13), gettext-base, automake, autoconf, dh-python, python3
+Build-Depends: debhelper (>= 13), gettext-base, automake, autoconf, dh-python, python3, python3-tornado, bc
 Homepage: https://byobu.org
 Vcs-Git: https://github.com/dustinkirkland/byobu
 
@@ -13,6 +13,7 @@ Architecture: all
 Depends:
  ${misc:Depends}, ${perl:Depends}, ${python3:Depends},
  bash,
+ bc,
  debconf (>= 0.5) | debconf-2.0,
  gettext-base,
  iproute2,
@@ -27,6 +28,7 @@ Recommends:
  run-one
 Suggests:
  apport,
+ trustmux,
  ccze,
  gnome-terminal|xterm,
  gnupg,
@@ -62,3 +64,26 @@ Description: text window manager, shell multiplexer, integrated DevOps environme
  multiple panes, monitor dozens of important statistics about your system,
  detach and reattach to sessions later while your programs continue to run in
  the background.
+
+Package: trustmux
+Architecture: all
+Depends:
+ ${misc:Depends},
+ python3,
+ python3-tornado,
+Recommends:
+ byobu,
+Description: mobile companion daemon for tmux/Byobu sessions
+ Trustmux is a lightweight daemon that lets you monitor and interact
+ with your tmux and Byobu sessions from any phone browser over your
+ Tailscale private network. No relay server — terminal data stays
+ between your devices via Tailscale WireGuard.
+ .
+ It provides a mobile-optimised web interface served over HTTPS via
+ tailscale serve, with pairing-code authentication and a Progressive Web
+ App (PWA) manifest for Add to Home Screen on Android and iOS.
+ .
+ Tailscale (https://tailscale.com) is required for HTTPS transport and is
+ not available in the Ubuntu archive; install it separately.
+ .
+ Enable at login with trustmux-enable; pair a phone with trustmux-pair.

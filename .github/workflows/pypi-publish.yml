@@ -1,0 +1,54 @@
+name: Publish trustmux to PyPI
+
+on:
+  push:
+    tags:
+      - 'trustmux-v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g. 7.0, 7.0a1, 7.0rc1)'
+        required: true
+
+permissions:
+  contents: read
+  id-token: write  # required for OIDC trusted publishing
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set version from tag
+        if: github.event_name == 'push'
+        run: |
+          # Strip leading 'trustmux-v' from tag name
+          VERSION="${GITHUB_REF_NAME#trustmux-v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Set version from input
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_ENV"
+
+      - name: Stamp version in pyproject.toml
+        run: sed -i "s/^version = .*/version = \"$VERSION\"/" mobile/pyproject.toml
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build tools
+        run: pip install build
+
+      - name: Build sdist and wheel
+        working-directory: mobile
+        run: python -m build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: mobile/dist/

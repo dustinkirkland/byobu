@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trustmux"
+version = "7.0.0"
+description = "Monitor and interact with tmux/Byobu sessions from your phone"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+authors = [{name = "Dustin Kirkland", email = "dustin.kirkland@gmail.com"}]
+requires-python = ">=3.9"
+dependencies = ["tornado>=6.0"]
+keywords = ["tmux", "byobu", "terminal", "mobile", "pwa"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Topic :: Terminals :: Terminal Emulators/X Terminals",
+]
+
+[project.urls]
+Homepage = "https://trustmux.app"
+Repository = "https://github.com/dustinkirkland/byobu"
+Issues = "https://github.com/dustinkirkland/byobu/issues"
+
+[project.scripts]
+trustmux         = "trustmux._daemon:main"
+trustmux-ctl     = "trustmux._ctl:main"
+trustmux-pair    = "trustmux._pair:main"
+trustmux-unpair  = "trustmux._unpair:main"
+trustmux-enable  = "trustmux._enable:main"
+trustmux-disable = "trustmux._disable:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["trustmux*"]
+
+[tool.setuptools.package-data]
+trustmux = [
+    "static/index.html",
+    "static/app.js",
+    "static/sw.js",
+    "static/trustmux.svg",
+    "static/trustmux-logo.svg",
+    "static/icons/icon-192.png",
+    "static/icons/icon-512.png",
+]

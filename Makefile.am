@@ -15,3 +15,6 @@ SUBDIRS = etc/byobu \
 	usr/share/man/man1 \
 	usr/share/sounds/byobu \
 	usr/bin
+
+distclean-local:
+	rm -rf mobile/build mobile/dist mobile/trustmux.egg-info

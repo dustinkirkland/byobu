@@ -1,3 +1,34 @@
+byobu (7.0) UNRELEASED; urgency=medium
+
+  * mobile/*: rename byobu-mobile → Trustmux across all files
+    - introduce trustmux: a mobile companion daemon for tmux/Byobu sessions
+    - monitor and interact with tmux sessions from any phone browser over Tailscale
+    - HTTPS by default via tailscale serve (Let's Encrypt cert, no management required)
+    - pairing flow: 6-digit one-time code, permanent session tokens, per-device revocation
+    - PWA support: manifest.json, service worker, Add to Home Screen on Android and iOS
+    - multi-machine selector: jump between trustmux daemons from a single UI
+    - trustmux-enable / trustmux-disable: start/stop daemon and install login hook
+    - daemon built on python3-tornado (Ubuntu Main); zero new runtime deps for packaged users
+    - ansi: true subscribe flag passes tmux capture-pane -e for full VT100 colour output
+    - config dir: ~/.config/trustmux/; socket: trustmux.sock; cookie: trustmux_session
+  * usr/share/byobu/tests/test_byobu.sh:
+    - add 113-test shell test suite covering byobu core utilities
+    - tests: fpdiv, rtrim, color_map, attr_map, uncommented_lines, status_freq,
+      color_tmux, newest, uptime formatting, memory/swap unit thresholds,
+      battery percentage/colour thresholds/state signs, disk units,
+      get_distro, config dir resolution, cpu count, byobu-ulevel
+  * mobile/tests/test_daemon_extended.py:
+    - add 84-test extended daemon suite (134 Python tests total)
+    - covers: token persistence (mode 0600, roundtrip), security headers on all
+      endpoints, all static file handlers, MachinesHandler, tmux write ops,
+      _make_chip colour mapping, read_byobu_status, admin socket protocol,
+      WebSocket handler (auth, rate limiting, all message types)
+  * debian/rules:
+    - add override_dh_auto_test: runs 113 shell + 134 Python tests (247 total)
+      on every dpkg-buildpackage / debuild invocation
+
+ -- Dustin Kirkland <dustin.kirkland@chainguard.dev>  Tue, 26 May 2026 11:53:03 -0500
+
 byobu (6.16) released; urgency=medium
 
   * usr/share/man/man1/byobu.1:

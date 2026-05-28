@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+"""trustmux-enable — start Trustmux daemon and enable it at login."""
+import sys
+import os
+
+_here = os.path.dirname(os.path.abspath(__file__))
+if os.path.isdir(os.path.join(_here, "trustmux")):
+    sys.path.insert(0, _here)
+else:
+    sys.path.insert(0, "/usr/lib/trustmux")
+
+from trustmux._enable import main
+
+if __name__ == "__main__":
+    main()
