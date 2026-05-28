@@ -129,6 +129,10 @@ docker run --rm \
     python3 -m unittest discover -s mobile/tests -v
 
     echo ""
+    echo "--- Running install step (catches duplicate-install bugs) ---"
+    dh install --with python3
+
+    echo ""
     echo "=== Smoke test PASSED ==="
   '
 ```
