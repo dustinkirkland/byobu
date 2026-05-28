@@ -370,3 +370,4 @@ Then tell the user:
 - If a series is still in "Active Development" and Launchpad lacks its build toolchain, that series build may fail on LP — that's expected; skip it.
 - To release a non-alpha (e.g. `7.0` stable), push tag `trustmux-v7.0` instead of the auto-incremented alpha.
 - The PPA version scheme `{BASE_VER}~ppa{ITER}~{SERIES}1` ensures strict ordering: any official Ubuntu or higher PPA upload automatically supersedes the candidate.
+- Always include `--repo dustinkirkland/byobu` in any `gh release create` command so it works from any working directory, not just from inside the byobu source tree.
