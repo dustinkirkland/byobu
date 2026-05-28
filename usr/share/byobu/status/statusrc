@@ -76,3 +76,7 @@
 # Set this to zero to hide seconds int the time display
 # Default 1
 #TIME_SECONDS=0
+
+# Number of load average values to display (1-minute only, or all three)
+# Default: 1
+#LOAD_AVERAGES=1

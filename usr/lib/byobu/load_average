@@ -34,12 +34,17 @@ __load_average() {
 		read one five fifteen other < /proc/loadavg
 	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
 		# vm.loadavg returns "{ x.xx y.yy z.zz }" -- $2 is the 1-min average
-		one=$(sysctl -n vm.loadavg 2>/dev/null | awk '{ print $2 }')
+		eval set -- $(sysctl -n vm.loadavg 2>/dev/null)
+		one="$2"; five="$3"; fifteen="$4"
 	else
 		one=$(uptime | sed -e "s/.*://" | awk '{print $1}')
 	fi
 	[ -n "$one" ] || return
-	color Y k; printf "$one"; color --
+	if [ "${LOAD_AVERAGES:-1}" = "3" ] && [ -n "$five" ] && [ -n "$fifteen" ]; then
+		color Y k; printf "%s %s %s" "$one" "$five" "$fifteen"; color --
+	else
+		color Y k; printf "%s" "$one"; color --
+	fi
 }
 
 # vi: syntax=sh ts=4 noexpandtab
