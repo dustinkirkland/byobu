@@ -326,6 +326,8 @@ def _read_byobu_status_config() -> tuple[list[str], list[str]]:
     return _parse(left_raw), _parse(right_raw)
 
 def _make_chip(name: str, shm: Path) -> dict | None:
+    if not _BYOBU_METRIC_RE.match(name):
+        return None
     status_dir = shm / "status.tmux"
     if not status_dir.is_dir():
         return None
@@ -472,8 +474,7 @@ class IconHandler(BaseHandler):
 
 class PingHandler(BaseHandler):
     def get(self):
-        token = (self.get_cookie("trustmux_session")
-                 or self.get_argument("token", ""))
+        token = self.get_cookie("trustmux_session") or ""
         if _valid_session_token(token):
             self.json({"auth": True, "hostname": socket.gethostname()})
         else:
@@ -574,6 +575,7 @@ def _valid_tmux_id(s: str) -> bool:
     return bool(s and _TMUX_ID_RE.match(s))
 
 _TMUX_NAME_BAD = re.compile(r'[:.@%\n\r]')
+_BYOBU_METRIC_RE = re.compile(r'^[a-zA-Z0-9_]+$')
 
 def _valid_tmux_name(s: str) -> bool:
     return bool(s) and not _TMUX_NAME_BAD.search(s)
@@ -588,8 +590,7 @@ class WsHandler(tornado.websocket.WebSocketHandler):
     """
 
     def open(self):
-        token = (self.get_cookie("trustmux_session")
-                 or self.get_argument("token", ""))
+        token = self.get_cookie("trustmux_session") or ""
         if not _valid_session_token(token):
             self.close(4401, "unauthorized")
             return
