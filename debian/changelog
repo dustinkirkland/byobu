@@ -28,6 +28,7 @@ byobu (7.1) UNRELEASED; urgency=medium
       cumulative totals instead of instantaneous rates; fixed in
       commit 2ba3b295 (February 2026)
       Closes: #992984
+      LP: #1626218
   * usr/bin/byobu.in:
     - fix inverted text rendering as italics under tmux: prefer tmux-256color
       terminfo over screen-256color when available; screen-256color defines
@@ -40,6 +41,12 @@ byobu (7.1) UNRELEASED; urgency=medium
     - add Swedish debconf template translation from Martin Bagge;
       commit ec7562da (February 2026)
       Closes: #1071729
+  * README.md, configure.ac, man pages, appdata:
+    - update all byobu.org references from http:// to https://; the domain
+      has required HTTPS for years and all source-tree links now reflect
+      that; byobu.org is confirmed accessible at https://byobu.org;
+      commit 0106e742 (May 2026)
+      LP: #1837812, #1842990
   * close obsolete/wontfix bugs:
     - #735178 (tmux starts infinite threads): byobu-status has been
       substantially hardened since the 5.87 era with process guards and
