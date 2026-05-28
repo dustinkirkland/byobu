@@ -2,6 +2,7 @@
 import argparse
 import json
 import os
+import shutil
 import signal
 import socket
 import subprocess
@@ -311,6 +312,11 @@ def main() -> None:
     if not args.cmd:
         parser.print_help()
         sys.exit(1)
+
+    if not shutil.which("tmux"):
+        print("Warning: tmux not found in PATH — trustmux requires tmux to be installed.",
+              file=sys.stderr)
+        print("Install: https://github.com/tmux/tmux/wiki/Installing", file=sys.stderr)
 
     cmd = args.cmd
     if cmd == "setup":
