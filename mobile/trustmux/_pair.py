@@ -119,7 +119,7 @@ def main():
     bar = "═" * 52
     print(f"\n{bar}")
     print(f"  Trustmux pairing code:  {code}  (valid {mins} min)")
-    print(f"  Open on your phone:     {url}")
+    print(f"  Connect:                {url}")
     print(f"{bar}\n")
 
     _print_qr(f"{url}?pair={code}")

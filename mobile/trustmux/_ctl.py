@@ -186,7 +186,7 @@ def cmd_start(mode: str = "serve") -> int:
         ok = pid is not None
         if ok:
             print(f"trustmux started (pid {pid})")
-            print(f"Connect from phone: https://{ts_host}")
+            print(f"Connect: https://{ts_host}")
 
     elif mode == "start-local":
         print("Starting trustmux (loopback only — SSH tunnel access)...")
@@ -211,7 +211,7 @@ def cmd_start(mode: str = "serve") -> int:
             except Exception:
                 local_ip = "localhost"
             print(f"trustmux started (pid {pid})")
-            print(f"Connect from phone: http://{local_ip}:{PORT}")
+            print(f"Connect: http://{local_ip}:{PORT}")
 
     else:
         print(f"Unknown mode: {mode}", file=sys.stderr)
