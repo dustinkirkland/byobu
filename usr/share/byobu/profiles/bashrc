@@ -29,7 +29,8 @@ esac
 [ -r "$BYOBU_PREFIX/lib/byobu/include/dirs" ] && . "$BYOBU_PREFIX/lib/byobu/include/dirs"
 
 byobu_prompt_git() { git branch 2>/dev/null | sed -e "/^[^*]/d" -e "s/* \(.*\)/ (\1)/"; }
-byobu_prompt_status() { printf "%s" "[$?]"; }
+byobu_prompt_status() { printf "%s" "[$_byobu_exit_code]"; }
+_byobu_save_exit() { _byobu_exit_code=$?; }
 byobu_prompt_symbol() { [ "$USER" = "root" ] && printf "%s" "#" || printf "%s" "\$"; }
 byobu_prompt_runtime() {
 	# Calculate the approximate runtime of the previous command
@@ -56,6 +57,14 @@ byobu_prompt_runtime() {
 	printf "[%s]" "$str"
 }
 # Requires Bash 4.x
+# Capture $? into _byobu_exit_code before PROMPT_COMMAND runs anything else that
+# might clobber it; PS1 subshells (byobu_prompt_runtime, byobu_prompt_status) each
+# reset $?, so we must save it here rather than reading $? inside byobu_prompt_status.
+if [ -z "${PROMPT_COMMAND}" ]; then
+    PROMPT_COMMAND="_byobu_save_exit"
+else
+    PROMPT_COMMAND="_byobu_save_exit; ${PROMPT_COMMAND}"
+fi
 # Only set PS0 if BYOBU_RUN_DIR is set (i.e., inside byobu)
 [ -d "$BYOBU_RUN_DIR" ] && export PS0='$(printf "%s" ${EPOCHREALTIME/[^0-9]/} >"$BYOBU_RUN_DIR/timer.$$")'
 
