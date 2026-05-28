@@ -130,7 +130,7 @@ docker run --rm \
       dpkg-buildpackage -S -us -uc -d 2>&1
 
       # Collect this series output
-      cp -v "$BUILDDIR"/*.changes "$BUILDDIR"/*.dsc "$BUILDDIR"/*.tar.* /out/ 2>/dev/null || true
+      cp -v "$BUILDDIR"/*.changes "$BUILDDIR"/*.dsc "$BUILDDIR"/*.tar.* "$BUILDDIR"/*.buildinfo /out/ 2>/dev/null || true
 
       cd /
       rm -rf "$BUILDDIR"
