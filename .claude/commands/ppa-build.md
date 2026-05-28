@@ -143,30 +143,55 @@ docker run --rm \
   '
 ```
 
-## Tell the user to sign and upload interactively
+## Write the sign-and-upload script, then tell the user to run it
 
-After Docker completes, print this block clearly so the user can copy-paste or use `!` to run in-session:
+After the Docker build completes, write this script to `/tmp/byobu-ppa/sign-and-upload.sh`
+and make it executable:
+
+```bash
+cat > /tmp/byobu-ppa/sign-and-upload.sh << 'EOF'
+#!/bin/bash
+set -e
+
+GPGKEY=$(grep -oP 'GPGKEY=\K\S+' ~/.bashrc | tail -1 | tr -d '"'"'")
+PPA="ppa:byobu/ppa"
+DIR="$(dirname "$0")"
+
+echo "Signing with key: $GPGKEY"
+echo "Uploading to:     $PPA"
+echo ""
+
+for f in "$DIR"/*_source.changes; do
+    echo "=== Signing $f ==="
+    debsign -k "$GPGKEY" "$f"
+done
+
+echo ""
+echo "All signed. Uploading..."
+echo ""
+
+for f in "$DIR"/*_source.changes; do
+    echo "=== Uploading $f ==="
+    dput "$PPA" "$f"
+done
+
+echo ""
+echo "Done. Monitor builds at:"
+echo "  https://launchpad.net/~byobu/+archive/ubuntu/ppa"
+EOF
+chmod +x /tmp/byobu-ppa/sign-and-upload.sh
+```
+
+Then tell the user:
 
 ```
-Unsigned source packages built in /tmp/byobu-ppa/
+All series built. To sign and upload:
 
-Step 1 — Sign all .changes files (you will be prompted for your GPG passphrase once per file):
+  /tmp/byobu-ppa/sign-and-upload.sh
 
-  for f in /tmp/byobu-ppa/*.changes; do
-    ! debsign -k $GPGKEY "$f"
-  done
-
-Step 2 — Upload each signed .changes to ppa:byobu/ppa:
-
-  for f in /tmp/byobu-ppa/*.changes; do
-    ! dput ppa:byobu/ppa "$f"
-  done
-
-Step 3 — Monitor the Launchpad build queue:
-  https://launchpad.net/~byobu/+archive/ubuntu/ppa
+GPG will prompt for your passphrase once per series.
+Monitor builds at: https://launchpad.net/~byobu/+archive/ubuntu/ppa
 ```
-
-Tell the user they can run individual lines with the `!` prefix to get interactive GPG prompts directly in the Claude Code session. Or run without `!` in a separate terminal.
 
 ## Notes
 
