@@ -19,6 +19,8 @@ import trustmux._daemon as bm
 
 from tornado.testing import AsyncHTTPTestCase, gen_test
 from tornado.websocket import websocket_connect
+from tornado.httpclient import HTTPRequest
+from tornado.httputil import HTTPHeaders
 
 
 # ---------------------------------------------------------------------------
@@ -699,15 +701,16 @@ class TestWsHandler(AsyncHTTPTestCase):
         _clear_sessions()
         super().tearDown()
 
-    def _ws_url(self, token=None):
+    def _ws_req(self, token=None):
         url = f'ws://localhost:{self.get_http_port()}/ws'
         if token:
-            url += f'?token={token}'
+            headers = HTTPHeaders({'Cookie': f'trustmux_session={token}'})
+            return HTTPRequest(url, headers=headers)
         return url
 
     @gen_test(timeout=5)
     async def test_invalid_token_closes_connection(self):
-        conn = await websocket_connect(self._ws_url(token='badtoken'))
+        conn = await websocket_connect(self._ws_req(token='badtoken'))
         msg = await conn.read_message()
         self.assertIsNone(msg)
 
@@ -715,7 +718,7 @@ class TestWsHandler(AsyncHTTPTestCase):
     async def test_valid_token_receives_initial_sessions(self):
         tok = _add_session('ws_tok_init')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
-            conn = await websocket_connect(self._ws_url(token=tok))
+            conn = await websocket_connect(self._ws_req(token=tok))
             msg = await conn.read_message()
         data = json.loads(msg)
         self.assertEqual(data['type'], 'sessions')
@@ -726,7 +729,7 @@ class TestWsHandler(AsyncHTTPTestCase):
         tok = _add_session('ws_tok_ls')
         fake = [{'id': '$0', 'name': 'main', 'attached': True, 'windows': []}]
         with patch.object(bm, 'tmux_list_sessions', return_value=fake):
-            conn = await websocket_connect(self._ws_url(token=tok))
+            conn = await websocket_connect(self._ws_req(token=tok))
             await conn.read_message()
             await conn.write_message(json.dumps({'type': 'list_sessions'}))
             resp = await conn.read_message()
@@ -739,7 +742,7 @@ class TestWsHandler(AsyncHTTPTestCase):
     async def test_invalid_json_returns_error(self):
         tok = _add_session('ws_tok_json')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
-            conn = await websocket_connect(self._ws_url(token=tok))
+            conn = await websocket_connect(self._ws_req(token=tok))
             await conn.read_message()
             await conn.write_message('not valid json {{{')
             resp = await conn.read_message()
@@ -752,7 +755,7 @@ class TestWsHandler(AsyncHTTPTestCase):
     async def test_oversized_message_returns_error(self):
         tok = _add_session('ws_tok_size')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
-            conn = await websocket_connect(self._ws_url(token=tok))
+            conn = await websocket_connect(self._ws_req(token=tok))
             await conn.read_message()
             await conn.write_message('x' * 20_000)
             resp = await conn.read_message()
@@ -765,7 +768,7 @@ class TestWsHandler(AsyncHTTPTestCase):
     async def test_subscribe_invalid_pane_id_returns_error(self):
         tok = _add_session('ws_tok_sub')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
-            conn = await websocket_connect(self._ws_url(token=tok))
+            conn = await websocket_connect(self._ws_req(token=tok))
             await conn.read_message()
             await conn.write_message(json.dumps({'type': 'subscribe', 'pane_id': 'notvalid'}))
             resp = await conn.read_message()
@@ -777,7 +780,7 @@ class TestWsHandler(AsyncHTTPTestCase):
     async def test_send_keys_invalid_pane_id_returns_error(self):
         tok = _add_session('ws_tok_sk')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
-            conn = await websocket_connect(self._ws_url(token=tok))
+            conn = await websocket_connect(self._ws_req(token=tok))
             await conn.read_message()
             await conn.write_message(json.dumps(
                 {'type': 'send_keys', 'pane_id': 'bad', 'keys': 'ls'}))
@@ -790,7 +793,7 @@ class TestWsHandler(AsyncHTTPTestCase):
     async def test_new_session_empty_name_returns_error(self):
         tok = _add_session('ws_tok_ns')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
-            conn = await websocket_connect(self._ws_url(token=tok))
+            conn = await websocket_connect(self._ws_req(token=tok))
             await conn.read_message()
             await conn.write_message(json.dumps({'type': 'new_session', 'name': ''}))
             resp = await conn.read_message()
@@ -802,7 +805,7 @@ class TestWsHandler(AsyncHTTPTestCase):
     async def test_new_window_invalid_session_id_returns_error(self):
         tok = _add_session('ws_tok_nw')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
-            conn = await websocket_connect(self._ws_url(token=tok))
+            conn = await websocket_connect(self._ws_req(token=tok))
             await conn.read_message()
             await conn.write_message(json.dumps(
                 {'type': 'new_window', 'session_id': 'notvalid'}))
@@ -815,7 +818,7 @@ class TestWsHandler(AsyncHTTPTestCase):
     async def test_new_pane_invalid_window_id_returns_error(self):
         tok = _add_session('ws_tok_np')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
-            conn = await websocket_connect(self._ws_url(token=tok))
+            conn = await websocket_connect(self._ws_req(token=tok))
             await conn.read_message()
             await conn.write_message(json.dumps(
                 {'type': 'new_pane', 'window_id': 'notvalid'}))
@@ -828,7 +831,7 @@ class TestWsHandler(AsyncHTTPTestCase):
     async def test_non_dict_json_returns_error(self):
         tok = _add_session('ws_tok_nd')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
-            conn = await websocket_connect(self._ws_url(token=tok))
+            conn = await websocket_connect(self._ws_req(token=tok))
             await conn.read_message()
             await conn.write_message(json.dumps([1, 2, 3]))
             resp = await conn.read_message()
@@ -840,7 +843,7 @@ class TestWsHandler(AsyncHTTPTestCase):
     async def test_rate_limit_triggers_error(self):
         tok = _add_session('ws_tok_rate')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
-            conn = await websocket_connect(self._ws_url(token=tok))
+            conn = await websocket_connect(self._ws_req(token=tok))
             await conn.read_message()
             # Flood with messages exceeding the per-second rate limit
             burst = bm._WS_RATE_LIMIT + 5

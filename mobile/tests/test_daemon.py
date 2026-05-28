@@ -262,11 +262,10 @@ class TestPingHandler(AsyncHTTPTestCase):
         self.assertTrue(data['auth'])
         self.assertIn('hostname', data)
 
-    def test_authenticated_via_query_param_returns_200(self):
+    def test_query_param_token_not_accepted(self):
         tok = _add_session()
         resp = self.fetch(f'/ping?token={tok}')
-        self.assertEqual(resp.code, 200)
-        self.assertTrue(json.loads(resp.body)['auth'])
+        self.assertEqual(resp.code, 401)
 
     def test_wrong_token_returns_401(self):
         _add_session('correct_token')
