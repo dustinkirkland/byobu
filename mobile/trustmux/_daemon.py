@@ -601,6 +601,7 @@ class WsHandler(tornado.websocket.WebSocketHandler):
 
     def _send(self, obj: dict):
         try:
+            obj["server_ts"] = int(time.time() * 1000)
             self.write_message(json.dumps(obj))
         except tornado.websocket.WebSocketClosedError:
             pass

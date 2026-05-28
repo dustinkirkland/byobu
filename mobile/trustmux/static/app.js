@@ -72,6 +72,7 @@ function connect() {
     let msg;
     try { msg = JSON.parse(evt.data); } catch { return; }
 
+    if (msg.server_ts) _serverOffset = msg.server_ts - Date.now();
     if (msg.type === 'sessions') {
       sessions = msg.data || [];
       if (msg.new_session) forcedSessionId = msg.new_session;
@@ -398,11 +399,12 @@ createNameInput.addEventListener('keydown', e => { if (e.key === 'Enter') submit
 
 // ── status bar clock (only ticks when connected — frozen clock = disconnected) ─
 let _clockInterval = null;
+let _serverOffset = 0;  // ms: server clock minus browser clock
 
 function startClock() {
   if (_clockInterval) return;
   function tick() {
-    const now = new Date();
+    const now = new Date(Date.now() + _serverOffset);
     const date = now.toLocaleDateString('en-US', {month:'short', day:'numeric'});
     const time = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
     headerClock.textContent = `${date} ${time}`;
