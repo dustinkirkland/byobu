@@ -20,7 +20,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __memory_detail() {
-	free
+	if eval $BYOBU_TEST free >/dev/null 2>&1; then
+		free
+	else
+		vmstat
+	fi
 }
 
 __memory() {
@@ -36,7 +40,7 @@ __memory() {
 			esac
 			[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
 		done < /proc/meminfo
-	elif [ "$(uname -s)" = "FreeBSD" ]; then
+	elif [ "$BYOBU_OSTYPE" = "FreeBSD" ]; then
 		# FreeBSD support
 		page_size=$(sysctl -n vm.stats.vm.v_page_size)
 		page_count=$(sysctl -n vm.stats.vm.v_page_count)
@@ -45,6 +49,23 @@ __memory() {
 		inactive_count=$(sysctl -n vm.stats.vm.v_inactive_count)
 		total=$(((${page_size} * ${page_count}) / 1024))
 		free=$(((${page_size} * (${free_count} + ${cache_count} + ${inactive_count})) / 1024))
+		buffers=0
+		cached=0
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
+		# OpenBSD support: use sysctl and vmstat
+		local physmem pagesize free_pages inactive_pages
+		physmem=$(sysctl -n hw.physmem 2>/dev/null)
+		[ -n "$physmem" ] || return
+		total=$((physmem / 1024))
+		pagesize=$(sysctl -n hw.pagesize 2>/dev/null)
+		# Count both free and inactive pages as available memory
+		free_pages=$(vmstat -s 2>/dev/null | awk '/pages free$/ { f=$1 } /pages inactive$/ { i=$1 } END { print f+0, i+0 }')
+		if [ -n "$free_pages" ] && [ -n "$pagesize" ]; then
+			set -- $free_pages
+			free=$(( (${1:-0} + ${2:-0}) * pagesize / 1024 ))
+		else
+			free=0
+		fi
 		buffers=0
 		cached=0
 	elif eval $BYOBU_TEST vm_stat >/dev/null 2>&1; then

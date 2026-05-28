@@ -44,7 +44,7 @@ fi
 [ -r "$BYOBU_CONFIG_DIR/socketdir" ] && . "$BYOBU_CONFIG_DIR/socketdir"
 
 # Create and export the runtime cache directory
-if [ -w /dev/shm ]; then
+if [ -d /dev/shm ] && [ -w /dev/shm ]; then
 	# Use shm for performance, if possible
 	for i in /dev/shm/$PKG-$USER-*; do
 		if [ -d "$i" ] && [ -O "$i" ]; then

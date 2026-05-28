@@ -34,7 +34,13 @@ __ip_address() {
 		interface="$MONITORED_NETWORK"
 	else
 		case "$IPV6" in
-			1|true|yes) interface=$(awk '$10 != "lo" { iface=$10 ; }; END { print iface; }' /proc/net/ipv6_route);;
+			1|true|yes)
+				if [ -r /proc/net/ipv6_route ]; then
+					interface=$(awk '$10 != "lo" { iface=$10 ; }; END { print iface; }' /proc/net/ipv6_route)
+				else
+					get_network_interface; interface="$_RET"
+				fi
+			;;
 			*) get_network_interface; interface="$_RET";;
 		esac
 	fi

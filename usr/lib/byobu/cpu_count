@@ -20,12 +20,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __cpu_count_detail() {
-	grep -i "^model name" /proc/cpuinfo
+	if [ -r /proc/cpuinfo ]; then
+		grep -i "^model name" /proc/cpuinfo
+	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
+		sysctl -n hw.model 2>/dev/null
+	fi
 }
 
 __cpu_count() {
 	local c
-	c=$(getconf _NPROCESSORS_ONLN 2>/dev/null || grep -ci "^processor" /proc/cpuinfo)
+	c=$(getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpuonline 2>/dev/null || grep -ci "^processor" /proc/cpuinfo 2>/dev/null || echo 1)
 	[ "$c" = "1" ] || printf "%sx" "$c"
 }
 

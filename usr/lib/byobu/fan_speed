@@ -26,6 +26,16 @@ __fan_speed_detail() {
 
 __fan_speed() {
 	local i="" speed=0
+	# OpenBSD: read fan speed from hw.sensors
+	if [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
+		speed=$(sysctl hw.sensors 2>/dev/null | awk -F'=' '/fan[0-9]/ { gsub(/ RPM/,"",$2); print $2; exit }')
+		if [ -n "$speed" ] && [ "$speed" -gt 0 ] 2>/dev/null; then
+			color bold1; printf "%s" "$speed"; color -; color none; printf "rpm"; color --
+			return 0
+		fi
+		rm -f "$BYOBU_RUN_DIR/status.$BYOBU_BACKEND/fan_speed"*
+		return 0
+	fi
 	# Let's check a few different probes for fan speed
 	# This seems to cover most of them:
 	for i in $FAN /sys/class/hwmon/*/*/fan1_input /sys/class/hwmon/*/device/hwmon/*/fan1_input; do
