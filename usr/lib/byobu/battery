@@ -34,19 +34,19 @@ __battery_detail() {
 }
 
 __battery() {
-	local bat line present sign state percent full rem color bcolor
+	local bat line present sign state percent full rem color bcolor dev BATTERY_STATUS
 	# Linux support
 	present=""; full="0"; rem="0"; state=""
 	for bat in $BATTERY /sys/class/power_supply/* /proc/acpi/battery/*; do
 		case "$bat" in
 			/sys/*)
 				if [ -r "$bat/uevent" ]; then
-					TMP_FILE=$(mktemp)
-					if [ -n "$TMP_FILE" ] && [ -r "$TMP_FILE" ]; then
-						sed 's/=/="/; s/$/"/' < "$bat/uevent" > "$TMP_FILE"
-						. "$TMP_FILE"
-						rm -f "$TMP_FILE"
-					fi
+					TMP_FILE=$(mktemp) || continue
+					trap 'rm -f "$TMP_FILE"' EXIT INT TERM
+					sed 's/=/="/; s/$/"/' < "$bat/uevent" > "$TMP_FILE"
+					. "$TMP_FILE"
+					rm -f "$TMP_FILE"
+					trap - EXIT INT TERM
 					case "$POWER_SUPPLY_NAME" in AC|ac|Ac|aC) continue ;; esac
 					present="$POWER_SUPPLY_PRESENT"
 					# Some use "CHARGE", others use "ENERGY", still others "CAPACITY"
@@ -86,7 +86,7 @@ __battery() {
 		esac
 	done
 	# upower fallback if /proc and /sys didn't work, e.g., with an APC UPS via USB HID
-	if [ $full -eq 0 ] && [ $rem -eq 0 ] && [ -z "$present" -a -z "$state" ]; then
+	if [ $full -eq 0 ] && [ $rem -eq 0 ] && [ -z "$present" ] && [ -z "$state" ]; then
 		if eval $BYOBU_TEST /usr/bin/upower >/dev/null 2>&1; then
 			dev=$(upower -e | grep devices/ups | head -1)
 			if [ -n "$dev" ]; then
