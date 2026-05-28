@@ -33,8 +33,8 @@ __load_average() {
 	if [ -r "/proc/loadavg" ]; then
 		read one five fifteen other < /proc/loadavg
 	elif [ "$BYOBU_OSTYPE" = "OpenBSD" ]; then
-		# vm.loadavg returns "x.xx y.yy z.zz"
-		one=$(sysctl -n vm.loadavg 2>/dev/null | awk '{ print $1 }')
+		# vm.loadavg returns "{ x.xx y.yy z.zz }" -- $2 is the 1-min average
+		one=$(sysctl -n vm.loadavg 2>/dev/null | awk '{ print $2 }')
 	else
 		one=$(uptime | sed -e "s/.*://" | awk '{print $1}')
 	fi

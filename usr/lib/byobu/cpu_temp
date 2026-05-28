@@ -38,9 +38,14 @@ __cpu_temp() {
 		# OpenBSD: read CPU temperature from hw.sensors
 		# Match CPU temp sensors: cpu (Intel coretemp), km/ksmn (AMD),
 		# inteldrm, or acpitz as fallback
-		t=$(sysctl hw.sensors 2>/dev/null | awk -F'[=.]' '
-			/(cpu|km|ksmn|inteldrm)[0-9]*\.temp[0-9]/ { print $2; exit }
-			/acpitz[0-9]*\.temp[0-9]/ { if (!f) f=$2 }
+		t=$(sysctl hw.sensors 2>/dev/null | awk '
+			/(cpu|km|ksmn|inteldrm)[0-9]*\.temp[0-9]/ {
+				split($0,a,"="); split(a[2],b," "); v=int(b[1])
+				if (v>0) { print v; exit }
+			}
+			/acpitz[0-9]*\.temp[0-9]/ {
+				if (!f) { split($0,a,"="); split(a[2],b," "); f=int(b[1]) }
+			}
 			END { if (f) print f }
 		')
 		if [ -n "$t" ] && [ "$t" -gt 0 ] 2>/dev/null; then
