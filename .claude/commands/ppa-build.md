@@ -90,6 +90,51 @@ Examples for BASE_VER=7.0, ITER=1:
 
 The double `~` gives strict ordering: `7.0~ppa1~noble1 < 7.0~ppa1 < 7.0`, so any official Ubuntu or higher PPA upload automatically supersedes the candidate. The series suffix (`~noble1`, `~jammy1`, …) prevents version collisions between series and allows independent rebuilds per series.
 
+## Smoke test (run this first, before the source builds)
+
+Run a full binary build in Docker against `ubuntu:noble` to catch test
+failures and missing `Build-Depends` **locally** before uploading anything
+to Launchpad. This mirrors exactly what Launchpad does: installs
+`Build-Depends`, runs `debian/rules build`, then `debian/rules test`
+(i.e. `override_dh_auto_test`). If this step fails, stop — do not proceed
+to the source builds.
+
+```bash
+echo "=== Smoke test: local binary build ==="
+docker run --rm \
+  -v /home/kirkland/src/byobu:/src:ro \
+  ubuntu:noble \
+  bash -c '
+    set -e
+    export DEBIAN_FRONTEND=noninteractive
+
+    apt-get update -qq
+    apt-get install -y --no-install-recommends \
+      build-essential dpkg-dev debhelper dh-python \
+      gettext-base automake autoconf \
+      python3 python3-all python3-tornado \
+      devscripts bc ca-certificates distro-info 2>&1 | tail -5
+
+    WORKDIR=$(mktemp -d)
+    cp -a /src "$WORKDIR/byobu"
+    cd "$WORKDIR/byobu"
+
+    echo ""
+    echo "--- Running build step ---"
+    dh build --with python3
+
+    echo ""
+    echo "--- Running test step (mirrors override_dh_auto_test) ---"
+    bash usr/share/byobu/tests/test_byobu.sh
+    python3 -m unittest discover -s mobile/tests -v
+
+    echo ""
+    echo "=== Smoke test PASSED ==="
+  '
+```
+
+If the smoke test fails, fix the issue and re-run before continuing.
+
 ## Build the source packages (unsigned, in Docker)
 
 Run a single Docker container that loops through all series and produces one `.changes` + `.dsc` pair per series. All series share the same source tarball.
