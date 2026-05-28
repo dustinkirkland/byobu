@@ -6,19 +6,25 @@ Build an unsigned source package for every currently-supported Ubuntu series in 
 
 ## Pre-flight checks (do these first, in parallel)
 
-1. Extract `DEBEMAIL` and `GPGKEY` directly from `~/.bashrc` (do NOT `source ~/.bashrc` —
-   it has a `[ -z "$PS1" ] && return` guard that exits early in non-interactive shells):
+1. Extract `DEBEMAIL`, `DEBFULLNAME`, and `GPGKEY` directly from `~/.bashrc` (do NOT
+   `source ~/.bashrc` — it has a `[ -z "$PS1" ] && return` guard that exits early in
+   non-interactive shells):
    ```bash
    DEBEMAIL=$(grep -oP 'DEBEMAIL=\K\S+' ~/.bashrc | tail -1 | tr -d '"'"'")
+   DEBFULLNAME=$(grep -oP 'DEBFULLNAME=\K.*' ~/.bashrc | tail -1 | tr -d '"'"'")
    GPGKEY=$(grep -oP 'GPGKEY=\K\S+' ~/.bashrc | tail -1 | tr -d '"'"'")
+   echo "DEBFULLNAME=$DEBFULLNAME"
    echo "DEBEMAIL=$DEBEMAIL"
    echo "GPGKEY=$GPGKEY"
    ```
-   If either is empty, stop — ask the user to add them to `~/.bashrc`:
+   If any are empty, stop — ask the user to add them to `~/.bashrc`:
    ```bash
+   export DEBFULLNAME="Dustin Kirkland"
    export DEBEMAIL="kirkland@ubuntu.com"
    export GPGKEY="E2D9E1C5F9F5D59291F4607D95E64373F1529469"
    ```
+   All three are required: `DEBFULLNAME` + `DEBEMAIL` populate the mandatory `Changed-By`
+   field in the `.changes` file; Launchpad rejects uploads missing it.
 
 2. Check that `dput` and `devscripts` (provides `debsign`) are installed:
    ```bash
@@ -79,10 +85,12 @@ rm -rf $OUTDIR && mkdir -p $OUTDIR
 docker run --rm \
   -v /home/kirkland/src/byobu:/src:ro \
   -v $OUTDIR:/out \
+  -e DEBEMAIL="$DEBEMAIL" \
+  -e DEBFULLNAME="$DEBFULLNAME" \
   ubuntu:noble \
   bash -c '
     set -e
-    export DEBIAN_FRONTEND=noninteractive DEBSIGN_KEYID="" GPGKEY=""
+    export DEBIAN_FRONTEND=noninteractive
 
     apt-get update -qq
     apt-get install -y --no-install-recommends \
@@ -94,20 +102,19 @@ docker run --rm \
     PKG=byobu
     BASE_VER=7.0
     ITER=1
-    DEBEMAIL=kirkland@ubuntu.com
-    # SERIES is passed in from the host substitution below
+    # DEBEMAIL and DEBFULLNAME injected via -e flags above
 
     SERIES=$(ubuntu-distro-info --supported | tr "\n" " ")
-    echo "Building for series: $SERIES"
+    echo "Building for: $DEBFULLNAME <$DEBEMAIL>"
+    echo "Series: $SERIES"
 
-    # Create one orig tarball shared across all series
     STAGING=$(mktemp -d)
     cp -a /src "$STAGING/src"
 
     for CODENAME in $SERIES; do
       PPA_VER="${BASE_VER}~ppa${ITER}~${CODENAME}1"
       echo ""
-      echo "=== Building $PPA_VER for $CODENAME ==="
+      echo "=== Building $PPA_VER ==="
 
       BUILDDIR=$(mktemp -d)
       cp -a "$STAGING/src" "$BUILDDIR/${PKG}-${PPA_VER}"
@@ -116,20 +123,20 @@ docker run --rm \
       # Switch to native source format (version has no - separator)
       echo "3.0 (native)" > debian/source/format
 
-      # Stamp changelog: new entry at top for this PPA version + series
+      # Stamp changelog: trailer must be "Name <email>  date" for Changed-By to populate
       DATESTAMP=$(date -R)
       {
         printf "%s (%s) %s; urgency=medium\n\n" "$PKG" "$PPA_VER" "$CODENAME"
         printf "  * PPA candidate build %s\n\n" "$PPA_VER"
-        printf " -- %s  %s\n\n" "$DEBEMAIL" "$DATESTAMP"
+        printf " -- %s <%s>  %s\n\n" "$DEBFULLNAME" "$DEBEMAIL" "$DATESTAMP"
         cat debian/changelog
       } > debian/changelog.new
       mv debian/changelog.new debian/changelog
 
       # Build source package — unsigned (-us -uc), source only (-S)
-      dpkg-buildpackage -S -us -uc -d 2>&1
+      dpkg-buildpackage -S -us -uc -d 2>&1 | tail -3
 
-      # Collect this series output
+      # Collect all artifacts (.buildinfo required by debsign)
       cp -v "$BUILDDIR"/*.changes "$BUILDDIR"/*.dsc "$BUILDDIR"/*.tar.* "$BUILDDIR"/*.buildinfo /out/ 2>/dev/null || true
 
       cd /
