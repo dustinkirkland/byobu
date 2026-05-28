@@ -60,7 +60,7 @@ Build an unsigned source package for every currently-supported Ubuntu series in 
    import urllib.request, json, re
    base = 'https://api.launchpad.net/1.0/~byobu/+archive/ubuntu/ppa?ws.op=getPublishedSources&source_name=byobu&status='
    iters = []
-   for status in ('Published', 'Pending'):
+   for status in ('Published', 'Pending', 'Superseded'):
        try:
            d = json.loads(urllib.request.urlopen(base + status).read())
            for e in d.get('entries', []):
@@ -72,7 +72,9 @@ Build an unsigned source package for every currently-supported Ubuntu series in 
    print(max(iters) if iters else 0)
    " 2>/dev/null)
    ITER=$((EXISTING_ITER + 1))
-   echo "ITER=$ITER (last seen was ppa${EXISTING_ITER})"
+   echo "API detected last iter: ppa${EXISTING_ITER} → will build ppa${ITER}"
+   echo "VERIFY at: https://launchpad.net/~byobu/+archive/ubuntu/ppa/+packages"
+   echo "If the highest version there is ppa${EXISTING_ITER}, proceed. Otherwise correct ITER manually."
    ```
    This queries Launchpad directly so repeated `/ppa-build` runs auto-increment even though
    the Docker build never writes back to the host changelog.
