@@ -87,6 +87,9 @@ docker run --rm \
   -v $OUTDIR:/out \
   -e DEBEMAIL="$DEBEMAIL" \
   -e DEBFULLNAME="$DEBFULLNAME" \
+  -e PKG="$PKG" \
+  -e BASE_VER="$BASE_VER" \
+  -e ITER="$ITER" \
   ubuntu:noble \
   bash -c '
     set -e
@@ -99,10 +102,7 @@ docker run --rm \
       python3 python3-all python3-tornado \
       devscripts bc ca-certificates distro-info 2>&1 | tail -5
 
-    PKG=byobu
-    BASE_VER=7.0
-    ITER=1
-    # DEBEMAIL and DEBFULLNAME injected via -e flags above
+    # PKG, BASE_VER, ITER, DEBEMAIL, DEBFULLNAME all injected via -e flags above
 
     SERIES=$(ubuntu-distro-info --supported | tr "\n" " ")
     echo "Building for: $DEBFULLNAME <$DEBEMAIL>"
