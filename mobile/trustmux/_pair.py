@@ -58,6 +58,18 @@ def _ts_url() -> str:
     return ""
 
 
+def _direct_url(port: int = 7432) -> str:
+    """Return a best-effort LAN URL when Tailscale is unavailable."""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return f"http://{ip}:{port}/"
+    except Exception:
+        return f"http://localhost:{port}/"
+
+
 def _print_qr(url: str) -> None:
     """Print a QR code for url using qrencode if available, else skip."""
     if shutil.which("qrencode"):
@@ -102,18 +114,16 @@ def main():
         sys.exit(1)
     code = data["code"]
     mins = data["expires_in"] // 60
-    url = _ts_url()
+    url = _ts_url() or _direct_url()
 
     bar = "═" * 52
     print(f"\n{bar}")
     print(f"  Trustmux pairing code:  {code}  (valid {mins} min)")
-    if url:
-        print(f"  Open on your phone:     {url}")
+    print(f"  Open on your phone:     {url}")
     print(f"{bar}\n")
 
-    if url:
-        _print_qr(f"{url}?pair={code}")
-        print()
+    _print_qr(f"{url}?pair={code}")
+    print()
 
     _wait_and_clear()
 
