@@ -1,4 +1,4 @@
-byobu (7.0) UNRELEASED; urgency=medium
+byobu (7.0) experimental; urgency=medium
 
   * usr/bin/byobu.in:
     - fix italic text rendered as reverse video inside byobu/tmux
@@ -9,6 +9,59 @@ byobu (7.0) UNRELEASED; urgency=medium
       backend; tmux-256color correctly separates smso=\E[7m and sitm=\E[3m
     - falls back to screen-256color on systems without tmux-256color terminfo
     - https://github.com/dustinkirkland/byobu/issues/96
+  * usr/lib/byobu/battery:
+    - add upower fallback for UPS devices (e.g. APC USB HID) when /proc and
+      /sys yield no battery data (thanks Anthony Kava, PR #95)
+    - fix uevent sourcing to quote values containing spaces (e.g. serial numbers
+      like "12345 2020/07/01") by writing a temp file with double-quoted values
+    - add fully-charged state to sign selection for upower-reported status
+    - harden mktemp error path, add trap for temp file cleanup on signal
+    - declare dev and BATTERY_STATUS as local variables
+  * usr/lib/byobu/load_average:
+    - add LOAD_AVERAGES=3 option: set in ~/.byobu/statusrc to display all three
+      load average intervals (1, 5, 15 min) space-separated in the status bar;
+      default behaviour (1-minute only) is unchanged
+  * usr/lib/byobu/ (OpenBSD support, thanks Corey Leavitt, PR #91):
+    - battery: APM(8) support via apm -l / apm -a
+    - cpu_temp: hw.sensors coretemp/km/ksmn/inteldrm with acpitz fallback
+    - cpu_freq: hw.cpuspeed (MHz) support
+    - cpu_count: sysctl hw.ncpuonline fallback
+    - fan_speed: hw.sensors fan[0-9] parsing
+    - memory: hw.physmem + vmstat -s free/inactive pages
+    - swap: swapctl -sk summary parsing
+    - load_average: sysctl vm.loadavg ({ x.xx y.yy z.zz } format)
+    - network: netstat -ibn with cached output for both directions
+    - disk_io: iostat -DI cumulative KB with rate calculation and caching
+    - disk: mount command fallback when /proc/mounts is absent
+    - wifi_quality: ifconfig signal strength with dBm→% conversion
+    - uptime: kern.boottime epoch seconds
+    - entropy: no-op (OpenBSD uses arc4random(3), always seeded)
+    - raid: bioctl softraid0 degraded/failed/rebuild detection
+    - ip_address: get_network_interface fallback when /proc/net/ipv6_route absent
+    - fix four OpenBSD sensor parsing bugs introduced in PR #91:
+      cpu_temp awk field index, load_average awk field index (braced output),
+      swap swapctl field index (used vs capacity%), fan_speed gsub trailing text
+  * usr/lib/byobu/include/constants:
+    - cache BYOBU_OSTYPE via uname -s once at startup to avoid repeated forks
+  * usr/lib/byobu/include/shutil:
+    - cache kern.boottime in _BYOBU_BOOTTIME (constant across session lifetime)
+    - fix get_network_interface: add -n to route(8) to suppress DNS lookups,
+      consolidate grep+awk into single awk for BSD/macOS path
+    - use BYOBU_OSTYPE instead of uname -s fork in get_distro
+  * usr/lib/byobu/include/cycle-status:
+    - use $BYOBU_SED_INLINE instead of hardcoded sed -i (BSD sed compatibility)
+  * usr/lib/byobu/include/toggle-utf8.in:
+    - use $BYOBU_SED_INLINE instead of hardcoded sed -i (BSD sed compatibility)
+  * usr/lib/byobu/include/dirs.in:
+    - check [ -d /dev/shm ] before [ -w /dev/shm ] (absent on non-Linux)
+  * usr/lib/byobu/processes:
+    - subtract 1 from ps -ef line count for header on non-Linux systems
+  * usr/lib/byobu/memory:
+    - use cached BYOBU_OSTYPE instead of $(uname -s) for FreeBSD branch
+  * usr/share/byobu/status/statusrc:
+    - document LOAD_AVERAGES=1 option (set to 3 for all three intervals)
+  * usr/share/man/man1/byobu.1:
+    - document LOAD_AVERAGES=3 option in load_average indicator entry
   * mobile/*: rename byobu-mobile → Trustmux across all files
     - introduce trustmux: mobile companion daemon for tmux/Byobu sessions
     - monitor and interact with tmux sessions from any phone browser
@@ -28,6 +81,9 @@ byobu (7.0) UNRELEASED; urgency=medium
       VT100 colour output
     - config dir: ~/.config/trustmux/; socket: trustmux.sock;
       cookie: trustmux_session
+    - four rounds of security hardening: open redirect fix, path traversal
+      guard, token hardening, CSP unsafe-inline removal, request body cap
+      at 64 KB, cache-control headers
   * usr/share/byobu/tests/test_byobu.sh:
     - add 113-test shell test suite covering byobu core utilities
     - tests: fpdiv, rtrim, color_map, attr_map, uncommented_lines, status_freq,
@@ -35,7 +91,7 @@ byobu (7.0) UNRELEASED; urgency=medium
       battery percentage/colour thresholds/state signs, disk units,
       get_distro, config dir resolution, cpu count, byobu-ulevel
   * mobile/tests/test_daemon_extended.py:
-    - add 84-test extended daemon suite (134 Python tests total)
+    - add 134-test Python daemon suite (247 tests total with shell suite)
     - covers: token persistence (mode 0600, roundtrip), security headers on all
       endpoints, all static file handlers, MachinesHandler, tmux write ops,
       _make_chip colour mapping, read_byobu_status, admin socket protocol,
@@ -43,8 +99,16 @@ byobu (7.0) UNRELEASED; urgency=medium
   * debian/rules:
     - add override_dh_auto_test: runs 113 shell + 134 Python tests (247 total)
       on every dpkg-buildpackage / debuild invocation
+  * debian: lintian clean-up and packaging modernisation
 
- -- Dustin Kirkland <dustin.kirkland@chainguard.dev>  Tue, 26 May 2026 11:53:03 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 28 May 2026 02:16:21 -0500
+
+byobu (7.0-0ubuntu1) stonking; urgency=medium
+
+  * Merge upstream 7.0 release for Ubuntu stonking (development series).
+    All changes identical to the upstream 7.0 entry above.
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 28 May 2026 02:16:21 -0500
 
 byobu (6.16) released; urgency=medium
 
