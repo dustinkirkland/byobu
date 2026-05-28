@@ -65,9 +65,9 @@ def _direct_url(port: int = 7432) -> str:
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
         s.close()
-        return f"http://{ip}:{port}/"
+        return f"https://{ip}:{port}/"
     except Exception:
-        return f"http://localhost:{port}/"
+        return f"https://localhost:{port}/"
 
 
 def _print_qr(url: str) -> None:

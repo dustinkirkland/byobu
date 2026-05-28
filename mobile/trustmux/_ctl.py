@@ -199,8 +199,8 @@ def cmd_start(mode: str = "serve") -> int:
             print(f"Then open: http://localhost:{PORT}")
 
     elif mode == "start-direct":
-        print("Starting trustmux (direct HTTP — dev/debug only)...")
-        pid = _launch(["--host", "0.0.0.0"])
+        print("Starting trustmux (direct HTTPS — self-signed cert)...")
+        pid = _launch(["--host", "0.0.0.0", "--self-signed"])
         ok = pid is not None
         if ok:
             try:
@@ -211,7 +211,8 @@ def cmd_start(mode: str = "serve") -> int:
             except Exception:
                 local_ip = "localhost"
             print(f"trustmux started (pid {pid})")
-            print(f"Connect: http://{local_ip}:{PORT}")
+            print(f"Connect: https://{local_ip}:{PORT}")
+            print(f"  (browser will warn about self-signed cert — click through to proceed)")
 
     else:
         print(f"Unknown mode: {mode}", file=sys.stderr)

@@ -864,13 +864,40 @@ def _make_app() -> tornado.web.Application:
 # Entry point
 # ---------------------------------------------------------------------------
 
-async def _amain(host: str, port: int, https: bool) -> None:
+def _ensure_self_signed_cert(lan_ip: str) -> tuple:
+    """Generate a self-signed TLS cert for lan_ip. Returns (cert_path, key_path)."""
+    import ssl as _ssl
+    cert = CONFIG_DIR / "cert.pem"
+    key  = CONFIG_DIR / "key.pem"
+    CONFIG_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
+    san = f"IP:{lan_ip},IP:127.0.0.1,DNS:localhost"
+    try:
+        subprocess.run([
+            "openssl", "req", "-x509", "-newkey", "rsa:2048",
+            "-keyout", str(key), "-out", str(cert),
+            "-days", "3650", "-nodes",
+            "-subj", "/CN=trustmux",
+            "-addext", f"subjectAltName={san}",
+        ], check=True, capture_output=True)
+        cert.chmod(0o644)
+        key.chmod(0o600)
+    except (FileNotFoundError, subprocess.CalledProcessError) as e:
+        print(f"Warning: openssl failed ({e}); falling back to plain HTTP", flush=True)
+        return None, None
+    ctx = _ssl.SSLContext(_ssl.PROTOCOL_TLS_SERVER)
+    ctx.load_cert_chain(str(cert), str(key))
+    print(f"Trustmux: self-signed TLS cert generated for {lan_ip}", flush=True)
+    return cert, ctx
+
+
+async def _amain(host: str, port: int, https: bool, ssl_ctx=None) -> None:
     global _https_mode
-    _https_mode = https
+    _https_mode = https or ssl_ctx is not None
     app = _make_app()
     # xheaders=True: trust X-Forwarded-For/Proto from tailscale serve proxy.
     # Only set in --https mode; in direct mode leave False to prevent spoofing.
-    server = tornado.httpserver.HTTPServer(app, xheaders=https)
+    server = tornado.httpserver.HTTPServer(app, xheaders=https,
+                                           ssl_options=ssl_ctx)
     server.listen(port, address=host)
     admin_task = asyncio.create_task(_run_admin_server())
     try:
@@ -899,6 +926,8 @@ def main():
                         help="Port (default: 7432)")
     parser.add_argument("--https", action="store_true",
                         help="HTTPS mode: Secure cookie + trust proxy headers (use with tailscale serve)")
+    parser.add_argument("--self-signed", action="store_true",
+                        help="Generate a self-signed TLS cert for direct HTTPS without Tailscale")
     args = parser.parse_args()
 
     _load_tokens()
@@ -916,8 +945,21 @@ def main():
                 host = "127.0.0.1"
                 print("Trustmux: Tailscale not found, binding to localhost only")
 
-    print(f"Trustmux daemon on {host}:{args.port} — run 'trustmux-pair' to pair a device.", flush=True)
-    asyncio.run(_amain(host, args.port, args.https))
+    ssl_ctx = None
+    if args.self_signed:
+        lan_ip = host if host not in ("0.0.0.0", None) else _tailscale_ip() or "127.0.0.1"
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            lan_ip = s.getsockname()[0]
+            s.close()
+        except Exception:
+            pass
+        _, ssl_ctx = _ensure_self_signed_cert(lan_ip)
+
+    scheme = "https" if (args.https or ssl_ctx) else "http"
+    print(f"Trustmux daemon on {scheme}://{host}:{args.port} — run 'trustmux-pair' to pair a device.", flush=True)
+    asyncio.run(_amain(host, args.port, args.https, ssl_ctx))
 
 
 if __name__ == "__main__":
