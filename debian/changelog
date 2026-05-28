@@ -1057,7 +1057,7 @@ byobu (5.102-0ubuntu1) xenial; urgency=medium
     usr/share/man/man1/byobu-status.1, usr/share/man/man1/byobu-status-
     detail.1, usr/share/man/man1/byobu-tmux.1, usr/share/man/man1/byobu-
     ugraph.1, usr/share/man/man1/byobu-ulevel.1:
-    - replace http://byobu.co links to newly registered http://byobu.org
+    - replace http://byobu.co links to newly registered https://byobu.org
 
   [ Jeffrey To ]
   * usr/share/byobu/keybindings/tmux-screen-keys.conf:

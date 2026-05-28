@@ -15,9 +15,9 @@
   </p>
  </description>
  <screenshots>
-  <screenshot type="default" width="800" height="600">http://byobu.org/img/screenshot.png</screenshot>
+  <screenshot type="default" width="800" height="600">https://byobu.org/img/screenshot.png</screenshot>
  </screenshots>
- <url type="homepage">http://byobu.org</url>
+ <url type="homepage">https://byobu.org</url>
  <updatecontact>kirkland@byobu.org</updatecontact>
  <project_group>Byobu</project_group>
 </application>
