@@ -1,16 +1,24 @@
 byobu (7.0) UNRELEASED; urgency=medium
 
   * mobile/*: rename byobu-mobile → Trustmux across all files
-    - introduce trustmux: a mobile companion daemon for tmux/Byobu sessions
-    - monitor and interact with tmux sessions from any phone browser over Tailscale
-    - HTTPS by default via tailscale serve (Let's Encrypt cert, no management required)
-    - pairing flow: 6-digit one-time code, permanent session tokens, per-device revocation
-    - PWA support: manifest.json, service worker, Add to Home Screen on Android and iOS
-    - multi-machine selector: jump between trustmux daemons from a single UI
-    - trustmux-enable / trustmux-disable: start/stop daemon and install login hook
-    - daemon built on python3-tornado (Ubuntu Main); zero new runtime deps for packaged users
-    - ansi: true subscribe flag passes tmux capture-pane -e for full VT100 colour output
-    - config dir: ~/.config/trustmux/; socket: trustmux.sock; cookie: trustmux_session
+    - introduce trustmux: mobile companion daemon for tmux/Byobu sessions
+    - monitor and interact with tmux sessions from any phone browser
+      over Tailscale
+    - HTTPS by default via tailscale serve (Let's Encrypt cert,
+      no management required)
+    - pairing flow: 6-digit one-time code, permanent session tokens,
+      per-device revocation
+    - PWA support: manifest.json, service worker, Add to Home Screen
+      on Android and iOS
+    - multi-machine selector: jump between trustmux daemons from one UI
+    - trustmux-enable / trustmux-disable: start/stop daemon and
+      install login hook
+    - daemon built on python3-tornado (Ubuntu Main); zero new runtime
+      deps for packaged users
+    - ansi: true subscribe flag passes tmux capture-pane -e for full
+      VT100 colour output
+    - config dir: ~/.config/trustmux/; socket: trustmux.sock;
+      cookie: trustmux_session
   * usr/share/byobu/tests/test_byobu.sh:
     - add 113-test shell test suite covering byobu core utilities
     - tests: fpdiv, rtrim, color_map, attr_map, uncommented_lines, status_freq,

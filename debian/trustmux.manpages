@@ -1,0 +1,6 @@
+mobile/man/man1/trustmux.1
+mobile/man/man1/trustmux-ctl.1
+mobile/man/man1/trustmux-pair.1
+mobile/man/man1/trustmux-unpair.1
+mobile/man/man1/trustmux-enable.1
+mobile/man/man1/trustmux-disable.1

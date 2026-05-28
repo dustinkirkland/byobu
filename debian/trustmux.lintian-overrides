@@ -1,0 +1,8 @@
+# The Python package lives at usr/lib/trustmux/trustmux/ by design: the outer
+# directory is the package's private lib dir, the inner is the Python package
+# namespace. The repeated segment is intentional.
+trustmux: repeated-path-segment trustmux [usr/lib/trustmux/trustmux/]
+
+# usr/share/trustmux/static/ contains the PWA shell (HTML, JS, SVG, icons).
+# This is application runtime data, not documentation; the path is correct.
+trustmux: package-contains-documentation-outside-usr-share-doc [usr/share/trustmux/static/index.html]

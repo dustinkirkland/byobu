@@ -1,0 +1,24 @@
+.TH TRUSTMUX-PAIR 1 "2026-05-28" "trustmux" "User Commands"
+.SH NAME
+trustmux\-pair \- generate a one-time pairing code for a new device
+.SH SYNOPSIS
+.B trustmux\-pair
+.SH DESCRIPTION
+.B trustmux\-pair
+asks the running Trustmux daemon to generate a 6-digit one-time pairing
+code, then displays it along with the URL your phone should open.  If
+.BR qrencode (1)
+is installed, a QR code is printed for one-scan pairing.
+.PP
+After the code is displayed the screen is cleared on the next keypress,
+keeping your pairing URL out of the terminal scroll-back.
+.PP
+The Trustmux daemon must be running before invoking this command.  Start
+it with
+.BR trustmux\-ctl\-start (1).
+.SH SEE ALSO
+.BR trustmux (1),
+.BR trustmux\-ctl (1),
+.BR trustmux\-unpair (1)
+.SH AUTHOR
+Dustin Kirkland <kirkland@ubuntu.com>

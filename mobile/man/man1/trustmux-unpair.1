@@ -1,0 +1,24 @@
+.TH TRUSTMUX-UNPAIR 1 "2026-05-28" "trustmux" "User Commands"
+.SH NAME
+trustmux\-unpair \- list and revoke paired devices
+.SH SYNOPSIS
+.B trustmux\-unpair
+[\fB\-\-all\fP | \fITOKEN\fP]
+.SH DESCRIPTION
+.B trustmux\-unpair
+lists all paired devices or revokes one or all session tokens.
+.PP
+With no arguments it prints the list of paired devices with their
+partial token, IP address, pairing time, and User-Agent label.
+.PP
+Pass a full token (as shown in the listing) to revoke a single device.
+Pass
+.B \-\-all
+to revoke all paired devices at once.
+.PP
+The Trustmux daemon must be running before invoking this command.
+.SH SEE ALSO
+.BR trustmux (1),
+.BR trustmux\-pair (1)
+.SH AUTHOR
+Dustin Kirkland <kirkland@ubuntu.com>

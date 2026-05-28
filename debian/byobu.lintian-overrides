@@ -1,0 +1,3 @@
+# byobu-config is a long-standing debconf-based configuration UI that pre-dates
+# the modern debconf API style. A full rewrite is deferred.
+byobu: old-style-config-script [usr/bin/byobu-config]
