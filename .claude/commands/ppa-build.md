@@ -6,14 +6,18 @@ Build an unsigned source package for every currently-supported Ubuntu series in 
 
 ## Pre-flight checks (do these first, in parallel)
 
-1. Source `~/.bashrc` and confirm env vars:
+1. Extract `DEBEMAIL` and `GPGKEY` directly from `~/.bashrc` (do NOT `source ~/.bashrc` —
+   it has a `[ -z "$PS1" ] && return` guard that exits early in non-interactive shells):
    ```bash
-   source ~/.bashrc && echo "DEBEMAIL=$DEBEMAIL" && echo "GPGKEY=$GPGKEY"
+   DEBEMAIL=$(grep -oP 'DEBEMAIL=\K\S+' ~/.bashrc | tail -1 | tr -d '"'"'")
+   GPGKEY=$(grep -oP 'GPGKEY=\K\S+' ~/.bashrc | tail -1 | tr -d '"'"'")
+   echo "DEBEMAIL=$DEBEMAIL"
+   echo "GPGKEY=$GPGKEY"
    ```
    If either is empty, stop — ask the user to add them to `~/.bashrc`:
    ```bash
    export DEBEMAIL="kirkland@ubuntu.com"
-   export GPGKEY="95E64373F1529469"
+   export GPGKEY="E2D9E1C5F9F5D59291F4607D95E64373F1529469"
    ```
 
 2. Check that `dput` and `devscripts` (provides `debsign`) are installed:
