@@ -884,7 +884,14 @@ async def _amain(host: str, port: int, https: bool) -> None:
 
 
 def main():
+    from importlib.metadata import version as _pkg_version, PackageNotFoundError
+    try:
+        _version = _pkg_version("trustmux")
+    except PackageNotFoundError:
+        _version = "dev"
+
     parser = argparse.ArgumentParser(description="Trustmux daemon")
+    parser.add_argument("--version", action="version", version=f"trustmux {_version}")
     parser.add_argument("--host", default=None,
                         help="Bind address (default: Tailscale IP; 127.0.0.1 with --https)")
     parser.add_argument("--port", type=int, default=7432,
