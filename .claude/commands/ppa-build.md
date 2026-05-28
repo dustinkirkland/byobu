@@ -58,17 +58,21 @@ Build an unsigned source package for every currently-supported Ubuntu series in 
    ```bash
    EXISTING_ITER=$(python3 -c "
    import urllib.request, json, re
-   url = 'https://api.launchpad.net/1.0/~byobu/+archive/ubuntu/ppa?ws.op=getPublishedSources&source_name=byobu'
-   try:
-       d = json.loads(urllib.request.urlopen(url).read())
-       versions = [e['source_package_version'] for e in d.get('entries', [])]
-       iters = [int(m.group(1)) for v in versions for m in [re.search(r'~ppa(\d+)', v)] if m]
-       print(max(iters) if iters else 0)
-   except Exception as e:
-       print(0)
+   base = 'https://api.launchpad.net/1.0/~byobu/+archive/ubuntu/ppa?ws.op=getPublishedSources&source_name=byobu&status='
+   iters = []
+   for status in ('Published', 'Pending'):
+       try:
+           d = json.loads(urllib.request.urlopen(base + status).read())
+           for e in d.get('entries', []):
+               v = e['source_package_version']
+               # Only match current-generation versions (BASE_VER prefix)
+               m = re.match(r'7\.0~ppa(\d+)', v)
+               if m: iters.append(int(m.group(1)))
+       except: pass
+   print(max(iters) if iters else 0)
    " 2>/dev/null)
    ITER=$((EXISTING_ITER + 1))
-   echo "ITER=$ITER (last published was ppa${EXISTING_ITER})"
+   echo "ITER=$ITER (last seen was ppa${EXISTING_ITER})"
    ```
    This queries Launchpad directly so repeated `/ppa-build` runs auto-increment even though
    the Docker build never writes back to the host changelog.
