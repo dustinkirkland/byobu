@@ -1,6 +1,12 @@
 byobu (7.1) UNRELEASED; urgency=medium
 
-  * Open 7.1 for development
+  * usr/share/byobu/profiles/bashrc:
+    - fix exit code always showing 0 in the PS1 prompt status indicator;
+      byobu_prompt_status() was reading $? inside PS1 expansion, but
+      byobu_prompt_runtime() ran first and reset $? to 0; fix by saving
+      the real exit code into _byobu_exit_code via a new _byobu_save_exit()
+      function prepended to PROMPT_COMMAND, which fires before PS1 rendering
+      while $? still holds the exit code of the last user command
 
  -- Dustin Kirkland <dustin.kirkland@gmail.com>  Thu, 28 May 2026 04:29:24 -0500
 
