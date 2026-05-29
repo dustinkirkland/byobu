@@ -28,8 +28,8 @@ _pair_code: str = ""
 _pair_code_expiry: float = 0.0        # wall-clock time, for human display only
 _pair_code_mono_expiry: float = 0.0   # monotonic time, for expiry check
 _pair_attempts: int = 0
-_MAX_PAIR_ATTEMPTS: int = 10
-_PAIR_CODE_TTL: int = 300             # 5 minutes
+_MAX_PAIR_ATTEMPTS: int = 3
+_PAIR_CODE_TTL: int = 180             # 3 minutes
 _sessions: dict[str, dict] = {}      # token → {ip, paired_at, label}
 _https_mode: bool = False             # set by --https; enables Secure cookie
 
