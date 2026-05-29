@@ -30,7 +30,7 @@ __network_detail() {
 
 __network() {
 	get_network_interface; local interface="$_RET"
-	local x1=0 x2=0 i= t= unit= symbol= cache= rate=
+	local x1=0 x2=0 have_cache= i= t= unit= symbol= cache= rate=
 	status_freq network
 	t="$_RET"
 	# By default, we won't bug the user with the display of network traffic
@@ -48,7 +48,13 @@ __network() {
 			down) symbol="$ICON_DN" ;;
 		esac
 		cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/network.$i"
-		[ -r "$cache" ] && read x1 < "$cache" || x1=0
+		if [ -r "$cache" ]; then
+			read x1 < "$cache"
+			have_cache=1
+		else
+			x1=0
+			have_cache=0
+		fi
 		if [ -n "$_netstat_out" ]; then
 			# OpenBSD netstat -ibn columns:
 			# Name Mtu Network Address Ipkts Ierrs Ibytes Opkts Oerrs Obytes Coll
@@ -61,6 +67,7 @@ __network() {
 			[ -n "$nb" ] && x2="$nb" || x2=0
 			printf "%s" "$x2" > "$cache"
 			[ "${t:-0}" -gt 0 ] 2>/dev/null || continue
+			[ "$have_cache" -eq 1 ] || continue
 		else
 			local iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed
 			cat /proc/net/dev > "$cache".dev
@@ -78,6 +85,7 @@ __network() {
 				esac
 			done < "$cache".dev
 			printf "%s" "$x2" > "$cache"
+			[ "$have_cache" -eq 1 ] || continue
 		fi
 		rate=$((8*($x2 - $x1) / $t / 1024))  # in kbps
 		[ "$rate" -lt 0 ] && rate=0
