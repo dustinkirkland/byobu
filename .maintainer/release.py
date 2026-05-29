@@ -68,6 +68,22 @@ def section(msg):
     print(f"\n── {msg} " + "─" * max(0, 58 - len(msg)))
 
 
+# ── phase resumption ──────────────────────────────────────────────────────
+
+# Canonical phase order (6b is an alias for 5b used in final-mode docs)
+_PHASE_ORDER = ["2b", "3", "4", "5", "5b", "6c", "6d", "6", "7"]
+
+def _phase_idx(phase):
+    if phase == "6b":
+        phase = "5b"
+    return _PHASE_ORDER.index(phase)
+
+def should_run(phase, start_from):
+    if start_from is None:
+        return True
+    return _phase_idx(phase) >= _phase_idx(start_from)
+
+
 # ── phase 1: pre-flight ────────────────────────────────────────────────────
 
 def load_identity():
@@ -125,7 +141,7 @@ def find_homebrew_tap(mode):
 
 # ── phase 2: versions ─────────────────────────────────────────────────────
 
-def determine_versions(mode):
+def determine_versions(mode, resume=False):
     section("Phase 2: Determine versions")
 
     # Canonical base version from debian/changelog
@@ -199,7 +215,8 @@ def determine_versions(mode):
     print(f"  Devel series: {devel_series}")
 
     # Final releases do not upload to the PPA; skip the slot check entirely.
-    if mode == "rc":
+    # Also skip on resume — slots are already occupied.
+    if mode == "rc" and not resume:
         print("  Checking Launchpad for existing PPA slot…")
         try:
             base_url = (
@@ -247,15 +264,30 @@ def determine_versions(mode):
 
     # Output directory
     outdir = Path(f"/tmp/byobu-release-{ppa_base}")
-    if outdir.exists():
-        shutil.rmtree(outdir)
-    (outdir / "debs").mkdir(parents=True)
-    (outdir / "debian").mkdir()
-    if mode == "rc":
-        (outdir / "ppa").mkdir()
-    if mode == "final":
-        (outdir / "ubuntu").mkdir()
-    print(f"  Output dir:   {outdir}")
+    if resume:
+        if not outdir.exists():
+            die(
+                f"--start-from: output directory {outdir} not found.\n"
+                f"  Run without --start-from first to create it."
+            )
+        # Ensure all subdirs exist (harmless if already there)
+        (outdir / "debs").mkdir(exist_ok=True)
+        (outdir / "debian").mkdir(exist_ok=True)
+        if mode == "rc":
+            (outdir / "ppa").mkdir(exist_ok=True)
+        if mode == "final":
+            (outdir / "ubuntu").mkdir(exist_ok=True)
+        print(f"  Resuming in:  {outdir}")
+    else:
+        if outdir.exists():
+            shutil.rmtree(outdir)
+        (outdir / "debs").mkdir(parents=True)
+        (outdir / "debian").mkdir()
+        if mode == "rc":
+            (outdir / "ppa").mkdir()
+        if mode == "final":
+            (outdir / "ubuntu").mkdir()
+        print(f"  Output dir:   {outdir}")
 
     return dict(
         pkg=pkg,
@@ -523,6 +555,7 @@ BUILDDIR=$(mktemp -d)
 
 # Use git archive to avoid .venv / build/ / dist/ contamination
 cd "$STAGING/src"
+git config --global --add safe.directory "$STAGING/src"
 git archive --format=tar.gz --prefix="${PKG}-${BASE_VER}/" HEAD \
   -o "$BUILDDIR/${PKG}_${BASE_VER}.orig.tar.gz"
 
@@ -862,38 +895,64 @@ def main():
         choices=["rc", "final", "open-dev"],
         default="rc",
     )
+    parser.add_argument(
+        "--start-from",
+        metavar="PHASE",
+        choices=_PHASE_ORDER + ["6b"],
+        help=(
+            "Resume from this phase, reusing the existing /tmp/byobu-release-* dir. "
+            "Phases: 2b 3 4 5 5b(=6b) 6c 6d 6 7"
+        ),
+    )
     args = parser.parse_args()
     mode = args.mode
+    start_from = args.start_from
 
     if mode == "open-dev":
         identity = load_identity()
         open_dev(identity)
         return
 
-    banner(f"byobu/trustmux release pipeline — {mode.upper()}")
+    banner(f"byobu/trustmux release pipeline — {mode.upper()}"
+           + (f"  [resuming from phase {start_from}]" if start_from else ""))
 
     identity = load_identity()
     check_tools()
-    tap_dir = find_homebrew_tap(mode)
-    v = determine_versions(mode)
-    build_local_debs(v)
-    debs = sorted((v["outdir"] / "debs").glob("*.deb"))
-    if debs:
-        install_cmd = "sudo dpkg -i " + " ".join(str(d) for d in debs)
-        print(f"\n  Install locally:\n    {install_cmd}\n")
-    confirm(f"Local .deb built and ready to test. Continue to tag trustmux-v{v['pypi_version']} on PyPI?")
-    push_pypi_tag(v)
-    run_smoke_test()
-    if mode == "rc":
+    tap_dir = find_homebrew_tap(mode) if should_run("6d", start_from) else None
+    v = determine_versions(mode, resume=(start_from is not None))
+
+    if should_run("2b", start_from):
+        build_local_debs(v)
+        debs = sorted((v["outdir"] / "debs").glob("*.deb"))
+        if debs:
+            install_cmd = "sudo dpkg -i " + " ".join(str(d) for d in debs)
+            print(f"\n  Install locally:\n    {install_cmd}\n")
+        confirm(f"Local .deb built and ready to test. Continue to tag trustmux-v{v['pypi_version']} on PyPI?")
+
+    if should_run("3", start_from):
+        push_pypi_tag(v)
+
+    if should_run("4", start_from):
+        run_smoke_test()
+
+    if mode == "rc" and should_run("5", start_from):
         build_ppa_packages(v, identity)
-    build_debian_source(v, identity, "experimental" if mode == "rc" else "unstable")
+
+    if should_run("5b", start_from):
+        build_debian_source(v, identity, "experimental" if mode == "rc" else "unstable")
 
     if mode == "final":
-        build_ubuntu_dev(v, identity)
-        update_homebrew(v, tap_dir)
+        if should_run("6c", start_from):
+            build_ubuntu_dev(v, identity)
+        if should_run("6d", start_from):
+            update_homebrew(v, tap_dir)
 
-    create_github_release(v, mode)
-    write_sign_and_upload(v, identity, mode)
+    if should_run("6", start_from):
+        create_github_release(v, mode)
+
+    if should_run("7", start_from):
+        write_sign_and_upload(v, identity, mode)
+
     print_summary(v, mode)
 
 
