@@ -87,6 +87,7 @@ function connect() {
     try { msg = JSON.parse(evt.data); } catch { return; }
 
     if (msg.server_ts) _serverOffset = msg.server_ts - Date.now();
+    if (msg.server_tz) _serverTz = msg.server_tz;
     if (msg.type === 'sessions') {
       sessions = msg.data || [];
       if (msg.new_session) forcedSessionId = msg.new_session;
@@ -425,13 +426,15 @@ createNameInput.addEventListener('keydown', e => { if (e.key === 'Enter') submit
 // ── status bar clock (only ticks when connected — frozen clock = disconnected) ─
 let _clockInterval = null;
 let _serverOffset = 0;  // ms: server clock minus browser clock
+let _serverTz = 'UTC';  // IANA timezone of the host machine
 
 function startClock() {
   if (_clockInterval) return;
   function tick() {
     const now = new Date(Date.now() + _serverOffset);
-    const date = now.toLocaleDateString('en-US', {month:'short', day:'numeric'});
-    const time = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+    const opts = { timeZone: _serverTz };
+    const date = new Intl.DateTimeFormat('en-US', {...opts, month:'short', day:'numeric'}).format(now);
+    const time = new Intl.DateTimeFormat('en-US', {...opts, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).format(now);
     headerClock.textContent = `${date} ${time}`;
   }
   tick();

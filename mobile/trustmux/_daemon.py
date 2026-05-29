@@ -41,6 +41,15 @@ _INSTALLED_STATIC = Path("/usr/share/trustmux/static")
 _DEV_STATIC       = Path(__file__).parent / "static"
 STATIC            = _INSTALLED_STATIC if _INSTALLED_STATIC.is_dir() else _DEV_STATIC
 
+def _get_server_tz() -> str:
+    try:
+        with open("/etc/timezone") as _f:
+            return _f.read().strip()
+    except Exception:
+        return "UTC"
+
+_SERVER_TZ = _get_server_tz()
+
 def _load_tokens() -> None:
     if not TOKENS_FILE.exists():
         return
@@ -676,6 +685,8 @@ class WsHandler(tornado.websocket.WebSocketHandler):
     def _send(self, obj: dict):
         try:
             obj["server_ts"] = int(time.time() * 1000)
+            obj["server_tz"] = _SERVER_TZ
+            obj["server_tz_offset_s"] = int(datetime.now().astimezone().utcoffset().total_seconds())
             self.write_message(json.dumps(obj))
         except tornado.websocket.WebSocketClosedError:
             pass
