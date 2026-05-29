@@ -354,6 +354,7 @@ echo "Building for: $DEBFULLNAME <$DEBEMAIL>"
 echo "Series: $SERIES"
 
 SRCDIR=$(mktemp -d)
+git config --global --add safe.directory /src
 git -C /src archive --format=tar HEAD | tar -x -C "$SRCDIR" -f -
 
 for CODENAME in $SERIES; do
@@ -423,6 +424,7 @@ apt-get install -y --no-install-recommends \
   devscripts bc ca-certificates git 2>&1 | tail -5
 
 SRCDIR=$(mktemp -d)
+git config --global --add safe.directory /src
 git -C /src archive --format=tar HEAD | tar -x -C "$SRCDIR" -f -
 
 BUILDDIR=$(mktemp -d)

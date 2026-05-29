@@ -658,9 +658,11 @@ class WsHandler(tornado.websocket.WebSocketHandler):
             return
         self._token = token
         self._stream_task: asyncio.Task | None = None
+        self._topo_task: asyncio.Task | None = None
         self._rate_window_start = time.monotonic()
         self._rate_count = 0
         asyncio.ensure_future(self._send_sessions())
+        self._topo_task = asyncio.ensure_future(self._poll_topology())
 
     def on_message(self, raw):
         asyncio.ensure_future(self._handle(raw))
@@ -668,6 +670,8 @@ class WsHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         if getattr(self, "_stream_task", None):
             self._stream_task.cancel()
+        if getattr(self, "_topo_task", None):
+            self._topo_task.cancel()
 
     def _send(self, obj: dict):
         try:
@@ -679,6 +683,25 @@ class WsHandler(tornado.websocket.WebSocketHandler):
     async def _send_sessions(self):
         sessions = await asyncio.to_thread(tmux_list_sessions)
         self._send({"type": "sessions", "data": sessions})
+
+    async def _poll_topology(self):
+        try:
+            sessions = await asyncio.to_thread(tmux_list_sessions)
+            last = json.dumps(sessions, sort_keys=True)
+        except Exception:
+            last = None
+        while True:
+            await asyncio.sleep(2)
+            try:
+                sessions = await asyncio.to_thread(tmux_list_sessions)
+                key = json.dumps(sessions, sort_keys=True)
+                if key != last:
+                    last = key
+                    self._send({"type": "sessions", "data": sessions})
+            except asyncio.CancelledError:
+                raise
+            except Exception:
+                pass
 
     async def _stream_pane(self, pane_id: str, history_lines: int, ansi: bool = False):
         try:
