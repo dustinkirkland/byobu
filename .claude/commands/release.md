@@ -69,13 +69,20 @@ EXISTING_RC=$(git -C /home/kirkland/src/byobu tag --list "trustmux-v${BASE_VER}r
 RC_NUM=$((${EXISTING_RC:-0} + 1))
 RC_VERSION="${BASE_VER}rc${RC_NUM}"
 PYPI_VERSION="${BASE_VER}rc${RC_NUM}"
-echo "RC number: $RC_NUM  →  trustmux-v${PYPI_VERSION}"
+# 0-prefix forces empty non-digit run → sorts below any letter → below final ~{series}1 and ~{base}
+# dpkg order: ~ < \0(0) < letters(97-122); empty non-digit run (order 0) < 'n'(110) < 'r'(114)
+# So: 7.1~0rc1~noble1 < 7.1~noble1 < 7.1  ✓
+DEB_EXP_VERSION="${BASE_VER}~0rc${RC_NUM}"
+echo "RC number: $RC_NUM  →  trustmux-v${PYPI_VERSION}  /  Debian: ${DEB_EXP_VERSION}"
 ```
 
 For **final** mode, set instead:
 ```bash
 PYPI_VERSION="${BASE_VER}"
-echo "Final version: ${PYPI_VERSION}"
+# Use the real version for experimental — it sorts above all 7.1~* by definition.
+# No ~expN suffix needed; if a packaging fix is required, bump the debian revision instead.
+DEB_EXP_VERSION="${BASE_VER}"
+echo "Final version: ${PYPI_VERSION}  /  Debian experimental: ${DEB_EXP_VERSION}"
 ```
 
 ### 2c. Supported Ubuntu series
@@ -96,9 +103,13 @@ echo "Devel:  $DEVEL_SERIES"
 
 ### 2d. PPA iteration (RC or final)
 
-For **RC** mode — version scheme: `{BASE_VER}~rc{N}~{series}1`
+For **RC** mode — version scheme: `{BASE_VER}~0rc{N}~{series}1`
+
+The `0` prefix makes the non-digit run empty in dpkg comparison (order 0), which sorts below
+any letter. This guarantees `7.1~0rc1~noble1 < 7.1~noble1` (final), so the final PPA upload
+always supersedes the RC without a version bump.
 ```bash
-PPA_BASE="${BASE_VER}~rc${RC_NUM}"
+PPA_BASE="${BASE_VER}~0rc${RC_NUM}"
 ```
 
 For **final** mode — version scheme: `{BASE_VER}~{series}1`
@@ -281,6 +292,7 @@ docker run --rm \
   -e DEBFULLNAME="$DEBFULLNAME" \
   -e PKG="$PKG" \
   -e BASE_VER="$BASE_VER" \
+  -e DEB_EXP_VERSION="$DEB_EXP_VERSION" \
   ubuntu:noble \
   bash -c '
     set -e
@@ -297,11 +309,17 @@ docker run --rm \
     cp -a /src "$STAGING/src"
 
     BUILDDIR=$(mktemp -d)
-    cp -a "$STAGING/src" "$BUILDDIR/${PKG}-${BASE_VER}"
-    cd "$BUILDDIR/${PKG}-${BASE_VER}"
+    cp -a "$STAGING/src" "$BUILDDIR/${PKG}-${DEB_EXP_VERSION}"
+    cd "$BUILDDIR/${PKG}-${DEB_EXP_VERSION}"
 
     # Debian native: no orig tarball needed
     echo "3.0 (native)" > debian/source/format
+
+    # Set versioned suffix (e.g. 7.1~rc1 or 7.1~exp1) so future uploads can
+    # supersede without needing to bump past the final release version.
+    # dput ftp-master also rejects UNRELEASED; distribution must be experimental.
+    sed -i "1s/^${PKG} ([^)]*)/${PKG} (${DEB_EXP_VERSION})/" debian/changelog
+    sed -i "1s/) UNRELEASED;/) experimental;/" debian/changelog
 
     dpkg-buildpackage -S -us -uc -d 2>&1 | tail -3
 
@@ -547,9 +565,9 @@ echo ""
 
 # Step 2: Debian experimental
 echo "── Step 2: Debian experimental ────────────────────────────────────────"
-echo "  dput ftp-master \$BASE/debian/byobu_${BASE_VER}_source.changes"
+echo "  dput ftp-master \$BASE/debian/byobu_${DEB_EXP_VERSION}_source.changes"
 read -rp "  Upload to Debian experimental? [y/N] " ans
-[[ "\$ans" =~ ^[Yy]\$ ]] && dput ftp-master "\$BASE/debian/byobu_${BASE_VER}_source.changes" || echo "  Skipped."
+[[ "\$ans" =~ ^[Yy]\$ ]] && dput ftp-master "\$BASE/debian/byobu_${DEB_EXP_VERSION}_source.changes" || echo "  Skipped."
 echo ""
 
 # Step 3: Ubuntu dev series
