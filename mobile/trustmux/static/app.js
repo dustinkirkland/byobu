@@ -49,6 +49,8 @@ const createNameForm   = document.getElementById('create-name-form');
 const createNameLabel  = document.getElementById('create-name-label');
 const createNameInput  = document.getElementById('create-name-input');
 const btnNew           = document.getElementById('btn-new');
+const btnPrev          = document.getElementById('btn-prev');
+const btnNext          = document.getElementById('btn-next');
 
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
@@ -224,7 +226,7 @@ btnKbdMode.addEventListener('click', () => {
   setTimeout(() => cmdInput.focus(), 50);
 });
 
-// ── swipe navigation (depth-first: panes → windows → sessions) ───────────
+// ── pane navigation (depth-first: panes → windows → sessions) ────────────
 function flatPaneList() {
   const list = [];
   for (const s of sessions) {
@@ -250,7 +252,7 @@ function navigateRelative(delta) {
   navigateTo(next.sessionId, next.windowId, next.paneId);
 }
 
-// ── unified touch handler: double-tap (context menu) + swipe (navigation) ─
+// ── touch handler: double-tap opens context menu ──────────────────────────
 let _touchX = 0, _touchY = 0;
 let _lastTap = 0;
 
@@ -262,17 +264,15 @@ output.addEventListener('touchstart', e => {
 output.addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - _touchX;
   const dy = e.changedTouches[0].clientY - _touchY;
-  if (Math.abs(dx) >= 90 && Math.abs(dx) >= Math.abs(dy) * 3) {
-    navigateRelative(dx < 0 ? 1 : -1);
-    _lastTap = 0;
-    return;
-  }
   if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
     const now = Date.now();
     if (now - _lastTap < 300) { showCtxMenu(); _lastTap = 0; }
     else { _lastTap = now; }
   }
 }, { passive: true });
+
+btnPrev.addEventListener('click', () => navigateRelative(-1));
+btnNext.addEventListener('click', () => navigateRelative(1));
 
 // ── rename / kill menu (double-tap) ──────────────────────────────────────
 let _pendingKill = null;   // { type, id }
