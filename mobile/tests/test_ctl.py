@@ -129,19 +129,16 @@ class TestEnsureTsServe(unittest.TestCase):
                 result = ctl._ensure_ts_serve()
         self.assertTrue(result)
 
-    def test_falls_back_to_sudo_operator(self):
+    def test_prints_error_and_returns_false_when_serve_fails(self):
         import subprocess as sp
-        call_count = [0]
-        def fake_run(cmd, **kw):
-            call_count[0] += 1
-            if 'serve' in cmd and '--bg' in cmd and call_count[0] == 1:
-                raise sp.CalledProcessError(1, cmd)
-            return MagicMock(returncode=0)
-
         with patch('trustmux._ctl.subprocess.check_output', return_value='nothing'):
-            with patch('trustmux._ctl.subprocess.run', side_effect=fake_run):
+            with patch('trustmux._ctl.subprocess.run',
+                       side_effect=sp.CalledProcessError(1, 'tailscale')) as mock_run:
                 result = ctl._ensure_ts_serve()
-        self.assertTrue(result)
+        self.assertFalse(result)
+        # Must never auto-run sudo
+        for call in mock_run.call_args_list:
+            self.assertNotIn('sudo', call.args[0])
 
     def test_returns_false_when_all_attempts_fail(self):
         import subprocess as sp
