@@ -33,7 +33,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-BYOBU_SRC = Path("/home/kirkland/src/byobu")
+BYOBU_SRC = Path(__file__).resolve().parent.parent
 
 
 # ── helpers ────────────────────────────────────────────────────────────────
@@ -87,16 +87,11 @@ def load_identity():
     if not all(identity.values()):
         die(
             "Missing identity in ~/.bashrc. Add:\n"
-            "  export DEBFULLNAME='Dustin Kirkland'\n"
-            "  export DEBEMAIL='kirkland@ubuntu.com'\n"
-            "  export GPGKEY='E2D9E1C5F9F5D59291F4607D95E64373F1529469'"
-        )
-
-    # Debian ftp-master silently drops uploads with wrong Changed-By email.
-    if identity["DEBEMAIL"] != "kirkland@ubuntu.com":
-        die(
-            f"DEBEMAIL must be kirkland@ubuntu.com (got {identity['DEBEMAIL']})\n"
-            "  Debian ftp-master silently rejects uploads with the wrong address."
+            "  export DEBFULLNAME='Your Name'\n"
+            "  export DEBEMAIL='you@example.com'\n"
+            "  export GPGKEY='<your GPG key fingerprint>'\n\n"
+            "  Note: DEBEMAIL must match your Debian Developer keyring entry.\n"
+            "  Debian ftp-master silently drops uploads with a mismatched address."
         )
 
     return identity
