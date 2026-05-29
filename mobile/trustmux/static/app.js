@@ -114,7 +114,7 @@ function send(obj) {
 function activePaneXYZ() {
   if (!currentPane) return '-:-:-';
   for (const s of sessions) {
-    const x = parseInt(s.id.replace('$', ''), 10);
+    const x = parseInt(s.id.replace('$', ''), 10) - 1;
     for (const w of (s.windows || [])) {
       for (const p of (w.panes || [])) {
         if (p.id === currentPane) return `${x}:${w.index}:${p.index}`;
