@@ -198,27 +198,53 @@ def determine_versions(mode):
     print(f"  Series:       {' '.join(series)}")
     print(f"  Devel series: {devel_series}")
 
-    # Check for PPA slot collision (non-fatal warning)
+    # Check for PPA slot collision — also catch cross-scheme RC conflicts.
+    # dpkg ordering: empty-string < letters, so "0rc13" < "rc3" even though
+    # 13 > 3.  Any existing *rc* upload under this base_ver can block us.
     print("  Checking Launchpad for existing PPA slot…")
     try:
-        prefix = f"{ppa_base}~"
         base_url = (
             "https://api.launchpad.net/1.0/~byobu/+archive/ubuntu/ppa"
             "?ws.op=getPublishedSources&source_name=byobu&status="
         )
-        found = []
+        all_entries = []
         for status in ("Published", "Pending"):
             d = json.loads(urllib.request.urlopen(base_url + status).read())
-            found += [
-                e["source_package_version"]
-                for e in d.get("entries", [])
-                if e["source_package_version"].startswith(prefix)
-            ]
-        if found:
+            all_entries += d.get("entries", [])
+
+        # Exact slot collision (same ppa_base prefix)
+        exact = [
+            e["source_package_version"]
+            for e in all_entries
+            if e["source_package_version"].startswith(f"{ppa_base}~")
+        ]
+        if exact:
             die(
-                f"PPA slot {ppa_base}~* already occupied: {' '.join(found)}\n"
+                f"PPA slot {ppa_base}~* already occupied: {' '.join(exact)}\n"
                 "  Version detection may be stale — verify and bump manually."
             )
+
+        # Cross-scheme RC collision: any *rc* version under this base_ver that
+        # dpkg would consider >= our ppa_base (e.g. old "7.1~rc3" vs new "7.1~0rc13")
+        if mode == "rc":
+            rc_pattern = re.compile(
+                rf"^{re.escape(base_ver)}~(?:0*rc\d+|[a-z]+rc\d+)~"
+            )
+            stale = [
+                e["source_package_version"]
+                for e in all_entries
+                if rc_pattern.match(e["source_package_version"])
+                and not e["source_package_version"].startswith(f"{ppa_base}~")
+            ]
+            if stale:
+                die(
+                    f"PPA contains RC packages from a different naming scheme:\n"
+                    f"  {' '.join(stale)}\n"
+                    f"  These may sort >= {ppa_base} in dpkg and block the upload.\n"
+                    f"  Delete them at https://launchpad.net/~byobu/+archive/ubuntu/ppa\n"
+                    f"  then re-run."
+                )
+
         print(f"  PPA slot {ppa_base}~* is free.")
     except urllib.error.URLError as e:
         print(f"  (Launchpad check skipped — network error: {e})")
