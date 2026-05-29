@@ -47,6 +47,16 @@ byobu (7.1) UNRELEASED; urgency=medium
       that; byobu.org is confirmed accessible at https://byobu.org;
       commit 0106e742 (May 2026)
       LP: #1837812, #1842990
+  * debian/control, debian/rules, debian/byobu.install, debian/byobu.dirs,
+    debian/byobu.manpages, debian/byobu.lintian-overrides, debian/docs:
+    - fold trustmux into the byobu binary package; all trustmux files
+      (daemon, CLI tools, Python library, static PWA assets, man pages) are
+      now installed by the byobu package so that "dpkg -i byobu*.deb" brings
+      trustmux along for the ride; the daemon does not start automatically —
+      users must explicitly run trustmux-enable to opt in; pip install and
+      brew install remain available for those who want trustmux without byobu;
+      remove the separate trustmux binary package from the source package;
+      add python3-tornado to byobu's Depends as it is now required at runtime
   * close obsolete/wontfix bugs:
     - #735178 (tmux starts infinite threads): byobu-status has been
       substantially hardened since the 5.87 era with process guards and

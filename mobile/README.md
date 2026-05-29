@@ -39,17 +39,21 @@ trustmux-pair
 
 ### Debian / Ubuntu (.deb)
 
+Trustmux is bundled with byobu — installing byobu brings trustmux along:
+
 ```bash
-sudo dpkg -i trustmux_7.0_all.deb
+sudo apt install byobu
 trustmux-enable
 trustmux-pair
 ```
 
-Add the PPA for automatic updates:
+Or with the PPA for the latest release:
 
 ```bash
-sudo add-apt-repository ppa:dustinkirkland/trustmux
-sudo apt install trustmux
+sudo add-apt-repository ppa:dustinkirkland/byobu
+sudo apt install byobu
+trustmux-enable
+trustmux-pair
 ```
 
 ---

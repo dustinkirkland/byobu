@@ -2,3 +2,25 @@
 usr/share/byobu/pixmaps/byobu.svg             usr/share/icons/hicolor/scalable/apps/
 usr/share/byobu/pixmaps/highcontrast/byobu.svg usr/share/icons/HighContrast/scalable/apps/
 debian/source_byobu.py                         usr/share/apport/package-hooks
+
+# Trustmux (mobile companion daemon) — folded into byobu package
+mobile/trustmux/__init__.py             usr/lib/trustmux/trustmux/
+mobile/trustmux/__main__.py             usr/lib/trustmux/trustmux/
+mobile/trustmux/_daemon.py              usr/lib/trustmux/trustmux/
+mobile/trustmux/_ctl.py                 usr/lib/trustmux/trustmux/
+mobile/trustmux/_pair.py                usr/lib/trustmux/trustmux/
+mobile/trustmux/_unpair.py              usr/lib/trustmux/trustmux/
+mobile/trustmux/_enable.py              usr/lib/trustmux/trustmux/
+mobile/trustmux/_disable.py             usr/lib/trustmux/trustmux/
+mobile/trustmux-ctl                     usr/bin/
+mobile/trustmux-pair                    usr/bin/
+mobile/trustmux-unpair                  usr/bin/
+mobile/trustmux-enable                  usr/bin/
+mobile/trustmux-disable                 usr/bin/
+mobile/trustmux/static/index.html           usr/share/trustmux/static/
+mobile/trustmux/static/app.js               usr/share/trustmux/static/
+mobile/trustmux/static/trustmux.svg         usr/share/trustmux/static/
+mobile/trustmux/static/trustmux-logo.svg    usr/share/trustmux/static/
+mobile/trustmux/static/sw.js                usr/share/trustmux/static/
+mobile/trustmux/static/icons/icon-192.png   usr/share/trustmux/static/icons/
+mobile/trustmux/static/icons/icon-512.png   usr/share/trustmux/static/icons/
