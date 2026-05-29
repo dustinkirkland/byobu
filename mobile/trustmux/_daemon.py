@@ -3,6 +3,7 @@
 
 import argparse
 import asyncio
+import base64
 from datetime import datetime
 import getpass
 import glob
@@ -593,6 +594,20 @@ class WsHandler(tornado.websocket.WebSocketHandler):
     Origin == Host. This is a security measure against cross-site WebSocket
     hijacking and is correct for our setup in all modes.
     """
+
+    async def get(self, *args, **kwargs):
+        # Chrome uses HTTP/2 for HTTPS connections. HTTP/2 WebSocket (RFC 8441)
+        # uses CONNECT + :protocol:websocket and omits Sec-WebSocket-Key.
+        # Tailscale serve translates H2→H1.1 but doesn't generate the missing
+        # key, causing Tornado to reject the handshake with 400. Inject it here.
+        hdrs = self.request.headers
+        if not hdrs.get("Sec-WebSocket-Key"):
+            hdrs["Sec-WebSocket-Key"] = base64.b64encode(os.urandom(16)).decode()
+        if not hdrs.get("Upgrade"):
+            hdrs["Upgrade"] = "websocket"
+        if "upgrade" not in hdrs.get("Connection", "").lower():
+            hdrs["Connection"] = "Upgrade"
+        await super().get(*args, **kwargs)
 
     def open(self):
         token = self.get_cookie("trustmux_session") or ""
