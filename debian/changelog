@@ -1,4 +1,4 @@
-byobu (7.3) UNRELEASED; urgency=medium
+byobu (7.4) UNRELEASED; urgency=medium
 
   * mobile/trustmux/static/app.js, mobile/trustmux/static/index.html:
     - add optional biometric/PIN re-authentication lock to the Trustmux PWA;
@@ -79,8 +79,9 @@ byobu (7.3) UNRELEASED; urgency=medium
       Closes: #735178, #772221
   * Open 7.2 for development
   * Open 7.3 for development
+  * Open 7.4 for development
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 29 May 2026 13:56:30 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 29 May 2026 18:09:01 -0500
 
 byobu (7.1) experimental; urgency=medium
 
