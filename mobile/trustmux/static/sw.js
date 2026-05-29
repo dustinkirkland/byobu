@@ -32,7 +32,9 @@ self.addEventListener('fetch', e => {
   if (NETWORK_ONLY.some(p => url.pathname.startsWith(p))) return;
 
   // Cache-first for everything else (shell assets).
+  // ignoreSearch: true so /?pair=XXXXXX matches the cached '/' shell instead
+  // of falling through to a network fetch (which hangs on Android/Tailscale).
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request))
+    caches.match(e.request, { ignoreSearch: true }).then(cached => cached || fetch(e.request))
   );
 });
