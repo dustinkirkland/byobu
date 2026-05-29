@@ -9,6 +9,7 @@ Usage:
 RC phases:
     1  Pre-flight checks
     2  Determine versions
+    2b Local binary .deb build (test before tagging)
     3  Push PyPI git tag (triggers GH Actions)
     4  Smoke test (Docker)
     5  PPA source builds (Docker, all series)
@@ -323,7 +324,7 @@ chown -R $(stat -c '%u:%g' /out) /out/
 
 
 def build_local_debs(v):
-    section("Phase 4b: Local binary build (installable .deb files)")
+    section("Phase 2b: Local binary build (installable .deb files)")
     run([
         "docker", "run", "--rm",
         "-v", f"{BYOBU_SRC}:/src:ro",
@@ -823,9 +824,14 @@ def main():
     check_tools()
     tap_dir = find_homebrew_tap(mode)
     v = determine_versions(mode)
+    build_local_debs(v)
+    debs = sorted((v["outdir"] / "debs").glob("*.deb"))
+    if debs:
+        install_cmd = "sudo dpkg -i " + " ".join(str(d) for d in debs)
+        print(f"\n  Install locally:\n    {install_cmd}\n")
+    confirm(f"Local .deb built and ready to test. Continue to tag trustmux-v{v['pypi_version']} on PyPI?")
     push_pypi_tag(v)
     run_smoke_test()
-    build_local_debs(v)
     build_ppa_packages(v, identity)
 
     if mode == "final":
