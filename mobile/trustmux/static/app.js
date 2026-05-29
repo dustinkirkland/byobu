@@ -9,6 +9,126 @@ let currentWindowId = null;
 let forcedSessionId = null; // set after creating a new session
 let statusInterval = null;
 
+// ── biometric lock ─────────────────────────────────────────────────────────
+// Uses WebAuthn platform authenticator (fingerprint/face/PIN) as an
+// idle/background lock — not a replacement for server-side auth.
+
+const LOCK_IDLE_MS   = 5 * 60 * 1000;  // lock after 5 min inactivity
+const LOCK_HIDDEN_MS = 30 * 1000;       // lock if backgrounded > 30s
+
+let _lockEnabled = localStorage.getItem('lock-enabled');  // 'true'/'false'/null
+let _lockCredId  = localStorage.getItem('lock-cred-id');  // base64url
+let _lockTimer   = null;
+let _hiddenAt    = 0;
+let _isLocked    = false;
+let _skipThisSession = false;
+
+function _b64uEncode(buf) {
+  return btoa(String.fromCharCode(...new Uint8Array(buf)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+function _b64uDecode(s) {
+  s = s.replace(/-/g, '+').replace(/_/g, '/');
+  const pad = s.length % 4;
+  if (pad) s += '='.repeat(4 - pad);
+  return Uint8Array.from(atob(s), c => c.charCodeAt(0));
+}
+
+function _webauthnAvailable() {
+  return window.isSecureContext && typeof PublicKeyCredential !== 'undefined';
+}
+
+function resetLockTimer() {
+  clearTimeout(_lockTimer);
+  if (_lockEnabled === 'true' && _lockCredId) {
+    _lockTimer = setTimeout(lockApp, LOCK_IDLE_MS);
+  }
+}
+
+async function _registerCredential() {
+  const cred = await navigator.credentials.create({
+    publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      rp: { id: location.hostname, name: 'Trustmux' },
+      user: {
+        id: crypto.getRandomValues(new Uint8Array(16)),
+        name: 'user',
+        displayName: 'Trustmux User',
+      },
+      pubKeyCredParams: [
+        { type: 'public-key', alg: -7 },
+        { type: 'public-key', alg: -257 },
+      ],
+      authenticatorSelection: {
+        authenticatorAttachment: 'platform',
+        userVerification: 'required',
+        residentKey: 'discouraged',
+      },
+      timeout: 60000,
+    },
+  });
+  return _b64uEncode(cred.rawId);
+}
+
+async function _verifyCredential() {
+  await navigator.credentials.get({
+    publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      rpId: location.hostname,
+      allowCredentials: [{ id: _b64uDecode(_lockCredId), type: 'public-key' }],
+      userVerification: 'required',
+      timeout: 60000,
+    },
+  });
+}
+
+function lockApp() {
+  if (_isLocked) return;
+  _isLocked = true;
+  clearTimeout(_lockTimer);
+  document.getElementById('lock-overlay').style.display = 'flex';
+}
+
+function unlockApp() {
+  _isLocked = false;
+  document.getElementById('lock-overlay').style.display = 'none';
+  resetLockTimer();
+}
+
+function disableLock() {
+  _lockEnabled = 'false';
+  _lockCredId  = null;
+  localStorage.setItem('lock-enabled', 'false');
+  localStorage.removeItem('lock-cred-id');
+  clearTimeout(_lockTimer);
+  unlockApp();
+}
+
+function maybeOfferBiometric() {
+  if (!_webauthnAvailable()) return;
+  if (_lockEnabled !== null) return;
+  if (_skipThisSession) return;
+  document.getElementById('bio-setup-overlay').style.display = 'flex';
+}
+
+// Activity events reset the idle lock timer
+['touchstart', 'keydown', 'mousedown'].forEach(ev =>
+  document.addEventListener(ev, () => {
+    if (_lockEnabled === 'true' && !_isLocked) resetLockTimer();
+  }, { passive: true })
+);
+
+// Lock when app returns from background (if gone > LOCK_HIDDEN_MS)
+document.addEventListener('visibilitychange', () => {
+  if (_lockEnabled !== 'true') return;
+  if (document.hidden) {
+    _hiddenAt = Date.now();
+  } else {
+    if (_hiddenAt && Date.now() - _hiddenAt >= LOCK_HIDDEN_MS) lockApp();
+    _hiddenAt = 0;
+  }
+});
+
 // ── DOM refs ───────────────────────────────────────────────────────────────
 const pairOverlay   = document.getElementById('pair-overlay');
 const pairCodeInput = document.getElementById('pair-code');
@@ -521,6 +641,8 @@ async function submitPair() {
       applyHostname();
       connect();
       startStatusPolling();
+      maybeOfferBiometric();
+      resetLockTimer();
     } else {
       pairError.textContent = data.error ?? 'Pairing failed.';
       pairCodeInput.value = '';
@@ -599,6 +721,50 @@ async function applyHostname() {
   } catch { /* ignore */ }
 }
 
+// ── biometric button wiring ───────────────────────────────────────────────
+
+document.getElementById('bio-enable-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('bio-enable-btn');
+  btn.disabled = true;
+  try {
+    const credId = await _registerCredential();
+    _lockCredId  = credId;
+    _lockEnabled = 'true';
+    localStorage.setItem('lock-enabled', 'true');
+    localStorage.setItem('lock-cred-id', credId);
+    document.getElementById('bio-setup-overlay').style.display = 'none';
+    resetLockTimer();
+  } catch {
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('bio-skip-btn').addEventListener('click', () => {
+  _skipThisSession = true;
+  document.getElementById('bio-setup-overlay').style.display = 'none';
+});
+
+document.getElementById('bio-never-btn').addEventListener('click', () => {
+  _lockEnabled = 'false';
+  localStorage.setItem('lock-enabled', 'false');
+  document.getElementById('bio-setup-overlay').style.display = 'none';
+});
+
+document.getElementById('lock-unlock-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('lock-unlock-btn');
+  btn.disabled = true;
+  try {
+    await _verifyCredential();
+    unlockApp();
+  } catch {
+    // stay locked — user dismissed or biometric failed
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('lock-disable-btn').addEventListener('click', disableLock);
+
 // ── init: check auth, then connect or show pair screen ────────────────────
 async function init() {
   setStatus('connecting…', 'connecting');
@@ -611,6 +777,12 @@ async function init() {
       connect();
       startStatusPolling();
       loadMachines();
+      if (_lockEnabled === 'true' && _lockCredId) {
+        lockApp();
+      } else {
+        maybeOfferBiometric();
+        resetLockTimer();
+      }
     } else {
       showPairScreen();
     }

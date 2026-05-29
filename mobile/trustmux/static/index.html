@@ -245,6 +245,52 @@
     }
     #pair-btn:disabled { opacity: 0.45; cursor: default; }
     #pair-btn:active:not(:disabled) { filter: brightness(0.85); }
+
+    /* ── biometric setup + lock screen ── */
+    #bio-setup-overlay, #lock-overlay {
+      position: fixed; inset: 0;
+      background: rgba(10,10,10,0.97);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #bio-setup-overlay { z-index: 150; }
+    #lock-overlay      { z-index: 500; }
+    #bio-setup-box, #lock-box {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 14px; padding: 32px 26px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; max-width: 300px; width: 88%;
+      text-align: center;
+    }
+    #bio-setup-box h2, #lock-box h2 {
+      font-size: 18px; color: var(--accent); letter-spacing: 2px;
+    }
+    #bio-setup-msg {
+      color: var(--dim); font-size: 12px; line-height: 1.6;
+    }
+    #lock-icon { font-size: 38px; line-height: 1; }
+    #bio-enable-btn, #lock-unlock-btn {
+      background: var(--accent); color: #fff; border: none;
+      border-radius: 8px; padding: 11px 0; width: 100%;
+      font-size: 15px; font-family: var(--font); cursor: pointer;
+    }
+    #bio-enable-btn:disabled, #lock-unlock-btn:disabled {
+      opacity: 0.45; cursor: default;
+    }
+    #bio-enable-btn:active:not(:disabled),
+    #lock-unlock-btn:active:not(:disabled) { filter: brightness(0.85); }
+    #bio-skip-btn {
+      background: transparent; color: var(--dim);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 9px 0; width: 100%;
+      font-size: 13px; font-family: var(--font); cursor: pointer;
+    }
+    #bio-skip-btn:active { background: var(--bg3); }
+    #bio-never-btn, #lock-disable-btn {
+      background: transparent; color: var(--dim); border: none;
+      font-size: 12px; font-family: var(--font);
+      cursor: pointer; padding: 4px 0;
+    }
+    #bio-never-btn:active, #lock-disable-btn:active { color: var(--text); }
   </style>
 </head>
 <body>
@@ -262,6 +308,29 @@
            spellcheck="false" maxlength="7">
     <p id="pair-error"></p>
     <button id="pair-btn">Pair device</button>
+  </div>
+</div>
+
+<!-- ── biometric setup prompt (shown once after pairing) ── -->
+<div id="bio-setup-overlay" style="display:none">
+  <div id="bio-setup-box">
+    <img src="/trustmux.svg" style="height:44px;width:auto;opacity:0.9;" alt="Trustmux">
+    <h2>Lock Trustmux?</h2>
+    <p id="bio-setup-msg">Require fingerprint, face, or PIN to unlock when you return to the app. Keeps your terminal sessions safe if someone picks up your phone.</p>
+    <button id="bio-enable-btn">Enable lock</button>
+    <button id="bio-skip-btn">Not now</button>
+    <button id="bio-never-btn">Never ask again</button>
+  </div>
+</div>
+
+<!-- ── lock screen ── -->
+<div id="lock-overlay" style="display:none">
+  <div id="lock-box">
+    <img src="/trustmux.svg" style="height:44px;width:auto;opacity:0.5;filter:grayscale(1);" alt="Trustmux">
+    <div id="lock-icon">&#x1F512;</div>
+    <h2>Locked</h2>
+    <button id="lock-unlock-btn">Unlock</button>
+    <button id="lock-disable-btn">Disable lock</button>
   </div>
 </div>
 

@@ -1,5 +1,15 @@
 byobu (7.3) UNRELEASED; urgency=medium
 
+  * mobile/trustmux/static/app.js, mobile/trustmux/static/index.html:
+    - add optional biometric/PIN re-authentication lock to the Trustmux PWA;
+      uses the WebAuthn platform authenticator API (fingerprint, face unlock,
+      or device PIN as fallback) to lock the app after 5 minutes of inactivity
+      or 30 seconds of being backgrounded; on first launch after pairing, the
+      user is offered to enable the lock (can choose Enable, Not now, or Never
+      ask again); if enabled, the app locks on cold start and requires biometric
+      or PIN to unlock; a Disable lock option is available from the lock screen
+      itself; requires HTTPS (WebAuthn spec requirement)
+
   * usr/share/byobu/profiles/bashrc:
     - fix exit code always showing 0 in the PS1 prompt status indicator;
       byobu_prompt_status() was reading $? inside PS1 expansion, but
