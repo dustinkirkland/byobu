@@ -347,14 +347,14 @@ apt-get install -y --no-install-recommends \
   build-essential dpkg-dev debhelper dh-python \
   gettext-base automake autoconf \
   python3 python3-all python3-tornado \
-  devscripts bc ca-certificates distro-info 2>&1 | tail -5
+  devscripts bc ca-certificates distro-info git 2>&1 | tail -5
 
 SERIES=$(ubuntu-distro-info --supported | tr "\n" " ")
 echo "Building for: $DEBFULLNAME <$DEBEMAIL>"
 echo "Series: $SERIES"
 
-STAGING=$(mktemp -d)
-cp -a /src "$STAGING/src"
+SRCDIR=$(mktemp -d)
+git -C /src archive --format=tar HEAD | tar -x -C "$SRCDIR" -f -
 
 for CODENAME in $SERIES; do
   PPA_VER="${PPA_BASE}~${CODENAME}1"
@@ -362,7 +362,7 @@ for CODENAME in $SERIES; do
   echo "=== Building $PPA_VER ==="
 
   BUILDDIR=$(mktemp -d)
-  cp -a "$STAGING/src" "$BUILDDIR/${PKG}-${PPA_VER}"
+  cp -a "$SRCDIR" "$BUILDDIR/${PKG}-${PPA_VER}"
   cd "$BUILDDIR/${PKG}-${PPA_VER}"
 
   echo "3.0 (native)" > debian/source/format
@@ -385,7 +385,7 @@ for CODENAME in $SERIES; do
   rm -rf "$BUILDDIR"
 done
 
-rm -rf "$STAGING"
+rm -rf "$SRCDIR"
 echo ""
 echo "=== All series built ==="
 ls -lh /out/
@@ -420,13 +420,13 @@ apt-get install -y --no-install-recommends \
   build-essential dpkg-dev debhelper dh-python \
   gettext-base automake autoconf \
   python3 python3-all python3-tornado \
-  devscripts bc ca-certificates 2>&1 | tail -5
+  devscripts bc ca-certificates git 2>&1 | tail -5
 
-STAGING=$(mktemp -d)
-cp -a /src "$STAGING/src"
+SRCDIR=$(mktemp -d)
+git -C /src archive --format=tar HEAD | tar -x -C "$SRCDIR" -f -
 
 BUILDDIR=$(mktemp -d)
-cp -a "$STAGING/src" "$BUILDDIR/${PKG}-${DEB_EXP_VERSION}"
+cp -a "$SRCDIR" "$BUILDDIR/${PKG}-${DEB_EXP_VERSION}"
 cd "$BUILDDIR/${PKG}-${DEB_EXP_VERSION}"
 
 echo "3.0 (native)" > debian/source/format
