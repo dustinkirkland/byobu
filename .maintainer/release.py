@@ -198,61 +198,61 @@ def determine_versions(mode):
     print(f"  Series:       {' '.join(series)}")
     print(f"  Devel series: {devel_series}")
 
-    # Check Launchpad for PPA versions that would block our upload.
-    # For each existing version under this base_ver, derive the upload target
-    # for that series and use dpkg --compare-versions for authoritative ordering.
-    print("  Checking Launchpad for existing PPA slot…")
-    try:
-        base_url = (
-            "https://api.launchpad.net/1.0/~byobu/+archive/ubuntu/ppa"
-            "?ws.op=getPublishedSources&source_name=byobu&status="
-        )
-        all_entries = []
-        for status in ("Published", "Pending"):
-            d = json.loads(urllib.request.urlopen(base_url + status).read())
-            all_entries += d.get("entries", [])
-
-        def dpkg_ge(v1, v2):
-            return subprocess.run(
-                ["dpkg", "--compare-versions", v1, "ge", v2],
-                check=False, capture_output=True,
-            ).returncode == 0
-
-        # For each existing PPA version under base_ver, compute what our
-        # per-series upload target would be and check if existing >= target.
-        # This handles exact collisions, cross-scheme RC conflicts, and
-        # RC-vs-final ordering in one authoritative pass.
-        conflicting = []
-        for e in all_entries:
-            ev = e["source_package_version"]
-            if not ev.startswith(f"{base_ver}~"):
-                continue
-            m = re.search(r"([a-z]+)\d+$", ev)
-            if not m:
-                continue
-            target = f"{ppa_base}~{m.group(1)}1"
-            if dpkg_ge(ev, target):
-                conflicting.append(ev)
-
-        if conflicting:
-            die(
-                f"PPA already has versions >= {ppa_base}~{{series}}1:\n"
-                f"  {' '.join(conflicting)}\n"
-                f"  Delete at https://launchpad.net/~byobu/+archive/ubuntu/ppa\n"
-                f"  then re-run."
+    # Final releases do not upload to the PPA; skip the slot check entirely.
+    if mode == "rc":
+        print("  Checking Launchpad for existing PPA slot…")
+        try:
+            base_url = (
+                "https://api.launchpad.net/1.0/~byobu/+archive/ubuntu/ppa"
+                "?ws.op=getPublishedSources&source_name=byobu&status="
             )
+            all_entries = []
+            for status in ("Published", "Pending"):
+                d = json.loads(urllib.request.urlopen(base_url + status).read())
+                all_entries += d.get("entries", [])
 
-        print(f"  PPA slot {ppa_base}~{{series}}1 is free.")
-    except urllib.error.URLError as e:
-        print(f"  (Launchpad check skipped — network error: {e})")
+            def dpkg_ge(v1, v2):
+                return subprocess.run(
+                    ["dpkg", "--compare-versions", v1, "ge", v2],
+                    check=False, capture_output=True,
+                ).returncode == 0
+
+            # For each existing PPA version under base_ver, compute what our
+            # per-series upload target would be and check if existing >= target.
+            # This handles exact collisions and cross-scheme RC conflicts in one
+            # authoritative pass.
+            conflicting = []
+            for e in all_entries:
+                ev = e["source_package_version"]
+                if not ev.startswith(f"{base_ver}~"):
+                    continue
+                m = re.search(r"([a-z]+)\d+$", ev)
+                if not m:
+                    continue
+                target = f"{ppa_base}~{m.group(1)}1"
+                if dpkg_ge(ev, target):
+                    conflicting.append(ev)
+
+            if conflicting:
+                die(
+                    f"PPA already has versions >= {ppa_base}~{{series}}1:\n"
+                    f"  {' '.join(conflicting)}\n"
+                    f"  Delete at https://launchpad.net/~byobu/+archive/ubuntu/ppa\n"
+                    f"  then re-run."
+                )
+
+            print(f"  PPA slot {ppa_base}~{{series}}1 is free.")
+        except urllib.error.URLError as e:
+            print(f"  (Launchpad check skipped — network error: {e})")
 
     # Output directory
     outdir = Path(f"/tmp/byobu-release-{ppa_base}")
     if outdir.exists():
         shutil.rmtree(outdir)
-    (outdir / "ppa").mkdir(parents=True)
-    (outdir / "debs").mkdir()
+    (outdir / "debs").mkdir(parents=True)
     (outdir / "debian").mkdir()
+    if mode == "rc":
+        (outdir / "ppa").mkdir()
     if mode == "final":
         (outdir / "ubuntu").mkdir()
     print(f"  Output dir:   {outdir}")
@@ -741,8 +741,7 @@ echo ""
 
 echo "── Step 1: GPG signing ─────────────────────────────────────────────"
 for f in "$BASE"/debian/*_source.changes \\
-         "$BASE"/ubuntu/*_source.changes \\
-         "$BASE"/ppa/*_source.changes; do
+         "$BASE"/ubuntu/*_source.changes; do
   [ -f "$f" ] || continue
   echo "  Signing: $f"
   debsign -k "$GPGKEY" "$f"
@@ -757,20 +756,7 @@ read -rp "  Upload to Ubuntu {v['devel_series']}? [y/N] " ans
   echo "  Skipped."
 echo ""
 
-echo "── Step 3: PPA ppa:byobu/ppa ────────────────────────────────────────"
-read -rp "  Upload all series to ppa:byobu/ppa? [y/N] " ans
-if [[ "$ans" =~ ^[Yy]$ ]]; then
-  for f in "$BASE"/ppa/*_source.changes; do
-    echo "  dput ppa:byobu/ppa $f"
-    dput ppa:byobu/ppa "$f"
-  done
-  echo "Done. Monitor: https://launchpad.net/~byobu/+archive/ubuntu/ppa"
-else
-  echo "  Skipped."
-fi
-echo ""
-
-echo "── Step 4: Debian unstable ──────────────────────────────────────────"
+echo "── Step 3: Debian unstable ──────────────────────────────────────────"
 read -rp "  Upload to Debian unstable (ftp-master)? [y/N] " ans
 [[ "$ans" =~ ^[Yy]$ ]] && \\
   dput ftp-master "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" || \\
@@ -791,13 +777,17 @@ def print_summary(v, mode):
     mode_label = "RC" if mode == "rc" else "Release"
     banner(f"{mode_label} complete: {v['pkg']} {v['ppa_base']}")
     deb_target = "experimental" if mode == "rc" else "unstable"
-    print(
-        f"\n  PyPI:  trustmux-v{v['pypi_version']} → GH Actions"
-        f"\n         https://github.com/dustinkirkland/byobu/actions"
-        f"\n  PPA:   ppa:byobu/ppa — {v['ppa_base']}~{{series}}1"
-        f"\n         https://launchpad.net/~byobu/+archive/ubuntu/ppa"
-        f"\n  Debian: byobu {v['deb_exp_version']} → {deb_target}"
-    )
+    lines = [
+        f"\n  PyPI:  trustmux-v{v['pypi_version']} → GH Actions",
+        f"         https://github.com/dustinkirkland/byobu/actions",
+    ]
+    if mode == "rc":
+        lines += [
+            f"  PPA:   ppa:byobu/ppa — {v['ppa_base']}~{{series}}1",
+            f"         https://launchpad.net/~byobu/+archive/ubuntu/ppa",
+        ]
+    lines.append(f"  Debian: byobu {v['deb_exp_version']} → {deb_target}")
+    print("\n".join(lines))
     if mode == "final":
         print(
             f"  Ubuntu: byobu {v['ubuntu_ver']} → {v['devel_series']}"
@@ -894,7 +884,8 @@ def main():
     confirm(f"Local .deb built and ready to test. Continue to tag trustmux-v{v['pypi_version']} on PyPI?")
     push_pypi_tag(v)
     run_smoke_test()
-    build_ppa_packages(v, identity)
+    if mode == "rc":
+        build_ppa_packages(v, identity)
     build_debian_source(v, identity, "experimental" if mode == "rc" else "unstable")
 
     if mode == "final":
