@@ -236,9 +236,7 @@ function send(obj) {
 function activePaneXYZ() {
   const list = flatPaneList();
   if (!currentPane || list.length === 0) return '-/-';
-  // Match by pane first, then by window (current pane may be a non-representative split pane)
-  let idx = list.findIndex(e => e.paneId === currentPane);
-  if (idx < 0) idx = list.findIndex(e => e.windowId === currentWindowId);
+  const idx = list.findIndex(e => e.paneId === currentPane);
   return idx < 0 ? '-/-' : `${idx + 1}/${list.length}`;
 }
 
@@ -373,15 +371,14 @@ btnKbdMode.addEventListener('click', () => {
   setTimeout(() => cmdInput.focus(), 50);
 });
 
-// ── pane list — one context per window (active/first live pane) ──────────
+// ── pane list — all live panes across all windows and sessions ────────────
 function flatPaneList() {
   const list = [];
   for (const s of sessions) {
     for (const w of (s.windows || [])) {
-      const live = (w.panes || []).filter(p => !p.dead);
-      if (!live.length) continue;
-      const rep = live.find(p => p.active) ?? live[0];
-      list.push({ sessionId: s.id, windowId: w.id, paneId: rep.id });
+      for (const p of (w.panes || [])) {
+        if (!p.dead) list.push({ sessionId: s.id, windowId: w.id, paneId: p.id });
+      }
     }
   }
   return list;
@@ -390,8 +387,7 @@ function flatPaneList() {
 function navigateRelative(delta) {
   const list = flatPaneList();
   if (list.length < 2) return;
-  let idx = list.findIndex(e => e.paneId === currentPane);
-  if (idx < 0) idx = list.findIndex(e => e.windowId === currentWindowId);
+  const idx = list.findIndex(e => e.paneId === currentPane);
   const next = list[((idx < 0 ? 0 : idx) + delta + list.length) % list.length];
   navigateTo(next.sessionId, next.windowId, next.paneId);
 }
