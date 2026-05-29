@@ -368,7 +368,7 @@ def build_local_debs(v):
 # ── phase 5: PPA source builds ────────────────────────────────────────────
 
 _PPA_SCRIPT = r"""
-set -e
+set -eo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -qq
@@ -436,13 +436,19 @@ def build_ppa_packages(v, identity):
         "-e", f"PPA_BASE={v['ppa_base']}",
         "ubuntu:noble", "bash", "-c", _PPA_SCRIPT,
     ])
-    print("  ✓ PPA source packages built")
+    changes = sorted((v["outdir"] / "ppa").glob("*.changes"))
+    if not changes:
+        die(f"PPA build produced no .changes files in {v['outdir']}/ppa/\n"
+            "  Check Docker output above for dpkg-buildpackage errors.")
+    print(f"  ✓ PPA source packages built ({len(changes)} series)")
+    for f in changes:
+        print(f"    {f.name}")
 
 
 # ── phase 5b/6b: Debian source build (experimental for RC, unstable for final) ──
 
 _DEB_SOURCE_SCRIPT = r"""
-set -e
+set -eo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -qq
@@ -491,13 +497,19 @@ def build_debian_source(v, identity, dist):
         "-e", f"DEB_DIST={dist}",
         "ubuntu:noble", "bash", "-c", _DEB_SOURCE_SCRIPT,
     ])
+    changes = sorted((v["outdir"] / "debian").glob("*.changes"))
+    if not changes:
+        die(f"Debian {dist} build produced no .changes files in {v['outdir']}/debian/\n"
+            "  Check Docker output above for dpkg-buildpackage errors.")
     print(f"  ✓ Debian {dist} source package built")
+    for f in changes:
+        print(f"    {f.name}")
 
 
 # ── phase 6c: Ubuntu dev series (final only) ─────────────────────────────
 
 _UBUNTU_SCRIPT = r"""
-set -e
+set -eo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -qq
@@ -559,7 +571,14 @@ def build_ubuntu_dev(v, identity):
         "-e", f"DEVEL_SERIES={v['devel_series']}",
         "ubuntu:noble", "bash", "-c", _UBUNTU_SCRIPT,
     ])
-    print(f"  ✓ Ubuntu {v['devel_series']} source package built")
+    changes = sorted((v["outdir"] / "ubuntu").glob("*.changes"))
+    if not changes:
+        die(f"Ubuntu {v['devel_series']} build produced no .changes files in {v['outdir']}/ubuntu/\n"
+            "  Check Docker output above for dpkg-buildpackage errors.")
+    print(f"  ✓ Ubuntu {v['devel_series']} source package built: {v['ubuntu_ver']}")
+    for f in changes:
+        print(f"    {f.name}")
+    print(f"    Output dir: {v['outdir']}/ubuntu/")
 
 
 # ── phase 6d: Homebrew (final only) ──────────────────────────────────────
@@ -785,6 +804,7 @@ def print_summary(v, mode):
     if mode == "final":
         print(
             f"  Ubuntu: byobu {v['ubuntu_ver']} → {v['devel_series']}"
+            f"\n          (files in {outdir}/ubuntu/)"
             f"\n  Homebrew: brew upgrade dustinkirkland/trustmux/trustmux"
         )
     debs = sorted((outdir / "debs").glob("*.deb"))
