@@ -344,26 +344,19 @@
   </div>
 </div>
 
-<!-- ── double-tap context menu (rename only) ── -->
+<!-- ── rename overlay (tap name in header) ── -->
 <div id="ctx-overlay" style="display:none">
   <div id="ctx-box">
-    <div id="ctx-main">
-      <button class="ctx-btn" id="ctx-rename">✎  Rename</button>
-      <div class="ctx-sep"></div>
-      <button class="ctx-btn ctx-dim" id="ctx-cancel">Cancel</button>
+    <p id="ctx-rename-label" style="padding:12px 16px;color:var(--dim);font-size:13px;font-family:var(--font);text-align:center"></p>
+    <div style="padding:0 10px 6px">
+      <input id="ctx-rename-input" type="text"
+             autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+             style="width:100%;background:var(--bg3);color:var(--text);border:1px solid var(--border);
+                    border-radius:6px;padding:10px 12px;font-size:14px;font-family:var(--font);outline:none">
     </div>
-    <div id="ctx-rename-form" style="display:none">
-      <p id="ctx-rename-label" style="padding:12px 16px;color:var(--dim);font-size:13px;font-family:var(--font);text-align:center"></p>
-      <div style="padding:0 10px 6px">
-        <input id="ctx-rename-input" type="text"
-               autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
-               style="width:100%;background:var(--bg3);color:var(--text);border:1px solid var(--border);
-                      border-radius:6px;padding:10px 12px;font-size:14px;font-family:var(--font);outline:none">
-      </div>
-      <button class="ctx-btn" id="ctx-rename-confirm" style="color:var(--accent)">Rename</button>
-      <div class="ctx-sep"></div>
-      <button class="ctx-btn ctx-dim" id="ctx-rename-back">← Back</button>
-    </div>
+    <button class="ctx-btn" id="ctx-rename-confirm" style="color:var(--accent)">Rename</button>
+    <div class="ctx-sep"></div>
+    <button class="ctx-btn ctx-dim" id="ctx-cancel">Cancel</button>
   </div>
 </div>
 

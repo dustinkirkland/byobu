@@ -151,9 +151,6 @@ const headerClock      = document.getElementById('header-clock');
 const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
 const ctxOverlay       = document.getElementById('ctx-overlay');
-const ctxMain          = document.getElementById('ctx-main');
-const ctxRename        = document.getElementById('ctx-rename');
-const ctxRenameForm    = document.getElementById('ctx-rename-form');
 const ctxRenameLabel   = document.getElementById('ctx-rename-label');
 const ctxRenameInput   = document.getElementById('ctx-rename-input');
 const ctxCancel        = document.getElementById('ctx-cancel');
@@ -239,7 +236,9 @@ function send(obj) {
 function activePaneXYZ() {
   const list = flatPaneList();
   if (!currentPane || list.length === 0) return '-/-';
-  const idx = list.findIndex(e => e.paneId === currentPane);
+  // Match by pane first, then by window (current pane may be a non-representative split pane)
+  let idx = list.findIndex(e => e.paneId === currentPane);
+  if (idx < 0) idx = list.findIndex(e => e.windowId === currentWindowId);
   return idx < 0 ? '-/-' : `${idx}/${list.length}`;
 }
 
@@ -311,11 +310,11 @@ function navigateTo(sessionId, windowId, paneId) {
   updateContextName();
 }
 
-// ── context name (user-defined label for the current pane) ────────────────
+// ── context name (custom label or command fallback) ───────────────────────
 function updateContextName() {
   if (!currentPane) { ctxName.textContent = ''; return; }
-  const name = getPaneName(currentPane, '');
-  ctxName.textContent = name;
+  const custom = getPaneName(currentPane, '');
+  ctxName.textContent = custom || currentPaneCommand() || 'shell';
 }
 
 // ── output rendering ───────────────────────────────────────────────────────
@@ -374,14 +373,15 @@ btnKbdMode.addEventListener('click', () => {
   setTimeout(() => cmdInput.focus(), 50);
 });
 
-// ── pane list (depth-first: panes → windows → sessions) ──────────────────
+// ── pane list — one context per window (active/first live pane) ──────────
 function flatPaneList() {
   const list = [];
   for (const s of sessions) {
     for (const w of (s.windows || [])) {
-      for (const p of (w.panes || [])) {
-        if (!p.dead) list.push({ sessionId: s.id, windowId: w.id, paneId: p.id });
-      }
+      const live = (w.panes || []).filter(p => !p.dead);
+      if (!live.length) continue;
+      const rep = live.find(p => p.active) ?? live[0];
+      list.push({ sessionId: s.id, windowId: w.id, paneId: rep.id });
     }
   }
   return list;
@@ -390,29 +390,23 @@ function flatPaneList() {
 function navigateRelative(delta) {
   const list = flatPaneList();
   if (list.length < 2) return;
-  const idx = list.findIndex(e => e.paneId === currentPane);
+  let idx = list.findIndex(e => e.paneId === currentPane);
+  if (idx < 0) idx = list.findIndex(e => e.windowId === currentWindowId);
   const next = list[((idx < 0 ? 0 : idx) + delta + list.length) % list.length];
   navigateTo(next.sessionId, next.windowId, next.paneId);
 }
 
-// ── touch handler: double-tap → new window; long-press → rename menu ──────
+// ── touch handler: double-tap → new window ────────────────────────────────
 let _touchX = 0, _touchY = 0;
 let _lastTap = 0;
-let _longPress = null;
 let _touchDoubleTapFired = false; // suppress synthetic dblclick after touch double-tap
 
 output.addEventListener('touchstart', e => {
   _touchX = e.touches[0].clientX;
   _touchY = e.touches[0].clientY;
-  _longPress = setTimeout(() => { _longPress = null; _lastTap = 0; showCtxMenu(); }, 600);
-}, { passive: true });
-
-output.addEventListener('touchmove', () => {
-  if (_longPress) { clearTimeout(_longPress); _longPress = null; }
 }, { passive: true });
 
 output.addEventListener('touchend', e => {
-  if (_longPress) { clearTimeout(_longPress); _longPress = null; }
   const dx = e.changedTouches[0].clientX - _touchX;
   const dy = e.changedTouches[0].clientY - _touchY;
   if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
@@ -435,49 +429,53 @@ output.addEventListener('dblclick', () => {
 btnPrev.addEventListener('click', () => navigateRelative(-1));
 btnNext.addEventListener('click', () => navigateRelative(1));
 
-// ── rename menu (long-press) ──────────────────────────────────────────────
-let _pendingRenameId = null; // pane ID being renamed
+// ── rename overlay (tap name label in header) ─────────────────────────────
+let _pendingRenameId = null;
 
-function showCtxMenu() {
-  if (!currentPane) return;
-  ctxMain.style.display = '';
-  ctxRenameForm.style.display = 'none';
-  ctxOverlay.style.display = 'flex';
+function currentPaneCommand() {
+  if (!currentPane) return '';
+  for (const s of sessions) {
+    for (const w of (s.windows || [])) {
+      for (const p of (w.panes || [])) {
+        if (p.id === currentPane) return p.command || '';
+      }
+    }
+  }
+  return '';
 }
 
-function hideCtxMenu() {
+function showRenameOverlay() {
+  if (!currentPane) return;
+  _pendingRenameId = currentPane;
+  const custom = getPaneName(currentPane, '');
+  const cmd = currentPaneCommand();
+  ctxRenameLabel.textContent = custom
+    ? `Rename "${custom}":`
+    : `Name this context (${cmd || 'shell'}):`;
+  ctxRenameInput.value = custom;
+  ctxOverlay.style.display = 'flex';
+  setTimeout(() => { ctxRenameInput.focus(); ctxRenameInput.select(); }, 80);
+}
+
+function hideRenameOverlay() {
   ctxOverlay.style.display = 'none';
   _pendingRenameId = null;
 }
 
-ctxCancel.addEventListener('click', hideCtxMenu);
-ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtxMenu(); });
-
-ctxRename.addEventListener('click', () => {
-  _pendingRenameId = currentPane;
-  const idx = flatPaneList().findIndex(e => e.paneId === currentPane);
-  ctxRenameLabel.textContent = `Name for context ${idx < 0 ? '' : idx + '/'}${flatPaneList().length}:`;
-  ctxRenameInput.value = getPaneName(currentPane, '');
-  ctxMain.style.display = 'none';
-  ctxRenameForm.style.display = '';
-  setTimeout(() => { ctxRenameInput.focus(); ctxRenameInput.select(); }, 80);
-});
+ctxName.addEventListener('click', showRenameOverlay);
+ctxCancel.addEventListener('click', hideRenameOverlay);
+ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideRenameOverlay(); });
 
 function submitRename() {
   if (!_pendingRenameId) return;
   const name = ctxRenameInput.value.trim();
   setPaneName(_pendingRenameId, name);
-  hideCtxMenu();
+  hideRenameOverlay();
   updateContextName();
 }
 
 document.getElementById('ctx-rename-confirm').addEventListener('click', submitRename);
 ctxRenameInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitRename(); });
-document.getElementById('ctx-rename-back').addEventListener('click', () => {
-  ctxRenameForm.style.display = 'none';
-  ctxMain.style.display = '';
-  _pendingRenameId = null;
-});
 
 // ── create overlay (+ button) ─────────────────────────────────────────────
 let _createType = null; // 'pane' | 'window' | 'session'
