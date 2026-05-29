@@ -1,4 +1,4 @@
-byobu (7.2) UNRELEASED; urgency=medium
+byobu (7.3) UNRELEASED; urgency=medium
 
   * usr/share/byobu/profiles/bashrc:
     - fix exit code always showing 0 in the PS1 prompt status indicator;
@@ -68,8 +68,9 @@ byobu (7.2) UNRELEASED; urgency=medium
       Debian and Ubuntu architectures; not a real portability concern
       Closes: #735178, #772221
   * Open 7.2 for development
+  * Open 7.3 for development
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 29 May 2026 08:44:38 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 29 May 2026 13:56:30 -0500
 
 byobu (7.1) experimental; urgency=medium
 
