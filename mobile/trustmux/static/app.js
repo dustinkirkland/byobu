@@ -93,8 +93,9 @@ function connect() {
       if (msg.new_session) forcedSessionId = msg.new_session;
       rebuildPaneTree();
     } else if (msg.type === 'snapshot') {
-      renderOutput(msg.data, /*scroll=*/true);
+      if (msg.pane_id === currentPane) renderOutput(msg.data, /*scroll=*/true);
     } else if (msg.type === 'update') {
+      if (msg.pane_id !== currentPane) return;
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
       renderOutput(msg.data, atBottom);
     } else if (msg.type === 'error') {
@@ -145,13 +146,16 @@ function rebuildPaneTree() {
   }
 
   const allVals = new Set([...selPaneTree.options].map(o => o.value).filter(Boolean));
-  if (prev && allVals.has(prev)) {
-    selPaneTree.value = prev;
-  } else if (autoTarget) {
-    selPaneTree.value = autoTarget;
-  }
+  const target = (prev && allVals.has(prev)) ? prev : (autoTarget || '');
+  if (target) selPaneTree.value = target;
 
-  onPaneTreeChange();
+  // Only re-subscribe if the effective pane actually changed.  Using `target`
+  // (computed explicitly) rather than re-reading selPaneTree.value avoids a
+  // browser quirk where setting .value for an <optgroup> option doesn't always
+  // take effect before the next synchronous read, which would incorrectly
+  // reset currentPane to null and then jump to autoTarget on the next update.
+  const [,, targetPaneId] = target.split('|');
+  if ((targetPaneId || null) !== currentPane) onPaneTreeChange();
 }
 
 function onPaneTreeChange() {
