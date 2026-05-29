@@ -18,7 +18,7 @@ RC phases:
     7  Write sign-and-upload.sh
 
 Final adds:
-    6b Debian experimental source build (Docker) — already done in RC, rerun for final
+    6b Debian unstable source build (Docker) — RC uses experimental, final promotes to unstable
     6c Ubuntu dev-series source build (Docker)
     6d Homebrew formula update
     GitHub release (non-prerelease, both byobu and trustmux tags)
@@ -166,7 +166,7 @@ def determine_versions(mode):
         ubuntu_ver = f"{base_ver}-0ubuntu1"
         print(f"  PyPI version: {pypi_version}")
         print(f"  PPA base:     {ppa_base}~{{series}}1")
-        print(f"  Debian exp:   {deb_exp_version}")
+        print(f"  Debian unstable: {deb_exp_version}")
         print(f"  Ubuntu:       {ubuntu_ver}")
 
     # Supported Ubuntu series
@@ -439,9 +439,9 @@ def build_ppa_packages(v, identity):
     print("  ✓ PPA source packages built")
 
 
-# ── phase 6b: Debian experimental (final only) ───────────────────────────
+# ── phase 5b/6b: Debian source build (experimental for RC, unstable for final) ──
 
-_DEB_EXP_SCRIPT = r"""
+_DEB_SOURCE_SCRIPT = r"""
 set -e
 export DEBIAN_FRONTEND=noninteractive
 
@@ -462,9 +462,9 @@ cd "$BUILDDIR/${PKG}-${DEB_EXP_VERSION}"
 
 echo "3.0 (native)" > debian/source/format
 
-# Set versioned experimental entry; change UNRELEASED → experimental
+# Set versioned entry; change UNRELEASED → target distribution
 sed -i "1s/^${PKG} ([^)]*)/${PKG} (${DEB_EXP_VERSION})/" debian/changelog
-sed -i "1s/) UNRELEASED;/) experimental;/" debian/changelog
+sed -i "1s/) UNRELEASED;/) ${DEB_DIST};/" debian/changelog
 
 dpkg-buildpackage -S -us -uc -d 2>&1 | tail -3
 
@@ -472,13 +472,13 @@ cp -v "$BUILDDIR"/*.changes "$BUILDDIR"/*.dsc \
       "$BUILDDIR"/*.tar.* "$BUILDDIR"/*.buildinfo /out/ 2>/dev/null || true
 chown -R $(stat -c '%u:%g' /out) /out/
 
-echo "=== Debian experimental source package built ==="
+echo "=== Debian ${DEB_DIST} source package built ==="
 ls -lh /out/
 """
 
 
-def build_debian_experimental(v, identity):
-    section("Phase 6b: Debian experimental source build (Docker)")
+def build_debian_source(v, identity, dist):
+    section(f"Phase 5b: Debian {dist} source build (Docker)")
     run([
         "docker", "run", "--rm",
         "-v", f"{BYOBU_SRC}:/src:ro",
@@ -488,9 +488,10 @@ def build_debian_experimental(v, identity):
         "-e", f"PKG={v['pkg']}",
         "-e", f"BASE_VER={v['base_ver']}",
         "-e", f"DEB_EXP_VERSION={v['deb_exp_version']}",
-        "ubuntu:noble", "bash", "-c", _DEB_EXP_SCRIPT,
+        "-e", f"DEB_DIST={dist}",
+        "ubuntu:noble", "bash", "-c", _DEB_SOURCE_SCRIPT,
     ])
-    print("  ✓ Debian experimental source package built")
+    print(f"  ✓ Debian {dist} source package built")
 
 
 # ── phase 6c: Ubuntu dev series (final only) ─────────────────────────────
@@ -753,8 +754,8 @@ else
 fi
 echo ""
 
-echo "── Step 4: Debian experimental ─────────────────────────────────────"
-read -rp "  Upload to Debian experimental (ftp-master)? [y/N] " ans
+echo "── Step 4: Debian unstable ──────────────────────────────────────────"
+read -rp "  Upload to Debian unstable (ftp-master)? [y/N] " ans
 [[ "$ans" =~ ^[Yy]$ ]] && \\
   dput ftp-master "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" || \\
   echo "  Skipped."
@@ -773,17 +774,17 @@ def print_summary(v, mode):
     outdir = v["outdir"]
     mode_label = "RC" if mode == "rc" else "Release"
     banner(f"{mode_label} complete: {v['pkg']} {v['ppa_base']}")
+    deb_target = "experimental" if mode == "rc" else "unstable"
     print(
         f"\n  PyPI:  trustmux-v{v['pypi_version']} → GH Actions"
         f"\n         https://github.com/dustinkirkland/byobu/actions"
         f"\n  PPA:   ppa:byobu/ppa — {v['ppa_base']}~{{series}}1"
         f"\n         https://launchpad.net/~byobu/+archive/ubuntu/ppa"
-        f"\n  Debian: byobu {v['deb_exp_version']} → experimental"
+        f"\n  Debian: byobu {v['deb_exp_version']} → {deb_target}"
     )
     if mode == "final":
         print(
-            f"  Debian: byobu {v['deb_exp_version']} → experimental"
-            f"\n  Ubuntu: byobu {v['ubuntu_ver']} → {v['devel_series']}"
+            f"  Ubuntu: byobu {v['ubuntu_ver']} → {v['devel_series']}"
             f"\n  Homebrew: brew upgrade dustinkirkland/trustmux/trustmux"
         )
     debs = sorted((outdir / "debs").glob("*.deb"))
@@ -877,7 +878,7 @@ def main():
     push_pypi_tag(v)
     run_smoke_test()
     build_ppa_packages(v, identity)
-    build_debian_experimental(v, identity)
+    build_debian_source(v, identity, "experimental" if mode == "rc" else "unstable")
 
     if mode == "final":
         build_ubuntu_dev(v, identity)
