@@ -32,6 +32,11 @@ const ctxMain          = document.getElementById('ctx-main');
 const ctxConfirm       = document.getElementById('ctx-confirm');
 const ctxConfirmMsg    = document.getElementById('ctx-confirm-msg');
 const ctxConfirmDetail = document.getElementById('ctx-confirm-detail');
+const ctxRenameWindow  = document.getElementById('ctx-rename-window');
+const ctxRenameSession = document.getElementById('ctx-rename-session');
+const ctxRenameForm    = document.getElementById('ctx-rename-form');
+const ctxRenameLabel   = document.getElementById('ctx-rename-label');
+const ctxRenameInput   = document.getElementById('ctx-rename-input');
 const ctxKillPane      = document.getElementById('ctx-kill-pane');
 const ctxKillWindow    = document.getElementById('ctx-kill-window');
 const ctxKillSession   = document.getElementById('ctx-kill-session');
@@ -252,7 +257,7 @@ output.addEventListener('touchstart', e => {
 output.addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - _touchX;
   const dy = e.changedTouches[0].clientY - _touchY;
-  if (Math.abs(dx) >= 60 && Math.abs(dx) >= Math.abs(dy) * 2) {
+  if (Math.abs(dx) >= 90 && Math.abs(dx) >= Math.abs(dy) * 3) {
     navigateRelative(dx < 0 ? 1 : -1);
     _lastTap = 0;
     return;
@@ -264,8 +269,9 @@ output.addEventListener('touchend', e => {
   }
 }, { passive: true });
 
-// ── kill menu (double-tap) ────────────────────────────────────────────────
-let _pendingKill = null; // { type, id }
+// ── rename / kill menu (double-tap) ──────────────────────────────────────
+let _pendingKill = null;   // { type, id }
+let _pendingRename = null; // { type, id }
 
 function showCtxMenu() {
   if (!selPaneTree.value) return;
@@ -275,16 +281,23 @@ function showCtxMenu() {
   const pane = win?.panes.find(p => p.id === paneId);
   const sNum = sessionId.replace('$', '');
 
+  ctxRenameWindow.textContent  = `✎  Rename window W${win?.index ?? '?'} · ${win?.name ?? '?'}`;
+  ctxRenameSession.textContent = `✎  Rename session S${sNum} · ${sess?.name ?? '?'}`;
   ctxKillPane.textContent    = `✕  Kill pane P${pane?.index ?? '?'} · ${pane?.command || 'dead'}`;
   ctxKillWindow.textContent  = `✕  Kill window W${win?.index ?? '?'} · ${win?.name ?? '?'} (${win?.panes.length ?? '?'} pane${(win?.panes.length ?? 0) !== 1 ? 's' : ''})`;
   ctxKillSession.textContent = `✕  Kill session S${sNum} · ${sess?.name ?? '?'} (${sess?.windows.length ?? '?'} window${(sess?.windows.length ?? 0) !== 1 ? 's' : ''})`;
 
   ctxMain.style.display = '';
   ctxConfirm.style.display = 'none';
+  ctxRenameForm.style.display = 'none';
   ctxOverlay.style.display = 'flex';
 }
 
-function hideCtxMenu() { ctxOverlay.style.display = 'none'; _pendingKill = null; }
+function hideCtxMenu() {
+  ctxOverlay.style.display = 'none';
+  _pendingKill = null;
+  _pendingRename = null;
+}
 
 function showKillConfirm(type, id, msg, detail) {
   _pendingKill = { type, id };
@@ -338,6 +351,47 @@ ctxConfirmNo.addEventListener('click', () => {
   ctxConfirm.style.display = 'none';
   ctxMain.style.display = '';
   _pendingKill = null;
+});
+
+ctxRenameWindow.addEventListener('click', () => {
+  const [, windowId] = selPaneTree.value.split('|');
+  const win = sessions.flatMap(s => s.windows).find(w => w.id === windowId);
+  _pendingRename = { type: 'rename_window', id: windowId };
+  ctxRenameLabel.textContent = `Rename window W${win?.index ?? '?'}:`;
+  ctxRenameInput.value = win?.name ?? '';
+  ctxMain.style.display = 'none';
+  ctxRenameForm.style.display = '';
+  setTimeout(() => { ctxRenameInput.focus(); ctxRenameInput.select(); }, 80);
+});
+
+ctxRenameSession.addEventListener('click', () => {
+  const [sessionId] = selPaneTree.value.split('|');
+  const sess = sessions.find(s => s.id === sessionId);
+  const sNum = sessionId.replace('$', '');
+  _pendingRename = { type: 'rename_session', id: sessionId };
+  ctxRenameLabel.textContent = `Rename session S${sNum}:`;
+  ctxRenameInput.value = sess?.name ?? '';
+  ctxMain.style.display = 'none';
+  ctxRenameForm.style.display = '';
+  setTimeout(() => { ctxRenameInput.focus(); ctxRenameInput.select(); }, 80);
+});
+
+function submitRename() {
+  if (!_pendingRename) return;
+  const name = ctxRenameInput.value.trim();
+  if (!name) { ctxRenameInput.focus(); return; }
+  const { type, id } = _pendingRename;
+  if (type === 'rename_window')  send({ type, window_id:  id, name });
+  else if (type === 'rename_session') send({ type, session_id: id, name });
+  hideCtxMenu();
+}
+
+document.getElementById('ctx-rename-confirm').addEventListener('click', submitRename);
+ctxRenameInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitRename(); });
+document.getElementById('ctx-rename-back').addEventListener('click', () => {
+  ctxRenameForm.style.display = 'none';
+  ctxMain.style.display = '';
+  _pendingRename = null;
 });
 
 // ── create overlay (+ button) ─────────────────────────────────────────────

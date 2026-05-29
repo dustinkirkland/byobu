@@ -242,6 +242,12 @@ def tmux_send_keys(pane_id: str, keys: str, enter: bool = True) -> None:
     if enter:
         _tmux("send-keys", "-t", pane_id, "Enter")
 
+def tmux_rename_window(window_id: str, name: str) -> None:
+    _tmux("rename-window", "-t", window_id, name)
+
+def tmux_rename_session(session_id: str, name: str) -> None:
+    _tmux("rename-session", "-t", session_id, name)
+
 # ---------------------------------------------------------------------------
 # Byobu status line — reads pre-computed cache from /dev/shm
 # ---------------------------------------------------------------------------
@@ -779,6 +785,32 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     enter = bool(msg.get("enter", True))
                     await asyncio.to_thread(tmux_send_keys, pane_id, keys, enter)
                     del keys  # release sensitive content as early as possible
+
+            elif mtype == "rename_window":
+                wid = msg.get("window_id", "")
+                if not _valid_tmux_id(wid):
+                    self._send({"type": "error", "message": "invalid window_id"})
+                else:
+                    name = str(msg.get("name", "")).strip()[:128]
+                    if not name or not _valid_tmux_name(name):
+                        self._send({"type": "error", "message": "invalid window name"})
+                    else:
+                        await asyncio.to_thread(tmux_rename_window, wid, name)
+                        sessions_list = await asyncio.to_thread(tmux_list_sessions)
+                        self._send({"type": "sessions", "data": sessions_list})
+
+            elif mtype == "rename_session":
+                sid = msg.get("session_id", "")
+                if not _valid_tmux_id(sid):
+                    self._send({"type": "error", "message": "invalid session_id"})
+                else:
+                    name = str(msg.get("name", "")).strip()[:128]
+                    if not name or not _valid_tmux_name(name):
+                        self._send({"type": "error", "message": "invalid session name"})
+                    else:
+                        await asyncio.to_thread(tmux_rename_session, sid, name)
+                        sessions_list = await asyncio.to_thread(tmux_list_sessions)
+                        self._send({"type": "sessions", "data": sessions_list})
 
         except Exception:
             self._send({"type": "error", "message": "command failed"})
