@@ -81,21 +81,12 @@ def _ensure_ts_serve() -> bool:
         pass
 
     user = os.environ.get("USER", "")
-    print(f"  (requires operator permission — running: sudo tailscale set --operator={user})")
-    try:
-        subprocess.run(["sudo", "tailscale", "set", f"--operator={user}"], check=True)
-        print(f"✓ {user} is now a Tailscale operator")
-        subprocess.run(["tailscale", "serve", "--bg", str(PORT)], check=True)
-        print("✓ tailscale serve configured")
-        return True
-    except (FileNotFoundError, subprocess.CalledProcessError):
-        pass
-
     print("", file=sys.stderr)
     print("Error: could not configure tailscale serve.", file=sys.stderr)
-    print("Try manually:", file=sys.stderr)
-    print(f"  sudo tailscale set --operator=$USER", file=sys.stderr)
+    print("Your user needs Tailscale operator permission. Run:", file=sys.stderr)
+    print(f"  sudo tailscale set --operator={user}", file=sys.stderr)
     print(f"  tailscale serve --bg {PORT}", file=sys.stderr)
+    print("Then re-run: trustmux-ctl start", file=sys.stderr)
     return False
 
 
