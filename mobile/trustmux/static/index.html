@@ -52,7 +52,15 @@
       padding: 8px 10px; background: var(--bg2);
       border-bottom: 1px solid var(--border); flex-shrink: 0;
     }
-    #btn-prev { margin-left: auto; }
+    #ctx-name {
+      margin-left: auto;
+      max-width: 120px; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+      color: var(--accent); font-size: 11px;
+      letter-spacing: 0.03em; padding: 0 4px;
+      cursor: pointer; user-select: none; flex-shrink: 0;
+    }
+    #ctx-name:active { opacity: 0.7; }
     #xyz-label {
       width: 44px; text-align: center; flex-shrink: 0;
       color: var(--text); font-size: 13px; letter-spacing: 0.05em;
@@ -340,9 +348,7 @@
 <div id="ctx-overlay" style="display:none">
   <div id="ctx-box">
     <div id="ctx-main">
-      <button class="ctx-btn" id="ctx-rename-pane"></button>
-      <button class="ctx-btn" id="ctx-rename-window"></button>
-      <button class="ctx-btn" id="ctx-rename-session"></button>
+      <button class="ctx-btn" id="ctx-rename">✎  Rename</button>
       <div class="ctx-sep"></div>
       <button class="ctx-btn ctx-dim" id="ctx-cancel">Cancel</button>
     </div>
@@ -400,6 +406,7 @@
       <img src="/trustmux.svg" class="byobu-logo" alt="Trustmux">
       <span style="font-size:15px;color:var(--accent);letter-spacing:2px;">Trustmux</span>
     </a>
+    <span id="ctx-name"></span>
     <button class="icon-btn" id="btn-prev" title="Previous pane">‹</button>
     <span id="xyz-label" title="Tap to refresh">-/-</span>
     <button class="icon-btn" id="btn-next" title="Next pane">›</button>

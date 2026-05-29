@@ -7,6 +7,8 @@ let currentPane = null;
 let currentSessionId = null;
 let currentWindowId = null;
 let forcedSessionId = null; // set after creating a new session
+let forcedPaneId = null;    // set after creating a new window (specific pane to navigate to)
+let _scrollTopOnNextSnapshot = false; // scroll to top instead of bottom on next snapshot
 let statusInterval = null;
 
 // ── biometric lock ─────────────────────────────────────────────────────────
@@ -150,13 +152,12 @@ const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
 const ctxOverlay       = document.getElementById('ctx-overlay');
 const ctxMain          = document.getElementById('ctx-main');
-const ctxRenamePane    = document.getElementById('ctx-rename-pane');
-const ctxRenameWindow  = document.getElementById('ctx-rename-window');
-const ctxRenameSession = document.getElementById('ctx-rename-session');
+const ctxRename        = document.getElementById('ctx-rename');
 const ctxRenameForm    = document.getElementById('ctx-rename-form');
 const ctxRenameLabel   = document.getElementById('ctx-rename-label');
 const ctxRenameInput   = document.getElementById('ctx-rename-input');
 const ctxCancel        = document.getElementById('ctx-cancel');
+const ctxName          = document.getElementById('ctx-name');
 const createOverlay    = document.getElementById('create-overlay');
 const createMain       = document.getElementById('create-main');
 const createNameForm   = document.getElementById('create-name-form');
@@ -211,9 +212,15 @@ function connect() {
     if (msg.type === 'sessions') {
       sessions = msg.data || [];
       if (msg.new_session) forcedSessionId = msg.new_session;
+      if (msg.new_pane) forcedPaneId = msg.new_pane;
       rebuildPaneTree();
     } else if (msg.type === 'snapshot') {
-      if (msg.pane_id === currentPane) renderOutput(msg.data, /*scroll=*/true);
+      if (msg.pane_id === currentPane) {
+        const scrollTop = _scrollTopOnNextSnapshot;
+        if (scrollTop) _scrollTopOnNextSnapshot = false;
+        renderOutput(msg.data, !scrollTop);
+        if (scrollTop) output.scrollTop = 0;
+      }
     } else if (msg.type === 'update') {
       if (msg.pane_id !== currentPane) return;
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
@@ -242,12 +249,15 @@ function updateXYZLabel() {
 
 // ── pane navigation ───────────────────────────────────────────────────────
 function rebuildPaneTree() {
-  const forced = forcedSessionId;
-  if (forced) forcedSessionId = null;
+  const forced     = forcedSessionId;
+  const forcedPane = forcedPaneId;
+  if (forced)     forcedSessionId = null;
+  if (forcedPane) forcedPaneId    = null;
 
-  let autoFromForced = null;
-  let autoFirst = null;
-  let prevTarget = null;
+  let autoFromForced     = null;
+  let autoFromForcedPane = null;
+  let autoFirst          = null;
+  let prevTarget         = null;
 
   for (const s of sessions) {
     for (const w of (s.windows || [])) {
@@ -255,6 +265,7 @@ function rebuildPaneTree() {
         if (!p.dead) {
           const entry = { sessionId: s.id, windowId: w.id, paneId: p.id };
           if (forced === s.id && !autoFromForced) autoFromForced = entry;
+          if (forcedPane === p.id) autoFromForcedPane = entry;
           if (!autoFirst) autoFirst = entry;
           if (p.id === currentPane) prevTarget = entry;
         }
@@ -262,7 +273,11 @@ function rebuildPaneTree() {
     }
   }
 
-  const target = prevTarget ?? autoFromForced ?? autoFirst ?? null;
+  // Prefer exact forced pane (new window), then current pane, then forced session, then first
+  const target = autoFromForcedPane ?? prevTarget ?? autoFromForced ?? autoFirst ?? null;
+
+  // Scroll to top when navigating to a freshly created window/session
+  if (autoFromForcedPane && autoFromForcedPane !== prevTarget) _scrollTopOnNextSnapshot = true;
 
   if (!target) {
     currentSessionId = null;
@@ -271,6 +286,7 @@ function rebuildPaneTree() {
     cmdInput.disabled = true;
     btnSend.disabled  = true;
     updateXYZLabel();
+    updateContextName();
     return;
   }
 
@@ -278,6 +294,7 @@ function rebuildPaneTree() {
     navigateTo(target.sessionId, target.windowId, target.paneId);
   } else {
     updateXYZLabel();
+    updateContextName();
   }
 }
 
@@ -291,6 +308,14 @@ function navigateTo(sessionId, windowId, paneId) {
   output.textContent = 'loading…';
   send({ type: 'subscribe', pane_id: paneId, lines: 300 });
   updateXYZLabel();
+  updateContextName();
+}
+
+// ── context name (user-defined label for the current pane) ────────────────
+function updateContextName() {
+  if (!currentPane) { ctxName.textContent = ''; return; }
+  const name = getPaneName(currentPane, '');
+  ctxName.textContent = name;
 }
 
 // ── output rendering ───────────────────────────────────────────────────────
@@ -374,6 +399,7 @@ function navigateRelative(delta) {
 let _touchX = 0, _touchY = 0;
 let _lastTap = 0;
 let _longPress = null;
+let _touchDoubleTapFired = false; // suppress synthetic dblclick after touch double-tap
 
 output.addEventListener('touchstart', e => {
   _touchX = e.touches[0].clientX;
@@ -392,6 +418,9 @@ output.addEventListener('touchend', e => {
   if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
     const now = Date.now();
     if (now - _lastTap < 300) {
+      // Mark so the synthetic dblclick that fires after touch doesn't duplicate this
+      _touchDoubleTapFired = true;
+      setTimeout(() => { _touchDoubleTapFired = false; }, 600);
       if (currentSessionId) send({ type: 'new_window', session_id: currentSessionId });
       _lastTap = 0;
     } else { _lastTap = now; }
@@ -399,26 +428,18 @@ output.addEventListener('touchend', e => {
 }, { passive: true });
 
 output.addEventListener('dblclick', () => {
+  if (_touchDoubleTapFired) return; // already handled by touchend, skip synthetic event
   if (currentSessionId) send({ type: 'new_window', session_id: currentSessionId });
 });
 
 btnPrev.addEventListener('click', () => navigateRelative(-1));
 btnNext.addEventListener('click', () => navigateRelative(1));
 
-// ── rename menu (double-tap) ──────────────────────────────────────────────
-let _pendingRename = null; // { type, id }
+// ── rename menu (long-press) ──────────────────────────────────────────────
+let _pendingRenameId = null; // pane ID being renamed
 
 function showCtxMenu() {
   if (!currentPane) return;
-  const sess = sessions.find(s => s.id === currentSessionId);
-  const win  = sess?.windows.find(w => w.id === currentWindowId);
-  const pane = win?.panes.find(p => p.id === currentPane);
-  const sNum = currentSessionId?.replace('$', '');
-
-  ctxRenamePane.textContent    = `✎  Rename pane P${pane?.index ?? '?'} · ${getPaneName(currentPane, pane?.command ?? '?')}`;
-  ctxRenameWindow.textContent  = `✎  Rename window W${win?.index ?? '?'} · ${win?.name ?? '?'}`;
-  ctxRenameSession.textContent = `✎  Rename session S${sNum} · ${sess?.name ?? '?'}`;
-
   ctxMain.style.display = '';
   ctxRenameForm.style.display = 'none';
   ctxOverlay.style.display = 'flex';
@@ -426,60 +447,28 @@ function showCtxMenu() {
 
 function hideCtxMenu() {
   ctxOverlay.style.display = 'none';
-  _pendingRename = null;
+  _pendingRenameId = null;
 }
 
 ctxCancel.addEventListener('click', hideCtxMenu);
 ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtxMenu(); });
 
-ctxRenamePane.addEventListener('click', () => {
-  const win  = sessions.flatMap(s => s.windows).find(w => w.id === currentWindowId);
-  const pane = win?.panes.find(p => p.id === currentPane);
-  _pendingRename = { type: 'rename_pane', id: currentPane };
-  ctxRenameLabel.textContent = `Rename pane P${pane?.index ?? '?'}:`;
-  ctxRenameInput.value = getPaneName(currentPane, pane?.command ?? '');
-  ctxMain.style.display = 'none';
-  ctxRenameForm.style.display = '';
-  setTimeout(() => { ctxRenameInput.focus(); ctxRenameInput.select(); }, 80);
-});
-
-ctxRenameWindow.addEventListener('click', () => {
-  const win = sessions.flatMap(s => s.windows).find(w => w.id === currentWindowId);
-  _pendingRename = { type: 'rename_window', id: currentWindowId };
-  ctxRenameLabel.textContent = `Rename window W${win?.index ?? '?'}:`;
-  ctxRenameInput.value = win?.name ?? '';
-  ctxMain.style.display = 'none';
-  ctxRenameForm.style.display = '';
-  setTimeout(() => { ctxRenameInput.focus(); ctxRenameInput.select(); }, 80);
-});
-
-ctxRenameSession.addEventListener('click', () => {
-  const sess = sessions.find(s => s.id === currentSessionId);
-  const sNum = currentSessionId?.replace('$', '');
-  _pendingRename = { type: 'rename_session', id: currentSessionId };
-  ctxRenameLabel.textContent = `Rename session S${sNum}:`;
-  ctxRenameInput.value = sess?.name ?? '';
+ctxRename.addEventListener('click', () => {
+  _pendingRenameId = currentPane;
+  const idx = flatPaneList().findIndex(e => e.paneId === currentPane);
+  ctxRenameLabel.textContent = `Name for context ${idx < 0 ? '' : idx + '/'}${flatPaneList().length}:`;
+  ctxRenameInput.value = getPaneName(currentPane, '');
   ctxMain.style.display = 'none';
   ctxRenameForm.style.display = '';
   setTimeout(() => { ctxRenameInput.focus(); ctxRenameInput.select(); }, 80);
 });
 
 function submitRename() {
-  if (!_pendingRename) return;
-  const { type, id } = _pendingRename;
+  if (!_pendingRenameId) return;
   const name = ctxRenameInput.value.trim();
-  if (type === 'rename_pane') {
-    // Stored locally only — panes have no native tmux name.
-    // Empty name clears the override and reverts to auto-detected name.
-    setPaneName(id, name);
-    hideCtxMenu();
-    rebuildPaneTree();
-  } else {
-    if (!name) { ctxRenameInput.focus(); return; }
-    if (type === 'rename_window')       send({ type, window_id:  id, name });
-    else if (type === 'rename_session') send({ type, session_id: id, name });
-    hideCtxMenu();
-  }
+  setPaneName(_pendingRenameId, name);
+  hideCtxMenu();
+  updateContextName();
 }
 
 document.getElementById('ctx-rename-confirm').addEventListener('click', submitRename);
@@ -487,7 +476,7 @@ ctxRenameInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitR
 document.getElementById('ctx-rename-back').addEventListener('click', () => {
   ctxRenameForm.style.display = 'none';
   ctxMain.style.display = '';
-  _pendingRename = null;
+  _pendingRenameId = null;
 });
 
 // ── create overlay (+ button) ─────────────────────────────────────────────

@@ -808,7 +808,15 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                         return
                     await asyncio.to_thread(tmux_new_window, sid, name)
                     sessions_list = await asyncio.to_thread(tmux_list_sessions)
-                    self._send({"type": "sessions", "data": sessions_list})
+                    # Find the newly created pane: last window (highest index) in this session
+                    new_pane_id = None
+                    for s in sessions_list:
+                        if s["id"] == sid and s.get("windows"):
+                            last_win = max(s["windows"], key=lambda w: w["index"])
+                            if last_win.get("panes"):
+                                new_pane_id = last_win["panes"][0]["id"]
+                            break
+                    self._send({"type": "sessions", "data": sessions_list, "new_pane": new_pane_id})
 
             elif mtype == "new_pane":
                 wid = msg.get("window_id", "")
