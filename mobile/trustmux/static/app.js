@@ -232,16 +232,10 @@ function send(obj) {
 
 // ── xyz label ─────────────────────────────────────────────────────────────
 function activePaneXYZ() {
-  if (!currentPane) return '-:-:-';
-  for (const s of sessions) {
-    const x = parseInt(s.id.replace('$', ''), 10) - 1;
-    for (const w of (s.windows || [])) {
-      for (const p of (w.panes || [])) {
-        if (p.id === currentPane) return `${x}:${w.index}:${p.index}`;
-      }
-    }
-  }
-  return '-:-:-';
+  const list = flatPaneList();
+  if (!currentPane || list.length === 0) return '-/-';
+  const idx = list.findIndex(e => e.paneId === currentPane);
+  return idx < 0 ? '-/-' : `${idx}/${list.length}`;
 }
 
 function updateXYZLabel() {
