@@ -83,7 +83,7 @@ def _ensure_ts_serve() -> bool:
     user = os.environ.get("USER", "")
     print("", file=sys.stderr)
     print("Error: could not configure tailscale serve.", file=sys.stderr)
-    print("Your user needs Tailscale operator permission. Run:", file=sys.stderr)
+    print("Your user needs Tailscale operator permission (one-time setup). Run:", file=sys.stderr)
     print(f"  sudo tailscale set --operator={user}", file=sys.stderr)
     print(f"  tailscale serve --bg {PORT}", file=sys.stderr)
     print("Then re-run: trustmux-ctl start", file=sys.stderr)
