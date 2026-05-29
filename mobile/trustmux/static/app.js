@@ -239,7 +239,7 @@ function activePaneXYZ() {
   // Match by pane first, then by window (current pane may be a non-representative split pane)
   let idx = list.findIndex(e => e.paneId === currentPane);
   if (idx < 0) idx = list.findIndex(e => e.windowId === currentWindowId);
-  return idx < 0 ? '-/-' : `${idx}/${list.length}`;
+  return idx < 0 ? '-/-' : `${idx + 1}/${list.length}`;
 }
 
 function updateXYZLabel() {
