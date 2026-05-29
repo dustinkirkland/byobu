@@ -225,6 +225,7 @@ def determine_versions(mode):
     if outdir.exists():
         shutil.rmtree(outdir)
     (outdir / "ppa").mkdir(parents=True)
+    (outdir / "debs").mkdir()
     if mode == "final":
         (outdir / "debian").mkdir()
         (outdir / "ubuntu").mkdir()
@@ -295,6 +296,44 @@ def run_smoke_test():
         "ubuntu:noble", "bash", "-c", _SMOKE_SCRIPT,
     ])
     print("  ✓ Smoke test PASSED")
+
+
+# ── phase 4b: local binary build ─────────────────────────────────────────
+
+_LOCAL_BUILD_SCRIPT = r"""
+set -e
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get update -qq
+apt-get install -y --no-install-recommends \
+  build-essential dpkg-dev debhelper dh-python \
+  gettext-base automake autoconf \
+  python3 python3-all python3-tornado \
+  devscripts bc ca-certificates 2>&1 | tail -5
+
+cp -a /src /build
+cd /build
+DEB_BUILD_OPTIONS=parallel=1 dpkg-buildpackage -us -uc -b
+cp /build/../*.deb /out/
+echo ""
+echo "=== Built packages ==="
+ls -lh /out/*.deb
+chown -R $(stat -c '%u:%g' /out) /out/
+"""
+
+
+def build_local_debs(v):
+    section("Phase 4b: Local binary build (installable .deb files)")
+    run([
+        "docker", "run", "--rm",
+        "-v", f"{BYOBU_SRC}:/src:ro",
+        "-v", f"{v['outdir']}/debs:/out",
+        "ubuntu:noble", "bash", "-c", _LOCAL_BUILD_SCRIPT,
+    ])
+    debs = sorted((v["outdir"] / "debs").glob("*.deb"))
+    print(f"  ✓ {len(debs)} package(s) built:")
+    for d in debs:
+        print(f"    {d}")
 
 
 # ── phase 5: PPA source builds ────────────────────────────────────────────
@@ -699,6 +738,11 @@ def print_summary(v, mode):
             f"\n  Ubuntu: byobu {v['ubuntu_ver']} → {v['devel_series']}"
             f"\n  Homebrew: brew upgrade dustinkirkland/trustmux/trustmux"
         )
+    debs = sorted((outdir / "debs").glob("*.deb"))
+    if debs:
+        print(f"\n  Local install:")
+        print(f"    sudo dpkg -i " + " ".join(str(d) for d in debs))
+
     print(
         f"\n  Sign and upload:\n    {outdir}/sign-and-upload.sh"
         f"\n  (GPG prompts once per series)\n"
@@ -778,6 +822,7 @@ def main():
     v = determine_versions(mode)
     push_pypi_tag(v)
     run_smoke_test()
+    build_local_debs(v)
     build_ppa_packages(v, identity)
 
     if mode == "final":
