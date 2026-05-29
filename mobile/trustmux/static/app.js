@@ -134,7 +134,7 @@ function rebuildPaneTree() {
         grp.appendChild(opt);
         if (!p.dead) {
           if (forced === s.id && !autoTarget) autoTarget = val;
-          if (!autoTarget && s.attached && w.active && p.active) autoTarget = val;
+          if (!autoTarget) autoTarget = val;  // first pane of first window of first session
         }
       }
     }
