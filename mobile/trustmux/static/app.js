@@ -61,7 +61,12 @@ function connect() {
   const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
   ws = new WebSocket(`${proto}//${location.host}/ws`);
 
-  ws.onopen  = () => { setStatus('connected', 'connected'); startClock(); };
+  ws.onopen  = () => {
+    setStatus('connected', 'connected');
+    startClock();
+    send({ type: 'list_sessions' });
+    if (currentPane) send({ type: 'subscribe', pane_id: currentPane, lines: 300 });
+  };
   ws.onclose = (evt) => {
     stopClock();
     if (evt.code === 4401) {
