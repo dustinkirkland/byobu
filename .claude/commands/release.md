@@ -22,7 +22,21 @@ echo "DEBFULLNAME=$DEBFULLNAME"
 echo "DEBEMAIL=$DEBEMAIL"
 echo "GPGKEY=$GPGKEY"
 ```
-If any are empty, stop and ask the user to add them to `~/.bashrc`:
+
+**STOP if any of these are wrong.** The correct values are:
+```
+DEBFULLNAME=Dustin Kirkland
+DEBEMAIL=kirkland@ubuntu.com        ← must be this; gmail/canonical addresses cause ftp-master rejection
+GPGKEY=E2D9E1C5F9F5D59291F4607D95E64373F1529469
+```
+
+The `Changed-By` field in every `.changes` file is built from `DEBEMAIL`. Debian's ftp-master
+uses that field to look up the uploader — if it doesn't match the Debian Developer keyring
+entry for `kirkland@ubuntu.com`, the upload is silently dropped with no visible error on the
+command line (dput reports success regardless). Check `kirkland@ubuntu.com` inbox for any
+rejection notices from `ftpmaster@debian.org`.
+
+If any value is missing or wrong, fix `~/.bashrc` and reload before continuing:
 ```bash
 export DEBFULLNAME="Dustin Kirkland"
 export DEBEMAIL="kirkland@ubuntu.com"
