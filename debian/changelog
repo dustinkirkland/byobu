@@ -71,6 +71,15 @@ byobu (7.2) UNRELEASED; urgency=medium
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 29 May 2026 08:44:38 -0500
 
+byobu (7.1) experimental; urgency=medium
+
+  * Skipped release; version 7.1 RC packages were published to the PPA
+    under an inconsistent versioning scheme (7.1~rc3 vs 7.1~0rc13) that
+    caused dpkg to consider the later RC older than the earlier one.
+    Advancing to 7.2 to avoid the unresolvable PPA slot conflict.
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Fri, 29 May 2026 08:44:38 -0500
+
 byobu (7.0) experimental; urgency=medium
 
   * usr/bin/byobu.in:
