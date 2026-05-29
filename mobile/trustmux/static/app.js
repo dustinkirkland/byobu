@@ -4,6 +4,8 @@
 let ws = null;
 let sessions = [];
 let currentPane = null;
+let currentSessionId = null;
+let currentWindowId = null;
 let forcedSessionId = null; // set after creating a new session
 let statusInterval = null;
 
@@ -12,7 +14,7 @@ const pairOverlay   = document.getElementById('pair-overlay');
 const pairCodeInput = document.getElementById('pair-code');
 const pairBtn       = document.getElementById('pair-btn');
 const pairError     = document.getElementById('pair-error');
-const selPaneTree   = document.getElementById('sel-pane-tree');
+const xyzLabel      = document.getElementById('xyz-label');
 const btnRefresh    = document.getElementById('btn-refresh');
 const output        = document.getElementById('output');
 const statusbar     = document.getElementById('statusbar');
@@ -108,72 +110,75 @@ function send(obj) {
   if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
 }
 
-// ── unified pane-tree picker ───────────────────────────────────────────────
-function rebuildPaneTree() {
-  const prev = selPaneTree.value;
-  selPaneTree.innerHTML = '<option value="">— select pane —</option>';
+// ── xyz label ─────────────────────────────────────────────────────────────
+function activePaneXYZ() {
+  if (!currentPane) return '-:-:-';
+  for (const s of sessions) {
+    const x = parseInt(s.id.replace('$', ''), 10);
+    for (const w of (s.windows || [])) {
+      for (const p of (w.panes || [])) {
+        if (p.id === currentPane) return `${x}:${w.index}:${p.index}`;
+      }
+    }
+  }
+  return '-:-:-';
+}
 
-  let autoTarget = null;
+function updateXYZLabel() {
+  xyzLabel.textContent = activePaneXYZ();
+}
+
+// ── pane navigation ───────────────────────────────────────────────────────
+function rebuildPaneTree() {
   const forced = forcedSessionId;
   if (forced) forcedSessionId = null;
 
+  let autoFromForced = null;
+  let autoFirst = null;
+  let prevTarget = null;
+
   for (const s of sessions) {
-    const sNum = s.id.replace('$', '');
-    const grp = document.createElement('optgroup');
-    grp.label = `S${sNum} · ${s.name}${s.attached ? ' ●' : ''}`;
-
-    for (const w of s.windows) {
-      const wHdr = document.createElement('option');
-      wHdr.disabled = true;
-      wHdr.textContent = `  W${w.index} · ${w.name}${w.active ? ' ●' : ''}`;
-      grp.appendChild(wHdr);
-
-      for (const p of w.panes) {
-        const opt = document.createElement('option');
-        const val = `${s.id}|${w.id}|${p.id}`;
-        opt.value = val;
-        const deadMark = p.dead ? ' [dead]' : '';
-        opt.textContent = `    P${p.index} · ${getPaneName(p.id, p.command)}${p.active ? ' ●' : ''}${deadMark}`;
-        if (p.dead) opt.style.color = 'var(--dim)';
-        grp.appendChild(opt);
+    for (const w of (s.windows || [])) {
+      for (const p of (w.panes || [])) {
         if (!p.dead) {
-          if (forced === s.id && !autoTarget) autoTarget = val;
-          if (!autoTarget) autoTarget = val;  // first pane of first window of first session
+          const entry = { sessionId: s.id, windowId: w.id, paneId: p.id };
+          if (forced === s.id && !autoFromForced) autoFromForced = entry;
+          if (!autoFirst) autoFirst = entry;
+          if (p.id === currentPane) prevTarget = entry;
         }
       }
     }
-    selPaneTree.appendChild(grp);
   }
 
-  const allVals = new Set([...selPaneTree.options].map(o => o.value).filter(Boolean));
-  const target = (prev && allVals.has(prev)) ? prev : (autoTarget || '');
-  if (target) selPaneTree.value = target;
+  const target = prevTarget ?? autoFromForced ?? autoFirst ?? null;
 
-  // Only re-subscribe if the effective pane actually changed.  Using `target`
-  // (computed explicitly) rather than re-reading selPaneTree.value avoids a
-  // browser quirk where setting .value for an <optgroup> option doesn't always
-  // take effect before the next synchronous read, which would incorrectly
-  // reset currentPane to null and then jump to autoTarget on the next update.
-  const [,, targetPaneId] = target.split('|');
-  if ((targetPaneId || null) !== currentPane) onPaneTreeChange();
-}
-
-function onPaneTreeChange() {
-  const val = selPaneTree.value;
-  if (!val) {
-    currentPane = null;
+  if (!target) {
+    currentSessionId = null;
+    currentWindowId  = null;
+    currentPane      = null;
     cmdInput.disabled = true;
     btnSend.disabled  = true;
+    updateXYZLabel();
     return;
   }
-  const [, , paneId] = val.split('|');
-  if (paneId === currentPane) return;
-  currentPane = paneId;
+
+  if (target.paneId !== currentPane) {
+    navigateTo(target.sessionId, target.windowId, target.paneId);
+  } else {
+    updateXYZLabel();
+  }
+}
+
+function navigateTo(sessionId, windowId, paneId) {
+  currentSessionId = sessionId;
+  currentWindowId  = windowId;
+  currentPane      = paneId;
   cmdInput.disabled = false;
   btnSend.disabled  = false;
   output.className  = '';
   output.textContent = 'loading…';
   send({ type: 'subscribe', pane_id: paneId, lines: 300 });
+  updateXYZLabel();
 }
 
 // ── output rendering ───────────────────────────────────────────────────────
@@ -193,7 +198,6 @@ function sendKeys() {
 }
 
 // ── events ─────────────────────────────────────────────────────────────────
-selPaneTree.addEventListener('change', onPaneTreeChange);
 btnRefresh.addEventListener('click',  () => send({ type: 'list_sessions' }));
 cmdInput.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendKeys(); }
@@ -233,7 +237,7 @@ btnKbdMode.addEventListener('click', () => {
   setTimeout(() => cmdInput.focus(), 50);
 });
 
-// ── pane navigation (depth-first: panes → windows → sessions) ────────────
+// ── pane list (depth-first: panes → windows → sessions) ──────────────────
 function flatPaneList() {
   const list = [];
   for (const s of sessions) {
@@ -244,11 +248,6 @@ function flatPaneList() {
     }
   }
   return list;
-}
-
-function navigateTo(sessionId, windowId, paneId) {
-  selPaneTree.value = `${sessionId}|${windowId}|${paneId}`;
-  onPaneTreeChange();
 }
 
 function navigateRelative(delta) {
@@ -285,14 +284,13 @@ btnNext.addEventListener('click', () => navigateRelative(1));
 let _pendingRename = null; // { type, id }
 
 function showCtxMenu() {
-  if (!selPaneTree.value) return;
-  const [sessionId, windowId, paneId] = selPaneTree.value.split('|');
-  const sess = sessions.find(s => s.id === sessionId);
-  const win  = sess?.windows.find(w => w.id === windowId);
-  const pane = win?.panes.find(p => p.id === paneId);
-  const sNum = sessionId.replace('$', '');
+  if (!currentPane) return;
+  const sess = sessions.find(s => s.id === currentSessionId);
+  const win  = sess?.windows.find(w => w.id === currentWindowId);
+  const pane = win?.panes.find(p => p.id === currentPane);
+  const sNum = currentSessionId?.replace('$', '');
 
-  ctxRenamePane.textContent    = `✎  Rename pane P${pane?.index ?? '?'} · ${getPaneName(paneId, pane?.command ?? '?')}`;
+  ctxRenamePane.textContent    = `✎  Rename pane P${pane?.index ?? '?'} · ${getPaneName(currentPane, pane?.command ?? '?')}`;
   ctxRenameWindow.textContent  = `✎  Rename window W${win?.index ?? '?'} · ${win?.name ?? '?'}`;
   ctxRenameSession.textContent = `✎  Rename session S${sNum} · ${sess?.name ?? '?'}`;
 
@@ -310,21 +308,19 @@ ctxCancel.addEventListener('click', hideCtxMenu);
 ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtxMenu(); });
 
 ctxRenamePane.addEventListener('click', () => {
-  const [, windowId, paneId] = selPaneTree.value.split('|');
-  const win  = sessions.flatMap(s => s.windows).find(w => w.id === windowId);
-  const pane = win?.panes.find(p => p.id === paneId);
-  _pendingRename = { type: 'rename_pane', id: paneId };
+  const win  = sessions.flatMap(s => s.windows).find(w => w.id === currentWindowId);
+  const pane = win?.panes.find(p => p.id === currentPane);
+  _pendingRename = { type: 'rename_pane', id: currentPane };
   ctxRenameLabel.textContent = `Rename pane P${pane?.index ?? '?'}:`;
-  ctxRenameInput.value = getPaneName(paneId, pane?.command ?? '');
+  ctxRenameInput.value = getPaneName(currentPane, pane?.command ?? '');
   ctxMain.style.display = 'none';
   ctxRenameForm.style.display = '';
   setTimeout(() => { ctxRenameInput.focus(); ctxRenameInput.select(); }, 80);
 });
 
 ctxRenameWindow.addEventListener('click', () => {
-  const [, windowId] = selPaneTree.value.split('|');
-  const win = sessions.flatMap(s => s.windows).find(w => w.id === windowId);
-  _pendingRename = { type: 'rename_window', id: windowId };
+  const win = sessions.flatMap(s => s.windows).find(w => w.id === currentWindowId);
+  _pendingRename = { type: 'rename_window', id: currentWindowId };
   ctxRenameLabel.textContent = `Rename window W${win?.index ?? '?'}:`;
   ctxRenameInput.value = win?.name ?? '';
   ctxMain.style.display = 'none';
@@ -333,10 +329,9 @@ ctxRenameWindow.addEventListener('click', () => {
 });
 
 ctxRenameSession.addEventListener('click', () => {
-  const [sessionId] = selPaneTree.value.split('|');
-  const sess = sessions.find(s => s.id === sessionId);
-  const sNum = sessionId.replace('$', '');
-  _pendingRename = { type: 'rename_session', id: sessionId };
+  const sess = sessions.find(s => s.id === currentSessionId);
+  const sNum = currentSessionId?.replace('$', '');
+  _pendingRename = { type: 'rename_session', id: currentSessionId };
   ctxRenameLabel.textContent = `Rename session S${sNum}:`;
   ctxRenameInput.value = sess?.name ?? '';
   ctxMain.style.display = 'none';
@@ -404,8 +399,7 @@ document.getElementById('create-name-back').addEventListener('click', () => {
 });
 
 document.getElementById('create-pane').addEventListener('click', () => {
-  const [, windowId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
-  if (windowId) send({ type: 'new_pane', window_id: windowId });
+  if (currentWindowId) send({ type: 'new_pane', window_id: currentWindowId });
   hideCreateOverlay();
 });
 
@@ -418,8 +412,7 @@ function submitCreate() {
     if (!name) { createNameInput.focus(); return; }
     send({ type: 'new_session', name });
   } else if (_createType === 'window') {
-    const [sessionId] = selPaneTree.value ? selPaneTree.value.split('|') : [];
-    if (sessionId) send({ type: 'new_window', session_id: sessionId, name });
+    if (currentSessionId) send({ type: 'new_window', session_id: currentSessionId, name });
   }
   hideCreateOverlay();
 }

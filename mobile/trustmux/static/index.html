@@ -52,7 +52,10 @@
       padding: 8px 10px; background: var(--bg2);
       border-bottom: 1px solid var(--border); flex-shrink: 0;
     }
-    #sel-pane-tree { flex: 1; min-width: 0; }
+    #xyz-label {
+      width: 60px; text-align: center; flex-shrink: 0;
+      color: var(--dim); font-size: 13px; letter-spacing: 0.05em;
+    }
     #machine-select {
       background: var(--bg3); color: var(--dim);
       border: 1px solid var(--border); border-radius: 4px;
@@ -326,9 +329,7 @@
       <span style="font-size:15px;color:var(--accent);letter-spacing:2px;">Trustmux</span>
     </a>
     <button class="icon-btn" id="btn-prev" title="Previous pane">‹</button>
-    <select id="sel-pane-tree" title="Session / Window / Pane">
-      <option value="">— select pane —</option>
-    </select>
+    <span id="xyz-label">-:-:-</span>
     <button class="icon-btn" id="btn-next" title="Next pane">›</button>
     <select id="machine-select" title="Switch machine" style="display:none"></select>
     <button id="btn-install" title="Install as app" style="display:none">+ Install app</button>
