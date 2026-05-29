@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE = 'trustmux-v5';
+const CACHE = 'trustmux-v6';
 
 // Static shell — load instantly from cache on repeat visits.
 const SHELL = ['/', '/app.js', '/trustmux.svg', '/manifest.json',
