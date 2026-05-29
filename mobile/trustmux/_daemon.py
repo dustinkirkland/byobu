@@ -132,6 +132,39 @@ ANSI_RE = re.compile(
 def strip_ansi(text: str) -> str:
     return ANSI_RE.sub('', text)
 
+def _smarter_pane_name(pane_pid_str: str, fallback: str) -> str:
+    """Walk /proc tree from pane_pid to find the leaf foreground process name.
+
+    tmux's pane_current_command only sees the direct child of the shell (e.g.
+    'sh' when running a shell-script wrapper like 'claude').  Reading
+    /proc/<pid>/task/<pid>/children lets us follow the chain down to the real
+    foreground process without spawning extra subprocesses.
+    """
+    try:
+        pid = int(pane_pid_str)
+    except (ValueError, TypeError):
+        return fallback
+    seen: set[int] = set()
+    for _ in range(6):
+        if pid in seen:
+            break
+        seen.add(pid)
+        try:
+            children = Path(f"/proc/{pid}/task/{pid}/children").read_text().split()
+        except OSError:
+            break
+        if not children:
+            try:
+                name = Path(f"/proc/{pid}/comm").read_text().strip()
+                return name or fallback
+            except OSError:
+                break
+        try:
+            pid = int(children[0])
+        except (ValueError, IndexError):
+            break
+    return fallback
+
 # ---------------------------------------------------------------------------
 # tmux interface — thin wrappers around the tmux CLI
 # ---------------------------------------------------------------------------
@@ -197,8 +230,11 @@ def tmux_list_panes(window_id: str) -> list[dict]:
         except ValueError:
             continue
         active = parts[2] == "1"
-        cmd = parts[3] if len(parts) > 3 else ""
-        dead = parts[5] == "1" if len(parts) > 5 else False
+        cmd     = parts[3] if len(parts) > 3 else ""
+        pid_str = parts[4] if len(parts) > 4 else ""
+        dead    = parts[5] == "1" if len(parts) > 5 else False
+        if not dead and pid_str:
+            cmd = _smarter_pane_name(pid_str, cmd)
         panes.append({
             "id": pane_id_str,
             "index": idx,

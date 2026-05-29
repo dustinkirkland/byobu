@@ -261,25 +261,15 @@
   </div>
 </div>
 
-<!-- ── double-tap context menu (rename / kill) ── -->
+<!-- ── double-tap context menu (rename only) ── -->
 <div id="ctx-overlay" style="display:none">
   <div id="ctx-box">
     <div id="ctx-main">
+      <button class="ctx-btn" id="ctx-rename-pane"></button>
       <button class="ctx-btn" id="ctx-rename-window"></button>
       <button class="ctx-btn" id="ctx-rename-session"></button>
       <div class="ctx-sep"></div>
-      <button class="ctx-btn ctx-danger" id="ctx-kill-pane"></button>
-      <button class="ctx-btn ctx-danger" id="ctx-kill-window"></button>
-      <button class="ctx-btn ctx-danger" id="ctx-kill-session"></button>
-      <div class="ctx-sep"></div>
       <button class="ctx-btn ctx-dim" id="ctx-cancel">Cancel</button>
-    </div>
-    <div id="ctx-confirm" style="display:none">
-      <p id="ctx-confirm-msg"></p>
-      <div id="ctx-confirm-detail" style="padding:0 16px 10px;font-size:11px;color:var(--dim);text-align:center;font-family:var(--font)"></div>
-      <button class="ctx-btn ctx-danger" id="ctx-confirm-yes">Yes, kill it</button>
-      <div class="ctx-sep"></div>
-      <button class="ctx-btn ctx-dim" id="ctx-confirm-no">Cancel</button>
     </div>
     <div id="ctx-rename-form" style="display:none">
       <p id="ctx-rename-label" style="padding:12px 16px;color:var(--dim);font-size:13px;font-family:var(--font);text-align:center"></p>

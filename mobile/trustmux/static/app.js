@@ -29,20 +29,13 @@ const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
 const ctxOverlay       = document.getElementById('ctx-overlay');
 const ctxMain          = document.getElementById('ctx-main');
-const ctxConfirm       = document.getElementById('ctx-confirm');
-const ctxConfirmMsg    = document.getElementById('ctx-confirm-msg');
-const ctxConfirmDetail = document.getElementById('ctx-confirm-detail');
+const ctxRenamePane    = document.getElementById('ctx-rename-pane');
 const ctxRenameWindow  = document.getElementById('ctx-rename-window');
 const ctxRenameSession = document.getElementById('ctx-rename-session');
 const ctxRenameForm    = document.getElementById('ctx-rename-form');
 const ctxRenameLabel   = document.getElementById('ctx-rename-label');
 const ctxRenameInput   = document.getElementById('ctx-rename-input');
-const ctxKillPane      = document.getElementById('ctx-kill-pane');
-const ctxKillWindow    = document.getElementById('ctx-kill-window');
-const ctxKillSession   = document.getElementById('ctx-kill-session');
 const ctxCancel        = document.getElementById('ctx-cancel');
-const ctxConfirmYes    = document.getElementById('ctx-confirm-yes');
-const ctxConfirmNo     = document.getElementById('ctx-confirm-no');
 const createOverlay    = document.getElementById('create-overlay');
 const createMain       = document.getElementById('create-main');
 const createNameForm   = document.getElementById('create-name-form');
@@ -51,6 +44,15 @@ const createNameInput  = document.getElementById('create-name-input');
 const btnNew           = document.getElementById('btn-new');
 const btnPrev          = document.getElementById('btn-prev');
 const btnNext          = document.getElementById('btn-next');
+
+// ── pane names (user-defined, stored in localStorage) ─────────────────────
+// Key is scoped to the server hostname so names don't bleed across machines.
+function _paneKey(paneId) { return `pane-name:${location.hostname}:${paneId}`; }
+function getPaneName(paneId, fallback) { return localStorage.getItem(_paneKey(paneId)) || fallback; }
+function setPaneName(paneId, name) {
+  if (name) localStorage.setItem(_paneKey(paneId), name);
+  else localStorage.removeItem(_paneKey(paneId));
+}
 
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
@@ -129,7 +131,7 @@ function rebuildPaneTree() {
         const val = `${s.id}|${w.id}|${p.id}`;
         opt.value = val;
         const deadMark = p.dead ? ' [dead]' : '';
-        opt.textContent = `    P${p.index} · ${p.command}${p.active ? ' ●' : ''}${deadMark}`;
+        opt.textContent = `    P${p.index} · ${getPaneName(p.id, p.command)}${p.active ? ' ●' : ''}${deadMark}`;
         if (p.dead) opt.style.color = 'var(--dim)';
         grp.appendChild(opt);
         if (!p.dead) {
@@ -274,8 +276,7 @@ output.addEventListener('touchend', e => {
 btnPrev.addEventListener('click', () => navigateRelative(-1));
 btnNext.addEventListener('click', () => navigateRelative(1));
 
-// ── rename / kill menu (double-tap) ──────────────────────────────────────
-let _pendingKill = null;   // { type, id }
+// ── rename menu (double-tap) ──────────────────────────────────────────────
 let _pendingRename = null; // { type, id }
 
 function showCtxMenu() {
@@ -286,76 +287,33 @@ function showCtxMenu() {
   const pane = win?.panes.find(p => p.id === paneId);
   const sNum = sessionId.replace('$', '');
 
+  ctxRenamePane.textContent    = `✎  Rename pane P${pane?.index ?? '?'} · ${getPaneName(paneId, pane?.command ?? '?')}`;
   ctxRenameWindow.textContent  = `✎  Rename window W${win?.index ?? '?'} · ${win?.name ?? '?'}`;
   ctxRenameSession.textContent = `✎  Rename session S${sNum} · ${sess?.name ?? '?'}`;
-  ctxKillPane.textContent    = `✕  Kill pane P${pane?.index ?? '?'} · ${pane?.command || 'dead'}`;
-  ctxKillWindow.textContent  = `✕  Kill window W${win?.index ?? '?'} · ${win?.name ?? '?'} (${win?.panes.length ?? '?'} pane${(win?.panes.length ?? 0) !== 1 ? 's' : ''})`;
-  ctxKillSession.textContent = `✕  Kill session S${sNum} · ${sess?.name ?? '?'} (${sess?.windows.length ?? '?'} window${(sess?.windows.length ?? 0) !== 1 ? 's' : ''})`;
 
   ctxMain.style.display = '';
-  ctxConfirm.style.display = 'none';
   ctxRenameForm.style.display = 'none';
   ctxOverlay.style.display = 'flex';
 }
 
 function hideCtxMenu() {
   ctxOverlay.style.display = 'none';
-  _pendingKill = null;
   _pendingRename = null;
-}
-
-function showKillConfirm(type, id, msg, detail) {
-  _pendingKill = { type, id };
-  ctxConfirmMsg.textContent    = msg;
-  ctxConfirmDetail.textContent = detail;
-  ctxMain.style.display    = 'none';
-  ctxConfirm.style.display = '';
 }
 
 ctxCancel.addEventListener('click', hideCtxMenu);
 ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtxMenu(); });
 
-ctxKillPane.addEventListener('click', () => {
+ctxRenamePane.addEventListener('click', () => {
   const [, windowId, paneId] = selPaneTree.value.split('|');
   const win  = sessions.flatMap(s => s.windows).find(w => w.id === windowId);
   const pane = win?.panes.find(p => p.id === paneId);
-  showKillConfirm('kill_pane', paneId,
-    `Kill pane P${pane?.index ?? '?'}?`,
-    `"${pane?.command || 'dead'}" — this pane only.`);
-});
-
-ctxKillWindow.addEventListener('click', () => {
-  const [, windowId] = selPaneTree.value.split('|');
-  const win = sessions.flatMap(s => s.windows).find(w => w.id === windowId);
-  const n = win?.panes.length ?? 0;
-  showKillConfirm('kill_window', windowId,
-    `Kill window W${win?.index ?? '?'} "${win?.name ?? '?'}"?`,
-    `Closes ${n} pane${n !== 1 ? 's' : ''}.`);
-});
-
-ctxKillSession.addEventListener('click', () => {
-  const [sessionId] = selPaneTree.value.split('|');
-  const sess = sessions.find(s => s.id === sessionId);
-  const sNum = sessionId.replace('$', '');
-  const m = sess?.windows.length ?? 0;
-  showKillConfirm('kill_session', sessionId,
-    `Kill session S${sNum} "${sess?.name ?? '?'}"?`,
-    `Closes ${m} window${m !== 1 ? 's' : ''} and all their panes.`);
-});
-
-ctxConfirmYes.addEventListener('click', () => {
-  if (!_pendingKill) return;
-  const { type, id } = _pendingKill;
-  if      (type === 'kill_pane')    send({ type, pane_id:    id });
-  else if (type === 'kill_window')  send({ type, window_id:  id });
-  else if (type === 'kill_session') send({ type, session_id: id });
-  hideCtxMenu();
-});
-
-ctxConfirmNo.addEventListener('click', () => {
-  ctxConfirm.style.display = 'none';
-  ctxMain.style.display = '';
-  _pendingKill = null;
+  _pendingRename = { type: 'rename_pane', id: paneId };
+  ctxRenameLabel.textContent = `Rename pane P${pane?.index ?? '?'}:`;
+  ctxRenameInput.value = getPaneName(paneId, pane?.command ?? '');
+  ctxMain.style.display = 'none';
+  ctxRenameForm.style.display = '';
+  setTimeout(() => { ctxRenameInput.focus(); ctxRenameInput.select(); }, 80);
 });
 
 ctxRenameWindow.addEventListener('click', () => {
@@ -383,12 +341,20 @@ ctxRenameSession.addEventListener('click', () => {
 
 function submitRename() {
   if (!_pendingRename) return;
-  const name = ctxRenameInput.value.trim();
-  if (!name) { ctxRenameInput.focus(); return; }
   const { type, id } = _pendingRename;
-  if (type === 'rename_window')  send({ type, window_id:  id, name });
-  else if (type === 'rename_session') send({ type, session_id: id, name });
-  hideCtxMenu();
+  const name = ctxRenameInput.value.trim();
+  if (type === 'rename_pane') {
+    // Stored locally only — panes have no native tmux name.
+    // Empty name clears the override and reverts to auto-detected name.
+    setPaneName(id, name);
+    hideCtxMenu();
+    rebuildPaneTree();
+  } else {
+    if (!name) { ctxRenameInput.focus(); return; }
+    if (type === 'rename_window')       send({ type, window_id:  id, name });
+    else if (type === 'rename_session') send({ type, session_id: id, name });
+    hideCtxMenu();
+  }
 }
 
 document.getElementById('ctx-rename-confirm').addEventListener('click', submitRename);
