@@ -13,11 +13,12 @@ RC phases:
     3  Push PyPI git tag (triggers GH Actions)
     4  Smoke test (Docker)
     5  PPA source builds (Docker, all series)
+    5b Debian experimental source build (Docker)
     6  GitHub pre-release
     7  Write sign-and-upload.sh
 
 Final adds:
-    6b Debian experimental source build (Docker)
+    6b Debian experimental source build (Docker) — already done in RC, rerun for final
     6c Ubuntu dev-series source build (Docker)
     6d Homebrew formula update
     GitHub release (non-prerelease, both byobu and trustmux tags)
@@ -153,10 +154,11 @@ def determine_versions(mode):
         pypi_version = f"{base_ver}rc{rc_num}"
         # 0-prefix: 7.1~0rc1~noble1 < 7.1~noble1 in dpkg ordering
         ppa_base = f"{base_ver}~0rc{rc_num}"
-        deb_exp_version = None
+        deb_exp_version = ppa_base
         ubuntu_ver = None
         print(f"  RC:           {rc_num}  →  trustmux-v{pypi_version}")
         print(f"  PPA base:     {ppa_base}~{{series}}1")
+        print(f"  Debian exp:   {deb_exp_version}")
     else:
         pypi_version = base_ver
         ppa_base = base_ver
@@ -227,8 +229,8 @@ def determine_versions(mode):
         shutil.rmtree(outdir)
     (outdir / "ppa").mkdir(parents=True)
     (outdir / "debs").mkdir()
+    (outdir / "debian").mkdir()
     if mode == "final":
-        (outdir / "debian").mkdir()
         (outdir / "ubuntu").mkdir()
     print(f"  Output dir:   {outdir}")
 
@@ -643,28 +645,43 @@ def write_sign_and_upload(v, identity, mode):
 set -e
 GPGKEY="${{GPGKEY:-{gpgkey}}}"
 PPA="ppa:byobu/ppa"
-DIR="$(dirname "$0")/ppa"
+BASE="$(dirname "$0")"
 
-echo "Signing with key: $GPGKEY"
-echo "Uploading to:     $PPA"
+echo "=========================================="
+echo " byobu {v['ppa_base']} sign-and-upload (RC)"
+echo " GPG key: $GPGKEY"
+echo "=========================================="
 echo ""
 
-for f in "$DIR"/*_source.changes; do
-  echo "=== Signing $f ==="
+echo "── Step 1: GPG signing ─────────────────────────────────────────────"
+for f in "$BASE"/ppa/*_source.changes \\
+         "$BASE"/debian/*_source.changes; do
+  [ -f "$f" ] || continue
+  echo "  Signing: $f"
   debsign -k "$GPGKEY" "$f"
 done
-
+echo "All signed."
 echo ""
-read -rp "All signed. Upload to PPA? [y/N] " ans
+
+echo "── Step 2: PPA ppa:byobu/ppa ────────────────────────────────────────"
+read -rp "  Upload all series to $PPA? [y/N] " ans
 if [[ "$ans" =~ ^[Yy]$ ]]; then
-  for f in "$DIR"/*_source.changes; do
-    echo "=== Uploading $f ==="
+  for f in "$BASE"/ppa/*_source.changes; do
+    echo "  dput $PPA $f"
     dput "$PPA" "$f"
   done
   echo "Done. Monitor: https://launchpad.net/~byobu/+archive/ubuntu/ppa"
 else
-  echo "Skipped upload."
+  echo "  Skipped."
 fi
+echo ""
+
+echo "── Step 3: Debian experimental ─────────────────────────────────────"
+read -rp "  Upload to Debian experimental (ftp-master)? [y/N] " ans
+[[ "$ans" =~ ^[Yy]$ ]] && \\
+  dput ftp-master "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" || \\
+  echo "  Skipped."
+echo "  Monitor: https://ftp-master.debian.org/new.html"
 """
     else:
         body = f"""\
@@ -735,6 +752,7 @@ def print_summary(v, mode):
         f"\n         https://github.com/dustinkirkland/byobu/actions"
         f"\n  PPA:   ppa:byobu/ppa — {v['ppa_base']}~{{series}}1"
         f"\n         https://launchpad.net/~byobu/+archive/ubuntu/ppa"
+        f"\n  Debian: byobu {v['deb_exp_version']} → experimental"
     )
     if mode == "final":
         print(
@@ -833,9 +851,9 @@ def main():
     push_pypi_tag(v)
     run_smoke_test()
     build_ppa_packages(v, identity)
+    build_debian_experimental(v, identity)
 
     if mode == "final":
-        build_debian_experimental(v, identity)
         build_ubuntu_dev(v, identity)
         update_homebrew(v, tap_dir)
 
