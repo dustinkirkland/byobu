@@ -687,21 +687,14 @@ done
 echo "All signed."
 echo ""
 
-echo "── Step 2: Debian experimental ─────────────────────────────────────"
-read -rp "  Upload to Debian experimental? [y/N] " ans
-[[ "$ans" =~ ^[Yy]$ ]] && \\
-  dput ftp-master "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" || \\
-  echo "  Skipped."
-echo ""
-
-echo "── Step 3: Ubuntu {v['devel_series']} (dev series) ──────────────────────────────"
+echo "── Step 2: Ubuntu {v['devel_series']} (dev series) ──────────────────────────────"
 read -rp "  Upload to Ubuntu {v['devel_series']}? [y/N] " ans
 [[ "$ans" =~ ^[Yy]$ ]] && \\
   dput ubuntu "$BASE/ubuntu/byobu_{v['ubuntu_ver']}_source.changes" || \\
   echo "  Skipped."
 echo ""
 
-echo "── Step 4: PPA ppa:byobu/ppa ────────────────────────────────────────"
+echo "── Step 3: PPA ppa:byobu/ppa ────────────────────────────────────────"
 read -rp "  Upload all series to ppa:byobu/ppa? [y/N] " ans
 if [[ "$ans" =~ ^[Yy]$ ]]; then
   for f in "$BASE"/ppa/*_source.changes; do
@@ -712,6 +705,14 @@ if [[ "$ans" =~ ^[Yy]$ ]]; then
 else
   echo "  Skipped."
 fi
+echo ""
+
+echo "── Step 4: Debian experimental ─────────────────────────────────────"
+read -rp "  Upload to Debian experimental (ftp-master)? [y/N] " ans
+[[ "$ans" =~ ^[Yy]$ ]] && \\
+  dput ftp-master "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" || \\
+  echo "  Skipped."
+echo "  Monitor: https://ftp-master.debian.org/new.html"
 """
 
     script_path = outdir / "sign-and-upload.sh"
