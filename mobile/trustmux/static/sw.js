@@ -1,13 +1,18 @@
 'use strict';
 
-const CACHE = 'trustmux-v6';
+const CACHE = 'trustmux-v7';
 
-// Static shell — load instantly from cache on repeat visits.
-const SHELL = ['/', '/app.js', '/trustmux.svg', '/manifest.json',
-               '/icons/icon-192.png?v=3', '/icons/icon-512.png?v=3'];
+// Only truly static assets are cached — icons and logo never change between
+// releases and are safe to serve from cache indefinitely.
+// index.html and app.js are intentionally excluded: they change with every
+// release and must always be fetched fresh so updates are visible immediately
+// without any cache-busting dance. The server is always local/Tailscale, so
+// there is no latency cost to fetching them from the network.
+const SHELL = ['/trustmux.svg', '/icons/icon-192.png?v=3', '/icons/icon-512.png?v=3'];
 
 // These are always fetched from the network — never cache.
-const NETWORK_ONLY = ['/ws', '/pair', '/ping', '/status', '/machines'];
+const NETWORK_ONLY = ['/ws', '/pair', '/ping', '/status', '/machines',
+                      '/', '/app.js', '/manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -28,13 +33,11 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
 
-  // Pass WebSocket upgrades and API endpoints straight through.
-  if (NETWORK_ONLY.some(p => url.pathname.startsWith(p))) return;
+  // Pass API endpoints, main HTML, and JS straight to the network.
+  if (NETWORK_ONLY.some(p => url.pathname === p || url.pathname.startsWith(p))) return;
 
-  // Cache-first for everything else (shell assets).
-  // ignoreSearch: true so /?pair=XXXXXX matches the cached '/' shell instead
-  // of falling through to a network fetch (which hangs on Android/Tailscale).
+  // Cache-first only for the truly static assets listed in SHELL.
   e.respondWith(
-    caches.match(e.request, { ignoreSearch: true }).then(cached => cached || fetch(e.request))
+    caches.match(e.request).then(cached => cached || fetch(e.request))
   );
 });
