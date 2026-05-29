@@ -56,7 +56,9 @@
     #xyz-label {
       width: 44px; text-align: center; flex-shrink: 0;
       color: var(--text); font-size: 13px; letter-spacing: 0.05em;
+      cursor: pointer; user-select: none;
     }
+    #xyz-label:active { color: var(--accent); }
     #machine-select {
       background: var(--bg3); color: var(--dim);
       border: 1px solid var(--border); border-radius: 4px;
@@ -399,12 +401,10 @@
       <span style="font-size:15px;color:var(--accent);letter-spacing:2px;">Trustmux</span>
     </a>
     <button class="icon-btn" id="btn-prev" title="Previous pane">‹</button>
-    <span id="xyz-label">-/-</span>
+    <span id="xyz-label" title="Tap to refresh">-/-</span>
     <button class="icon-btn" id="btn-next" title="Next pane">›</button>
     <select id="machine-select" title="Switch machine" style="display:none"></select>
     <button id="btn-install" title="Install as app" style="display:none">+ Install app</button>
-    <button class="icon-btn" id="btn-new" title="New pane / window / session">+</button>
-    <button class="icon-btn" id="btn-refresh" title="Refresh session list">↺</button>
   </div>
 
   <div id="statusbar">

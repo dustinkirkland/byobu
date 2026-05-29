@@ -135,7 +135,6 @@ const pairCodeInput = document.getElementById('pair-code');
 const pairBtn       = document.getElementById('pair-btn');
 const pairError     = document.getElementById('pair-error');
 const xyzLabel      = document.getElementById('xyz-label');
-const btnRefresh    = document.getElementById('btn-refresh');
 const output        = document.getElementById('output');
 const statusbar     = document.getElementById('statusbar');
 const statusText    = document.getElementById('status-text');
@@ -163,7 +162,6 @@ const createMain       = document.getElementById('create-main');
 const createNameForm   = document.getElementById('create-name-form');
 const createNameLabel  = document.getElementById('create-name-label');
 const createNameInput  = document.getElementById('create-name-input');
-const btnNew           = document.getElementById('btn-new');
 const btnPrev          = document.getElementById('btn-prev');
 const btnNext          = document.getElementById('btn-next');
 
@@ -312,7 +310,7 @@ function sendKeys() {
 }
 
 // ── events ─────────────────────────────────────────────────────────────────
-btnRefresh.addEventListener('click',  () => send({ type: 'list_sessions' }));
+xyzLabel.addEventListener('click', () => send({ type: 'list_sessions' }));
 cmdInput.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendKeys(); }
 });
@@ -372,24 +370,37 @@ function navigateRelative(delta) {
   navigateTo(next.sessionId, next.windowId, next.paneId);
 }
 
-// ── touch handler: double-tap opens context menu ──────────────────────────
+// ── touch handler: double-tap → new window; long-press → rename menu ──────
 let _touchX = 0, _touchY = 0;
 let _lastTap = 0;
+let _longPress = null;
 
 output.addEventListener('touchstart', e => {
   _touchX = e.touches[0].clientX;
   _touchY = e.touches[0].clientY;
+  _longPress = setTimeout(() => { _longPress = null; _lastTap = 0; showCtxMenu(); }, 600);
+}, { passive: true });
+
+output.addEventListener('touchmove', () => {
+  if (_longPress) { clearTimeout(_longPress); _longPress = null; }
 }, { passive: true });
 
 output.addEventListener('touchend', e => {
+  if (_longPress) { clearTimeout(_longPress); _longPress = null; }
   const dx = e.changedTouches[0].clientX - _touchX;
   const dy = e.changedTouches[0].clientY - _touchY;
   if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
     const now = Date.now();
-    if (now - _lastTap < 300) { showCtxMenu(); _lastTap = 0; }
-    else { _lastTap = now; }
+    if (now - _lastTap < 300) {
+      if (currentSessionId) send({ type: 'new_window', session_id: currentSessionId });
+      _lastTap = 0;
+    } else { _lastTap = now; }
   }
 }, { passive: true });
+
+output.addEventListener('dblclick', () => {
+  if (currentSessionId) send({ type: 'new_window', session_id: currentSessionId });
+});
 
 btnPrev.addEventListener('click', () => navigateRelative(-1));
 btnNext.addEventListener('click', () => navigateRelative(1));
@@ -502,7 +513,6 @@ function showCreateNameForm(type) {
   setTimeout(() => createNameInput.focus(), 80);
 }
 
-btnNew.addEventListener('click', showCreateOverlay);
 createOverlay.addEventListener('click', e => { if (e.target === createOverlay) hideCreateOverlay(); });
 
 document.getElementById('create-cancel').addEventListener('click', hideCreateOverlay);
