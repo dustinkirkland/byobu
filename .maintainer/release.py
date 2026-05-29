@@ -198,9 +198,9 @@ def determine_versions(mode):
     print(f"  Series:       {' '.join(series)}")
     print(f"  Devel series: {devel_series}")
 
-    # Check for PPA slot collision — also catch cross-scheme RC conflicts.
-    # dpkg ordering: empty-string < letters, so "0rc13" < "rc3" even though
-    # 13 > 3.  Any existing *rc* upload under this base_ver can block us.
+    # Check Launchpad for PPA versions that would block our upload.
+    # For each existing version under this base_ver, derive the upload target
+    # for that series and use dpkg --compare-versions for authoritative ordering.
     print("  Checking Launchpad for existing PPA slot…")
     try:
         base_url = (
@@ -212,40 +212,37 @@ def determine_versions(mode):
             d = json.loads(urllib.request.urlopen(base_url + status).read())
             all_entries += d.get("entries", [])
 
-        # Exact slot collision (same ppa_base prefix)
-        exact = [
-            e["source_package_version"]
-            for e in all_entries
-            if e["source_package_version"].startswith(f"{ppa_base}~")
-        ]
-        if exact:
+        def dpkg_ge(v1, v2):
+            return subprocess.run(
+                ["dpkg", "--compare-versions", v1, "ge", v2],
+                check=False, capture_output=True,
+            ).returncode == 0
+
+        # For each existing PPA version under base_ver, compute what our
+        # per-series upload target would be and check if existing >= target.
+        # This handles exact collisions, cross-scheme RC conflicts, and
+        # RC-vs-final ordering in one authoritative pass.
+        conflicting = []
+        for e in all_entries:
+            ev = e["source_package_version"]
+            if not ev.startswith(f"{base_ver}~"):
+                continue
+            m = re.search(r"([a-z]+)\d+$", ev)
+            if not m:
+                continue
+            target = f"{ppa_base}~{m.group(1)}1"
+            if dpkg_ge(ev, target):
+                conflicting.append(ev)
+
+        if conflicting:
             die(
-                f"PPA slot {ppa_base}~* already occupied: {' '.join(exact)}\n"
-                "  Version detection may be stale — verify and bump manually."
+                f"PPA already has versions >= {ppa_base}~{{series}}1:\n"
+                f"  {' '.join(conflicting)}\n"
+                f"  Delete at https://launchpad.net/~byobu/+archive/ubuntu/ppa\n"
+                f"  then re-run."
             )
 
-        # Cross-scheme RC collision: any *rc* version under this base_ver that
-        # dpkg would consider >= our ppa_base (e.g. old "7.1~rc3" vs new "7.1~0rc13")
-        if mode == "rc":
-            rc_pattern = re.compile(
-                rf"^{re.escape(base_ver)}~(?:0*rc\d+|[a-z]+rc\d+)~"
-            )
-            stale = [
-                e["source_package_version"]
-                for e in all_entries
-                if rc_pattern.match(e["source_package_version"])
-                and not e["source_package_version"].startswith(f"{ppa_base}~")
-            ]
-            if stale:
-                die(
-                    f"PPA contains RC packages from a different naming scheme:\n"
-                    f"  {' '.join(stale)}\n"
-                    f"  These may sort >= {ppa_base} in dpkg and block the upload.\n"
-                    f"  Delete them at https://launchpad.net/~byobu/+archive/ubuntu/ppa\n"
-                    f"  then re-run."
-                )
-
-        print(f"  PPA slot {ppa_base}~* is free.")
+        print(f"  PPA slot {ppa_base}~{{series}}1 is free.")
     except urllib.error.URLError as e:
         print(f"  (Launchpad check skipped — network error: {e})")
 
