@@ -11,6 +11,7 @@ import time
 from pathlib import Path
 
 PORT       = 7432
+SERVE_PORT = 443  # tailscale serve terminates TLS on :443
 CONFIG_DIR = Path.home() / ".config" / "trustmux"
 LOGFILE    = CONFIG_DIR / "trustmux.log"
 PIDFILE    = Path("/tmp/trustmux.pid")
@@ -54,6 +55,85 @@ def _ts_host() -> str:
         return json.loads(out).get("Self", {}).get("DNSName", "").rstrip(".")
     except Exception:
         return ""
+
+
+def _peer_acl_allows_tcp(port: int = SERVE_PORT) -> bool | None:
+    """Check whether the current tailnet ACL permits peer devices to reach this
+    node on tcp:<port>.
+
+    Returns True if at least one packet-filter rule allows it, False if no rule
+    does, or None if the check could not be performed (no tailscale binary,
+    unexpected netmap shape, etc.) — callers should treat None as "no warning."
+    """
+    try:
+        out = subprocess.check_output(
+            ["tailscale", "debug", "netmap"],
+            stderr=subprocess.DEVNULL, timeout=3, text=True,
+        )
+        nm = json.loads(out)
+    except Exception:
+        return None
+
+    self_ips: set[str] = set()
+    for cidr in (nm.get("SelfNode") or {}).get("Addresses") or []:
+        self_ips.add(cidr.split("/")[0])
+
+    rules = nm.get("PacketFilter")
+    if not rules:
+        return None
+
+    for r in rules:
+        protos = r.get("IPProto") or []
+        # Empty IPProto means "any protocol" in Tailscale's filter format.
+        if protos and 6 not in protos:
+            continue
+        for dst in r.get("Dsts") or []:
+            ports = dst.get("Ports") or {}
+            first, last = ports.get("First"), ports.get("Last")
+            if first is None or last is None:
+                continue
+            if not (first <= port <= last):
+                continue
+            if self_ips:
+                base = dst.get("Net", "").split("/")[0]
+                if base not in self_ips:
+                    continue
+            return True
+    return False
+
+
+def warn_if_peer_blocked(port: int = SERVE_PORT, stream=sys.stderr) -> None:
+    """Print an actionable warning if peer access to tcp:<port> appears to be
+    blocked by the tailnet ACL. Silent when the check passes or cannot run.
+
+    Without this warning, an ACL that omits the serve port produces a confusing
+    failure mode: the daemon and `tailscale serve` are healthy, `curl` from the
+    same host succeeds (loopback bypasses ACL evaluation), but peer browsers
+    see ERR_NETWORK_CHANGED or "Site cannot be reached" because tailscaled
+    silently drops the incoming TCP with no RST.
+    """
+    if _peer_acl_allows_tcp(port) is not False:
+        return
+    print("", file=stream)
+    print(f"warning: your tailnet ACL does not appear to allow tcp:{port} to this device.", file=stream)
+    print( "         Peer devices will silently fail to connect; browsers show", file=stream)
+    print( "         ERR_NETWORK_CHANGED or 'site cannot be reached.'", file=stream)
+    print( "", file=stream)
+    print( "         Edit your tailnet policy at:", file=stream)
+    print( "           https://login.tailscale.com/admin/acls/file", file=stream)
+    print( "", file=stream)
+    print( "         For the newer 'grants' format, add:", file=stream)
+    print( "", file=stream)
+    print( '             { "src": ["autogroup:member"],', file=stream)
+    print( '               "dst": ["<this-device-or-tag>"],', file=stream)
+    print(f'               "ip":  ["tcp:{port}"] }}', file=stream)
+    print( "", file=stream)
+    print( "         For the legacy 'acls' format, add:", file=stream)
+    print( "", file=stream)
+    print( '             { "action": "accept",', file=stream)
+    print( '               "src":    ["autogroup:member"],', file=stream)
+    print(f'               "dst":    ["<this-device-or-tag>:{port}"] }}', file=stream)
+    print( "", file=stream)
 
 
 def _ensure_ts_serve() -> bool:
@@ -143,6 +223,8 @@ def cmd_setup(quiet: bool = False) -> int:
 
     if not _ensure_ts_serve():
         return 1
+
+    warn_if_peer_blocked()
 
     if not quiet:
         print("\nSetup complete. Next steps:\n")
