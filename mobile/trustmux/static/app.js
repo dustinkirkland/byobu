@@ -316,10 +316,14 @@ function updateContextName() {
 }
 
 // ── output rendering ───────────────────────────────────────────────────────
+function scrollOutputToBottom() {
+  requestAnimationFrame(() => { output.scrollTop = output.scrollHeight; });
+}
+
 function renderOutput(text, scrollToBottom) {
   output.className = '';
   output.textContent = text;
-  if (scrollToBottom) output.scrollTop = output.scrollHeight;
+  if (scrollToBottom) scrollOutputToBottom();
 }
 
 // ── send keys ─────────────────────────────────────────────────────────────
@@ -362,6 +366,7 @@ function applyKbdMode() {
     btnKbdMode.title = 'Terminal mode — tap to enable spell check';
     btnKbdMode.style.color = '';
   }
+  scrollOutputToBottom();
 }
 btnKbdMode.addEventListener('click', () => {
   textMode = !textMode;
@@ -392,38 +397,17 @@ function navigateRelative(delta) {
   navigateTo(next.sessionId, next.windowId, next.paneId);
 }
 
-// ── touch handler: double-tap → new window ────────────────────────────────
+// ── touch swipe tracking (used for swipe nav) ─────────────────────────────
 let _touchX = 0, _touchY = 0;
-let _lastTap = 0;
-let _touchDoubleTapFired = false; // suppress synthetic dblclick after touch double-tap
 
 output.addEventListener('touchstart', e => {
   _touchX = e.touches[0].clientX;
   _touchY = e.touches[0].clientY;
 }, { passive: true });
 
-output.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - _touchX;
-  const dy = e.changedTouches[0].clientY - _touchY;
-  if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
-    const now = Date.now();
-    if (now - _lastTap < 300) {
-      // Mark so the synthetic dblclick that fires after touch doesn't duplicate this
-      _touchDoubleTapFired = true;
-      setTimeout(() => { _touchDoubleTapFired = false; }, 600);
-      if (currentSessionId) send({ type: 'new_window', session_id: currentSessionId });
-      _lastTap = 0;
-    } else { _lastTap = now; }
-  }
-}, { passive: true });
-
-output.addEventListener('dblclick', () => {
-  if (_touchDoubleTapFired) return; // already handled by touchend, skip synthetic event
-  if (currentSessionId) send({ type: 'new_window', session_id: currentSessionId });
-});
-
 btnPrev.addEventListener('click', () => navigateRelative(-1));
 btnNext.addEventListener('click', () => navigateRelative(1));
+document.getElementById('btn-create').addEventListener('click', showCreateOverlay);
 
 // ── rename overlay (tap name label in header) ─────────────────────────────
 let _pendingRenameId = null;
