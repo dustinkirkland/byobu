@@ -479,5 +479,131 @@ class TestDisableMain(unittest.TestCase):
                 disable.main()   # should not raise
 
 
+# ---------------------------------------------------------------------------
+# _peer_acl_allows_tcp() — tailnet ACL preflight
+# ---------------------------------------------------------------------------
+
+def _netmap(rules, self_addrs=("100.93.98.28/32",)):
+    """Build a minimal netmap JSON blob for the ACL preflight tests."""
+    nm = {"PacketFilter": rules}
+    if self_addrs is not None:
+        nm["SelfNode"] = {"Addresses": list(self_addrs)}
+    return json.dumps(nm)
+
+
+class TestPeerAclAllowsTcp(unittest.TestCase):
+
+    def _patch_netmap(self, output):
+        return patch('trustmux._ctl.subprocess.check_output', return_value=output)
+
+    def test_rule_allows_port_and_proto(self):
+        rules = [{
+            "IPProto": [6],
+            "Dsts": [{"Net": "100.93.98.28/32", "Ports": {"First": 443, "Last": 443}}],
+        }]
+        with self._patch_netmap(_netmap(rules)):
+            self.assertTrue(ctl._peer_acl_allows_tcp(443))
+
+    def test_rule_allows_port_range(self):
+        rules = [{
+            "IPProto": [6],
+            "Dsts": [{"Net": "100.93.98.28/32", "Ports": {"First": 1, "Last": 65535}}],
+        }]
+        with self._patch_netmap(_netmap(rules)):
+            self.assertTrue(ctl._peer_acl_allows_tcp(443))
+
+    def test_empty_iproto_means_all_protocols(self):
+        rules = [{
+            "IPProto": [],
+            "Dsts": [{"Net": "100.93.98.28/32", "Ports": {"First": 443, "Last": 443}}],
+        }]
+        with self._patch_netmap(_netmap(rules)):
+            self.assertTrue(ctl._peer_acl_allows_tcp(443))
+
+    def test_no_rule_covers_port(self):
+        rules = [{
+            "IPProto": [6],
+            "Dsts": [{"Net": "100.93.98.28/32", "Ports": {"First": 22, "Last": 22}}],
+        }]
+        with self._patch_netmap(_netmap(rules)):
+            self.assertFalse(ctl._peer_acl_allows_tcp(443))
+
+    def test_wrong_protocol_rejected(self):
+        rules = [{
+            "IPProto": [17],  # UDP only
+            "Dsts": [{"Net": "100.93.98.28/32", "Ports": {"First": 443, "Last": 443}}],
+        }]
+        with self._patch_netmap(_netmap(rules)):
+            self.assertFalse(ctl._peer_acl_allows_tcp(443))
+
+    def test_rule_for_different_device_rejected(self):
+        rules = [{
+            "IPProto": [6],
+            "Dsts": [{"Net": "100.64.0.99/32", "Ports": {"First": 443, "Last": 443}}],
+        }]
+        with self._patch_netmap(_netmap(rules)):
+            self.assertFalse(ctl._peer_acl_allows_tcp(443))
+
+    def test_accepts_match_when_self_ips_unknown(self):
+        # If SelfNode.Addresses is absent, fall back to "any net" matching so
+        # we don't false-positive a warning.
+        rules = [{
+            "IPProto": [6],
+            "Dsts": [{"Net": "100.64.0.99/32", "Ports": {"First": 443, "Last": 443}}],
+        }]
+        nm = json.dumps({"PacketFilter": rules})
+        with patch('trustmux._ctl.subprocess.check_output', return_value=nm):
+            self.assertTrue(ctl._peer_acl_allows_tcp(443))
+
+    def test_tailscale_missing_returns_none(self):
+        with patch('trustmux._ctl.subprocess.check_output',
+                   side_effect=FileNotFoundError):
+            self.assertIsNone(ctl._peer_acl_allows_tcp(443))
+
+    def test_malformed_json_returns_none(self):
+        with patch('trustmux._ctl.subprocess.check_output',
+                   return_value='not json'):
+            self.assertIsNone(ctl._peer_acl_allows_tcp(443))
+
+    def test_missing_packet_filter_returns_none(self):
+        with patch('trustmux._ctl.subprocess.check_output',
+                   return_value='{}'):
+            self.assertIsNone(ctl._peer_acl_allows_tcp(443))
+
+
+# ---------------------------------------------------------------------------
+# warn_if_peer_blocked()
+# ---------------------------------------------------------------------------
+
+class TestWarnIfPeerBlocked(unittest.TestCase):
+
+    def test_silent_when_reachable(self):
+        import io
+        buf = io.StringIO()
+        with patch('trustmux._ctl._peer_acl_allows_tcp', return_value=True):
+            ctl.warn_if_peer_blocked(443, stream=buf)
+        self.assertEqual(buf.getvalue(), "")
+
+    def test_silent_when_unknown(self):
+        import io
+        buf = io.StringIO()
+        with patch('trustmux._ctl._peer_acl_allows_tcp', return_value=None):
+            ctl.warn_if_peer_blocked(443, stream=buf)
+        self.assertEqual(buf.getvalue(), "")
+
+    def test_warns_when_blocked(self):
+        import io
+        buf = io.StringIO()
+        with patch('trustmux._ctl._peer_acl_allows_tcp', return_value=False):
+            ctl.warn_if_peer_blocked(443, stream=buf)
+        msg = buf.getvalue()
+        self.assertIn("warning", msg)
+        self.assertIn("tcp:443", msg)
+        self.assertIn("ERR_NETWORK_CHANGED", msg)
+        # Mentions both ACL formats so users on either can self-serve.
+        self.assertIn("grants", msg)
+        self.assertIn("acls", msg)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -9,6 +9,8 @@ import termios
 import tty
 from pathlib import Path
 
+from trustmux._ctl import warn_if_peer_blocked
+
 SOCK = Path.home() / ".config" / "trustmux" / "trustmux.sock"
 
 
@@ -122,6 +124,8 @@ def main():
     print(f"  Trustmux pairing code:  {code}  (valid {mins} min)")
     print(f"  Connect:                {pair_url}")
     print(f"{bar}\n")
+
+    warn_if_peer_blocked()
 
     _print_qr(pair_url)
     print()
