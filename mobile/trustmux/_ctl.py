@@ -1,5 +1,6 @@
 """trustmux-ctl — manage the Trustmux daemon."""
 import argparse
+import ipaddress
 import json
 import os
 import shutil
@@ -95,8 +96,11 @@ def _peer_acl_allows_tcp(port: int = SERVE_PORT) -> bool | None:
             if not (first <= port <= last):
                 continue
             if self_ips:
-                base = dst.get("Net", "").split("/")[0]
-                if base not in self_ips:
+                try:
+                    net = ipaddress.ip_network(dst.get("Net", ""), strict=False)
+                    if not any(ipaddress.ip_address(ip) in net for ip in self_ips):
+                        continue
+                except ValueError:
                     continue
             return True
     return False

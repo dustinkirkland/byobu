@@ -544,6 +544,24 @@ class TestPeerAclAllowsTcp(unittest.TestCase):
         with self._patch_netmap(_netmap(rules)):
             self.assertFalse(ctl._peer_acl_allows_tcp(443))
 
+    def test_cidr_rule_covers_device_ip(self):
+        # CIDR block that contains the device — default autogroup:member ACL
+        # uses 100.64.0.0/10 rather than a per-host /32.
+        rules = [{
+            "IPProto": [6],
+            "Dsts": [{"Net": "100.64.0.0/10", "Ports": {"First": 443, "Last": 443}}],
+        }]
+        with self._patch_netmap(_netmap(rules)):  # device is 100.93.98.28
+            self.assertTrue(ctl._peer_acl_allows_tcp(443))
+
+    def test_cidr_rule_does_not_cover_device_ip(self):
+        rules = [{
+            "IPProto": [6],
+            "Dsts": [{"Net": "10.0.0.0/8", "Ports": {"First": 443, "Last": 443}}],
+        }]
+        with self._patch_netmap(_netmap(rules)):
+            self.assertFalse(ctl._peer_acl_allows_tcp(443))
+
     def test_accepts_match_when_self_ips_unknown(self):
         # If SelfNode.Addresses is absent, fall back to "any net" matching so
         # we don't false-positive a warning.
