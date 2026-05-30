@@ -1,3 +1,5 @@
-.claude      export-ignore
-.github      export-ignore
-.maintainer  export-ignore
+.claude                       export-ignore
+.github                       export-ignore
+.maintainer                   export-ignore
+mobile/generate_screenshots.py export-ignore
+mobile/screenshots             export-ignore

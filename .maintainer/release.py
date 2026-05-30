@@ -22,6 +22,7 @@ Final adds:
     6c Ubuntu dev-series source build (Docker)
     6d Homebrew formula update
     GitHub release (non-prerelease, both byobu and trustmux tags)
+    8  Regenerate PWA screenshots → commit + push trustmux-web
 """
 
 import argparse
@@ -71,7 +72,7 @@ def section(msg):
 # ── phase resumption ──────────────────────────────────────────────────────
 
 # Canonical phase order (6b is an alias for 5b used in final-mode docs)
-_PHASE_ORDER = ["2b", "3", "4", "5", "5b", "6c", "6d", "6", "7"]
+_PHASE_ORDER = ["2b", "3", "4", "5", "5b", "6c", "6d", "6", "7", "8"]
 
 def _phase_idx(phase):
     if phase == "6b":
@@ -803,6 +804,61 @@ echo "  Monitor: https://ftp-master.debian.org/new.html"
     print(f"  ✓ Written: {script_path}")
 
 
+# ── phase 8: website screenshots (final only) ─────────────────────────────
+
+def update_website_screenshots(v):
+    """Regenerate PWA demo PNGs and push them to the trustmux-web repo."""
+    import tempfile
+    section("Phase 8: Regenerate website screenshots → trustmux-web")
+
+    mobile_dir  = BYOBU_SRC / "mobile"
+    venv_python = mobile_dir / ".venv" / "bin" / "python"
+    gen_script  = mobile_dir / "generate_screenshots.py"
+
+    if not venv_python.exists():
+        die(
+            f"Mobile venv not found at {venv_python}\n"
+            "  Run: cd mobile && uv venv && uv pip install -e '.[dev]' cairosvg pillow"
+        )
+    if not gen_script.exists():
+        die(f"generate_screenshots.py not found at {gen_script}")
+
+    # Locate trustmux-web repo
+    web_repo = None
+    for candidate in [
+        Path.home() / "src/trustmux-web",
+        Path.home() / "trustmux-web",
+        BYOBU_SRC.parent / "trustmux-web",
+    ]:
+        if (candidate / ".git").is_dir():
+            web_repo = candidate
+            break
+    if not web_repo:
+        die("trustmux-web repo not found. Clone it to ~/src/trustmux-web first.")
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        run([str(venv_python), str(gen_script), "--out-dir", tmpdir])
+        shots_dir = web_repo / "screenshots"
+        shots_dir.mkdir(exist_ok=True)
+        for png in sorted(Path(tmpdir).glob("*.png")):
+            shutil.copy2(png, shots_dir / png.name)
+            print(f"  copied {png.name} → {shots_dir}/")
+
+    run(["git", "-C", str(web_repo), "add", "screenshots/"])
+    dirty = run(
+        ["git", "-C", str(web_repo), "diff", "--cached", "--quiet"], check=False
+    )
+    if dirty.returncode != 0:
+        run([
+            "git", "-C", str(web_repo), "commit", "-m",
+            f"Regenerate PWA screenshots for trustmux {v['pypi_version']}",
+        ])
+        run(["git", "-C", str(web_repo), "push"])
+        print(f"  ✓ Screenshots updated and pushed to trustmux-web ({v['pypi_version']})")
+    else:
+        print("  (screenshots unchanged — nothing to push)")
+
+
 # ── summary ───────────────────────────────────────────────────────────────
 
 def print_summary(v, mode):
@@ -826,6 +882,7 @@ def print_summary(v, mode):
             f"  Ubuntu: byobu {v['ubuntu_ver']} → {v['devel_series']}"
             f"\n          (files in {outdir}/ubuntu/)"
             f"\n  Homebrew: brew upgrade dustinkirkland/trustmux/trustmux"
+            f"\n  Website: trustmux-web screenshots regenerated and pushed"
         )
     debs = sorted((outdir / "debs").glob("*.deb"))
     if debs:
@@ -901,7 +958,7 @@ def main():
         choices=_PHASE_ORDER + ["6b"],
         help=(
             "Resume from this phase, reusing the existing /tmp/byobu-release-* dir. "
-            "Phases: 2b 3 4 5 5b(=6b) 6c 6d 6 7"
+            "Phases: 2b 3 4 5 5b(=6b) 6c 6d 6 7 8"
         ),
     )
     args = parser.parse_args()
@@ -952,6 +1009,9 @@ def main():
 
     if should_run("7", start_from):
         write_sign_and_upload(v, identity, mode)
+
+    if mode == "final" and should_run("8", start_from):
+        update_website_screenshots(v)
 
     print_summary(v, mode)
 
