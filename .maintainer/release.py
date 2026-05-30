@@ -408,7 +408,8 @@ apt-get install -y --no-install-recommends \
   python3 python3-all python3-tornado \
   devscripts bc ca-certificates distro-info git 2>&1 | tail -5
 
-SERIES=$(ubuntu-distro-info --supported | tr "\n" " ")
+DEVEL=$(ubuntu-distro-info --devel 2>/dev/null || echo "")
+SERIES=$(ubuntu-distro-info --supported | grep -Fxv "$DEVEL" | tr "\n" " ")
 echo "Building for: $DEBFULLNAME <$DEBEMAIL>"
 echo "Series: $SERIES"
 
@@ -808,6 +809,15 @@ if [[ "$ans" =~ ^[Yy]$ ]]; then
 else
   echo "  Skipped."
 fi
+
+echo ""
+echo "=========================================="
+echo " All uploads complete!"
+echo " Next step: open the next development cycle"
+echo ""
+echo "   cd {BYOBU_SRC}"
+echo "   ./.maintainer/release.py open-dev"
+echo "=========================================="
 """
 
     script_path = outdir / "sign-and-upload.sh"
