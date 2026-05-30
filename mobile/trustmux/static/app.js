@@ -709,10 +709,17 @@ const isStandalone = window.matchMedia('(display-mode: standalone)').matches
                      || navigator.standalone === true;
 let deferredInstallPrompt = null;
 
+// Show install button OR context name in the center slot — never both.
+function _syncCenterSlot() {
+  const showInstall = btnInstall.style.display !== 'none';
+  ctxName.style.display = showInstall ? 'none' : '';
+}
+
 if (!isStandalone) {
   if (isIOS) {
     // iOS Safari: no beforeinstallprompt — show button that explains manual steps.
     btnInstall.style.display = '';
+    _syncCenterSlot();
     btnInstall.addEventListener('click', () => {
       iosInstallTip.style.display = '';
     });
@@ -725,6 +732,7 @@ if (!isStandalone) {
       e.preventDefault();
       deferredInstallPrompt = e;
       btnInstall.style.display = '';
+      _syncCenterSlot();
     });
     btnInstall.addEventListener('click', async () => {
       if (!deferredInstallPrompt) return;
@@ -732,10 +740,12 @@ if (!isStandalone) {
       const { outcome } = await deferredInstallPrompt.userChoice;
       deferredInstallPrompt = null;
       btnInstall.style.display = 'none';
+      _syncCenterSlot();
     });
     window.addEventListener('appinstalled', () => {
       btnInstall.style.display = 'none';
       deferredInstallPrompt = null;
+      _syncCenterSlot();
     });
   }
 }
