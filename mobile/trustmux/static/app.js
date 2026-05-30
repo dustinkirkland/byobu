@@ -187,7 +187,7 @@ function connect() {
     setStatus('connected', 'connected');
     startClock();
     send({ type: 'list_sessions' });
-    if (currentPane) send({ type: 'subscribe', pane_id: currentPane, lines: 300 });
+    if (currentPane) send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true });
   };
   ws.onclose = (evt) => {
     stopClock();
@@ -303,7 +303,7 @@ function navigateTo(sessionId, windowId, paneId) {
   btnSend.disabled  = false;
   output.className  = '';
   output.textContent = 'loading…';
-  send({ type: 'subscribe', pane_id: paneId, lines: 300 });
+  send({ type: 'subscribe', pane_id: paneId, lines: 300, ansi: true });
   updateXYZLabel();
   updateContextName();
 }
@@ -320,9 +320,80 @@ function scrollOutputToBottom() {
   requestAnimationFrame(() => { output.scrollTop = output.scrollHeight; });
 }
 
+// Convert ANSI SGR escape codes to HTML spans.
+// Handles: 16/256/truecolor fg+bg, bold, italic, underline. Other sequences discarded.
+function ansiToHtml(text) {
+  const C16 = [
+    '#1e1e1e','#cc0000','#4e9a06','#c4a000','#3465a4','#75507b','#06989a','#d3d7cf',
+    '#555753','#ef2929','#8ae234','#fce94f','#729fcf','#ad7fa8','#34e2e2','#eeeeec',
+  ];
+  function c256(n) {
+    if (n < 16) return C16[n];
+    if (n < 232) {
+      const i = n - 16, lv = [0, 95, 135, 175, 215, 255];
+      return `rgb(${lv[~~(i/36)]},${lv[~~((i%36)/6)]},${lv[i%6]})`;
+    }
+    const v = 8 + (n - 232) * 10;
+    return `rgb(${v},${v},${v})`;
+  }
+  let fg = null, bg = null, bold = false, italic = false, ul = false;
+  let spanCss = null, out = '';
+
+  function css() {
+    const p = [];
+    if (fg) p.push(`color:${fg}`);
+    if (bg) p.push(`background:${bg}`);
+    if (bold) p.push('font-weight:bold');
+    if (italic) p.push('font-style:italic');
+    if (ul) p.push('text-decoration:underline');
+    return p.join(';');
+  }
+  function emit(s) {
+    if (!s) return;
+    const c = css();
+    if (c !== spanCss) {
+      if (spanCss !== null) out += '</span>';
+      if (c) out += `<span style="${c}">`;
+      spanCss = c || null;
+    }
+    out += s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function sgr(ps) {
+    let i = 0;
+    while (i < ps.length) {
+      const p = ps[i];
+      if (!p)            { fg = bg = null; bold = italic = ul = false; }
+      else if (p === 1)  bold   = true;
+      else if (p === 3)  italic = true;
+      else if (p === 4)  ul     = true;
+      else if (p === 22) bold   = false;
+      else if (p === 23) italic = false;
+      else if (p === 24) ul     = false;
+      else if (p >= 30 && p <= 37) fg = C16[p - 30];
+      else if (p === 38 && ps[i+1] === 5) { fg = c256(ps[i+2]); i += 2; }
+      else if (p === 38 && ps[i+1] === 2) { fg = `rgb(${ps[i+2]},${ps[i+3]},${ps[i+4]})`; i += 4; }
+      else if (p === 39) fg = null;
+      else if (p >= 40 && p <= 47) bg = C16[p - 40];
+      else if (p === 48 && ps[i+1] === 5) { bg = c256(ps[i+2]); i += 2; }
+      else if (p === 48 && ps[i+1] === 2) { bg = `rgb(${ps[i+2]},${ps[i+3]},${ps[i+4]})`; i += 4; }
+      else if (p === 49) bg = null;
+      else if (p >= 90  && p <= 97)  fg = C16[p - 82];
+      else if (p >= 100 && p <= 107) bg = C16[p - 92];
+      i++;
+    }
+  }
+  const TOK = /([^\x1b]+)|\x1b(?:\[([0-9;]*)([A-Za-z])|\][^\x07]*(?:\x07|\x1b\\)|(.))/g;
+  for (const m of text.matchAll(TOK)) {
+    if (m[1])              emit(m[1]);
+    else if (m[3] === 'm') sgr(m[2] ? m[2].split(';').map(Number) : [0]);
+  }
+  if (spanCss !== null) out += '</span>';
+  return out;
+}
+
 function renderOutput(text, scrollToBottom) {
   output.className = '';
-  output.textContent = text;
+  output.innerHTML = ansiToHtml(text);
   if (scrollToBottom) scrollOutputToBottom();
 }
 

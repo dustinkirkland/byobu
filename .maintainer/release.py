@@ -576,7 +576,7 @@ DATESTAMP=$(date -R)
 } > debian/changelog.new
 mv debian/changelog.new debian/changelog
 
-dpkg-buildpackage -S -us -uc -d 2>&1 | tail -3
+dpkg-buildpackage -S -us -uc -d -sa 2>&1 | tail -3
 
 cp -v "$BUILDDIR"/*.changes "$BUILDDIR"/*.dsc \
       "$BUILDDIR"/*.tar.* "$BUILDDIR"/*.buildinfo /out/ 2>/dev/null || true
