@@ -98,9 +98,9 @@ function unlockApp() {
 }
 
 function disableLock() {
-  _lockEnabled = 'false';
+  _lockEnabled = null;
   _lockCredId  = null;
-  localStorage.setItem('lock-enabled', 'false');
+  localStorage.removeItem('lock-enabled');
   localStorage.removeItem('lock-cred-id');
   clearTimeout(_lockTimer);
   unlockApp();
