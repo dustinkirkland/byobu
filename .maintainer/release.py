@@ -754,9 +754,10 @@ fi
 echo ""
 
 echo "── Step 3: Debian experimental (mentors.debian.net) ────────────────"
-read -rp "  Upload to mentors.debian.net for sponsor review? [y/N] " ans
+read -rp "  Upload to mentors.debian.net for sponsor review? [y/N] " ans < /dev/tty
 if [[ "$ans" =~ ^[Yy]$ ]]; then
-  dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes"
+  dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" \
+    || {{ echo "  ✗ dput failed — package not uploaded."; exit 1; }}
   echo ""
   echo "  Uploaded. Email Antoine <anarcat@debian.org> with:"
   echo "    Subject: byobu {v['deb_exp_version']} sponsorship request (experimental)"
@@ -796,9 +797,10 @@ read -rp "  Upload to Ubuntu {v['devel_series']}? [y/N] " ans
 echo ""
 
 echo "── Step 3: Debian unstable (mentors.debian.net) ────────────────────"
-read -rp "  Upload to mentors.debian.net for sponsor review? [y/N] " ans
+read -rp "  Upload to mentors.debian.net for sponsor review? [y/N] " ans < /dev/tty
 if [[ "$ans" =~ ^[Yy]$ ]]; then
-  dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes"
+  dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" \
+    || {{ echo "  ✗ dput failed — package not uploaded."; exit 1; }}
   echo ""
   echo "  Uploaded. Email Antoine <anarcat@debian.org> with:"
   echo "    Subject: byobu {v['base_ver']} sponsorship request (unstable)"
