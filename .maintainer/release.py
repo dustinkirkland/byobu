@@ -753,12 +753,17 @@ else
 fi
 echo ""
 
-echo "── Step 3: Debian experimental ─────────────────────────────────────"
-read -rp "  Upload to Debian experimental (ftp-master)? [y/N] " ans
-[[ "$ans" =~ ^[Yy]$ ]] && \\
-  dput ftp-master "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" || \\
+echo "── Step 3: Debian experimental (mentors.debian.net) ────────────────"
+read -rp "  Upload to mentors.debian.net for sponsor review? [y/N] " ans
+if [[ "$ans" =~ ^[Yy]$ ]]; then
+  dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes"
+  echo ""
+  echo "  Uploaded. Email Antoine <anarcat@debian.org> with:"
+  echo "    Subject: byobu {v['deb_exp_version']} sponsorship request (experimental)"
+  echo "    Body: https://mentors.debian.net/package/byobu"
+else
   echo "  Skipped."
-echo "  Monitor: https://ftp-master.debian.org/new.html"
+fi
 """
     else:
         body = f"""\
@@ -790,12 +795,17 @@ read -rp "  Upload to Ubuntu {v['devel_series']}? [y/N] " ans
   echo "  Skipped."
 echo ""
 
-echo "── Step 3: Debian unstable ──────────────────────────────────────────"
-read -rp "  Upload to Debian unstable (ftp-master)? [y/N] " ans
-[[ "$ans" =~ ^[Yy]$ ]] && \\
-  dput ftp-master "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" || \\
+echo "── Step 3: Debian unstable (mentors.debian.net) ────────────────────"
+read -rp "  Upload to mentors.debian.net for sponsor review? [y/N] " ans
+if [[ "$ans" =~ ^[Yy]$ ]]; then
+  dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes"
+  echo ""
+  echo "  Uploaded. Email Antoine <anarcat@debian.org> with:"
+  echo "    Subject: byobu {v['base_ver']} sponsorship request (unstable)"
+  echo "    Body: https://mentors.debian.net/package/byobu"
+else
   echo "  Skipped."
-echo "  Monitor: https://ftp-master.debian.org/new.html"
+fi
 """
 
     script_path = outdir / "sign-and-upload.sh"
