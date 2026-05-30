@@ -823,9 +823,19 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                 if not _valid_tmux_id(wid):
                     self._send({"type": "error", "message": "invalid window_id"})
                 else:
+                    # Snapshot pane IDs before split to identify the new one
+                    panes_before = {p["id"] for p in await asyncio.to_thread(tmux_list_panes, wid)}
                     await asyncio.to_thread(tmux_new_pane, wid)
                     sessions_list = await asyncio.to_thread(tmux_list_sessions)
-                    self._send({"type": "sessions", "data": sessions_list})
+                    new_pane_id = None
+                    for s in sessions_list:
+                        for w in s.get("windows", []):
+                            if w["id"] == wid:
+                                for p in w.get("panes", []):
+                                    if p["id"] not in panes_before:
+                                        new_pane_id = p["id"]
+                                break
+                    self._send({"type": "sessions", "data": sessions_list, "new_pane": new_pane_id})
 
             elif mtype == "kill_pane":
                 pane_id = msg.get("pane_id", "")

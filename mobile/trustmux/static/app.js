@@ -448,12 +448,18 @@ btnKbdMode.addEventListener('click', () => {
 });
 
 // ── pane list — all live panes across all windows and sessions ────────────
+// Deduplicated by pane ID: byobu exposes the same windows/panes under multiple
+// sessions (linked windows / multi-client attach), so skip any already seen.
 function flatPaneList() {
   const list = [];
+  const seen = new Set();
   for (const s of sessions) {
     for (const w of (s.windows || [])) {
       for (const p of (w.panes || [])) {
-        if (!p.dead) list.push({ sessionId: s.id, windowId: w.id, paneId: p.id });
+        if (!p.dead && !seen.has(p.id)) {
+          seen.add(p.id);
+          list.push({ sessionId: s.id, windowId: w.id, paneId: p.id });
+        }
       }
     }
   }
