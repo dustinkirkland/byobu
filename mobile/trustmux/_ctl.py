@@ -15,7 +15,7 @@ PORT       = 7432
 SERVE_PORT = 443  # tailscale serve terminates TLS on :443
 CONFIG_DIR = Path.home() / ".config" / "trustmux"
 LOGFILE    = CONFIG_DIR / "trustmux.log"
-PIDFILE    = Path("/tmp/trustmux.pid")
+PIDFILE    = CONFIG_DIR / "trustmux.pid"
 TOKENS_FILE = CONFIG_DIR / "tokens.json"
 
 

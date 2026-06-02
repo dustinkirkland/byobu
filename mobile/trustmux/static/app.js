@@ -97,14 +97,6 @@ function unlockApp() {
   resetLockTimer();
 }
 
-function disableLock() {
-  _lockEnabled = null;
-  _lockCredId  = null;
-  localStorage.removeItem('lock-enabled');
-  localStorage.removeItem('lock-cred-id');
-  clearTimeout(_lockTimer);
-  unlockApp();
-}
 
 function maybeOfferBiometric() {
   if (!_webauthnAvailable()) return;
@@ -162,6 +154,8 @@ const createNameLabel  = document.getElementById('create-name-label');
 const createNameInput  = document.getElementById('create-name-input');
 const btnPrev          = document.getElementById('btn-prev');
 const btnNext          = document.getElementById('btn-next');
+const btnEscape        = document.getElementById('btn-escape');
+const escapePopup      = document.getElementById('escape-popup');
 
 // ── pane names (user-defined, stored in localStorage) ─────────────────────
 // Key is scoped to the server hostname so names don't bleed across machines.
@@ -336,6 +330,10 @@ function ansiToHtml(text) {
     const v = 8 + (n - 232) * 10;
     return `rgb(${v},${v},${v})`;
   }
+  function _rgb(r, g, b) {
+    const ok = v => Number.isInteger(v) && v >= 0 && v <= 255;
+    return (ok(r) && ok(g) && ok(b)) ? `rgb(${r},${g},${b})` : null;
+  }
   let fg = null, bg = null, bold = false, italic = false, ul = false;
   let spanCss = null, out = '';
 
@@ -371,11 +369,11 @@ function ansiToHtml(text) {
       else if (p === 24) ul     = false;
       else if (p >= 30 && p <= 37) fg = C16[p - 30];
       else if (p === 38 && ps[i+1] === 5) { fg = c256(ps[i+2]); i += 2; }
-      else if (p === 38 && ps[i+1] === 2) { fg = `rgb(${ps[i+2]},${ps[i+3]},${ps[i+4]})`; i += 4; }
+      else if (p === 38 && ps[i+1] === 2) { fg = _rgb(ps[i+2],ps[i+3],ps[i+4]); i += 4; }
       else if (p === 39) fg = null;
       else if (p >= 40 && p <= 47) bg = C16[p - 40];
       else if (p === 48 && ps[i+1] === 5) { bg = c256(ps[i+2]); i += 2; }
-      else if (p === 48 && ps[i+1] === 2) { bg = `rgb(${ps[i+2]},${ps[i+3]},${ps[i+4]})`; i += 4; }
+      else if (p === 48 && ps[i+1] === 2) { bg = _rgb(ps[i+2],ps[i+3],ps[i+4]); i += 4; }
       else if (p === 49) bg = null;
       else if (p >= 90  && p <= 97)  fg = C16[p - 82];
       else if (p >= 100 && p <= 107) bg = C16[p - 92];
@@ -446,6 +444,38 @@ btnKbdMode.addEventListener('click', () => {
   cmdInput.blur();
   setTimeout(() => cmdInput.focus(), 50);
 });
+
+// ── escape / ctrl-c popup ─────────────────────────────────────────────────
+function showEscapePopup() {
+  const rect = btnEscape.getBoundingClientRect();
+  escapePopup.style.display = 'flex';
+  escapePopup.style.right   = (window.innerWidth - rect.right) + 'px';
+  escapePopup.style.bottom  = (window.innerHeight - rect.top + 8) + 'px';
+}
+
+function hideEscapePopup() {
+  escapePopup.style.display = 'none';
+}
+
+btnEscape.addEventListener('click', e => {
+  e.stopPropagation();
+  escapePopup.style.display === 'none' ? showEscapePopup() : hideEscapePopup();
+});
+
+document.getElementById('escape-popup-esc').addEventListener('click', () => {
+  if (currentPane) send({ type: 'send_keys', pane_id: currentPane, keys: 'Escape', enter: false, literal: false });
+  hideEscapePopup();
+});
+
+document.getElementById('escape-popup-ctrlc').addEventListener('click', () => {
+  if (currentPane) send({ type: 'send_keys', pane_id: currentPane, keys: 'C-c', enter: false, literal: false });
+  hideEscapePopup();
+});
+
+document.addEventListener('click', () => hideEscapePopup());
+document.addEventListener('touchstart', e => {
+  if (!escapePopup.contains(e.target) && e.target !== btnEscape) hideEscapePopup();
+}, { passive: true });
 
 // ── pane list — all live panes across all windows and sessions ────────────
 // Deduplicated by pane ID: byobu exposes the same windows/panes under multiple
@@ -646,7 +676,7 @@ function showPairScreen() {
   pairCodeInput.value = '';
   pairError.textContent = '';
   if (statusInterval) { clearInterval(statusInterval); statusInterval = null; }
-  const autoCode = new URLSearchParams(window.location.search).get('pair');
+  const autoCode = (window.location.hash.slice(1) || '').replace(/\D/g, '').slice(0, 6);
   if (autoCode && /^\d{6}$/.test(autoCode)) {
     pairCodeInput.value = `${autoCode.slice(0,3)}-${autoCode.slice(3)}`;
     setTimeout(submitPair, 400);
@@ -657,10 +687,8 @@ function showPairScreen() {
 
 function hidePairScreen() {
   pairOverlay.style.display = 'none';
-  const url = new URL(window.location);
-  if (url.searchParams.has('pair')) {
-    url.searchParams.delete('pair');
-    history.replaceState(null, '', url);
+  if (window.location.hash) {
+    history.replaceState(null, '', window.location.pathname + window.location.search);
   }
 }
 
@@ -821,7 +849,6 @@ document.getElementById('lock-unlock-btn').addEventListener('click', async () =>
   }
 });
 
-document.getElementById('lock-disable-btn').addEventListener('click', disableLock);
 
 // ── init: check auth, then connect or show pair screen ────────────────────
 async function init() {

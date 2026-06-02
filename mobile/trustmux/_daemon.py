@@ -7,6 +7,7 @@ import base64
 from datetime import datetime
 import getpass
 import glob
+import hmac
 import json
 import os
 import re
@@ -30,7 +31,8 @@ _pair_code_mono_expiry: float = 0.0   # monotonic time, for expiry check
 _pair_attempts: int = 0
 _MAX_PAIR_ATTEMPTS: int = 3
 _PAIR_CODE_TTL: int = 180             # 3 minutes
-_sessions: dict[str, dict] = {}      # token → {ip, paired_at, label}
+_TOKEN_EXPIRY_DAYS: int = 90          # sessions expire after 90 days of inactivity
+_sessions: dict[str, dict] = {}      # token → {ip, paired_at, label, last_used}
 _https_mode: bool = False             # set by --https; enables Secure cookie
 
 CONFIG_DIR    = Path.home() / ".config" / "trustmux"
@@ -57,14 +59,24 @@ def _load_tokens() -> None:
         data = json.loads(TOKENS_FILE.read_text())
         if not isinstance(data, dict):
             raise ValueError("expected a JSON object")
+        expiry_cutoff = time.time() - _TOKEN_EXPIRY_DAYS * 86400
         valid = {
             t: s for t, s in data.items()
             if isinstance(t, str) and isinstance(s, dict)
             and "ip" in s and "paired_at" in s
+            and float(s.get("last_used", s["paired_at"])) > expiry_cutoff
         }
-        skipped = len(data) - len(valid)
-        if skipped:
-            print(f"Warning: skipped {skipped} malformed record(s) in {TOKENS_FILE}", flush=True)
+        expired = sum(
+            1 for t, s in data.items()
+            if isinstance(t, str) and isinstance(s, dict)
+            and "paired_at" in s
+            and float(s.get("last_used", s["paired_at"])) <= expiry_cutoff
+        )
+        malformed = len(data) - len(valid) - expired
+        if expired:
+            print(f"Info: expired {expired} stale session(s) from {TOKENS_FILE}", flush=True)
+        if malformed:
+            print(f"Warning: skipped {malformed} malformed record(s) in {TOKENS_FILE}", flush=True)
         _sessions.update(valid)
     except Exception as e:
         print(f"Warning: could not load {TOKENS_FILE}: {e} — all sessions lost", flush=True)
@@ -99,7 +111,17 @@ def _print_pair_code() -> None:
     print(f"{bar}\n", flush=True)
 
 def _valid_session_token(token: str) -> bool:
-    return bool(token and token in _sessions)
+    if not token:
+        return False
+    token_bytes = token.encode()
+    expiry_cutoff = time.time() - _TOKEN_EXPIRY_DAYS * 86400
+    for k, s in _sessions.items():
+        if hmac.compare_digest(token_bytes, k.encode()):
+            if float(s.get("last_used", s.get("paired_at", 0))) <= expiry_cutoff:
+                return False
+            s["last_used"] = time.time()
+            return True
+    return False
 
 # ---------------------------------------------------------------------------
 # Tailscale IP detection
@@ -282,8 +304,11 @@ def tmux_kill_window(window_id: str) -> None:
 def tmux_kill_session(session_id: str) -> None:
     _tmux("kill-session", "-t", session_id)
 
-def tmux_send_keys(pane_id: str, keys: str, enter: bool = True) -> None:
-    _tmux("send-keys", "-t", pane_id, "-l", keys)
+def tmux_send_keys(pane_id: str, keys: str, enter: bool = True, literal: bool = True) -> None:
+    if literal:
+        _tmux("send-keys", "-t", pane_id, "-l", keys)
+    else:
+        _tmux("send-keys", "-t", pane_id, keys)
     if enter:
         _tmux("send-keys", "-t", pane_id, "Enter")
 
@@ -561,14 +586,17 @@ class PairHandler(BaseHandler):
         if code != _pair_code:
             _pair_attempts += 1
             left = _MAX_PAIR_ATTEMPTS - _pair_attempts
+            await asyncio.sleep(0.5)  # slow brute-force attempts
             return self.json({"error": f"wrong code — {left} attempts left"}, 403)
         # Valid — issue permanent session token; invalidate code (one device per code)
         token = secrets.token_urlsafe(32)
         label = self.request.headers.get("User-Agent", "")[:120]
         ip = self.request.remote_ip  # respects xheaders automatically
+        now = time.time()
         _sessions[token] = {
             "ip": ip,
-            "paired_at": time.time(),
+            "paired_at": now,
+            "last_used": now,
             "label": label,
         }
         await asyncio.to_thread(_save_tokens)
@@ -579,7 +607,7 @@ class PairHandler(BaseHandler):
         print(f"✓ Trustmux: device paired ({ip})", flush=True)
         self.set_cookie(
             "trustmux_session", token,
-            expires_days=10 * 365,
+            expires_days=_TOKEN_EXPIRY_DAYS,
             httponly=True,
             samesite="Strict",
             secure=_https_mode,
@@ -587,7 +615,7 @@ class PairHandler(BaseHandler):
         self.json({"ok": True})
 
 
-class MachinesHandler(BaseHandler):
+class MachinesHandler(BaseAuthHandler):
     async def get(self):
         try:
             current_url = f"{self.request.protocol}://{self.request.host}"
@@ -597,7 +625,7 @@ class MachinesHandler(BaseHandler):
                 if isinstance(raw, list):
                     siblings = [s for s in raw
                                 if isinstance(s, dict) and "name" in s and "url" in s
-                                and re.match(r'^https?://', s["url"])]
+                                and re.match(r'^https://', s["url"])]
             result = [{"name": "this machine", "url": current_url, "current": True}] + [
                 {"name": s["name"], "url": s["url"].rstrip("/"), "current": False}
                 for s in siblings
@@ -661,17 +689,34 @@ class WsHandler(tornado.websocket.WebSocketHandler):
         await super().get(*args, **kwargs)
 
     def open(self):
-        token = self.get_cookie("trustmux_session") or ""
-        if not _valid_session_token(token):
-            self.close(4401, "unauthorized")
-            return
-        self._token = token
         self._stream_task: asyncio.Task | None = None
         self._topo_task: asyncio.Task | None = None
+        self._auth_timer: asyncio.Task | None = None
         self._rate_window_start = time.monotonic()
         self._rate_count = 0
+        token = self.get_cookie("trustmux_session") or ""
+        if token:
+            # Cookie present: accept if valid, reject immediately if not
+            if _valid_session_token(token):
+                self._token = token
+                self._authenticated = True
+                self._start_streams()
+            else:
+                self.close(4401, "unauthorized")
+        else:
+            # No cookie: native client authenticates via first-message auth frame
+            self._token = None
+            self._authenticated = False
+            self._auth_timer = asyncio.ensure_future(self._auth_timeout())
+
+    def _start_streams(self):
         asyncio.ensure_future(self._send_sessions())
         self._topo_task = asyncio.ensure_future(self._poll_topology())
+
+    async def _auth_timeout(self):
+        await asyncio.sleep(10)
+        if not getattr(self, "_authenticated", False):
+            self.close(4401, "authentication timeout")
 
     def on_message(self, raw):
         asyncio.ensure_future(self._handle(raw))
@@ -681,6 +726,8 @@ class WsHandler(tornado.websocket.WebSocketHandler):
             self._stream_task.cancel()
         if getattr(self, "_topo_task", None):
             self._topo_task.cancel()
+        if getattr(self, "_auth_timer", None):
+            self._auth_timer.cancel()
 
     def _send(self, obj: dict):
         try:
@@ -731,6 +778,25 @@ class WsHandler(tornado.websocket.WebSocketHandler):
             self._send({"type": "error", "message": "pane stream error"})
 
     async def _handle(self, raw: str):
+        # Handle unauthenticated state — expect auth message first
+        if not getattr(self, "_authenticated", False):
+            try:
+                msg = json.loads(raw)
+                if isinstance(msg, dict) and msg.get("type") == "auth":
+                    token = str(msg.get("token", ""))
+                    if _valid_session_token(token):
+                        if self._auth_timer:
+                            self._auth_timer.cancel()
+                            self._auth_timer = None
+                        self._token = token
+                        self._authenticated = True
+                        self._start_streams()
+                        return
+            except Exception:
+                pass
+            self.close(4401, "unauthorized")
+            return
+
         # Re-check token on every message — catches revocation mid-session
         if not _valid_session_token(getattr(self, "_token", "")):
             self.close(4401, "unauthorized")
@@ -870,8 +936,9 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     self._send({"type": "error", "message": "invalid pane_id"})
                 else:
                     keys = str(msg.get("keys", ""))[:4096]
-                    enter = bool(msg.get("enter", True))
-                    await asyncio.to_thread(tmux_send_keys, pane_id, keys, enter)
+                    enter   = bool(msg.get("enter", True))
+                    literal = bool(msg.get("literal", True))
+                    await asyncio.to_thread(tmux_send_keys, pane_id, keys, enter, literal)
                     del keys  # release sensitive content as early as possible
 
             elif mtype == "rename_window":
@@ -1023,7 +1090,17 @@ def _ensure_self_signed_cert(lan_ip: str) -> tuple:
     cert = CONFIG_DIR / "cert.pem"
     key  = CONFIG_DIR / "key.pem"
     CONFIG_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
-    san = f"IP:{lan_ip},IP:127.0.0.1,DNS:localhost"
+    san_parts = [f"IP:{lan_ip}", "IP:127.0.0.1", "DNS:localhost"]
+    fqdn = socket.getfqdn()
+    if fqdn and fqdn not in ("localhost", lan_ip):
+        san_parts.append(f"DNS:{fqdn}")
+    hostname = socket.gethostname().split(".")[0]
+    if hostname and hostname not in ("localhost",):
+        san_parts.append(f"DNS:{hostname}")
+    ts_ip = _tailscale_ip()
+    if ts_ip and ts_ip != lan_ip:
+        san_parts.append(f"IP:{ts_ip}")
+    san = ",".join(san_parts)
     try:
         subprocess.run([
             "openssl", "req", "-x509",

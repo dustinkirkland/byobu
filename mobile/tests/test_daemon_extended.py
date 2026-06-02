@@ -68,14 +68,14 @@ class TestTokenPersistence(unittest.TestCase):
         self.assertEqual(bm._sessions, {})
 
     def test_load_valid_tokens(self):
-        self._write_tokens({'mytoken': {'ip': '1.2.3.4', 'paired_at': 1234.0, 'label': 'x'}})
+        self._write_tokens({'mytoken': {'ip': '1.2.3.4', 'paired_at': time.time(), 'label': 'x'}})
         bm._load_tokens()
         self.assertIn('mytoken', bm._sessions)
         self.assertEqual(bm._sessions['mytoken']['ip'], '1.2.3.4')
 
     def test_load_skips_malformed_records(self):
         self._write_tokens({
-            'good': {'ip': '1.1.1.1', 'paired_at': 1.0, 'label': ''},
+            'good': {'ip': '1.1.1.1', 'paired_at': time.time(), 'label': ''},
             'bad_str': 'not-a-dict',
             'bad_missing': {'label': 'no ip or paired_at'},
         })
@@ -96,7 +96,7 @@ class TestTokenPersistence(unittest.TestCase):
         self.assertEqual(bm._sessions, {})
 
     def test_save_creates_tokens_file(self):
-        bm._sessions['tok123'] = {'ip': '9.9.9.9', 'paired_at': 1.0, 'label': 'y'}
+        bm._sessions['tok123'] = {'ip': '9.9.9.9', 'paired_at': time.time(), 'label': 'y'}
         bm._save_tokens()
         self.assertTrue(bm.TOKENS_FILE.exists())
         data = json.loads(bm.TOKENS_FILE.read_text())
@@ -104,20 +104,20 @@ class TestTokenPersistence(unittest.TestCase):
         self.assertEqual(data['tok123']['ip'], '9.9.9.9')
 
     def test_save_file_mode_600(self):
-        bm._sessions['tok456'] = {'ip': '1.1.1.1', 'paired_at': 2.0, 'label': ''}
+        bm._sessions['tok456'] = {'ip': '1.1.1.1', 'paired_at': time.time(), 'label': ''}
         bm._save_tokens()
         mode = oct(bm.TOKENS_FILE.stat().st_mode)[-3:]
         self.assertEqual(mode, '600')
 
     def test_save_and_reload_roundtrip(self):
-        bm._sessions['roundtrip'] = {'ip': '5.5.5.5', 'paired_at': 99.0, 'label': 'rt'}
+        bm._sessions['roundtrip'] = {'ip': '5.5.5.5', 'paired_at': time.time(), 'label': 'rt'}
         bm._save_tokens()
         _clear_sessions()
         bm._load_tokens()
         self.assertIn('roundtrip', bm._sessions)
 
     def test_valid_session_token_true_for_known(self):
-        bm._sessions['abc123'] = {'ip': '1.1.1.1', 'paired_at': 1.0, 'label': ''}
+        bm._sessions['abc123'] = {'ip': '1.1.1.1', 'paired_at': time.time(), 'label': ''}
         self.assertTrue(bm._valid_session_token('abc123'))
 
     def test_valid_session_token_false_for_unknown(self):
@@ -251,14 +251,21 @@ class TestMachinesHandler(AsyncHTTPTestCase):
         self._tmpdir = tempfile.TemporaryDirectory()
         self._orig = bm.MACHINES_FILE
         bm.MACHINES_FILE = Path(self._tmpdir.name) / 'machines.json'
+        # Create a valid session token for auth-required requests
+        self._auth_token = 'test_machines_token'
+        bm._sessions[self._auth_token] = {'ip': '127.0.0.1', 'paired_at': time.time(), 'label': 'test'}
 
     def tearDown(self):
+        bm._sessions.pop(self._auth_token, None)
         bm.MACHINES_FILE = self._orig
         self._tmpdir.cleanup()
         super().tearDown()
 
+    def _auth_fetch(self, path):
+        return self.fetch(path, headers={'Cookie': f'trustmux_session={self._auth_token}'})
+
     def test_no_file_returns_only_current(self):
-        resp = self.fetch('/machines')
+        resp = self._auth_fetch('/machines')
         self.assertEqual(resp.code, 200)
         data = json.loads(resp.body)
         self.assertEqual(len(data), 1)
@@ -270,7 +277,7 @@ class TestMachinesHandler(AsyncHTTPTestCase):
             {'name': 'home', 'url': 'https://home.ts.net'},
         ]
         bm.MACHINES_FILE.write_text(json.dumps(siblings))
-        resp = self.fetch('/machines')
+        resp = self._auth_fetch('/machines')
         data = json.loads(resp.body)
         self.assertEqual(len(data), 3)
         urls = [m['url'] for m in data]
@@ -282,25 +289,25 @@ class TestMachinesHandler(AsyncHTTPTestCase):
             {'missing_url': True},
         ]
         bm.MACHINES_FILE.write_text(json.dumps(siblings))
-        resp = self.fetch('/machines')
+        resp = self._auth_fetch('/machines')
         data = json.loads(resp.body)
         # Only current + 'good'; malformed entry absent
         self.assertEqual(len(data), 2)
 
     def test_non_list_json_returns_current_only(self):
         bm.MACHINES_FILE.write_text(json.dumps({'not': 'a list'}))
-        resp = self.fetch('/machines')
+        resp = self._auth_fetch('/machines')
         data = json.loads(resp.body)
         self.assertEqual(len(data), 1)
 
     def test_corrupt_json_returns_500(self):
         bm.MACHINES_FILE.write_text('not valid json!!!')
-        resp = self.fetch('/machines')
+        resp = self._auth_fetch('/machines')
         self.assertEqual(resp.code, 500)
 
     def test_corrupt_json_error_is_generic(self):
         bm.MACHINES_FILE.write_text('not valid json!!!')
-        resp = self.fetch('/machines')
+        resp = self._auth_fetch('/machines')
         data = json.loads(resp.body)
         self.assertEqual(data.get('error'), 'internal error')
 
@@ -310,11 +317,15 @@ class TestMachinesHandler(AsyncHTTPTestCase):
             {'name': 'evil', 'url': 'javascript:alert(1)'},
         ]
         bm.MACHINES_FILE.write_text(json.dumps(siblings))
-        resp = self.fetch('/machines')
+        resp = self._auth_fetch('/machines')
         data = json.loads(resp.body)
         urls = [m['url'] for m in data]
         self.assertNotIn('javascript:alert(1)', urls)
         self.assertIn('https://good.ts.net', urls)
+
+    def test_unauthenticated_returns_401(self):
+        resp = self.fetch('/machines')
+        self.assertEqual(resp.code, 401)
 
 
 # ---------------------------------------------------------------------------

@@ -76,7 +76,7 @@ __wifi_quality() {
 			awk '$0 ~ /[ ]*Link Quality./ {
 			    sub(/.*=/,"",$2); split($2,a,"/");
 			    printf "quality=%.0f\n", 100*a[1]/a[2] };
-			    $0 ~ /[ ]*Bit Rate/ { sub(/.*[:=]/,"",$2); printf("bitrate=%s\n", $2); }
+			    $0 ~ /[ ]*Bit Rate/ { sub(/.*[:=]/,"",$2); printf("bitrate=%.1f\n", $2+0); }
 			    '`
 		eval "$out"
 	elif eval $BYOBU_TEST iw >/dev/null 2>&1; then
@@ -89,7 +89,7 @@ __wifi_quality() {
 			out=`iw dev "$dev" link 2>/dev/null |
 				awk '$0 ~ /^\s*signal:/ { a = 100 * ($2 + 110) / 70;
 				    printf "quality=%.0f\n", (a > 100) ? 100 : ((a < 0) ? 0 : a); }
-				    $0 ~ /^\s*rx bitrate:/ { printf "bitrate=%s\n", $3; }
+				    $0 ~ /^\s*rx bitrate:/ { printf "bitrate=%.1f\n", $3+0; }
 				    '`
 			eval "$out"
 			[ -z "$bitrate" ] || [ -z "$quality" ] || break

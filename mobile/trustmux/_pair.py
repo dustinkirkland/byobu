@@ -118,7 +118,7 @@ def main():
     mins = data["expires_in"] // 60
     url = _ts_url() or _direct_url()
 
-    pair_url = f"{url}?pair={code.replace('-', '')}"
+    pair_url = f"{url}#{code.replace('-', '')}"
     bar = "═" * 52
     print(f"\n{bar}")
     print(f"  Trustmux pairing code:  {code}  (valid {mins} min)")
