@@ -309,9 +309,19 @@ def push_pypi_tag(v):
     section("Phase 3: Push PyPI tag (triggers GH Actions → PyPI upload)")
     tag = f"trustmux-v{v['pypi_version']}"
     confirm(f"Push git tag {tag} to origin?")
-    run(["git", "-C", str(BYOBU_SRC), "tag", tag])
-    run(["git", "-C", str(BYOBU_SRC), "push", "origin", tag])
-    print(f"  ✓ Tag {tag} pushed.")
+    # Idempotent: skip local creation if tag already exists (e.g. re-run after partial failure)
+    local = run(["git", "-C", str(BYOBU_SRC), "tag", "--list", tag], capture=True)
+    if tag not in local.stdout.split():
+        run(["git", "-C", str(BYOBU_SRC), "tag", tag])
+    else:
+        print(f"  (local tag {tag} already exists — skipping creation)")
+    # Skip push if tag already on remote
+    remote = run(["git", "-C", str(BYOBU_SRC), "ls-remote", "--tags", "origin", tag], capture=True)
+    if remote.stdout.strip():
+        print(f"  (tag {tag} already on remote — skipping push)")
+    else:
+        run(["git", "-C", str(BYOBU_SRC), "push", "origin", tag])
+    print(f"  ✓ Tag {tag} ready.")
     print("    Monitor: https://github.com/dustinkirkland/byobu/actions")
 
 
@@ -617,10 +627,17 @@ def build_ubuntu_dev(v, identity):
 
 def update_homebrew(v, tap_dir):
     section("Phase 6d: Homebrew formula update")
-    print("  Polling PyPI for tarball (up to ~150s)…")
+    confirm(
+        f"Confirm GH Actions PyPI publish completed:\n"
+        f"    https://github.com/dustinkirkland/byobu/actions\n"
+        f"  trustmux {v['pypi_version']} should be live at:\n"
+        f"    https://pypi.org/project/trustmux/{v['pypi_version']}/\n"
+        f"  Continue to update Homebrew formula?"
+    )
+    print("  Polling PyPI for tarball (up to ~5 min)…")
 
     tarball_url = tarball_sha256 = None
-    for attempt in range(10):
+    for attempt in range(20):
         try:
             url = f"https://pypi.org/pypi/trustmux/{v['pypi_version']}/json"
             d = json.loads(urllib.request.urlopen(url).read())
@@ -633,13 +650,15 @@ def update_homebrew(v, tap_dir):
                 break
         except Exception:
             pass
-        print(f"  Attempt {attempt + 1}/10 — not ready, waiting 15s…")
+        print(f"  Attempt {attempt + 1}/20 — not ready, waiting 15s…")
         time.sleep(15)
 
     if not tarball_url:
         die(
-            "Timed out waiting for PyPI.\n"
-            "  Check https://github.com/dustinkirkland/byobu/actions before retrying."
+            "Timed out waiting for PyPI tarball (20 attempts × 15s).\n"
+            "  Check GH Actions: https://github.com/dustinkirkland/byobu/actions\n"
+            "  Once the workflow completes, resume with:\n"
+            "    python .maintainer/release.py final --start-from 6d"
         )
 
     print(f"  URL:    {tarball_url}")
