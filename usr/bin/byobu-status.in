@@ -138,12 +138,15 @@ case "$1" in
 						fi
 					;;
 					time)
-						if [ -z "$BYOBU_TIME" ]; then
+						_byobu_time_fmt="%H:%M:%S"
+						[ "${TIME_SECONDS:-1}" = "0" ] && _byobu_time_fmt="%H:%M"
+						if [ "$BYOBU_TIME" != "$_byobu_time_fmt" ]; then
 							$BYOBU_SED_INLINE -e "/BYOBU_TIME=/d" "$BYOBU_CONFIG_DIR/datetime.tmux"
-							printf "%s\n" 'BYOBU_TIME="%H:%M:%S"' >> "$BYOBU_CONFIG_DIR/datetime.tmux"
+							printf 'BYOBU_TIME="%s"\n' "$_byobu_time_fmt" >> "$BYOBU_CONFIG_DIR/datetime.tmux"
 							touch "$BYOBU_RUN_DIR/reload-required"
-							continue
 						fi
+						unset _byobu_time_fmt
+						continue
 					;;
 				esac
 			fi
