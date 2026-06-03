@@ -29,7 +29,7 @@ PKG="byobu"
 rm -rf "$BYOBU_RUN_DIR/.last.$BYOBU_BACKEND"
 
 # Ensure that we re-check metadata service
-rm -f "$BYOBU_CONFIG_DIR/.metadata_available" "$BYOBU_RUN_DIR/.metadata_available"
+rm -f "$BYOBU_CONFIG_DIR/.metadata_available" "$BYOBU_RUN_DIR/.metadata_available" 2>/dev/null || true
 
 # Exit immediately, if we're not forced, and there is no reload flag
 FLAG="$BYOBU_RUN_DIR/reload-required"
