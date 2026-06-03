@@ -17,7 +17,18 @@ AC_PROG_LN_S
 
 # Checks for library functions.
 
+# Trustmux — mobile companion daemon. Enabled by default; pass
+# --disable-trustmux to skip installing the daemon, CLIs, and PWA assets
+# (e.g. for a minimal byobu install without a Python tornado runtime dep).
+AC_ARG_ENABLE([trustmux],
+  [AS_HELP_STRING([--disable-trustmux],
+    [do not install the Trustmux mobile companion daemon @<:@default=enabled@:>@])],
+  [enable_trustmux=$enableval],
+  [enable_trustmux=yes])
+AM_CONDITIONAL([ENABLE_TRUSTMUX], [test "x$enable_trustmux" = "xyes"])
+
 AC_OUTPUT(Makefile \
+	mobile/Makefile \
 	etc/byobu/Makefile \
 	etc/profile.d/Makefile \
 	etc/profile.d/Z97-byobu.sh \

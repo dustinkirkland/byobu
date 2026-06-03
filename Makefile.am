@@ -1,3 +1,9 @@
+if ENABLE_TRUSTMUX
+TRUSTMUX_SUBDIR = mobile
+else
+TRUSTMUX_SUBDIR =
+endif
+
 SUBDIRS = etc/byobu \
 	etc/profile.d \
 	usr/share/byobu/desktop \
@@ -14,7 +20,12 @@ SUBDIRS = etc/byobu \
 	usr/lib/byobu/include \
 	usr/share/man/man1 \
 	usr/share/sounds/byobu \
-	usr/bin
+	usr/bin \
+	$(TRUSTMUX_SUBDIR)
+
+# mobile/ is always distributed so `make dist` is complete regardless of
+# whether --disable-trustmux was passed at configure time.
+DIST_SUBDIRS = $(SUBDIRS) mobile
 
 distclean-local:
 	rm -rf mobile/build mobile/dist mobile/trustmux.egg-info

@@ -3,13 +3,13 @@
 import sys
 import os
 
-# When run from the dev tree or Debian install (not via pip), the package may
-# not be on sys.path — add the directory that contains the trustmux/ package.
+# When run from the dev tree, the package is in a sibling trustmux/ dir.
+# When installed by autotools, fall back to the configure-time trustmuxpydir.
 _here = os.path.dirname(os.path.abspath(__file__))
 if os.path.isdir(os.path.join(_here, "trustmux")):
     sys.path.insert(0, _here)
 else:
-    sys.path.insert(0, "/usr/lib/trustmux")
+    sys.path.insert(0, "@trustmuxpydir@")
 
 from trustmux._pair import main
 
