@@ -82,6 +82,13 @@ byobu (7.6) UNRELEASED; urgency=medium
   * Open 7.4 for development
   * Open 7.5 for development
   * Open 7.6 for development
+  * usr/lib/byobu/include/select-session.py:
+    - .always-select flag is honoured correctly: when ~/.byobu/.always-select
+      exists, the session selection menu always appears regardless of how many
+      sessions are running; the show_shell guard ensures NEW and SHELL entries
+      are appended before the len > 1 check, so the menu is shown even with
+      zero or one existing session
+      Closes: #1030283
   * debian/po/zh_CN.po, debian/po/zh_TW.po:
     - add Simplified and Traditional Chinese debconf template translations
       from Yangfl <mmyangfl@gmail.com>
