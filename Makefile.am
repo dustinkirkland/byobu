@@ -23,8 +23,8 @@ SUBDIRS = etc/byobu \
 	usr/bin \
 	$(TRUSTMUX_SUBDIR)
 
-# mobile/ is also distributed by AM_CONDITIONAL=no users, so DIST_SUBDIRS
-# always includes it — keeps `make dist` complete regardless of --enable.
+# mobile/ is always distributed so `make dist` is complete regardless of
+# whether --disable-trustmux was passed at configure time.
 DIST_SUBDIRS = $(SUBDIRS) mobile
 
 distclean-local:
