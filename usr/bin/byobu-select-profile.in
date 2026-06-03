@@ -175,7 +175,7 @@ else
 			;;
 			-h|--hostname)
 				color=$(hostname | $HASH | head -c 6)
-				setcolor_tmux "$color"
+				setcolor_tmux "\#$color"
 				shift
 				break
 			;;
@@ -183,7 +183,7 @@ else
 				[ -r "$BYOBU_CONFIG_DIR/statusrc" ] && . "$BYOBU_CONFIG_DIR/statusrc"
 				. $BYOBU_PREFIX/lib/$PKG/ip_address
 				color=$(__ip_address t| $HASH | head -c 6)
-				setcolor_tmux "$color"
+				setcolor_tmux "\#$color"
 				shift
 				break
 			;;
