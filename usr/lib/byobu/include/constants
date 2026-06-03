@@ -64,15 +64,26 @@ $BYOBU_SED --follow-symlinks "s///" /dev/null 2>/dev/null && export BYOBU_SED_IN
 # Determine if we have ulimit support
 eval $BYOBU_TEST ulimit >/dev/null 2>&1 && export BYOBU_ULIMIT="ulimit" || export BYOBU_ULIMIT="false"
 
-# Find a suitable python interpreter, if undefined
+# Find a suitable python interpreter, if undefined.
+# Cache the result in $BYOBU_CONFIG_DIR so each status-bar subprocess
+# (run fresh by tmux every few seconds) does not re-import snack on NFS
+# or slow filesystems.  LP: #2076905
 if [ -z "$BYOBU_PYTHON" ]; then
-	if python3 -c "import snack" >/dev/null 2>&1; then
-		export BYOBU_PYTHON="python3"
-	elif python2 -c "import snack" >/dev/null 2>&1; then
-		export BYOBU_PYTHON="python2"
-	elif python -c "import snack" >/dev/null 2>&1; then
-		export BYOBU_PYTHON="python"
+	_byobu_python_cache="${BYOBU_CONFIG_DIR:-$HOME/.byobu}/.python_cache"
+	if [ -f "$_byobu_python_cache" ]; then
+		IFS= read -r BYOBU_PYTHON < "$_byobu_python_cache" 2>/dev/null || true
+		export BYOBU_PYTHON
+	else
+		if python3 -c "import snack" >/dev/null 2>&1; then
+			export BYOBU_PYTHON="python3"
+		elif python2 -c "import snack" >/dev/null 2>&1; then
+			export BYOBU_PYTHON="python2"
+		elif python -c "import snack" >/dev/null 2>&1; then
+			export BYOBU_PYTHON="python"
+		fi
+		printf "%s\n" "$BYOBU_PYTHON" > "$_byobu_python_cache" 2>/dev/null || true
 	fi
+	unset _byobu_python_cache
 fi
 
 export BYOBU_WINDOW_NAME="-"
