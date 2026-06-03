@@ -82,6 +82,20 @@ byobu (7.6) UNRELEASED; urgency=medium
   * Open 7.4 for development
   * Open 7.5 for development
   * Open 7.6 for development
+  * debian/po/zh_CN.po, debian/po/zh_TW.po:
+    - add Simplified and Traditional Chinese debconf template translations
+      from Yangfl <mmyangfl@gmail.com>
+      Closes: #1124414
+  * usr/bin/byobu-launch.in:
+    - skip autolaunch when $TMUX is already set, preventing nested session
+      warning "sessions should be nested with care" when opening a new pane
+      or window inside an existing byobu/tmux session
+  * usr/bin/purge-old-kernels:
+    - print visible deprecation warning to stderr before delegating to
+      apt-get autoremove, directing users to 'sudo apt autoremove'
+  * usr/share/byobu/profiles/bashrc:
+    - use >| for dircolors redirect to work correctly when the shell has
+      set -o noclobber active (e.g. oh-my-bash)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 03 Jun 2026 05:23:26 -0500
 
