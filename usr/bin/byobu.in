@@ -119,10 +119,13 @@ if [ -t 1 ]; then
 	[ -n "$BYOBU_NO_TITLE" ] || printf '\033]0;%s\007' "$_byobu_title"
 fi
 
-# Drop a symlink to the ssh socket in $HOME, since we can ensure that exists
+# Drop a symlink to the ssh socket in $HOME, since we can ensure that exists.
+# Include hostname in the name so NFS-shared homes don't stomp each other.
 if [ -S "$SSH_AUTH_SOCK" ] && [ ! -h "$SSH_AUTH_SOCK" ]; then
-	ln -sf "$SSH_AUTH_SOCK" "$BYOBU_CONFIG_DIR/.ssh-agent"
-	export SSH_AUTH_SOCK="$BYOBU_CONFIG_DIR/.ssh-agent"
+	_byobu_agent="$BYOBU_CONFIG_DIR/.ssh-agent-$(hostname -s 2>/dev/null || hostname)"
+	ln -sf "$SSH_AUTH_SOCK" "$_byobu_agent"
+	export SSH_AUTH_SOCK="$_byobu_agent"
+	unset _byobu_agent
 fi
 
 # Fallback terminfo
