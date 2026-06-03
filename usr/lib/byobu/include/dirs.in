@@ -59,11 +59,12 @@ if [ -d /dev/shm ] && [ -w /dev/shm ]; then
 fi
 if [ ! -d "$BYOBU_RUN_DIR" ] || [ ! -O "$BYOBU_RUN_DIR" ] || [ ! -w "$BYOBU_RUN_DIR" ]; then
 	# For distros that don't have a /dev/shm, use local disk
-	if [ -d "$XDG_CACHE_HOME" ]; then
+	if [ -n "$XDG_CACHE_HOME" ]; then
 		# Use XDG, as some users insist on such nonsense :-)
 		export BYOBU_RUN_DIR="$XDG_CACHE_HOME/$PKG"
 	else
 		# But if not, we'll use a cache directory
 		export BYOBU_RUN_DIR="$HOME/.cache/$PKG"
 	fi
+	mkdir -p "$BYOBU_RUN_DIR" 2>/dev/null || true
 fi
