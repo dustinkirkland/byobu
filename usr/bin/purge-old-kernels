@@ -26,4 +26,8 @@
 # If you still have old kernels lying around after this, please
 # file a bug against apt: https://bugs.launchpad.net/ubuntu/+source/apt/+filebug
 
+echo "WARNING: purge-old-kernels is deprecated and will be removed in a future release." >&2
+echo "         Use 'sudo apt autoremove' instead to remove old kernel packages." >&2
+echo "" >&2
+
 sudo apt-get $@ autoremove

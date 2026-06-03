@@ -39,7 +39,7 @@ if [ "${_tty#/dev/ttyS}" != "$_tty" ] && [ "${_tty#/dev/ttyAMA}" != "$_tty" ]; t
 	echo "INFO: Disabling auto-launch of Byobu on this serial console"
 	echo "INFO: You can still run 'byobu' manually at the command line"
 	echo
-elif [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1" ] && [ -O "$HOME" ]; then
+elif [ "$BYOBU_SOURCED_PROFILE" != "1" ] && [ "$LC_BYOBU" != "0" ] && [ "$BYOBU_DISABLE" != "1" ] && [ -O "$HOME" ] && [ -z "$TMUX" ]; then
 	unset _tty
 	BYOBU_SOURCED_PROFILE=1
 	PKG="byobu"
