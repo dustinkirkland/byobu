@@ -82,7 +82,7 @@ case "$BYOBU_DISTRO" in
 		export LESS_TERMCAP_us=$(printf '\e[04;38;5;139m') # enter underline mode – underline aubergine
 		# Use Ubuntu themed dircolors
 		if [ -e "${BYOBU_PREFIX}/share/byobu/profiles/dircolors" ]; then
-			dircolors "${BYOBU_PREFIX}/share/byobu/profiles/dircolors" > "$BYOBU_RUN_DIR/dircolors"
+			dircolors "${BYOBU_PREFIX}/share/byobu/profiles/dircolors" >| "$BYOBU_RUN_DIR/dircolors"
 			. "$BYOBU_RUN_DIR/dircolors"
 		fi
 	;;
