@@ -18,6 +18,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 for w in $(tmux list-windows | $BYOBU_SED -e "s/:.*//"); do
-	tmux send-keys -t :$w "$@"
+	tmux send-keys -l -t :$w "$@"
 	tmux send-keys -t :$w Enter
 done
