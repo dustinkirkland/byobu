@@ -19,10 +19,6 @@ override_dh_auto_test:
 override_dh_auto_install:
 	dh_auto_install --destdir=debian/byobu
 
-override_dh_install:
-	dh_install
-	install -Dm755 mobile/trustmux-daemon debian/byobu/usr/bin/trustmux
-
 override_dh_perl:
 	dh_perl -d
 
