@@ -1,4 +1,4 @@
-byobu (7.6) UNRELEASED; urgency=medium
+byobu (7.7) UNRELEASED; urgency=medium
 
   * mobile/trustmux/static/app.js, mobile/trustmux/static/index.html:
     - add optional biometric/PIN re-authentication lock to the Trustmux PWA;
@@ -103,8 +103,9 @@ byobu (7.6) UNRELEASED; urgency=medium
   * usr/share/byobu/profiles/bashrc:
     - use >| for dircolors redirect to work correctly when the shell has
       set -o noclobber active (e.g. oh-my-bash)
+  * Open 7.7 for development
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 03 Jun 2026 05:23:26 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Wed, 03 Jun 2026 06:22:07 -0500
 
 byobu (7.1) experimental; urgency=medium
 
