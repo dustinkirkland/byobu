@@ -55,6 +55,7 @@ byobu_prompt_runtime() {
 	[ "$minutes" = "0" ] && minutes= || minutes="${minutes}m "
 	str="${days}${hours}${minutes}${seconds}.${microseconds}s"
 	printf "[%s]" "$str"
+	rm -f "$BYOBU_RUN_DIR/timer.$$"
 }
 # Requires Bash 4.x
 # Capture $? into _byobu_exit_code before PROMPT_COMMAND runs anything else that
