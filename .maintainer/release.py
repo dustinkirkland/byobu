@@ -11,27 +11,30 @@ RC phases:
     2  Determine versions
     2b Local binary .deb build (test before tagging)
     3  Push PyPI git tag (triggers GH Actions)
-    4  Smoke test (Docker)
-    5  PPA source builds (Docker, all series)
-    5b Debian experimental source build (Docker)
+    4  Smoke test          ┐
+    5  PPA source builds   ├─ run in parallel
+    5b Debian exp source   ┘
     6  GitHub pre-release
     7  Write sign-and-upload.sh
 
 Final adds:
     6b Debian unstable source build (Docker) — RC uses experimental, final promotes to unstable
-    6c Ubuntu dev-series source build (Docker)
+    6c Ubuntu dev-series source build (Docker)  ┐ run in parallel with 4 and 5b
     6d Homebrew formula update
     GitHub release (non-prerelease, both byobu and trustmux tags)
     8  Regenerate PWA screenshots → commit + push trustmux-web
 """
 
 import argparse
+import concurrent.futures
+import io
 import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import threading
 import time
 import urllib.request
 from pathlib import Path
@@ -39,14 +42,119 @@ from pathlib import Path
 BYOBU_SRC = Path(__file__).resolve().parent.parent
 
 
+# ── thread-local stdout (parallel output capture) ──────────────────────────
+#
+# Parallel phase threads set _tls.buf to a StringIO.  All print() calls and
+# subprocess runs in that thread then write into the buffer instead of the
+# real terminal.  The main thread replays each buffer in phase order after
+# all parallel phases have joined, giving clean, interleave-free output.
+
+_tls = threading.local()
+
+
+class _TLSStdout:
+    """sys.stdout shim: routes writes to a per-thread StringIO when set."""
+
+    def __init__(self, real):
+        self._real = real
+
+    def _buf(self):
+        return getattr(_tls, "buf", None)
+
+    def write(self, s):
+        b = self._buf()
+        (b if b is not None else self._real).write(s)
+
+    def flush(self):
+        if self._buf() is None:
+            self._real.flush()
+
+    def isatty(self):
+        return False if self._buf() is not None else self._real.isatty()
+
+    def fileno(self):
+        return self._real.fileno()
+
+
+sys.stdout = _TLSStdout(sys.stdout)
+
+
 # ── helpers ────────────────────────────────────────────────────────────────
 
 def run(cmd, check=True, capture=False, **kwargs):
     kw = dict(check=check, text=True, **kwargs)
     if capture:
-        kw["stdout"] = subprocess.PIPE
-        kw["stderr"] = subprocess.PIPE
+        kw.update(stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return subprocess.run(cmd, shell=isinstance(cmd, str), **kw)
+    # In a parallel phase thread, pipe subprocess output into the thread buffer
+    # so it is replayed in-order with the rest of that phase's output.
+    buf = getattr(_tls, "buf", None)
+    if buf is not None:
+        kw.update(stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        result = subprocess.run(cmd, shell=isinstance(cmd, str), **kw)
+        buf.write(result.stdout or "")
+        if check and result.returncode != 0:
+            raise subprocess.CalledProcessError(result.returncode, cmd, result.stdout)
+        return result
     return subprocess.run(cmd, shell=isinstance(cmd, str), **kw)
+
+
+def run_phases_parallel(labeled_fns):
+    """Run phase functions concurrently; replay each section's captured output
+    in-order after all phases complete.
+
+    labeled_fns: list of (label, callable).  Callables must be thread-safe.
+    A single-element list is run directly with no threading overhead.
+    """
+    if not labeled_fns:
+        return
+    if len(labeled_fns) == 1:
+        labeled_fns[0][1]()
+        return
+
+    labels = [l for l, _ in labeled_fns]
+    print(f"\n  ⟳ Launching in parallel: {', '.join(labels)}")
+
+    outcomes = {}  # label → (output_str, exc_or_None)
+
+    def _run_one(label, fn):
+        buf = io.StringIO()
+        _tls.buf = buf
+        try:
+            fn()
+            outcomes[label] = (buf.getvalue(), None)
+        except BaseException as exc:
+            outcomes[label] = (buf.getvalue(), exc)
+        finally:
+            _tls.buf = None
+
+    threads = [
+        threading.Thread(target=_run_one, args=(l, f), name=l)
+        for l, f in labeled_fns
+    ]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    any_failed = False
+    for label in labels:
+        out, exc = outcomes.get(label, ("", RuntimeError("phase did not run")))
+        ok = exc is None
+        marker = "✓" if ok else "✗"
+        print(f"\n── {marker} {label} " + "─" * max(0, 55 - len(label)))
+        if out.strip():
+            for line in out.rstrip().splitlines():
+                print(f"  {line}")
+        if not ok:
+            if isinstance(exc, SystemExit):
+                print(f"  ✗ {label}: aborted (see stderr above)")
+            else:
+                print(f"  ✗ {label}: {exc}")
+            any_failed = True
+
+    if any_failed:
+        die("One or more parallel phases failed (see output above).")
 
 
 def die(msg):
@@ -54,10 +162,21 @@ def die(msg):
     sys.exit(1)
 
 
-def confirm(prompt):
-    ans = input(f"\n{prompt} [y/N] ").strip().lower()
-    if ans not in ("y", "yes"):
-        die("Aborted.")
+def confirm(prompt, skippable=False):
+    """Prompt the user to proceed, skip, or abort.
+
+    Returns True  — user chose to proceed (y/yes).
+    Returns False — user chose to skip this step (s/skip); only when skippable=True.
+    Calls die()   — user chose to abort (anything else).
+    """
+    opts = "[y/s/N]" if skippable else "[y/N]"
+    ans = input(f"\n{prompt} {opts} ").strip().lower()
+    if ans in ("y", "yes"):
+        return True
+    if skippable and ans in ("s", "skip"):
+        print("  (skipped)")
+        return False
+    die("Aborted.")
 
 
 def banner(msg):
@@ -308,7 +427,9 @@ def determine_versions(mode, resume=False):
 def push_pypi_tag(v):
     section("Phase 3: Push PyPI tag (triggers GH Actions → PyPI upload)")
     tag = f"trustmux-v{v['pypi_version']}"
-    confirm(f"Push git tag {tag} to origin?")
+    if not confirm(f"Push git tag {tag} to origin?", skippable=True):
+        print(f"  (tag push skipped — downstream phases will use existing tag state)")
+        return
     # Idempotent: skip local creation if tag already exists (e.g. re-run after partial failure)
     local = run(["git", "-C", str(BYOBU_SRC), "tag", "--list", tag], capture=True)
     if tag not in local.stdout.split():
@@ -367,7 +488,7 @@ def run_smoke_test():
     print("  ✓ Smoke test PASSED")
 
 
-# ── phase 4b: local binary build ─────────────────────────────────────────
+# ── phase 2b: local binary build ─────────────────────────────────────────
 
 _LOCAL_BUILD_SCRIPT = r"""
 set -e
@@ -405,9 +526,13 @@ def build_local_debs(v):
         print(f"    {d}")
 
 
-# ── phase 5: PPA source builds ────────────────────────────────────────────
+# ── phase 5: PPA source builds (parallel per-series) ─────────────────────
+#
+# Each Ubuntu series gets its own Docker container so all series build
+# concurrently.  Output files have distinct names (version includes the
+# codename), so there is no contention on the shared /out volume.
 
-_PPA_SCRIPT = r"""
+_PPA_SERIES_SCRIPT = r"""
 set -eo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
@@ -416,67 +541,97 @@ apt-get install -y --no-install-recommends \
   build-essential dpkg-dev debhelper dh-python \
   gettext-base automake autoconf \
   python3 python3-all python3-tornado \
-  devscripts bc ca-certificates distro-info git 2>&1 | tail -5
-
-DEVEL=$(ubuntu-distro-info --devel 2>/dev/null || echo "")
-SERIES=$(ubuntu-distro-info --supported | grep -Fxv "$DEVEL" | tr "\n" " ")
-echo "Building for: $DEBFULLNAME <$DEBEMAIL>"
-echo "Series: $SERIES"
+  devscripts bc ca-certificates git 2>&1 | tail -5
 
 SRCDIR=$(mktemp -d)
 git config --global --add safe.directory /src
 git -C /src archive --format=tar HEAD | tar -x -C "$SRCDIR" -f -
 
-for CODENAME in $SERIES; do
-  PPA_VER="${PPA_BASE}~${CODENAME}1"
-  echo ""
-  echo "=== Building $PPA_VER ==="
+PPA_VER="${PPA_BASE}~${CODENAME}1"
+echo "=== Building $PPA_VER ==="
 
-  BUILDDIR=$(mktemp -d)
-  cp -a "$SRCDIR" "$BUILDDIR/${PKG}-${PPA_VER}"
-  cd "$BUILDDIR/${PKG}-${PPA_VER}"
+BUILDDIR=$(mktemp -d)
+cp -a "$SRCDIR" "$BUILDDIR/${PKG}-${PPA_VER}"
+cd "$BUILDDIR/${PKG}-${PPA_VER}"
 
-  echo "3.0 (native)" > debian/source/format
+echo "3.0 (native)" > debian/source/format
 
-  DATESTAMP=$(date -R)
-  {
-    printf "%s (%s) %s; urgency=medium\n\n" "$PKG" "$PPA_VER" "$CODENAME"
-    printf "  * PPA candidate build %s\n\n" "$PPA_VER"
-    printf " -- %s <%s>  %s\n\n" "$DEBFULLNAME" "$DEBEMAIL" "$DATESTAMP"
-    cat debian/changelog
-  } > debian/changelog.new
-  mv debian/changelog.new debian/changelog
+DATESTAMP=$(date -R)
+{
+  printf "%s (%s) %s; urgency=medium\n\n" "$PKG" "$PPA_VER" "$CODENAME"
+  printf "  * PPA candidate build %s\n\n" "$PPA_VER"
+  printf " -- %s <%s>  %s\n\n" "$DEBFULLNAME" "$DEBEMAIL" "$DATESTAMP"
+  cat debian/changelog
+} > debian/changelog.new
+mv debian/changelog.new debian/changelog
 
-  dpkg-buildpackage -S -us -uc -d 2>&1 | tail -3
+dpkg-buildpackage -S -us -uc -d 2>&1 | tail -3
 
-  cp -v "$BUILDDIR"/*.changes "$BUILDDIR"/*.dsc \
-        "$BUILDDIR"/*.tar.* "$BUILDDIR"/*.buildinfo /out/ 2>/dev/null || true
-
-  cd /
-  rm -rf "$BUILDDIR"
-done
-
-rm -rf "$SRCDIR"
-echo ""
-echo "=== All series built ==="
-ls -lh /out/
+cp -v "$BUILDDIR"/*.changes "$BUILDDIR"/*.dsc \
+      "$BUILDDIR"/*.tar.* "$BUILDDIR"/*.buildinfo /out/ 2>/dev/null || true
 chown -R $(stat -c '%u:%g' /out) /out/
+
+echo "=== $CODENAME done ==="
 """
 
 
 def build_ppa_packages(v, identity):
-    section("Phase 5: PPA source builds (Docker, all series)")
-    run([
-        "docker", "run", "--rm",
-        "-v", f"{BYOBU_SRC}:/src:ro",
-        "-v", f"{v['outdir']}/ppa:/out",
-        "-e", f"DEBEMAIL={identity['DEBEMAIL']}",
-        "-e", f"DEBFULLNAME={identity['DEBFULLNAME']}",
-        "-e", f"PKG={v['pkg']}",
-        "-e", f"BASE_VER={v['base_ver']}",
-        "-e", f"PPA_BASE={v['ppa_base']}",
-        "ubuntu:noble", "bash", "-c", _PPA_SCRIPT,
-    ])
+    section("Phase 5: PPA source builds (parallel, all series)")
+    # Exclude the devel series — PPA uploads target stable/supported series only.
+    ppa_series = [s for s in v["series"] if s != v["devel_series"]]
+    print(f"  Series ({len(ppa_series)}): {' '.join(ppa_series)}")
+    print(f"  Launching {len(ppa_series)} containers in parallel…")
+
+    series_outputs = {}
+    series_errors = {}
+
+    def _build_one(codename):
+        # Each worker thread gets its own capture buffer; the parent thread's
+        # _tls.buf (if set, i.e. we're inside run_phases_parallel) is separate.
+        buf = io.StringIO()
+        prev = getattr(_tls, "buf", None)
+        _tls.buf = buf
+        try:
+            run([
+                "docker", "run", "--rm",
+                "-v", f"{BYOBU_SRC}:/src:ro",
+                "-v", f"{v['outdir']}/ppa:/out",
+                "-e", f"DEBEMAIL={identity['DEBEMAIL']}",
+                "-e", f"DEBFULLNAME={identity['DEBFULLNAME']}",
+                "-e", f"PKG={v['pkg']}",
+                "-e", f"BASE_VER={v['base_ver']}",
+                "-e", f"PPA_BASE={v['ppa_base']}",
+                "-e", f"CODENAME={codename}",
+                "ubuntu:noble", "bash", "-c", _PPA_SERIES_SCRIPT,
+            ])
+            series_outputs[codename] = buf.getvalue()
+        except Exception as exc:
+            series_errors[codename] = (buf.getvalue(), exc)
+        finally:
+            _tls.buf = prev
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(ppa_series)) as ex:
+        futures = {ex.submit(_build_one, c): c for c in ppa_series}
+        concurrent.futures.wait(futures)
+
+    # Replay per-series output in deterministic order (writes to parent buf
+    # if we are ourselves inside a parallel phase, or to real stdout otherwise).
+    for codename in ppa_series:
+        if codename in series_errors:
+            out, exc = series_errors[codename]
+            print(f"  ── {codename}: FAILED ({exc})")
+            for line in out.rstrip().splitlines():
+                print(f"     {line}")
+        else:
+            print(f"  ── {codename}: OK")
+            out = series_outputs.get(codename, "")
+            if out.strip():
+                for line in out.rstrip().splitlines():
+                    print(f"     {line}")
+
+    if series_errors:
+        die(f"PPA build failed for: {', '.join(series_errors)}")
+
     changes = sorted((v["outdir"] / "ppa").glob("*.changes"))
     if not changes:
         die(f"PPA build produced no .changes files in {v['outdir']}/ppa/\n"
@@ -627,13 +782,15 @@ def build_ubuntu_dev(v, identity):
 
 def update_homebrew(v, tap_dir):
     section("Phase 6d: Homebrew formula update")
-    confirm(
+    if not confirm(
         f"Confirm GH Actions PyPI publish completed:\n"
         f"    https://github.com/dustinkirkland/byobu/actions\n"
         f"  trustmux {v['pypi_version']} should be live at:\n"
         f"    https://pypi.org/project/trustmux/{v['pypi_version']}/\n"
-        f"  Continue to update Homebrew formula?"
-    )
+        f"  Continue to update Homebrew formula?",
+        skippable=True,
+    ):
+        return
     print("  Polling PyPI for tarball (up to ~5 min)…")
 
     tarball_url = tarball_sha256 = None
@@ -761,7 +918,7 @@ echo "All signed."
 echo ""
 
 echo "── Step 2: PPA ppa:byobu/ppa ────────────────────────────────────────"
-read -rp "  Upload all series to $PPA? [y/N] " ans
+read -rp "  Upload all series to $PPA? [y=upload / N=skip] " ans
 if [[ "$ans" =~ ^[Yy]$ ]]; then
   for f in "$BASE"/ppa/*_source.changes; do
     echo "  dput $PPA $f"
@@ -774,9 +931,9 @@ fi
 echo ""
 
 echo "── Step 3: Debian experimental (mentors.debian.net) ────────────────"
-read -rp "  Upload to mentors.debian.net for sponsor review? [y/N] " ans < /dev/tty
+read -rp "  Upload to mentors.debian.net for sponsor review? [y=upload / N=skip] " ans < /dev/tty
 if [[ "$ans" =~ ^[Yy]$ ]]; then
-  dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" \
+  dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" \\
     || {{ echo "  ✗ dput failed — package not uploaded."; exit 1; }}
   echo ""
   echo "  Uploaded. Email Antoine <anarcat@debian.org> with:"
@@ -810,16 +967,18 @@ echo "All signed."
 echo ""
 
 echo "── Step 2: Ubuntu {v['devel_series']} (dev series) ──────────────────────────────"
-read -rp "  Upload to Ubuntu {v['devel_series']}? [y/N] " ans
-[[ "$ans" =~ ^[Yy]$ ]] && \\
-  dput ubuntu "$BASE/ubuntu/byobu_{v['ubuntu_ver']}_source.changes" || \\
+read -rp "  Upload to Ubuntu {v['devel_series']}? [y=upload / N=skip] " ans
+if [[ "$ans" =~ ^[Yy]$ ]]; then
+  dput ubuntu "$BASE/ubuntu/byobu_{v['ubuntu_ver']}_source.changes"
+else
   echo "  Skipped."
+fi
 echo ""
 
 echo "── Step 3: Debian unstable (mentors.debian.net) ────────────────────"
-read -rp "  Upload to mentors.debian.net for sponsor review? [y/N] " ans < /dev/tty
+read -rp "  Upload to mentors.debian.net for sponsor review? [y=upload / N=skip] " ans < /dev/tty
 if [[ "$ans" =~ ^[Yy]$ ]]; then
-  dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" \
+  dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" \\
     || {{ echo "  ✗ dput failed — package not uploaded."; exit 1; }}
   echo ""
   echo "  Uploaded. Email Antoine <anarcat@debian.org> with:"
@@ -1030,18 +1189,25 @@ def main():
     if should_run("3", start_from):
         push_pypi_tag(v)
 
+    # ── phases 4 / 5 / 5b (RC) or 4 / 5b / 6c (final): run in parallel ────
+    #
+    # All three Docker builds are independent: each mounts /src read-only and
+    # writes to a different output directory.  Running them concurrently saves
+    # ~5 minutes on a typical RC run and ~6 minutes on a final release.
+    parallel = []
     if should_run("4", start_from):
-        run_smoke_test()
-
+        parallel.append(("smoke test", run_smoke_test))
     if mode == "rc" and should_run("5", start_from):
-        build_ppa_packages(v, identity)
-
+        parallel.append(("PPA builds", lambda: build_ppa_packages(v, identity)))
+    dist = "experimental" if mode == "rc" else "unstable"
     if should_run("5b", start_from):
-        build_debian_source(v, identity, "experimental" if mode == "rc" else "unstable")
+        parallel.append(("Debian source", lambda: build_debian_source(v, identity, dist)))
+    if mode == "final" and should_run("6c", start_from):
+        parallel.append(("Ubuntu dev", lambda: build_ubuntu_dev(v, identity)))
+
+    run_phases_parallel(parallel)
 
     if mode == "final":
-        if should_run("6c", start_from):
-            build_ubuntu_dev(v, identity)
         if should_run("6d", start_from):
             update_homebrew(v, tap_dir)
 
