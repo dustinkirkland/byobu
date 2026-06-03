@@ -1,10 +1,9 @@
 Source: byobu
 Section: misc
-Priority: optional
 Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 Uploaders: Antoine Beaupré <anarcat@koumbit.org>
-Standards-Version: 4.7.2
-DM-Upload-Allowed: yes
+Standards-Version: 4.7.3
+Dm-Upload-Allowed: yes
 Build-Depends: debhelper-compat (= 13), gettext-base, automake, autoconf, dh-python, python3, python3-tornado, bc
 Homepage: https://byobu.org
 Vcs-Git: https://github.com/dustinkirkland/byobu

@@ -2,6 +2,28 @@
 # the modern debconf API style. A full rewrite is deferred.
 byobu: old-style-config-script [usr/bin/byobu-config]
 
+# All scripts under usr/lib/byobu/ are executed directly by byobu's status
+# framework at runtime; executable permission is intentional and required.
+byobu: executable-in-usr-lib
+
+# On merged-/usr systems /bin is a symlink to /usr/bin. References to
+# ${BYOBU_PREFIX}/bin/byobu-* resolve correctly at runtime; no functional
+# problem exists.
+byobu: bin-sbin-mismatch
+
+# Launchpad does not publish detached OpenPGP signatures for release tarballs,
+# so pgpmode=optional is the best we can do.
+byobu source: debian-watch-does-not-check-openpgp-signature
+
+# The copyright file predates DEP-5; converting it is deferred.
+byobu source: no-dep5-copyright
+
+# Long lines in autotools-generated Makefile.am stubs and the byobu man page
+# are not practically splittable without breaking the build or formatting.
+byobu source: very-long-line-length-in-source-file [usr/bin/Makefile.am]
+byobu source: very-long-line-length-in-source-file [usr/share/man/man1/Makefile.am]
+byobu source: very-long-line-length-in-source-file [usr/share/man/man1/byobu.1]
+
 # The Python package lives at usr/lib/trustmux/trustmux/ by design: the outer
 # directory is the package's private lib dir, the inner is the Python package
 # namespace. The repeated segment is intentional.

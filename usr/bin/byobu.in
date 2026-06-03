@@ -114,7 +114,7 @@ if [ -t 1 ]; then
 	if [ -n "$BYOBU_ALT_TITLE" ]; then
 		_byobu_title="$BYOBU_ALT_TITLE"
 	else
-		_byobu_title="${USER}@${HOSTNAME:-$(hostname)} ($(__ip_address t)) - ${PKG}"
+		_byobu_title="${USER}@$(hostname) ($(__ip_address t)) - ${PKG}"
 	fi
 	[ -n "$BYOBU_NO_TITLE" ] || printf '\033]0;%s\007' "$_byobu_title"
 fi
