@@ -85,3 +85,25 @@
 # Number of load average values to display (1-minute only, or all three)
 # Default: 1
 #LOAD_AVERAGES=1
+
+# Override status-bar icons for the reboot/upgrade notifications.
+# Useful for SSH clients (e.g. PuTTY, older MobaXterm) whose fonts
+# do not include U+27F3 (⟳) or U+26A0 (⚠).  Set before byobu sources
+# the icon definitions so your value takes precedence.
+# Example: use plain ASCII
+#ICON_REBOOT="(R)"
+#ICON_UPGRADE="/!\\"
+
+# Terminal type used inside tmux.  Byobu auto-detects 256-colour support,
+# but you can force a specific value here if detection is wrong.
+# Example: force 256-colour even if the outer TERM is not recognized
+#BYOBU_TERM="screen-256color"
+
+# Shell arguments passed to new windows and panes.
+# Set to "--login" to load /etc/profile.d aliases and environment
+# (useful on systems where profile.d sets up modules, Spack, etc.).
+# Note: this requires adding the line below to ~/.byobu/.tmux.conf:
+#   set -g default-command 'exec $SHELL --login'
+# Alternatively, set BYOBU_SHELL_ARGS here and byobu will write that
+# file for you on next restart:
+#BYOBU_SHELL_ARGS="--login"
