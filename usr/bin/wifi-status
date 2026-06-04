@@ -29,8 +29,12 @@ fi
 
 router=$(ip route show|head -n 1|awk '{print $3}')
 
+# Allow users to override the connectivity ping target in statusrc
+[ -r "$HOME/.byobu/statusrc" ] && . "$HOME/.byobu/statusrc" 2>/dev/null || true
+WIFI_PING_TARGET="${WIFI_PING_TARGET:-8.8.8.8}"
+
 if [ -z "$TMUX" ]; then
-	watch -n1 "iw $dev info; ip addr show $dev; ip route; echo; (journalctl -b --no-pager -q | grep -i $dev | tail -n 10 | sort -r); echo; ping -I $dev -c 1 8.8.8.8"
+	watch -n1 "iw $dev info; ip addr show $dev; ip route; echo; (journalctl -b --no-pager -q | grep -i $dev | tail -n 10 | sort -r); echo; ping -I $dev -c 1 $WIFI_PING_TARGET"
 else
 	# Note that the speedometer item will silently fail, if the speedometer command is not found;  I don't want byobu to depend on speedometer, but it can suggest it
 	tmux new-window -n wifi-status "watch -c iw $dev info \| ccze -A" \; \
@@ -38,7 +42,7 @@ else
 		split-window -t wifi-status -v "watch -c ip route \| ccze -A" \; \
 		split-window -t wifi-status -h "ping -I $dev $router" \; \
 		split-window -t wifi-status -v "watch -c journalctl -b --no-pager -q \| grep -i $dev \| tail -n 10 \| sort -r \| ccze -A" \; \
-		split-window -t wifi-status -h "ping -I $dev 8.8.8.8" \; \
+		split-window -t wifi-status -h "ping -I $dev $WIFI_PING_TARGET" \; \
 		split-window -t wifi-status -v "speedometer -t $dev -r $dev" \; \
 		select-layout -t wifi-status tiled
 fi

@@ -54,6 +54,11 @@
 # Default: 20
 #NETWORK_THRESHOLD=20
 
+# Ping target used by wifi-status to test connectivity.
+# Override if 8.8.8.8 is blocked by your firewall, e.g. use your router IP.
+# Default: 8.8.8.8
+#WIFI_PING_TARGET=8.8.8.8
+
 # You can add an additional source of temperature here
 #MONITORED_TEMP=/proc/acpi/thermal_zone/THM0/temperature
 
