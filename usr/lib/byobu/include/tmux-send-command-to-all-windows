@@ -17,7 +17,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+if [ $# -gt 0 ]; then
+	_cmd="$*"
+else
+	_cmd=$(tmux show-buffer 2>/dev/null) || true
+fi
+[ -z "$_cmd" ] && exit 0
 for w in $(tmux list-windows | $BYOBU_SED -e "s/:.*//"); do
-	tmux send-keys -l -t :$w "$@"
+	tmux send-keys -l -t :$w "$_cmd"
 	tmux send-keys -t :$w Enter
 done
+unset _cmd
