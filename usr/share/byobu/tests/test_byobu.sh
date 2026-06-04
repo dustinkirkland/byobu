@@ -442,6 +442,83 @@ assert_true "ulevel exit 0 on valid input" "_ul -n -c 75 -t vbars_8"
 rm -f "$_ULEVEL"
 
 # ---------------------------------------------------------------------------
+# Section 18 — LP: #1066626  F2 must not disable automatic-rename
+# ---------------------------------------------------------------------------
+
+_fkeys="$BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux"
+assert_false "F2 binding does not rename-window to '-'" \
+	"grep -E 'bind-key -n F2.*rename-window' '$_fkeys'"
+assert_false "C-S-F2 binding does not rename-window to '-'" \
+	"grep -E 'bind-key -n C-S-F2.*rename-window' '$_fkeys'"
+assert_true "F2 binding still creates new-window" \
+	"grep -qE 'bind-key -n F2 new-window' '$_fkeys'"
+assert_true "C-S-F2 binding still creates new-session" \
+	"grep -qE 'bind-key -n C-S-F2 new-session' '$_fkeys'"
+unset _fkeys
+
+# ---------------------------------------------------------------------------
+# Section 19 — LP: #1846983  wifi-status WIFI_PING_TARGET
+# ---------------------------------------------------------------------------
+
+_wst="$BYOBU_PREFIX/bin/wifi-status"
+assert_true "wifi-status uses WIFI_PING_TARGET variable" \
+	"grep -q 'WIFI_PING_TARGET' '$_wst'"
+assert_true "wifi-status still has a default ping address" \
+	"grep -qE 'WIFI_PING_TARGET:-[0-9]' '$_wst'"
+unset _wst
+
+# ---------------------------------------------------------------------------
+# Section 20 — LP: #1995865  tmux default-command uses exec
+# ---------------------------------------------------------------------------
+
+_tmux_profile="$BYOBU_PREFIX/share/byobu/profiles/tmux"
+assert_true "tmux default-command uses exec \$SHELL" \
+	"grep -qE \"set -g default-command 'exec\" '$_tmux_profile'"
+assert_false "tmux default-command is not bare \$SHELL without exec" \
+	"grep -qE '^set -g default-command \\\$SHELL$' '$_tmux_profile'"
+unset _tmux_profile
+
+# ---------------------------------------------------------------------------
+# Section 21 — LP: #1946926  byobu-reconnect-sockets allows non-interactive sourcing
+# ---------------------------------------------------------------------------
+
+_reco="$BYOBU_PREFIX/bin/byobu-reconnect-sockets.in"
+# Must still guard against direct execution (no BYOBU_BACKEND)
+assert_true "reconnect-sockets still has an interactive check" \
+	"grep -q 'case.*\"\$-\"' '$_reco'"
+# Must NOT hard-exit when BYOBU_BACKEND is set (fish/bass compatibility)
+assert_true "reconnect-sockets skips exit when BYOBU_BACKEND is set" \
+	"grep -q 'BYOBU_BACKEND' '$_reco'"
+unset _reco
+
+# ---------------------------------------------------------------------------
+# Section 22 — LP: #1960236  tmux config errors shown on startup failure
+# ---------------------------------------------------------------------------
+
+_byobu_bin="$BYOBU_PREFIX/bin/byobu.in"
+assert_true "byobu.in contains a tmux preflight config check" \
+	"grep -q 'start-server\|byobu_tmux_err' '$_byobu_bin'"
+unset _byobu_bin
+
+# ---------------------------------------------------------------------------
+# Section 23 — LP: #1807026  Shift+F9 uses tmux buffer (no shell quoting of input)
+# ---------------------------------------------------------------------------
+
+_panes="$BYOBU_PREFIX/lib/byobu/include/tmux-send-command-to-all-panes"
+_wins="$BYOBU_PREFIX/lib/byobu/include/tmux-send-command-to-all-windows"
+assert_true "send-command-to-all-panes reads from tmux show-buffer" \
+	"grep -q 'show-buffer' '$_panes'"
+assert_true "send-command-to-all-windows reads from tmux show-buffer" \
+	"grep -q 'show-buffer' '$_wins'"
+# Keybinding must use set-buffer, not pass text directly via single-quoted %%
+_fkeys="$BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux"
+assert_true "S-F9 keybinding uses set-buffer" \
+	"grep -qE 'S-F9.*set-buffer' '$_fkeys'"
+assert_true "C-F9 keybinding uses set-buffer" \
+	"grep -qE 'C-F9.*set-buffer' '$_fkeys'"
+unset _panes _wins _fkeys
+
+# ---------------------------------------------------------------------------
 # Results
 # ---------------------------------------------------------------------------
 

@@ -28,10 +28,10 @@ source $BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux.disable
 # Documented in: $BYOBU_PREFIX/share/doc/byobu/help.tmux.txt
 bind-key -n F1 new-window -n help "sh -c 'LESS=\"\" $BYOBU_PAGER $BYOBU_PREFIX/share/doc/byobu/help.tmux.txt'"
 bind-key -n S-F1 new-window -n help "sh -c 'LESS=\"\" $BYOBU_PAGER $BYOBU_PREFIX/share/doc/byobu/help.tmux.txt'"
-bind-key -n F2 new-window -c "#{pane_current_path}" \; rename-window "-"
+bind-key -n F2 new-window -c "#{pane_current_path}"
 bind-key -n C-F2 display-panes \; split-window -h -c "#{pane_current_path}"
 bind-key -n S-F2 display-panes \; split-window -v -c "#{pane_current_path}"
-bind-key -n C-S-F2 new-session \; rename-window "-"
+bind-key -n C-S-F2 new-session
 bind-key -n F3 previous-window
 bind-key -n F4 next-window
 bind-key -n M-Left previous-window
@@ -71,8 +71,8 @@ bind-key -n S-F8 next-layout
 bind-key -n M-S-F8 new-window "byobu-layout restore; clear; $SHELL"
 bind-key -n C-S-F8 command-prompt -p "Save byobu layout as:" "run-shell \"byobu-layout save '%%'\""
 bind-key -n F9 new-window -n config byobu-config
-bind-key -n S-F9 command-prompt -p "Send command to all panes:" "run-shell \"$BYOBU_PREFIX/lib/byobu/include/tmux-send-command-to-all-panes '%%'\""
-bind-key -n C-F9 command-prompt -p "Send command to all windows:" "run-shell \"$BYOBU_PREFIX/lib/byobu/include/tmux-send-command-to-all-windows '%%'\""
+bind-key -n S-F9 command-prompt -p "Send command to all panes:" "set-buffer \"%%\" ; run-shell \"$BYOBU_PREFIX/lib/byobu/include/tmux-send-command-to-all-panes\""
+bind-key -n C-F9 command-prompt -p "Send command to all windows:" "set-buffer \"%%\" ; run-shell \"$BYOBU_PREFIX/lib/byobu/include/tmux-send-command-to-all-windows\""
 bind-key -n M-F9 display-panes \; setw synchronize-panes
 bind-key -n M-F11 break-pane
 bind-key -n C-F11 join-pane -h -s :. -t :-1
