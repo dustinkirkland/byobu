@@ -28,17 +28,20 @@ __memory_detail() {
 }
 
 __memory() {
-	local free="" total="" buffers="" cached=""
+	local free="" total="" available="" buffers="" cached=""
 	local kb_main_used=0 buffers_plus_cached=0 fo_buffers=0 fo_cached=0
 	if [ -r /proc/meminfo ]; then
 		while read tok val unit; do
 			case "$tok" in
-				MemTotal:) total=${val};;
-				MemFree:) free=${val};;
-				Buffers:) buffers=${val};;
-				Cached:) cached=${val};;
+				MemTotal:)     total=${val};;
+				MemFree:)      free=${val};;
+				MemAvailable:) available=${val};;
+				Buffers:)      buffers=${val};;
+				Cached:)       cached=${val};;
 			esac
-			[ -n "${free}" -a -n "${total}" -a -n "${buffers}" -a -n "${cached}" ] && break;
+			# MemAvailable (Linux 3.14+) appears before Buffers/Cached;
+			# break early once we have total + available for efficiency.
+			[ -n "${total}" -a -n "${available}" ] && break;
 		done < /proc/meminfo
 	elif [ "$BYOBU_OSTYPE" = "FreeBSD" ]; then
 		# FreeBSD support
@@ -80,10 +83,15 @@ __memory() {
 		buffers=0
 		cached=0
 	fi
-        kb_main_used=$(($total-$free))
-        buffers_plus_cached=$(($buffers+$cached))
-        # "free output" buffers and cache (output from 'free')
-        fo_buffers=$(($kb_main_used - $buffers_plus_cached))
+	if [ -n "$available" ]; then
+		# MemAvailable accounts for reclaimable slab memory in addition
+		# to free + buffers + cached; matches what 'free -h' reports.
+		fo_buffers=$(($total - $available))
+	else
+		kb_main_used=$(($total-$free))
+		buffers_plus_cached=$(($buffers+$cached))
+		fo_buffers=$(($kb_main_used - $buffers_plus_cached))
+	fi
         fpdiv $((100*${fo_buffers})) "${total}" 0;
         usage=${_RET}
 	if [ $total -ge 1048576 ]; then
