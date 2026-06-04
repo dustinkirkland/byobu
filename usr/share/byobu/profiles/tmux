@@ -63,11 +63,11 @@ set -g default-terminal "$BYOBU_TERM"
 # The following helps with Shift-PageUp/Shift-PageDown
 set -g terminal-overrides 'xterm*:smcup@:rmcup@'
 
-# Must set default-command to $SHELL, in order to not source ~/.profile
-# BUG: Should *not* hardcode /bin/bash here
-# Use byobu-shell here, to show MOTD, but would do so with every new window and split
+# Must set default-command to $SHELL, in order to not source ~/.profile.
+# Use 'exec' so the user's shell replaces the intermediate wrapper process
+# directly — avoids double-process overhead (fixes LP: #1995865 for fish).
 #set -g default-command 'exec byobu-shell'
-set -g default-command $SHELL
+set -g default-command 'exec $SHELL'
 
 set -g status-style bg=$BYOBU_DARK,fg=$BYOBU_LIGHT
 set -g status-interval 1
