@@ -77,6 +77,19 @@ case "$SHELL" in
 	;;
 esac
 
+# Also install in .bashrc / .zshrc so byobu auto-starts in non-login
+# interactive shells used by Alacritty, kitty, st, terminology, etc.
+# byobu-launch already guards against nested launches and non-interactive
+# shells, so this is safe.  LP: #1840728
+case "$SHELL" in
+	*bash)
+		[ -w "$HOME/.bashrc" ] && install_launcher "$HOME/.bashrc"
+	;;
+	*zsh)
+		[ -w "$HOME/.zshrc" ] && install_launcher "$HOME/.zshrc"
+	;;
+esac
+
 # Handle fish shell
 if [ -d "$HOME/.config/fish" ]; then
 	install_launcher_fish "$HOME/.config/fish/config.fish"

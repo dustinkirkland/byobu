@@ -34,7 +34,7 @@ remove_launcher() {
 if [ -f "$1" ]; then
 		remove_launcher "$1"
 else
-	for i in ".profile" ".bashrc" ".bash_profile" ".bash_login" ".zprofile" ".config/fish/config.fish"; do
+	for i in ".profile" ".bashrc" ".bash_profile" ".bash_login" ".zprofile" ".zshrc" ".config/fish/config.fish"; do
 		remove_launcher "$HOME/$i"
 	done
 fi
