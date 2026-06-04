@@ -68,13 +68,17 @@ __ip_address() {
 		;;
 		*)
 			if [ "$IP_EXTERNAL" = "1" ]; then
-				# Try dig with OpenDNS first (faster), fall back to wget
-				if command -v dig >/dev/null 2>&1; then
+				if [ -n "$EXTERNAL_IP_SOURCE" ]; then
+					# User-specified URL (e.g. https://api.ipify.org). LP: #1869483
+					timeout 1 wget -q -O- "$EXTERNAL_IP_SOURCE" </dev/null >"$cache" 2>/dev/null &
+					sleep 0.02
+				elif command -v dig >/dev/null 2>&1; then
+					# Try dig with OpenDNS first (faster), fall back to wget
 					timeout 1 dig +short myip.opendns.com @resolver1.opendns.com </dev/null 2>/dev/null | tr -d '\n' >"$cache" &
 					# Brief sleep for cold-start display optimization (requires bash)
 					sleep 0.1
 				fi
-				# Fall back to wget if dig didn't work
+				# Fall back to wget if primary source didn't work
 				if [ ! -s "$cache" ]; then
 					timeout 1 wget -q -O- http://v4.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
 					# Brief sleep for cold-start display optimization (requires bash)
@@ -89,9 +93,16 @@ __ip_address() {
 				[ -s "$cache" ] && read ipaddr < "$cache"
 			else
 				if [ -x /sbin/ip ]; then
-					ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global 2>/dev/null)
-					ipaddr=${ipaddr#* inet }
-					ipaddr=${ipaddr%%/*}
+					# 'ip route get' reports the preferred source for outbound
+					# traffic without needing to guess the interface. LP: #2015819
+					ipaddr=$(LC_ALL=C /sbin/ip route get 1.1.1.1 2>/dev/null | \
+						awk '/src/{for(i=1;i<=NF;i++) if($i=="src"){print $(i+1); exit}}')
+					# Fall back to interface-based detection (no default route, VPN, etc.)
+					if [ -z "$ipaddr" ]; then
+						ipaddr=$(LC_ALL=C /sbin/ip -4 addr list dev "$interface" scope global 2>/dev/null)
+						ipaddr=${ipaddr#* inet }
+						ipaddr=${ipaddr%%/*}
+					fi
 				elif eval $BYOBU_TEST ifconfig >/dev/null 2>&1; then
 					ipaddr=$(ifconfig "$interface" | grep "inet " | awk '{print $2}')
 				fi
