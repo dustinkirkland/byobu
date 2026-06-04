@@ -241,6 +241,17 @@ export BYOBU_TERM
 [ -n "$DBUS_SESSION_BUS_ADDRESS" ] && printf "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS\n" > "$BYOBU_RUN_DIR/sockets"
 [ -n "$SESSION_MANAGER" ] && printf "SESSION_MANAGER=$SESSION_MANAGER\n" >> "$BYOBU_RUN_DIR/sockets"
 
+# Preflight: if no tmux server is running yet, validate the config so any
+# syntax error is shown to the user rather than swallowed by exec.  LP: #1960236
+if [ "$BYOBU_BACKEND" = "tmux" ] && ! tmux list-sessions >/dev/null 2>&1; then
+	_byobu_tmux_err=$(tmux start-server 2>&1 >/dev/null) || true
+	if [ -n "$_byobu_tmux_err" ]; then
+		printf "byobu: tmux configuration error:\n%s\n" "$_byobu_tmux_err" >&2
+		exit 1
+	fi
+	unset _byobu_tmux_err
+fi
+
 # Now let's execute the backend!
 if [ "$#" = "0" ]; then
 	if [ "$CUSTOM_WINDOW_SET" = "1" ]; then
