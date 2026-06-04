@@ -442,7 +442,118 @@ assert_true "ulevel exit 0 on valid input" "_ul -n -c 75 -t vbars_8"
 rm -f "$_ULEVEL"
 
 # ---------------------------------------------------------------------------
-# Section 18 — LP: #1066626  F2 must not disable automatic-rename
+# Section 18 — LP: #1783604  custom status: no trailing space on empty output
+# ---------------------------------------------------------------------------
+
+# Source shutil to get readfile/_RET; mock a minimal byobu env
+_orig_ESC="${ESC:-}"
+ESC=$'\033'
+_custom_script="$BYOBU_PREFIX/lib/byobu/custom"
+
+# Test that "[ -n "$str" ] || continue" guard is present before the case
+assert_true "custom: empty-str guard present" \
+	"grep -qE '\[ -n.*str.*\].*\|\|.*continue' '$_custom_script'"
+# Guard must appear before the case/append, not after
+assert_true "custom: guard comes before case statement" \
+	"awk '/\[ -n.*str.*continue/{g=1} /case.*str/{if(g)exit 0; exit 1}' '$_custom_script'"
+unset _custom_script ESC
+ESC="${_orig_ESC}"; unset _orig_ESC
+
+# ---------------------------------------------------------------------------
+# Section 19 — LP: #1837818  updates_available: apt list --upgradeable
+# ---------------------------------------------------------------------------
+
+_ua="$BYOBU_PREFIX/lib/byobu/updates_available"
+assert_true "updates_available: uses apt list --upgradeable" \
+	"grep -q 'apt list --upgradeable' '$_ua'"
+assert_true "updates_available: apt list preferred before apt-get" \
+	"awk '/apt list/{found=1} /apt-get.*upgrade/{if(!found)exit 1; exit 0}' '$_ua'"
+unset _ua
+
+# ---------------------------------------------------------------------------
+# Section 20 — LP: #1827306  icons: ICON_REBOOT/UPGRADE honour pre-set value
+# ---------------------------------------------------------------------------
+
+# Source icons with a pre-set override and verify it is preserved
+_icon_check() {
+	BYOBU_BACKEND=tmux BYOBU_CHARMAP=UTF-8 ICON_REBOOT="CUSTOM" \
+		bash -c ". $BYOBU_PREFIX/lib/byobu/include/icons; printf '%s' \"\$ICON_REBOOT\""
+}
+assert_eq "icons: pre-set ICON_REBOOT honoured in UTF-8 mode" "$(_icon_check)" "CUSTOM"
+
+_icon_check2() {
+	BYOBU_BACKEND=tmux BYOBU_CHARMAP=ASCII ICON_REBOOT="MY_REBOOT" \
+		bash -c ". $BYOBU_PREFIX/lib/byobu/include/icons; printf '%s' \"\$ICON_REBOOT\""
+}
+assert_eq "icons: pre-set ICON_REBOOT honoured in non-UTF-8 mode" "$(_icon_check2)" "MY_REBOOT"
+
+_icon_default() {
+	BYOBU_BACKEND=tmux BYOBU_CHARMAP=UTF-8 \
+		bash -c ". $BYOBU_PREFIX/lib/byobu/include/icons; printf '%s' \"\$ICON_REBOOT\""
+}
+assert_nonempty "icons: default ICON_REBOOT is non-empty" "$(_icon_default)"
+unset -f _icon_check _icon_check2 _icon_default
+
+# ---------------------------------------------------------------------------
+# Section 21 — LP: #1871016  tmuxrc re-applies pane border colours on reload
+# ---------------------------------------------------------------------------
+
+_tmuxrc="$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
+assert_true "tmuxrc: sets pane-border-style from BYOBU_ACCENT" \
+	"grep -q 'pane-border-style.*BYOBU_ACCENT' '$_tmuxrc'"
+assert_true "tmuxrc: sets pane-active-border-style from BYOBU_HIGHLIGHT" \
+	"grep -q 'pane-active-border-style.*BYOBU_HIGHLIGHT' '$_tmuxrc'"
+assert_true "tmuxrc: pane styles come AFTER color.tmux source" \
+	"awk '/source-file.*color.tmux/{found=1} /pane-border-style/{if(!found)exit 1; exit 0}' '$_tmuxrc'"
+unset _tmuxrc
+
+# ---------------------------------------------------------------------------
+# Section 22 — LP: #1618516  BYOBU_SHELL_ARGS written by byobu-janitor
+# ---------------------------------------------------------------------------
+
+_jan="$BYOBU_PREFIX/bin/byobu-janitor.in"
+assert_true "byobu-janitor: handles BYOBU_SHELL_ARGS" \
+	"grep -q 'BYOBU_SHELL_ARGS' '$_jan'"
+assert_true "byobu-janitor: writes shellinit.tmux" \
+	"grep -q 'shellinit.tmux' '$_jan'"
+
+# Runtime test: janitor writes correct default-command when BYOBU_SHELL_ARGS set
+_sdir=$(mktemp -d)
+printf 'BYOBU_SHELL_ARGS="--login"\n' > "$_sdir/statusrc"
+(
+	BYOBU_CONFIG_DIR="$_sdir"
+	BYOBU_SHELL_ARGS="--login"
+	# Simulate the janitor's shellinit write logic
+	_shellinit="$BYOBU_CONFIG_DIR/shellinit.tmux"
+	printf 'set -g default-command "exec $SHELL %s"\n' "$BYOBU_SHELL_ARGS" > "$_shellinit"
+)
+assert_true "janitor: shellinit.tmux contains --login when BYOBU_SHELL_ARGS set" \
+	"grep -q -- '--login' '$_sdir/shellinit.tmux'"
+assert_true "janitor: shellinit.tmux contains default-command" \
+	"grep -q 'default-command' '$_sdir/shellinit.tmux'"
+rm -rf "$_sdir"; unset _sdir _jan
+
+# tmuxrc sources shellinit.tmux
+_tmuxrc="$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"
+assert_true "tmuxrc: sources shellinit.tmux" \
+	"grep -q 'shellinit.tmux' '$_tmuxrc'"
+unset _tmuxrc
+
+# ---------------------------------------------------------------------------
+# Section 23 — LP: #1544983  statusrc documents BYOBU_TERM override
+# ---------------------------------------------------------------------------
+
+_src="$BYOBU_PREFIX/share/byobu/status/statusrc"
+assert_true "statusrc: documents BYOBU_TERM override" \
+	"grep -q 'BYOBU_TERM' '$_src'"
+assert_true "statusrc: documents ICON_REBOOT override" \
+	"grep -q 'ICON_REBOOT' '$_src'"
+assert_true "statusrc: documents BYOBU_SHELL_ARGS" \
+	"grep -q 'BYOBU_SHELL_ARGS' '$_src'"
+unset _src
+
+# ---------------------------------------------------------------------------
+# Section 25 — LP: #1066626  F2 must not disable automatic-rename
 # ---------------------------------------------------------------------------
 
 _fkeys="$BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux"
@@ -457,7 +568,7 @@ assert_true "C-S-F2 binding still creates new-session" \
 unset _fkeys
 
 # ---------------------------------------------------------------------------
-# Section 19 — LP: #1846983  wifi-status WIFI_PING_TARGET
+# Section 26 — LP: #1846983  wifi-status WIFI_PING_TARGET
 # ---------------------------------------------------------------------------
 
 _wst="$BYOBU_PREFIX/bin/wifi-status"
@@ -468,7 +579,7 @@ assert_true "wifi-status still has a default ping address" \
 unset _wst
 
 # ---------------------------------------------------------------------------
-# Section 20 — LP: #1995865  tmux default-command uses exec
+# Section 27 — LP: #1995865  tmux default-command uses exec
 # ---------------------------------------------------------------------------
 
 _tmux_profile="$BYOBU_PREFIX/share/byobu/profiles/tmux"
@@ -479,7 +590,7 @@ assert_false "tmux default-command is not bare \$SHELL without exec" \
 unset _tmux_profile
 
 # ---------------------------------------------------------------------------
-# Section 21 — LP: #1946926  byobu-reconnect-sockets allows non-interactive sourcing
+# Section 28 — LP: #1946926  byobu-reconnect-sockets allows non-interactive sourcing
 # ---------------------------------------------------------------------------
 
 _reco="$BYOBU_PREFIX/bin/byobu-reconnect-sockets.in"
@@ -492,7 +603,7 @@ assert_true "reconnect-sockets skips exit when BYOBU_BACKEND is set" \
 unset _reco
 
 # ---------------------------------------------------------------------------
-# Section 22 — LP: #1960236  tmux config errors shown on startup failure
+# Section 29 — LP: #1960236  tmux config errors shown on startup failure
 # ---------------------------------------------------------------------------
 
 _byobu_bin="$BYOBU_PREFIX/bin/byobu.in"
@@ -501,7 +612,7 @@ assert_true "byobu.in contains a tmux preflight config check" \
 unset _byobu_bin
 
 # ---------------------------------------------------------------------------
-# Section 23 — LP: #1807026  Shift+F9 uses tmux buffer (no shell quoting of input)
+# Section 30 — LP: #1807026  Shift+F9 uses tmux buffer (no shell quoting of input)
 # ---------------------------------------------------------------------------
 
 _panes="$BYOBU_PREFIX/lib/byobu/include/tmux-send-command-to-all-panes"

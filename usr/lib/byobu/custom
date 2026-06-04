@@ -47,6 +47,7 @@ __custom() {
 		fi
 		readfile < "$cache.$script"
 		local str="${_RET}"
+		[ -n "$str" ] || continue
 		case "$str" in
 			*"$ESC{"*)
 				# User has formatted the colors
