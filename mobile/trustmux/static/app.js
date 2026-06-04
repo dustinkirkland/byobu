@@ -11,6 +11,22 @@ let forcedPaneId = null;    // set after creating a new window (specific pane to
 let _scrollTopOnNextSnapshot = false; // scroll to top instead of bottom on next snapshot
 let statusInterval = null;
 
+// ── offline / connectivity helpers ────────────────────────────────────────
+let _offlineCountdownTimer = null;
+let _offlineRetryTimer = null;
+const OFFLINE_RETRY_SECS = 8; // auto-retry interval while offline screen is shown
+
+/** True if the current host looks like a Tailscale address. */
+function isTailscaleHost() {
+  const h = location.hostname;
+  // Tailscale CGNAT range: 100.64.0.0/10  →  100.64.x.x – 100.127.x.x
+  const m = h.match(/^100\.(\d+)\./);
+  if (m && +m[1] >= 64 && +m[1] <= 127) return true;
+  // MagicDNS: *.ts.net or *.taile*.net
+  if (/\.ts\.net$/.test(h) || /\.taile[a-z0-9-]*\.net$/.test(h)) return true;
+  return false;
+}
+
 // ── biometric lock ─────────────────────────────────────────────────────────
 // Uses WebAuthn platform authenticator (fingerprint/face/PIN) as an
 // idle/background lock — not a replacement for server-side auth.
@@ -156,6 +172,61 @@ const btnPrev          = document.getElementById('btn-prev');
 const btnNext          = document.getElementById('btn-next');
 const btnEscape        = document.getElementById('btn-escape');
 const escapePopup      = document.getElementById('escape-popup');
+
+// offline overlay elements
+const offlineOverlay       = document.getElementById('offline-overlay');
+const offlineHost          = document.getElementById('offline-host');
+const offlineTailscaleHint = document.getElementById('offline-tailscale-hint');
+const offlineRetryBtn      = document.getElementById('offline-retry-btn');
+const offlineCountdown     = document.getElementById('offline-countdown');
+
+function showOfflineScreen() {
+  offlineHost.textContent = location.host;
+  if (isTailscaleHost()) {
+    offlineTailscaleHint.classList.add('visible');
+  } else {
+    offlineTailscaleHint.classList.remove('visible');
+  }
+  offlineOverlay.classList.add('visible');
+  _startOfflineCountdown();
+}
+
+function hideOfflineScreen() {
+  offlineOverlay.classList.remove('visible');
+  _clearOfflineTimers();
+}
+
+function _clearOfflineTimers() {
+  if (_offlineCountdownTimer) { clearInterval(_offlineCountdownTimer); _offlineCountdownTimer = null; }
+  if (_offlineRetryTimer)     { clearTimeout(_offlineRetryTimer);      _offlineRetryTimer = null; }
+  offlineCountdown.textContent = '';
+}
+
+function _startOfflineCountdown() {
+  _clearOfflineTimers();
+  let secs = OFFLINE_RETRY_SECS;
+  offlineCountdown.textContent = `Auto-retry in ${secs}s`;
+  _offlineCountdownTimer = setInterval(() => {
+    secs--;
+    if (secs > 0) {
+      offlineCountdown.textContent = `Auto-retry in ${secs}s`;
+    } else {
+      clearInterval(_offlineCountdownTimer);
+      _offlineCountdownTimer = null;
+      offlineCountdown.textContent = 'Retrying…';
+    }
+  }, 1000);
+  _offlineRetryTimer = setTimeout(() => {
+    offlineCountdown.textContent = 'Retrying…';
+    init();
+  }, OFFLINE_RETRY_SECS * 1000);
+}
+
+offlineRetryBtn.addEventListener('click', () => {
+  offlineCountdown.textContent = 'Retrying…';
+  _clearOfflineTimers();
+  init();
+});
 
 // ── pane names (user-defined, stored in localStorage) ─────────────────────
 // Key is scoped to the server hostname so names don't bleed across machines.
@@ -858,6 +929,7 @@ async function init() {
     const data = await r.json();
     if (r.ok) {
       if (data.hostname) hostnameDisplay.textContent = data.hostname;
+      hideOfflineScreen();
       hidePairScreen();
       connect();
       startStatusPolling();
@@ -869,10 +941,11 @@ async function init() {
         resetLockTimer();
       }
     } else {
+      hideOfflineScreen();
       showPairScreen();
     }
   } catch {
-    showPairScreen();
+    showOfflineScreen();
   }
 }
 init();
