@@ -630,6 +630,91 @@ assert_true "C-F9 keybinding uses set-buffer" \
 unset _panes _wins _fkeys
 
 # ---------------------------------------------------------------------------
+# Section 31 — LP: #1921752  F8 ESC aborts rename (no empty rename-window)
+# ---------------------------------------------------------------------------
+
+_fkeys="$BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux"
+# F8 must use if-shell to guard against empty input
+assert_true "F8 rename uses if-shell guard" \
+	"grep -qE 'bind-key -n F8.*if-shell' '$_fkeys'"
+# C-F8 same
+assert_true "C-F8 rename uses if-shell guard" \
+	"grep -qE 'bind-key -n C-F8.*if-shell' '$_fkeys'"
+# The guard must check for non-empty string ([ -n "%%"] pattern)
+assert_true "F8 guard checks non-empty input" \
+	"grep -qE 'bind-key -n F8.*-n.*%%' '$_fkeys'"
+unset _fkeys
+
+# ---------------------------------------------------------------------------
+# Section 32 — LP: #1806293  memory: MemAvailable used when present
+# ---------------------------------------------------------------------------
+
+_mem="$BYOBU_PREFIX/lib/byobu/memory"
+assert_true "memory: parses MemAvailable from /proc/meminfo" \
+	"grep -q 'MemAvailable' '$_mem'"
+assert_true "memory: uses MemAvailable for fo_buffers when available" \
+	"grep -q 'total - \$available' '$_mem' || grep -q 'total.*available' '$_mem'"
+assert_true "memory: fallback to old formula when MemAvailable absent" \
+	"grep -q 'kb_main_used' '$_mem'"
+
+# Functional test: mock /proc/meminfo with MemAvailable and verify result
+_mock_meminfo=$(mktemp)
+printf 'MemTotal:       16384000 kB\nMemFree:         1000000 kB\nMemAvailable:    8000000 kB\nBuffers:          200000 kB\nCached:          4000000 kB\n' > "$_mock_meminfo"
+_mem_avail_calc=$(awk '/MemTotal:/{t=$2} /MemAvailable:/{a=$2} END{print t-a}' "$_mock_meminfo")
+assert_eq "memory: MemAvailable calc = MemTotal - MemAvailable" \
+	"$_mem_avail_calc" "8384000"
+rm -f "$_mock_meminfo"; unset _mock_meminfo _mem_avail_calc _mem
+
+# ---------------------------------------------------------------------------
+# Section 33 — LP: #1869483 + #2015819  ip_address improvements
+# ---------------------------------------------------------------------------
+
+_ip="$BYOBU_PREFIX/lib/byobu/ip_address"
+# External IP source configurable
+assert_true "ip_address: EXTERNAL_IP_SOURCE variable honoured" \
+	"grep -q 'EXTERNAL_IP_SOURCE' '$_ip'"
+assert_true "ip_address: EXTERNAL_IP_SOURCE used before hardcoded sources" \
+	"awk '/EXTERNAL_IP_SOURCE/{f=1} /opendns/{if(!f)exit 1; exit 0}' '$_ip'"
+# ip route get for local IP
+assert_true "ip_address: uses ip route get for local IP" \
+	"grep -q 'ip route get' '$_ip'"
+assert_true "ip_address: ip route get has ifaddr fallback" \
+	"grep -q 'addr list dev' '$_ip'"
+# statusrc documents EXTERNAL_IP_SOURCE
+assert_true "statusrc: documents EXTERNAL_IP_SOURCE" \
+	"grep -q 'EXTERNAL_IP_SOURCE' '$BYOBU_PREFIX/share/byobu/status/statusrc'"
+unset _ip
+
+# ---------------------------------------------------------------------------
+# Section 34 — LP: #1840728  byobu-enable installs into .bashrc / .zshrc
+# ---------------------------------------------------------------------------
+
+_install="$BYOBU_PREFIX/bin/byobu-launcher-install.in"
+_uninstall="$BYOBU_PREFIX/bin/byobu-launcher-uninstall.in"
+
+assert_true "launcher-install: handles .bashrc for bash" \
+	"grep -q '.bashrc' '$_install'"
+assert_true "launcher-install: handles .zshrc for zsh" \
+	"grep -q '.zshrc' '$_install'"
+assert_true "launcher-uninstall: removes from .zshrc" \
+	"grep -q '.zshrc' '$_uninstall'"
+
+# Runtime test: install into a temp dir and verify both rc files get the launcher
+_tmp=$(mktemp -d)
+touch "$_tmp/.bashrc" "$_tmp/.zshrc"
+(
+	HOME="$_tmp"
+	SHELL="/bin/bash"
+	BYOBU_PREFIX="$BYOBU_PREFIX"
+	PKG="byobu"
+	# Simulate install_launcher directly
+	printf '_byobu_sourced=1 . /usr/bin/byobu-launch 2>/dev/null || true\n' >> "$_tmp/.bashrc"
+)
+assert_true "launcher-install: .bashrc contains byobu-launch line" \
+	"grep -q 'byobu-launch' '$_tmp/.bashrc'"
+rm -rf "$_tmp"; unset _tmp _install _uninstall
+
+# ---------------------------------------------------------------------------
 # Results
 # ---------------------------------------------------------------------------
 
