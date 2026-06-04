@@ -86,6 +86,17 @@ MC=0
 [ -r "$BYOBU_CONFIG_DIR/backend" ] || echo "BYOBU_BACKEND=$BYOBU_BACKEND" > "$BYOBU_CONFIG_DIR/backend"
 [ -r "$BYOBU_CONFIG_DIR/.screenrc" ] || touch "$BYOBU_CONFIG_DIR/.screenrc"
 [ -r "$BYOBU_CONFIG_DIR/.tmux.conf" ] || touch "$BYOBU_CONFIG_DIR/.tmux.conf"
+# BYOBU_SHELL_ARGS: if set in statusrc, write a shellinit.tmux that overrides
+# tmux's default-command so new windows/panes start with those args (e.g.
+# --login to source /etc/profile.d).  LP: #1618516
+[ -r "$BYOBU_CONFIG_DIR/statusrc" ] && . "$BYOBU_CONFIG_DIR/statusrc" 2>/dev/null || true
+_shellinit="$BYOBU_CONFIG_DIR/shellinit.tmux"
+if [ -n "$BYOBU_SHELL_ARGS" ]; then
+	printf 'set -g default-command "exec $SHELL %s"\n' "$BYOBU_SHELL_ARGS" > "$_shellinit"
+else
+	[ -f "$_shellinit" ] || touch "$_shellinit"
+fi
+unset _shellinit
 for f in status statusrc; do
 	if [ ! -r "$BYOBU_CONFIG_DIR/$f" ]; then
 		# Copy from skeleton, if possible
