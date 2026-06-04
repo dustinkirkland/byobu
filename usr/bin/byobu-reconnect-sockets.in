@@ -30,14 +30,20 @@ PKG="byobu"
 
 case "$-" in
 	*i*)
-		# no-op
+		# Interactive shell — sourced normally
 	;;
 	*)
-		echo 2>&1
-		echo "ERROR: You must source this file, rather than execute it." 2>&1
-		echo "  . $0" 2>&1
-		echo 2>&1
-		exit 1
+		# Non-interactive. Allow when BYOBU_BACKEND is already set in the
+		# environment (e.g. fish users sourcing via the bass shim).
+		# Refuse only when there is no sign of a running byobu context,
+		# which most likely means the script is being executed directly.
+		if [ -z "$BYOBU_BACKEND" ]; then
+			echo 2>&1
+			echo "ERROR: You must source this file, rather than execute it." 2>&1
+			echo "  . $0" 2>&1
+			echo 2>&1
+			exit 1
+		fi
 	;;
 esac
 
