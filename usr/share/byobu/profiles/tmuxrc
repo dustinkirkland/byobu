@@ -23,8 +23,17 @@
 ###############################################################################
 
 source-file $BYOBU_CONFIG_DIR/color.tmux
+# Re-apply pane border colours from the colour profile on every reload (F5).
+# profiles/tmux sets these at startup using shell variables; tmuxrc must
+# re-apply them using tmux format strings so Mondrian and colour-profile
+# changes take effect without a full byobu restart.  LP: #1871016
+set-option -g pane-border-style fg=#{BYOBU_ACCENT}
+set-option -g pane-active-border-style bg=#{BYOBU_HIGHLIGHT},fg=#{BYOBU_HIGHLIGHT}
+set-option -g display-panes-colour #{BYOBU_ACCENT}
+set-option -g display-panes-active-colour #{BYOBU_HIGHLIGHT}
 source-file $BYOBU_CONFIG_DIR/datetime.tmux
 source-file $BYOBU_CONFIG_DIR/profile.tmux
 source-file $BYOBU_CONFIG_DIR/keybindings.tmux
 #source-file $BYOBU_CONFIG_DIR/windows.tmux
 source-file $BYOBU_CONFIG_DIR/.tmux.conf
+source-file $BYOBU_CONFIG_DIR/shellinit.tmux
