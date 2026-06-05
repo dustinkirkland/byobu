@@ -11,6 +11,12 @@ let forcedPaneId = null;    // set after creating a new window (specific pane to
 let _scrollTopOnNextSnapshot = false; // scroll to top instead of bottom on next snapshot
 let statusInterval = null;
 
+// ── pane snapshot cache (in-memory only — never persisted) ────────────────
+// Stores the last-rendered HTML + scroll position for each pane so that
+// switching back to a pane is instant while the fresh snapshot loads.
+const _paneCache = new Map();
+const _PANE_CACHE_MAX = 50;
+
 // ── offline / connectivity helpers ────────────────────────────────────────
 let _offlineCountdownTimer = null;
 let _offlineRetryTimer = null;
@@ -361,13 +367,27 @@ function rebuildPaneTree() {
 }
 
 function navigateTo(sessionId, windowId, paneId) {
+  // Save departing pane's rendered content + scroll position.
+  if (currentPane && output.innerHTML) {
+    _paneCache.set(currentPane, { html: output.innerHTML, scrollTop: output.scrollTop });
+    if (_paneCache.size > _PANE_CACHE_MAX) _paneCache.delete(_paneCache.keys().next().value);
+  }
+
   currentSessionId = sessionId;
   currentWindowId  = windowId;
   currentPane      = paneId;
   cmdInput.disabled = false;
   btnSend.disabled  = false;
   output.className  = '';
-  output.textContent = 'loading…';
+
+  const cached = _paneCache.get(paneId);
+  if (cached) {
+    output.innerHTML  = cached.html;
+    output.scrollTop  = cached.scrollTop;
+  } else {
+    output.textContent = 'loading…';
+  }
+
   send({ type: 'subscribe', pane_id: paneId, lines: 300, ansi: true });
   updateXYZLabel();
   updateContextName();
