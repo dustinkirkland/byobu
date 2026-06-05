@@ -283,6 +283,41 @@
     #pair-btn:disabled { opacity: 0.45; cursor: default; }
     #pair-btn:active:not(:disabled) { filter: brightness(0.85); }
 
+    /* ── offline / can't-reach-server overlay ── */
+    #offline-overlay {
+      position: fixed; inset: 0; z-index: 98;
+      background: rgba(10,10,10,0.97);
+      display: none; align-items: center; justify-content: center;
+    }
+    #offline-overlay.visible { display: flex; }
+    #offline-box {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 14px; padding: 32px 24px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; max-width: 320px; width: 90%;
+      text-align: center;
+    }
+    #offline-box h2 { font-size: 16px; color: var(--amber); letter-spacing: 1px; }
+    #offline-host { color: var(--dim); font-size: 11px; word-break: break-all; }
+    #offline-reason {
+      color: var(--text); font-size: 12px; line-height: 1.6;
+    }
+    #offline-tailscale-hint {
+      display: none;
+      background: var(--bg3); border: 1px solid var(--amber);
+      border-radius: 8px; padding: 10px 14px;
+      color: var(--amber); font-size: 11px; line-height: 1.6;
+      text-align: left;
+    }
+    #offline-tailscale-hint.visible { display: block; }
+    #offline-retry-btn {
+      background: var(--bg3); color: var(--text); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 0; width: 100%;
+      font-size: 13px; font-family: var(--font); cursor: pointer;
+    }
+    #offline-retry-btn:active { filter: brightness(0.8); }
+    #offline-countdown { color: var(--dim); font-size: 10px; }
+
     /* ── biometric setup + lock screen ── */
     #bio-setup-overlay, #lock-overlay {
       position: fixed; inset: 0;
@@ -331,6 +366,24 @@
   </style>
 </head>
 <body>
+
+<!-- ── offline / can't-reach-server overlay ── -->
+<div id="offline-overlay">
+  <div id="offline-box">
+    <img src="/trustmux.svg" style="height:44px;width:auto;opacity:0.7;" alt="Trustmux">
+    <h2>⚠ Can't reach server</h2>
+    <p id="offline-host"></p>
+    <p id="offline-reason">The server is not responding.<br>Check that the daemon is running.</p>
+    <div id="offline-tailscale-hint">
+      <strong>Tailscale not connected?</strong><br>
+      This address is on your Tailnet.<br>
+      Open the Tailscale app and connect,<br>
+      then tap Retry.
+    </div>
+    <button id="offline-retry-btn">Retry now</button>
+    <p id="offline-countdown"></p>
+  </div>
+</div>
 
 <!-- ── pairing overlay (shown until device is authenticated) ── -->
 <div id="pair-overlay" style="display:none">
