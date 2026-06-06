@@ -416,7 +416,7 @@ def _make_chip(name: str, shm: Path) -> dict | None:
     except OSError:
         return None
     text = _TMUX_ATTR.sub("", raw).strip()
-    text = re.sub(r'([A-Za-z])(\d)', r'\1 \2', text)
+    text = re.sub(r'([KMGT])(\d)', r'\1 \2', text)
     if not text:
         return None
     bg_name = _first_attr(raw, "bg=")
