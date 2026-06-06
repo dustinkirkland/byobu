@@ -113,12 +113,28 @@ Use WebFetch to fetch each Launchpad bug list page. For individual bugs, fetch t
 
 **Cross-reference with GitHub**: Many Launchpad bugs are duplicates of GitHub issues or already fixed in upstream. Check current master before confirming a bug is open.
 
-**Status options on Launchpad** (you cannot change these directly — flag them for the user to act on, or note them in your summary):
-- Mark as **Fix Released** if fixed in current upstream
-- Mark as **Invalid** if not a byobu bug
-- Mark as **Confirmed** if you can verify the reproduction
+**Status options on Launchpad:**
+- **Fix Released** — fixed in current upstream master
+- **Invalid** — not a byobu bug
+- **Confirmed** — you can verify the reproduction (with optional Importance: Wishlist/Low/Medium/High/Critical)
 
-Since you can't authenticate to Launchpad, produce a list of recommended actions (bug number, current status, recommended new status, reason) for the user to apply.
+### Launchpad automation scripts — `~/src/launchpad-tools/`
+
+You can apply Launchpad changes directly using the Python scripts in `~/src/launchpad-tools/`:
+
+- **`launchpad_triage_bugs.py`** — sets status + importance and posts a diagnostic comment on each bug. Edit the `TRIAGE` list at the top (tuples of `(bug_number, new_status, new_importance, comment_text)`).
+- **`launchpad_close_bugs.py`** — closes bugs as Fix Released (or Invalid) with a polite explanation. Edit the `FIXES` list at the top (tuples of `(bug_number, new_status, comment_text)`).
+
+**Credentials** are cached at `~/.cache/byobu-launchpad/credentials`. If absent or expired, re-authenticate by running `~/src/byobu/launchpad_auth_simple.py` and following the printed URL.
+
+**Workflow for a Launchpad triage batch:**
+
+1. Decide which bugs to triage and what status/importance/comment each gets.
+2. Add entries to the appropriate `TRIAGE` or `FIXES` list in the script.
+3. Dry-run first to verify: `python3 ~/src/launchpad-tools/launchpad_triage_bugs.py --dry-run`
+4. Confirm with the user, then run live: `python3 ~/src/launchpad-tools/launchpad_triage_bugs.py`
+
+Always confirm the batch with the user before the live run — show them the planned entries (bug number, title, new status, importance).
 
 **Closing Launchpad bugs via debian/changelog**: When a fix is committed (or already in master), the proper way to officially close a Launchpad Ubuntu bug is to add `- LP: #NNNNNN` as a sub-bullet under the relevant change entry in `debian/changelog`. The Ubuntu archive infrastructure automatically marks the bug Fix Released when a package containing that changelog entry is uploaded. The format used in this repo is:
 
@@ -189,4 +205,4 @@ Debian BTS        |        X |    n/a |   n/a |      n/a |         X
 - **Close Launchpad bugs via changelog** — add `- LP: #NNNNNN` under the relevant entry in the UNRELEASED `debian/changelog` stanza and commit it. The archive does the rest on next upload.
 - **Close Debian bugs via changelog** — add `- Closes: #NNNNNN` under the relevant entry in the UNRELEASED `debian/changelog` stanza and commit it. Both references can coexist in the same entry.
 - **Match the existing comment tone** — warm, direct, grateful, never terse or dismissive.
-- Use `gh` CLI for all GitHub operations. Use WebFetch for Launchpad and Debian BTS pages.
+- Use `gh` CLI for all GitHub operations. Use WebFetch for Launchpad and Debian BTS pages. Use the scripts in `~/src/launchpad-tools/` to apply Launchpad changes directly (triage or close bugs).
