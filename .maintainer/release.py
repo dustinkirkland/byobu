@@ -890,15 +890,15 @@ def create_github_release(v, mode):
         ])
     else:
         run([
-            "gh", "release", "create", v["base_ver"],
-            "--repo", "dustinkirkland/byobu",
-            "--title", f"byobu {v['base_ver']}",
-            "--notes", f"byobu {v['base_ver']} / trustmux {v['pypi_version']}",
-        ])
-        run([
             "gh", "release", "create", tag,
             "--repo", "dustinkirkland/byobu",
             "--title", f"Trustmux {v['pypi_version']}",
+            "--notes", f"byobu {v['base_ver']} / trustmux {v['pypi_version']}",
+        ])
+        run([
+            "gh", "release", "create", v["base_ver"],
+            "--repo", "dustinkirkland/byobu",
+            "--title", f"byobu {v['base_ver']}",
             "--notes", f"byobu {v['base_ver']} / trustmux {v['pypi_version']}",
         ])
 
