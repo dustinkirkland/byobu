@@ -264,6 +264,25 @@ def find_homebrew_tap(mode):
 def determine_versions(mode, resume=False):
     section("Phase 2: Determine versions")
 
+    # Guard: refuse to release if HEAD is an open-dev bump commit.
+    # open-dev bumps the version and commits "bump version to X.Y and open for
+    # development".  If the release pipeline runs while HEAD is that commit,
+    # the release tag lands on the version-bump commit rather than on real
+    # development work — which is what happened with trustmux-v7.8.
+    head_msg = run(
+        ["git", "-C", str(BYOBU_SRC), "log", "--format=%s", "-1"],
+        capture=True,
+    ).stdout.strip()
+    if re.match(r"^bump version to .* and open for development$", head_msg):
+        die(
+            f"HEAD is an open-dev bump commit: '{head_msg}'\n"
+            f"  Release tags must not land on a version-bump commit.\n"
+            f"  Either:\n"
+            f"    • Add development commits before running the release pipeline, or\n"
+            f"    • Run the release pipeline BEFORE running 'open-dev'."
+        )
+    print(f"  HEAD: {head_msg[:60]}")
+
     # Canonical base version from debian/changelog
     changelog_line = (BYOBU_SRC / "debian/changelog").read_text().splitlines()[0]
     m = re.search(r"\(([^)~]+)", changelog_line)
