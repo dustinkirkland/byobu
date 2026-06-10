@@ -257,19 +257,20 @@ def check_tools():
     print(f"  Tools OK: {' '.join(required)}")
 
 
-def find_homebrew_tap(mode):
+def find_tap(name, mode):
+    """Locate or clone a dustinkirkland/homebrew-{name} tap. Returns None for rc."""
     if mode == "rc":
         return None
     for d in [
-        Path("/tmp/homebrew-trustmux"),
-        Path.home() / "src/homebrew-trustmux",
-        Path.home() / "homebrew-trustmux",
+        Path(f"/tmp/homebrew-{name}"),
+        Path.home() / f"src/homebrew-{name}",
+        Path.home() / f"homebrew-{name}",
     ]:
         if (d / ".git").is_dir():
-            print(f"  Homebrew tap: {d}")
+            print(f"  Homebrew tap ({name}): {d}")
             return d
-    tap = Path("/tmp/homebrew-trustmux")
-    run(["git", "clone", "git@github.com:dustinkirkland/homebrew-trustmux.git", str(tap)])
+    tap = Path(f"/tmp/homebrew-{name}")
+    run(["git", "clone", f"git@github.com:dustinkirkland/homebrew-{name}.git", str(tap)])
     return tap
 
 
@@ -1112,8 +1113,62 @@ def update_homebrew(v, tap_dir):
     except subprocess.CalledProcessError:
         run(["git", "-C", str(tap_dir), "push", "origin", "master"])
 
-    print("  ✓ Homebrew formula updated and pushed")
+    print("  ✓ Homebrew trustmux formula updated and pushed")
     print("    brew upgrade dustinkirkland/trustmux/trustmux")
+
+
+# ── phase 6d: Homebrew byobu tap update (final only) ─────────────────────
+
+def update_homebrew_byobu(v, tap_dir):
+    section("Phase 6d: Homebrew byobu tap update (dustinkirkland/homebrew-byobu)")
+    import hashlib
+
+    tarball_url = (
+        f"https://github.com/dustinkirkland/byobu"
+        f"/archive/refs/tags/{v['base_ver']}.tar.gz"
+    )
+    print(f"  Downloading release tarball to compute sha256…")
+    print(f"  {tarball_url}")
+    try:
+        tarball_data = urllib.request.urlopen(tarball_url).read()
+    except urllib.error.URLError as e:
+        die(
+            f"Could not download byobu tarball: {e}\n"
+            f"  Ensure the GitHub release for {v['base_ver']} exists before running this phase.\n"
+            f"  Resume with: python .maintainer/release.py final --start-from 6d"
+        )
+    tarball_sha256 = hashlib.sha256(tarball_data).hexdigest()
+    print(f"  sha256: {tarball_sha256}")
+
+    formula_path = tap_dir / "Formula/byobu.rb"
+    formula = formula_path.read_text()
+    formula = re.sub(
+        r'^  url "https://github\.com/dustinkirkland/byobu/archive/refs/tags/[^"]*"',
+        f'  url "{tarball_url}"',
+        formula, count=1, flags=re.MULTILINE,
+    )
+    formula = re.sub(
+        r'^  sha256 "[a-f0-9]+"',
+        f'  sha256 "{tarball_sha256}"',
+        formula, count=1, flags=re.MULTILINE,
+    )
+    formula = re.sub(
+        r'^  version "[^"]*"',
+        f'  version "{v["base_ver"]}"',
+        formula, count=1, flags=re.MULTILINE,
+    )
+    formula_path.write_text(formula)
+
+    run(["git", "-C", str(tap_dir), "pull", "--ff-only"])
+    run(["git", "-C", str(tap_dir), "add", "Formula/byobu.rb"])
+    run(["git", "-C", str(tap_dir), "commit", "-m", f"byobu: update to {v['base_ver']}"])
+    try:
+        run(["git", "-C", str(tap_dir), "push", "origin", "main"])
+    except subprocess.CalledProcessError:
+        run(["git", "-C", str(tap_dir), "push", "origin", "master"])
+
+    print(f"  ✓ Homebrew byobu formula updated and pushed")
+    print(f"    brew upgrade dustinkirkland/byobu/byobu")
 
 
 # ── github release ────────────────────────────────────────────────────────
@@ -1294,7 +1349,8 @@ def print_summary(v, mode):
         print(
             f"  Ubuntu: byobu {v['ubuntu_ver']} → {v['devel_series']}"
             f"\n          (files in {outdir}/ubuntu/)"
-            f"\n  Homebrew: brew upgrade dustinkirkland/trustmux/trustmux"
+            f"\n  Homebrew: brew upgrade dustinkirkland/byobu/byobu"
+            f"\n            brew upgrade dustinkirkland/trustmux/trustmux"
             f"\n  Website: trustmux-web screenshots regenerated and pushed"
         )
     rpms = sorted((outdir / "rpm").glob("*.rpm"))
@@ -1399,7 +1455,8 @@ def main():
 
     identity = load_identity()
     check_tools()
-    tap_dir = find_homebrew_tap(mode) if should_run("6d", start_from) else None
+    tap_trustmux = find_tap("trustmux", mode) if should_run("6d", start_from) else None
+    tap_byobu    = find_tap("byobu",    mode) if should_run("6d", start_from) else None
     v = determine_versions(mode, resume=(start_from is not None))
 
     if should_run("3", start_from):
@@ -1433,7 +1490,8 @@ def main():
 
     if mode == "final":
         if should_run("6d", start_from):
-            update_homebrew(v, tap_dir)
+            update_homebrew(v, tap_trustmux)
+            update_homebrew_byobu(v, tap_byobu)
 
     if should_run("6", start_from):
         create_github_release(v, mode)
