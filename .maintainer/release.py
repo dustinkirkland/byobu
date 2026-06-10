@@ -9,7 +9,6 @@ Usage:
 RC phases:
     1  Pre-flight checks
     2  Determine versions
-    2b Local binary .deb build (test before tagging)
     3  Push PyPI git tag (triggers GH Actions)
     4  Smoke test          ┐
     5  PPA source builds   ├─ run in parallel
@@ -191,7 +190,7 @@ def section(msg):
 # ── phase resumption ──────────────────────────────────────────────────────
 
 # Canonical phase order (6b is an alias for 5b used in final-mode docs)
-_PHASE_ORDER = ["2b", "3", "4", "5", "5b", "6c", "6d", "6", "7", "8"]
+_PHASE_ORDER = ["3", "4", "5", "5b", "6c", "6d", "6", "7", "8"]
 
 def _phase_idx(phase):
     if phase == "6b":
@@ -1126,7 +1125,7 @@ def main():
         choices=_PHASE_ORDER + ["6b"],
         help=(
             "Resume from this phase, reusing the existing /tmp/byobu-release-* dir. "
-            "Phases: 2b 3 4 5 5b(=6b) 6c 6d 6 7 8"
+            "Phases: 3 4 5 5b(=6b) 6c 6d 6 7 8"
         ),
     )
     args = parser.parse_args()
@@ -1145,14 +1144,6 @@ def main():
     check_tools()
     tap_dir = find_homebrew_tap(mode) if should_run("6d", start_from) else None
     v = determine_versions(mode, resume=(start_from is not None))
-
-    if should_run("2b", start_from):
-        build_local_debs(v)
-        debs = sorted((v["outdir"] / "debs").glob("*.deb"))
-        if debs:
-            install_cmd = "sudo dpkg -i " + " ".join(str(d) for d in debs)
-            print(f"\n  Install locally:\n    {install_cmd}\n")
-        confirm(f"Local .deb built and ready to test. Continue to tag trustmux-v{v['pypi_version']} on PyPI?")
 
     if should_run("3", start_from):
         push_pypi_tag(v)
