@@ -13,7 +13,8 @@ RC phases:
     3  Push PyPI git tag (triggers GH Actions)
     4  Smoke test (Debian build)   ┐
     4b pip install smoke test      ├─ run in parallel
-    4c Homebrew install smoke test ┘
+    4c Homebrew install smoke test │
+    4d Fedora Rawhide RPM build    ┘
     5  PPA source builds           ┐
     5b Debian exp source           ┘ run in parallel
 
@@ -23,7 +24,8 @@ Final skips phase 4 (smoke already passed on RC commit):
 
 Final adds:
     6b Debian unstable source build (Docker) — RC uses experimental, final promotes to unstable
-    6c Ubuntu dev-series source build (Docker)  ┐ run in parallel with 4 and 5b
+    6c Ubuntu dev-series source build (Docker)  ┐
+    6e Fedora Rawhide RPM build (Docker)        ┘ run in parallel with 5b
     6d Homebrew formula update
     GitHub release (non-prerelease, both byobu and trustmux tags)
     8  Regenerate PWA screenshots → commit + push trustmux-web
@@ -201,13 +203,14 @@ def section(msg):
 
 # ── phase resumption ──────────────────────────────────────────────────────
 
-# Canonical phase order (6b is an alias for 5b used in final-mode docs)
-_PHASE_ORDER = ["3", "4", "5", "5b", "6c", "6d", "6", "7", "8"]
+# Canonical phase order (6b is an alias for 5b; 6e is Fedora RPM, runs with 5b/6c)
+_PHASE_ORDER = ["3", "4", "5", "5b", "6c", "6e", "6d", "6", "7", "8"]
 
 def _phase_idx(phase):
     if phase == "6b":
         phase = "5b"
     return _PHASE_ORDER.index(phase)
+
 
 def should_run(phase, start_from):
     if start_from is None:
@@ -423,6 +426,7 @@ def determine_versions(mode, resume=False):
         # Ensure all subdirs exist (harmless if already there)
         (outdir / "debs").mkdir(exist_ok=True)
         (outdir / "debian").mkdir(exist_ok=True)
+        (outdir / "rpm").mkdir(exist_ok=True)
         if mode == "rc":
             (outdir / "ppa").mkdir(exist_ok=True)
         if mode == "final":
@@ -433,6 +437,7 @@ def determine_versions(mode, resume=False):
             shutil.rmtree(outdir)
         (outdir / "debs").mkdir(parents=True)
         (outdir / "debian").mkdir()
+        (outdir / "rpm").mkdir()
         if mode == "rc":
             (outdir / "ppa").mkdir()
         if mode == "final":
@@ -474,6 +479,33 @@ def push_pypi_tag(v):
         run(["git", "-C", str(BYOBU_SRC), "push", "origin", tag])
     print(f"  ✓ Tag {tag} ready.")
     print("    Monitor: https://github.com/dustinkirkland/byobu/actions")
+
+
+# ── shared smoke-check fragments ─────────────────────────────────────────
+#
+# Self-contained shell snippets injected into every container script that
+# installs byobu or trustmux.  Add new checks here — they propagate to all
+# build targets automatically.
+#
+# _SMOKE_BYOBU    — full byobu package (deb, rpm)
+# _SMOKE_TRUSTMUX — trustmux only (pip, brew) or alongside byobu (deb, rpm)
+
+_SMOKE_BYOBU = r"""
+echo "--- Smoke: byobu binaries ---"
+byobu --version
+echo "--- Smoke: byobu test suite ---"
+bash /usr/share/byobu/tests/test_byobu.sh
+"""
+
+_SMOKE_TRUSTMUX = r"""
+echo "--- Smoke: trustmux CLI ---"
+trustmux --help | grep -qi usage
+echo "--- Smoke: trustmux runtime ---"
+tmux new-session -d -s smoketest "sleep 300" 2>/dev/null || true
+trustmux start-direct
+sleep 2
+trustmux status | grep -q running
+"""
 
 
 # ── phase 4: smoke test ───────────────────────────────────────────────────
@@ -520,7 +552,8 @@ def run_smoke_test():
 
 # ── phase 4b: pip smoke test ─────────────────────────────────────────────
 
-_PIP_SMOKE_SCRIPT = r"""
+_PIP_SMOKE_SCRIPT = (
+    r"""
 set -e
 apk update -q
 apk add --no-cache python3 py3-pip tmux
@@ -528,22 +561,12 @@ apk add --no-cache python3 py3-pip tmux
 echo "--- Installing trustmux from local source ---"
 cp -r /mobile /tmp/trustmux-src
 pip install --break-system-packages /tmp/trustmux-src
-
-echo "--- Verifying CLI ---"
-trustmux --help | grep -qi usage
-
-echo "--- Starting tmux session ---"
-tmux new-session -d -s smoketest "sleep 300"
-
-echo "--- trustmux start-direct (self-signed HTTPS, no Tailscale) ---"
-trustmux start-direct
-sleep 2
-
-echo "--- Checking daemon status ---"
-trustmux status | grep -q running
-
+"""
+    + _SMOKE_TRUSTMUX
+    + r"""
 echo "=== pip smoke test PASSED ==="
 """
+)
 
 
 def run_pip_smoke_test(v):
@@ -560,7 +583,8 @@ def run_pip_smoke_test(v):
 
 # ── phase 4c: Homebrew smoke test ────────────────────────────────────────
 
-_HOMEBREW_SMOKE_SCRIPT = r"""
+_HOMEBREW_SMOKE_SCRIPT = (
+    r"""
 set -e
 apk update -q
 apk add --no-cache bash brew tmux
@@ -584,19 +608,12 @@ git -C /tmp/homebrew-trustmux commit -q -m "trustmux rc formula"
 echo "--- Installing via Homebrew (resources from PyPI, main pkg local) ---"
 brew tap local/trustmux /tmp/homebrew-trustmux
 brew install local/trustmux/trustmux
-
-echo "--- Starting tmux session ---"
-tmux new-session -d -s smoketest "sleep 300"
-
-echo "--- trustmux start-direct (self-signed HTTPS, no Tailscale) ---"
-trustmux start-direct
-sleep 2
-
-echo "--- Checking daemon status ---"
-trustmux status | grep -q running
-
+"""
+    + _SMOKE_TRUSTMUX
+    + r"""
 echo "=== Homebrew smoke test PASSED ==="
 """
+)
 
 
 def _build_local_sdist(v):
@@ -651,9 +668,85 @@ def run_homebrew_smoke_test(v):
     print("  ✓ Homebrew smoke test PASSED")
 
 
+# ── phase 4d / 6e: Fedora Rawhide RPM build ──────────────────────────────
+
+_FEDORA_RPM_SCRIPT = (
+    r"""
+set -eo pipefail
+
+dnf install -y --setopt=install_weak_deps=False \
+  rpm-build rpmdevtools make git automake autoconf gettext \
+  python3-devel python3-newt python3-tornado \
+  desktop-file-utils 2>&1 | tail -10
+
+rpmdev-setuptree
+
+git config --global --add safe.directory /src
+
+# Build source tarball from HEAD using the release version
+git -C /src archive --format=tar.gz --prefix="byobu-${VERSION}/" HEAD \
+  -o ~/rpmbuild/SOURCES/byobu-${VERSION}.tar.gz
+
+# Copy the Fedora-specific sources
+cp /src/rpm/fedoracommon ~/rpmbuild/SOURCES/
+
+# Patch version and release into the spec
+sed \
+  -e "s/^Version:.*/Version:\t${VERSION}/" \
+  -e "s/^Release:.*/Release:\t${RPM_RELEASE}/" \
+  /src/rpm/byobu.spec > ~/rpmbuild/SPECS/byobu.spec
+
+rpmbuild -ba ~/rpmbuild/SPECS/byobu.spec
+
+find ~/rpmbuild/RPMS ~/rpmbuild/SRPMS -name "*.rpm" -exec cp -v {} /out/ \;
+chown -R $(stat -c '%u:%g' /out) /out/
+
+echo "--- Build PASSED ---"
+ls -lh /out/
+
+echo "--- Install step ---"
+dnf install -y ~/rpmbuild/RPMS/noarch/byobu-*.rpm 2>&1 | tail -5
+"""
+    + _SMOKE_BYOBU
+    + _SMOKE_TRUSTMUX
+    + r"""
+echo "=== Fedora RPM build + install smoke test PASSED ==="
+"""
+)
+
+
+def build_fedora_rpm(v):
+    section("Phase 4d: Fedora Rawhide RPM build + install smoke test (Docker fedora:rawhide)")
+    if "rc" in v["pypi_version"]:
+        m = re.search(r"rc(\d+)$", v["pypi_version"])
+        rc_tag = f"rc{m.group(1)}" if m else "rc"
+        rpm_release = f"0.1.{rc_tag}%{{?dist}}"
+    else:
+        rpm_release = "1%{?dist}"
+    outdir = v["outdir"] / "rpm"
+    outdir.mkdir(exist_ok=True)
+    print(f"  Version: {v['base_ver']},  Release: {rpm_release}")
+    run([
+        "docker", "run", "--rm",
+        "-v", f"{BYOBU_SRC}:/src:ro",
+        "-v", f"{outdir}:/out",
+        "-e", f"VERSION={v['base_ver']}",
+        "-e", f"RPM_RELEASE={rpm_release}",
+        "fedora:rawhide", "bash", "-c", _FEDORA_RPM_SCRIPT,
+    ])
+    rpms = sorted(outdir.glob("*.rpm"))
+    if not rpms:
+        die(f"Fedora RPM build produced no .rpm files in {outdir}\n"
+            "  Check Docker output above for rpmbuild errors.")
+    print(f"  ✓ Fedora RPM build + install smoke test PASSED ({len(rpms)} package(s)):")
+    for r in rpms:
+        print(f"    {r.name}")
+
+
 # ── phase 2b: local binary build ─────────────────────────────────────────
 
-_LOCAL_BUILD_SCRIPT = r"""
+_LOCAL_BUILD_SCRIPT = (
+    r"""
 set -e
 export DEBIAN_FRONTEND=noninteractive
 
@@ -668,15 +761,23 @@ cp -a /src /build
 cd /build
 DEB_BUILD_OPTIONS=parallel=1 dpkg-buildpackage -us -uc -b
 cp /build/../*.deb /out/
-echo ""
-echo "=== Built packages ==="
+echo "--- Build PASSED ---"
 ls -lh /out/*.deb
 chown -R $(stat -c '%u:%g' /out) /out/
+
+echo "--- Install step ---"
+apt-get install -y /out/*.deb 2>&1 | tail -5
 """
+    + _SMOKE_BYOBU
+    + _SMOKE_TRUSTMUX
+    + r"""
+echo "=== Ubuntu deb install smoke test PASSED ==="
+"""
+)
 
 
 def build_local_debs(v):
-    section("Phase 2b: Local binary build (installable .deb files)")
+    section("Phase 2b: Ubuntu deb build + install smoke test (ubuntu:noble)")
     run([
         "docker", "run", "--rm",
         "-v", f"{BYOBU_SRC}:/src:ro",
@@ -684,7 +785,7 @@ def build_local_debs(v):
         "ubuntu:noble", "bash", "-c", _LOCAL_BUILD_SCRIPT,
     ])
     debs = sorted((v["outdir"] / "debs").glob("*.deb"))
-    print(f"  ✓ {len(debs)} package(s) built:")
+    print(f"  ✓ Ubuntu deb build + install smoke test PASSED ({len(debs)} package(s)):")
     for d in debs:
         print(f"    {d}")
 
@@ -1196,6 +1297,12 @@ def print_summary(v, mode):
             f"\n  Homebrew: brew upgrade dustinkirkland/trustmux/trustmux"
             f"\n  Website: trustmux-web screenshots regenerated and pushed"
         )
+    rpms = sorted((outdir / "rpm").glob("*.rpm"))
+    if rpms:
+        print(f"\n  Fedora RPMs:")
+        for r in rpms:
+            print(f"    {r}")
+
     debs = sorted((outdir / "debs").glob("*.deb"))
     if debs:
         print(f"\n  Local install:")
@@ -1266,7 +1373,7 @@ def main():
         choices=_PHASE_ORDER + ["6b"],
         help=(
             "Resume from this phase, reusing the existing /tmp/byobu-release-* dir. "
-            "Phases: 3 4 5 5b(=6b) 6c 6d 6 7 8"
+            "Phases: 3 4 5 5b(=6b) 6c 6e 6d 6 7 8"
         ),
     )
     parser.add_argument(
@@ -1311,6 +1418,7 @@ def main():
         parallel.append(("pip install",   lambda: run_pip_smoke_test(v)))
         parallel.append(("brew install",  lambda: run_homebrew_smoke_test(v)))
         parallel.append(("local deb",     lambda: build_local_debs(v)))
+        parallel.append(("Fedora RPM",    lambda: build_fedora_rpm(v)))
     if mode == "rc" and should_run("5", start_from):
         parallel.append(("PPA builds", lambda: build_ppa_packages(v, identity)))
     dist = "experimental" if mode == "rc" else "unstable"
@@ -1318,6 +1426,8 @@ def main():
         parallel.append(("Debian source", lambda: build_debian_source(v, identity, dist)))
     if mode == "final" and should_run("6c", start_from):
         parallel.append(("Ubuntu dev", lambda: build_ubuntu_dev(v, identity)))
+    if mode == "final" and should_run("6e", start_from):
+        parallel.append(("Fedora RPM", lambda: build_fedora_rpm(v)))
 
     run_phases_parallel(parallel)
 
