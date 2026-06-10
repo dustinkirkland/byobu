@@ -14,6 +14,7 @@ import re
 import secrets
 import socket
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -1139,8 +1140,9 @@ def _ensure_self_signed_cert(lan_ip: str) -> tuple:
         cert.chmod(0o644)
         key.chmod(0o600)
     except Exception as e:
-        print(f"Warning: TLS cert generation failed ({e}); falling back to plain HTTP", flush=True)
-        return None, None
+        print(f"Error: TLS cert generation failed ({e})", flush=True)
+        print("Trustmux refuses to start without encryption. Install 'cryptography': pip install --upgrade cryptography", flush=True)
+        sys.exit(1)
     ctx = _ssl.SSLContext(_ssl.PROTOCOL_TLS_SERVER)
     ctx.minimum_version = _ssl.TLSVersion.TLSv1_2
     ctx.load_cert_chain(str(cert), str(key))

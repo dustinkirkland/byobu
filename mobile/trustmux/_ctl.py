@@ -19,6 +19,23 @@ PIDFILE    = CONFIG_DIR / "trustmux.pid"
 TOKENS_FILE = CONFIG_DIR / "tokens.json"
 
 
+def _check_tls() -> bool:
+    """Return True if TLS cert generation is available, False (with message) if not."""
+    try:
+        from cryptography.hazmat.primitives.asymmetric import ec
+        ec.generate_private_key(ec.SECP256R1())
+        return True
+    except Exception as e:
+        print("", file=sys.stderr)
+        print("Error: TLS support is unavailable — trustmux refuses to start without encryption.", file=sys.stderr)
+        print(f"  ({e})", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("The 'cryptography' package is required. Fix with:", file=sys.stderr)
+        print("  pip install --upgrade cryptography", file=sys.stderr)
+        print("", file=sys.stderr)
+        return False
+
+
 def _ensure_dir() -> None:
     CONFIG_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
     LOGFILE.touch()
@@ -245,13 +262,15 @@ def cmd_start(mode: str = "serve") -> int:
         return 1
 
     if mode == "serve":
+        if not _check_tls():
+            return 1
         try:
             subprocess.run(["tailscale", "--version"], check=True,
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except (FileNotFoundError, subprocess.CalledProcessError):
             print("Error: tailscale not found.", file=sys.stderr)
             print("Install: https://tailscale.com/docs/install/linux", file=sys.stderr)
-            print("Or use 'start-direct' for plain HTTP without Tailscale.", file=sys.stderr)
+            print("Or use 'start-direct' for self-signed HTTPS without Tailscale.", file=sys.stderr)
             return 1
         ts_host = _ts_host()
         if not ts_host:
@@ -277,6 +296,8 @@ def cmd_start(mode: str = "serve") -> int:
             print(f"Then open: http://localhost:{PORT}")
 
     elif mode == "start-direct":
+        if not _check_tls():
+            return 1
         print("Starting trustmux (direct HTTPS — self-signed cert)...")
         pid = _launch(["--host", "0.0.0.0", "--self-signed"])
         ok = pid is not None
