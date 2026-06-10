@@ -518,7 +518,8 @@ apk update -q
 apk add --no-cache python3 py3-pip tmux
 
 echo "--- Installing trustmux from local source ---"
-pip install --break-system-packages /mobile
+cp -r /mobile /tmp/trustmux-src
+pip install --break-system-packages /tmp/trustmux-src
 
 echo "--- Verifying CLI ---"
 trustmux --help | grep -qi usage
@@ -544,7 +545,7 @@ def run_pip_smoke_test(v):
     run([
         "docker", "run", "--rm",
         "-v", f"{mobile}:/mobile:ro",
-        "cgr.dev/chainguard/wolfi-base", "bash", "-c", _PIP_SMOKE_SCRIPT,
+        "cgr.dev/chainguard/wolfi-base", "sh", "-c", _PIP_SMOKE_SCRIPT,
     ])
     print("  ✓ pip smoke test PASSED")
 
@@ -554,18 +555,27 @@ def run_pip_smoke_test(v):
 _HOMEBREW_SMOKE_SCRIPT = r"""
 set -e
 apk update -q
-apk add --no-cache brew tmux
+apk add --no-cache bash brew tmux
 
 . /etc/profile.d/brew.sh
 
 echo "--- Patching formula with local RC sdist ---"
-cp /formula/trustmux.rb /tmp/trustmux_rc.rb
-sed -i "s|^  url \"[^\"]*\"|  url \"file:///sdist/$TARBALL_NAME\"|" /tmp/trustmux_rc.rb
-sed -i "s|^  sha256 \"[a-f0-9]*\"|  sha256 \"$TARBALL_SHA256\"|" /tmp/trustmux_rc.rb
-sed -i "s|^  version \"[^\"]*\"|  version \"$PYPI_VERSION\"|" /tmp/trustmux_rc.rb
+mkdir -p /tmp/homebrew-trustmux/Formula
+cp /formula/trustmux.rb /tmp/homebrew-trustmux/Formula/trustmux.rb
+sed -i "s|^  url \"[^\"]*\"|  url \"file:///sdist/$TARBALL_NAME\"|" /tmp/homebrew-trustmux/Formula/trustmux.rb
+sed -i "s|^  sha256 \"[a-f0-9]*\"|  sha256 \"$TARBALL_SHA256\"|" /tmp/homebrew-trustmux/Formula/trustmux.rb
+sed -i "s|^  version \"[^\"]*\"|  version \"$PYPI_VERSION\"|" /tmp/homebrew-trustmux/Formula/trustmux.rb
+
+echo "--- Creating local git tap ---"
+git -C /tmp/homebrew-trustmux init -q
+git -C /tmp/homebrew-trustmux config user.email "smoke@test.local"
+git -C /tmp/homebrew-trustmux config user.name "Smoke Test"
+git -C /tmp/homebrew-trustmux add Formula/trustmux.rb
+git -C /tmp/homebrew-trustmux commit -q -m "trustmux rc formula"
 
 echo "--- Installing via Homebrew (resources from PyPI, main pkg local) ---"
-brew install --formula /tmp/trustmux_rc.rb
+brew tap local/trustmux /tmp/homebrew-trustmux
+brew install local/trustmux/trustmux
 
 echo "--- Starting tmux session ---"
 tmux new-session -d -s smoketest "sleep 300"
@@ -583,20 +593,29 @@ echo "=== Homebrew smoke test PASSED ==="
 
 def _build_local_sdist(v):
     """Build the trustmux sdist from local source. Returns (Path, sha256_hex)."""
-    import hashlib
+    import hashlib, shutil
     mobile = BYOBU_SRC / "mobile"
-    dist = mobile / "dist"
-    dist.mkdir(exist_ok=True)
-    for old in dist.glob("trustmux-*.tar.gz"):
-        old.unlink()
-    # Use the mobile venv's Python if present, otherwise system python3.
-    venv_py = mobile / ".venv/bin/python"
-    py = str(venv_py) if venv_py.exists() else "python3"
-    # Ensure the build frontend is available.
-    check = subprocess.run([py, "-c", "import build"], capture_output=True)
-    if check.returncode != 0:
-        run([py, "-m", "pip", "install", "--quiet", "build"])
-    run([py, "-m", "build", "--sdist", "--outdir", str(dist)], cwd=str(mobile))
+    # Copy source to a writable scratch dir — previous Docker runs may have
+    # left root-owned trustmux.egg-info and dist/ files inside mobile/.
+    src_copy = Path("/tmp/trustmux-sdist-src")
+    if src_copy.exists():
+        shutil.rmtree(src_copy)
+    shutil.copytree(mobile, src_copy, ignore=shutil.ignore_patterns(".venv", "__pycache__"))
+    dist = Path("/tmp/trustmux-sdist-build")
+    if dist.exists():
+        shutil.rmtree(dist)
+    dist.mkdir(parents=True)
+    # Prefer `uv build` (no separate install required); fall back to
+    # `python3 -m build` if uv is not on PATH.
+    uv = shutil.which("uv")
+    if uv:
+        run([uv, "build", "--sdist", "--out-dir", str(dist)], cwd=str(src_copy))
+    else:
+        py = "python3"
+        check = subprocess.run([py, "-c", "import build"], capture_output=True)
+        if check.returncode != 0:
+            run([py, "-m", "pip", "install", "--quiet", "--break-system-packages", "build"])
+        run([py, "-m", "build", "--sdist", "--outdir", str(dist)], cwd=str(src_copy))
     tarballs = sorted(dist.glob("trustmux-*.tar.gz"))
     if not tarballs:
         die(f"sdist build produced no tarball in {dist}")
@@ -619,7 +638,7 @@ def run_homebrew_smoke_test(v):
         "-e", f"TARBALL_NAME={tarball.name}",
         "-e", f"TARBALL_SHA256={sha256}",
         "-e", f"PYPI_VERSION={v['pypi_version']}",
-        "cgr.dev/chainguard/wolfi-base", "bash", "-c", _HOMEBREW_SMOKE_SCRIPT,
+        "cgr.dev/chainguard/wolfi-base", "sh", "-c", _HOMEBREW_SMOKE_SCRIPT,
     ])
     print("  ✓ Homebrew smoke test PASSED")
 
