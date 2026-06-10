@@ -1,71 +1,50 @@
 .TH TRUSTMUX 1 "2026-05-28" "trustmux" "User Commands"
 .SH NAME
-trustmux \- mobile companion daemon for tmux/Byobu sessions
+trustmux \- manage the Trustmux daemon
 .SH SYNOPSIS
 .B trustmux
-[\fB\-\-host\fP \fIADDR\fP]
-[\fB\-\-port\fP \fIPORT\fP]
-[\fB\-\-https\fP]
-[\fB\-\-self\-signed\fP]
-[\fB\-\-version\fP]
+.I COMMAND
 .SH DESCRIPTION
 .B trustmux
-is a lightweight daemon that serves a mobile-optimised web interface for
-monitoring and interacting with tmux and Byobu sessions over your Tailscale
-private network.
-.PP
-The daemon serves a Progressive Web App (PWA) over HTTPS.  In the default
-mode it binds to the Tailscale interface and relies on
-.BR "tailscale serve"
-for TLS termination.  In direct mode (\fB\-\-self\-signed\fP) it generates
-a self-signed ECDSA certificate and binds directly on the network interface.
-.PP
-Authentication uses 6-digit one-time pairing codes (generated with
-.BR trustmux\-pair (1))
-and permanent per-device session tokens stored in
-.IR ~/.config/trustmux/tokens.json .
-.SH OPTIONS
+starts, stops, and inspects the Trustmux daemon.
+.SH COMMANDS
 .TP
-.BI \-\-host " ADDR"
-Bind address (default: Tailscale IP, or 127.0.0.1 with \fB\-\-https\fP).
+.B setup
+One-time setup: verify Tailscale is installed and connected, then
+configure \fBtailscale serve\fP for HTTPS on port 7432.
 .TP
-.BI \-\-port " PORT"
-TCP port to listen on (default: 7432).
+.B start
+Start the daemon in HTTPS mode via \fBtailscale serve\fP (default).
 .TP
-.B \-\-https
-HTTPS mode: trust proxy headers and set Secure cookie flag.
-Use with \fBtailscale serve\fP.
+.B start\-local
+Start the daemon bound to 127.0.0.1 only, for access via SSH tunnel.
 .TP
-.B \-\-self\-signed
-Generate a self-signed ECDSA P-256 TLS certificate for direct
-HTTPS access without Tailscale.
+.B start\-direct
+Start the daemon with a self-signed TLS certificate, binding on
+all interfaces for LAN access without Tailscale.
 .TP
-.B \-\-version
-Print version and exit.
+.B stop
+Send SIGTERM to the running daemon.
+.TP
+.B restart
+Stop then start the daemon in HTTPS mode.
+.TP
+.B status
+Show whether the daemon is running and the URL to connect to.
+.TP
+.B log
+Tail the daemon log at
+.IR ~/.config/trustmux/trustmux.log .
 .SH FILES
 .TP
-.I ~/.config/trustmux/tokens.json
-Persistent session tokens (mode 0600).
+.I ~/.config/trustmux/trustmux.log
+Daemon log file.
 .TP
-.I ~/.config/trustmux/trustmux.sock
-Admin Unix socket (mode 0600) used by
-.BR trustmux\-pair (1)
-and
-.BR trustmux\-unpair (1).
-.TP
-.I ~/.config/trustmux/cert.pem
-Self-signed TLS certificate (mode 0644), created on first
-\fB\-\-self\-signed\fP start.
-.TP
-.I ~/.config/trustmux/key.pem
-TLS private key (mode 0600).
+.I /tmp/trustmux.pid
+PID file written at startup.
 .SH SEE ALSO
-.BR trustmux\-ctl (1),
+.BR trustmuxd (1),
 .BR trustmux\-pair (1),
-.BR trustmux\-unpair (1),
-.BR trustmux\-enable (1),
-.BR trustmux\-disable (1),
-.BR byobu (1),
-.BR tmux (1)
+.BR trustmux\-enable (1)
 .SH AUTHOR
 Dustin Kirkland <kirkland@ubuntu.com>

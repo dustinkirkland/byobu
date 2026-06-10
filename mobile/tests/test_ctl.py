@@ -380,7 +380,7 @@ class TestInstallHook(unittest.TestCase):
         try:
             enable._install_hook(fpath)
             content = fpath.read_text()
-            self.assertIn('trustmux-ctl', content)
+            self.assertIn('trustmux start', content)
             self.assertIn('# existing content', content)
         finally:
             fpath.unlink()
@@ -388,13 +388,13 @@ class TestInstallHook(unittest.TestCase):
     def test_idempotent_does_not_duplicate_hook(self):
         with tempfile.NamedTemporaryFile(mode='w', suffix='.profile',
                                          delete=False) as f:
-            f.write('trustmux-ctl start 2>/dev/null || true\n')
+            f.write('trustmux start 2>/dev/null || true\n')
             fpath = Path(f.name)
         try:
             enable._install_hook(fpath)
             enable._install_hook(fpath)
             content = fpath.read_text()
-            self.assertEqual(content.count('trustmux-ctl'), 1)
+            self.assertEqual(content.count('trustmux start'), 1)
         finally:
             fpath.unlink()
 
@@ -413,12 +413,12 @@ class TestRemoveHook(unittest.TestCase):
     def test_removes_hook_lines(self):
         with tempfile.NamedTemporaryFile(mode='w', suffix='.profile',
                                          delete=False) as f:
-            f.write('# preamble\ntrustmux-ctl start 2>/dev/null || true\n# after\n')
+            f.write('# preamble\ntrustmux start 2>/dev/null || true\n# after\n')
             fpath = Path(f.name)
         try:
             disable._remove_hook(fpath)
             content = fpath.read_text()
-            self.assertNotIn('trustmux-ctl', content)
+            self.assertNotIn('trustmux start 2>/dev/null', content)
             self.assertIn('# preamble', content)
             self.assertIn('# after', content)
         finally:
@@ -439,12 +439,12 @@ class TestRemoveHook(unittest.TestCase):
     def test_no_op_on_non_writable_file(self):
         with tempfile.NamedTemporaryFile(mode='w', suffix='.profile',
                                          delete=False) as f:
-            f.write('trustmux-ctl start\n')
+            f.write('trustmux start\n')
             fpath = Path(f.name)
         try:
             with patch('trustmux._disable.os.access', return_value=False):
                 disable._remove_hook(fpath)
-            self.assertIn('trustmux-ctl', fpath.read_text())
+            self.assertIn('trustmux start', fpath.read_text())
         finally:
             fpath.unlink()
 

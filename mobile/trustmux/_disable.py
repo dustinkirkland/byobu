@@ -16,7 +16,7 @@ def _remove_hook(dest: Path) -> None:
     if not dest.exists() or not os.access(dest, os.W_OK):
         return
     lines = dest.read_text().splitlines(keepends=True)
-    filtered = [l for l in lines if "trustmux-ctl" not in l]
+    filtered = [l for l in lines if "trustmux-ctl" not in l and "trustmux start 2>/dev/null" not in l]
     if len(filtered) < len(lines):
         dest.write_text("".join(filtered))
 

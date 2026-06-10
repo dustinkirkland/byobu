@@ -5,7 +5,7 @@ from pathlib import Path
 
 from trustmux._ctl import TOKENS_FILE, cmd_setup, cmd_start
 
-_HOOK = "trustmux-ctl start 2>/dev/null || true\n"
+_HOOK = "trustmux start 2>/dev/null || true\n"
 
 _LOGIN_FILES = [
     Path.home() / ".profile",
@@ -19,7 +19,8 @@ if "zsh" in os.environ.get("SHELL", ""):
 def _install_hook(dest: Path) -> None:
     if not dest.exists():
         return
-    if "trustmux-ctl" in dest.read_text():
+    text = dest.read_text()
+    if _HOOK in text or "trustmux-ctl" in text:
         return
     with dest.open("a") as f:
         f.write(f"\n{_HOOK}")

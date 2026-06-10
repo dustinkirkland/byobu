@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""trustmux — Trustmux daemon."""
+"""trustmuxd — Trustmux daemon."""
 import sys
 import os
 

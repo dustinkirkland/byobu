@@ -1,4 +1,4 @@
-"""trustmux-ctl — manage the Trustmux daemon."""
+"""trustmux — manage the Trustmux daemon."""
 import argparse
 import ipaddress
 import json
@@ -213,7 +213,7 @@ def _ensure_ts_serve() -> bool:
     print("Your user needs Tailscale operator permission (one-time setup). Run:", file=sys.stderr)
     print(f"  sudo tailscale set --operator={user}", file=sys.stderr)
     print(f"  tailscale serve --bg {PORT}", file=sys.stderr)
-    print("Then re-run: trustmux-ctl start", file=sys.stderr)
+    print("Then re-run: trustmux start", file=sys.stderr)
     return False
 
 
@@ -275,7 +275,7 @@ def cmd_setup(quiet: bool = False) -> int:
 
     if not quiet:
         print("\nSetup complete. Next steps:\n")
-        print("  1. Start the daemon:      trustmux-ctl start")
+        print("  1. Start the daemon:      trustmux start")
         print("  2. Generate pairing code: trustmux-pair")
         print(f"  3. Open on your phone:    https://{ts_host}")
     return 0
@@ -418,7 +418,7 @@ def cmd_log() -> int:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="trustmux-ctl",
+        prog="trustmux",
         description="Manage the Trustmux daemon",
         epilog="To remove tailscale serve config: tailscale serve reset",
     )

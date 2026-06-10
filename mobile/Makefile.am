@@ -40,7 +40,7 @@ dist_trustmuxicons_DATA = \
 
 dist_man1_MANS = \
 	man/man1/trustmux.1 \
-	man/man1/trustmux-ctl.1 \
+	man/man1/trustmuxd.1 \
 	man/man1/trustmux-pair.1 \
 	man/man1/trustmux-unpair.1 \
 	man/man1/trustmux-enable.1 \
@@ -51,22 +51,22 @@ dist_man1_MANS = \
 # rather than AC_CONFIG_FILES because $(libdir) is only fully expanded
 # at Make time, not configure time.
 WRAPPERS = \
-	trustmux-ctl \
+	trustmux \
+	trustmuxd \
 	trustmux-pair \
 	trustmux-unpair \
 	trustmux-enable \
-	trustmux-disable \
-	trustmux-daemon
+	trustmux-disable
 
 bin_SCRIPTS = $(WRAPPERS:%=%.gen)
 
 EXTRA_DIST = \
-	trustmux-ctl.in \
+	trustmux.in \
+	trustmuxd.in \
 	trustmux-pair.in \
 	trustmux-unpair.in \
 	trustmux-enable.in \
 	trustmux-disable.in \
-	trustmux-daemon.in \
 	pyproject.toml \
 	requirements.txt \
 	uv.lock \
@@ -90,13 +90,9 @@ do_subst = sed -e 's|@trustmuxpydir[@]|$(trustmuxpydir)|g'
 # /usr/bin/trustmux is the user-facing entry point for the daemon.
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && \
-	  for w in trustmux-ctl trustmux-pair trustmux-unpair \
-	           trustmux-enable trustmux-disable; do \
+	  for w in $(WRAPPERS); do \
 	    mv $$w.gen $$w; \
-	  done && \
-	  mv trustmux-daemon.gen trustmux
+	  done
 
 uninstall-hook:
-	cd $(DESTDIR)$(bindir) && rm -f \
-	  trustmux trustmux-ctl trustmux-pair trustmux-unpair \
-	  trustmux-enable trustmux-disable
+	cd $(DESTDIR)$(bindir) && rm -f $(WRAPPERS)

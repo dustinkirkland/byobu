@@ -61,11 +61,11 @@ trustmux-pair
 ## Daily use
 
 ```bash
-trustmux-ctl start      # start daemon
-trustmux-ctl stop       # stop daemon
-trustmux-ctl restart    # restart daemon
-trustmux-ctl status     # show URL and running status
-trustmux-ctl log        # tail the daemon log
+trustmux start      # start daemon
+trustmux stop       # stop daemon
+trustmux restart    # restart daemon
+trustmux status     # show URL and running status
+trustmux log        # tail the daemon log
 
 trustmux-pair           # generate a pairing code for a new device
 trustmux-unpair         # list paired devices and remove them
@@ -126,7 +126,7 @@ python3 -m unittest tests.test_daemon -v
 
 ## Troubleshooting
 
-**502 Bad Gateway** — tailscale serve is running but daemon isn't: `trustmux-ctl start`
+**502 Bad Gateway** — tailscale serve is running but daemon isn't: `trustmux start`
 
 **"Serve not enabled"** — visit the URL printed by `tailscale serve --bg 7432`
 
