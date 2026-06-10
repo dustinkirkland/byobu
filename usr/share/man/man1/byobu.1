@@ -282,6 +282,23 @@ Apple Mac OSX terminal users have reported 'flashing text'.  You can fix this in
 Apple Mac keyboard users may need to specify a vt100 terminal by adding this to your OSX profile, in order to get Byobu's function keys and colors to work:
   alias ssh='TERM=vt100 ssh'
 
+URxvt users have reported that Ctrl+Shift+F-key combinations do not work by default, because URxvt does not send the expected escape sequences for those key chords.  You can fix this by adding the following to \fI~/.Xresources\fP (then running \fBxrdb -merge ~/.Xresources\fP):
+.nf
+  URxvt.keysym.S-C-F1:  string:\\033[11@
+  URxvt.keysym.S-C-F2:  string:\\033[12@
+  URxvt.keysym.S-C-F3:  string:\\033[13@
+  URxvt.keysym.S-C-F4:  string:\\033[14@
+  URxvt.keysym.S-C-F5:  string:\\033[15@
+  URxvt.keysym.S-C-F6:  string:\\033[17@
+  URxvt.keysym.S-C-F7:  string:\\033[18@
+  URxvt.keysym.S-C-F8:  string:\\033[19@
+  URxvt.keysym.S-C-F9:  string:\\033[20@
+  URxvt.keysym.S-C-F10: string:\\033[21@
+  URxvt.keysym.S-C-F11: string:\\033[23@
+  URxvt.keysym.S-C-F12: string:\\033[24@
+.fi
+See: \fIhttps://github.com/dustinkirkland/byobu/issues/108\fP
+
 Users of a non-UTF-8 locale (such as cs_CZ charset ISO-8859-2), may need to add "defutf8 off" to \fI~/.screenrc\fP, if some characters are rendering as "?".
 
 Users who customize their PS1 prompt need to put this setting in \fI~/.bashrc\fP, rather than \fI~/.profile\fP, in order for it to work correctly with Byobu.
