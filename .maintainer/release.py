@@ -517,18 +517,8 @@ set -e
 apk update -q
 apk add --no-cache python3 py3-pip tmux
 
-echo "--- Waiting for trustmux $PYPI_VERSION on PyPI (GH Actions may take a few minutes) ---"
-i=0
-while [ $i -lt 24 ]; do
-    i=$((i + 1))
-    pip install --break-system-packages "trustmux==$PYPI_VERSION" --dry-run >/dev/null 2>&1 && break
-    [ $i -eq 24 ] && echo "ERROR: trustmux $PYPI_VERSION not on PyPI after 12 minutes" && exit 1
-    echo "  ($i/24) not ready yet, waiting 30s..."
-    sleep 30
-done
-
-echo "--- Installing trustmux $PYPI_VERSION ---"
-pip install --break-system-packages "trustmux==$PYPI_VERSION"
+echo "--- Installing trustmux from local source ---"
+pip install --break-system-packages /mobile
 
 echo "--- Verifying CLI ---"
 trustmux --help | grep -qi usage
@@ -548,11 +538,12 @@ echo "=== pip smoke test PASSED ==="
 
 
 def run_pip_smoke_test(v):
-    section("Phase 4b: pip smoke test (Chainguard Wolfi)")
-    print("  Polling PyPI for RC, then: pip install → tmux session → trustmux start-direct…")
+    section("Phase 4b: pip smoke test (Chainguard Wolfi, local source)")
+    mobile = BYOBU_SRC / "mobile"
+    print("  pip install /mobile → tmux session → trustmux start-direct…")
     run([
         "docker", "run", "--rm",
-        "-e", f"PYPI_VERSION={v['pypi_version']}",
+        "-v", f"{mobile}:/mobile:ro",
         "cgr.dev/chainguard/wolfi-base", "bash", "-c", _PIP_SMOKE_SCRIPT,
     ])
     print("  ✓ pip smoke test PASSED")
@@ -563,38 +554,17 @@ def run_pip_smoke_test(v):
 _HOMEBREW_SMOKE_SCRIPT = r"""
 set -e
 apk update -q
-apk add --no-cache brew tmux python3 curl
+apk add --no-cache brew tmux
 
 . /etc/profile.d/brew.sh
 
-echo "--- Waiting for trustmux $PYPI_VERSION on PyPI ---"
-i=0
-while [ $i -lt 24 ]; do
-    i=$((i + 1))
-    PYPI_JSON=$(curl -sf "https://pypi.org/pypi/trustmux/$PYPI_VERSION/json") && break
-    [ $i -eq 24 ] && echo "ERROR: trustmux $PYPI_VERSION not on PyPI after 12 minutes" && exit 1
-    echo "  ($i/24) not ready yet, waiting 30s..."
-    sleep 30
-done
-
-TARBALL_URL=$(printf '%s' "$PYPI_JSON" | python3 -c "
-import sys, json
-d = json.load(sys.stdin)
-print(next(u['url'] for u in d['urls'] if u['filename'].endswith('.tar.gz')))
-")
-TARBALL_SHA=$(printf '%s' "$PYPI_JSON" | python3 -c "
-import sys, json
-d = json.load(sys.stdin)
-print(next(u['digests']['sha256'] for u in d['urls'] if u['filename'].endswith('.tar.gz')))
-")
-
-echo "--- Patching formula for $PYPI_VERSION ---"
+echo "--- Patching formula with local RC sdist ---"
 cp /formula/trustmux.rb /tmp/trustmux_rc.rb
-sed -i "s|^  url \"https://files\.pythonhosted\.org/[^\"]*\"|  url \"$TARBALL_URL\"|" /tmp/trustmux_rc.rb
-sed -i "s|^  sha256 \"[a-f0-9]*\"|  sha256 \"$TARBALL_SHA\"|" /tmp/trustmux_rc.rb
+sed -i "s|^  url \"[^\"]*\"|  url \"file:///sdist/$TARBALL_NAME\"|" /tmp/trustmux_rc.rb
+sed -i "s|^  sha256 \"[a-f0-9]*\"|  sha256 \"$TARBALL_SHA256\"|" /tmp/trustmux_rc.rb
 sed -i "s|^  version \"[^\"]*\"|  version \"$PYPI_VERSION\"|" /tmp/trustmux_rc.rb
 
-echo "--- Installing via Homebrew ---"
+echo "--- Installing via Homebrew (resources from PyPI, main pkg local) ---"
 brew install --formula /tmp/trustmux_rc.rb
 
 echo "--- Starting tmux session ---"
@@ -611,13 +581,43 @@ echo "=== Homebrew smoke test PASSED ==="
 """
 
 
+def _build_local_sdist(v):
+    """Build the trustmux sdist from local source. Returns (Path, sha256_hex)."""
+    import hashlib
+    mobile = BYOBU_SRC / "mobile"
+    dist = mobile / "dist"
+    dist.mkdir(exist_ok=True)
+    for old in dist.glob("trustmux-*.tar.gz"):
+        old.unlink()
+    # Use the mobile venv's Python if present, otherwise system python3.
+    venv_py = mobile / ".venv/bin/python"
+    py = str(venv_py) if venv_py.exists() else "python3"
+    # Ensure the build frontend is available.
+    check = subprocess.run([py, "-c", "import build"], capture_output=True)
+    if check.returncode != 0:
+        run([py, "-m", "pip", "install", "--quiet", "build"])
+    run([py, "-m", "build", "--sdist", "--outdir", str(dist)], cwd=str(mobile))
+    tarballs = sorted(dist.glob("trustmux-*.tar.gz"))
+    if not tarballs:
+        die(f"sdist build produced no tarball in {dist}")
+    tarball = tarballs[-1]
+    sha256 = hashlib.sha256(tarball.read_bytes()).hexdigest()
+    print(f"  sdist: {tarball.name}")
+    print(f"  sha256: {sha256}")
+    return tarball, sha256
+
+
 def run_homebrew_smoke_test(v):
-    section("Phase 4c: Homebrew smoke test (Chainguard Wolfi)")
+    section("Phase 4c: Homebrew smoke test (Chainguard Wolfi, local sdist)")
     formula = BYOBU_SRC / "homebrew/Formula/trustmux.rb"
-    print("  Polling PyPI for RC, patching formula, brew install → tmux session → trustmux start-direct…")
+    tarball, sha256 = _build_local_sdist(v)
+    print("  brew install (local sdist) → tmux session → trustmux start-direct…")
     run([
         "docker", "run", "--rm",
         "-v", f"{formula}:/formula/trustmux.rb:ro",
+        "-v", f"{tarball}:/sdist/{tarball.name}:ro",
+        "-e", f"TARBALL_NAME={tarball.name}",
+        "-e", f"TARBALL_SHA256={sha256}",
         "-e", f"PYPI_VERSION={v['pypi_version']}",
         "cgr.dev/chainguard/wolfi-base", "bash", "-c", _HOMEBREW_SMOKE_SCRIPT,
     ])
