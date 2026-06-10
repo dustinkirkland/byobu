@@ -229,32 +229,39 @@ class TestCmdStart(unittest.TestCase):
             self.assertEqual(ctl.cmd_start(), 1)
 
     def test_returns_1_when_tailscale_missing(self):
-        import subprocess as sp
         with patch('trustmux._ctl._pid', return_value=None):
-            with patch('trustmux._ctl.subprocess.run',
-                       side_effect=FileNotFoundError):
-                self.assertEqual(ctl.cmd_start('serve'), 1)
+            with patch('trustmux._ctl._check_tmux', return_value=True):
+                with patch('trustmux._ctl._check_tls', return_value=True):
+                    with patch('trustmux._ctl.subprocess.run',
+                               side_effect=FileNotFoundError):
+                        self.assertEqual(ctl.cmd_start('serve'), 1)
 
     def test_returns_1_when_no_tailscale_host(self):
         with patch('trustmux._ctl._pid', return_value=None):
-            with patch('trustmux._ctl.subprocess.run'):
-                with patch('trustmux._ctl._ts_host', return_value=''):
-                    self.assertEqual(ctl.cmd_start('serve'), 1)
+            with patch('trustmux._ctl._check_tmux', return_value=True):
+                with patch('trustmux._ctl._check_tls', return_value=True):
+                    with patch('trustmux._ctl.subprocess.run'):
+                        with patch('trustmux._ctl._ts_host', return_value=''):
+                            self.assertEqual(ctl.cmd_start('serve'), 1)
 
     def test_returns_1_when_ts_serve_fails(self):
         with patch('trustmux._ctl._pid', return_value=None):
-            with patch('trustmux._ctl.subprocess.run'):
-                with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
-                    with patch('trustmux._ctl._ensure_ts_serve', return_value=False):
-                        self.assertEqual(ctl.cmd_start('serve'), 1)
+            with patch('trustmux._ctl._check_tmux', return_value=True):
+                with patch('trustmux._ctl._check_tls', return_value=True):
+                    with patch('trustmux._ctl.subprocess.run'):
+                        with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
+                            with patch('trustmux._ctl._ensure_ts_serve', return_value=False):
+                                self.assertEqual(ctl.cmd_start('serve'), 1)
 
     def test_serve_mode_success(self):
         with patch('trustmux._ctl._pid', return_value=None):
-            with patch('trustmux._ctl.subprocess.run'):
-                with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
-                    with patch('trustmux._ctl._ensure_ts_serve', return_value=True):
-                        with patch('trustmux._ctl._launch', return_value=5678):
-                            self.assertEqual(ctl.cmd_start('serve'), 0)
+            with patch('trustmux._ctl._check_tmux', return_value=True):
+                with patch('trustmux._ctl._check_tls', return_value=True):
+                    with patch('trustmux._ctl.subprocess.run'):
+                        with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
+                            with patch('trustmux._ctl._ensure_ts_serve', return_value=True):
+                                with patch('trustmux._ctl._launch', return_value=5678):
+                                    self.assertEqual(ctl.cmd_start('serve'), 0)
 
     def test_start_local_success(self):
         with patch('trustmux._ctl._pid', return_value=None):
@@ -263,16 +270,20 @@ class TestCmdStart(unittest.TestCase):
 
     def test_start_direct_success(self):
         with patch('trustmux._ctl._pid', return_value=None):
-            with patch('trustmux._ctl._launch', return_value=5678):
-                self.assertEqual(ctl.cmd_start('start-direct'), 0)
+            with patch('trustmux._ctl._check_tmux', return_value=True):
+                with patch('trustmux._ctl._check_tls', return_value=True):
+                    with patch('trustmux._ctl._launch', return_value=5678):
+                        self.assertEqual(ctl.cmd_start('start-direct'), 0)
 
     def test_returns_1_when_launch_fails(self):
         with patch('trustmux._ctl._pid', return_value=None):
-            with patch('trustmux._ctl.subprocess.run'):
-                with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
-                    with patch('trustmux._ctl._ensure_ts_serve', return_value=True):
-                        with patch('trustmux._ctl._launch', return_value=None):
-                            self.assertEqual(ctl.cmd_start('serve'), 1)
+            with patch('trustmux._ctl._check_tmux', return_value=True):
+                with patch('trustmux._ctl._check_tls', return_value=True):
+                    with patch('trustmux._ctl.subprocess.run'):
+                        with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
+                            with patch('trustmux._ctl._ensure_ts_serve', return_value=True):
+                                with patch('trustmux._ctl._launch', return_value=None):
+                                    self.assertEqual(ctl.cmd_start('serve'), 1)
 
     def test_unknown_mode_returns_1(self):
         with patch('trustmux._ctl._pid', return_value=None):
