@@ -15,7 +15,7 @@ RC phases:
     5  PPA source builds   ├─ run in parallel
     5b Debian exp source   ┘
     6  GitHub pre-release
-    7  Write sign-and-upload.sh
+    7  Sign and upload (GPG sign + dput, interactive)
 
 Final adds:
     6b Debian unstable source build (Docker) — RC uses experimental, final promotes to unstable
@@ -905,122 +905,75 @@ def create_github_release(v, mode):
     print("  ✓ GitHub release created")
 
 
-# ── sign-and-upload script ────────────────────────────────────────────────
+# ── sign and upload ───────────────────────────────────────────────────────
 
-def write_sign_and_upload(v, identity, mode):
-    section("Phase 7: Write sign-and-upload.sh" if mode == "rc" else "Phase 8: Write sign-and-upload.sh")
+def sign_and_upload(v, identity, mode):
+    section("Phase 7: Sign and upload" if mode == "rc" else "Phase 8: Sign and upload")
     outdir = v["outdir"]
     gpgkey = identity["GPGKEY"]
 
+    def _ask(msg):
+        ans = input(f"\n{msg} [y=upload / N=skip] ").strip().lower()
+        return ans in ("y", "yes")
+
+    # ── Step 1: GPG signing ──────────────────────────────────────────────────
+    print(f"\n── Step 1: GPG signing  (key: {gpgkey})")
+    subdirs = ["ppa", "debian"] if mode == "rc" else ["debian", "ubuntu"]
+    signed = 0
+    for subdir in subdirs:
+        for f in sorted((outdir / subdir).glob("*_source.changes")):
+            print(f"  Signing: {f.name}")
+            run(["debsign", "-k", gpgkey, str(f)])
+            signed += 1
+    if not signed:
+        die(f"No *_source.changes files found under {outdir}")
+    print(f"  ✓ {signed} file(s) signed.")
+
+    # ── Step 2: PPA (RC only) ────────────────────────────────────────────────
     if mode == "rc":
-        body = f"""\
-#!/bin/bash
-set -e
-GPGKEY="${{GPGKEY:-{gpgkey}}}"
-PPA="ppa:byobu/ppa"
-BASE="$(dirname "$0")"
+        print("\n── Step 2: PPA  ppa:byobu/ppa")
+        if _ask("  Upload all series to ppa:byobu/ppa?"):
+            for f in sorted((outdir / "ppa").glob("*_source.changes")):
+                print(f"  dput ppa:byobu/ppa {f.name}")
+                run(["dput", "ppa:byobu/ppa", str(f)])
+            print("  ✓ PPA uploads done.")
+            print("    Monitor: https://launchpad.net/~byobu/+archive/ubuntu/ppa")
+        else:
+            print("  Skipped.")
 
-echo "=========================================="
-echo " byobu {v['ppa_base']} sign-and-upload (RC)"
-echo " GPG key: $GPGKEY"
-echo "=========================================="
-echo ""
+    # ── Step 2: Ubuntu dev series (final only) ───────────────────────────────
+    if mode == "final":
+        print(f"\n── Step 2: Ubuntu {v['devel_series']}  (dev series)")
+        ubuntu_changes = sorted((outdir / "ubuntu").glob("*_source.changes"))
+        if ubuntu_changes:
+            if _ask(f"  Upload to Ubuntu {v['devel_series']}?"):
+                for f in ubuntu_changes:
+                    run(["dput", "ubuntu", str(f)])
+                print(f"  ✓ Ubuntu {v['devel_series']} upload done.")
+            else:
+                print("  Skipped.")
+        else:
+            print("  (no ubuntu .changes files found — skipping)")
 
-echo "── Step 1: GPG signing ─────────────────────────────────────────────"
-for f in "$BASE"/ppa/*_source.changes \\
-         "$BASE"/debian/*_source.changes; do
-  [ -f "$f" ] || continue
-  echo "  Signing: $f"
-  debsign -k "$GPGKEY" "$f"
-done
-echo "All signed."
-echo ""
-
-echo "── Step 2: PPA ppa:byobu/ppa ────────────────────────────────────────"
-read -rp "  Upload all series to $PPA? [y=upload / N=skip] " ans
-if [[ "$ans" =~ ^[Yy]$ ]]; then
-  for f in "$BASE"/ppa/*_source.changes; do
-    echo "  dput $PPA $f"
-    dput "$PPA" "$f"
-  done
-  echo "Done. Monitor: https://launchpad.net/~byobu/+archive/ubuntu/ppa"
-else
-  echo "  Skipped."
-fi
-echo ""
-
-echo "── Step 3: Debian experimental (mentors.debian.net) ────────────────"
-read -rp "  Upload to mentors.debian.net for sponsor review? [y=upload / N=skip] " ans < /dev/tty
-if [[ "$ans" =~ ^[Yy]$ ]]; then
-  dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" \\
-    || {{ echo "  ✗ dput failed — package not uploaded."; exit 1; }}
-  echo ""
-  echo "  Uploaded. Email Andreas Tille <tille@debian.org> with:"
-  echo "    Subject: byobu {v['deb_exp_version']} sponsorship request (experimental)"
-  echo "    Body: https://mentors.debian.net/package/byobu"
-else
-  echo "  Skipped."
-fi
-"""
+    # ── Step 3: Debian mentors ───────────────────────────────────────────────
+    deb_target = "experimental" if mode == "rc" else "unstable"
+    print(f"\n── Step 3: Debian {deb_target}  (mentors.debian.net)")
+    deb_changes = sorted((outdir / "debian").glob("*_source.changes"))
+    if deb_changes:
+        if _ask("  Upload to mentors.debian.net for sponsor review?"):
+            run(["dput", "mentors", str(deb_changes[0])])
+            subject_ver = v["deb_exp_version"] if mode == "rc" else v["base_ver"]
+            print(f"\n  ✓ Uploaded. Email Andreas Tille <tille@debian.org>:")
+            print(f"    Subject: byobu {subject_ver} sponsorship request ({deb_target})")
+            print(f"    Body:    https://mentors.debian.net/package/byobu")
+        else:
+            print("  Skipped.")
     else:
-        body = f"""\
-#!/bin/bash
-set -e
-GPGKEY="${{GPGKEY:-{gpgkey}}}"
-BASE="{outdir}"
+        print("  (no debian .changes files found — skipping)")
 
-echo "=========================================="
-echo " byobu {v['base_ver']} sign-and-upload"
-echo " GPG key: $GPGKEY"
-echo "=========================================="
-echo ""
-
-echo "── Step 1: GPG signing ─────────────────────────────────────────────"
-for f in "$BASE"/debian/*_source.changes \\
-         "$BASE"/ubuntu/*_source.changes; do
-  [ -f "$f" ] || continue
-  echo "  Signing: $f"
-  debsign -k "$GPGKEY" "$f"
-done
-echo "All signed."
-echo ""
-
-echo "── Step 2: Ubuntu {v['devel_series']} (dev series) ──────────────────────────────"
-read -rp "  Upload to Ubuntu {v['devel_series']}? [y=upload / N=skip] " ans
-if [[ "$ans" =~ ^[Yy]$ ]]; then
-  dput ubuntu "$BASE/ubuntu/byobu_{v['ubuntu_ver']}_source.changes"
-else
-  echo "  Skipped."
-fi
-echo ""
-
-echo "── Step 3: Debian unstable (mentors.debian.net) ────────────────────"
-read -rp "  Upload to mentors.debian.net for sponsor review? [y=upload / N=skip] " ans < /dev/tty
-if [[ "$ans" =~ ^[Yy]$ ]]; then
-  dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" \\
-    || {{ echo "  ✗ dput failed — package not uploaded."; exit 1; }}
-  echo ""
-  echo "  Uploaded. Email Andreas Tille <tille@debian.org> with:"
-  echo "    Subject: byobu {v['base_ver']} sponsorship request (unstable)"
-  echo "    Body: https://mentors.debian.net/package/byobu"
-else
-  echo "  Skipped."
-fi
-
-echo ""
-echo "=========================================="
-echo " All uploads complete!"
-echo " Next step: open the next development cycle"
-echo ""
-echo "   cd {BYOBU_SRC}"
-echo "   ./.maintainer/release.py open-dev"
-echo "=========================================="
-"""
-
-    script_path = outdir / "sign-and-upload.sh"
-    script_path.write_text(body)
-    script_path.chmod(0o755)
-    print(f"  ✓ Written: {script_path}")
+    print("\n  ✓ Sign and upload complete.")
+    if mode == "final":
+        print(f"\n  Next: ./.maintainer/release.py open-dev")
 
 
 # ── phase 8: website screenshots (final only) ─────────────────────────────
@@ -1108,10 +1061,6 @@ def print_summary(v, mode):
         print(f"\n  Local install:")
         print(f"    sudo dpkg -i " + " ".join(str(d) for d in debs))
 
-    print(
-        f"\n  Sign and upload:\n    {outdir}/sign-and-upload.sh"
-        f"\n  (GPG prompts once per series)\n"
-    )
     if mode == "final":
         print("  Next: run ./release.py open-dev to bump version and open development.\n")
 
@@ -1234,7 +1183,7 @@ def main():
         create_github_release(v, mode)
 
     if should_run("7", start_from):
-        write_sign_and_upload(v, identity, mode)
+        sign_and_upload(v, identity, mode)
 
     if mode == "final" and should_run("8", start_from):
         update_website_screenshots(v)
