@@ -3,8 +3,9 @@
 release.py — byobu/trustmux release pipeline
 
 Usage:
-    ./release.py [rc]     # build and tag an RC (default)
-    ./release.py final    # cut a full release
+    ./release.py [rc]               # build and tag an RC (default, non-interactive)
+    ./release.py [rc] --interactive # same, but prompt for confirmation at each step
+    ./release.py final              # cut a full release
 
 RC phases:
     1  Pre-flight checks
@@ -43,6 +44,9 @@ import urllib.request
 from pathlib import Path
 
 BYOBU_SRC = Path(__file__).resolve().parent.parent
+
+# Set to True by --interactive; when False all confirm() calls auto-proceed.
+_interactive = False
 
 
 # ── thread-local stdout (parallel output capture) ──────────────────────────
@@ -168,10 +172,14 @@ def die(msg):
 def confirm(prompt, skippable=False):
     """Prompt the user to proceed, skip, or abort.
 
-    Returns True  — user chose to proceed (y/yes).
+    In non-interactive mode (default) auto-proceeds without prompting.
+    Returns True  — user chose to proceed (y/yes), or auto-proceed.
     Returns False — user chose to skip this step (s/skip); only when skippable=True.
     Calls die()   — user chose to abort (anything else).
     """
+    if not _interactive:
+        print(f"\n  (auto-proceeding: {prompt[:60]}{'…' if len(prompt) > 60 else ''})")
+        return True
     opts = "[y/s/N]" if skippable else "[y/N]"
     ans = input(f"\n{prompt} {opts} ").strip().lower()
     if ans in ("y", "yes"):
@@ -1048,10 +1056,6 @@ def sign_and_upload(v, identity, mode):
     outdir = v["outdir"]
     gpgkey = identity["GPGKEY"]
 
-    def _ask(msg):
-        ans = input(f"\n{msg} [y=upload / N=skip] ").strip().lower()
-        return ans in ("y", "yes")
-
     # ── Step 1: GPG signing ──────────────────────────────────────────────────
     print(f"\n── Step 1: GPG signing  (key: {gpgkey})")
     subdirs = ["ppa", "debian"] if mode == "rc" else ["debian", "ubuntu"]
@@ -1068,7 +1072,7 @@ def sign_and_upload(v, identity, mode):
     # ── Step 2: PPA (RC only) ────────────────────────────────────────────────
     if mode == "rc":
         print("\n── Step 2: PPA  ppa:byobu/ppa")
-        if _ask("  Upload all series to ppa:byobu/ppa?"):
+        if confirm("  Upload all series to ppa:byobu/ppa?", skippable=True):
             for f in sorted((outdir / "ppa").glob("*_source.changes")):
                 print(f"  dput ppa:byobu/ppa {f.name}")
                 run(["dput", "ppa:byobu/ppa", str(f)])
@@ -1082,7 +1086,7 @@ def sign_and_upload(v, identity, mode):
         print(f"\n── Step 2: Ubuntu {v['devel_series']}  (dev series)")
         ubuntu_changes = sorted((outdir / "ubuntu").glob("*_source.changes"))
         if ubuntu_changes:
-            if _ask(f"  Upload to Ubuntu {v['devel_series']}?"):
+            if confirm(f"  Upload to Ubuntu {v['devel_series']}?", skippable=True):
                 for f in ubuntu_changes:
                     run(["dput", "ubuntu", str(f)])
                 print(f"  ✓ Ubuntu {v['devel_series']} upload done.")
@@ -1096,7 +1100,7 @@ def sign_and_upload(v, identity, mode):
     print(f"\n── Step 3: Debian {deb_target}  (mentors.debian.net)")
     deb_changes = sorted((outdir / "debian").glob("*_source.changes"))
     if deb_changes:
-        if _ask("  Upload to mentors.debian.net for sponsor review?"):
+        if confirm("  Upload to mentors.debian.net for sponsor review?", skippable=True):
             run(["dput", "mentors", str(deb_changes[0])])
             subject_ver = v["deb_exp_version"] if mode == "rc" else v["base_ver"]
             print(f"\n  ✓ Uploaded. Email Andreas Tille <tille@debian.org>:")
@@ -1265,9 +1269,18 @@ def main():
             "Phases: 3 4 5 5b(=6b) 6c 6d 6 7 8"
         ),
     )
+    parser.add_argument(
+        "--interactive", "-i",
+        action="store_true",
+        default=False,
+        help="Prompt for confirmation at each step (default: auto-proceed)",
+    )
     args = parser.parse_args()
     mode = args.mode
     start_from = args.start_from
+
+    global _interactive
+    _interactive = args.interactive
 
     if mode == "open-dev":
         identity = load_identity()
@@ -1297,6 +1310,7 @@ def main():
         parallel.append(("smoke test",    run_smoke_test))
         parallel.append(("pip install",   lambda: run_pip_smoke_test(v)))
         parallel.append(("brew install",  lambda: run_homebrew_smoke_test(v)))
+        parallel.append(("local deb",     lambda: build_local_debs(v)))
     if mode == "rc" and should_run("5", start_from):
         parallel.append(("PPA builds", lambda: build_ppa_packages(v, identity)))
     dist = "experimental" if mode == "rc" else "unstable"
