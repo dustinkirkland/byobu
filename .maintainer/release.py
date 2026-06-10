@@ -13,6 +13,8 @@ RC phases:
     4  Smoke test          ┐
     5  PPA source builds   ├─ run in parallel
     5b Debian exp source   ┘
+
+Final skips phase 4 (smoke already passed on RC commit):
     6  GitHub pre-release
     7  Sign and upload (GPG sign + dput, interactive)
 
@@ -1148,13 +1150,15 @@ def main():
     if should_run("3", start_from):
         push_pypi_tag(v)
 
-    # ── phases 4 / 5 / 5b (RC) or 4 / 5b / 6c (final): run in parallel ────
+    # ── phases 4 / 5 / 5b (RC) or 5b / 6c (final): run in parallel ────
     #
-    # All three Docker builds are independent: each mounts /src read-only and
-    # writes to a different output directory.  Running them concurrently saves
-    # ~5 minutes on a typical RC run and ~6 minutes on a final release.
+    # All builds are independent: each mounts /src read-only and writes to a
+    # different output directory.  Running them concurrently saves ~5 minutes
+    # on a typical RC run.  The smoke test only runs for RC — the final is cut
+    # from the same commit that passed the RC smoke test, so re-running it
+    # would test identical bytes a second time.
     parallel = []
-    if should_run("4", start_from):
+    if mode == "rc" and should_run("4", start_from):
         parallel.append(("smoke test", run_smoke_test))
     if mode == "rc" and should_run("5", start_from):
         parallel.append(("PPA builds", lambda: build_ppa_packages(v, identity)))
