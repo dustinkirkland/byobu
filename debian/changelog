@@ -1,4 +1,4 @@
-byobu (7.10) UNRELEASED; urgency=medium
+byobu (7.11) UNRELEASED; urgency=medium
 
   * mobile/trustmux/static/app.js, mobile/trustmux/static/index.html:
     - add optional biometric/PIN re-authentication lock to the Trustmux PWA;
@@ -113,8 +113,9 @@ byobu (7.10) UNRELEASED; urgency=medium
       add Andreas Tille <tille@debian.org> as Uploader/sponsor; update watch
       file from defunct Launchpad URL to GitHub tags
       Closes: #1138925
+  * Open 7.11 for development
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 08 Jun 2026 07:50:11 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Jun 2026 23:32:22 -0500
 
 byobu (7.9-1) unstable; urgency=medium
 
