@@ -13,8 +13,9 @@ RC phases:
     3  Push PyPI git tag (triggers GH Actions)
     4  Smoke test (Debian build)   ┐
     4b pip install smoke test      ├─ run in parallel
-    4c Homebrew install smoke test │
-    4d Fedora Rawhide RPM build    ┘
+    4c Homebrew trustmux smoke test │
+    4d Fedora Rawhide RPM build    │
+    4e Homebrew byobu smoke test   ┘
     5  PPA source builds           ┐
     5b Debian exp source           ┘ run in parallel
 
@@ -495,7 +496,9 @@ _SMOKE_BYOBU = r"""
 echo "--- Smoke: byobu binaries ---"
 byobu --version
 echo "--- Smoke: byobu test suite ---"
-bash /usr/share/byobu/tests/test_byobu.sh
+_suite=/usr/share/byobu/tests/test_byobu.sh
+command -v brew >/dev/null 2>&1 && _suite="$(brew --prefix)/share/byobu/tests/test_byobu.sh"
+bash "$_suite"
 """
 
 _SMOKE_TRUSTMUX = r"""
@@ -666,7 +669,64 @@ def run_homebrew_smoke_test(v):
         "-e", f"PYPI_VERSION={v['pypi_version']}",
         "cgr.dev/chainguard/wolfi-base", "sh", "-c", _HOMEBREW_SMOKE_SCRIPT,
     ])
-    print("  ✓ Homebrew smoke test PASSED")
+    print("  ✓ Homebrew trustmux smoke test PASSED")
+
+
+# ── phase 4e: Homebrew byobu smoke test ──────────────────────────────────
+
+_HOMEBREW_BYOBU_SMOKE_SCRIPT = (
+    r"""
+set -e
+apk update -q
+apk add --no-cache bash brew git
+
+. /etc/profile.d/brew.sh
+
+echo "--- Building source tarball from HEAD ---"
+git config --global --add safe.directory /src
+git -C /src archive --format=tar.gz --prefix="byobu-${VERSION}/" HEAD \
+  -o /tmp/byobu-${VERSION}.tar.gz
+TARBALL_SHA256=$(sha256sum /tmp/byobu-${VERSION}.tar.gz | cut -d' ' -f1)
+echo "  sha256: $TARBALL_SHA256"
+
+echo "--- Patching formula with local tarball ---"
+mkdir -p /tmp/homebrew-byobu/Formula
+cp /src/homebrew/Formula/byobu.rb /tmp/homebrew-byobu/Formula/byobu.rb
+sed -i "s|^  url \"[^\"]*\"|  url \"file:///tmp/byobu-${VERSION}.tar.gz\"|" \
+  /tmp/homebrew-byobu/Formula/byobu.rb
+sed -i "s|^  sha256 \"[a-f0-9]*\"|  sha256 \"${TARBALL_SHA256}\"|" \
+  /tmp/homebrew-byobu/Formula/byobu.rb
+sed -i "s|^  version \"[^\"]*\"|  version \"${VERSION}\"|" \
+  /tmp/homebrew-byobu/Formula/byobu.rb
+
+echo "--- Creating local git tap ---"
+git -C /tmp/homebrew-byobu init -q
+git -C /tmp/homebrew-byobu config user.email "smoke@test.local"
+git -C /tmp/homebrew-byobu config user.name "Smoke Test"
+git -C /tmp/homebrew-byobu add Formula/byobu.rb
+git -C /tmp/homebrew-byobu commit -q -m "byobu local formula"
+
+echo "--- Installing via Homebrew (build from source) ---"
+brew tap local/byobu /tmp/homebrew-byobu
+brew install local/byobu/byobu
+"""
+    + _SMOKE_BYOBU
+    + r"""
+echo "=== Homebrew byobu smoke test PASSED ==="
+"""
+)
+
+
+def run_homebrew_byobu_smoke_test(v):
+    section("Phase 4e: Homebrew byobu smoke test (Chainguard Wolfi, local tarball)")
+    print("  brew install (local tarball, build from source) → byobu tests…")
+    run([
+        "docker", "run", "--rm",
+        "-v", f"{BYOBU_SRC}:/src:ro",
+        "-e", f"VERSION={v['base_ver']}",
+        "cgr.dev/chainguard/wolfi-base", "sh", "-c", _HOMEBREW_BYOBU_SMOKE_SCRIPT,
+    ])
+    print("  ✓ Homebrew byobu smoke test PASSED")
 
 
 # ── phase 4d / 6e: Fedora Rawhide RPM build ──────────────────────────────
@@ -1476,6 +1536,7 @@ def main():
         parallel.append(("brew install",  lambda: run_homebrew_smoke_test(v)))
         parallel.append(("local deb",     lambda: build_local_debs(v)))
         parallel.append(("Fedora RPM",    lambda: build_fedora_rpm(v)))
+        parallel.append(("Homebrew byobu", lambda: run_homebrew_byobu_smoke_test(v)))
     if mode == "rc" and should_run("5", start_from):
         parallel.append(("PPA builds", lambda: build_ppa_packages(v, identity)))
     dist = "experimental" if mode == "rc" else "unstable"
