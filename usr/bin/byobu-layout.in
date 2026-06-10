@@ -49,6 +49,8 @@ case "$1" in
 		panes=$(tmux list-panes | wc -l)
 		if [ -n "$2" ]; then
 			name="$2"
+		elif name=$(tmux show-buffer 2>/dev/null) && [ -n "$name" ]; then
+			: # name read from tmux paste buffer (set by C-S-F8 keybinding)
 		else
 			echo
 			echo "Restore layout with <shift-F8>, save a layout with <shift-ctrl-F8>"

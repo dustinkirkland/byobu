@@ -69,7 +69,7 @@ bind-key -n F8 command-prompt -p "(rename-window) " "rename-window \"%%\""
 bind-key -n C-F8 command-prompt -p "(rename-session) " "rename-session \"%%\""
 bind-key -n S-F8 next-layout
 bind-key -n M-S-F8 new-window "byobu-layout restore; clear; $SHELL"
-bind-key -n C-S-F8 command-prompt -p "Save byobu layout as:" "run-shell \"byobu-layout save '%%'\""
+bind-key -n C-S-F8 command-prompt -p "Save byobu layout as:" "set-buffer \"%%\" ; run-shell \"byobu-layout save\""
 bind-key -n F9 new-window -n config byobu-config
 bind-key -n S-F9 command-prompt -p "Send command to all panes:" "set-buffer \"%%\" ; run-shell \"$BYOBU_PREFIX/lib/byobu/include/tmux-send-command-to-all-panes\""
 bind-key -n C-F9 command-prompt -p "Send command to all windows:" "set-buffer \"%%\" ; run-shell \"$BYOBU_PREFIX/lib/byobu/include/tmux-send-command-to-all-windows\""
