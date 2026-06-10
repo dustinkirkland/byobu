@@ -4,34 +4,30 @@ Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 Uploaders: Antoine Beaupré <anarcat@koumbit.org>,
            Andreas Tille <tille@debian.org>
 Standards-Version: 4.7.4
-Dm-Upload-Allowed: yes
-Build-Depends: debhelper-compat (= 13), gettext-base, automake, autoconf, dh-python, python3, python3-tornado, bc
-Homepage: https://byobu.org
+Build-Depends: debhelper-compat (= 13), gettext-base, automake, autoconf, dh-sequence-python3, python3, bc
+Homepage: https://www.byobu.org
 Vcs-Git: https://salsa.debian.org/debian/byobu.git
 Vcs-Browser: https://salsa.debian.org/debian/byobu
 
 Package: byobu
 Architecture: all
-Priority: optional
 Depends:
- ${misc:Depends}, ${python3:Depends},
+ ${misc:Depends}, ${perl:Depends}, ${python3:Depends},
  bc,
- debconf (>= 0.5) | debconf-2.0,
+ debconf | debconf-2.0,
  gettext-base,
  iproute2,
  python3,
  python3-cryptography,
  python3-newt,
  python3-tornado,
- tmux (>= 1.5),
+ tmux,
  gawk,
 Recommends:
  less,
  pastebinit,
  sensible-utils,
- run-one
 Suggests:
- apport,
  ccze,
  gnome-terminal|xterm,
  gnupg,
@@ -39,25 +35,26 @@ Suggests:
  po-debconf,
  screen,
  speedometer,
- ttf-ubuntu-font-family (>= 0.80-0ubuntu1~medium),
+ fonts-ubuntu,
  update-notifier-common,
  vim,
- wireless-tools
-Provides:
- screen-profiles,
- screen-profiles-extras,
- byobu-extras
-Replaces:
- screen-profiles (<< 2.0),
- screen-profiles-extras (<< 2.0),
- byobu-extras (<< 2.17),
- bikeshed (<< 1.64)
+ wireless-tools,
+Enhances:
+ screen,
 Breaks:
  screen-profiles (<< 2.0),
  screen-profiles-extras (<< 2.0),
  byobu-extras (<< 2.17),
- bikeshed (<< 1.64)
-Enhances: screen
+ bikeshed (<< 1.64),
+Provides:
+ screen-profiles,
+ screen-profiles-extras,
+ byobu-extras,
+Replaces:
+ screen-profiles (<< 2.0),
+ screen-profiles-extras (<< 2.0),
+ byobu-extras (<< 2.17),
+ bikeshed (<< 1.64),
 Description: text window manager, shell multiplexer, integrated DevOps environment
  Byobu is Ubuntu's powerful text-based window manager, shell multiplexer, and
  integrated DevOps environment.
@@ -67,4 +64,3 @@ Description: text window manager, shell multiplexer, integrated DevOps environme
  multiple panes, monitor dozens of important statistics about your system,
  detach and reattach to sessions later while your programs continue to run in
  the background.
-

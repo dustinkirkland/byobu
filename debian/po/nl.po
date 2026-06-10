@@ -1,0 +1,50 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: byobu_5.129-1\n"
+"Report-Msgid-Bugs-To: byobu@packages.debian.org\n"
+"POT-Creation-Date: 2013-01-24 18:31-0600\n"
+"PO-Revision-Date: 2019-11-11 21:14+0100\n"
+"Last-Translator: Frans Spiesschaert <Frans.Spiesschaert@yucom.be>\n"
+"Language-Team: Debian Dutch l10n Team <debian-l10n-dutch@lists.debian.org>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.8.11\n"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid "Do you want to launch Byobu at shell login for all users?"
+msgstr "Wilt u Byobu voor alle gebruikers starten bij een shell-login?"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"Byobu can launch automatically at login (e.g. console, ssh), providing an "
+"attachable/detachable window manager on the command line."
+msgstr ""
+"Byobu kan bij een login (bijv. console, ssh) automatisch opstarten en op de "
+"commandoregel voorzien in een aanhechtbare/demonteerbare windowmanager."
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"If you select this option, Byobu will install a symlink in /etc/profile.d. "
+"This setting is system-wide, for all users logging into the system. "
+"Individual users can disable this by touching ~/.byobu/disable-autolaunch, "
+"or configuring with 'byobu-config'."
+msgstr ""
+"Indien u voor deze optie kiest, zal Byobu een symbolische koppeling "
+"installeren in /etc/profile.d. Deze instelling geldt voor het hele systeem, "
+"voor alle gebruikers die op het systeem inloggen. Individuele gebruikers "
+"kunnen dit uitzetten met het commando 'touch ~/.byobu/disable-autolaunch' of "
+"door dit te configureren met 'byobu-config'."

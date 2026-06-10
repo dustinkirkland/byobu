@@ -1,0 +1,51 @@
+# Translation of byobu debconf templates to French
+# Copyright (C) 2019, French l10n team <debian-l10n-french@lists.debian.org>
+# This file is distributed under the same license as the byobu package.
+# Grégoire Scano <gregoire.scano@malloc.fr>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: byobu_5.129-1\n"
+"Report-Msgid-Bugs-To: byobu@packages.debian.org\n"
+"POT-Creation-Date: 2013-01-24 18:31-0600\n"
+"PO-Revision-Date: 2019-06-21 09:30+0800\n"
+"Last-Translator: Grégoire Scano <gregoire.scano@malloc.fr>\n"
+"Language-Team: French <debian-l10n-french@lists.debian.org>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid "Do you want to launch Byobu at shell login for all users?"
+msgstr ""
+"Faut-il démarrer Byobu lors de la connexion à l'interface système pour tous "
+"les utilisateurs ?"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"Byobu can launch automatically at login (e.g. console, ssh), providing an "
+"attachable/detachable window manager on the command line."
+msgstr ""
+"Byobu peut démarrer automatiquement lors de la connexion (par exemple, sur "
+"une console, en ssh), fournissant un gestionnaire de fenêtres attachables ou "
+"détachables sur la ligne de commande."
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"If you select this option, Byobu will install a symlink in /etc/profile.d. "
+"This setting is system-wide, for all users logging into the system. "
+"Individual users can disable this by touching ~/.byobu/disable-autolaunch, "
+"or configuring with 'byobu-config'."
+msgstr ""
+"Si vous sélectionnez cette option, Byobu installera un lien symbolique dans /"
+"etc/profile.d. Ce réglage s'applique à l'ensemble du système et pour tous "
+"les utilisateurs s'y connectant. Les utilisateurs individuels peuvent "
+"désactiver cela en créant le fichier ~/.byobu/disable-autolaunch, ou en "
+"configurant le logiciel avec « byobu-config »."

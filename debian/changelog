@@ -123,6 +123,27 @@ byobu (7.11) UNRELEASED; urgency=medium
       file from defunct Launchpad URL to GitHub tags
       Closes: #1138925
   * Open 7.11 for development
+  * Fold in packaging improvements from Andreas Tille's 7.10-0.1 NMU:
+    - debian/control: dh-python → dh-sequence-python3 (modern debhelper);
+      drop run-one from Recommends; drop apport from Suggests;
+      ttf-ubuntu-font-family → fonts-ubuntu (package renamed);
+      tmux (>= 1.5) → tmux (version constraint obsolete);
+      debconf (>= 0.5) | debconf-2.0 → debconf | debconf-2.0;
+      add ${perl:Depends}; Homepage → https://www.byobu.org
+    - debian/rules: drop --with python3 (implied by dh-sequence-python3)
+    - debian/watch: upgrade to version 5 git mode
+    - debian/copyright: convert to DEP-5 machine-readable format
+    - debian/upstream/metadata: new file with Bug-Database/Bug-Submit URLs
+    - debian/salsa-ci.yml: add Salsa CI pipeline configuration
+    - debian/source/lintian-overrides: drop now-resolved overrides for
+      debian-watch-does-not-check-openpgp-signature and no-dep5-copyright
+    - debian/po/fr.po: add French debconf translation (Grégoire Scano, 2019)
+    - debian/po/nl.po: add Dutch debconf translation (Frans Spiesschaert, 2019)
+    - debian/po/pt_BR.po: add Brazilian Portuguese debconf translation
+      (Adriano Rafael Gomes, 2020)
+    - debian/po/de.po: capitalisation fix + proper German quotation marks
+    - debian/po/ru.po: replace incomplete 2010 translation with complete
+      2019 version from Lev Lamberov (Debian L10N Russian)
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Jun 2026 23:32:22 -0500
 
