@@ -57,6 +57,7 @@ F18B = _font(_MONO_B, 18)
 F11S = _font(_SANS,   11)
 F13S = _font(_SANS,   13)
 F13B = _font(_SANS_B, 13)
+F15S = _font(_SANS,   15)
 
 
 def px(n):
@@ -182,7 +183,12 @@ def draw_padlock(d, cx, cy, size=28, body_color=DIM, shackle_color=DIM):
 # ── shared layout sections ─────────────────────────────────────────────────
 
 def draw_header(canvas, ctx_name="bash", pane_idx=2, pane_total=3):
-    """Draw the top navigation header. Logo+wordmark left; everything else right."""
+    """Draw the top navigation header matching the actual PWA layout.
+
+    Left:  SVG logo + 'Trustmux' wordmark
+    Center (margin-left:auto): ctx-name in accent
+    Right: + | ‹ | x/y | ›
+    """
     d = ImageDraw.Draw(canvas)
     y0, y1 = 0, 40
     draw_rect(d, 0, y0, W, y1, fill=BG2)
@@ -193,39 +199,38 @@ def draw_header(canvas, ctx_name="bash", pane_idx=2, pane_total=3):
     draw_text(d, 35, 12, "Trustmux", F15, ACCENT)
     d = ImageDraw.Draw(canvas)   # redraw after paste
 
-    # ── Right: + button, ›, N/M, ‹, ctx-name  (right to left) ──
+    # ── Right buttons: › | x/y | ‹ | +  (drawn right-to-left) ──
     btn_w, btn_h = 20, 20
     btn_y = 10
     rx = W - 8   # cursor from right
 
-    # + create
-    rx -= btn_w
-    draw_rect(d, rx, btn_y, rx + btn_w, btn_y + btn_h,
-              fill=BG3, outline=BORDER, radius=3)
-    draw_text(d, rx + 6, btn_y + 3, "+", F13, TEXT)
-
     # › next
-    rx -= (btn_w + 4)
-    draw_rect(d, rx, btn_y, rx + btn_w, btn_y + btn_h,
+    draw_rect(d, rx - btn_w, btn_y, rx, btn_y + btn_h,
               fill=BG3, outline=BORDER, radius=3)
-    draw_text(d, rx + 6, btn_y + 3, ">", F13, TEXT)
+    draw_text(d, rx - btn_w + 5, btn_y + 3, ">", F13, TEXT)
+    rx -= (btn_w + 4)
 
-    # N/M pane counter
+    # x/y pane counter
     lbl = f"{pane_idx}/{pane_total}"
     lbl_w = tw(lbl, F11)
-    rx -= (lbl_w + 8)
-    draw_text(d, rx, btn_y + 5, lbl, F11, TEXT)
+    draw_text(d, rx - lbl_w, btn_y + 5, lbl, F11, TEXT)
+    rx -= (lbl_w + 6)
 
     # ‹ prev
-    rx -= (btn_w + 4)
-    draw_rect(d, rx, btn_y, rx + btn_w, btn_y + btn_h,
+    draw_rect(d, rx - btn_w, btn_y, rx, btn_y + btn_h,
               fill=BG3, outline=BORDER, radius=3)
-    draw_text(d, rx + 6, btn_y + 3, "<", F13, TEXT)
+    draw_text(d, rx - btn_w + 5, btn_y + 3, "<", F13, TEXT)
+    rx -= (btn_w + 4)
 
-    # Context name
+    # + create
+    draw_rect(d, rx - btn_w, btn_y, rx, btn_y + btn_h,
+              fill=BG3, outline=BORDER, radius=3)
+    draw_text(d, rx - btn_w + 6, btn_y + 3, "+", F13, TEXT)
+    rx -= (btn_w + 8)
+
+    # ── Center-slot: ctx-name (sits just left of + button) ──
     if ctx_name:
-        rx -= (tw(ctx_name, F11) + 8)
-        draw_text(d, rx, btn_y + 5, ctx_name, F11, ACCENT)
+        draw_text(d, rx - tw(ctx_name, F11), btn_y + 5, ctx_name, F11, ACCENT)
 
     return y1
 
@@ -291,9 +296,12 @@ def draw_inputbar(canvas, top, text_mode=False,
 
     pad = 8
     btn_w = 30
+    btn_h = 18  # each of the two stacked buttons
+    gap = 4     # gap between stacked buttons
+
     sx = W - pad - btn_w                   # send button x
-    kx = sx - 4 - btn_w                    # kbd-mode button x
-    cmd_x2 = kx - 6
+    col_x = sx - gap - btn_w              # ⎋/$_ column x
+    cmd_x2 = col_x - gap
     cmd_x, cmd_y = pad, y0 + pad
     cmd_y2 = H - pad
 
@@ -302,22 +310,29 @@ def draw_inputbar(canvas, top, text_mode=False,
     draw_rect(d, cmd_x, cmd_y, cmd_x2, cmd_y2,
               fill=BG3, outline=border_col, radius=4)
     if input_text:
-        # wrap text at ~cmd width
         draw_text(d, cmd_x + 8, cmd_y + 9, input_text, F13, TEXT)
     else:
         draw_text(d, cmd_x + 8, cmd_y + 9, placeholder, F13, DIM)
 
-    # keyboard mode toggle
+    # ⎋ escape button (top of column)
+    esc_y = cmd_y
+    draw_rect(d, col_x, esc_y, col_x + btn_w, esc_y + btn_h,
+              fill=BG3, outline=BORDER, radius=4)
+    draw_text(d, col_x + 7, esc_y + 3, "⎋", F11S, TEXT)
+
+    # $_ / Aa keyboard mode button (bottom of column)
     kbdlabel = "Aa" if text_mode else "$_"
     kbdcolor  = ACCENT if text_mode else TEXT
-    draw_rect(d, kx, cmd_y, kx + btn_w, cmd_y + 38,
+    kbd_y = esc_y + btn_h + gap
+    draw_rect(d, col_x, kbd_y, col_x + btn_w, kbd_y + btn_h,
               fill=BG3, outline=BORDER, radius=4)
-    draw_text(d, kx + 4, cmd_y + 11, kbdlabel, F13, kbdcolor)
+    draw_text(d, col_x + 4, kbd_y + 3, kbdlabel, F11, kbdcolor)
 
-    # send button
-    draw_rect(d, sx, cmd_y, sx + btn_w, cmd_y + 38, fill=ACCENT, radius=4)
+    # send ↵ button
+    send_h = btn_h * 2 + gap
+    draw_rect(d, sx, cmd_y, sx + btn_w, cmd_y + send_h, fill=ACCENT, radius=4)
     btn_cx = sx + btn_w // 2
-    btn_cy = cmd_y + 19
+    btn_cy = cmd_y + send_h // 2
     draw_enter_arrow(d, btn_cx, btn_cy, size=9, color="#ffffff")
 
 
@@ -337,7 +352,7 @@ CLAUDE_LINES = [
     (DIM,    ""),
     (ACCENT, " > Show me the connection flow"),
     (DIM,    ""),
-    (GREEN,  "1. trustmux-enable  — starts daemon"),
+    (GREEN,  "1. trustmux enable  — starts daemon"),
     (GREEN,  "2. Open PWA on phone, tap Pair"),
     (GREEN,  "3. Enter 6-digit code from terminal"),
     (GREEN,  "4. WebSocket streams pane snapshots"),
@@ -356,11 +371,11 @@ MAIN_LINES = [
     (TEXT,   "-rw-r--r--  1 kirkland kirkland  512 May 29 08:20 Makefile"),
     (DIM,    ""),
     (TEXT,   "kirkland@dev:~/src/byobu$ git log --oneline -5"),
-    (AMBER,  "475c6f9 Add 'Nine problems solved' table"),
-    (AMBER,  "5e023e9 Honest Trustmux vs Mosh FAQ"),
-    (AMBER,  "25d0fef Add FAQ entry comparing to mosh"),
-    (AMBER,  "e289d2d Add FAQ section with 12 Q&As"),
-    (AMBER,  "9390f29 Refine byobu nav wordmark"),
+    (AMBER,  "4c9eaa9 fold enable/disable/pair/unpair"),
+    (AMBER,  "ed650c3 move PWA install btn to center slot"),
+    (AMBER,  "bad21e3 fix y count, move + btn left"),
+    (AMBER,  "1519fe1 add offline overlay HTML+CSS"),
+    (AMBER,  "10de765 cache pane snapshots in-memory"),
     (DIM,    ""),
     (TEXT,   "kirkland@dev:~/src/byobu$ ▌"),
 ]
@@ -463,11 +478,11 @@ def screen_create_overlay():
     d = ImageDraw.Draw(img)
 
     items = [
-        ("  New pane",    TEXT,  False),
-        ("  New window",  TEXT,  False),
-        ("  New session", TEXT,  False),
-        (None,            None,  True),
-        ("Cancel",        DIM,   False),
+        ("⊞  New pane",    TEXT,  False),
+        ("⬜  New window",  TEXT,  False),
+        ("⧉  New session", TEXT,  False),
+        (None,              None,  True),
+        ("Cancel",          DIM,   False),
     ]
     row_h, sep_h = 52, 8
     total_h = sum(sep_h if sep else row_h for _, _, sep in items) + 12
@@ -476,24 +491,20 @@ def screen_create_overlay():
     draw_rect(d, bx, by, bx + bw, by + total_h, fill=BG2, outline=BORDER, radius=14)
 
     ry = by + 6
-    icons = ["[+]", "[ ]", "[=]"]
-    ic = 0
     for label, color, is_sep in items:
         if is_sep:
             draw_line(d, bx + 10, ry + 1, bx + bw - 10, ry + 1, BORDER)
             ry += sep_h
         else:
-            if ic < len(icons):
-                draw_text(d, bx + 16, ry + 16, icons[ic], F15, ACCENT)
-                ic += 1
-            draw_text(d, bx + 58, ry + 16, label, F15, color)
+            draw_text(d, bx + 16, ry + 16, label, F15S, color)
             ry += row_h
 
     return img.resize((W, H), Image.LANCZOS), "03_create_overlay.png"
 
 
 def screen_lock():
-    """Screen 4: Biometric lock screen."""
+    """Screen 4: Biometric lock screen — matches actual #lock-overlay HTML."""
+    from PIL import ImageEnhance
     img = new_canvas()
     h_bot = draw_header(img, ctx_name="bash", pane_idx=2, pane_total=3)
     d = ImageDraw.Draw(img)
@@ -503,44 +514,32 @@ def screen_lock():
     img = Image.alpha_composite(img, overlay)
     d = ImageDraw.Draw(img)
 
-    bx, bw = 45, 300
-    by, bh = 240, 300
+    bx, bw = 55, 280
+    by, bh = 260, 260
     draw_rect(d, bx, by, bx + bw, by + bh, fill=BG2, outline=BORDER, radius=14)
 
-    # Greyed SVG logo
+    # Greyed SVG logo (opacity:0.5, filter:grayscale(1))
     logo = get_logo_img(44)
-    grey = Image.new("RGBA", logo.size, (0, 0, 0, 0))
-    for px_data in [(i, logo.getpixel((i % logo.width, i // logo.width)))
-                    for i in range(logo.width * logo.height)]:
-        pass  # use convert instead
     grey_logo = logo.convert("LA").convert("RGBA")
-    # dim it
-    r, g, b, a = grey_logo.split()
-    from PIL import ImageEnhance
     grey_logo = ImageEnhance.Brightness(grey_logo).enhance(0.5)
     lx = px(bx + bw // 2) - logo.width // 2
     img.paste(grey_logo, (lx, px(by + 20)), grey_logo)
     d = ImageDraw.Draw(img)
 
-    # Padlock drawn geometrically
-    draw_padlock(d, bx + bw // 2, by + 100, size=28, body_color=DIM, shackle_color=DIM)
+    # geometric padlock (stand-in for the 🔒 emoji at font-size:38px)
+    draw_padlock(d, bx + bw // 2, by + 112, size=28, body_color=DIM, shackle_color=DIM)
 
-    # LOCKED label
-    locked = "LOCKED"
+    # "Locked" heading (letter-spacing:2px, color:accent)
+    locked = "Locked"
     draw_text(d, bx + bw // 2 - tw(locked, F18B) // 2,
               by + 148, locked, F18B, ACCENT)
 
-    # Unlock button
+    # "Unlock" button
     draw_rect(d, bx + 14, by + 188, bx + bw - 14, by + 230,
               fill=ACCENT, radius=8)
     ul = "Unlock"
     draw_text(d, bx + bw // 2 - tw(ul, F15B) // 2,
               by + 202, ul, F15B, "#ffffff")
-
-    # Disable lock
-    dl = "Disable lock"
-    draw_text(d, bx + bw // 2 - tw(dl, F13S) // 2,
-              by + 250, dl, F13S, DIM)
 
     return img.resize((W, H), Image.LANCZOS), "04_lock_screen.png"
 
