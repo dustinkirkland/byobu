@@ -10,9 +10,11 @@ RC phases:
     1  Pre-flight checks
     2  Determine versions
     3  Push PyPI git tag (triggers GH Actions)
-    4  Smoke test          ┐
-    5  PPA source builds   ├─ run in parallel
-    5b Debian exp source   ┘
+    4  Smoke test (Debian build)   ┐
+    4b pip install smoke test      ├─ run in parallel
+    4c Homebrew install smoke test ┘
+    5  PPA source builds           ┐
+    5b Debian exp source           ┘ run in parallel
 
 Final skips phase 4 (smoke already passed on RC commit):
     6  GitHub pre-release
@@ -506,6 +508,120 @@ def run_smoke_test():
         "ubuntu:noble", "bash", "-c", _SMOKE_SCRIPT,
     ])
     print("  ✓ Smoke test PASSED")
+
+
+# ── phase 4b: pip smoke test ─────────────────────────────────────────────
+
+_PIP_SMOKE_SCRIPT = r"""
+set -e
+apk update -q
+apk add --no-cache python3 py3-pip tmux
+
+echo "--- Waiting for trustmux $PYPI_VERSION on PyPI (GH Actions may take a few minutes) ---"
+i=0
+while [ $i -lt 24 ]; do
+    i=$((i + 1))
+    pip install --break-system-packages "trustmux==$PYPI_VERSION" --dry-run >/dev/null 2>&1 && break
+    [ $i -eq 24 ] && echo "ERROR: trustmux $PYPI_VERSION not on PyPI after 12 minutes" && exit 1
+    echo "  ($i/24) not ready yet, waiting 30s..."
+    sleep 30
+done
+
+echo "--- Installing trustmux $PYPI_VERSION ---"
+pip install --break-system-packages "trustmux==$PYPI_VERSION"
+
+echo "--- Verifying CLI ---"
+trustmux --help | grep -qi usage
+
+echo "--- Starting tmux session ---"
+tmux new-session -d -s smoketest "sleep 300"
+
+echo "--- trustmux start-direct (self-signed HTTPS, no Tailscale) ---"
+trustmux start-direct
+sleep 2
+
+echo "--- Checking daemon status ---"
+trustmux status | grep -q running
+
+echo "=== pip smoke test PASSED ==="
+"""
+
+
+def run_pip_smoke_test(v):
+    section("Phase 4b: pip smoke test (Chainguard Wolfi)")
+    print("  Polling PyPI for RC, then: pip install → tmux session → trustmux start-direct…")
+    run([
+        "docker", "run", "--rm",
+        "-e", f"PYPI_VERSION={v['pypi_version']}",
+        "cgr.dev/chainguard/wolfi-base", "bash", "-c", _PIP_SMOKE_SCRIPT,
+    ])
+    print("  ✓ pip smoke test PASSED")
+
+
+# ── phase 4c: Homebrew smoke test ────────────────────────────────────────
+
+_HOMEBREW_SMOKE_SCRIPT = r"""
+set -e
+apk update -q
+apk add --no-cache brew tmux python3 curl
+
+. /etc/profile.d/brew.sh
+
+echo "--- Waiting for trustmux $PYPI_VERSION on PyPI ---"
+i=0
+while [ $i -lt 24 ]; do
+    i=$((i + 1))
+    PYPI_JSON=$(curl -sf "https://pypi.org/pypi/trustmux/$PYPI_VERSION/json") && break
+    [ $i -eq 24 ] && echo "ERROR: trustmux $PYPI_VERSION not on PyPI after 12 minutes" && exit 1
+    echo "  ($i/24) not ready yet, waiting 30s..."
+    sleep 30
+done
+
+TARBALL_URL=$(printf '%s' "$PYPI_JSON" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+print(next(u['url'] for u in d['urls'] if u['filename'].endswith('.tar.gz')))
+")
+TARBALL_SHA=$(printf '%s' "$PYPI_JSON" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+print(next(u['digests']['sha256'] for u in d['urls'] if u['filename'].endswith('.tar.gz')))
+")
+
+echo "--- Patching formula for $PYPI_VERSION ---"
+cp /formula/trustmux.rb /tmp/trustmux_rc.rb
+sed -i "s|^  url \"https://files\.pythonhosted\.org/[^\"]*\"|  url \"$TARBALL_URL\"|" /tmp/trustmux_rc.rb
+sed -i "s|^  sha256 \"[a-f0-9]*\"|  sha256 \"$TARBALL_SHA\"|" /tmp/trustmux_rc.rb
+sed -i "s|^  version \"[^\"]*\"|  version \"$PYPI_VERSION\"|" /tmp/trustmux_rc.rb
+
+echo "--- Installing via Homebrew ---"
+brew install --formula /tmp/trustmux_rc.rb
+
+echo "--- Starting tmux session ---"
+tmux new-session -d -s smoketest "sleep 300"
+
+echo "--- trustmux start-direct (self-signed HTTPS, no Tailscale) ---"
+trustmux start-direct
+sleep 2
+
+echo "--- Checking daemon status ---"
+trustmux status | grep -q running
+
+echo "=== Homebrew smoke test PASSED ==="
+"""
+
+
+def run_homebrew_smoke_test(v):
+    section("Phase 4c: Homebrew smoke test (Chainguard Wolfi)")
+    formula = BYOBU_SRC / "homebrew/Formula/trustmux.rb"
+    print("  Polling PyPI for RC, patching formula, brew install → tmux session → trustmux start-direct…")
+    run([
+        "docker", "run", "--rm",
+        "-v", f"{formula}:/formula/trustmux.rb:ro",
+        "-e", f"PYPI_VERSION={v['pypi_version']}",
+        "cgr.dev/chainguard/wolfi-base", "bash", "-c", _HOMEBREW_SMOKE_SCRIPT,
+    ])
+    print("  ✓ Homebrew smoke test PASSED")
 
 
 # ── phase 2b: local binary build ─────────────────────────────────────────
@@ -1159,7 +1275,9 @@ def main():
     # would test identical bytes a second time.
     parallel = []
     if mode == "rc" and should_run("4", start_from):
-        parallel.append(("smoke test", run_smoke_test))
+        parallel.append(("smoke test",    run_smoke_test))
+        parallel.append(("pip install",   lambda: run_pip_smoke_test(v)))
+        parallel.append(("brew install",  lambda: run_homebrew_smoke_test(v)))
     if mode == "rc" and should_run("5", start_from):
         parallel.append(("PPA builds", lambda: build_ppa_packages(v, identity)))
     dist = "experimental" if mode == "rc" else "unstable"
