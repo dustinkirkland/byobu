@@ -1,7 +1,6 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Yangfl <mmyangfl@gmail.com>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: byobu\n"
@@ -44,4 +43,4 @@ msgid ""
 msgstr ""
 "如果选择此选项，Byobu 将在 /etc/profile.d 目录下创建一个符号链接。此设置是"
 "系统范围的，适用于所有登录系统的用户。单个用户可以通过创建 ~/.byobu/"
-"disable-autolaunch 文件，或使用"byobu-config"命令来禁用此功能。"
+"disable-autolaunch 文件，或使用 'byobu-config' 命令来禁用此功能。"
