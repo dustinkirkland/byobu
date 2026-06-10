@@ -475,7 +475,7 @@ apt-get update -qq
 apt-get install -y --no-install-recommends \
   build-essential dpkg-dev debhelper dh-python \
   gettext-base automake autoconf \
-  python3 python3-all python3-tornado \
+  python3 python3-all python3-cryptography python3-tornado \
   devscripts bc ca-certificates distro-info 2>&1 | tail -5
 
 WORKDIR=$(mktemp -d)
@@ -517,7 +517,7 @@ apt-get update -qq
 apt-get install -y --no-install-recommends \
   build-essential dpkg-dev debhelper dh-python \
   gettext-base automake autoconf \
-  python3 python3-all python3-tornado \
+  python3 python3-all python3-cryptography python3-tornado \
   devscripts bc ca-certificates 2>&1 | tail -5
 
 cp -a /src /build
@@ -559,7 +559,7 @@ apt-get update -qq
 apt-get install -y --no-install-recommends \
   build-essential dpkg-dev debhelper dh-python \
   gettext-base automake autoconf \
-  python3 python3-all python3-tornado \
+  python3 python3-all python3-cryptography python3-tornado \
   devscripts bc ca-certificates git 2>&1 | tail -5
 
 SRCDIR=$(mktemp -d)
@@ -670,7 +670,7 @@ apt-get update -qq
 apt-get install -y --no-install-recommends \
   build-essential dpkg-dev debhelper dh-python \
   gettext-base automake autoconf \
-  python3 python3-all python3-tornado \
+  python3 python3-all python3-cryptography python3-tornado \
   devscripts bc ca-certificates git 2>&1 | tail -5
 
 SRCDIR=$(mktemp -d)
@@ -731,7 +731,7 @@ apt-get update -qq
 apt-get install -y --no-install-recommends \
   build-essential dpkg-dev debhelper dh-python \
   gettext-base automake autoconf \
-  python3 python3-all python3-tornado \
+  python3 python3-all python3-cryptography python3-tornado \
   devscripts bc ca-certificates git 2>&1 | tail -5
 
 STAGING=$(mktemp -d)
@@ -955,7 +955,7 @@ if [[ "$ans" =~ ^[Yy]$ ]]; then
   dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" \\
     || {{ echo "  ✗ dput failed — package not uploaded."; exit 1; }}
   echo ""
-  echo "  Uploaded. Email Antoine <anarcat@debian.org> with:"
+  echo "  Uploaded. Email Andreas Tille <tille@debian.org> with:"
   echo "    Subject: byobu {v['deb_exp_version']} sponsorship request (experimental)"
   echo "    Body: https://mentors.debian.net/package/byobu"
 else
@@ -1000,7 +1000,7 @@ if [[ "$ans" =~ ^[Yy]$ ]]; then
   dput mentors "$BASE/debian/byobu_{v['deb_exp_version']}_source.changes" \\
     || {{ echo "  ✗ dput failed — package not uploaded."; exit 1; }}
   echo ""
-  echo "  Uploaded. Email Antoine <anarcat@debian.org> with:"
+  echo "  Uploaded. Email Andreas Tille <tille@debian.org> with:"
   echo "    Subject: byobu {v['base_ver']} sponsorship request (unstable)"
   echo "    Body: https://mentors.debian.net/package/byobu"
 else
