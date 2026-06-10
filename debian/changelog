@@ -110,6 +110,71 @@ byobu (7.10) UNRELEASED; urgency=medium
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 08 Jun 2026 07:50:11 -0500
 
+byobu (7.9-1) unstable; urgency=medium
+
+  * Major upstream release series 7.x — complete rewrite targeting tmux as
+    the sole backend (GNU screen support removed). Covers all changes from
+    7.0 through 7.9, first upload of the 7.x series to Debian unstable.
+    Closes: #1138925
+  * usr/share/byobu/profiles/tmuxrc:
+    - fix tmux 3.6 startup syntax errors: replace #{BYOBU_ACCENT} and
+      #{BYOBU_HIGHLIGHT} format strings with $VAR environment-variable
+      expansion; tmux 3.6 no longer accepts #{} in style option values.
+      GH: #105
+  * usr/share/byobu/include/colors:
+    - drop historic \# backslash escape before hex colour values; tmux 3.6
+      explicitly rejects the \#RRGGBB form; plain #RRGGBB is accepted by all
+      supported tmux versions. GH: #105
+  * debian/postinst:
+    - update gnome-terminal server binary path check from the old
+      /usr/lib/gnome-terminal/gnome-terminal-server to the current
+      /usr/libexec/gnome-terminal-server (gnome-terminal 3.34.0+ migration);
+      old path also checked for backward compatibility.
+      Closes: #857223
+  * usr/lib/byobu/disk_io:
+    - fix cache read failure causing incorrect I/O statistics; the Linux
+      path wrote the cache file without a trailing newline, causing POSIX
+      read to always fail and display cumulative totals instead of rates.
+      Closes: #992984
+  * usr/bin/byobu.in:
+    - prefer tmux-256color terminfo over screen-256color when available;
+      screen-256color defines smso=\E[3m (italic escape) causing tmux to
+      render standout as italic rather than reverse video.
+      Closes: #760431
+  * usr/lib/byobu/include/select-session.py:
+    - honour .always-select flag correctly: when ~/.byobu/.always-select
+      exists the session-selection menu always appears, even with zero or
+      one existing session. Closes: #1030283
+  * debian/po/sv.po:
+    - add Swedish debconf template translation from Martin Bagge.
+      Closes: #1071729
+  * debian/po/pt.po:
+    - add complete Portuguese debconf translation from Américo Monteiro;
+      the 2010 Tiago Silva version left two of three msgstr entries empty.
+      Closes: #1107443
+  * debian/po/zh_CN.po, debian/po/zh_TW.po:
+    - add Simplified and Traditional Chinese debconf template translations
+      from Yangfl <mmyangfl@gmail.com>. Closes: #1124414
+  * Close obsolete bugs:
+    - #735178 (tmux starts infinite threads): moreinfo requested in 2015,
+      no response in over ten years; byobu-status substantially hardened.
+    - #772221 (bashism fractional sleep): GNU coreutils sleep supports
+      fractional arguments on all supported architectures; not a concern.
+      Closes: #735178, #772221
+  * debian/control, debian/rules, debian/byobu.install:
+    - fold trustmux mobile companion into the byobu binary package; all
+      trustmux files (daemon, CLI tools, Python library, PWA assets, man
+      pages) installed by the byobu package; daemon does not start
+      automatically — users opt in via trustmux-enable.
+    - add python3-tornado and python3-cryptography to Depends (required
+      at runtime by the trustmux daemon).
+  * debian/control:
+    - update Vcs-Git and Vcs-Browser to Salsa.
+    - update Standards-Version to 4.7.4 (no changes required).
+  * debian/watch: update from Launchpad to GitHub for upstream tarballs.
+
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 09 Jun 2026 12:00:00 -0500
+
 byobu (7.1) experimental; urgency=medium
 
   * Skipped release; version 7.1 RC packages were published to the PPA

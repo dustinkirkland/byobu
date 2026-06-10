@@ -2,12 +2,13 @@ Source: byobu
 Section: misc
 Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
 Uploaders: Antoine Beaupré <anarcat@koumbit.org>
-Standards-Version: 4.7.3
+Standards-Version: 4.7.4
 Dm-Upload-Allowed: yes
 Build-Depends: debhelper-compat (= 13), gettext-base, automake, autoconf, dh-python, python3, python3-tornado, bc
 Homepage: https://byobu.org
 Vcs-Git: https://github.com/dustinkirkland/byobu
-Vcs-Browser: https://github.com/dustinkirkland/byobu
+Vcs-Git: https://salsa.debian.org/debian/byobu.git
+Vcs-Browser: https://salsa.debian.org/debian/byobu
 
 Package: byobu
 Architecture: all
@@ -19,6 +20,7 @@ Depends:
  gettext-base,
  iproute2,
  python3,
+ python3-cryptography,
  python3-newt,
  python3-tornado,
  tmux (>= 1.5),
