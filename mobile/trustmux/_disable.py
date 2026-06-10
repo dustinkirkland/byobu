@@ -1,4 +1,4 @@
-"""trustmux-disable — stop Trustmux daemon and remove login hook."""
+"""trustmux disable — stop Trustmux daemon and remove login hook."""
 import os
 from pathlib import Path
 
@@ -33,7 +33,7 @@ def main() -> None:
     print("Paired device tokens are preserved in ~/.config/trustmux/tokens.json.")
     print()
     print("To re-enable later, run:")
-    print("  trustmux-enable")
+    print("  trustmux enable")
     print()
 
 

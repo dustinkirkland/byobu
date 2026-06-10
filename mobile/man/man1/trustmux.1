@@ -1,30 +1,44 @@
-.TH TRUSTMUX 1 "2026-05-28" "trustmux" "User Commands"
+.TH TRUSTMUX 1 "2026-06-09" "trustmux" "User Commands"
 .SH NAME
 trustmux \- manage the Trustmux daemon
 .SH SYNOPSIS
 .B trustmux
 .I COMMAND
+.RI [ options ]
 .SH DESCRIPTION
 .B trustmux
-starts, stops, and inspects the Trustmux daemon.
+is the single command-line interface for the Trustmux daemon — a lightweight
+server that lets you monitor and interact with your tmux/Byobu sessions from
+a phone browser over your Tailscale network.
+.PP
+All operations are subcommands of
+.BR trustmux :
+initial setup, starting and stopping the daemon, login-hook management, and
+device pairing.
 .SH COMMANDS
+.SS "Daemon lifecycle"
 .TP
 .B setup
-One-time setup: verify Tailscale is installed and connected, then
-configure \fBtailscale serve\fP for HTTPS on port 7432.
+One-time setup: verify Tailscale is installed and connected, then configure
+.B tailscale serve
+for HTTPS on port 7432.
 .TP
 .B start
-Start the daemon in HTTPS mode via \fBtailscale serve\fP (default).
+Start the daemon in HTTPS mode via
+.B tailscale serve
+(default, recommended).
 .TP
 .B start\-local
-Start the daemon bound to 127.0.0.1 only, for access via SSH tunnel.
+Start the daemon bound to 127.0.0.1 only, for access via an SSH port-forward.
+No TLS certificate is generated; the tunnel provides encryption.
 .TP
 .B start\-direct
-Start the daemon with a self-signed TLS certificate, binding on
-all interfaces for LAN access without Tailscale.
+Start the daemon with a self-signed TLS certificate, binding on all interfaces
+for LAN/direct access without Tailscale.
 .TP
 .B stop
 Send SIGTERM to the running daemon.
+Tailscale serve configuration is left in place.
 .TP
 .B restart
 Stop then start the daemon in HTTPS mode.
@@ -35,16 +49,82 @@ Show whether the daemon is running and the URL to connect to.
 .B log
 Tail the daemon log at
 .IR ~/.config/trustmux/trustmux.log .
+.SS "Login hook"
+.TP
+.B enable
+Run first-time setup if needed, start the daemon, and install a hook in the
+user's shell login file
+.RI ( ~/.profile ,
+.IR ~/.bash_profile ,
+or
+.IR ~/.zprofile )
+so the daemon starts automatically on each login.
+.TP
+.B disable
+Stop the running daemon and remove the login hook so the daemon no longer
+starts automatically.
+Paired device tokens are preserved.
+.SS "Device pairing"
+.TP
+.B pair
+Ask the running daemon to generate a one-time 6-digit pairing code (valid for
+5 minutes) and display it along with the URL your phone should open.
+If
+.BR qrencode (1)
+is installed, a QR code is printed for one-scan pairing.
+The screen is cleared on the next keypress to keep the pairing URL out of the
+terminal scroll-back.
+.TP
+.B unpair
+List all currently paired devices (IP address, browser label, and pairing
+time) and offer an interactive menu to remove one or all of them.
+.SH OPTIONS
+.TP
+.B setup \-\-quiet
+Suppress the "Next steps" output after a successful setup.
 .SH FILES
 .TP
 .I ~/.config/trustmux/trustmux.log
 Daemon log file.
 .TP
-.I /tmp/trustmux.pid
-PID file written at startup.
+.I ~/.config/trustmux/trustmux.pid
+PID file written at daemon startup.
+.TP
+.I ~/.config/trustmux/trustmux.sock
+Admin Unix socket used by
+.B pair
+and
+.BR unpair .
+.TP
+.I ~/.config/trustmux/tokens.json
+Paired device session tokens (mode 0600).
+.TP
+.I ~/.config/trustmux/machines.json
+Optional: sibling machine list for the in-app machine selector.
+.SH EXAMPLES
+Typical first-time setup:
+.PP
+.RS
+.nf
+trustmux setup
+trustmux enable
+trustmux pair
+.fi
+.RE
+.PP
+Daily use:
+.PP
+.RS
+.nf
+trustmux status
+trustmux restart
+trustmux log
+.fi
+.RE
 .SH SEE ALSO
 .BR trustmuxd (1),
-.BR trustmux\-pair (1),
-.BR trustmux\-enable (1)
+.BR tailscale (1),
+.BR tmux (1),
+.BR byobu (1)
 .SH AUTHOR
 Dustin Kirkland <kirkland@ubuntu.com>

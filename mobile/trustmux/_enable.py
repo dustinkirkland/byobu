@@ -1,4 +1,4 @@
-"""trustmux-enable — start Trustmux daemon and enable it at login."""
+"""trustmux enable — start Trustmux daemon and enable it at login."""
 import os
 import sys
 from pathlib import Path
@@ -29,7 +29,7 @@ def _install_hook(dest: Path) -> None:
 def main() -> None:
     if cmd_setup(quiet=True) != 0:
         print("\nFirst-time setup did not complete. Fix the issue above, then re-run:")
-        print("  trustmux-enable")
+        print("  trustmux enable")
         sys.exit(1)
 
     for f in _LOGIN_FILES:
@@ -46,13 +46,13 @@ def main() -> None:
 
     if not TOKENS_FILE.exists() or TOKENS_FILE.stat().st_size == 0:
         print("Next step — pair your phone:")
-        print("  trustmux-pair")
+        print("  trustmux pair")
         print()
         print("Open the URL printed above in your phone's browser, enter the code, and tap Pair.")
         print()
 
     print("To stop and disable later, run:")
-    print("  trustmux-disable")
+    print("  trustmux disable")
     print()
 
 

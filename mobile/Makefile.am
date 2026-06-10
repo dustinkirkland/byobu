@@ -40,11 +40,7 @@ dist_trustmuxicons_DATA = \
 
 dist_man1_MANS = \
 	man/man1/trustmux.1 \
-	man/man1/trustmuxd.1 \
-	man/man1/trustmux-pair.1 \
-	man/man1/trustmux-unpair.1 \
-	man/man1/trustmux-enable.1 \
-	man/man1/trustmux-disable.1
+	man/man1/trustmuxd.1
 
 # Generated wrappers — sed-substitute @trustmuxpydir@ at build time so
 # the path resolves to the actual configure --prefix.  Using Make rules
@@ -52,21 +48,17 @@ dist_man1_MANS = \
 # at Make time, not configure time.
 WRAPPERS = \
 	trustmux \
-	trustmuxd \
-	trustmux-pair \
-	trustmux-unpair \
-	trustmux-enable \
-	trustmux-disable
+	trustmuxd
 
 bin_SCRIPTS = $(WRAPPERS:%=%.gen)
+
+bashcompdir = $(datadir)/bash-completion/completions
+dist_bashcomp_DATA = bash-completion/trustmux
 
 EXTRA_DIST = \
 	trustmux.in \
 	trustmuxd.in \
-	trustmux-pair.in \
-	trustmux-unpair.in \
-	trustmux-enable.in \
-	trustmux-disable.in \
+	bash-completion/trustmux \
 	pyproject.toml \
 	requirements.txt \
 	uv.lock \

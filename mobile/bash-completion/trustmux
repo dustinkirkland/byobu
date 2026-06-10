@@ -1,0 +1,22 @@
+# bash completion for trustmux(1)
+_trustmux() {
+    local cur prev words cword
+    _init_completion || return
+
+    local subcommands="setup start start-local start-direct stop restart status log enable disable pair unpair"
+
+    if [[ $cword -eq 1 ]]; then
+        COMPREPLY=($(compgen -W "$subcommands" -- "$cur"))
+        return
+    fi
+
+    case "${words[1]}" in
+        setup)
+            COMPREPLY=($(compgen -W "--quiet" -- "$cur"))
+            ;;
+        start|start-local|start-direct|stop|restart|status|log|enable|disable|pair|unpair)
+            ;;
+    esac
+}
+
+complete -F _trustmux trustmux

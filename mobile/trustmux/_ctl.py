@@ -276,7 +276,7 @@ def cmd_setup(quiet: bool = False) -> int:
     if not quiet:
         print("\nSetup complete. Next steps:\n")
         print("  1. Start the daemon:      trustmux start")
-        print("  2. Generate pairing code: trustmux-pair")
+        print("  2. Generate pairing code: trustmux pair")
         print(f"  3. Open on your phone:    https://{ts_host}")
     return 0
 
@@ -435,6 +435,10 @@ def main() -> None:
     sub.add_parser("restart",      help="Restart daemon")
     sub.add_parser("status",       help="Show running status and URL")
     sub.add_parser("log",          help="Tail the log file")
+    sub.add_parser("enable",       help="Start daemon and install login hook for automatic start")
+    sub.add_parser("disable",      help="Stop daemon and remove login hook")
+    sub.add_parser("pair",         help="Generate a one-time pairing code for a new device")
+    sub.add_parser("unpair",       help="List paired devices and revoke tokens")
 
     args = parser.parse_args()
     if not args.cmd:
@@ -460,6 +464,18 @@ def main() -> None:
         sys.exit(cmd_status())
     elif cmd == "log":
         sys.exit(cmd_log())
+    elif cmd == "enable":
+        from trustmux._enable import main as _run_enable
+        _run_enable()
+    elif cmd == "disable":
+        from trustmux._disable import main as _run_disable
+        _run_disable()
+    elif cmd == "pair":
+        from trustmux._pair import main as _run_pair
+        _run_pair()
+    elif cmd == "unpair":
+        from trustmux._unpair import main as _run_unpair
+        _run_unpair()
 
 
 if __name__ == "__main__":

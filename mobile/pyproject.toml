@@ -26,12 +26,8 @@ Repository = "https://github.com/dustinkirkland/byobu"
 Issues = "https://github.com/dustinkirkland/byobu/issues"
 
 [project.scripts]
-trustmux         = "trustmux._ctl:main"
-trustmuxd        = "trustmux._daemon:main"
-trustmux-pair    = "trustmux._pair:main"
-trustmux-unpair  = "trustmux._unpair:main"
-trustmux-enable  = "trustmux._enable:main"
-trustmux-disable = "trustmux._disable:main"
+trustmux  = "trustmux._ctl:main"
+trustmuxd = "trustmux._daemon:main"
 
 [tool.setuptools.packages.find]
 where = ["."]

@@ -25,16 +25,16 @@ Two tiers:
 ```bash
 brew tap dustinkirkland/trustmux
 brew install trustmux
-trustmux-enable    # configure tailscale serve + start daemon
-trustmux-pair      # generate pairing code; enter on phone
+trustmux enable    # configure tailscale serve + start daemon
+trustmux pair      # generate pairing code; enter on phone
 ```
 
 ### pip (PyPI)
 
 ```bash
 pip install trustmux
-trustmux-enable
-trustmux-pair
+trustmux enable
+trustmux pair
 ```
 
 ### Debian / Ubuntu (.deb)
@@ -43,8 +43,8 @@ Trustmux is bundled with byobu — installing byobu brings trustmux along:
 
 ```bash
 sudo apt install byobu
-trustmux-enable
-trustmux-pair
+trustmux enable
+trustmux pair
 ```
 
 Or with the PPA for the latest release:
@@ -52,8 +52,8 @@ Or with the PPA for the latest release:
 ```bash
 sudo add-apt-repository ppa:dustinkirkland/byobu
 sudo apt install byobu
-trustmux-enable
-trustmux-pair
+trustmux enable
+trustmux pair
 ```
 
 ---
@@ -67,8 +67,8 @@ trustmux restart    # restart daemon
 trustmux status     # show URL and running status
 trustmux log        # tail the daemon log
 
-trustmux-pair           # generate a pairing code for a new device
-trustmux-unpair         # list paired devices and remove them
+trustmux pair           # generate a pairing code for a new device
+trustmux unpair         # list paired devices and remove them
 ```
 
 ---
@@ -79,8 +79,8 @@ trustmux-unpair         # list paired devices and remove them
 cd mobile/
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-./trustmux-enable
-./trustmux-pair
+trustmux enable
+trustmux pair
 ```
 
 ---
@@ -132,4 +132,4 @@ python3 -m unittest tests.test_daemon -v
 
 **Phone can't reach URL** — ensure Tailscale is active on the phone
 
-**Need to re-pair** — run `trustmux-pair` and enter the new code on the device
+**Need to re-pair** — run `trustmux pair` and enter the new code on the device
