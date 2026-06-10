@@ -19,6 +19,32 @@ PIDFILE    = CONFIG_DIR / "trustmux.pid"
 TOKENS_FILE = CONFIG_DIR / "tokens.json"
 
 
+def _check_tmux() -> bool:
+    """Hard-error if tmux is absent; warn if no sessions exist. Returns False on hard error."""
+    if not shutil.which("tmux") and not shutil.which("byobu"):
+        print("", file=sys.stderr)
+        print("Error: tmux is not installed — trustmux requires tmux to attach to sessions.", file=sys.stderr)
+        print("  Install tmux:  https://github.com/tmux/tmux/wiki/Installing", file=sys.stderr)
+        print("  Install Byobu: https://byobu.org", file=sys.stderr)
+        print("", file=sys.stderr)
+        return False
+    try:
+        out = subprocess.check_output(
+            ["tmux", "list-sessions", "-F", "#{session_name}"],
+            stderr=subprocess.DEVNULL, text=True, timeout=3,
+        ).strip()
+        sessions = [s for s in out.splitlines() if s]
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        sessions = []
+    if not sessions:
+        print("", file=sys.stderr)
+        print("Warning: no tmux sessions found — trustmux will start but has nothing to attach to.", file=sys.stderr)
+        print("  Start a session first:  tmux new-session", file=sys.stderr)
+        print("  Or launch Byobu:        byobu", file=sys.stderr)
+        print("", file=sys.stderr)
+    return True
+
+
 def _check_tls() -> bool:
     """Return True if TLS cert generation is available, False (with message) if not."""
     try:
@@ -262,6 +288,8 @@ def cmd_start(mode: str = "serve") -> int:
         return 1
 
     if mode == "serve":
+        if not _check_tmux():
+            return 1
         if not _check_tls():
             return 1
         try:
@@ -296,6 +324,8 @@ def cmd_start(mode: str = "serve") -> int:
             print(f"Then open: http://localhost:{PORT}")
 
     elif mode == "start-direct":
+        if not _check_tmux():
+            return 1
         if not _check_tls():
             return 1
         print("Starting trustmux (direct HTTPS — self-signed cert)...")
@@ -400,7 +430,7 @@ def main() -> None:
     sub.add_parser("start",        help="Start daemon via tailscale serve (HTTPS — default)")
     sub.add_parser("serve",        help=argparse.SUPPRESS)   # alias
     sub.add_parser("start-local",  help="Start daemon loopback-only for SSH tunnel access")
-    sub.add_parser("start-direct", help="Start daemon direct to Tailscale IP (HTTP — dev only)")
+    sub.add_parser("start-direct", help="Start daemon direct HTTPS (self-signed cert, no Tailscale)")
     sub.add_parser("stop",         help="Stop daemon (tailscale serve config persists)")
     sub.add_parser("restart",      help="Restart daemon")
     sub.add_parser("status",       help="Show running status and URL")
@@ -410,12 +440,6 @@ def main() -> None:
     if not args.cmd:
         parser.print_help()
         sys.exit(1)
-
-    if not shutil.which("tmux"):
-        print("Warning: tmux not found in PATH — tmux (or Byobu) must be installed and running.",
-              file=sys.stderr)
-        print("Install tmux:  https://github.com/tmux/tmux/wiki/Installing", file=sys.stderr)
-        print("Install Byobu: https://byobu.org", file=sys.stderr)
 
     cmd = args.cmd
     if cmd == "setup":
