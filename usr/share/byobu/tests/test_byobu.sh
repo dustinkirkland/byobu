@@ -631,18 +631,20 @@ unset _panes _wins _fkeys
 
 # ---------------------------------------------------------------------------
 # Section 31 — LP: #1921752  F8 ESC aborts rename (no empty rename-window)
+# Note: the if-shell guard was dropped in tmux 3.6 (GH: #107) because
+# %% substitution no longer propagates into if-shell branch strings, and
+# tmux 3.4+ already cancels command-prompt on ESC without running the command.
 # ---------------------------------------------------------------------------
 
 _fkeys="$BYOBU_PREFIX/share/byobu/keybindings/f-keys.tmux"
-# F8 must use if-shell to guard against empty input
-assert_true "F8 rename uses if-shell guard" \
+# F8/C-F8 use command-prompt with direct %% substitution (no if-shell wrapper)
+assert_true "F8 rename uses command-prompt with %% substitution" \
+	"grep -qE 'bind-key -n F8 command-prompt.*%%' '$_fkeys'"
+assert_true "C-F8 rename uses command-prompt with %% substitution" \
+	"grep -qE 'bind-key -n C-F8 command-prompt.*%%' '$_fkeys'"
+# Must NOT use if-shell (broken in tmux 3.6 for command-prompt substitution)
+assert_false "F8 rename does not use broken if-shell guard" \
 	"grep -qE 'bind-key -n F8.*if-shell' '$_fkeys'"
-# C-F8 same
-assert_true "C-F8 rename uses if-shell guard" \
-	"grep -qE 'bind-key -n C-F8.*if-shell' '$_fkeys'"
-# The guard must check for non-empty string ([ -n "%%"] pattern)
-assert_true "F8 guard checks non-empty input" \
-	"grep -qE 'bind-key -n F8.*-n.*%%' '$_fkeys'"
 unset _fkeys
 
 # ---------------------------------------------------------------------------
