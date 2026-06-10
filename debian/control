@@ -1,8 +1,7 @@
 Source: byobu
 Section: misc
 Maintainer: Dustin Kirkland <kirkland@ubuntu.com>
-Uploaders: Antoine Beaupré <anarcat@koumbit.org>,
-           Andreas Tille <tille@debian.org>
+Uploaders: Andreas Tille <tille@debian.org>
 Standards-Version: 4.7.4
 Build-Depends: debhelper-compat (= 13), gettext-base, automake, autoconf, dh-sequence-python3, python3, bc
 Homepage: https://www.byobu.org
