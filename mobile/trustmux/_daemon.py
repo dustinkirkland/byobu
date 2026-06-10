@@ -1087,6 +1087,13 @@ def _make_app() -> tornado.web.Application:
 def _ensure_self_signed_cert(lan_ip: str) -> tuple:
     """Generate a self-signed TLS cert for lan_ip. Returns (cert_path, ssl_ctx)."""
     import ssl as _ssl
+    import ipaddress as _ipaddress
+    import datetime as _datetime
+    from cryptography import x509 as _x509
+    from cryptography.x509.oid import NameOID as _NameOID
+    from cryptography.hazmat.primitives import hashes as _hashes, serialization as _ser
+    from cryptography.hazmat.primitives.asymmetric import ec as _ec
+
     cert = CONFIG_DIR / "cert.pem"
     key  = CONFIG_DIR / "key.pem"
     CONFIG_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -1100,20 +1107,39 @@ def _ensure_self_signed_cert(lan_ip: str) -> tuple:
     ts_ip = _tailscale_ip()
     if ts_ip and ts_ip != lan_ip:
         san_parts.append(f"IP:{ts_ip}")
-    san = ",".join(san_parts)
     try:
-        subprocess.run([
-            "openssl", "req", "-x509",
-            "-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:P-256",
-            "-keyout", str(key), "-out", str(cert),
-            "-days", "3650", "-nodes",
-            "-subj", "/CN=trustmux",
-            "-addext", f"subjectAltName={san}",
-        ], check=True, capture_output=True)
+        private_key = _ec.generate_private_key(_ec.SECP256R1())
+        san_list = []
+        for part in san_parts:
+            if part.startswith("IP:"):
+                san_list.append(_x509.IPAddress(_ipaddress.ip_address(part[3:])))
+            elif part.startswith("DNS:"):
+                san_list.append(_x509.DNSName(part[4:]))
+        subject = issuer = _x509.Name([
+            _x509.NameAttribute(_NameOID.COMMON_NAME, "trustmux"),
+        ])
+        now = _datetime.datetime.now(_datetime.timezone.utc)
+        cert_obj = (
+            _x509.CertificateBuilder()
+            .subject_name(subject)
+            .issuer_name(issuer)
+            .public_key(private_key.public_key())
+            .serial_number(_x509.random_serial_number())
+            .not_valid_before(now)
+            .not_valid_after(now + _datetime.timedelta(days=3650))
+            .add_extension(_x509.SubjectAlternativeName(san_list), critical=False)
+            .sign(private_key, _hashes.SHA256())
+        )
+        key.write_bytes(private_key.private_bytes(
+            encoding=_ser.Encoding.PEM,
+            format=_ser.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=_ser.NoEncryption(),
+        ))
+        cert.write_bytes(cert_obj.public_bytes(_ser.Encoding.PEM))
         cert.chmod(0o644)
         key.chmod(0o600)
-    except (FileNotFoundError, subprocess.CalledProcessError) as e:
-        print(f"Warning: openssl failed ({e}); falling back to plain HTTP", flush=True)
+    except Exception as e:
+        print(f"Warning: TLS cert generation failed ({e}); falling back to plain HTTP", flush=True)
         return None, None
     ctx = _ssl.SSLContext(_ssl.PROTOCOL_TLS_SERVER)
     ctx.minimum_version = _ssl.TLSVersion.TLSv1_2
