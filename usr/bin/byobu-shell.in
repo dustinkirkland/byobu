@@ -41,15 +41,15 @@ if [ ! -e "$FLAG" ]; then
 	touch "$FLAG"
 fi
 
-# This needs to be a -l login shell, in order to source profiles
-# and colorize the prompt
-# However, fish shell has issues with -l in byobu autostart context (LP#2064030)
-# Fish uses "status --is-login" to detect if it should run autostart, which would
-# create an infinite loop if we launch it with -l
+# Use a login shell (-l) so that profiles are sourced and PS1 is colourised.
+# Exceptions:
+#   fish  - "status --is-login" triggers autostart, causing an infinite loop (LP#2064030)
+#   zsh   - .zshrc commonly guards against login context with [[ -o login ]] && return,
+#           which silently skips interactive config; drop -l so the first window matches
+#           default-command 'exec $SHELL' used for all subsequent windows (GH: #104)
 if [ -n "$SHELL" ] && [ -x "$SHELL" ]; then
 	case "$SHELL" in
-		*/fish)
-			# For fish, don't use -l to avoid autostart loop
+		*/fish|*/zsh)
 			exec "$SHELL"
 			;;
 		*)
