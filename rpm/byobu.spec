@@ -21,6 +21,7 @@ BuildRequires:	desktop-file-utils
 BuildRequires:	make
 BuildRequires:	gettext
 BuildRequires:	python3-devel
+Requires:	bc
 Requires:	gettext-runtime
 Requires:	newt
 Requires:	openssl
