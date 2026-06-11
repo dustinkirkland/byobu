@@ -1204,11 +1204,16 @@ def update_homebrew(v, tap_dir):
 
     run(["git", "-C", str(tap_dir), "pull", "--ff-only"])
     run(["git", "-C", str(tap_dir), "add", "Formula/trustmux.rb"])
-    run(["git", "-C", str(tap_dir), "commit", "-m", f"trustmux: update to {v['pypi_version']}"])
-    try:
-        run(["git", "-C", str(tap_dir), "push", "origin", "main"])
-    except subprocess.CalledProcessError:
-        run(["git", "-C", str(tap_dir), "push", "origin", "master"])
+    dirty = run(["git", "-C", str(tap_dir), "diff", "--cached", "--quiet"],
+                check=False)
+    if dirty.returncode == 0:
+        print("  (formula already up to date — nothing to commit)")
+    else:
+        run(["git", "-C", str(tap_dir), "commit", "-m", f"trustmux: update to {v['pypi_version']}"])
+        try:
+            run(["git", "-C", str(tap_dir), "push", "origin", "main"])
+        except subprocess.CalledProcessError:
+            run(["git", "-C", str(tap_dir), "push", "origin", "master"])
 
     print("  ✓ Homebrew trustmux formula updated and pushed")
     print("    brew upgrade dustinkirkland/trustmux/trustmux")
@@ -1258,11 +1263,16 @@ def update_homebrew_byobu(v, tap_dir):
 
     run(["git", "-C", str(tap_dir), "pull", "--ff-only"])
     run(["git", "-C", str(tap_dir), "add", "Formula/byobu.rb"])
-    run(["git", "-C", str(tap_dir), "commit", "-m", f"byobu: update to {v['base_ver']}"])
-    try:
-        run(["git", "-C", str(tap_dir), "push", "origin", "main"])
-    except subprocess.CalledProcessError:
-        run(["git", "-C", str(tap_dir), "push", "origin", "master"])
+    dirty = run(["git", "-C", str(tap_dir), "diff", "--cached", "--quiet"],
+                check=False)
+    if dirty.returncode == 0:
+        print("  (formula already up to date — nothing to commit)")
+    else:
+        run(["git", "-C", str(tap_dir), "commit", "-m", f"byobu: update to {v['base_ver']}"])
+        try:
+            run(["git", "-C", str(tap_dir), "push", "origin", "main"])
+        except subprocess.CalledProcessError:
+            run(["git", "-C", str(tap_dir), "push", "origin", "master"])
 
     print(f"  ✓ Homebrew byobu formula updated and pushed")
     print(f"    brew upgrade dustinkirkland/byobu/byobu")
