@@ -335,12 +335,13 @@ def determine_versions(mode, resume=False):
         )
     print(f"  HEAD: {head_msg[:60]}")
 
-    # Canonical base version from debian/changelog
+    # Canonical base version from debian/changelog.
+    # Strip Debian revision (-N) if present: "7.12-1" → "7.12".
     changelog_line = (BYOBU_SRC / "debian/changelog").read_text().splitlines()[0]
     m = re.search(r"\(([^)~]+)", changelog_line)
     if not m:
         die(f"Cannot parse base version from: {changelog_line}")
-    base_ver = m.group(1).strip()
+    base_ver = re.sub(r"-\d+$", "", m.group(1).strip())
     pkg = changelog_line.split()[0]
     print(f"  Package:      {pkg}")
     print(f"  Base version: {base_ver}")
@@ -361,7 +362,7 @@ def determine_versions(mode, resume=False):
         pypi_version = f"{base_ver}rc{rc_num}"
         # 0-prefix: 7.1~0rc1~noble1 < 7.1~noble1 in dpkg ordering
         ppa_base = f"{base_ver}~0rc{rc_num}"
-        deb_exp_version = ppa_base
+        deb_exp_version = f"{base_ver}~0rc{rc_num}-1"
         ubuntu_ver = None
         print(f"  RC:           {rc_num}  →  trustmux-v{pypi_version}")
         print(f"  PPA base:     {ppa_base}~{{series}}1")
@@ -369,7 +370,7 @@ def determine_versions(mode, resume=False):
     else:
         pypi_version = base_ver
         ppa_base = base_ver
-        deb_exp_version = base_ver
+        deb_exp_version = f"{base_ver}-1"
         ubuntu_ver = f"{base_ver}-0ubuntu1"
         print(f"  PyPI version: {pypi_version}")
         print(f"  PPA base:     {ppa_base}~{{series}}1")
@@ -1017,21 +1018,27 @@ apt-get install -y --no-install-recommends \
   python3 python3-all python3-cryptography python3-tornado \
   devscripts bc ca-certificates git 2>&1 | tail -5
 
-SRCDIR=$(mktemp -d)
 git config --global --add safe.directory /src
-git -C /src archive --format=tar HEAD | tar -x -C "$SRCDIR" -f -
 
 BUILDDIR=$(mktemp -d)
-cp -a "$SRCDIR" "$BUILDDIR/${PKG}-${DEB_EXP_VERSION}"
-cd "$BUILDDIR/${PKG}-${DEB_EXP_VERSION}"
 
-echo "3.0 (native)" > debian/source/format
+# 3.0 (quilt): orig tarball uses upstream version (BASE_VER, no Debian suffix)
+git -C /src archive --format=tar.gz --prefix="${PKG}-${BASE_VER}/" HEAD \
+  -o "$BUILDDIR/${PKG}_${BASE_VER}.orig.tar.gz"
 
-# Set versioned entry; change UNRELEASED → target distribution
+mkdir "$BUILDDIR/${PKG}-${BASE_VER}"
+tar -xzf "$BUILDDIR/${PKG}_${BASE_VER}.orig.tar.gz" \
+    -C "$BUILDDIR/${PKG}-${BASE_VER}" --strip-components=1
+
+cd "$BUILDDIR/${PKG}-${BASE_VER}"
+
+echo "3.0 (quilt)" > debian/source/format
+
+# DEB_EXP_VERSION carries the full Debian version (e.g. 7.12-1 or 7.12~0rc1-1)
 sed -i "1s/^${PKG} ([^)]*)/${PKG} (${DEB_EXP_VERSION})/" debian/changelog
 sed -i "1s/) UNRELEASED;/) ${DEB_DIST};/" debian/changelog
 
-dpkg-buildpackage -S -us -uc -d 2>&1 | tail -3
+dpkg-buildpackage -S -us -uc -d -sa 2>&1 | tail -3
 
 cp -v "$BUILDDIR"/*.changes "$BUILDDIR"/*.dsc \
       "$BUILDDIR"/*.tar.* "$BUILDDIR"/*.buildinfo /out/ 2>/dev/null || true
@@ -1653,7 +1660,7 @@ def open_dev(identity):
            "DEBEMAIL": identity["DEBEMAIL"],
            "DEBFULLNAME": identity["DEBFULLNAME"]}
     run(
-        ["dch", "--newversion", next_ver,
+        ["dch", "--newversion", f"{next_ver}-1",
          "--distribution", "UNRELEASED", "--urgency", "medium",
          f"Open {next_ver} for development"],
         cwd=str(BYOBU_SRC), env=env,

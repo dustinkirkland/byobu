@@ -1,4 +1,4 @@
-byobu (7.12) UNRELEASED; urgency=medium
+byobu (7.12-1) UNRELEASED; urgency=medium
 
   * mobile/trustmux/static/app.js, mobile/trustmux/static/index.html:
     - add optional biometric/PIN re-authentication lock to the Trustmux PWA;
