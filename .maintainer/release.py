@@ -216,7 +216,7 @@ def section(msg):
 # ── phase resumption ──────────────────────────────────────────────────────
 
 # Canonical phase order (6b is an alias for 5b; 6e is Fedora RPM, runs with 5b/6c)
-_PHASE_ORDER = ["3", "4", "5", "5b", "6c", "6e", "6d", "6", "7", "8"]
+_PHASE_ORDER = ["3", "4", "5", "5b", "6c", "6e", "6", "6d", "7", "8"]
 
 def _phase_idx(phase):
     if phase == "6b":
@@ -1526,7 +1526,7 @@ def main():
         choices=_PHASE_ORDER + ["6b"],
         help=(
             "Resume from this phase, reusing the existing /tmp/byobu-release-* dir. "
-            "Phases: 3 4 5 5b(=6b) 6c 6e 6d 6 7 8"
+            "Phases: 3 4 5 5b(=6b) 6c 6e 6 6d 7 8"
         ),
     )
     parser.add_argument(
