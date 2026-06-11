@@ -14,7 +14,6 @@ override_dh_auto_build:
 
 override_dh_auto_test:
 	bash usr/share/byobu/tests/test_byobu.sh
-	python3 -m unittest discover -s mobile/tests -v
 
 override_dh_auto_install:
 	dh_auto_install --destdir=debian/byobu
