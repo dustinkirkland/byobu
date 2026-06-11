@@ -1284,32 +1284,49 @@ def create_github_release(v, mode):
     section("Phase 6: GitHub release" if mode == "rc" else "Phase 7: GitHub release")
     tag = f"trustmux-v{v['pypi_version']}"
 
-    if mode == "rc":
-        run([
-            "gh", "release", "create", tag,
-            "--repo", "dustinkirkland/byobu",
-            "--title", f"Trustmux {v['pypi_version']} (RC)",
-            "--prerelease",
-            "--notes",
-            f"Release candidate.\n\n"
-            f"pip install trustmux=={v['pypi_version']}\n"
-            f"PPA: ppa:byobu/ppa  ({v['ppa_base']}~{{series}}1)",
-        ])
-    else:
-        run([
-            "gh", "release", "create", tag,
-            "--repo", "dustinkirkland/byobu",
-            "--title", f"Trustmux {v['pypi_version']}",
-            "--notes", f"byobu {v['base_ver']} / trustmux {v['pypi_version']}",
-        ])
-        run([
-            "gh", "release", "create", v["base_ver"],
-            "--repo", "dustinkirkland/byobu",
-            "--title", f"byobu {v['base_ver']}",
-            "--notes", f"byobu {v['base_ver']} / trustmux {v['pypi_version']}",
-        ])
+    def _release_exists(release_tag):
+        result = run(
+            ["gh", "release", "view", release_tag, "--repo", "dustinkirkland/byobu"],
+            check=False,
+        )
+        return result.returncode == 0
 
-    print("  ✓ GitHub release created")
+    if mode == "rc":
+        if _release_exists(tag):
+            print(f"  (release {tag} already exists — skipping)")
+        else:
+            run([
+                "gh", "release", "create", tag,
+                "--repo", "dustinkirkland/byobu",
+                "--title", f"Trustmux {v['pypi_version']} (RC)",
+                "--prerelease",
+                "--notes",
+                f"Release candidate.\n\n"
+                f"pip install trustmux=={v['pypi_version']}\n"
+                f"PPA: ppa:byobu/ppa  ({v['ppa_base']}~{{series}}1)",
+            ])
+    else:
+        if _release_exists(tag):
+            print(f"  (release {tag} already exists — skipping)")
+        else:
+            run([
+                "gh", "release", "create", tag,
+                "--repo", "dustinkirkland/byobu",
+                "--title", f"Trustmux {v['pypi_version']}",
+                "--notes", f"byobu {v['base_ver']} / trustmux {v['pypi_version']}",
+            ])
+        byobu_tag = v["base_ver"]
+        if _release_exists(byobu_tag):
+            print(f"  (release {byobu_tag} already exists — skipping)")
+        else:
+            run([
+                "gh", "release", "create", byobu_tag,
+                "--repo", "dustinkirkland/byobu",
+                "--title", f"byobu {v['base_ver']}",
+                "--notes", f"byobu {v['base_ver']} / trustmux {v['pypi_version']}",
+            ])
+
+    print("  ✓ GitHub release done")
 
 
 # ── sign and upload ───────────────────────────────────────────────────────
