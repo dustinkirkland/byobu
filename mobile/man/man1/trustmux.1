@@ -68,7 +68,7 @@ Paired device tokens are preserved.
 .TP
 .B pair
 Ask the running daemon to generate a one-time 6-digit pairing code (valid for
-5 minutes) and display it along with the URL your phone should open.
+3 minutes) and display it along with the URL your phone should open.
 If
 .BR qrencode (1)
 is installed, a QR code is printed for one-scan pairing.
@@ -121,6 +121,47 @@ trustmux restart
 trustmux log
 .fi
 .RE
+.SH SECURITY
+.SS "Pairing code"
+The one-time pairing code is a 6-digit decimal value drawn from
+.BR secrets.randbelow (1,000,000),
+giving 1,000,000 possible values.
+The code is valid for 3 minutes.
+After three incorrect guesses the code is immediately invalidated and a new one
+must be generated with
+.BR "trustmux pair" .
+The hard 3-attempt lockout makes brute-force infeasible: an attacker has a
+0.0003% chance of success per pairing window, and each new window requires
+the machine owner to run
+.B trustmux pair
+again.
+An incorrect guess also incurs a 0.5-second artificial delay.
+.SS "Session tokens"
+After a successful pairing the daemon issues a 256-bit URL-safe session token
+.RB ( secrets.token_urlsafe (32))
+stored in
+.I ~/.config/trustmux/tokens.json
+(mode 0600) and delivered to the browser as an
+.BR httponly ,
+.B SameSite=Strict
+cookie.
+Tokens are validated with a constant-time comparison to prevent timing attacks.
+Sessions expire after 90 days of inactivity and can be revoked at any time with
+.BR "trustmux unpair" .
+.SS "Network exposure"
+In the default
+.B start
+mode the daemon binds only to the Tailscale IP (100.x.x.x), so the pairing
+endpoint is unreachable from the public internet or from other local-network
+devices.
+In
+.B start\-direct
+mode the daemon binds on all interfaces; the pairing-code and session-token
+protections above remain in force, but the network attack surface is broader.
+In
+.B start\-local
+mode the daemon binds to 127.0.0.1 only and is accessible solely through an
+explicit SSH port-forward.
 .SH SEE ALSO
 .BR trustmuxd (1),
 .BR tailscale (1),
