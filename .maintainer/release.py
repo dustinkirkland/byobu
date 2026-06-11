@@ -1287,6 +1287,56 @@ def update_homebrew_byobu(v, tap_dir):
 
 # ── github release ────────────────────────────────────────────────────────
 
+def _build_release_notes(v):
+    """Return markdown release notes built from git log since the previous final tag."""
+    base_ver = v["base_ver"]
+    parts = base_ver.split(".", 1)
+    if len(parts) != 2 or not parts[1].isdigit():
+        return f"byobu {base_ver} / trustmux {v['pypi_version']}"
+
+    prev_ver = f"{parts[0]}.{int(parts[1]) - 1}"
+
+    # Find previous final tag — prefer trustmux-v{prev} over plain {prev}
+    prev_tag = None
+    for candidate in [f"trustmux-v{prev_ver}", prev_ver]:
+        r = subprocess.run(
+            ["git", "-C", str(BYOBU_SRC), "rev-parse", "--verify", candidate],
+            capture_output=True, text=True,
+        )
+        if r.returncode == 0:
+            prev_tag = candidate
+            break
+
+    if prev_tag is None:
+        return f"byobu {base_ver} / trustmux {v['pypi_version']}"
+
+    until_tag = f"trustmux-v{v['pypi_version']}"
+    r = subprocess.run(
+        ["git", "-C", str(BYOBU_SRC), "log", "--oneline", f"{prev_tag}..{until_tag}"],
+        capture_output=True, text=True, check=True,
+    )
+
+    subjects = []
+    for line in r.stdout.strip().splitlines():
+        parts = line.split(None, 1)
+        if len(parts) < 2:
+            continue
+        subject = parts[1]
+        if subject.startswith("bump version to "):
+            continue
+        subjects.append(subject)
+
+    if not subjects:
+        return f"byobu {base_ver} / trustmux {v['pypi_version']}"
+
+    bullets = "\n".join(f"- {s}" for s in subjects)
+    return (
+        f"## byobu {base_ver} / trustmux {v['pypi_version']}\n\n"
+        f"Changes since {prev_tag}:\n\n"
+        f"{bullets}\n"
+    )
+
+
 def create_github_release(v, mode):
     section("Phase 6: GitHub release" if mode == "rc" else "Phase 7: GitHub release")
     tag = f"trustmux-v{v['pypi_version']}"
@@ -1299,6 +1349,11 @@ def create_github_release(v, mode):
         return result.returncode == 0
 
     if mode == "rc":
+        notes = (
+            f"Release candidate.\n\n"
+            f"pip install trustmux=={v['pypi_version']}\n"
+            f"PPA: ppa:byobu/ppa  ({v['ppa_base']}~{{series}}1)"
+        )
         if _release_exists(tag):
             print(f"  (release {tag} already exists — skipping)")
         else:
@@ -1307,30 +1362,43 @@ def create_github_release(v, mode):
                 "--repo", "dustinkirkland/byobu",
                 "--title", f"Trustmux {v['pypi_version']} (RC)",
                 "--prerelease",
-                "--notes",
-                f"Release candidate.\n\n"
-                f"pip install trustmux=={v['pypi_version']}\n"
-                f"PPA: ppa:byobu/ppa  ({v['ppa_base']}~{{series}}1)",
+                "--notes", notes,
             ])
     else:
+        notes = _build_release_notes(v)
+        print(f"  Release notes preview:\n")
+        for line in notes.splitlines():
+            print(f"    {line}")
+        print()
+
         if _release_exists(tag):
-            print(f"  (release {tag} already exists — skipping)")
+            print(f"  (release {tag} already exists — updating notes)")
+            run([
+                "gh", "release", "edit", tag,
+                "--repo", "dustinkirkland/byobu",
+                "--notes", notes,
+            ])
         else:
             run([
                 "gh", "release", "create", tag,
                 "--repo", "dustinkirkland/byobu",
                 "--title", f"Trustmux {v['pypi_version']}",
-                "--notes", f"byobu {v['base_ver']} / trustmux {v['pypi_version']}",
+                "--notes", notes,
             ])
         byobu_tag = v["base_ver"]
         if _release_exists(byobu_tag):
-            print(f"  (release {byobu_tag} already exists — skipping)")
+            print(f"  (release {byobu_tag} already exists — updating notes)")
+            run([
+                "gh", "release", "edit", byobu_tag,
+                "--repo", "dustinkirkland/byobu",
+                "--notes", notes,
+            ])
         else:
             run([
                 "gh", "release", "create", byobu_tag,
                 "--repo", "dustinkirkland/byobu",
                 "--title", f"byobu {v['base_ver']}",
-                "--notes", f"byobu {v['base_ver']} / trustmux {v['pypi_version']}",
+                "--notes", notes,
             ])
 
     print("  ✓ GitHub release done")
