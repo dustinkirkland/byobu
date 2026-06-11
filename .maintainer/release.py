@@ -1017,21 +1017,27 @@ apt-get install -y --no-install-recommends \
   python3 python3-all python3-cryptography python3-tornado \
   devscripts bc ca-certificates git 2>&1 | tail -5
 
-SRCDIR=$(mktemp -d)
 git config --global --add safe.directory /src
-git -C /src archive --format=tar HEAD | tar -x -C "$SRCDIR" -f -
 
 BUILDDIR=$(mktemp -d)
-cp -a "$SRCDIR" "$BUILDDIR/${PKG}-${DEB_EXP_VERSION}"
-cd "$BUILDDIR/${PKG}-${DEB_EXP_VERSION}"
 
-echo "3.0 (native)" > debian/source/format
+# 3.0 (quilt): create orig tarball from the upstream tree (BASE_VER, no Debian suffix)
+git -C /src archive --format=tar.gz --prefix="${PKG}-${BASE_VER}/" HEAD \
+  -o "$BUILDDIR/${PKG}_${BASE_VER}.orig.tar.gz"
+
+mkdir "$BUILDDIR/${PKG}-${BASE_VER}"
+tar -xzf "$BUILDDIR/${PKG}_${BASE_VER}.orig.tar.gz" \
+    -C "$BUILDDIR/${PKG}-${BASE_VER}" --strip-components=1
+
+cd "$BUILDDIR/${PKG}-${BASE_VER}"
+
+echo "3.0 (quilt)" > debian/source/format
 
 # Set versioned entry; change UNRELEASED → target distribution
 sed -i "1s/^${PKG} ([^)]*)/${PKG} (${DEB_EXP_VERSION})/" debian/changelog
 sed -i "1s/) UNRELEASED;/) ${DEB_DIST};/" debian/changelog
 
-dpkg-buildpackage -S -us -uc -d 2>&1 | tail -3
+dpkg-buildpackage -S -us -uc -d -sa 2>&1 | tail -3
 
 cp -v "$BUILDDIR"/*.changes "$BUILDDIR"/*.dsc \
       "$BUILDDIR"/*.tar.* "$BUILDDIR"/*.buildinfo /out/ 2>/dev/null || true
