@@ -1024,15 +1024,19 @@ git config --global --add safe.directory /src
 
 BUILDDIR=$(mktemp -d)
 
-# 3.0 (quilt): orig tarball uses upstream version (BASE_VER, no Debian suffix)
-git -C /src archive --format=tar.gz --prefix="${PKG}-${BASE_VER}/" HEAD \
-  -o "$BUILDDIR/${PKG}_${BASE_VER}.orig.tar.gz"
+# 3.0 (quilt): orig tarball must match the upstream portion of DEB_EXP_VERSION.
+# For a final release (7.12-1) that equals BASE_VER; for an RC (7.12~0rc1-1)
+# dpkg-source expects byobu_7.12~0rc1.orig.tar.gz, not byobu_7.12.orig.tar.gz.
+UPSTREAM_VER="${DEB_EXP_VERSION%-*}"
 
-mkdir "$BUILDDIR/${PKG}-${BASE_VER}"
-tar -xzf "$BUILDDIR/${PKG}_${BASE_VER}.orig.tar.gz" \
-    -C "$BUILDDIR/${PKG}-${BASE_VER}" --strip-components=1
+git -C /src archive --format=tar.gz --prefix="${PKG}-${UPSTREAM_VER}/" HEAD \
+  -o "$BUILDDIR/${PKG}_${UPSTREAM_VER}.orig.tar.gz"
 
-cd "$BUILDDIR/${PKG}-${BASE_VER}"
+mkdir "$BUILDDIR/${PKG}-${UPSTREAM_VER}"
+tar -xzf "$BUILDDIR/${PKG}_${UPSTREAM_VER}.orig.tar.gz" \
+    -C "$BUILDDIR/${PKG}-${UPSTREAM_VER}" --strip-components=1
+
+cd "$BUILDDIR/${PKG}-${UPSTREAM_VER}"
 
 echo "3.0 (quilt)" > debian/source/format
 
