@@ -16,7 +16,8 @@ RC phases:
     4b pip install smoke test      ├─ run in parallel
     4c Homebrew trustmux smoke test │
     4d Fedora Rawhide RPM build    │
-    4e Homebrew byobu smoke test   ┘
+    4e Homebrew byobu smoke test   │
+    4f Salsa CI (gbp buildpackage) ┘
     5  PPA source builds           ┐
     5b Debian exp source           ┘ run in parallel
 
@@ -1800,6 +1801,7 @@ def main():
         parallel.append(("local deb",     lambda: build_local_debs(v)))
         parallel.append(("Fedora RPM",    lambda: build_fedora_rpm(v)))
         parallel.append(("Homebrew byobu", lambda: run_homebrew_byobu_smoke_test(v)))
+        parallel.append(("Salsa CI",      run_salsa_ci))
     if mode == "rc" and should_run("5", start_from):
         parallel.append(("PPA builds", lambda: build_ppa_packages(v, identity)))
     dist = "experimental" if mode == "rc" else "unstable"
