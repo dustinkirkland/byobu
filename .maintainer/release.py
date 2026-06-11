@@ -258,6 +258,30 @@ def check_tools():
     print(f"  Tools OK: {' '.join(required)}")
 
 
+def prewarm_gpg(identity):
+    """Sign a throwaway blob to unlock the gpg-agent now, before the long builds start.
+
+    The passphrase is cached in the agent for the debsign calls in phase 7,
+    so the user is not interrupted mid-release.
+    """
+    import tempfile
+    section("Phase 1b: GPG pre-warm (cache passphrase before builds start)")
+    gpgkey = identity["GPGKEY"]
+    print(f"  Key: {gpgkey}")
+    print(f"  Enter passphrase now — gpg-agent will serve it automatically in phase 7.")
+    with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as f:
+        f.write(b"byobu release gpg pre-warm\n")
+        tmpfile = Path(f.name)
+    sig = Path(str(tmpfile) + ".asc")
+    try:
+        run(["gpg", "--armor", "--detach-sign", "-u", gpgkey,
+             "--output", str(sig), str(tmpfile)])
+        print(f"  ✓ GPG agent unlocked — passphrase cached")
+    finally:
+        tmpfile.unlink(missing_ok=True)
+        sig.unlink(missing_ok=True)
+
+
 def find_tap(name, mode):
     """Locate or clone a dustinkirkland/homebrew-{name} tap. Returns None for rc."""
     if mode == "rc":
@@ -1515,6 +1539,7 @@ def main():
 
     identity = load_identity()
     check_tools()
+    prewarm_gpg(identity)
     tap_trustmux = find_tap("trustmux", mode) if should_run("6d", start_from) else None
     tap_byobu    = find_tap("byobu",    mode) if should_run("6d", start_from) else None
     v = determine_versions(mode, resume=(start_from is not None))
