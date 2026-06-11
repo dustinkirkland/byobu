@@ -6,6 +6,7 @@ Usage:
     ./release.py [rc]               # build and tag an RC (default, non-interactive)
     ./release.py [rc] --interactive # same, but prompt for confirmation at each step
     ./release.py final              # cut a full release
+    ./release.py salsa-ci           # local Docker dry-run of the Debian Salsa CI
 
 RC phases:
     1  Pre-flight checks
@@ -1634,6 +1635,57 @@ def print_summary(v, mode):
         print("  Next: run ./release.py open-dev to bump version and open development.\n")
 
 
+# ── salsa-ci: local dry-run ───────────────────────────────────────────────
+
+_SALSA_CI_SCRIPT = r"""
+set -eo pipefail
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get update -qq
+apt-get install -y --no-install-recommends \
+  git git-buildpackage devscripts debhelper dh-python \
+  gettext-base automake autoconf \
+  python3 python3-all python3-cryptography python3-tornado \
+  bc ca-certificates lintian 2>&1 | tail -10
+
+# Clone from the bind-mounted source so gbp can read the full git history.
+git clone /src /build/byobu
+cd /build/byobu
+
+echo "--- debian/gbp.conf ---"
+cat debian/gbp.conf
+
+echo "--- gbp buildpackage (mimicking Salsa CI) ---"
+gbp buildpackage \
+  --git-export-dir=/tmp/build-area \
+  --git-no-sign-tags \
+  -us -uc -d -sa
+
+echo "--- Build output ---"
+ls -lh /tmp/build-area/
+
+echo "=== Salsa CI simulation PASSED ==="
+"""
+
+
+def run_salsa_ci():
+    """Run a local Docker build that mimics the Debian Salsa CI pipeline.
+
+    Clones the repo inside the container so gbp has a clean git view, then
+    runs gbp buildpackage with the same flags the Salsa CI uses.  Lets you
+    catch gbp / quilt / lintian failures before pushing to salsa.
+    """
+    banner("Salsa CI local simulation (docker debian:sid + gbp buildpackage)")
+    print("  Cloning repo inside container and running gbp buildpackage…")
+    run([
+        "docker", "run", "--rm",
+        "-v", f"{BYOBU_SRC}:/src:ro",
+        "debian:sid", "bash", "-c", _SALSA_CI_SCRIPT,
+    ])
+    print("  ✓ Salsa CI simulation PASSED")
+    print("    Safe to push to salsa — gbp buildpackage will succeed.")
+
+
 # ── open-dev (post-final) ─────────────────────────────────────────────────
 
 def open_dev(identity):
@@ -1682,11 +1734,11 @@ def main():
     parser = argparse.ArgumentParser(
         description="byobu/trustmux release pipeline",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="Modes: rc (default), final, open-dev",
+        epilog="Modes: rc (default), final, open-dev, salsa-ci",
     )
     parser.add_argument(
         "mode", nargs="?",
-        choices=["rc", "final", "open-dev"],
+        choices=["rc", "final", "open-dev", "salsa-ci"],
         default="rc",
     )
     parser.add_argument(
@@ -1714,6 +1766,10 @@ def main():
     if mode == "open-dev":
         identity = load_identity()
         open_dev(identity)
+        return
+
+    if mode == "salsa-ci":
+        run_salsa_ci()
         return
 
     banner(f"byobu/trustmux release pipeline — {mode.upper()}"
