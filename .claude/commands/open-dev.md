@@ -52,19 +52,50 @@ Verify the substitution looks right before continuing.
 
 ---
 
-## Step 4: Add UNRELEASED debian/changelog stanza
+## Step 4: Prepend a fresh UNRELEASED stanza
+
+`dch --newversion` merges into the existing UNRELEASED stanza when the current
+top entry is also UNRELEASED — it simply bumps the version number in-place,
+losing the per-version boundary. Instead, stamp the existing stanza's trailer
+with the current datestamp, then prepend a brand-new stanza on top.
 
 ```bash
 cd /home/kirkland/src/byobu
-DEBEMAIL="$DEBEMAIL" DEBFULLNAME="$DEBFULLNAME" \
-  dch --newversion "$NEXT_VER" --distribution UNRELEASED --urgency medium \
-  "Open ${NEXT_VER} for development"
+
+# 4a. Re-stamp the trailer of the current top stanza with right-now, so its
+#     datestamp reflects when it was "closed" as the previous version.
+DATESTAMP=$(date -R)
+sed -i "1,/^ -- /{s/^ -- \(.*\)  .*/ -- \1  ${DATESTAMP}/}" debian/changelog
+
+# 4b. Prepend a brand-new stanza for NEXT_VER above the existing content.
+python3 - <<PYEOF
+import datetime, subprocess, os
+
+debemail   = os.environ['DEBEMAIL']
+debfullname = os.environ['DEBFULLNAME']
+next_ver   = os.environ['NEXT_VER']
+datestamp  = subprocess.check_output(['date', '-R']).decode().strip()
+
+new_stanza = (
+    f"byobu ({next_ver}) UNRELEASED; urgency=medium\n"
+    f"\n"
+    f"  * Open {next_ver} for development\n"
+    f"\n"
+    f" -- {debfullname} <{debemail}>  {datestamp}\n"
+    f"\n"
+)
+
+cl = open('debian/changelog').read()
+open('debian/changelog', 'w').write(new_stanza + cl)
+print("New top of debian/changelog:")
+print(new_stanza)
+PYEOF
 ```
 
-Verify the top of `debian/changelog`:
+Verify two separate stanzas now appear at the top:
 
 ```bash
-head -6 /home/kirkland/src/byobu/debian/changelog
+head -14 /home/kirkland/src/byobu/debian/changelog
 ```
 
 Expected:
@@ -74,6 +105,10 @@ byobu (X.Y) UNRELEASED; urgency=medium
   * Open X.Y for development
 
  -- Dustin Kirkland <...>  <datestamp>
+
+byobu (X.Y-1) UNRELEASED; urgency=medium   ← or whatever the prev version was
+
+  ...previous changes...
 ```
 
 ---
