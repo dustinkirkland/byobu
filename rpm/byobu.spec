@@ -97,8 +97,14 @@ rm %{buildroot}%{_mandir}/man1/vigpg.1*
 install -D -p -m 0644 usr/share/byobu/pixmaps/byobu.svg %{buildroot}%{_iconsscaldir}/%{name}.svg
 
 # fix shebangs
-%py3_shebang_fix %{buildroot}%{_bindir}/*
-%py3_shebang_fix %{buildroot}%{_libexecdir}/%{name}/*
+find %{buildroot}%{_bindir} \
+    -type f ! -lname '*' \
+    -exec grep -Iq python {} \; \
+    -exec %py3_shebang_fix {} +
+find %{buildroot}%{_libexecdir}/%{name} \
+    -type f ! -lname '*' \
+    -exec grep -Iq python {} \; \
+    -exec %py3_shebang_fix {} +
 %py3_shebang_fix %{buildroot}%{trustmuxlibdir}/trustmux/_daemon.py
 
 # install README.md manually to the doc dir
@@ -159,6 +165,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
-* Tue Jun 10 2026 Dustin Kirkland <dustin.kirkland@gmail.com> - 7.11-1
+* Wed Jun 10 2026 Dustin Kirkland <dustin.kirkland@gmail.com> - 7.11-1
 - Update to 7.11; add trustmux files; import spec from Fedora dist-git
   (maintained by Filipe Rosset <rosset.filipe@gmail.com>)
