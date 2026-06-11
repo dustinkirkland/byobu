@@ -1177,7 +1177,7 @@ def update_homebrew(v, tap_dir):
             "Timed out waiting for PyPI tarball (20 attempts × 15s).\n"
             "  Check GH Actions: https://github.com/dustinkirkland/byobu/actions\n"
             "  Once the workflow completes, resume with:\n"
-            "    python .maintainer/release.py final --start-from 6d"
+            "    python .maintainer/release.py final --start-from 6"
         )
 
     print(f"  URL:    {tarball_url}")
@@ -1229,15 +1229,22 @@ def update_homebrew_byobu(v, tap_dir):
         f"https://github.com/dustinkirkland/byobu"
         f"/archive/refs/tags/{v['base_ver']}.tar.gz"
     )
-    print(f"  Downloading release tarball to compute sha256…")
+    print(f"  Waiting for GitHub to generate release tarball…")
     print(f"  {tarball_url}")
-    try:
-        tarball_data = urllib.request.urlopen(tarball_url).read()
-    except urllib.error.URLError as e:
+    tarball_data = None
+    for attempt in range(20):
+        try:
+            tarball_data = urllib.request.urlopen(tarball_url).read()
+            break
+        except urllib.error.URLError:
+            pass
+        print(f"  Attempt {attempt + 1}/20 — not ready, waiting 15s…")
+        time.sleep(15)
+    if tarball_data is None:
         die(
-            f"Could not download byobu tarball: {e}\n"
-            f"  Ensure the GitHub release for {v['base_ver']} exists before running this phase.\n"
-            f"  Resume with: python .maintainer/release.py final --start-from 6d"
+            f"Timed out waiting for byobu tarball (20 attempts × 15s).\n"
+            f"  Ensure the GitHub release for {v['base_ver']} exists.\n"
+            f"  Resume with: python .maintainer/release.py final --start-from 6"
         )
     tarball_sha256 = hashlib.sha256(tarball_data).hexdigest()
     print(f"  sha256: {tarball_sha256}")
