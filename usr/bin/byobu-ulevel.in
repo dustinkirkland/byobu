@@ -319,7 +319,7 @@ show_theme_entry()
   if [ $a11y = y ]
   then
     [ -z "$decimal_places" ] && decimal_places=$default_decimal_places
-    val=$(echo|awk -v p=$percent -v dp=$decimal_places '{printf("%.*f", dp, p)}')
+    val=$(printf "%.*f" "$decimal_places" "$percent")
     echo $newline "$val"
     return
   fi
