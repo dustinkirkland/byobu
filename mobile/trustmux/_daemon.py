@@ -1144,7 +1144,7 @@ def _ensure_self_signed_cert(lan_ip: str) -> tuple:
         print("Trustmux refuses to start without encryption. Install 'cryptography': pip install --upgrade cryptography", flush=True)
         sys.exit(1)
     ctx = _ssl.SSLContext(_ssl.PROTOCOL_TLS_SERVER)
-    ctx.minimum_version = _ssl.TLSVersion.TLSv1_2
+    ctx.minimum_version = _ssl.TLSVersion.TLSv1_3
     ctx.load_cert_chain(str(cert), str(key))
     print(f"Trustmux: self-signed TLS cert generated for {lan_ip}", flush=True)
     return cert, ctx
