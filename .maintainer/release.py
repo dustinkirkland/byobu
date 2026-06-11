@@ -1614,13 +1614,13 @@ def main():
 
     run_phases_parallel(parallel, log_dir=v["outdir"] / "logs")
 
+    if should_run("6", start_from):
+        create_github_release(v, mode)
+
     if mode == "final":
         if should_run("6d", start_from):
             update_homebrew(v, tap_trustmux)
             update_homebrew_byobu(v, tap_byobu)
-
-    if should_run("6", start_from):
-        create_github_release(v, mode)
 
     if should_run("7", start_from):
         sign_and_upload(v, identity, mode)
