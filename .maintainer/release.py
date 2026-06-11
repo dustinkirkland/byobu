@@ -30,6 +30,7 @@ Final adds:
     6d Homebrew formula update
     GitHub release (non-prerelease, both byobu and trustmux tags)
     8  Regenerate PWA screenshots → commit + push trustmux-web
+    9  Push release commit + tag to Debian Salsa (salsa/master)
 """
 
 import argparse
@@ -216,7 +217,7 @@ def section(msg):
 # ── phase resumption ──────────────────────────────────────────────────────
 
 # Canonical phase order (6b is an alias for 5b; 6e is Fedora RPM, runs with 5b/6c)
-_PHASE_ORDER = ["3", "4", "5", "5b", "6c", "6e", "6", "6d", "7", "8"]
+_PHASE_ORDER = ["3", "4", "5", "5b", "6c", "6e", "6", "6d", "7", "8", "9"]
 
 def _phase_idx(phase):
     if phase == "6b":
@@ -1539,6 +1540,52 @@ def update_website_screenshots(v):
         print("  (screenshots unchanged — nothing to push)")
 
 
+# ── phase 9: Salsa push (final only) ─────────────────────────────────────
+
+def push_salsa(v):
+    """Force-push the byobu version tag commit to salsa/master and push the tag.
+
+    salsa/master tracks the latest final release, never open-dev HEAD.  We
+    force-push so that the history rebase (from the old Debian-native history
+    that lived on salsa before) is not an obstacle on subsequent releases.
+    """
+    section("Phase 9: Push to Debian Salsa (salsa/master)")
+    base_ver = v["base_ver"]
+    tag = base_ver  # e.g. "7.11"
+
+    # Resolve the byobu version tag to a commit hash.
+    r = run(
+        ["git", "-C", str(BYOBU_SRC), "rev-parse", tag],
+        capture=True, check=False,
+    )
+    if r.returncode != 0:
+        print(f"  (tag {tag} not found locally — fetching from origin)")
+        run(["git", "-C", str(BYOBU_SRC), "fetch", "origin",
+             f"refs/tags/{tag}:refs/tags/{tag}"])
+        r = run(["git", "-C", str(BYOBU_SRC), "rev-parse", tag], capture=True)
+
+    commit = r.stdout.strip()
+    print(f"  Tag:    {tag}")
+    print(f"  Commit: {commit}")
+
+    run(["git", "-C", str(BYOBU_SRC), "push", "--force", "salsa",
+         f"{commit}:refs/heads/master"])
+    print("  ✓ salsa/master updated")
+
+    # Push the tag; skip if already present.
+    remote = run(
+        ["git", "-C", str(BYOBU_SRC), "ls-remote", "--tags", "salsa", tag],
+        capture=True,
+    )
+    if remote.stdout.strip():
+        print(f"  (tag {tag} already on salsa — skipping tag push)")
+    else:
+        run(["git", "-C", str(BYOBU_SRC), "push", "salsa", tag])
+        print(f"  ✓ Tag {tag} pushed to salsa")
+
+    print(f"    https://salsa.debian.org/debian/byobu")
+
+
 # ── summary ───────────────────────────────────────────────────────────────
 
 def print_summary(v, mode):
@@ -1641,7 +1688,7 @@ def main():
         choices=_PHASE_ORDER + ["6b"],
         help=(
             "Resume from this phase, reusing the existing /tmp/byobu-release-* dir. "
-            "Phases: 3 4 5 5b(=6b) 6c 6e 6 6d 7 8"
+            "Phases: 3 4 5 5b(=6b) 6c 6e 6 6d 7 8 9"
         ),
     )
     parser.add_argument(
@@ -1715,6 +1762,9 @@ def main():
 
     if mode == "final" and should_run("8", start_from):
         update_website_screenshots(v)
+
+    if mode == "final" and should_run("9", start_from):
+        push_salsa(v)
 
     print_summary(v, mode)
 
