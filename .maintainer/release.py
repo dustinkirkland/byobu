@@ -1649,7 +1649,9 @@ apt-get install -y --no-install-recommends \
   python3 python3-all python3-cryptography python3-tornado \
   bc ca-certificates lintian 2>&1 | tail -10
 
-# Clone from the bind-mounted source so gbp can read the full git history.
+# The bind-mounted /src is owned by the host user, not root inside the
+# container.  Allow all directories so git clone can read it.
+git config --global --add safe.directory '*'
 git clone /src /build/byobu
 cd /build/byobu
 
