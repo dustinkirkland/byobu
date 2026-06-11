@@ -25,6 +25,7 @@ Requires:	bc
 Requires:	gettext-runtime
 Requires:	newt
 Requires:	openssl
+Requires:	python3-cryptography
 Requires:	python3-newt
 Requires:	python3-tornado
 Requires:	screen
