@@ -153,6 +153,7 @@ def run_phases_parallel(labeled_fns, log_dir=None):
         t.join()
 
     any_failed = False
+    failed_logs = []
     for label in labels:
         out, exc = outcomes.get(label, ("", RuntimeError("phase did not run")))
         ok = exc is None
@@ -176,8 +177,12 @@ def run_phases_parallel(labeled_fns, log_dir=None):
                     lf.write(f"\n--- FAILED: {exc}\n")
             if not ok:
                 print(f"  (full log: {log_path})")
+                failed_logs.append(log_path)
 
     if any_failed:
+        print("\n✗  Failed phase logs:")
+        for p in failed_logs:
+            print(f"     {p}")
         die("One or more parallel phases failed (see output above).")
 
 
@@ -652,6 +657,7 @@ git -C /tmp/homebrew-trustmux commit -q -m "trustmux rc formula"
 
 echo "--- Installing via Homebrew (resources from PyPI, main pkg local) ---"
 brew tap local/trustmux /tmp/homebrew-trustmux
+brew trust local/trustmux
 brew install local/trustmux/trustmux
 """
     + _SMOKE_TRUSTMUX
@@ -749,6 +755,7 @@ git -C /tmp/homebrew-byobu commit -q -m "byobu local formula"
 
 echo "--- Installing via Homebrew (build from source) ---"
 brew tap local/byobu /tmp/homebrew-byobu
+brew trust local/byobu
 brew install local/byobu/byobu
 """
     + _SMOKE_BYOBU
