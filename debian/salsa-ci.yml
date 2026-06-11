@@ -2,8 +2,7 @@
 include:
   - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/recipes/debian.yml
 
-# test-uscan checks for a released upstream tag matching the changelog version.
-# This will always fail on an unreleased development version, so disable it.
-test-uscan:
-  rules:
-    - when: never
+variables:
+  # test-uscan looks for a released upstream tag matching the changelog version.
+  # This will always fail on an unreleased development version, so disable it.
+  SALSA_CI_DISABLE_USCAN: 1
