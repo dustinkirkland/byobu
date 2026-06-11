@@ -135,11 +135,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %config(noreplace) %{_sysconfdir}/%{name}/
 # trustmux files
 %{_bindir}/trustmux
-%{_bindir}/trustmux-ctl
-%{_bindir}/trustmux-disable
-%{_bindir}/trustmux-enable
-%{_bindir}/trustmux-pair
-%{_bindir}/trustmux-unpair
+%{_bindir}/trustmuxd
 %{trustmuxlibdir}/trustmux/__init__.py
 %{trustmuxlibdir}/trustmux/__main__.py
 %{trustmuxlibdir}/trustmux/_ctl.py
@@ -148,12 +144,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{trustmuxlibdir}/trustmux/_enable.py
 %{trustmuxlibdir}/trustmux/_pair.py
 %{trustmuxlibdir}/trustmux/_unpair.py
+%{_datadir}/bash-completion/completions/trustmux
 %{_mandir}/man1/trustmux.1.gz
-%{_mandir}/man1/trustmux-ctl.1.gz
-%{_mandir}/man1/trustmux-disable.1.gz
-%{_mandir}/man1/trustmux-enable.1.gz
-%{_mandir}/man1/trustmux-pair.1.gz
-%{_mandir}/man1/trustmux-unpair.1.gz
+%{_mandir}/man1/trustmuxd.1.gz
 %{_datadir}/trustmux/static/app.js
 %{_datadir}/trustmux/static/index.html
 %{_datadir}/trustmux/static/sw.js

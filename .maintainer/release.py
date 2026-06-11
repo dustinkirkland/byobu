@@ -109,12 +109,14 @@ def run(cmd, check=True, capture=False, **kwargs):
     return subprocess.run(cmd, shell=isinstance(cmd, str), **kw)
 
 
-def run_phases_parallel(labeled_fns):
+def run_phases_parallel(labeled_fns, log_dir=None):
     """Run phase functions concurrently; replay each section's captured output
     in-order after all phases complete.
 
     labeled_fns: list of (label, callable).  Callables must be thread-safe.
     A single-element list is run directly with no threading overhead.
+    log_dir: optional Path; each phase's full output is written to
+             {log_dir}/{label}.log so failures are diagnosable after the run.
     """
     if not labeled_fns:
         return
@@ -162,6 +164,15 @@ def run_phases_parallel(labeled_fns):
             else:
                 print(f"  ✗ {label}: {exc}")
             any_failed = True
+        if log_dir is not None:
+            slug = label.replace(" ", "-").replace("/", "-")
+            log_path = Path(log_dir) / f"{slug}.log"
+            with open(log_path, "w") as lf:
+                lf.write(out)
+                if not ok:
+                    lf.write(f"\n--- FAILED: {exc}\n")
+            if not ok:
+                print(f"  (full log: {log_path})")
 
     if any_failed:
         die("One or more parallel phases failed (see output above).")
@@ -453,6 +464,7 @@ def determine_versions(mode, resume=False):
         (outdir / "debs").mkdir(exist_ok=True)
         (outdir / "debian").mkdir(exist_ok=True)
         (outdir / "rpm").mkdir(exist_ok=True)
+        (outdir / "logs").mkdir(exist_ok=True)
         if mode == "rc":
             (outdir / "ppa").mkdir(exist_ok=True)
         if mode == "final":
@@ -464,6 +476,7 @@ def determine_versions(mode, resume=False):
         (outdir / "debs").mkdir(parents=True)
         (outdir / "debian").mkdir()
         (outdir / "rpm").mkdir()
+        (outdir / "logs").mkdir()
         if mode == "rc":
             (outdir / "ppa").mkdir()
         if mode == "final":
@@ -1572,7 +1585,7 @@ def main():
     if mode == "final" and should_run("6e", start_from):
         parallel.append(("Fedora RPM", lambda: build_fedora_rpm(v)))
 
-    run_phases_parallel(parallel)
+    run_phases_parallel(parallel, log_dir=v["outdir"] / "logs")
 
     if mode == "final":
         if should_run("6d", start_from):

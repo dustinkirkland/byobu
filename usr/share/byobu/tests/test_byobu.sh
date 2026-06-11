@@ -401,12 +401,14 @@ assert_eq "cpu display 8 → 8x"     "$(_cpu_display 8)"  "8x"
 # Section 17 — byobu-ulevel: unicode level indicator
 # ---------------------------------------------------------------------------
 
-# Build a temporary copy of byobu-ulevel.in with @prefix@ substituted
+# Build a temporary copy of byobu-ulevel with @prefix@ substituted (source tree),
+# or fall back to the installed binary when running from an installed package.
 _ULEVEL=$(mktemp /tmp/byobu-ulevel-test-XXXXXX)
 sed "s|@prefix@|${BYOBU_PREFIX}|g" \
 	"${BYOBU_PREFIX}/../usr/bin/byobu-ulevel.in" > "$_ULEVEL" 2>/dev/null || \
 sed "s|@prefix@|${BYOBU_PREFIX}|g" \
-	"$(dirname "$0")/../../bin/byobu-ulevel.in" > "$_ULEVEL"
+	"$(dirname "$0")/../../bin/byobu-ulevel.in" > "$_ULEVEL" 2>/dev/null || \
+cp "${BYOBU_PREFIX}/bin/byobu-ulevel" "$_ULEVEL" 2>/dev/null || true
 chmod +x "$_ULEVEL"
 
 _ul() { BYOBU_INCLUDED_LIBS=1 BYOBU_BACKEND=tmux PKG=byobu bash "$_ULEVEL" "$@"; }
@@ -512,10 +514,12 @@ unset _tmuxrc
 # ---------------------------------------------------------------------------
 
 _jan="$BYOBU_PREFIX/bin/byobu-janitor.in"
+if [ -f "$_jan" ]; then
 assert_true "byobu-janitor: handles BYOBU_SHELL_ARGS" \
 	"grep -q 'BYOBU_SHELL_ARGS' '$_jan'"
 assert_true "byobu-janitor: writes shellinit.tmux" \
 	"grep -q 'shellinit.tmux' '$_jan'"
+fi
 
 # Runtime test: janitor writes correct default-command when BYOBU_SHELL_ARGS set
 _sdir=$(mktemp -d)
@@ -594,12 +598,14 @@ unset _tmux_profile
 # ---------------------------------------------------------------------------
 
 _reco="$BYOBU_PREFIX/bin/byobu-reconnect-sockets.in"
+if [ -f "$_reco" ]; then
 # Must still guard against direct execution (no BYOBU_BACKEND)
 assert_true "reconnect-sockets still has an interactive check" \
 	"grep -q 'case.*\"\$-\"' '$_reco'"
 # Must NOT hard-exit when BYOBU_BACKEND is set (fish/bass compatibility)
 assert_true "reconnect-sockets skips exit when BYOBU_BACKEND is set" \
 	"grep -q 'BYOBU_BACKEND' '$_reco'"
+fi
 unset _reco
 
 # ---------------------------------------------------------------------------
@@ -607,8 +613,10 @@ unset _reco
 # ---------------------------------------------------------------------------
 
 _byobu_bin="$BYOBU_PREFIX/bin/byobu.in"
+if [ -f "$_byobu_bin" ]; then
 assert_true "byobu.in contains a tmux preflight config check" \
 	"grep -q 'start-server\|byobu_tmux_err' '$_byobu_bin'"
+fi
 unset _byobu_bin
 
 # ---------------------------------------------------------------------------
@@ -694,12 +702,16 @@ unset _ip
 _install="$BYOBU_PREFIX/bin/byobu-launcher-install.in"
 _uninstall="$BYOBU_PREFIX/bin/byobu-launcher-uninstall.in"
 
+if [ -f "$_install" ]; then
 assert_true "launcher-install: handles .bashrc for bash" \
 	"grep -q '.bashrc' '$_install'"
 assert_true "launcher-install: handles .zshrc for zsh" \
 	"grep -q '.zshrc' '$_install'"
+fi
+if [ -f "$_uninstall" ]; then
 assert_true "launcher-uninstall: removes from .zshrc" \
 	"grep -q '.zshrc' '$_uninstall'"
+fi
 
 # Runtime test: install into a temp dir and verify both rc files get the launcher
 _tmp=$(mktemp -d)
