@@ -1,4 +1,4 @@
-byobu (7.11) UNRELEASED; urgency=medium
+byobu (7.12) UNRELEASED; urgency=medium
 
   * mobile/trustmux/static/app.js, mobile/trustmux/static/index.html:
     - add optional biometric/PIN re-authentication lock to the Trustmux PWA;
@@ -144,8 +144,9 @@ byobu (7.11) UNRELEASED; urgency=medium
     - debian/po/de.po: capitalisation fix + proper German quotation marks
     - debian/po/ru.po: replace incomplete 2010 translation with complete
       2019 version from Lev Lamberov (Debian L10N Russian)
+  * Open 7.12 for development
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Jun 2026 23:32:22 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Jun 2026 00:14:47 -0500
 
 byobu (7.9-1) unstable; urgency=medium
 
