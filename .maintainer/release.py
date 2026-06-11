@@ -1287,28 +1287,41 @@ def update_homebrew_byobu(v, tap_dir):
 
 # ── github release ────────────────────────────────────────────────────────
 
+def _final_trustmux_tags():
+    """Return sorted list of final (non-RC) trustmux-v* tags."""
+    r = subprocess.run(
+        ["git", "-C", str(BYOBU_SRC), "tag", "--list", "trustmux-v*"],
+        capture_output=True, text=True, check=True,
+    )
+    tags = [t.strip() for t in r.stdout.splitlines() if t.strip()]
+    # Keep only final tags (no rc in the name)
+    tags = [t for t in tags if "rc" not in t.lower()]
+    # Sort by the numeric version after "trustmux-v"
+    def _ver_key(t):
+        try:
+            parts = t[len("trustmux-v"):].split(".")
+            return tuple(int(x) for x in parts)
+        except ValueError:
+            return (0,)
+    return sorted(tags, key=_ver_key)
+
+
 def _build_release_notes(v):
     """Return markdown release notes built from git log since the previous final tag."""
     base_ver = v["base_ver"]
-    parts = base_ver.split(".", 1)
-    if len(parts) != 2 or not parts[1].isdigit():
+    until_tag = f"trustmux-v{v['pypi_version']}"
+
+    # Find the tag that immediately precedes until_tag in the sorted final-tag list
+    all_tags = _final_trustmux_tags()
+    try:
+        idx = all_tags.index(until_tag)
+    except ValueError:
         return f"byobu {base_ver} / trustmux {v['pypi_version']}"
 
-    prev_ver = f"{parts[0]}.{int(parts[1]) - 1}"
-
-    # Find previous final tag — prefer trustmux-v{prev} over plain {prev}
-    prev_tag = None
-    for candidate in [f"trustmux-v{prev_ver}", prev_ver]:
-        r = subprocess.run(
-            ["git", "-C", str(BYOBU_SRC), "rev-parse", "--verify", candidate],
-            capture_output=True, text=True,
-        )
-        if r.returncode == 0:
-            prev_tag = candidate
-            break
-
-    if prev_tag is None:
+    if idx == 0:
         return f"byobu {base_ver} / trustmux {v['pypi_version']}"
+
+    prev_tag = all_tags[idx - 1]
 
     until_tag = f"trustmux-v{v['pypi_version']}"
     r = subprocess.run(
