@@ -2,7 +2,6 @@
 include:
   - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/recipes/debian.yml
 
-variables:
-  # test-uscan looks for a released upstream tag matching the changelog version.
-  # This will always fail on an unreleased development version, so disable it.
-  SALSA_CI_DISABLE_USCAN: 1
+# debian/watch is intentionally absent: the test-uscan job only runs when that
+# file exists, and uscan cannot find an upstream git tag for an unreleased
+# development version anyway.  Add debian/watch back once 7.12 is tagged.
