@@ -22,7 +22,7 @@ BuildRequires:	make
 BuildRequires:	gettext
 BuildRequires:	python3-devel
 Requires:	bc
-Requires:	gettext-runtime
+Requires:	gettext
 Requires:	newt
 Requires:	openssl
 Requires:	python3-cryptography
