@@ -151,6 +151,7 @@ byobu (7.13-1) UNRELEASED; urgency=medium
   * debian/salsa-ci.yml: add Salsa CI pipeline configuration
   * debian/source/lintian-overrides: drop now-resolved overrides for
   * debian-watch-does-not-check-openpgp-signature and no-dep5-copyright
+  * Remove unused lintian-overrides
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Jun 2026 20:52:40 -0500
 
