@@ -1,4 +1,4 @@
-byobu (7.13-1) UNRELEASED; urgency=medium
+byobu (7.13-1) unstable; urgency=medium
 
   [ Dustin Kirkland ]
   * Major upstream release series 7.x — complete rewrite targeting tmux as
