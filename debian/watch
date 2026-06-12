@@ -1,5 +1,0 @@
-Version: 5
-
-Source: https://github.com/dustinkirkland/@PACKAGE@/
-Matching-Pattern: refs/tags/@ANY_VERSION@
-Mode: git
