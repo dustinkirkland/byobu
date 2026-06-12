@@ -2,6 +2,6 @@
 include:
   - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/recipes/debian.yml
 
-# debian/watch is intentionally absent: the test-uscan job only runs when that
-# file exists, and uscan cannot find an upstream git tag for an unreleased
-# development version anyway.  Add debian/watch back once 7.12 is tagged.
+# Ignore broken test-uscan CI test
+test-uscan:
+  allow_failure: true

@@ -5,8 +5,6 @@ byobu (7.13-1) UNRELEASED; urgency=medium
     the sole backend (GNU screen support removed). Covers all changes from
     7.0 through 7.9, first upload of the 7.x series to Debian unstable.
     Closes: #1138925
-  * debian/salsa-ci.yml: disable test-uscan (watch file absent during
-    open-dev cycle)
   * debian/rules: drop mobile/tests from dh_auto_test
   * trustmux: require TLS 1.3 minimum in --self-signed mode
   * trustmux.1: correct pairing code TTL from 5 min to 3 min
@@ -152,6 +150,7 @@ byobu (7.13-1) UNRELEASED; urgency=medium
   * debian/source/lintian-overrides: drop now-resolved overrides for
   * debian-watch-does-not-check-openpgp-signature and no-dep5-copyright
   * Remove unused lintian-overrides
+  * debian/salsa-ci.yml: do not fail test-uscan
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Jun 2026 20:52:40 -0500
 
