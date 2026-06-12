@@ -12,7 +12,7 @@ byobu (7.12-1) UNRELEASED; urgency=medium
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Jun 2026 00:14:47 -0500
 
-byobu (7.11) released; urgency=medium
+byobu (7.11) UNRELEASED; urgency=medium
 
   * debian/po/sv.po:
     - replace the placeholder 2020 anonymous Swedish translation with
@@ -56,7 +56,7 @@ byobu (7.11) released; urgency=medium
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Jun 2026 23:32:22 -0500
 
-byobu (7.10) released; urgency=medium
+byobu (7.10) UNRELEASED; urgency=medium
 
   * mobile/trustmux/static/app.js, mobile/trustmux/static/index.html:
     - add optional biometric/PIN re-authentication lock to the Trustmux PWA;
