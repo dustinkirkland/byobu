@@ -1,20 +1,15 @@
 byobu (7.13-1) UNRELEASED; urgency=medium
 
-  * debian/source: switch to 3.0 (quilt) format with proper Debian revision
-    versioning; update gbp.conf accordingly
-  * debian/control: remove Andreas Tille from Uploaders
+  [ Dustin Kirkland ]
+  * Major upstream release series 7.x — complete rewrite targeting tmux as
+    the sole backend (GNU screen support removed). Covers all changes from
+    7.0 through 7.9, first upload of the 7.x series to Debian unstable.
+    Closes: #1138925
   * debian/salsa-ci.yml: disable test-uscan (watch file absent during
     open-dev cycle)
   * debian/rules: drop mobile/tests from dh_auto_test
   * trustmux: require TLS 1.3 minimum in --self-signed mode
   * trustmux.1: correct pairing code TTL from 5 min to 3 min
-  * Open 7.12 for development
-  * Open 7.13 for development
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Jun 2026 20:52:40 -0500
-
-byobu (7.11) UNRELEASED; urgency=medium
-
   * debian/po/sv.po:
     - replace the placeholder 2020 anonymous Swedish translation with
       the proper 2024 translation from Martin Bagge <brother@persilja.net>,
@@ -33,32 +28,6 @@ byobu (7.11) UNRELEASED; urgency=medium
     - replace awk %.*f with bash printf for busybox compatibility
   * usr/share/byobu/doc/byobu.1:
     - document URxvt Ctrl+Shift+Fn keysym fix in BUGS section
-  * Fold in packaging improvements from Andreas Tille's 7.10-0.1 NMU:
-    - debian/control: dh-python → dh-sequence-python3 (modern debhelper);
-      drop run-one from Recommends; drop apport from Suggests;
-      ttf-ubuntu-font-family → fonts-ubuntu (package renamed);
-      tmux (>= 1.5) → tmux (version constraint obsolete);
-      debconf (>= 0.5) | debconf-2.0 → debconf | debconf-2.0;
-      add ${perl:Depends}; Homepage → https://www.byobu.org
-    - debian/rules: drop --with python3 (implied by dh-sequence-python3)
-    - debian/watch: upgrade to version 5 git mode
-    - debian/copyright: convert to DEP-5 machine-readable format
-    - debian/upstream/metadata: new file with Bug-Database/Bug-Submit URLs
-    - debian/salsa-ci.yml: add Salsa CI pipeline configuration
-    - debian/source/lintian-overrides: drop now-resolved overrides for
-      debian-watch-does-not-check-openpgp-signature and no-dep5-copyright
-    - debian/po/fr.po: add French debconf translation (Grégoire Scano, 2019)
-    - debian/po/nl.po: add Dutch debconf translation (Frans Spiesschaert, 2019)
-    - debian/po/pt_BR.po: add Brazilian Portuguese debconf translation
-      (Adriano Rafael Gomes, 2020)
-    - debian/po/de.po: capitalisation fix + proper German quotation marks
-    - debian/po/ru.po: replace incomplete 2010 translation with complete
-      2019 version from Lev Lamberov (Debian L10N Russian)
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Tue, 09 Jun 2026 23:32:22 -0500
-
-byobu (7.10) UNRELEASED; urgency=medium
-
   * mobile/trustmux/static/app.js, mobile/trustmux/static/index.html:
     - add optional biometric/PIN re-authentication lock to the Trustmux PWA;
       uses the WebAuthn platform authenticator API (fingerprint, face unlock,
@@ -102,15 +71,15 @@ byobu (7.10) UNRELEASED; urgency=medium
       remove the separate trustmux binary package from the source package;
       add python3-cryptography and python3-tornado to byobu's Depends as they
       are now required at runtime; python3-cryptography is in Ubuntu/Debian main
-
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 08 Jun 2026 07:50:11 -0500
-
-byobu (7.9-1) unstable; urgency=medium
-
-  * Major upstream release series 7.x — complete rewrite targeting tmux as
-    the sole backend (GNU screen support removed). Covers all changes from
-    7.0 through 7.9, first upload of the 7.x series to Debian unstable.
-    Closes: #1138925
+  * 
+  * debian/po translations:
+    - debian/po/fr.po: add French debconf translation (Grégoire Scano, 2019)
+    - debian/po/nl.po: add Dutch debconf translation (Frans Spiesschaert, 2019)
+    - debian/po/pt_BR.po: add Brazilian Portuguese debconf translation
+      (Adriano Rafael Gomes, 2020)
+    - debian/po/de.po: capitalisation fix + proper German quotation marks
+    - debian/po/ru.po: replace incomplete 2010 translation with complete
+      2019 version from Lev Lamberov (Debian L10N Russian)
   * usr/share/byobu/profiles/tmuxrc:
     - fix tmux 3.6 startup syntax errors: replace #{BYOBU_ACCENT} and
       #{BYOBU_HIGHLIGHT} format strings with $VAR environment-variable
@@ -163,12 +132,27 @@ byobu (7.9-1) unstable; urgency=medium
       automatically — users opt in via trustmux-enable.
     - add python3-tornado and python3-cryptography to Depends (required
       at runtime by the trustmux daemon).
+
+  [ Andreas Tille]
   * debian/control:
     - update Vcs-Git and Vcs-Browser to Salsa.
     - update Standards-Version to 4.7.4 (no changes required).
   * debian/watch: update from Launchpad to GitHub for upstream tarballs.
+  * debian/control: dh-python → dh-sequence-python3 (modern debhelper);
+    drop run-one from Recommends; drop apport from Suggests;
+    ttf-ubuntu-font-family → fonts-ubuntu (package renamed);
+    tmux (>= 1.5) → tmux (version constraint obsolete);
+    debconf (>= 0.5) | debconf-2.0 → debconf | debconf-2.0;
+    add ${perl:Depends}; Homepage → https://www.byobu.org
+  * debian/rules: drop --with python3 (implied by dh-sequence-python3)
+  * debian/watch: upgrade to version 5 git mode
+  * debian/copyright: convert to DEP-5 machine-readable format
+  * debian/upstream/metadata: new file with Bug-Database/Bug-Submit URLs
+  * debian/salsa-ci.yml: add Salsa CI pipeline configuration
+  * debian/source/lintian-overrides: drop now-resolved overrides for
+  * debian-watch-does-not-check-openpgp-signature and no-dep5-copyright
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 09 Jun 2026 12:00:00 -0500
+ -- Dustin Kirkland <kirkland@ubuntu.com>  Thu, 11 Jun 2026 20:52:40 -0500
 
 byobu (7.1) experimental; urgency=medium
 
