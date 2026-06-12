@@ -544,6 +544,35 @@ byobu (6.0) released; urgency=medium
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Sat, 23 Dec 2023 15:09:09 -0600
 
+byobu (5.133-1.2) unstable; urgency=medium
+
+  * Non-maintainer upload
+  * Drop apport and run-one pkg relationships (Closes: #812310, #1112253)
+  * Drop non-existing Vcs-Bzr
+  * Follow Homepage redirect
+  * d/copyright: Convert to machine-readable format
+
+  [ Hideki Yamane ]
+  * Suggest fonts-ubuntu (Closes: #928600)
+
+ -- Bastian Germann <bage@debian.org>  Tue, 02 Sep 2025 17:17:36 +0200
+
+byobu (5.133-1.1) unstable; urgency=medium
+
+  * Non-maintainer upload with maintainer approval.
+  * Add/Update debconf template translation
+    - Add French translation.
+      Thanks to Grégoire Scano (Closes: #930953)
+    - Update Russion translation.
+      Thanks Lev Lamberov (Closes: #942636)
+    - Add Dutch translation.
+      Thanks Frans Spiesschaert (Closes: #945360)
+    - Add Brazilian Portuguese translation.
+      Thanks Adriano Rafael Gomes (Closes: #972450)
+  * Fix a typo and quote signs in the German debconf translation.
+
+ -- Helge Kreutzmann <debian@helgefjell.de>  Wed, 04 Jan 2023 10:08:35 +0100
+
 byobu (5.133-0ubuntu1) focal; urgency=medium
 
   * debian/docs: Closes: #951455
