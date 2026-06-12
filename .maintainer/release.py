@@ -1625,8 +1625,14 @@ def push_salsa(v):
              "HEAD:refs/heads/master"])
         print("  ✓ salsa/master updated (with debian/watch)")
     finally:
-        # Always roll back, whether the push succeeded or failed.
+        # Roll back the overlay commit so local master and GitHub stay watch-free.
         run(["git", "-C", str(BYOBU_SRC), "reset", "--hard", "HEAD~1"], check=False)
+        # Re-sync the remote-tracking ref so salsa/master points to our HEAD
+        # (not the overlay).  Without this, the next `git push salsa master`
+        # fails as non-fast-forward and a naive `git merge salsa/master` would
+        # re-import the watch file into permanent history.
+        run(["git", "-C", str(BYOBU_SRC), "update-ref",
+             "refs/remotes/salsa/master", "HEAD"], check=False)
 
     # Push the release tag; skip if already present.
     remote = run(
@@ -1758,15 +1764,21 @@ def open_dev(identity):
     )
     configure_ac.write_text(text)
 
-    env = {**os.environ,
-           "DEBEMAIL": identity["DEBEMAIL"],
-           "DEBFULLNAME": identity["DEBFULLNAME"]}
-    run(
-        ["dch", "--newversion", f"{next_ver}-1",
-         "--distribution", "UNRELEASED", "--urgency", "medium",
-         f"Open {next_ver} for development"],
-        cwd=str(BYOBU_SRC), env=env,
+    # Prepend a fresh stanza rather than using `dch --newversion`, which merges
+    # into the existing UNRELEASED entry instead of creating a new one when the
+    # top stanza is already UNRELEASED (i.e. after an RC, not a final release).
+    import subprocess as _sp
+    datestamp = _sp.check_output(["date", "-R"]).decode().strip()
+    new_stanza = (
+        f"byobu ({next_ver}-1) UNRELEASED; urgency=medium\n"
+        f"\n"
+        f"  * Open {next_ver} for development\n"
+        f"\n"
+        f" -- {identity['DEBFULLNAME']} <{identity['DEBEMAIL']}>  {datestamp}\n"
+        f"\n"
     )
+    cl_path = BYOBU_SRC / "debian/changelog"
+    cl_path.write_text(new_stanza + cl_path.read_text())
 
     print("\n  debian/changelog top:")
     for line in (BYOBU_SRC / "debian/changelog").read_text().splitlines()[:6]:
