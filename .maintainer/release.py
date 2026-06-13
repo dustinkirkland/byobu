@@ -50,6 +50,7 @@ import urllib.request
 from pathlib import Path
 
 BYOBU_SRC = Path(__file__).resolve().parent.parent
+DEBIAN_DIR = BYOBU_SRC / ".maintainer" / "debian"
 
 # Set to True by --interactive; when False all confirm() calls auto-proceed.
 _interactive = False
@@ -344,7 +345,7 @@ def determine_versions(mode, resume=False):
 
     # Canonical base version from debian/changelog.
     # Strip Debian revision (-N) if present: "7.12-1" → "7.12".
-    changelog_line = (BYOBU_SRC / "debian/changelog").read_text().splitlines()[0]
+    changelog_line = (DEBIAN_DIR / "changelog").read_text().splitlines()[0]
     m = re.search(r"\(([^)~]+)", changelog_line)
     if not m:
         die(f"Cannot parse base version from: {changelog_line}")
@@ -925,6 +926,7 @@ echo "=== Building $PPA_VER ==="
 
 BUILDDIR=$(mktemp -d)
 cp -a "$SRCDIR" "$BUILDDIR/${PKG}-${PPA_VER}"
+cp -a /src/debian "$BUILDDIR/${PKG}-${PPA_VER}/"
 cd "$BUILDDIR/${PKG}-${PPA_VER}"
 
 echo "3.0 (native)" > debian/source/format
@@ -1042,6 +1044,7 @@ git -C /src archive --format=tar.gz --prefix="${PKG}-${UPSTREAM_VER}/" HEAD \
 mkdir "$BUILDDIR/${PKG}-${UPSTREAM_VER}"
 tar -xzf "$BUILDDIR/${PKG}_${UPSTREAM_VER}.orig.tar.gz" \
     -C "$BUILDDIR/${PKG}-${UPSTREAM_VER}" --strip-components=1
+cp -a /src/debian "$BUILDDIR/${PKG}-${UPSTREAM_VER}/"
 
 cd "$BUILDDIR/${PKG}-${UPSTREAM_VER}"
 
@@ -1560,6 +1563,28 @@ def update_website_screenshots(v):
         print("  (screenshots unchanged — nothing to push)")
 
 
+# ── debian/ build helper ─────────────────────────────────────────────────
+#
+# debian/ lives in .maintainer/debian/ so it is excluded from upstream
+# tarballs (.gitattributes marks .maintainer/ export-ignore).  Docker build
+# steps mount BYOBU_SRC as /src and expect debian/ at the root.
+# prepare_debian() copies it there; cleanup_debian() removes it afterwards.
+# The root-level debian/ is gitignored so it is never committed upstream.
+
+def prepare_debian():
+    src = DEBIAN_DIR
+    dst = BYOBU_SRC / "debian"
+    if dst.exists():
+        shutil.rmtree(dst)
+    shutil.copytree(src, dst)
+
+
+def cleanup_debian():
+    dst = BYOBU_SRC / "debian"
+    if dst.exists():
+        shutil.rmtree(dst)
+
+
 # ── phase 9: Salsa push (final only) ─────────────────────────────────────
 
 def push_salsa(v):
@@ -1689,6 +1714,7 @@ apt-get install -y --no-install-recommends \
 # container.  Allow all directories so git clone can read it.
 git config --global --add safe.directory '*'
 git clone /src /build/byobu
+cp -a /src/debian /build/byobu/
 cd /build/byobu
 
 echo "--- debian/gbp.conf ---"
@@ -1761,14 +1787,14 @@ def open_dev(identity):
         f" -- {identity['DEBFULLNAME']} <{identity['DEBEMAIL']}>  {datestamp}\n"
         f"\n"
     )
-    cl_path = BYOBU_SRC / "debian/changelog"
+    cl_path = DEBIAN_DIR / "changelog"
     cl_path.write_text(new_stanza + cl_path.read_text())
 
     print("\n  debian/changelog top:")
-    for line in (BYOBU_SRC / "debian/changelog").read_text().splitlines()[:6]:
+    for line in cl_path.read_text().splitlines()[:6]:
         print(f"    {line}")
 
-    run(["git", "-C", str(BYOBU_SRC), "add", "configure.ac", "debian/changelog"])
+    run(["git", "-C", str(BYOBU_SRC), "add", "configure.ac", ".maintainer/debian/changelog"])
     run(["git", "-C", str(BYOBU_SRC), "commit",
          "-m", f"bump version to {next_ver} and open for development"])
     print(f"  ✓ Committed: bump version to {next_ver}")
@@ -1815,7 +1841,11 @@ def main():
         return
 
     if mode == "salsa-ci":
-        run_salsa_ci()
+        prepare_debian()
+        try:
+            run_salsa_ci()
+        finally:
+            cleanup_debian()
         return
 
     banner(f"byobu/trustmux release pipeline — {mode.upper()}"
@@ -1857,26 +1887,30 @@ def main():
     if mode == "final" and should_run("6e", start_from):
         parallel.append(("Fedora RPM", lambda: build_fedora_rpm(v)))
 
-    run_phases_parallel(parallel, log_dir=v["outdir"] / "logs")
+    prepare_debian()
+    try:
+        run_phases_parallel(parallel, log_dir=v["outdir"] / "logs")
 
-    if should_run("6", start_from):
-        create_github_release(v, mode)
+        if should_run("6", start_from):
+            create_github_release(v, mode)
 
-    if mode == "final":
-        if should_run("6d", start_from):
-            update_homebrew(v, tap_trustmux)
-            update_homebrew_byobu(v, tap_byobu)
+        if mode == "final":
+            if should_run("6d", start_from):
+                update_homebrew(v, tap_trustmux)
+                update_homebrew_byobu(v, tap_byobu)
 
-    if should_run("7", start_from):
-        sign_and_upload(v, identity, mode)
+        if should_run("7", start_from):
+            sign_and_upload(v, identity, mode)
 
-    if mode == "final" and should_run("8", start_from):
-        update_website_screenshots(v)
+        if mode == "final" and should_run("8", start_from):
+            update_website_screenshots(v)
 
-    if mode == "final" and should_run("9", start_from):
-        push_salsa(v)
+        if mode == "final" and should_run("9", start_from):
+            push_salsa(v)
 
-    print_summary(v, mode)
+        print_summary(v, mode)
+    finally:
+        cleanup_debian()
 
 
 if __name__ == "__main__":
