@@ -1,5 +1,0 @@
-# Long lines in autotools-generated Makefile.am stubs and the byobu(1) man
-# page are not practically splittable without breaking the build or rendering.
-byobu source: very-long-line-length-in-source-file [usr/bin/Makefile.am]
-byobu source: very-long-line-length-in-source-file [usr/share/man/man1/Makefile.am]
-byobu source: very-long-line-length-in-source-file [usr/share/man/man1/byobu.1]

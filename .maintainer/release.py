@@ -32,7 +32,7 @@ Final adds:
     6d Homebrew formula update
     GitHub release (non-prerelease, both byobu and trustmux tags)
     8  Regenerate PWA screenshots → commit + push trustmux-web
-    9  Push release commit + tag to Debian Salsa (salsa/master)
+    9  Push release commit + tag to Debian Salsa (salsa/debian/latest)
 """
 
 import argparse
@@ -1562,30 +1562,16 @@ def update_website_screenshots(v):
 
 # ── phase 9: Salsa push (final only) ─────────────────────────────────────
 
-_WATCH_CONTENT = (
-    "Version: 5\n\n"
-    "Source: https://github.com/dustinkirkland/@PACKAGE@/\n"
-    "Matching-Pattern: refs/tags/@ANY_VERSION@\n"
-    "Mode: git\n"
-)
-
-
 def push_salsa(v):
-    """Force-push an overlay commit (release + debian/watch) to salsa/master.
+    """Push the release commit to salsa/debian/latest (DEP-14).
 
-    salsa/master tracks the latest final release, never open-dev HEAD.  We
-    force-push so that the history rebase (from the old Debian-native history
-    that lived on salsa before) is not an obstacle on subsequent releases.
-
-    debian/watch is intentionally absent during development (test-uscan would
-    fail on an unreleased version).  Here we temporarily commit it on top of
-    the release tag commit, push that overlay commit to salsa, then hard-reset
-    locally so GitHub master never sees the file.  open_dev() removes it again
-    if it somehow ends up in the working tree.
+    Never force-pushes.  Aborts if salsa/debian/latest has commits not yet
+    merged into local master, so history on Salsa is always preserved.
+    debian/watch lives permanently in the tree; no overlay commit needed.
     """
-    section("Phase 9: Push to Debian Salsa (salsa/master)")
+    section("Phase 9: Push to Debian Salsa (debian/latest)")
     base_ver = v["base_ver"]
-    tag = base_ver  # e.g. "7.12"
+    tag = base_ver  # e.g. "7.13"
 
     # Resolve the byobu version tag to a commit hash.
     r = run(
@@ -1602,37 +1588,34 @@ def push_salsa(v):
     print(f"  Tag:    {tag}")
     print(f"  Commit: {commit}")
 
-    # Require a clean working tree — we're about to make and then undo a commit.
-    status = run(
-        ["git", "-C", str(BYOBU_SRC), "status", "--porcelain"],
-        capture=True,
+    # Fetch Salsa and verify our HEAD is a fast-forward of salsa/debian/latest.
+    # Never overwrite Salsa history — if Andreas (or another DD) has pushed
+    # commits there that we haven't merged, abort and ask the maintainer to
+    # merge first.
+    print("  Fetching salsa to check for upstream changes…")
+    run(["git", "-C", str(BYOBU_SRC), "fetch", "salsa"])
+    salsa_ref = run(
+        ["git", "-C", str(BYOBU_SRC), "rev-parse", "salsa/debian/latest"],
+        capture=True, check=False,
     )
-    if status.stdout.strip():
-        die(
-            "Working tree is not clean — cannot safely add debian/watch for salsa.\n"
-            "  Commit or stash your changes first."
+    if salsa_ref.returncode == 0:
+        merge_base = run(
+            ["git", "-C", str(BYOBU_SRC), "merge-base",
+             "HEAD", "salsa/debian/latest"],
+            capture=True, check=False,
         )
+        if (merge_base.returncode == 0 and
+                merge_base.stdout.strip() != salsa_ref.stdout.strip()):
+            die(
+                "salsa/debian/latest has commits not present in local master.\n"
+                "  Merge them first:\n"
+                "    git merge salsa/debian/latest\n"
+                "  Then re-run the release."
+            )
 
-    # Build an overlay commit that adds debian/watch, push it to salsa, then
-    # hard-reset so the local branch and GitHub stay watch-free.
-    watch_path = BYOBU_SRC / "debian/watch"
-    try:
-        watch_path.write_text(_WATCH_CONTENT)
-        run(["git", "-C", str(BYOBU_SRC), "add", "debian/watch"])
-        run(["git", "-C", str(BYOBU_SRC), "commit",
-             "-m", f"debian: add watch file for released version {base_ver}"])
-        run(["git", "-C", str(BYOBU_SRC), "push", "--force", "salsa",
-             "HEAD:refs/heads/master"])
-        print("  ✓ salsa/master updated (with debian/watch)")
-    finally:
-        # Roll back the overlay commit so local master and GitHub stay watch-free.
-        run(["git", "-C", str(BYOBU_SRC), "reset", "--hard", "HEAD~1"], check=False)
-        # Re-sync the remote-tracking ref so salsa/master points to our HEAD
-        # (not the overlay).  Without this, the next `git push salsa master`
-        # fails as non-fast-forward and a naive `git merge salsa/master` would
-        # re-import the watch file into permanent history.
-        run(["git", "-C", str(BYOBU_SRC), "update-ref",
-             "refs/remotes/salsa/master", "HEAD"], check=False)
+    run(["git", "-C", str(BYOBU_SRC), "push", "salsa",
+         "HEAD:refs/heads/debian/latest"])
+    print("  ✓ salsa/debian/latest updated")
 
     # Push the release tag; skip if already present.
     remote = run(
@@ -1715,6 +1698,7 @@ echo "--- gbp buildpackage (mimicking Salsa CI) ---"
 gbp buildpackage \
   --git-export-dir=/tmp/build-area \
   --git-no-sign-tags \
+  --git-ignore-branch \
   -us -uc -d -sa
 
 echo "--- Build output ---"
@@ -1783,12 +1767,6 @@ def open_dev(identity):
     print("\n  debian/changelog top:")
     for line in (BYOBU_SRC / "debian/changelog").read_text().splitlines()[:6]:
         print(f"    {line}")
-
-    # Remove debian/watch — test-uscan fails on an unreleased version.
-    # push_salsa() adds it back (temporarily) when cutting a final release.
-    watch_path = BYOBU_SRC / "debian/watch"
-    if watch_path.exists():
-        run(["git", "-C", str(BYOBU_SRC), "rm", "debian/watch"])
 
     run(["git", "-C", str(BYOBU_SRC), "add", "configure.ac", "debian/changelog"])
     run(["git", "-C", str(BYOBU_SRC), "commit",
