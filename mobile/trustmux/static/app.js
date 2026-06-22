@@ -155,6 +155,7 @@ const output        = document.getElementById('output');
 const statusbar     = document.getElementById('statusbar');
 const statusText    = document.getElementById('status-text');
 const cmdInput      = document.getElementById('cmd');
+const pwdInput      = document.getElementById('pwd');
 const btnSend       = document.getElementById('btn-send');
 const btnKbdMode    = document.getElementById('btn-kbd-mode');
 const machineSelect    = document.getElementById('machine-select');
@@ -362,6 +363,7 @@ function rebuildPaneTree() {
     currentWindowId  = null;
     currentPane      = null;
     cmdInput.disabled = true;
+    pwdInput.disabled = true;
     btnSend.disabled  = true;
     updateXYZLabel();
     updateContextName();
@@ -388,6 +390,7 @@ function navigateTo(sessionId, windowId, paneId) {
   currentPane      = paneId;
   _saveLastPane(paneId);
   cmdInput.disabled = false;
+  pwdInput.disabled = false;
   btnSend.disabled  = false;
   output.className  = '';
 
@@ -498,12 +501,17 @@ function renderOutput(text, scrollToBottom) {
 }
 
 // ── send keys ─────────────────────────────────────────────────────────────
+function activeInput() { return kbdMode === 2 ? pwdInput : cmdInput; }
+
 function sendKeys() {
-  const keys = cmdInput.value;
+  const inp  = activeInput();
+  const keys = inp.value;
   if (!keys || !currentPane) return;
   send({ type: 'send_keys', pane_id: currentPane, keys, enter: true });
-  cmdInput.value = '';
-  cmdInput.style.height = 'auto';
+  inp.value = '';
+  if (inp === cmdInput) {
+    cmdInput.style.height = 'auto';
+  }
 }
 
 // ── events ─────────────────────────────────────────────────────────────────
@@ -515,12 +523,22 @@ cmdInput.addEventListener('input', () => {
   cmdInput.style.height = 'auto';
   cmdInput.style.height = Math.min(cmdInput.scrollHeight, 160) + 'px';
 });
+pwdInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); sendKeys(); }
+});
 btnSend.addEventListener('click', sendKeys);
 
-// ── keyboard mode toggle (terminal ↔ text) ────────────────────────────────
-let textMode = false;
+// ── keyboard mode toggle ($_ / Aa / **) ───────────────────────────────────
+// 0 = terminal ($_)   no spell-check, no autocorrect
+// 1 = text     (Aa)   spell-check + autocorrect on
+// 2 = password (**)   type="password" input — keyboard does not learn text
+let kbdMode = 0;
 function applyKbdMode() {
-  if (textMode) {
+  const inPwd = kbdMode === 2;
+  cmdInput.style.display = inPwd ? 'none' : '';
+  pwdInput.style.display = inPwd ? '' : 'none';
+
+  if (kbdMode === 1) {
     cmdInput.setAttribute('spellcheck', 'true');
     cmdInput.setAttribute('autocorrect', 'on');
     cmdInput.setAttribute('autocapitalize', 'sentences');
@@ -528,7 +546,7 @@ function applyKbdMode() {
     btnKbdMode.textContent = 'Aa';
     btnKbdMode.title = 'Text mode — tap for terminal mode';
     btnKbdMode.style.color = 'var(--accent)';
-  } else {
+  } else if (kbdMode === 0) {
     cmdInput.setAttribute('spellcheck', 'false');
     cmdInput.setAttribute('autocorrect', 'off');
     cmdInput.setAttribute('autocapitalize', 'none');
@@ -536,15 +554,21 @@ function applyKbdMode() {
     btnKbdMode.textContent = '$_';
     btnKbdMode.title = 'Terminal mode — tap to enable spell check';
     btnKbdMode.style.color = '';
+  } else {
+    output.style.whiteSpace = 'pre';
+    btnKbdMode.textContent = '**';
+    btnKbdMode.title = 'Password mode — keyboard will not learn this text';
+    btnKbdMode.style.color = 'var(--accent)';
   }
   scrollOutputToBottom();
 }
 btnKbdMode.addEventListener('click', () => {
-  textMode = !textMode;
+  kbdMode = (kbdMode + 1) % 3;
   applyKbdMode();
-  // blur + refocus so Android keyboard re-evaluates spellcheck state
-  cmdInput.blur();
-  setTimeout(() => cmdInput.focus(), 50);
+  // blur + refocus so Android keyboard re-evaluates input type/spellcheck
+  const inp = activeInput();
+  inp.blur();
+  setTimeout(() => inp.focus(), 50);
 });
 
 // ── escape / ctrl-c popup ─────────────────────────────────────────────────

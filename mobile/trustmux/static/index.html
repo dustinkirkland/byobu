@@ -216,6 +216,15 @@
     #cmd:focus { border-color: var(--accent); }
     #cmd:disabled { opacity: 0.4; }
     #cmd::placeholder { color: var(--dim); }
+    #pwd {
+      flex: 1; background: var(--bg3); color: var(--text);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 8px 10px; font-size: 13px; font-family: var(--font);
+      outline: none; height: 38px; display: none;
+    }
+    #pwd:focus { border-color: var(--accent); }
+    #pwd:disabled { opacity: 0.4; }
+    #pwd::placeholder { color: var(--dim); }
 
     #btn-send {
       background: var(--accent); color: #fff; border: none;
@@ -509,6 +518,10 @@
     <textarea id="cmd" rows="2" placeholder="Send keys to pane… (Enter = send, Shift+Enter = newline)"
               autocomplete="off" autocorrect="off" autocapitalize="none"
               spellcheck="false" disabled></textarea>
+    <input type="password" id="pwd"
+           autocomplete="new-password" autocorrect="off" autocapitalize="none"
+           spellcheck="false" placeholder="Password — not saved by keyboard"
+           disabled>
     <div id="btn-right-col">
       <button id="btn-escape" class="icon-btn" title="Esc / Ctrl-C">⎋</button>
       <button id="btn-kbd-mode" class="icon-btn" title="Terminal mode — tap to enable spell check">$_</button>
