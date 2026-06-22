@@ -3,4 +3,4 @@ __pycache__
 mobile/build/
 mobile/dist/
 mobile/trustmux.egg-info/
-debian/
+/debian/
