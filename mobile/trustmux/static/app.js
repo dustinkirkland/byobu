@@ -243,6 +243,11 @@ function setPaneName(paneId, name) {
   else localStorage.removeItem(_paneKey(paneId));
 }
 
+// ── last-viewed pane (persisted so reopening the PWA restores context) ────
+function _lastPaneKey() { return `last-pane:${location.hostname}`; }
+function _saveLastPane(paneId) { localStorage.setItem(_lastPaneKey(), paneId); }
+function _loadLastPane() { return localStorage.getItem(_lastPaneKey()); }
+
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
   statusText.textContent = msg;
@@ -327,6 +332,8 @@ function rebuildPaneTree() {
   let autoFromForcedPane = null;
   let autoFirst          = null;
   let prevTarget         = null;
+  let savedTarget        = null;
+  const savedPaneId      = _loadLastPane();
 
   for (const s of sessions) {
     for (const w of (s.windows || [])) {
@@ -337,13 +344,15 @@ function rebuildPaneTree() {
           if (forcedPane === p.id) autoFromForcedPane = entry;
           if (!autoFirst) autoFirst = entry;
           if (p.id === currentPane) prevTarget = entry;
+          if (savedPaneId && p.id === savedPaneId) savedTarget = entry;
         }
       }
     }
   }
 
-  // Prefer exact forced pane (new window), then current pane, then forced session, then first
-  const target = autoFromForcedPane ?? prevTarget ?? autoFromForced ?? autoFirst ?? null;
+  // Prefer exact forced pane (new window), then current pane, then forced session,
+  // then last-viewed pane restored from localStorage, then first available pane.
+  const target = autoFromForcedPane ?? prevTarget ?? autoFromForced ?? savedTarget ?? autoFirst ?? null;
 
   // Scroll to top when navigating to a freshly created window/session
   if (autoFromForcedPane && autoFromForcedPane !== prevTarget) _scrollTopOnNextSnapshot = true;
@@ -377,6 +386,7 @@ function navigateTo(sessionId, windowId, paneId) {
   currentSessionId = sessionId;
   currentWindowId  = windowId;
   currentPane      = paneId;
+  _saveLastPane(paneId);
   cmdInput.disabled = false;
   btnSend.disabled  = false;
   output.className  = '';
