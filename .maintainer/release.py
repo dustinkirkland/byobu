@@ -108,6 +108,8 @@ def run(cmd, check=True, capture=False, **kwargs):
         result = subprocess.run(cmd, shell=isinstance(cmd, str), **kw)
         buf.write(result.stdout or "")
         if check and result.returncode != 0:
+            short = (cmd[0] if isinstance(cmd, list) else str(cmd).split()[0])
+            buf.write(f"\n[exit {result.returncode}] {short}\n")
             raise subprocess.CalledProcessError(result.returncode, cmd, result.stdout)
         return result
     return subprocess.run(cmd, shell=isinstance(cmd, str), **kw)
@@ -175,7 +177,15 @@ def run_phases_parallel(labeled_fns, log_dir=None):
             with open(log_path, "w") as lf:
                 lf.write(out)
                 if not ok:
-                    lf.write(f"\n--- FAILED: {exc}\n")
+                    if isinstance(exc, subprocess.CalledProcessError):
+                        short = (exc.cmd[0] if isinstance(exc.cmd, list)
+                                 else str(exc.cmd).split()[0])
+                        lf.write(f"\n--- FAILED (exit {exc.returncode}): {short}\n")
+                        extra = (exc.output or "").strip()
+                        if extra and extra not in out:
+                            lf.write(f"--- subprocess output ---\n{extra}\n")
+                    else:
+                        lf.write(f"\n--- FAILED: {exc}\n")
             if not ok:
                 print(f"  (full log: {log_path})")
                 failed_logs.append(log_path)
