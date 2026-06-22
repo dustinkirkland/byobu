@@ -44,5 +44,8 @@ class Trustmux < Formula
     assert_match "trustmux not running", shell_output("#{bin}/trustmux status")
     # --help should work without a running daemon
     assert_match "usage:", shell_output("#{bin}/trustmux --help")
+    # Regression: cryptography must be importable in the bundled venv (GH: #113)
+    system libexec/"bin/python3", "-c",
+      "from cryptography.hazmat.primitives.asymmetric import ec; ec.generate_private_key(ec.SECP256R1())"
   end
 end

@@ -57,7 +57,7 @@ def _check_tls() -> bool:
         print(f"  ({e})", file=sys.stderr)
         print("", file=sys.stderr)
         print("The 'cryptography' package is required. Fix with:", file=sys.stderr)
-        print("  pip install --upgrade cryptography", file=sys.stderr)
+        print(f"  {sys.executable} -m pip install --upgrade cryptography", file=sys.stderr)
         print("", file=sys.stderr)
         return False
 

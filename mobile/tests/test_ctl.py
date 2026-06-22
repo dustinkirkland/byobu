@@ -107,6 +107,41 @@ class TestTsHost(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# _check_tls()  — GH #113: missing cryptography in bundled Homebrew venv
+# ---------------------------------------------------------------------------
+
+class TestCheckTls(unittest.TestCase):
+
+    @unittest.skipUnless(
+        __import__('importlib.util', fromlist=['find_spec']).find_spec('cryptography') is not None,
+        'cryptography not installed in this venv',
+    )
+    def test_returns_true_when_cryptography_present(self):
+        self.assertTrue(ctl._check_tls())
+
+    def test_returns_false_and_prints_sys_executable_when_import_fails(self):
+        # Simulate a Homebrew bundled-venv install where cryptography is absent
+        # (GH #113).  Shadow the module so the local `from cryptography...`
+        # import inside _check_tls raises ImportError.
+        import io
+        buf = io.StringIO()
+        with patch.dict(sys.modules, {
+            'cryptography.hazmat.primitives.asymmetric': None,
+        }):
+            with patch('trustmux._ctl.sys.stderr', buf):
+                result = ctl._check_tls()
+        self.assertFalse(result)
+        output = buf.getvalue()
+        self.assertIn(sys.executable, output)
+        self.assertIn("cryptography", output)
+        # Must NOT suggest bare 'pip' — that targets the wrong interpreter
+        # in Homebrew's bundled-venv installs (regression: GH #113).
+        for line in output.splitlines():
+            if "pip" in line and "cryptography" in line:
+                self.assertNotRegex(line, r'^\s+pip ')
+
+
+# ---------------------------------------------------------------------------
 # _ensure_ts_serve()
 # ---------------------------------------------------------------------------
 

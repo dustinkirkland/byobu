@@ -1207,8 +1207,11 @@ def update_homebrew(v, tap_dir):
     print(f"  URL:    {tarball_url}")
     print(f"  SHA256: {tarball_sha256}")
 
-    formula_path = tap_dir / "Formula/trustmux.rb"
-    formula = formula_path.read_text()
+    # Always start from the repo formula so the tap stays in sync with the
+    # canonical resource list (dependencies, test block, etc.).  Only the
+    # url/sha256/version fields are replaced with the live PyPI values.
+    repo_formula = BYOBU_SRC / "homebrew/Formula/trustmux.rb"
+    formula = repo_formula.read_text()
     formula = re.sub(
         r'^  url "https://files\.pythonhosted\.org/[^"]*"',
         f'  url "{tarball_url}"',
@@ -1224,6 +1227,7 @@ def update_homebrew(v, tap_dir):
         f'  version "{v["pypi_version"]}"',
         formula, count=1, flags=re.MULTILINE,
     )
+    formula_path = tap_dir / "Formula/trustmux.rb"
     formula_path.write_text(formula)
 
     run(["git", "-C", str(tap_dir), "pull", "--ff-only"])
