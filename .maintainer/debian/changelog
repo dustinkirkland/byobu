@@ -1,6 +1,16 @@
 byobu (7.14-1) UNRELEASED; urgency=medium
 
-  * Open 7.14 for development
+  * trustmux/homebrew: fix missing cryptography resource in Homebrew formula;
+    bundled venv now includes cryptography, cffi, pycparser, and rust build dep
+    so trustmux starts correctly out of the box (Closes: GH #113)
+  * trustmux/pwa: preserve scroll position when new snapshots arrive; no longer
+    yanked to bottom when scrolled up and terminal output changes
+  * trustmux/pwa: restore last-viewed pane on reopen; pane ID persisted to
+    localStorage (scoped per host) and restored on next PWA launch
+  * release: fix .gitignore to anchor /debian/ to repo root so .maintainer/debian/
+    is no longer inadvertently ignored by git
+  * release: fix update_homebrew() to sync tap formula from canonical repo copy
+    rather than mutating tap in place, preventing future resource omissions
 
  -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 22 Jun 2026 09:36:22 -0500
 
