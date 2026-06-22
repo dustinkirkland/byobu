@@ -1718,8 +1718,17 @@ apt-get install -y --no-install-recommends \
 # container.  Allow all directories so git clone can read it.
 git config --global --add safe.directory '*'
 git clone /src /build/byobu
-cp -a /src/debian /build/byobu/
 cd /build/byobu
+
+# Simulate the debian/latest branch that the real Salsa CI checks out.
+# gbp reads debian/changelog from git (HEAD:debian/changelog), not from disk,
+# so we must commit debian/ into the clone — not just copy it.
+git checkout -b debian/latest
+cp -a /src/debian debian/
+git config user.email "ci@salsa.local"
+git config user.name "Salsa CI"
+git add -f debian/
+git commit -q -m "debian: add packaging directory (Salsa CI simulation)"
 
 echo "--- debian/gbp.conf ---"
 cat debian/gbp.conf
