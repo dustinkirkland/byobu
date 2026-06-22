@@ -284,10 +284,11 @@ function connect() {
       rebuildPaneTree();
     } else if (msg.type === 'snapshot') {
       if (msg.pane_id === currentPane) {
-        const scrollTop = _scrollTopOnNextSnapshot;
-        if (scrollTop) _scrollTopOnNextSnapshot = false;
-        renderOutput(msg.data, !scrollTop);
-        if (scrollTop) output.scrollTop = 0;
+        const forceTop = _scrollTopOnNextSnapshot;
+        if (forceTop) _scrollTopOnNextSnapshot = false;
+        const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
+        renderOutput(msg.data, !forceTop && atBottom);
+        if (forceTop) output.scrollTop = 0;
       }
     } else if (msg.type === 'update') {
       if (msg.pane_id !== currentPane) return;
