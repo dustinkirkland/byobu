@@ -18,6 +18,8 @@ const _paneCache = new Map();
 const _PANE_CACHE_MAX = 50;
 
 // ── offline / connectivity helpers ────────────────────────────────────────
+let _serverVersion = null;
+
 let _offlineCountdownTimer = null;
 let _offlineRetryTimer = null;
 const OFFLINE_RETRY_SECS = 8; // auto-retry interval while offline screen is shown
@@ -163,6 +165,8 @@ const btnInstall       = document.getElementById('btn-install');
 const iosInstallTip    = document.getElementById('ios-install-tip');
 const hostnameDisplay  = document.getElementById('hostname-display');
 const headerClock      = document.getElementById('header-clock');
+const appVersion       = document.getElementById('app-version');
+const btnUpdate        = document.getElementById('btn-update');
 const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
 const ctxOverlay       = document.getElementById('ctx-overlay');
@@ -926,10 +930,23 @@ machineSelect.addEventListener('change', () => {
   if (url && /^https?:\/\//.test(url)) window.location.href = url;
 });
 
+btnUpdate.addEventListener('click', () => location.reload());
+
+function applyVersion(v) {
+  if (!v) return;
+  appVersion.textContent = 'v' + v;
+  if (_serverVersion && v !== _serverVersion) {
+    btnUpdate.style.display = '';
+  } else {
+    _serverVersion = v;
+  }
+}
+
 async function applyHostname() {
   try {
     const data = await fetch('/ping').then(r => r.json());
     if (data.hostname) hostnameDisplay.textContent = data.hostname;
+    if (data.version) applyVersion(data.version);
   } catch { /* ignore */ }
 }
 
@@ -984,6 +1001,7 @@ async function init() {
     const data = await r.json();
     if (r.ok) {
       if (data.hostname) hostnameDisplay.textContent = data.hostname;
+      if (data.version) applyVersion(data.version);
       hideOfflineScreen();
       hidePairScreen();
       connect();

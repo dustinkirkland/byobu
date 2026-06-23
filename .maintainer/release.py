@@ -1778,7 +1778,7 @@ def run_salsa_ci():
 # ── open-dev (post-final) ─────────────────────────────────────────────────
 
 def open_dev(identity):
-    """Bump configure.ac + debian/changelog to next minor version after a final release."""
+    """Bump configure.ac, debian/changelog, and trustmux version files to next minor version after a final release."""
     banner("open-dev: bump to next development version")
 
     configure_ac = BYOBU_SRC / "configure.ac"
@@ -1796,6 +1796,18 @@ def open_dev(identity):
         f"AC_INIT([byobu], [{next_ver}]",
     )
     configure_ac.write_text(text)
+
+    init_py = BYOBU_SRC / "mobile" / "trustmux" / "__init__.py"
+    init_text = init_py.read_text()
+    init_py.write_text(
+        re.sub(r'__version__ = "[^"]+"', f'__version__ = "{next_ver}"', init_text)
+    )
+
+    pyproject = BYOBU_SRC / "mobile" / "pyproject.toml"
+    pyproject_text = pyproject.read_text()
+    pyproject.write_text(
+        re.sub(r'^version = "[^"]+"', f'version = "{next_ver}"', pyproject_text, flags=re.MULTILINE)
+    )
 
     # Prepend a fresh stanza rather than using `dch --newversion`, which merges
     # into the existing UNRELEASED entry instead of creating a new one when the
@@ -1817,7 +1829,11 @@ def open_dev(identity):
     for line in cl_path.read_text().splitlines()[:6]:
         print(f"    {line}")
 
-    run(["git", "-C", str(BYOBU_SRC), "add", "configure.ac", ".maintainer/debian/changelog"])
+    run(["git", "-C", str(BYOBU_SRC), "add",
+         "configure.ac",
+         ".maintainer/debian/changelog",
+         "mobile/trustmux/__init__.py",
+         "mobile/pyproject.toml"])
     run(["git", "-C", str(BYOBU_SRC), "commit",
          "-m", f"bump version to {next_ver} and open for development"])
     print(f"  ✓ Committed: bump version to {next_ver}")

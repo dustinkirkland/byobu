@@ -22,6 +22,12 @@ import tornado.httpserver
 import tornado.web
 import tornado.websocket
 
+try:
+    from importlib.metadata import version as _pkg_version
+    _DAEMON_VERSION = _pkg_version("trustmux")
+except Exception:
+    from trustmux import __version__ as _DAEMON_VERSION
+
 # ---------------------------------------------------------------------------
 # Pairing & session state
 # ---------------------------------------------------------------------------
@@ -559,7 +565,7 @@ class PingHandler(BaseHandler):
         self.set_header("Cache-Control", "no-store")
         token = self.get_cookie("trustmux_session") or ""
         if _valid_session_token(token):
-            self.json({"auth": True, "hostname": socket.gethostname()})
+            self.json({"auth": True, "hostname": socket.gethostname(), "version": _DAEMON_VERSION})
         else:
             self.json({"auth": False}, 401)
 

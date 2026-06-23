@@ -1,3 +1,3 @@
 """Trustmux — mobile companion for Byobu/tmux sessions."""
 
-__version__ = "7.0.0"
+__version__ = "7.14"
