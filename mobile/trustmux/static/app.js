@@ -166,7 +166,6 @@ const iosInstallTip    = document.getElementById('ios-install-tip');
 const hostnameDisplay  = document.getElementById('hostname-display');
 const headerClock      = document.getElementById('header-clock');
 const appVersion       = document.getElementById('app-version');
-const btnUpdate        = document.getElementById('btn-update');
 const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
 const ctxOverlay       = document.getElementById('ctx-overlay');
@@ -930,16 +929,20 @@ machineSelect.addEventListener('change', () => {
   if (url && /^https?:\/\//.test(url)) window.location.href = url;
 });
 
-btnUpdate.addEventListener('click', () => location.reload());
+let _swRegistration = null;
+
+appVersion.addEventListener('click', async () => {
+  if (_swRegistration) await _swRegistration.update().catch(() => {});
+  location.reload();
+});
 
 function applyVersion(v) {
   if (!v) return;
-  appVersion.textContent = 'v' + v;
-  if (_serverVersion && v !== _serverVersion) {
-    btnUpdate.style.display = '';
-  } else {
-    _serverVersion = v;
-  }
+  const isUpdate = _serverVersion && v !== _serverVersion;
+  appVersion.textContent = isUpdate ? 'v' + v + ' ⟳' : 'v' + v;
+  appVersion.title = isUpdate ? 'Server updated — tap to reload' : 'Tap to reload / check for updates';
+  appVersion.classList.toggle('update-available', !!isUpdate);
+  if (!isUpdate) _serverVersion = v;
 }
 
 async function applyHostname() {
@@ -1024,5 +1027,5 @@ async function init() {
 init();
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
+  navigator.serviceWorker.register('/sw.js').then(r => { _swRegistration = r; });
 }

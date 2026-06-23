@@ -168,12 +168,12 @@
     #statusbar.error .dot { background: var(--red); }
     #app-version {
       font-size: 10px; color: var(--dim); white-space: nowrap; flex-shrink: 0;
+      background: none; border: none; padding: 0; cursor: pointer;
+      font-family: inherit;
     }
-    #btn-update {
-      background: none; border: none; color: var(--amber);
-      cursor: pointer; font-size: 14px; padding: 0 1px; flex-shrink: 0; line-height: 1;
-    }
-    #btn-update:active { opacity: 0.7; }
+    #app-version:hover { color: var(--text); }
+    #app-version:active { opacity: 0.7; }
+    #app-version.update-available { color: var(--amber); }
 
     /* ── output area ── */
     #output {
@@ -509,8 +509,7 @@
   <div id="statusbar">
     <span class="dot"></span>
     <span id="status-text">connecting…</span>
-    <span id="app-version"></span>
-    <button id="btn-update" title="Update available — tap to reload" style="display:none">⟳</button>
+    <button id="app-version" title="Tap to reload / check for updates"></button>
     <span id="status-right">
       <span id="hostname-display"></span>
       <span id="header-clock"></span>
