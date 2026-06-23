@@ -416,7 +416,31 @@ def cmd_log() -> int:
     return 0
 
 
+def _refuse_root() -> None:
+    """Abort if running as root (e.g. via sudo).
+
+    Running as root causes three distinct failure modes:
+      1. Path.home() resolves to /root/, so PIDFILE/CONFIG_DIR point to root's
+         home; the PID-mismatch safety check in cmd_stop() is silently bypassed
+         because the user's PIDFILE is invisible to root.
+      2. `tailscale serve` runs as root and creates a conflicting serve config,
+         clobbering the user-level config and wedging tailscale.
+      3. The daemon relaunches owned by root, creating a privilege-escalation
+         risk and making the user-level `trustmux stop/status` inoperative.
+    """
+    if os.geteuid() == 0:
+        sudo_user = os.environ.get("SUDO_USER", "")
+        hint = f"  Run as your normal user: sudo -u {sudo_user} trustmux ..." if sudo_user else ""
+        if not hint:
+            hint = "  Drop sudo and run as your normal user account."
+        print("Error: trustmux must not be run as root (or via sudo).", file=sys.stderr)
+        print(hint, file=sys.stderr)
+        print("  Running as root breaks tailscale serve config and daemon ownership.", file=sys.stderr)
+        sys.exit(1)
+
+
 def main() -> None:
+    _refuse_root()
     parser = argparse.ArgumentParser(
         prog="trustmux",
         description="Manage the Trustmux daemon",
