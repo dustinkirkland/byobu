@@ -22,11 +22,30 @@ import tornado.httpserver
 import tornado.web
 import tornado.websocket
 
-try:
-    from importlib.metadata import version as _pkg_version
-    _DAEMON_VERSION = _pkg_version("trustmux")
-except Exception:
-    from trustmux import __version__ as _DAEMON_VERSION
+def _resolve_version() -> str:
+    import subprocess as _sp
+    # Prefer the full Debian package version (e.g. 7.14-1~local1) when
+    # installed via .deb — gives the exact build including local iterators.
+    try:
+        v = _sp.check_output(
+            ["dpkg-query", "-W", "-f=${Version}", "byobu"],
+            stderr=_sp.DEVNULL, text=True,
+        ).strip()
+        if v:
+            return v
+    except Exception:
+        pass
+    # pip / PyPI install: metadata carries the tag version (e.g. 7.14rc1).
+    try:
+        from importlib.metadata import version as _pkg_version
+        return _pkg_version("trustmux")
+    except Exception:
+        pass
+    # Dev tree fallback.
+    from trustmux import __version__
+    return __version__
+
+_DAEMON_VERSION = _resolve_version()
 
 # ---------------------------------------------------------------------------
 # Pairing & session state
