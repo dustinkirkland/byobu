@@ -539,7 +539,7 @@ let kbdMode = 0;
 function applyKbdMode() {
   const inPwd = kbdMode === 2;
   cmdInput.style.display = inPwd ? 'none' : '';
-  pwdInput.style.display = inPwd ? '' : 'none';
+  pwdInput.style.display = inPwd ? 'block' : 'none';
 
   if (kbdMode === 1) {
     cmdInput.setAttribute('spellcheck', 'true');
