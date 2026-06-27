@@ -10,7 +10,7 @@ readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
 authors = [{name = "Dustin Kirkland", email = "dustin.kirkland@gmail.com"}]
 requires-python = ">=3.9"
-dependencies = ["tornado>=6.4.2", "cryptography>=43.0"]
+dependencies = ["tornado>=6.5.7", "cryptography>=43.0"]
 keywords = ["tmux", "byobu", "terminal", "mobile", "pwa"]
 classifiers = [
     "Development Status :: 4 - Beta",
