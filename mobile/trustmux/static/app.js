@@ -252,6 +252,14 @@ function _lastPaneKey() { return `last-pane:${location.hostname}`; }
 function _saveLastPane(paneId) { localStorage.setItem(_lastPaneKey(), paneId); }
 function _loadLastPane() { return localStorage.getItem(_lastPaneKey()); }
 
+// ── keyboard mode per pane (persisted so context switches restore correctly) ─
+function _kbdModeKey(paneId) { return `kbd-mode:${location.hostname}:${paneId}`; }
+function _getKbdMode(paneId) {
+  const v = localStorage.getItem(_kbdModeKey(paneId));
+  return v !== null ? parseInt(v, 10) : 0;
+}
+function _saveKbdMode(paneId, mode) { localStorage.setItem(_kbdModeKey(paneId), mode); }
+
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
   statusText.textContent = msg;
@@ -382,16 +390,21 @@ function rebuildPaneTree() {
 }
 
 function navigateTo(sessionId, windowId, paneId) {
-  // Save departing pane's rendered content + scroll position.
+  // Save departing pane's rendered content + scroll position + keyboard mode.
   if (currentPane && output.innerHTML) {
     _paneCache.set(currentPane, { html: output.innerHTML, scrollTop: output.scrollTop });
     if (_paneCache.size > _PANE_CACHE_MAX) _paneCache.delete(_paneCache.keys().next().value);
   }
+  if (currentPane) _saveKbdMode(currentPane, kbdMode);
 
   currentSessionId = sessionId;
   currentWindowId  = windowId;
   currentPane      = paneId;
   _saveLastPane(paneId);
+
+  // Restore keyboard mode for the arriving pane.
+  kbdMode = _getKbdMode(paneId);
+  applyKbdMode();
   cmdInput.disabled = false;
   pwdInput.disabled = false;
   btnSend.disabled  = false;
@@ -567,6 +580,7 @@ function applyKbdMode() {
 }
 btnKbdMode.addEventListener('click', () => {
   kbdMode = (kbdMode + 1) % 3;
+  if (currentPane) _saveKbdMode(currentPane, kbdMode);
   applyKbdMode();
   // blur + refocus so Android keyboard re-evaluates input type/spellcheck
   const inp = activeInput();
