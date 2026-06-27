@@ -56,9 +56,10 @@ _pair_code_expiry: float = 0.0        # wall-clock time, for human display only
 _pair_code_mono_expiry: float = 0.0   # monotonic time, for expiry check
 _pair_attempts: int = 0
 _MAX_PAIR_ATTEMPTS: int = 3
-_PAIR_CODE_TTL: int = 180             # 3 minutes
+_PAIR_CODE_TTL: int = 60              # 60 seconds — keep the window tight
 _TOKEN_EXPIRY_DAYS: int = 90          # sessions expire after 90 days of inactivity
 _sessions: dict[str, dict] = {}      # token → {ip, paired_at, label, last_used}
+_ws_clients: dict[str, set] = {}     # token → set[WsHandler] — closed on unpair
 _https_mode: bool = False             # set by --https; enables Secure cookie
 
 CONFIG_DIR    = Path.home() / ".config" / "trustmux"
@@ -736,6 +737,7 @@ class WsHandler(tornado.websocket.WebSocketHandler):
             self._auth_timer = asyncio.ensure_future(self._auth_timeout())
 
     def _start_streams(self):
+        _ws_clients.setdefault(self._token, set()).add(self)
         asyncio.ensure_future(self._send_sessions())
         self._topo_task = asyncio.ensure_future(self._poll_topology())
 
@@ -748,6 +750,11 @@ class WsHandler(tornado.websocket.WebSocketHandler):
         asyncio.ensure_future(self._handle(raw))
 
     def on_close(self):
+        token = getattr(self, "_token", None)
+        if token and token in _ws_clients:
+            _ws_clients[token].discard(self)
+            if not _ws_clients[token]:
+                del _ws_clients[token]
         if getattr(self, "_stream_task", None):
             self._stream_task.cancel()
         if getattr(self, "_topo_task", None):
@@ -1044,14 +1051,20 @@ async def _handle_admin(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
         elif action == "sessions_delete":
             token = cmd.get("token")   # None = clear all; non-empty string = specific token
             if token is None:
+                tokens_to_evict = list(_sessions.keys())
                 count = len(_sessions)
                 _sessions.clear()
                 _save_tokens()
+                for t in tokens_to_evict:
+                    for ws in list(_ws_clients.get(t, [])):
+                        ws.close(4401, "unauthorized")
                 resp = {"ok": True, "removed": count}
             elif token:
                 if token in _sessions:
                     del _sessions[token]
                     _save_tokens()
+                    for ws in list(_ws_clients.get(token, [])):
+                        ws.close(4401, "unauthorized")
                     resp = {"ok": True}
                 else:
                     resp = {"error": "session not found"}
