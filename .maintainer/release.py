@@ -563,12 +563,20 @@ bash "$_suite"
 
 _SMOKE_TRUSTMUX = r"""
 echo "--- Smoke: trustmux CLI ---"
-trustmux --help | grep -qi usage
+# trustmux refuses to run as root — create a non-root smoke user.
+if ! id smokeuser >/dev/null 2>&1; then
+    useradd -m -s /bin/sh smokeuser 2>/dev/null || \
+    adduser -D -h /home/smokeuser -s /bin/sh smokeuser 2>/dev/null || true
+    mkdir -p /home/smokeuser && chown smokeuser /home/smokeuser 2>/dev/null || true
+fi
+_TMX=$(command -v trustmux)
+_TMUX=$(command -v tmux)
+su smokeuser -s /bin/sh -c "$_TMX --help" 2>&1 | grep -qi usage
 echo "--- Smoke: trustmux runtime ---"
-tmux new-session -d -s smoketest "sleep 300" 2>/dev/null || true
-trustmux start-direct
+su smokeuser -s /bin/sh -c "$_TMUX new-session -d -s smoketest 'sleep 300' 2>/dev/null || true"
+su smokeuser -s /bin/sh -c "$_TMX start-direct"
 sleep 2
-trustmux status | grep -q running
+su smokeuser -s /bin/sh -c "$_TMX status | grep -q running"
 """
 
 
