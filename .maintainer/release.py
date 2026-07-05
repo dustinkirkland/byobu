@@ -280,11 +280,14 @@ def load_identity():
     return identity
 
 
-def check_tools():
+def check_tools(mode="rc"):
     required = ["dput", "debsign", "git", "docker", "python3", "gh"]
+    if mode == "final":
+        required.append("gbp")   # needed for gbp import-orig → upstream/latest
     missing = [t for t in required if not shutil.which(t)]
     if missing:
-        die(f"Missing tools: {' '.join(missing)}\n  sudo apt install devscripts dput gh")
+        die(f"Missing tools: {' '.join(missing)}\n"
+            "  sudo apt install devscripts dput gh git-buildpackage")
     print(f"  Tools OK: {' '.join(required)}")
 
 
@@ -1602,15 +1605,19 @@ def cleanup_debian():
 # ── phase 9: Salsa push (final only) ─────────────────────────────────────
 
 def push_salsa(v):
-    """Push the release commit to salsa/debian/latest (DEP-14).
+    """Push the release commit to salsa/debian/latest and seed upstream/latest.
 
     Never force-pushes.  Aborts if salsa/debian/latest has commits not yet
     merged into local master, so history on Salsa is always preserved.
     debian/watch lives permanently in the tree; no overlay commit needed.
+
+    upstream/latest is seeded via gbp import-orig in a temporary Salsa clone
+    so our working tree is not disturbed.  This is the workflow Andreas
+    confirmed (email 2026-07-05): "gbp import-orig --upstream-branch=upstream/latest".
     """
-    section("Phase 9: Push to Debian Salsa (debian/latest)")
+    section("Phase 9: Push to Debian Salsa (debian/latest + upstream/latest)")
     base_ver = v["base_ver"]
-    tag = base_ver  # e.g. "7.13"
+    tag = base_ver  # e.g. "7.14"
 
     # Resolve the byobu version tag to a commit hash.
     r = run(
@@ -1666,6 +1673,53 @@ def push_salsa(v):
     else:
         run(["git", "-C", str(BYOBU_SRC), "push", "salsa", tag])
         print(f"  ✓ Tag {tag} pushed to salsa")
+
+    # ── seed upstream/latest via gbp import-orig ──────────────────────────
+    # This is the workflow Andreas Tille confirmed (2026-07-05): run
+    # gbp import-orig --upstream-branch=upstream/latest in a Salsa clone.
+    # We work in a temp clone so the local working tree is untouched.
+    # upstream/latest tracks the upstream tarball for each final release.
+    import tempfile
+    section("Phase 9b: Seed salsa/upstream/latest via gbp import-orig")
+
+    tarball_name = f"{v['pkg']}_{base_ver}.orig.tar.gz"
+    tarball = Path(tempfile.gettempdir()) / tarball_name
+
+    print(f"  Generating {tarball_name} from tag {tag}…")
+    run([
+        "git", "-C", str(BYOBU_SRC), "archive",
+        "--format=tar.gz",
+        f"--prefix={v['pkg']}-{base_ver}/",
+        f"--output={tarball}",
+        tag,
+    ])
+    print(f"  ✓ {tarball}")
+
+    with tempfile.TemporaryDirectory(prefix="byobu-salsa-") as tmpdir:
+        salsa_clone = Path(tmpdir) / "byobu"
+        print("  Cloning Salsa (for upstream/latest import only)…")
+        run(["git", "clone", "git@salsa.debian.org:debian/byobu.git",
+             str(salsa_clone)])
+
+        # Fetch upstream/latest if it already exists on Salsa
+        run(["git", "-C", str(salsa_clone), "fetch", "origin",
+             "refs/heads/upstream/latest:refs/heads/upstream/latest"],
+            check=False)
+
+        # Import the tarball into upstream/latest; --no-merge keeps
+        # debian/latest (the checked-out branch) unchanged.
+        run([
+            "gbp", "import-orig",
+            "--upstream-branch=upstream/latest",
+            "--debian-branch=debian/latest",
+            "--no-merge",
+            str(tarball),
+        ], cwd=str(salsa_clone))
+
+        # Push upstream/latest to Salsa
+        run(["git", "-C", str(salsa_clone), "push", "origin",
+             "refs/heads/upstream/latest:refs/heads/upstream/latest"])
+        print(f"  ✓ salsa/upstream/latest seeded with {v['pkg']} {base_ver}")
 
     print(f"    https://salsa.debian.org/debian/byobu")
 
@@ -1891,7 +1945,7 @@ def main():
            + (f"  [resuming from phase {start_from}]" if start_from else ""))
 
     identity = load_identity()
-    check_tools()
+    check_tools(mode)
     prewarm_gpg(identity)
     tap_trustmux = find_tap("trustmux", mode) if should_run("6d", start_from) else None
     tap_byobu    = find_tap("byobu",    mode) if should_run("6d", start_from) else None
