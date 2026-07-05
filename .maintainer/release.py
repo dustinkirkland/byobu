@@ -280,6 +280,56 @@ def load_identity():
     return identity
 
 
+def check_salsa_sync(mode):
+    """Warn (RC) or die (final) if salsa/debian/latest has commits not in HEAD.
+
+    Catching this during RC gives the maintainer time to merge before final,
+    rather than discovering it at Phase 9 after the GitHub release is live.
+    """
+    section("Phase 1: Salsa sync check")
+    r = run(
+        ["git", "-C", str(BYOBU_SRC), "fetch", "salsa"],
+        check=False, capture=True,
+    )
+    if r.returncode != 0:
+        print("  (salsa remote unreachable — skipping sync check)")
+        return
+
+    salsa_ref = run(
+        ["git", "-C", str(BYOBU_SRC), "rev-parse", "salsa/debian/latest"],
+        capture=True, check=False,
+    )
+    if salsa_ref.returncode != 0:
+        print("  (salsa/debian/latest not found — skipping sync check)")
+        return
+
+    merge_base = run(
+        ["git", "-C", str(BYOBU_SRC), "merge-base",
+         "HEAD", "salsa/debian/latest"],
+        capture=True, check=False,
+    )
+    if (merge_base.returncode == 0 and
+            merge_base.stdout.strip() != salsa_ref.stdout.strip()):
+        ahead = run(
+            ["git", "-C", str(BYOBU_SRC), "log", "--oneline",
+             "HEAD..salsa/debian/latest"],
+            capture=True, check=False,
+        ).stdout.strip()
+        msg = (
+            "salsa/debian/latest has commits not present in local master:\n"
+            + "".join(f"    {l}\n" for l in ahead.splitlines())
+            + "  Merge them before running final:\n"
+            + "    git merge -s ours salsa/debian/latest -m 'merge: absorb Salsa history'\n"
+            + "    git push"
+        )
+        if mode == "final":
+            die(msg)
+        else:
+            print(f"\n  ⚠  WARNING: {msg}\n")
+    else:
+        print("  ✓ salsa/debian/latest is in sync with local master")
+
+
 def check_tools(mode="rc"):
     required = ["dput", "debsign", "git", "docker", "python3", "gh"]
     if mode == "final":
@@ -1954,6 +2004,7 @@ def main():
 
     identity = load_identity()
     check_tools(mode)
+    check_salsa_sync(mode)
     prewarm_gpg(identity)
     tap_trustmux = find_tap("trustmux", mode) if should_run("6d", start_from) else None
     tap_byobu    = find_tap("byobu",    mode) if should_run("6d", start_from) else None
