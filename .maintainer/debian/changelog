@@ -11,8 +11,25 @@ byobu (7.14-1) UNRELEASED; urgency=medium
     is no longer inadvertently ignored by git
   * release: fix update_homebrew() to sync tap formula from canonical repo copy
     rather than mutating tap in place, preventing future resource omissions
+  * trustmux: refuse to run as root (or via sudo); running as root breaks
+    tailscale serve config and daemon ownership, could wedge the machine
+  * trustmux/pwa: show daemon version in statusbar; version label is clickable
+    to force a reload/update-check; amber ⟳ indicator when server has updated
+  * trustmux/pwa: add password keyboard mode (**); input type=password so the
+    mobile keyboard does not learn or autocorrect sensitive text
+  * trustmux/pwa: fix password keyboard mode being hidden when selected due to
+    CSS display:none fallback when style.display was set to empty string
+  * trustmux/pwa: keyboard mode ($_ / Aa / **) is now sticky per pane,
+    persisted to localStorage so context switches and PWA restarts restore it
+  * trustmux: security: revoke active WebSocket streams immediately on unpair;
+    previously a revoked token holder continued receiving live terminal output
+    indefinitely until natural connection drop (TMX-004)
+  * trustmux: security: reduce pairing code TTL from 180s to 60s to match
+    advertised window and reduce observation attack exposure (TMX-002)
+  * trustmux: security: raise dependency floors to tornado>=6.5.7 (clears
+    GHSA-pw6j-qg29-8w7f) and cryptography>=43.0 (TMX-017)
 
- -- Dustin Kirkland <kirkland@ubuntu.com>  Mon, 22 Jun 2026 09:36:22 -0500
+ -- Dustin Kirkland <dustin.kirkland@gmail.com>  Sat, 05 Jul 2026 00:00:00 -0500
 
 byobu (7.13-1) UNRELEASED; urgency=medium
 
