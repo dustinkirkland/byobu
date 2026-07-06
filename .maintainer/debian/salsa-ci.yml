@@ -1,7 +1,0 @@
----
-include:
-  - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/recipes/debian.yml
-
-# Ignore broken test-uscan CI test
-test-uscan:
-  allow_failure: true

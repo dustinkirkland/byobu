@@ -15,8 +15,13 @@ The clean-room approach catches missing Build-Depends early and produces reprodu
 docker --version
 ```
 
-2. Read `Build-Depends` from `.maintainer/debian/control` to confirm what to install.
-   (Note: `debian/` lives at `.maintainer/debian/` — it is copied into place inside Docker.)
+2. Fetch `debian/` from Salsa on the host (it is not part of this repo — `salsa/debian/latest` is its only source of truth) and read `Build-Depends` from it to confirm what to install:
+```bash
+git fetch salsa debian/latest
+rm -rf /tmp/byobu-debian && mkdir -p /tmp/byobu-debian
+git archive salsa/debian/latest debian | tar -x -C /tmp/byobu-debian
+grep Build-Depends -A20 /tmp/byobu-debian/debian/control
+```
 
 3. Compute the RC version on the host and pass it into Docker:
 ```bash
@@ -33,6 +38,7 @@ mkdir -p /tmp/byobu-debs
 rm -f /tmp/byobu-debs/*.deb
 docker run --rm \
   -v /home/kirkland/src/byobu:/src:ro \
+  -v /tmp/byobu-debian/debian:/debian-src:ro \
   -v /tmp/byobu-debs:/out \
   -e LOCAL_VER="$LOCAL_VER" \
   -e DEBEMAIL="dustin.kirkland@gmail.com" \
@@ -48,7 +54,7 @@ docker run --rm \
       devscripts bc \
       ca-certificates
     cp -a /src /build
-    cp -a /build/.maintainer/debian /build/debian
+    cp -a /debian-src /build/debian
     cd /build
     dch -v \"\$LOCAL_VER\" -b --distribution UNRELEASED --no-auto-nmu 'Local RC test build'
     DEB_BUILD_OPTIONS=parallel=1 dpkg-buildpackage -us -uc -b
@@ -75,6 +81,6 @@ docker run --rm \
 - `-us -uc` skips GPG signing (not needed for local test builds).
 - `-b` builds binary packages only (no source package).
 - The RC version (`7.14~rc5-1`) is computed from git tags on the host and injected via `$LOCAL_VER`. It matches what the release pipeline would assign as the next RC number, so test builds are clearly labeled and sort correctly below final releases in dpkg.
-- `debian/` lives at `.maintainer/debian/` in the repo; it is copied into `/build/debian/` inside Docker before building.
+- `debian/` is not part of this repo — `salsa/debian/latest` is its only source of truth. It's fetched on the host (step 2) into `/tmp/byobu-debian/`, bind-mounted read-only into the container, then copied into `/build/debian/` before building.
 - The test suite runs automatically as part of the build via `override_dh_auto_test` in `debian/rules` — 113 shell tests + 134 Python tests (247 total). A test failure fails the build.
 - If the user wants to skip tests (e.g. to iterate on packaging only): add `DEB_BUILD_OPTIONS=nocheck` to the environment.

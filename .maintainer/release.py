@@ -41,6 +41,7 @@ import io
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -50,7 +51,20 @@ import urllib.request
 from pathlib import Path
 
 BYOBU_SRC = Path(__file__).resolve().parent.parent
-DEBIAN_DIR = BYOBU_SRC / ".maintainer" / "debian"
+
+
+def read_configure_ac_version():
+    """Return (pkg, version) parsed from configure.ac's AC_INIT.
+
+    configure.ac is the single source of truth for the upstream version.
+    Debian packaging (debian/) lives only on salsa/debian/latest — see
+    .maintainer/DEBIAN_PACKAGING_CONTEXT.md.
+    """
+    text = (BYOBU_SRC / "configure.ac").read_text()
+    m = re.search(r"AC_INIT\(\[([^\]]+)\], \[([^\]]+)\]", text)
+    if not m:
+        die("Cannot find AC_INIT version in configure.ac")
+    return m.group(1), m.group(2)
 
 # Set to True by --interactive; when False all confirm() calls auto-proceed.
 _interactive = False
@@ -281,10 +295,15 @@ def load_identity():
 
 
 def check_salsa_sync(mode):
-    """Warn (RC) or die (final) if salsa/debian/latest has commits not in HEAD.
+    """Verify Salsa is reachable and its packaging branches exist.
 
-    Catching this during RC gives the maintainer time to merge before final,
-    rather than discovering it at Phase 9 after the GitHub release is live.
+    debian/ lives only on salsa/debian/latest, maintained there directly —
+    this repo's master has no ancestor relationship to it (see
+    .maintainer/DEBIAN_PACKAGING_CONTEXT.md), so there is nothing to
+    reconcile against local history.  Phase 9 merges into it via gbp
+    import-orig, which fails loudly on its own if something is wrong;
+    this check just catches an unreachable remote or a missing branch
+    early, before the rest of the pipeline runs.
     """
     section("Phase 1: Salsa sync check")
     r = run(
@@ -292,42 +311,24 @@ def check_salsa_sync(mode):
         check=False, capture=True,
     )
     if r.returncode != 0:
-        print("  (salsa remote unreachable — skipping sync check)")
-        return
-
-    salsa_ref = run(
-        ["git", "-C", str(BYOBU_SRC), "rev-parse", "salsa/debian/latest"],
-        capture=True, check=False,
-    )
-    if salsa_ref.returncode != 0:
-        print("  (salsa/debian/latest not found — skipping sync check)")
-        return
-
-    merge_base = run(
-        ["git", "-C", str(BYOBU_SRC), "merge-base",
-         "HEAD", "salsa/debian/latest"],
-        capture=True, check=False,
-    )
-    if (merge_base.returncode == 0 and
-            merge_base.stdout.strip() != salsa_ref.stdout.strip()):
-        ahead = run(
-            ["git", "-C", str(BYOBU_SRC), "log", "--oneline",
-             "HEAD..salsa/debian/latest"],
-            capture=True, check=False,
-        ).stdout.strip()
-        msg = (
-            "salsa/debian/latest has commits not present in local master:\n"
-            + "".join(f"    {l}\n" for l in ahead.splitlines())
-            + "  Merge them before running final:\n"
-            + "    git merge -s ours salsa/debian/latest -m 'merge: absorb Salsa history'\n"
-            + "    git push"
-        )
+        msg = "salsa remote unreachable"
         if mode == "final":
-            die(msg)
+            die(f"{msg} — required for final release (Phase 9 pushes to Salsa).")
+        print(f"  (⚠ {msg} — skipping sync check)")
+        return
+
+    for branch in ("debian/latest", "upstream/latest"):
+        ref = run(
+            ["git", "-C", str(BYOBU_SRC), "rev-parse", f"salsa/{branch}"],
+            capture=True, check=False,
+        )
+        if ref.returncode != 0:
+            msg = f"salsa/{branch} not found"
+            if mode == "final":
+                die(f"{msg} — has it been created on Salsa?")
+            print(f"  (⚠ {msg})")
         else:
-            print(f"\n  ⚠  WARNING: {msg}\n")
-    else:
-        print("  ✓ salsa/debian/latest is in sync with local master")
+            print(f"  ✓ salsa/{branch} found ({ref.stdout.strip()[:10]})")
 
 
 def check_tools(mode="rc"):
@@ -406,14 +407,9 @@ def determine_versions(mode, resume=False):
         )
     print(f"  HEAD: {head_msg[:60]}")
 
-    # Canonical base version from debian/changelog.
-    # Strip Debian revision (-N) if present: "7.12-1" → "7.12".
-    changelog_line = (DEBIAN_DIR / "changelog").read_text().splitlines()[0]
-    m = re.search(r"\(([^)~]+)", changelog_line)
-    if not m:
-        die(f"Cannot parse base version from: {changelog_line}")
-    base_ver = re.sub(r"-\d+$", "", m.group(1).strip())
-    pkg = changelog_line.split()[0]
+    # Canonical base version from configure.ac (single source of truth —
+    # debian/ lives only on salsa/debian/latest, not in this repo).
+    pkg, base_ver = read_configure_ac_version()
     print(f"  Package:      {pkg}")
     print(f"  Base version: {base_ver}")
 
@@ -1640,18 +1636,25 @@ def update_website_screenshots(v):
 
 # ── debian/ build helper ─────────────────────────────────────────────────
 #
-# debian/ lives in .maintainer/debian/ so it is excluded from upstream
-# tarballs (.gitattributes marks .maintainer/ export-ignore).  Docker build
-# steps mount BYOBU_SRC as /src and expect debian/ at the root.
-# prepare_debian() copies it there; cleanup_debian() removes it afterwards.
-# The root-level debian/ is gitignored so it is never committed upstream.
+# debian/ is not part of this repo — salsa/debian/latest is its only source
+# of truth (see .maintainer/DEBIAN_PACKAGING_CONTEXT.md).  Docker build steps
+# mount BYOBU_SRC as /src and expect debian/ at the root, so prepare_debian()
+# fetches it from Salsa for the duration of the build; cleanup_debian()
+# removes it afterwards.  The root-level debian/ is gitignored so it can
+# never be committed here by accident.
 
 def prepare_debian():
-    src = DEBIAN_DIR
     dst = BYOBU_SRC / "debian"
     if dst.exists():
         shutil.rmtree(dst)
-    shutil.copytree(src, dst)
+    run(["git", "-C", str(BYOBU_SRC), "fetch", "salsa", "debian/latest"])
+    run([
+        "bash", "-c",
+        f"git -C {shlex.quote(str(BYOBU_SRC))} archive salsa/debian/latest debian "
+        f"| tar -x -C {shlex.quote(str(BYOBU_SRC))}",
+    ])
+    if not dst.is_dir():
+        die("prepare_debian(): fetched salsa/debian/latest but debian/ was not extracted")
 
 
 def cleanup_debian():
@@ -1663,17 +1666,17 @@ def cleanup_debian():
 # ── phase 9: Salsa push (final only) ─────────────────────────────────────
 
 def push_salsa(v):
-    """Push the release commit to salsa/debian/latest and seed upstream/latest.
+    """Seed salsa/upstream/latest with the new release tarball and merge it
+    into salsa/debian/latest via gbp's standard import-orig workflow.
 
-    Never force-pushes.  Aborts if salsa/debian/latest has commits not yet
-    merged into local master, so history on Salsa is always preserved.
-    debian/watch lives permanently in the tree; no overlay commit needed.
-
-    upstream/latest is seeded via gbp import-orig in a temporary Salsa clone
-    so our working tree is not disturbed.  This is the workflow Andreas
-    confirmed (email 2026-07-05): "gbp import-orig --upstream-branch=upstream/latest".
+    We never touch debian/ ourselves — it exists only on salsa/debian/latest
+    and is maintained there directly (see .maintainer/DEBIAN_PACKAGING_CONTEXT.md).
+    gbp import-orig's default merge brings new upstream source onto
+    debian/latest without disturbing debian/, exactly like a normal Debian
+    packaging workflow.  Both pushes are plain (non-force) fast-forwards;
+    they fail loudly if Salsa has diverged instead of silently overwriting it.
     """
-    section("Phase 9: Push to Debian Salsa (debian/latest + upstream/latest)")
+    section("Phase 9: Push to Debian Salsa (upstream/latest → debian/latest via gbp)")
     base_ver = v["base_ver"]
     tag = base_ver  # e.g. "7.14"
 
@@ -1692,36 +1695,7 @@ def push_salsa(v):
     print(f"  Tag:    {tag}")
     print(f"  Commit: {commit}")
 
-    # Fetch Salsa and verify our HEAD is a fast-forward of salsa/debian/latest.
-    # Never overwrite Salsa history — if Andreas (or another DD) has pushed
-    # commits there that we haven't merged, abort and ask the maintainer to
-    # merge first.
-    print("  Fetching salsa to check for upstream changes…")
-    run(["git", "-C", str(BYOBU_SRC), "fetch", "salsa"])
-    salsa_ref = run(
-        ["git", "-C", str(BYOBU_SRC), "rev-parse", "salsa/debian/latest"],
-        capture=True, check=False,
-    )
-    if salsa_ref.returncode == 0:
-        merge_base = run(
-            ["git", "-C", str(BYOBU_SRC), "merge-base",
-             "HEAD", "salsa/debian/latest"],
-            capture=True, check=False,
-        )
-        if (merge_base.returncode == 0 and
-                merge_base.stdout.strip() != salsa_ref.stdout.strip()):
-            die(
-                "salsa/debian/latest has commits not present in local master.\n"
-                "  Merge them first:\n"
-                "    git merge salsa/debian/latest\n"
-                "  Then re-run the release."
-            )
-
-    run(["git", "-C", str(BYOBU_SRC), "push", "salsa",
-         "HEAD:refs/heads/debian/latest"])
-    print("  ✓ salsa/debian/latest updated")
-
-    # Push the release tag; skip if already present.
+    # Push the release tag to Salsa too, for reference; skip if already present.
     remote = run(
         ["git", "-C", str(BYOBU_SRC), "ls-remote", "--tags", "salsa", tag],
         capture=True,
@@ -1732,13 +1706,12 @@ def push_salsa(v):
         run(["git", "-C", str(BYOBU_SRC), "push", "salsa", tag])
         print(f"  ✓ Tag {tag} pushed to salsa")
 
-    # ── seed upstream/latest via gbp import-orig ──────────────────────────
+    # ── seed upstream/latest and merge into debian/latest via gbp ─────────
     # This is the workflow Andreas Tille confirmed (2026-07-05): run
     # gbp import-orig --upstream-branch=upstream/latest in a Salsa clone.
     # We work in a temp clone so the local working tree is untouched.
-    # upstream/latest tracks the upstream tarball for each final release.
     import tempfile
-    section("Phase 9b: Seed salsa/upstream/latest via gbp import-orig")
+    section("Phase 9b: gbp import-orig (upstream/latest, merged into debian/latest)")
 
     tarball_name = f"{v['pkg']}_{base_ver}.orig.tar.gz"
     tarball = Path(tempfile.gettempdir()) / tarball_name
@@ -1755,29 +1728,44 @@ def push_salsa(v):
 
     with tempfile.TemporaryDirectory(prefix="byobu-salsa-") as tmpdir:
         salsa_clone = Path(tmpdir) / "byobu"
-        print("  Cloning Salsa (for upstream/latest import only)…")
+        print("  Cloning Salsa…")
         run(["git", "clone", "git@salsa.debian.org:debian/byobu.git",
              str(salsa_clone)])
 
-        # Fetch upstream/latest if it already exists on Salsa
+        # gbp needs local branches for both upstream/latest and debian/latest
+        # to import the tarball and merge it.
         run(["git", "-C", str(salsa_clone), "fetch", "origin",
+             "refs/heads/debian/latest:refs/heads/debian/latest",
              "refs/heads/upstream/latest:refs/heads/upstream/latest"],
             check=False)
+        run(["git", "-C", str(salsa_clone), "checkout", "debian/latest"])
 
-        # Import the tarball into upstream/latest; --no-merge keeps
-        # debian/latest (the checked-out branch) unchanged.
+        # Import the tarball into upstream/latest and merge it into
+        # debian/latest — gbp's default behaviour.  debian/ itself is
+        # untouched by the merge since upstream commits never contain it.
         run([
             "gbp", "import-orig",
             "--upstream-branch=upstream/latest",
             "--debian-branch=debian/latest",
-            "--no-merge",
             str(tarball),
         ], cwd=str(salsa_clone))
 
-        # Push upstream/latest to Salsa
-        run(["git", "-C", str(salsa_clone), "push", "origin",
-             "refs/heads/upstream/latest:refs/heads/upstream/latest"])
-        print(f"  ✓ salsa/upstream/latest seeded with {v['pkg']} {base_ver}")
+        # Push both branches — never force.  A rejected push here means
+        # Salsa moved since we cloned; re-run rather than overwrite it.
+        push = run(
+            ["git", "-C", str(salsa_clone), "push", "origin",
+             "refs/heads/upstream/latest:refs/heads/upstream/latest",
+             "refs/heads/debian/latest:refs/heads/debian/latest"],
+            check=False,
+        )
+        if push.returncode != 0:
+            die(
+                "Push to salsa/upstream/latest or salsa/debian/latest was "
+                "rejected (non-fast-forward).\n"
+                "  Someone else likely pushed to Salsa concurrently — "
+                "re-run the release."
+            )
+        print(f"  ✓ salsa/upstream/latest and salsa/debian/latest updated with {v['pkg']} {base_ver}")
 
     print(f"    https://salsa.debian.org/debian/byobu")
 
@@ -1889,15 +1877,12 @@ def run_salsa_ci():
 
 # ── open-dev (post-final) ─────────────────────────────────────────────────
 
-def open_dev(identity):
-    """Bump configure.ac, debian/changelog, and trustmux version files to next minor version after a final release."""
+def open_dev():
+    """Bump configure.ac and trustmux version files to next minor version after a final release."""
     banner("open-dev: bump to next development version")
 
     configure_ac = BYOBU_SRC / "configure.ac"
-    cur = re.search(r"AC_INIT\(\[byobu\], \[([^\]]+)\]", configure_ac.read_text())
-    if not cur:
-        die("Cannot find AC_INIT version in configure.ac")
-    current_ver = cur.group(1).strip()
+    _, current_ver = read_configure_ac_version()
     major, minor = current_ver.split(".")[:2]
     next_ver = f"{major}.{int(minor) + 1}"
     print(f"  {current_ver}  →  {next_ver}")
@@ -1921,29 +1906,8 @@ def open_dev(identity):
         re.sub(r'^version = "[^"]+"', f'version = "{next_ver}"', pyproject_text, flags=re.MULTILINE)
     )
 
-    # Prepend a fresh stanza rather than using `dch --newversion`, which merges
-    # into the existing UNRELEASED entry instead of creating a new one when the
-    # top stanza is already UNRELEASED (i.e. after an RC, not a final release).
-    import subprocess as _sp
-    datestamp = _sp.check_output(["date", "-R"]).decode().strip()
-    new_stanza = (
-        f"byobu ({next_ver}-1) UNRELEASED; urgency=medium\n"
-        f"\n"
-        f"  * Open {next_ver} for development\n"
-        f"\n"
-        f" -- {identity['DEBFULLNAME']} <{identity['DEBEMAIL']}>  {datestamp}\n"
-        f"\n"
-    )
-    cl_path = DEBIAN_DIR / "changelog"
-    cl_path.write_text(new_stanza + cl_path.read_text())
-
-    print("\n  debian/changelog top:")
-    for line in cl_path.read_text().splitlines()[:6]:
-        print(f"    {line}")
-
     run(["git", "-C", str(BYOBU_SRC), "add",
          "configure.ac",
-         ".maintainer/debian/changelog",
          "mobile/trustmux/__init__.py",
          "mobile/pyproject.toml"])
     run(["git", "-C", str(BYOBU_SRC), "commit",
@@ -1987,8 +1951,7 @@ def main():
     _interactive = args.interactive
 
     if mode == "open-dev":
-        identity = load_identity()
-        open_dev(identity)
+        open_dev()
         return
 
     if mode == "salsa-ci":

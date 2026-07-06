@@ -1,5 +1,0 @@
-# Extra placements not handled by autotools make install.
-# Trustmux files are now installed by autotools via mobile/Makefile.am.
-usr/share/byobu/pixmaps/byobu.svg             usr/share/icons/hicolor/scalable/apps/
-usr/share/byobu/pixmaps/highcontrast/byobu.svg usr/share/icons/HighContrast/scalable/apps/
-debian/source_byobu.py                         usr/share/apport/package-hooks
