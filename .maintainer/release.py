@@ -1732,17 +1732,30 @@ def push_salsa(v):
         run(["git", "clone", "git@salsa.debian.org:debian/byobu.git",
              str(salsa_clone)])
 
-        # gbp needs local branches for both upstream/latest and debian/latest
-        # to import the tarball and merge it.
+        # git clone already checks out Salsa's default branch (debian/latest)
+        # locally -- fetching it again here would fail with "refusing to
+        # fetch into branch checked out". gbp also needs local branches for
+        # upstream/latest and pristine-tar (gbp.conf: pristine-tar = True)
+        # to import the tarball, merge it, and extend the pristine-tar
+        # delta history.
         run(["git", "-C", str(salsa_clone), "fetch", "origin",
-             "refs/heads/debian/latest:refs/heads/debian/latest",
-             "refs/heads/upstream/latest:refs/heads/upstream/latest"],
+             "refs/heads/upstream/latest:refs/heads/upstream/latest",
+             "refs/heads/pristine-tar:refs/heads/pristine-tar"],
             check=False)
-        run(["git", "-C", str(salsa_clone), "checkout", "debian/latest"])
+        branch = run(
+            ["git", "-C", str(salsa_clone), "branch", "--show-current"],
+            capture=True,
+        ).stdout.strip()
+        if branch != "debian/latest":
+            die(f"Expected Salsa's default checked-out branch to be "
+                f"debian/latest, got {branch!r}")
 
         # Import the tarball into upstream/latest and merge it into
         # debian/latest — gbp's default behaviour.  debian/ itself is
         # untouched by the merge since upstream commits never contain it.
+        # gbp also tags the imported commit upstream/<version> locally —
+        # that tag must be pushed too, or it only ever exists in this
+        # throwaway clone and is lost the moment tmpdir is removed.
         run([
             "gbp", "import-orig",
             "--upstream-branch=upstream/latest",
@@ -1750,22 +1763,37 @@ def push_salsa(v):
             str(tarball),
         ], cwd=str(salsa_clone))
 
-        # Push both branches — never force.  A rejected push here means
-        # Salsa moved since we cloned; re-run rather than overwrite it.
+        upstream_tag = f"upstream/{base_ver}"
+        tag_check = run(
+            ["git", "-C", str(salsa_clone), "rev-parse", "--verify", "-q",
+             f"refs/tags/{upstream_tag}"],
+            check=False, capture=True,
+        )
+        if tag_check.returncode != 0:
+            die(f"gbp import-orig did not create the expected tag "
+                f"{upstream_tag} — inspect {salsa_clone} before retrying.")
+
+        # Push all three branches plus the upstream tag — never force.  A
+        # rejected push here means Salsa moved since we cloned; re-run
+        # rather than overwrite it.
         push = run(
             ["git", "-C", str(salsa_clone), "push", "origin",
              "refs/heads/upstream/latest:refs/heads/upstream/latest",
-             "refs/heads/debian/latest:refs/heads/debian/latest"],
+             "refs/heads/debian/latest:refs/heads/debian/latest",
+             "refs/heads/pristine-tar:refs/heads/pristine-tar",
+             f"refs/tags/{upstream_tag}:refs/tags/{upstream_tag}"],
             check=False,
         )
         if push.returncode != 0:
             die(
-                "Push to salsa/upstream/latest or salsa/debian/latest was "
-                "rejected (non-fast-forward).\n"
+                "Push to salsa/upstream/latest, salsa/debian/latest, "
+                "salsa/pristine-tar, or the upstream tag was rejected "
+                "(non-fast-forward).\n"
                 "  Someone else likely pushed to Salsa concurrently — "
                 "re-run the release."
             )
-        print(f"  ✓ salsa/upstream/latest and salsa/debian/latest updated with {v['pkg']} {base_ver}")
+        print(f"  ✓ salsa/upstream/latest, salsa/debian/latest, salsa/pristine-tar, "
+              f"and tag {upstream_tag} updated with {v['pkg']} {base_ver}")
 
     print(f"    https://salsa.debian.org/debian/byobu")
 
@@ -1819,7 +1847,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -qq
 apt-get install -y --no-install-recommends \
-  git git-buildpackage devscripts debhelper dh-python \
+  git git-buildpackage pristine-tar devscripts debhelper dh-python \
   gettext-base automake autoconf \
   python3 python3-all python3-cryptography python3-tornado \
   bc ca-certificates lintian 2>&1 | tail -10
@@ -1829,6 +1857,10 @@ apt-get install -y --no-install-recommends \
 git config --global --add safe.directory '*'
 git clone /src /build/byobu
 cd /build/byobu
+
+# gbp.conf sets pristine-tar = True; pull in the real pristine-tar branch
+# (fetched from Salsa on the host) so gbp can find the orig tarball delta.
+git fetch /pristine-tar.bundle pristine-tar:pristine-tar
 
 # Simulate the debian/latest branch that the real Salsa CI checks out.
 # gbp reads debian/changelog from git (HEAD:debian/changelog), not from disk,
@@ -1863,14 +1895,38 @@ def run_salsa_ci():
     Clones the repo inside the container so gbp has a clean git view, then
     runs gbp buildpackage with the same flags the Salsa CI uses.  Lets you
     catch gbp / quilt / lintian failures before pushing to salsa.
+
+    gbp.conf sets pristine-tar = True, so the synthetic debian/latest clone
+    needs a real pristine-tar branch too — /src is just the read-only GitHub
+    checkout, which doesn't have one, so it's fetched from Salsa and handed
+    to the container as a bundle.
     """
+    import tempfile
     banner("Salsa CI local simulation (docker debian:sid + gbp buildpackage)")
+    print("  Fetching salsa/pristine-tar for the simulation…")
+    run(["git", "-C", str(BYOBU_SRC), "fetch", "salsa", "pristine-tar"], check=False)
+    bundle = Path(tempfile.gettempdir()) / "byobu-pristine-tar.bundle"
+    had_local_branch = run(
+        ["git", "-C", str(BYOBU_SRC), "rev-parse", "--verify", "-q", "pristine-tar"],
+        check=False, capture=True,
+    ).returncode == 0
+    if had_local_branch:
+        die("Local branch 'pristine-tar' already exists — remove it before running salsa-ci.")
+    run(["git", "-C", str(BYOBU_SRC), "branch", "pristine-tar", "salsa/pristine-tar"])
+    try:
+        run(["git", "-C", str(BYOBU_SRC), "bundle", "create", str(bundle),
+             "pristine-tar"])
+    finally:
+        run(["git", "-C", str(BYOBU_SRC), "branch", "-D", "pristine-tar"])
+
     print("  Cloning repo inside container and running gbp buildpackage…")
     run([
         "docker", "run", "--rm",
         "-v", f"{BYOBU_SRC}:/src:ro",
+        "-v", f"{bundle}:/pristine-tar.bundle:ro",
         "debian:sid", "bash", "-c", _SALSA_CI_SCRIPT,
     ])
+    bundle.unlink(missing_ok=True)
     print("  ✓ Salsa CI simulation PASSED")
     print("    Safe to push to salsa — gbp buildpackage will succeed.")
 
