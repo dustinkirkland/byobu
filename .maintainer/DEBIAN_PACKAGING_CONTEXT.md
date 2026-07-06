@@ -60,6 +60,22 @@ The fix: `.maintainer/debian/` was deleted outright (diffed clean against
 - If we ever need to change packaging content itself (control, rules,
   changelog, etc.), that happens directly against `salsa/debian/latest` —
   never through this repo's automation.
+- **`pristine-tar = True`** in `gbp.conf` (was `False` and unused since
+  7.10 — the branch existed but every import since then skipped it).
+  `push_salsa()` now fetches/pushes `pristine-tar` alongside the other two
+  branches, and pushes the `upstream/<version>` tag `gbp import-orig`
+  creates locally (previously only branches were pushed, so these tags
+  were silently discarded with the temp clone since 7.10 — backfilled
+  `upstream/7.14` when this was fixed). `run_salsa_ci()`'s local Docker
+  simulation fetches the real `pristine-tar` branch from Salsa as a
+  bundle so it actually exercises this instead of silently missing it.
+- **Considered, rejected: `gbp import-orig --uscan`.** Otto's guide uses
+  it, but `debian/watch`'s `Github` template can't distinguish byobu's
+  own RC pre-release tags/GitHub prereleases from real releases (checked
+  the `Devscripts::Uscan::Templates::Github` source — `releaseonly`
+  doesn't filter on GitHub's `prerelease` flag in devscripts 2.26.x). It
+  picked `trustmux-v7.14rc6` as "newer" than `7.14`. Kept the deterministic
+  `git archive`-on-release-tag approach instead.
 
 ### RC numbering is unaffected
 
@@ -127,7 +143,7 @@ hiding trick as still violating it — see "Current model" above.
 | `master` | GitHub | upstream + packaging tooling, no `debian/` anywhere |
 | `debian/latest` | Salsa | sole source of truth for `debian/`; maintained directly there |
 | `upstream/latest` | Salsa | seeded per-release via `gbp import-orig` |
-| `pristine-tar` | Salsa | correct already |
+| `pristine-tar` | Salsa | `pristine-tar = True`; delta backfilled through 7.14 |
 
 ## gbp.conf (on salsa/debian/latest)
 
@@ -135,19 +151,43 @@ hiding trick as still violating it — see "Current model" above.
 [DEFAULT]
 upstream-branch = upstream/latest
 debian-branch = debian/latest
-pristine-tar = False
+pristine-tar = True
+
+[buildpackage]
+sign-tags = False
 ```
 
 `upstream-tree = HEAD` from the old `.maintainer/debian/gbp.conf` is gone —
 it doesn't apply now that `gbp.conf` lives on Salsa's branch and imports come
-from a real tarball, not a filtered local `HEAD`.
+from a real tarball, not a filtered local `HEAD`. `upstream-signatures`
+stays at its default ("auto") since byobu's GitHub releases aren't
+GPG-signed yet — revisit once they are.
 
 ## release.py Phase 9 — Current Behavior
 
 1. Resolves/pushes the plain version tag (e.g. `7.14`) to Salsa, for reference.
 2. Generates the orig tarball from that tag via `git archive`.
 3. Clones Salsa into a temp dir, runs `gbp import-orig` (default merge) to
-   land the tarball on `upstream/latest` and merge it into `debian/latest`.
-4. Pushes both `upstream/latest` and `debian/latest` — plain, non-force.
+   land the tarball on `upstream/latest` and merge it into `debian/latest`,
+   extending the `pristine-tar` delta history.
+4. Pushes `upstream/latest`, `debian/latest`, `pristine-tar`, and the new
+   `upstream/<version>` tag — all plain, non-force. A rejected push means
+   Salsa moved concurrently; re-run rather than force.
 
 No push of `HEAD`. No `.maintainer/debian`. No force push. No `salsa/master`.
+
+## 2026-07-06 pristine-tar backfill (one-time, already done)
+
+Backfilled the missing `7.14` pristine-tar delta and `upstream/7.14` tag
+*before* flipping `pristine-tar = True`, specifically to avoid a window
+where the config says "on" but no delta exists for the currently-committed
+changelog version (which would break any build — Andreas's included —
+against the then-current `debian/latest` HEAD). Verified the exact
+existing `salsa/upstream/latest` 7.14 commit was already clean (no
+`.maintainer`/`.claude`/`.github`), built the tarball from that commit
+specifically (not a fresh re-derivation), confirmed byte-identical
+pristine-tar round-trip, then confirmed a full real `gbp buildpackage` run
+(162 tests passed) before pushing anything. 7.14-1 was not yet in the real
+Debian archive at the time (still `7.13-1` there), so there was no
+external immutable tarball to match — this reasoning would need to change
+for any future backfill of an already-archive-uploaded version.
