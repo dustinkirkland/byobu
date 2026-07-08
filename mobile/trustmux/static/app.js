@@ -501,7 +501,7 @@ function ansiToHtml(text) {
       i++;
     }
   }
-  const TOK = /([^\x1b]+)|\x1b(?:\[([0-9;]*)([A-Za-z])|\][^\x07]*(?:\x07|\x1b\\)|(.))/g;
+  const TOK = /([^\x1b]+)|\x1b(?:\[([0-9;]*)([A-Za-z])|\][^\x07\x1b]*(?:\x07|\x1b\\)|(.))/g;
   for (const m of text.matchAll(TOK)) {
     if (m[1])              emit(m[1]);
     else if (m[3] === 'm') sgr(m[2] ? m[2].split(';').map(Number) : [0]);
