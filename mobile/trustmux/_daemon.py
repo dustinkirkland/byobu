@@ -331,12 +331,22 @@ def tmux_kill_window(window_id: str) -> None:
 def tmux_kill_session(session_id: str) -> None:
     _tmux("kill-session", "-t", session_id)
 
+# `send-keys -l` delivers the whole literal string as one paste-like burst.
+# Some TUIs (e.g. Codex CLI) detect paste-like input by inter-keystroke
+# timing and, for a short window afterward, treat Enter as a newline inside
+# the paste rather than submit — sending Enter immediately lands inside that
+# window, so Enter is silently swallowed. Codex's window is 120ms; settle
+# past it before sending Enter. https://github.com/dustinkirkland/byobu/issues/115
+_PASTE_BURST_SETTLE = 0.15
+
 def tmux_send_keys(pane_id: str, keys: str, enter: bool = True, literal: bool = True) -> None:
     if literal:
         _tmux("send-keys", "-t", pane_id, "-l", keys)
     else:
         _tmux("send-keys", "-t", pane_id, keys)
     if enter:
+        if literal:
+            time.sleep(_PASTE_BURST_SETTLE)
         _tmux("send-keys", "-t", pane_id, "Enter")
 
 def tmux_rename_window(window_id: str, name: str) -> None:

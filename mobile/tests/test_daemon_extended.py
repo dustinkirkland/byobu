@@ -374,7 +374,8 @@ class TestTmuxListSessions(unittest.TestCase):
 class TestTmuxWriteOps(unittest.TestCase):
     def _capture(self, fn, *args, **kwargs):
         calls = []
-        with patch.object(bm, '_tmux', side_effect=lambda *a: calls.append(a) or ''):
+        with patch.object(bm, '_tmux', side_effect=lambda *a: calls.append(a) or ''), \
+             patch('time.sleep'):
             fn(*args, **kwargs)
         return calls
 
@@ -416,6 +417,19 @@ class TestTmuxWriteOps(unittest.TestCase):
     def test_send_keys_uses_literal_flag(self):
         calls = self._capture(bm.tmux_send_keys, '%0', 'my text', False)
         self.assertIn('-l', calls[0])
+
+    def test_send_keys_literal_with_enter_settles_before_enter(self):
+        # Paste-burst-detecting TUIs (e.g. Codex CLI) swallow an Enter that
+        # arrives immediately after a literal paste as a newline instead of
+        # submit — regression test for GH #115.
+        with patch.object(bm, '_tmux', return_value=''), patch('time.sleep') as mock_sleep:
+            bm.tmux_send_keys('%0', 'ls', True, True)
+        mock_sleep.assert_called_once_with(bm._PASTE_BURST_SETTLE)
+
+    def test_send_keys_non_literal_with_enter_does_not_settle(self):
+        with patch.object(bm, '_tmux', return_value=''), patch('time.sleep') as mock_sleep:
+            bm.tmux_send_keys('%0', 'Enter', True, False)
+        mock_sleep.assert_not_called()
 
 
 # ---------------------------------------------------------------------------
