@@ -938,6 +938,24 @@ apt-get install -y --no-install-recommends \
 
 cp -a /src /build
 cd /build
+
+# debian/changelog fetched from salsa/debian/latest still names the last
+# *released* version (e.g. 7.14-1) — a plain -b (binary-only) build doesn't
+# invoke dpkg-source, so nothing catches that mismatch, and the .deb ends up
+# mislabeled with a stale version even though its actual contents are built
+# from the current dev tree. Stamp a throwaway top stanza with the version
+# actually being built here, matching what the PPA/Debian source builds
+# already do. Discarded with the rest of /build; never touches the host
+# tree or gets pushed anywhere.
+DATESTAMP=$(date -R)
+{
+  printf "%s (%s) UNRELEASED; urgency=medium\n\n" "$PKG" "$VERSION"
+  printf "  * Local smoke-test build %s\n\n" "$VERSION"
+  printf " -- %s <%s>  %s\n\n" "$DEBFULLNAME" "$DEBEMAIL" "$DATESTAMP"
+  cat debian/changelog
+} > debian/changelog.new
+mv debian/changelog.new debian/changelog
+
 DEB_BUILD_OPTIONS=parallel=1 dpkg-buildpackage -us -uc -b
 cp /build/../*.deb /out/
 echo "--- Build PASSED ---"
@@ -955,12 +973,16 @@ echo "=== Ubuntu deb install smoke test PASSED ==="
 )
 
 
-def build_local_debs(v):
+def build_local_debs(v, identity):
     section("Phase 2b: Ubuntu deb build + install smoke test (ubuntu:noble)")
     run([
         "docker", "run", "--rm",
         "-v", f"{BYOBU_SRC}:/src:ro",
         "-v", f"{v['outdir']}/debs:/out",
+        "-e", f"PKG={v['pkg']}",
+        "-e", f"VERSION={v['ppa_base']}",
+        "-e", f"DEBFULLNAME={identity['DEBFULLNAME']}",
+        "-e", f"DEBEMAIL={identity['DEBEMAIL']}",
         "ubuntu:noble", "bash", "-c", _LOCAL_BUILD_SCRIPT,
     ])
     debs = sorted((v["outdir"] / "debs").glob("*.deb"))
@@ -2057,7 +2079,7 @@ def main():
         parallel.append(("smoke test",    run_smoke_test))
         parallel.append(("pip install",   lambda: run_pip_smoke_test(v)))
         parallel.append(("brew install",  lambda: run_homebrew_smoke_test(v)))
-        parallel.append(("local deb",     lambda: build_local_debs(v)))
+        parallel.append(("local deb",     lambda: build_local_debs(v, identity)))
         parallel.append(("Fedora RPM",    lambda: build_fedora_rpm(v)))
         parallel.append(("Homebrew byobu", lambda: run_homebrew_byobu_smoke_test(v)))
         parallel.append(("Salsa CI",      run_salsa_ci))
