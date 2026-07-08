@@ -18,15 +18,16 @@ RC phases:
     4d Fedora Rawhide RPM build    │
     4e Homebrew byobu smoke test   │
     4f Salsa CI (gbp buildpackage) ┘
-    5  PPA source builds           ┐
-    5b Debian exp source           ┘ run in parallel
+    5  PPA source builds
 
 Final skips phase 4 (smoke already passed on RC commit):
     6  GitHub pre-release
     7  Sign and upload (GPG sign + dput, interactive)
 
 Final adds:
-    6b Debian unstable source build (Docker) — RC uses experimental, final promotes to unstable
+    5b Debian unstable source build (Docker) — RC no longer builds a Debian source package at
+       all (dropped 2026-07-08 pending a decision on whether the mentors.debian.net/Salsa
+       sponsorship path is still needed); final still does, for the real archive upload
     6c Ubuntu dev-series source build (Docker)  ┐
     6e Fedora Rawhide RPM build (Docker)        ┘ run in parallel with 5b
     6d Homebrew formula update
@@ -429,11 +430,12 @@ def determine_versions(mode, resume=False):
         pypi_version = f"{base_ver}rc{rc_num}"
         # 0-prefix: 7.1~0rc1~noble1 < 7.1~noble1 in dpkg ordering
         ppa_base = f"{base_ver}~0rc{rc_num}"
+        # Unused for rc (no Debian source package built for RC anymore) — kept only so
+        # the dict shape matches final's; harmless if referenced.
         deb_exp_version = f"{base_ver}~0rc{rc_num}-1"
         ubuntu_ver = None
         print(f"  RC:           {rc_num}  →  trustmux-v{pypi_version}")
         print(f"  PPA base:     {ppa_base}~{{series}}1")
-        print(f"  Debian exp:   {deb_exp_version}")
     else:
         pypi_version = base_ver
         ppa_base = base_ver
@@ -1521,7 +1523,7 @@ def sign_and_upload(v, identity, mode):
 
     # ── Step 1: GPG signing ──────────────────────────────────────────────────
     print(f"\n── Step 1: GPG signing  (key: {gpgkey})")
-    subdirs = ["ppa", "debian"] if mode == "rc" else ["debian", "ubuntu"]
+    subdirs = ["ppa"] if mode == "rc" else ["debian", "ubuntu"]
     signed = 0
     for subdir in subdirs:
         for f in sorted((outdir / subdir).glob("*_source.changes")):
@@ -1558,21 +1560,21 @@ def sign_and_upload(v, identity, mode):
         else:
             print("  (no ubuntu .changes files found — skipping)")
 
-    # ── Step 3: Debian mentors ───────────────────────────────────────────────
-    deb_target = "experimental" if mode == "rc" else "unstable"
-    print(f"\n── Step 3: Debian {deb_target}  (mentors.debian.net)")
-    deb_changes = sorted((outdir / "debian").glob("*_source.changes"))
-    if deb_changes:
-        if confirm("  Upload to mentors.debian.net for sponsor review?", skippable=True):
-            run(["dput", "mentors", str(deb_changes[0])])
-            subject_ver = v["deb_exp_version"] if mode == "rc" else v["base_ver"]
-            print(f"\n  ✓ Uploaded. Email Andreas Tille <tille@debian.org>:")
-            print(f"    Subject: byobu {subject_ver} sponsorship request ({deb_target})")
-            print(f"    Body:    https://mentors.debian.net/package/byobu")
+    # ── Step 3: Debian mentors (final only — RC no longer builds a Debian source
+    #    package; see the note in main()) ────────────────────────────────────
+    if mode == "final":
+        print(f"\n── Step 3: Debian unstable  (mentors.debian.net)")
+        deb_changes = sorted((outdir / "debian").glob("*_source.changes"))
+        if deb_changes:
+            if confirm("  Upload to mentors.debian.net for sponsor review?", skippable=True):
+                run(["dput", "mentors", str(deb_changes[0])])
+                print(f"\n  ✓ Uploaded. Email Andreas Tille <tille@debian.org>:")
+                print(f"    Subject: byobu {v['base_ver']} sponsorship request (unstable)")
+                print(f"    Body:    https://mentors.debian.net/package/byobu")
+            else:
+                print("  Skipped.")
         else:
-            print("  Skipped.")
-    else:
-        print("  (no debian .changes files found — skipping)")
+            print("  (no debian .changes files found — skipping)")
 
     print("\n  ✓ Sign and upload complete.")
     if mode == "final":
@@ -1804,7 +1806,6 @@ def print_summary(v, mode):
     outdir = v["outdir"]
     mode_label = "RC" if mode == "rc" else "Release"
     banner(f"{mode_label} complete: {v['pkg']} {v['ppa_base']}")
-    deb_target = "experimental" if mode == "rc" else "unstable"
     lines = [
         f"\n  PyPI:  trustmux-v{v['pypi_version']} → GH Actions",
         f"         https://github.com/dustinkirkland/byobu/actions",
@@ -1814,7 +1815,8 @@ def print_summary(v, mode):
             f"  PPA:   ppa:byobu/ppa — {v['ppa_base']}~{{series}}1",
             f"         https://launchpad.net/~byobu/+archive/ubuntu/ppa",
         ]
-    lines.append(f"  Debian: byobu {v['deb_exp_version']} → {deb_target}")
+    else:
+        lines.append(f"  Debian: byobu {v['deb_exp_version']} → unstable")
     print("\n".join(lines))
     if mode == "final":
         print(
@@ -2061,9 +2063,12 @@ def main():
         parallel.append(("Salsa CI",      run_salsa_ci))
     if mode == "rc" and should_run("5", start_from):
         parallel.append(("PPA builds", lambda: build_ppa_packages(v, identity)))
-    dist = "experimental" if mode == "rc" else "unstable"
-    if should_run("5b", start_from):
-        parallel.append(("Debian source", lambda: build_debian_source(v, identity, dist)))
+    # RC no longer builds/uploads a Debian source package (dropped 2026-07-08 — the local
+    # Ubuntu deb build covers local smoke-testing; whether the mentors.debian.net/Salsa
+    # sponsorship path is still needed is under review). Final still builds "unstable" for
+    # the real Debian archive upload.
+    if mode == "final" and should_run("5b", start_from):
+        parallel.append(("Debian source", lambda: build_debian_source(v, identity, "unstable")))
     if mode == "final" and should_run("6c", start_from):
         parallel.append(("Ubuntu dev", lambda: build_ubuntu_dev(v, identity)))
     if mode == "final" and should_run("6e", start_from):
