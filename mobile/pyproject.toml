@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "trustmux"
-version = "7.15"
+version = "7.16"
 description = "Monitor and interact with tmux/Byobu sessions from your phone"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
