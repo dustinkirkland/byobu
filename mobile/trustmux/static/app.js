@@ -164,6 +164,7 @@ const machineSelect    = document.getElementById('machine-select');
 const btnInstall       = document.getElementById('btn-install');
 const iosInstallTip    = document.getElementById('ios-install-tip');
 const hostnameDisplay  = document.getElementById('hostname-display');
+function setHostnameDisplay(name) { hostnameDisplay.textContent = '🖥️ ' + name; }
 const headerClock      = document.getElementById('header-clock');
 const appVersion       = document.getElementById('app-version');
 const statuslineLeft   = document.getElementById('statusline-left');
@@ -427,7 +428,7 @@ function navigateTo(sessionId, windowId, paneId) {
 function updateContextName() {
   if (!currentPane) { ctxName.textContent = ''; return; }
   const custom = getPaneName(currentPane, '');
-  ctxName.textContent = custom || currentPaneCommand() || 'shell';
+  ctxName.textContent = '🪟 ' + (custom || currentPaneCommand() || 'shell');
 }
 
 // ── output rendering ───────────────────────────────────────────────────────
@@ -962,7 +963,7 @@ function applyVersion(v) {
 async function applyHostname() {
   try {
     const data = await fetch('/ping').then(r => r.json());
-    if (data.hostname) hostnameDisplay.textContent = data.hostname;
+    if (data.hostname) setHostnameDisplay(data.hostname);
     if (data.version) applyVersion(data.version);
   } catch { /* ignore */ }
 }
@@ -1010,6 +1011,28 @@ document.getElementById('lock-unlock-btn').addEventListener('click', async () =>
 });
 
 
+// ── keyboard-aware viewport (visualViewport) ───────────────────────────────
+// iOS/Android don't resize the layout viewport when the on-screen keyboard
+// opens — they resize the *visual* viewport and, on iOS Safari, also scroll
+// the page to bring the focused input into view. #app's `position:fixed;
+// inset:0` is pinned to the layout viewport, so it drifts out of sync: the
+// header scrolls off the top and dead space appears at the bottom. Re-pin
+// #app to the current visual viewport on every change (keyboard open/close,
+// resize, orientation) and cancel any page-level scroll iOS applies.
+const appEl = document.getElementById('app');
+function syncViewportToKeyboard() {
+  const vv = window.visualViewport;
+  if (!vv) return;
+  appEl.style.height = vv.height + 'px';
+  appEl.style.top = vv.offsetTop + 'px';
+  window.scrollTo(0, 0);
+}
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', syncViewportToKeyboard);
+  window.visualViewport.addEventListener('scroll', syncViewportToKeyboard);
+  syncViewportToKeyboard();
+}
+
 // ── init: check auth, then connect or show pair screen ────────────────────
 async function init() {
   setStatus('connecting…', 'connecting');
@@ -1017,7 +1040,7 @@ async function init() {
     const r = await fetch('/ping');
     const data = await r.json();
     if (r.ok) {
-      if (data.hostname) hostnameDisplay.textContent = data.hostname;
+      if (data.hostname) setHostnameDisplay(data.hostname);
       if (data.version) applyVersion(data.version);
       hideOfflineScreen();
       hidePairScreen();
