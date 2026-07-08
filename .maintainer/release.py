@@ -1863,9 +1863,20 @@ cd /build/byobu
 git fetch /pristine-tar.bundle pristine-tar:pristine-tar
 
 # Simulate the debian/latest branch that the real Salsa CI checks out.
+# Real debian/latest's non-debian/ content is whatever the last `gbp
+# import-orig` merged there — i.e. the last *released* upstream version, not
+# current dev HEAD. Checking out current master here would diff a
+# post-release dev tree (new commits since the last final) against the
+# pristine-tar delta for the last release, which dpkg-source correctly
+# rejects as "unexpected upstream changes" even though nothing is actually
+# wrong. Check out the matching upstream/<version> tag instead — created by
+# push_salsa()'s gbp import-orig on every final release — so this simulation
+# builds the same tree the real debian/latest actually has.
 # gbp reads debian/changelog from git (HEAD:debian/changelog), not from disk,
 # so we must commit debian/ into the clone — not just copy it.
-git checkout -b debian/latest
+CHANGELOG_VER=$(dpkg-parsechangelog -l /src/debian/changelog -S Version | sed 's/-[^-]*$//')
+echo "debian/changelog declares upstream version: $CHANGELOG_VER"
+git checkout -b debian/latest "upstream/${CHANGELOG_VER}"
 cp -a /src/debian debian/
 git config user.email "ci@salsa.local"
 git config user.name "Salsa CI"
