@@ -1,5 +1,5 @@
 ---
-description: Cut a byobu/trustmux RC via the codified release.py pipeline — PyPI, PPA, Debian experimental, GitHub pre-release, GPG sign + upload
+description: Cut a byobu/trustmux RC or final release via the codified release.py pipeline — PyPI, PPA, GitHub pre-release, GPG sign + upload; final also handles Debian unstable, Ubuntu dev, Homebrew, and Salsa
 ---
 
 All RC/final release logic is codified in `.maintainer/release.py`. This skill does not
@@ -18,13 +18,18 @@ reintroduce that duplication: if `release.py`'s behavior needs to change, change
 2  Determine versions (base version from mobile/pyproject.toml / configure.ac)
 3  Push PyPI git tag (triggers GH Actions → PyPI)
 4  Smoke tests + local deb + Fedora RPM + Homebrew smoke tests + Salsa CI   ┐ parallel
-5  PPA source builds                                                        │
-5b Debian experimental source build                                        ┘
+5  PPA source builds                                                        ┘
 6  GitHub pre-release
-7  GPG sign + upload (ppa:byobu/ppa, mentors.debian.net)
+7  GPG sign + upload (ppa:byobu/ppa only — RC no longer builds/uploads a Debian
+   source package at all; see .maintainer/DEBIAN_PACKAGING_CONTEXT.md)
 ```
-`final` mode additionally updates Homebrew, builds for the Ubuntu dev series, and pushes to
-Debian Salsa. Full phase list and flags: `python3 .maintainer/release.py --help`.
+`final` mode additionally builds Debian unstable + Ubuntu dev-series source, updates Homebrew,
+and pushes to Debian Salsa — including a mechanical `debian/changelog` stanza (Phase 9c).
+**`final` mode requires the top-level `ChangeLog` file's top entry to already match the version
+being released** (`determine_versions()` dies otherwise) — curated release notes go there, not
+in `debian/changelog` (packaging-only per Andreas Tille's guidance, see
+`.maintainer/DEBIAN_PACKAGING_CONTEXT.md`). Full phase list and flags:
+`python3 .maintainer/release.py --help`.
 
 ## Do not run this via Bash
 
@@ -54,6 +59,9 @@ Read-only prep and sanity checks are fine — these don't touch GPG or upload an
 - Fetch and eyeball `salsa/debian/latest` sync: `git fetch salsa debian/latest`
 - Check existing `trustmux-v*` tags (`git tag -l 'trustmux-v*' | sort -V | tail`) so the
   expected next RC number is known before the user kicks it off
+- Before a `final` run: confirm `ChangeLog`'s top entry matches the version about to be
+  released. If it's stale or missing, draft it — curate from `git log` between the last
+  version-bump commit and HEAD, excluding internal release.py/skill/doc-only commits
 - After the user's run completes, verify results (PyPI, GitHub release, PPA) and report back —
   but don't re-run any phase or touch GPG/upload yourself; if something needs redoing, tell the
   user which `--start-from PHASE` to use.
