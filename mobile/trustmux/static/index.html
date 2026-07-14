@@ -184,7 +184,11 @@
     #update-badge:active { opacity: 0.7; }
 
     #header-clock {
-      font-size: 11px; color: var(--dim); white-space: nowrap; flex-shrink: 0;
+      /* --dim (#666) only gives 2.9:1 against --bg2 — fails WCAG's 4.5:1 for
+         small text. This is a scoped fix (not a --dim change) since nothing
+         else was flagged as hard to read. 5.64:1, still visually secondary
+         next to the near-white terminal text and blue hostname/accent. */
+      font-size: 11px; color: #969696; white-space: nowrap; flex-shrink: 0;
     }
 
     /* ── version popup (tap hostname) ── */
