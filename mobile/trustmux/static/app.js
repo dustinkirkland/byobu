@@ -154,8 +154,7 @@ const pairBtn       = document.getElementById('pair-btn');
 const pairError     = document.getElementById('pair-error');
 const xyzLabel      = document.getElementById('xyz-label');
 const output        = document.getElementById('output');
-const statusbar     = document.getElementById('statusbar');
-const statusText    = document.getElementById('status-text');
+const connIndicator = document.getElementById('conn-indicator');
 const cmdInput      = document.getElementById('cmd');
 const pwdInput      = document.getElementById('pwd');
 const btnSend       = document.getElementById('btn-send');
@@ -166,7 +165,10 @@ const iosInstallTip    = document.getElementById('ios-install-tip');
 const hostnameDisplay  = document.getElementById('hostname-display');
 function setHostnameDisplay(name) { hostnameDisplay.textContent = '🖥️ ' + name; }
 const headerClock      = document.getElementById('header-clock');
-const appVersion       = document.getElementById('app-version');
+const updateBadge      = document.getElementById('update-badge');
+const versionPopup       = document.getElementById('version-popup');
+const versionPopupText   = document.getElementById('version-popup-text');
+const versionPopupReload = document.getElementById('version-popup-reload');
 const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
 const ctxOverlay       = document.getElementById('ctx-overlay');
@@ -263,8 +265,8 @@ function _saveKbdMode(paneId, mode) { localStorage.setItem(_kbdModeKey(paneId), 
 
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
-  statusText.textContent = msg;
-  statusbar.className = cls || '';
+  connIndicator.title = msg;
+  connIndicator.className = cls || '';
 }
 
 // ── WebSocket ──────────────────────────────────────────────────────────────
@@ -769,12 +771,22 @@ let _serverTz = 'UTC';  // IANA timezone of the host machine
 
 function startClock() {
   if (_clockInterval) return;
+  // YYYY-MM-DD HH:MM:SS, always, in the connected machine's timezone (never
+  // the browser's) — built from formatToParts rather than trusting a
+  // locale's default field order, so it's exact regardless of browser/locale.
+  // Rebuilt every tick since _serverTz can change (e.g. switching machines).
   function tick() {
     const now = new Date(Date.now() + _serverOffset);
-    const opts = { timeZone: _serverTz };
-    const date = new Intl.DateTimeFormat('en-US', {...opts, month:'short', day:'numeric'}).format(now);
-    const time = new Intl.DateTimeFormat('en-US', {...opts, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).format(now);
-    headerClock.textContent = `${date} ${time}`;
+    const fmt = new Intl.DateTimeFormat('en-US', {
+      timeZone: _serverTz,
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hourCycle: 'h23',
+    });
+    const parts = {};
+    for (const p of fmt.formatToParts(now)) parts[p.type] = p.value;
+    headerClock.textContent =
+      `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
   }
   tick();
   _clockInterval = setInterval(tick, 1000);
@@ -945,18 +957,43 @@ machineSelect.addEventListener('change', () => {
 });
 
 let _swRegistration = null;
+let _versionText = '';       // last text shown in the version popup
 
-appVersion.addEventListener('click', async () => {
+// ── version popup (tap hostname or the update-available badge) ────────────
+function showVersionPopup() {
+  versionPopupText.textContent = _versionText;
+  const rect = hostnameDisplay.getBoundingClientRect();
+  versionPopup.style.display = 'block';
+  versionPopup.style.top   = (rect.bottom + 8) + 'px';
+  versionPopup.style.right = (window.innerWidth - rect.right) + 'px';
+}
+function hideVersionPopup() {
+  versionPopup.style.display = 'none';
+}
+hostnameDisplay.addEventListener('click', e => {
+  e.stopPropagation();
+  versionPopup.style.display === 'none' ? showVersionPopup() : hideVersionPopup();
+});
+updateBadge.addEventListener('click', e => {
+  e.stopPropagation();
+  versionPopup.style.display === 'none' ? showVersionPopup() : hideVersionPopup();
+});
+versionPopupReload.addEventListener('click', async () => {
   if (_swRegistration) await _swRegistration.update().catch(() => {});
   location.reload();
 });
+document.addEventListener('click', () => hideVersionPopup());
+document.addEventListener('touchstart', e => {
+  if (!versionPopup.contains(e.target) && e.target !== hostnameDisplay && e.target !== updateBadge) {
+    hideVersionPopup();
+  }
+}, { passive: true });
 
 function applyVersion(v) {
   if (!v) return;
   const isUpdate = _serverVersion && v !== _serverVersion;
-  appVersion.textContent = isUpdate ? 'v' + v + ' ⟳' : 'v' + v;
-  appVersion.title = isUpdate ? 'Server updated — tap to reload' : 'Tap to reload / check for updates';
-  appVersion.classList.toggle('update-available', !!isUpdate);
+  _versionText = isUpdate ? `v${v} — server updated, tap Reload` : `v${v}`;
+  updateBadge.style.display = isUpdate ? '' : 'none';
   if (!isUpdate) _serverVersion = v;
 }
 
