@@ -190,36 +190,30 @@
       font-size: 11px; color: var(--text); white-space: nowrap; flex-shrink: 0;
     }
 
-    /* ── version popup (tap hostname) ── */
-    #version-popup {
+    /* ── info popup (tap hostname, connection indicator, or update badge) ── */
+    #info-popup {
       position: fixed; z-index: 150;
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: 10px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.55);
-      min-width: 150px; max-width: 220px; font-size: 12px;
+      min-width: 160px; max-width: 220px; font-size: 12px;
     }
     /* the FQDN (location.hostname — the real Tailscale MagicDNS name or
        whatever address the browser actually used) can run long; wrap it
        rather than letting the popup grow wide enough to run off-screen */
-    #version-popup-host {
-      color: var(--accent); margin-bottom: 4px;
+    #info-popup-host {
+      color: var(--accent); margin-bottom: 6px;
       overflow-wrap: break-word; word-break: break-all;
     }
-    #version-popup-text { color: var(--dim); margin-bottom: 8px; }
-    #version-popup-reload {
+    #info-popup-body {
+      color: var(--dim); white-space: pre-line; line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    #info-popup-reload {
       background: var(--accent); color: #fff; border: none;
       border-radius: 6px; padding: 8px 10px; width: 100%;
       font-size: 12px; font-family: var(--font); cursor: pointer;
     }
-    #version-popup-reload:active { filter: brightness(0.85); }
-
-    /* ── connection-info popup (tap the connection indicator) ── */
-    #conn-popup {
-      position: fixed; z-index: 150;
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 10px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.55);
-      min-width: 160px; font-size: 12px; color: var(--dim);
-      white-space: pre-line; line-height: 1.6;
-    }
+    #info-popup-reload:active { filter: brightness(0.85); }
 
     /* ── status bar (line 2 — context layer: pane/window/session nav) ── */
     #statusbar {
@@ -564,15 +558,12 @@
     <button class="icon-btn" id="btn-next" title="Next pane">›</button>
   </div>
 
-  <!-- ── version popup (tap hostname) ── -->
-  <div id="version-popup" style="display:none">
-    <div id="version-popup-host"></div>
-    <div id="version-popup-text"></div>
-    <button id="version-popup-reload">Reload</button>
+  <!-- ── info popup (tap hostname, connection indicator, or update badge) ── -->
+  <div id="info-popup" style="display:none">
+    <div id="info-popup-host"></div>
+    <div id="info-popup-body"></div>
+    <button id="info-popup-reload">Reload</button>
   </div>
-
-  <!-- ── connection-info popup (tap the connection indicator) ── -->
-  <div id="conn-popup" style="display:none"></div>
 
   <div id="output" class="placeholder">Select a pane above.</div>
 
