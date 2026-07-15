@@ -167,6 +167,7 @@ function setHostnameDisplay(name) { hostnameDisplay.textContent = '🖥️ ' + n
 const headerClock      = document.getElementById('header-clock');
 const updateBadge      = document.getElementById('update-badge');
 const versionPopup       = document.getElementById('version-popup');
+const versionPopupHost   = document.getElementById('version-popup-host');
 const versionPopupText   = document.getElementById('version-popup-text');
 const versionPopupReload = document.getElementById('version-popup-reload');
 const connPopup          = document.getElementById('conn-popup');
@@ -990,6 +991,10 @@ let _versionText = '';       // last text shown in the version popup
 
 // ── version popup (tap hostname or the update-available badge) ────────────
 function showVersionPopup() {
+  // location.hostname is the real FQDN/Tailscale MagicDNS name the browser
+  // actually used to reach the server — distinct from (and often longer
+  // than) the short OS hostname shown in the header via socket.gethostname().
+  versionPopupHost.textContent = location.hostname;
   versionPopupText.textContent = _versionText;
   const rect = hostnameDisplay.getBoundingClientRect();
   versionPopup.style.display = 'block';

@@ -185,10 +185,9 @@
 
     #header-clock {
       /* --dim (#666) only gives 2.9:1 against --bg2 — fails WCAG's 4.5:1 for
-         small text. This is a scoped fix (not a --dim change) since nothing
-         else was flagged as hard to read. 5.64:1, still visually secondary
-         next to the near-white terminal text and blue hostname/accent. */
-      font-size: 11px; color: #969696; white-space: nowrap; flex-shrink: 0;
+         small text. #969696 (5.64:1) still read as hard to see on-device,
+         so just use --text (11.25:1) — same near-white as the terminal body. */
+      font-size: 11px; color: var(--text); white-space: nowrap; flex-shrink: 0;
     }
 
     /* ── version popup (tap hostname) ── */
@@ -196,7 +195,14 @@
       position: fixed; z-index: 150;
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: 10px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.55);
-      min-width: 150px; font-size: 12px;
+      min-width: 150px; max-width: 220px; font-size: 12px;
+    }
+    /* the FQDN (location.hostname — the real Tailscale MagicDNS name or
+       whatever address the browser actually used) can run long; wrap it
+       rather than letting the popup grow wide enough to run off-screen */
+    #version-popup-host {
+      color: var(--accent); margin-bottom: 4px;
+      overflow-wrap: break-word; word-break: break-all;
     }
     #version-popup-text { color: var(--dim); margin-bottom: 8px; }
     #version-popup-reload {
@@ -560,6 +566,7 @@
 
   <!-- ── version popup (tap hostname) ── -->
   <div id="version-popup" style="display:none">
+    <div id="version-popup-host"></div>
     <div id="version-popup-text"></div>
     <button id="version-popup-reload">Reload</button>
   </div>
