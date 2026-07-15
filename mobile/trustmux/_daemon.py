@@ -175,6 +175,31 @@ def _tailscale_ip() -> str | None:
         pass
     return None
 
+
+def _get_server_ip() -> str:
+    """Best-effort primary IP for the connection-info popup only — not used
+    for binding. Prefers the Tailscale IP (matches what isTailscaleHost() on
+    the client checks for), falling back to whichever local interface the OS
+    would route through to reach the public internet (no packets actually
+    sent — UDP connect() just consults the routing table).
+    """
+    ip = _tailscale_ip()
+    if ip:
+        return ip
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
+
+
+# Computed once at daemon startup (may shell out to `tailscale`) — never
+# recomputed per-message, unlike server_ts which must be fresh every time.
+_SERVER_IP = _get_server_ip()
+
 # ---------------------------------------------------------------------------
 # ANSI stripping
 # ---------------------------------------------------------------------------
@@ -777,6 +802,7 @@ class WsHandler(tornado.websocket.WebSocketHandler):
             obj["server_ts"] = int(time.time() * 1000)
             obj["server_tz"] = _SERVER_TZ
             obj["server_tz_offset_s"] = int(datetime.now().astimezone().utcoffset().total_seconds())
+            obj["server_ip"] = _SERVER_IP
             self.write_message(json.dumps(obj))
         except tornado.websocket.WebSocketClosedError:
             pass
@@ -873,7 +899,13 @@ class WsHandler(tornado.websocket.WebSocketHandler):
         mtype = msg.get("type")
 
         try:
-            if mtype == "list_sessions":
+            if mtype == "ping":
+                # Round-trip latency probe for the connection-info popup —
+                # deliberately does no work beyond echoing back, unlike
+                # list_sessions which queries tmux.
+                self._send({"type": "pong"})
+
+            elif mtype == "list_sessions":
                 sessions = await asyncio.to_thread(tmux_list_sessions)
                 self._send({"type": "sessions", "data": sessions})
 
