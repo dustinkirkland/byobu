@@ -154,8 +154,7 @@ const pairBtn       = document.getElementById('pair-btn');
 const pairError     = document.getElementById('pair-error');
 const xyzLabel      = document.getElementById('xyz-label');
 const output        = document.getElementById('output');
-const statusbar     = document.getElementById('statusbar');
-const statusText    = document.getElementById('status-text');
+const connIndicator = document.getElementById('conn-indicator');
 const cmdInput      = document.getElementById('cmd');
 const pwdInput      = document.getElementById('pwd');
 const btnSend       = document.getElementById('btn-send');
@@ -166,7 +165,11 @@ const iosInstallTip    = document.getElementById('ios-install-tip');
 const hostnameDisplay  = document.getElementById('hostname-display');
 function setHostnameDisplay(name) { hostnameDisplay.textContent = '🖥️ ' + name; }
 const headerClock      = document.getElementById('header-clock');
-const appVersion       = document.getElementById('app-version');
+const updateBadge      = document.getElementById('update-badge');
+const versionPopup       = document.getElementById('version-popup');
+const versionPopupText   = document.getElementById('version-popup-text');
+const versionPopupReload = document.getElementById('version-popup-reload');
+const connPopup          = document.getElementById('conn-popup');
 const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
 const ctxOverlay       = document.getElementById('ctx-overlay');
@@ -263,8 +266,13 @@ function _saveKbdMode(paneId, mode) { localStorage.setItem(_kbdModeKey(paneId), 
 
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
-  statusText.textContent = msg;
-  statusbar.className = cls || '';
+  connIndicator.title = msg;
+  connIndicator.className = cls || '';
+  // The connection-info popup shows a snapshot (latency, connected-since)
+  // that's meaningless — or actively misleading — once we're no longer
+  // connected. hideConnPopup is a hoisted function declaration, safe to
+  // call here even though it's defined later in the file.
+  if (cls !== 'connected') hideConnPopup();
 }
 
 // ── WebSocket ──────────────────────────────────────────────────────────────
@@ -274,6 +282,7 @@ function connect() {
 
   ws.onopen  = () => {
     setStatus('connected', 'connected');
+    _connectedAt = Date.now();
     startClock();
     send({ type: 'list_sessions' });
     if (currentPane) send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true });
@@ -295,7 +304,10 @@ function connect() {
 
     if (msg.server_ts) _serverOffset = msg.server_ts - Date.now();
     if (msg.server_tz) _serverTz = msg.server_tz;
-    if (msg.type === 'sessions') {
+    if (msg.server_ip) _serverIp = msg.server_ip;
+    if (msg.type === 'pong') {
+      if (_pendingPing) { _pendingPing(); _pendingPing = null; }
+    } else if (msg.type === 'sessions') {
       sessions = msg.data || [];
       if (msg.new_session) forcedSessionId = msg.new_session;
       if (msg.new_pane) forcedPaneId = msg.new_pane;
@@ -766,15 +778,44 @@ createNameInput.addEventListener('keydown', e => { if (e.key === 'Enter') submit
 let _clockInterval = null;
 let _serverOffset = 0;  // ms: server clock minus browser clock
 let _serverTz = 'UTC';  // IANA timezone of the host machine
+let _serverIp = '';     // machine's IP, for the connection-info popup
+let _connectedAt = 0;   // Date.now() when the current ws connection opened
+let _pendingPing = null; // resolver for an in-flight latency ping, or null
+
+// Round-trip latency via a dedicated ping/pong (not list_sessions — that
+// queries tmux, adding noise to a number meant to reflect network time).
+// Resolves to null if no pong arrives within 3s (matches how the rest of
+// the app treats a stalled connection).
+function measureLatency() {
+  return new Promise(resolve => {
+    if (_pendingPing) { resolve(null); return; }
+    const start = performance.now();
+    _pendingPing = () => resolve(Math.round(performance.now() - start));
+    send({ type: 'ping' });
+    setTimeout(() => {
+      if (_pendingPing) { _pendingPing = null; resolve(null); }
+    }, 3000);
+  });
+}
 
 function startClock() {
   if (_clockInterval) return;
+  // YYYY-MM-DD HH:MM:SS, always, in the connected machine's timezone (never
+  // the browser's) — built from formatToParts rather than trusting a
+  // locale's default field order, so it's exact regardless of browser/locale.
+  // Rebuilt every tick since _serverTz can change (e.g. switching machines).
   function tick() {
     const now = new Date(Date.now() + _serverOffset);
-    const opts = { timeZone: _serverTz };
-    const date = new Intl.DateTimeFormat('en-US', {...opts, month:'short', day:'numeric'}).format(now);
-    const time = new Intl.DateTimeFormat('en-US', {...opts, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).format(now);
-    headerClock.textContent = `${date} ${time}`;
+    const fmt = new Intl.DateTimeFormat('en-US', {
+      timeZone: _serverTz,
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hourCycle: 'h23',
+    });
+    const parts = {};
+    for (const p of fmt.formatToParts(now)) parts[p.type] = p.value;
+    headerClock.textContent =
+      `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
   }
   tick();
   _clockInterval = setInterval(tick, 1000);
@@ -945,18 +986,87 @@ machineSelect.addEventListener('change', () => {
 });
 
 let _swRegistration = null;
+let _versionText = '';       // last text shown in the version popup
 
-appVersion.addEventListener('click', async () => {
+// ── version popup (tap hostname or the update-available badge) ────────────
+function showVersionPopup() {
+  versionPopupText.textContent = _versionText;
+  const rect = hostnameDisplay.getBoundingClientRect();
+  versionPopup.style.display = 'block';
+  versionPopup.style.top   = (rect.bottom + 8) + 'px';
+  versionPopup.style.right = (window.innerWidth - rect.right) + 'px';
+}
+function hideVersionPopup() {
+  versionPopup.style.display = 'none';
+}
+hostnameDisplay.addEventListener('click', e => {
+  e.stopPropagation();
+  versionPopup.style.display === 'none' ? showVersionPopup() : hideVersionPopup();
+});
+updateBadge.addEventListener('click', e => {
+  e.stopPropagation();
+  versionPopup.style.display === 'none' ? showVersionPopup() : hideVersionPopup();
+});
+versionPopupReload.addEventListener('click', async () => {
   if (_swRegistration) await _swRegistration.update().catch(() => {});
   location.reload();
 });
+document.addEventListener('click', () => hideVersionPopup());
+document.addEventListener('touchstart', e => {
+  if (!versionPopup.contains(e.target) && e.target !== hostnameDisplay && e.target !== updateBadge) {
+    hideVersionPopup();
+  }
+}, { passive: true });
+
+// ── connection-info popup (tap the connection indicator) ──────────────────
+function formatDuration(ms) {
+  const s = Math.floor(ms / 1000);
+  if (s < 60) return `${s}s`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ${s % 60}s`;
+  const h = Math.floor(m / 60);
+  return `${h}h ${m % 60}m`;
+}
+async function showConnPopup() {
+  const rect = connIndicator.getBoundingClientRect();
+  connPopup.style.display = 'block';
+  connPopup.style.top   = (rect.bottom + 8) + 'px';
+  connPopup.style.right = (window.innerWidth - rect.right) + 'px';
+  connPopup.textContent = 'Measuring…';
+
+  const method  = isTailscaleHost() ? 'Tailscale' : 'Direct';
+  const since   = _connectedAt ? formatDuration(Date.now() - _connectedAt) : '—';
+  const ip      = _serverIp || '—';
+  const latency = await measureLatency();
+  // Bail if the popup was closed (or reopened, wiping this stale request)
+  // while the ping was in flight.
+  if (connPopup.style.display === 'none') return;
+  connPopup.textContent =
+    `Latency: ${latency !== null ? latency + ' ms' : 'timed out'}\n` +
+    `Connection: ${method}\n` +
+    `Connected: ${since}\n` +
+    `IP: ${ip}`;
+}
+function hideConnPopup() {
+  connPopup.style.display = 'none';
+}
+connIndicator.addEventListener('click', e => {
+  e.stopPropagation();
+  // Nothing meaningful to show while connecting/errored — latency and
+  // connected-since would just be stale or "timed out" noise.
+  if (!connIndicator.classList.contains('connected')) return;
+  connPopup.style.display === 'none' ? showConnPopup() : hideConnPopup();
+});
+document.addEventListener('click', () => hideConnPopup());
+document.addEventListener('touchstart', e => {
+  if (!connPopup.contains(e.target) && e.target !== connIndicator) hideConnPopup();
+}, { passive: true });
 
 function applyVersion(v) {
   if (!v) return;
   const isUpdate = _serverVersion && v !== _serverVersion;
-  appVersion.textContent = isUpdate ? 'v' + v + ' ⟳' : 'v' + v;
-  appVersion.title = isUpdate ? 'Server updated — tap to reload' : 'Tap to reload / check for updates';
-  appVersion.classList.toggle('update-available', !!isUpdate);
+  _versionText = isUpdate ? `v${v} — server updated, tap Reload` : `v${v}`;
+  updateBadge.style.display = isUpdate ? '' : 'none';
   if (!isUpdate) _serverVersion = v;
 }
 

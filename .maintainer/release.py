@@ -33,7 +33,11 @@ Final adds:
     6d Homebrew formula update
     GitHub release (non-prerelease, both byobu and trustmux tags)
     8  Regenerate PWA screenshots → commit + push trustmux-web
-    9  Push release commit + tag to Debian Salsa (salsa/debian/latest)
+    9  Push release commit + tag to Debian Salsa (salsa/debian/latest); also
+       adds a minimal "New upstream release" debian/changelog stanza (9c) —
+       debian/changelog is packaging-only per Andreas Tille's 2026-07-14
+       guidance, so phase 2's version check requires a matching curated
+       entry already exist in the top-level ChangeLog file before this runs
 """
 
 import argparse
@@ -445,6 +449,27 @@ def determine_versions(mode, resume=False):
         print(f"  PPA base:     {ppa_base}~{{series}}1")
         print(f"  Debian unstable: {deb_exp_version}")
         print(f"  Ubuntu:       {ubuntu_ver}")
+
+        # ChangeLog currency check. push_salsa() only ever writes a minimal
+        # "New upstream release" debian/changelog stanza (packaging-only,
+        # per Andreas Tille's 2026-07-14 guidance) — the curated upstream
+        # release notes belong in the top-level ChangeLog file, and nothing
+        # in this pipeline can write good bullets for you. Catch a forgotten
+        # entry here rather than shipping a release with a stale ChangeLog.
+        changelog_path = BYOBU_SRC / "ChangeLog"
+        if not changelog_path.exists():
+            die(f"{changelog_path} not found — cannot verify it has a "
+                f"{base_ver} entry.")
+        top_match = re.search(r"^byobu \(([^)]+)\)", changelog_path.read_text(), re.MULTILINE)
+        if not top_match or top_match.group(1) != base_ver:
+            found = top_match.group(1) if top_match else "(no entry found)"
+            die(
+                f"ChangeLog's top entry is {found!r}, expected {base_ver!r}.\n"
+                f"  Add a curated 'byobu ({base_ver}) {{date}}  {{name}} <{{email}}>' "
+                f"stanza to {changelog_path} before running final — "
+                f"debian/changelog only ever gets a one-line placeholder."
+            )
+        print(f"  ChangeLog:    top entry matches {base_ver} ✓")
 
     # Supported Ubuntu series
     try:
@@ -1689,16 +1714,27 @@ def cleanup_debian():
 
 # ── phase 9: Salsa push (final only) ─────────────────────────────────────
 
-def push_salsa(v):
+def push_salsa(v, identity):
     """Seed salsa/upstream/latest with the new release tarball and merge it
-    into salsa/debian/latest via gbp's standard import-orig workflow.
+    into salsa/debian/latest via gbp's standard import-orig workflow, then
+    add a minimal debian/changelog stanza for the new upstream version.
 
-    We never touch debian/ ourselves — it exists only on salsa/debian/latest
-    and is maintained there directly (see .maintainer/DEBIAN_PACKAGING_CONTEXT.md).
-    gbp import-orig's default merge brings new upstream source onto
-    debian/latest without disturbing debian/, exactly like a normal Debian
-    packaging workflow.  Both pushes are plain (non-force) fast-forwards;
-    they fail loudly if Salsa has diverged instead of silently overwriting it.
+    We never touch debian/ content ourselves beyond that one mechanical
+    changelog stanza — everything else about debian/ (control, rules,
+    actual packaging changes) is maintained directly on salsa/debian/latest
+    (see .maintainer/DEBIAN_PACKAGING_CONTEXT.md). gbp import-orig's default
+    merge brings new upstream source onto debian/latest without disturbing
+    debian/, exactly like a normal Debian packaging workflow. Both pushes
+    are plain (non-force) fast-forwards; they fail loudly if Salsa has
+    diverged instead of silently overwriting it.
+
+    debian/changelog gets only "New upstream release" — per Andreas Tille's
+    guidance (2026-07-14), debian/changelog documents packaging changes
+    only, never upstream feature/bugfix history. That curated content
+    belongs in the top-level ChangeLog file (part of the upstream tarball
+    itself, auto-installed by dh_installchangelogs) — which must already
+    have a matching top entry by this point; see determine_versions()'s
+    changelog-currency check in final mode.
     """
     section("Phase 9: Push to Debian Salsa (upstream/latest → debian/latest via gbp)")
     base_ver = v["base_ver"]
@@ -1796,6 +1832,26 @@ def push_salsa(v):
         if tag_check.returncode != 0:
             die(f"gbp import-orig did not create the expected tag "
                 f"{upstream_tag} — inspect {salsa_clone} before retrying.")
+
+        # ── minimal debian/changelog stanza (packaging-only; see docstring) ──
+        section("Phase 9c: debian/changelog — minimal new-upstream-release stanza")
+        env = os.environ.copy()
+        env["DEBFULLNAME"] = identity["DEBFULLNAME"]
+        env["DEBEMAIL"] = identity["DEBEMAIL"]
+        run([
+            "dch", "--newversion", f"{base_ver}-1",
+            "--distribution", "UNRELEASED",
+            "--release-heuristic", "log",
+            "--package", v["pkg"],
+            "New upstream release. See /usr/share/doc/byobu/changelog for "
+            "upstream changes.",
+        ], cwd=str(salsa_clone), env=env)
+        # dch edits debian/changelog on disk; commit it explicitly (gbp
+        # import-orig's own commit above never touches debian/).
+        run(["git", "-C", str(salsa_clone), "add", "debian/changelog"])
+        run(["git", "-C", str(salsa_clone), "commit", "-m",
+             f"debian/changelog: new upstream release {base_ver}"])
+        print(f"  ✓ debian/changelog: {base_ver}-1 UNRELEASED stanza added")
 
         # Push all three branches plus the upstream tag — never force.  A
         # rejected push here means Salsa moved since we cloned; re-run
@@ -2115,7 +2171,7 @@ def main():
             update_website_screenshots(v)
 
         if mode == "final" and should_run("9", start_from):
-            push_salsa(v)
+            push_salsa(v, identity)
 
         print_summary(v, mode)
     finally:

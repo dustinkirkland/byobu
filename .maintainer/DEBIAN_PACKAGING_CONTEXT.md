@@ -176,6 +176,70 @@ GPG-signed yet — revisit once they are.
 
 No push of `HEAD`. No `.maintainer/debian`. No force push. No `salsa/master`.
 
+## 2026-07-14: debian/changelog is packaging-only; upstream ChangeLog moved to GitHub
+
+Andreas Tille flagged that `debian/changelog` was being (mis)used as an upstream
+changelog — bulleted trustmux/pwa feature and bugfix entries had been going straight
+into it for the 7.15-1 draft (and every version before it, "almost 20 years" of
+history per Dustin). His point: `debian/changelog` documents changes to the *Debian
+packaging* only (control, rules, dependencies, patches). Upstream release notes
+belong in a file that ships in the upstream tarball itself, so every distribution
+repackaging byobu (Ubuntu, Fedora, etc.) can reuse the same information instead of
+it being siloed inside Debian-specific metadata. He unilaterally rewrote the 7.15-1
+stanza down to `* New upstream version` and deleted the never-uploaded 7.14-1 stanza
+entirely before uploading to the `delayed/1` queue — Dustin agreed with the
+principle after review.
+
+**What changed:**
+
+- **`/home/kirkland/src/byobu/ChangeLog`** (new, top-level, part of the upstream
+  tarball) is now byobu's real changelog — curated, prose-bullet entries per
+  version, same style as the old debian/changelog bullets but without any
+  Debian-specific decoration (no `; urgency=`, no `UNRELEASED`/`unstable`
+  distribution field — those are meaningless upstream). Full ~18-year history
+  (back to `screen-profiles` in 2008) migrated in from `debian/changelog` verbatim;
+  the two most recent entries (7.14, 7.15) were restored from their original
+  curated content before Andreas's edit, not left squashed.
+- **`dh_installchangelogs` auto-detects this file** — confirmed by reading its
+  actual source (`find_changelog()` in `/usr/bin/dh_installchangelogs`, Perl,
+  inside `debhelper`): it lowercases each candidate filename and compares against
+  `changelog`/`changes`/`history` (optionally with `.txt`/`.md`/etc.), so
+  `ChangeLog` (any case) matches `changelog` with no `debian/rules` override
+  needed. Installed automatically as `/usr/share/doc/byobu/changelog.gz`.
+- **`debian/changelog` gets a minimal, mechanical stanza only** — `push_salsa()`
+  (Phase 9c, `release.py final`) now runs, in the temp Salsa clone, right after
+  `gbp import-orig`'s merge and before pushing:
+  ```
+  dch --newversion {base_ver}-1 --distribution UNRELEASED --release-heuristic log \
+      --package byobu "New upstream release. See /usr/share/doc/byobu/changelog for upstream changes."
+  ```
+  `--release-heuristic log` is required — plain `dch --newversion` merges into an
+  existing `UNRELEASED` top stanza in-place instead of creating a real boundary
+  (confirmed by actually running it and diffing the result, twice, independently).
+  `log` instead checks for a dupload/dput log file recording a real prior upload;
+  byobu's never been dput'd from an automated context, so none exists, and `dch`
+  correctly creates a fresh stanza regardless of the existing top entry's
+  distribution field. Verified with a real `gbp buildpackage` + `lintian` run in a
+  `debian:sid` Docker container, checked out at the actual `upstream/<version>`
+  tag (not current dev HEAD — same bug class as the `run_salsa_ci()` fix below;
+  hit it again independently while validating this).
+- **`determine_versions()` (final mode) now dies if `ChangeLog`'s top entry
+  doesn't match `base_ver`** — a forcing function so a release can't ship without
+  a curated entry. Nothing in the pipeline auto-generates the *content* of a
+  ChangeLog entry (that requires editorial judgment: filtering internal-only
+  commits like release-tooling/skill/doc changes out of what ships, writing
+  clean prose from raw commit messages) — a human (or Claude, asked explicitly)
+  must add the entry before running `release.py final`.
+
+**Process reference** (from actually doing this by hand for 7.15 before automating
+Phase 9c): drafted in a `git worktree` of `salsa/debian/latest` → `dch
+--newversion X.Y-Z --distribution UNRELEASED --release-heuristic log` → hand-edit
+the placeholder bullet to curated content → verify with `gbp buildpackage` +
+`lintian` in Docker → commit → `git push salsa HEAD:debian/latest`. That was for
+the one-off 7.15-1 stanza before this convention existed; going forward the
+mechanical debian/changelog part is Phase 9c and only the ChangeLog file entry
+needs to be written by hand.
+
 ## 2026-07-06 pristine-tar backfill (one-time, already done)
 
 Backfilled the missing `7.14` pristine-tar delta and `upstream/7.14` tag

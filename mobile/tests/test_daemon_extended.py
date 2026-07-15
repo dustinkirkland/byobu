@@ -764,6 +764,20 @@ class TestWsHandler(AsyncHTTPTestCase):
         conn.close()
 
     @gen_test(timeout=5)
+    async def test_ping_returns_pong(self):
+        tok = _add_session('ws_tok_ping')
+        with patch.object(bm, 'tmux_list_sessions', return_value=[]):
+            conn = await websocket_connect(self._ws_req(token=tok))
+            await conn.read_message()
+            await conn.write_message(json.dumps({'type': 'ping'}))
+            resp = await conn.read_message()
+        data = json.loads(resp)
+        self.assertEqual(data['type'], 'pong')
+        self.assertIn('server_ts', data)
+        self.assertIn('server_ip', data)
+        conn.close()
+
+    @gen_test(timeout=5)
     async def test_invalid_json_returns_error(self):
         tok = _add_session('ws_tok_json')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
