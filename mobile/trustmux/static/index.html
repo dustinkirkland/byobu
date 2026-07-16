@@ -141,6 +141,16 @@
     #ctx-confirm-msg { padding: 12px 16px; color: var(--dim); font-size: 13px;
                        font-family: var(--font); text-align: center; }
 
+    /* ── context jump list (tap context name in header) ── */
+    /* capped + scrollable so a long pane list doesn't push the Rename/Cancel
+       buttons off-screen or grow the box past the viewport */
+    #ctx-list { max-height: 50vh; overflow-y: auto; }
+    .ctx-group-label {
+      padding: 10px 16px 4px; color: var(--dim); font-size: 11px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .ctx-btn.ctx-current { color: var(--accent); }
+
     .icon-btn {
       background: var(--bg3); color: var(--text);
       border: 1px solid var(--border); border-radius: 4px;
@@ -185,35 +195,35 @@
 
     #header-clock {
       /* --dim (#666) only gives 2.9:1 against --bg2 — fails WCAG's 4.5:1 for
-         small text. This is a scoped fix (not a --dim change) since nothing
-         else was flagged as hard to read. 5.64:1, still visually secondary
-         next to the near-white terminal text and blue hostname/accent. */
-      font-size: 11px; color: #969696; white-space: nowrap; flex-shrink: 0;
+         small text. #969696 (5.64:1) still read as hard to see on-device,
+         so just use --text (11.25:1) — same near-white as the terminal body. */
+      font-size: 11px; color: var(--text); white-space: nowrap; flex-shrink: 0;
     }
 
-    /* ── version popup (tap hostname) ── */
-    #version-popup {
+    /* ── info popup (tap hostname, connection indicator, or update badge) ── */
+    #info-popup {
       position: fixed; z-index: 150;
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: 10px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.55);
-      min-width: 150px; font-size: 12px;
+      min-width: 160px; max-width: 220px; font-size: 12px;
     }
-    #version-popup-text { color: var(--dim); margin-bottom: 8px; }
-    #version-popup-reload {
+    /* the FQDN (location.hostname — the real Tailscale MagicDNS name or
+       whatever address the browser actually used) can run long; wrap it
+       rather than letting the popup grow wide enough to run off-screen */
+    #info-popup-host {
+      color: var(--accent); margin-bottom: 6px;
+      overflow-wrap: break-word; word-break: break-all;
+    }
+    #info-popup-body {
+      color: var(--dim); white-space: pre-line; line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    #info-popup-reload {
       background: var(--accent); color: #fff; border: none;
       border-radius: 6px; padding: 8px 10px; width: 100%;
       font-size: 12px; font-family: var(--font); cursor: pointer;
     }
-    #version-popup-reload:active { filter: brightness(0.85); }
-
-    /* ── connection-info popup (tap the connection indicator) ── */
-    #conn-popup {
-      position: fixed; z-index: 150;
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 10px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.55);
-      min-width: 160px; font-size: 12px; color: var(--dim);
-      white-space: pre-line; line-height: 1.6;
-    }
+    #info-popup-reload:active { filter: brightness(0.85); }
 
     /* ── status bar (line 2 — context layer: pane/window/session nav) ── */
     #statusbar {
@@ -488,19 +498,27 @@
   </div>
 </div>
 
-<!-- ── rename overlay (tap name in header) ── -->
+<!-- ── context jump list + rename (tap context name in header) ── -->
 <div id="ctx-overlay" style="display:none">
   <div id="ctx-box">
-    <p id="ctx-rename-label" style="padding:12px 16px;color:var(--dim);font-size:13px;font-family:var(--font);text-align:center"></p>
-    <div style="padding:0 10px 6px">
-      <input id="ctx-rename-input" type="text"
-             autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
-             style="width:100%;background:var(--bg3);color:var(--text);border:1px solid var(--border);
-                    border-radius:6px;padding:10px 12px;font-size:14px;font-family:var(--font);outline:none">
+    <div id="ctx-list-view">
+      <div id="ctx-list"></div>
+      <div class="ctx-sep"></div>
+      <button class="ctx-btn" id="ctx-rename-open" style="color:var(--accent)">✎  Rename current</button>
+      <button class="ctx-btn ctx-dim" id="ctx-cancel">Cancel</button>
     </div>
-    <button class="ctx-btn" id="ctx-rename-confirm" style="color:var(--accent)">Rename</button>
-    <div class="ctx-sep"></div>
-    <button class="ctx-btn ctx-dim" id="ctx-cancel">Cancel</button>
+    <div id="ctx-rename-form" style="display:none">
+      <p id="ctx-rename-label" style="padding:12px 16px;color:var(--dim);font-size:13px;font-family:var(--font);text-align:center"></p>
+      <div style="padding:0 10px 6px">
+        <input id="ctx-rename-input" type="text"
+               autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+               style="width:100%;background:var(--bg3);color:var(--text);border:1px solid var(--border);
+                      border-radius:6px;padding:10px 12px;font-size:14px;font-family:var(--font);outline:none">
+      </div>
+      <button class="ctx-btn" id="ctx-rename-confirm" style="color:var(--accent)">Rename</button>
+      <div class="ctx-sep"></div>
+      <button class="ctx-btn ctx-dim" id="ctx-rename-back">← Back</button>
+    </div>
   </div>
 </div>
 
@@ -558,14 +576,12 @@
     <button class="icon-btn" id="btn-next" title="Next pane">›</button>
   </div>
 
-  <!-- ── version popup (tap hostname) ── -->
-  <div id="version-popup" style="display:none">
-    <div id="version-popup-text"></div>
-    <button id="version-popup-reload">Reload</button>
+  <!-- ── info popup (tap hostname, connection indicator, or update badge) ── -->
+  <div id="info-popup" style="display:none">
+    <div id="info-popup-host"></div>
+    <div id="info-popup-body"></div>
+    <button id="info-popup-reload">Reload</button>
   </div>
-
-  <!-- ── connection-info popup (tap the connection indicator) ── -->
-  <div id="conn-popup" style="display:none"></div>
 
   <div id="output" class="placeholder">Select a pane above.</div>
 

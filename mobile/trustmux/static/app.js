@@ -166,15 +166,20 @@ const hostnameDisplay  = document.getElementById('hostname-display');
 function setHostnameDisplay(name) { hostnameDisplay.textContent = '🖥️ ' + name; }
 const headerClock      = document.getElementById('header-clock');
 const updateBadge      = document.getElementById('update-badge');
-const versionPopup       = document.getElementById('version-popup');
-const versionPopupText   = document.getElementById('version-popup-text');
-const versionPopupReload = document.getElementById('version-popup-reload');
-const connPopup          = document.getElementById('conn-popup');
+const infoPopup       = document.getElementById('info-popup');
+const infoPopupHost   = document.getElementById('info-popup-host');
+const infoPopupBody   = document.getElementById('info-popup-body');
+const infoPopupReload = document.getElementById('info-popup-reload');
 const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
 const ctxOverlay       = document.getElementById('ctx-overlay');
+const ctxListView      = document.getElementById('ctx-list-view');
+const ctxList          = document.getElementById('ctx-list');
+const ctxRenameOpen    = document.getElementById('ctx-rename-open');
+const ctxRenameForm    = document.getElementById('ctx-rename-form');
 const ctxRenameLabel   = document.getElementById('ctx-rename-label');
 const ctxRenameInput   = document.getElementById('ctx-rename-input');
+const ctxRenameBack    = document.getElementById('ctx-rename-back');
 const ctxCancel        = document.getElementById('ctx-cancel');
 const ctxName          = document.getElementById('ctx-name');
 const createOverlay    = document.getElementById('create-overlay');
@@ -268,11 +273,11 @@ function _saveKbdMode(paneId, mode) { localStorage.setItem(_kbdModeKey(paneId), 
 function setStatus(msg, cls) {
   connIndicator.title = msg;
   connIndicator.className = cls || '';
-  // The connection-info popup shows a snapshot (latency, connected-since)
-  // that's meaningless — or actively misleading — once we're no longer
-  // connected. hideConnPopup is a hoisted function declaration, safe to
-  // call here even though it's defined later in the file.
-  if (cls !== 'connected') hideConnPopup();
+  // Close the info popup on any state change rather than let it sit open
+  // showing a snapshot from before the transition. hideInfoPopup is a
+  // hoisted function declaration, safe to call here even though it's
+  // defined later in the file.
+  hideInfoPopup();
 }
 
 // ── WebSocket ──────────────────────────────────────────────────────────────
@@ -672,7 +677,56 @@ btnPrev.addEventListener('click', () => navigateRelative(-1));
 btnNext.addEventListener('click', () => navigateRelative(1));
 document.getElementById('btn-create').addEventListener('click', showCreateOverlay);
 
-// ── rename overlay (tap name label in header) ─────────────────────────────
+// ── context jump list (tap context name in header) ─────────────────────────
+// Lists every live pane across every session/window, grouped, so jumping to
+// a specific context is one tap instead of cycling through ‹ › one at a time.
+function renderCtxList() {
+  ctxList.innerHTML = '';
+  for (const s of sessions) {
+    for (const w of (s.windows || [])) {
+      const livePanes = (w.panes || []).filter(p => !p.dead);
+      if (!livePanes.length) continue;
+      const label = document.createElement('div');
+      label.className = 'ctx-group-label';
+      label.textContent = `${s.name} › ${w.name}`;
+      ctxList.appendChild(label);
+      for (const p of livePanes) {
+        const isCurrent = p.id === currentPane;
+        const btn = document.createElement('button');
+        btn.className = 'ctx-btn' + (isCurrent ? ' ctx-current' : '');
+        const name = getPaneName(p.id, '') || p.command || 'shell';
+        btn.textContent = (isCurrent ? '✓ ' : '') + name;
+        btn.addEventListener('click', () => {
+          hideCtxOverlay();
+          if (!isCurrent) navigateTo(s.id, w.id, p.id);
+        });
+        ctxList.appendChild(btn);
+      }
+    }
+  }
+  if (!ctxList.children.length) {
+    const empty = document.createElement('div');
+    empty.className = 'ctx-dim';
+    empty.style.padding = '16px';
+    empty.textContent = 'No contexts';
+    ctxList.appendChild(empty);
+  }
+}
+
+function showCtxOverlay() {
+  renderCtxList();
+  ctxListView.style.display = '';
+  ctxRenameForm.style.display = 'none';
+  ctxOverlay.style.display = 'flex';
+}
+function hideCtxOverlay() {
+  ctxOverlay.style.display = 'none';
+}
+ctxName.addEventListener('click', showCtxOverlay);
+ctxCancel.addEventListener('click', hideCtxOverlay);
+ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtxOverlay(); });
+
+// ── rename sub-form (reached via "Rename current" inside the jump list) ────
 let _pendingRenameId = null;
 
 function currentPaneCommand() {
@@ -687,7 +741,7 @@ function currentPaneCommand() {
   return '';
 }
 
-function showRenameOverlay() {
+function showRenameForm() {
   if (!currentPane) return;
   _pendingRenameId = currentPane;
   const custom = getPaneName(currentPane, '');
@@ -696,24 +750,24 @@ function showRenameOverlay() {
     ? `Rename "${custom}":`
     : `Name this context (${cmd || 'shell'}):`;
   ctxRenameInput.value = custom;
-  ctxOverlay.style.display = 'flex';
+  ctxListView.style.display = 'none';
+  ctxRenameForm.style.display = '';
   setTimeout(() => { ctxRenameInput.focus(); ctxRenameInput.select(); }, 80);
 }
-
-function hideRenameOverlay() {
-  ctxOverlay.style.display = 'none';
-  _pendingRenameId = null;
+function backToCtxList() {
+  ctxRenameForm.style.display = 'none';
+  renderCtxList();
+  ctxListView.style.display = '';
 }
-
-ctxName.addEventListener('click', showRenameOverlay);
-ctxCancel.addEventListener('click', hideRenameOverlay);
-ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideRenameOverlay(); });
+ctxRenameOpen.addEventListener('click', showRenameForm);
+ctxRenameBack.addEventListener('click', backToCtxList);
 
 function submitRename() {
   if (!_pendingRenameId) return;
   const name = ctxRenameInput.value.trim();
   setPaneName(_pendingRenameId, name);
-  hideRenameOverlay();
+  _pendingRenameId = null;
+  hideCtxOverlay();
   updateContextName();
 }
 
@@ -986,39 +1040,8 @@ machineSelect.addEventListener('change', () => {
 });
 
 let _swRegistration = null;
-let _versionText = '';       // last text shown in the version popup
+let _versionText = '';       // last text shown in the info popup
 
-// ── version popup (tap hostname or the update-available badge) ────────────
-function showVersionPopup() {
-  versionPopupText.textContent = _versionText;
-  const rect = hostnameDisplay.getBoundingClientRect();
-  versionPopup.style.display = 'block';
-  versionPopup.style.top   = (rect.bottom + 8) + 'px';
-  versionPopup.style.right = (window.innerWidth - rect.right) + 'px';
-}
-function hideVersionPopup() {
-  versionPopup.style.display = 'none';
-}
-hostnameDisplay.addEventListener('click', e => {
-  e.stopPropagation();
-  versionPopup.style.display === 'none' ? showVersionPopup() : hideVersionPopup();
-});
-updateBadge.addEventListener('click', e => {
-  e.stopPropagation();
-  versionPopup.style.display === 'none' ? showVersionPopup() : hideVersionPopup();
-});
-versionPopupReload.addEventListener('click', async () => {
-  if (_swRegistration) await _swRegistration.update().catch(() => {});
-  location.reload();
-});
-document.addEventListener('click', () => hideVersionPopup());
-document.addEventListener('touchstart', e => {
-  if (!versionPopup.contains(e.target) && e.target !== hostnameDisplay && e.target !== updateBadge) {
-    hideVersionPopup();
-  }
-}, { passive: true });
-
-// ── connection-info popup (tap the connection indicator) ──────────────────
 function formatDuration(ms) {
   const s = Math.floor(ms / 1000);
   if (s < 60) return `${s}s`;
@@ -1027,39 +1050,63 @@ function formatDuration(ms) {
   const h = Math.floor(m / 60);
   return `${h}h ${m % 60}m`;
 }
-async function showConnPopup() {
-  const rect = connIndicator.getBoundingClientRect();
-  connPopup.style.display = 'block';
-  connPopup.style.top   = (rect.bottom + 8) + 'px';
-  connPopup.style.right = (window.innerWidth - rect.right) + 'px';
-  connPopup.textContent = 'Measuring…';
 
-  const method  = isTailscaleHost() ? 'Tailscale' : 'Direct';
-  const since   = _connectedAt ? formatDuration(Date.now() - _connectedAt) : '—';
-  const ip      = _serverIp || '—';
-  const latency = await measureLatency();
-  // Bail if the popup was closed (or reopened, wiping this stale request)
-  // while the ping was in flight.
-  if (connPopup.style.display === 'none') return;
-  connPopup.textContent =
-    `Latency: ${latency !== null ? latency + ' ms' : 'timed out'}\n` +
+// ── info popup (tap hostname, connection indicator, or update badge) ──────
+// Combines machine identity (FQDN), connection health (method, latency,
+// uptime), and daemon version into one popup, in that order: who/where
+// you're connected to, how well, then what it's running.
+async function showInfoPopup() {
+  // location.hostname is the real FQDN/Tailscale MagicDNS name the browser
+  // actually used to reach the server — distinct from (and often longer
+  // than) the short OS hostname shown in the header via socket.gethostname().
+  infoPopupHost.textContent = location.hostname;
+
+  const rect = hostnameDisplay.getBoundingClientRect();
+  infoPopup.style.display = 'block';
+  infoPopup.style.top   = (rect.bottom + 8) + 'px';
+  infoPopup.style.right = (window.innerWidth - rect.right) + 'px';
+
+  const connected = connIndicator.classList.contains('connected');
+  const method    = isTailscaleHost() ? 'Tailscale' : 'Direct';
+  const ip        = _serverIp || '—';
+  const since     = connected && _connectedAt
+    ? formatDuration(Date.now() - _connectedAt) : 'not connected';
+
+  const render = latencyText =>
+    `IP: ${ip}\n` +
     `Connection: ${method}\n` +
+    `Latency: ${latencyText}\n` +
     `Connected: ${since}\n` +
-    `IP: ${ip}`;
+    `Version: ${_versionText}`;
+
+  infoPopupBody.textContent = render(connected ? 'measuring…' : 'not connected');
+
+  if (connected) {
+    const latency = await measureLatency();
+    // Bail if the popup was closed (or reopened, wiping this stale request)
+    // while the ping was in flight.
+    if (infoPopup.style.display === 'none') return;
+    infoPopupBody.textContent = render(latency !== null ? latency + ' ms' : 'timed out');
+  }
 }
-function hideConnPopup() {
-  connPopup.style.display = 'none';
+function hideInfoPopup() {
+  infoPopup.style.display = 'none';
 }
-connIndicator.addEventListener('click', e => {
+function toggleInfoPopup(e) {
   e.stopPropagation();
-  // Nothing meaningful to show while connecting/errored — latency and
-  // connected-since would just be stale or "timed out" noise.
-  if (!connIndicator.classList.contains('connected')) return;
-  connPopup.style.display === 'none' ? showConnPopup() : hideConnPopup();
+  infoPopup.style.display === 'none' ? showInfoPopup() : hideInfoPopup();
+}
+hostnameDisplay.addEventListener('click', toggleInfoPopup);
+updateBadge.addEventListener('click', toggleInfoPopup);
+connIndicator.addEventListener('click', toggleInfoPopup);
+infoPopupReload.addEventListener('click', async () => {
+  if (_swRegistration) await _swRegistration.update().catch(() => {});
+  location.reload();
 });
-document.addEventListener('click', () => hideConnPopup());
+document.addEventListener('click', () => hideInfoPopup());
 document.addEventListener('touchstart', e => {
-  if (!connPopup.contains(e.target) && e.target !== connIndicator) hideConnPopup();
+  const isTrigger = e.target === hostnameDisplay || e.target === updateBadge || e.target === connIndicator;
+  if (!infoPopup.contains(e.target) && !isTrigger) hideInfoPopup();
 }, { passive: true });
 
 function applyVersion(v) {
