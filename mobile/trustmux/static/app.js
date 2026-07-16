@@ -173,8 +173,13 @@ const infoPopupReload = document.getElementById('info-popup-reload');
 const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
 const ctxOverlay       = document.getElementById('ctx-overlay');
+const ctxListView      = document.getElementById('ctx-list-view');
+const ctxList          = document.getElementById('ctx-list');
+const ctxRenameOpen    = document.getElementById('ctx-rename-open');
+const ctxRenameForm    = document.getElementById('ctx-rename-form');
 const ctxRenameLabel   = document.getElementById('ctx-rename-label');
 const ctxRenameInput   = document.getElementById('ctx-rename-input');
+const ctxRenameBack    = document.getElementById('ctx-rename-back');
 const ctxCancel        = document.getElementById('ctx-cancel');
 const ctxName          = document.getElementById('ctx-name');
 const createOverlay    = document.getElementById('create-overlay');
@@ -672,7 +677,56 @@ btnPrev.addEventListener('click', () => navigateRelative(-1));
 btnNext.addEventListener('click', () => navigateRelative(1));
 document.getElementById('btn-create').addEventListener('click', showCreateOverlay);
 
-// ── rename overlay (tap name label in header) ─────────────────────────────
+// ── context jump list (tap context name in header) ─────────────────────────
+// Lists every live pane across every session/window, grouped, so jumping to
+// a specific context is one tap instead of cycling through ‹ › one at a time.
+function renderCtxList() {
+  ctxList.innerHTML = '';
+  for (const s of sessions) {
+    for (const w of (s.windows || [])) {
+      const livePanes = (w.panes || []).filter(p => !p.dead);
+      if (!livePanes.length) continue;
+      const label = document.createElement('div');
+      label.className = 'ctx-group-label';
+      label.textContent = `${s.name} › ${w.name}`;
+      ctxList.appendChild(label);
+      for (const p of livePanes) {
+        const isCurrent = p.id === currentPane;
+        const btn = document.createElement('button');
+        btn.className = 'ctx-btn' + (isCurrent ? ' ctx-current' : '');
+        const name = getPaneName(p.id, '') || p.command || 'shell';
+        btn.textContent = (isCurrent ? '✓ ' : '') + name;
+        btn.addEventListener('click', () => {
+          hideCtxOverlay();
+          if (!isCurrent) navigateTo(s.id, w.id, p.id);
+        });
+        ctxList.appendChild(btn);
+      }
+    }
+  }
+  if (!ctxList.children.length) {
+    const empty = document.createElement('div');
+    empty.className = 'ctx-dim';
+    empty.style.padding = '16px';
+    empty.textContent = 'No contexts';
+    ctxList.appendChild(empty);
+  }
+}
+
+function showCtxOverlay() {
+  renderCtxList();
+  ctxListView.style.display = '';
+  ctxRenameForm.style.display = 'none';
+  ctxOverlay.style.display = 'flex';
+}
+function hideCtxOverlay() {
+  ctxOverlay.style.display = 'none';
+}
+ctxName.addEventListener('click', showCtxOverlay);
+ctxCancel.addEventListener('click', hideCtxOverlay);
+ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtxOverlay(); });
+
+// ── rename sub-form (reached via "Rename current" inside the jump list) ────
 let _pendingRenameId = null;
 
 function currentPaneCommand() {
@@ -687,7 +741,7 @@ function currentPaneCommand() {
   return '';
 }
 
-function showRenameOverlay() {
+function showRenameForm() {
   if (!currentPane) return;
   _pendingRenameId = currentPane;
   const custom = getPaneName(currentPane, '');
@@ -696,24 +750,24 @@ function showRenameOverlay() {
     ? `Rename "${custom}":`
     : `Name this context (${cmd || 'shell'}):`;
   ctxRenameInput.value = custom;
-  ctxOverlay.style.display = 'flex';
+  ctxListView.style.display = 'none';
+  ctxRenameForm.style.display = '';
   setTimeout(() => { ctxRenameInput.focus(); ctxRenameInput.select(); }, 80);
 }
-
-function hideRenameOverlay() {
-  ctxOverlay.style.display = 'none';
-  _pendingRenameId = null;
+function backToCtxList() {
+  ctxRenameForm.style.display = 'none';
+  renderCtxList();
+  ctxListView.style.display = '';
 }
-
-ctxName.addEventListener('click', showRenameOverlay);
-ctxCancel.addEventListener('click', hideRenameOverlay);
-ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideRenameOverlay(); });
+ctxRenameOpen.addEventListener('click', showRenameForm);
+ctxRenameBack.addEventListener('click', backToCtxList);
 
 function submitRename() {
   if (!_pendingRenameId) return;
   const name = ctxRenameInput.value.trim();
   setPaneName(_pendingRenameId, name);
-  hideRenameOverlay();
+  _pendingRenameId = null;
+  hideCtxOverlay();
   updateContextName();
 }
 

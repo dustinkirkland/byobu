@@ -141,6 +141,16 @@
     #ctx-confirm-msg { padding: 12px 16px; color: var(--dim); font-size: 13px;
                        font-family: var(--font); text-align: center; }
 
+    /* ── context jump list (tap context name in header) ── */
+    /* capped + scrollable so a long pane list doesn't push the Rename/Cancel
+       buttons off-screen or grow the box past the viewport */
+    #ctx-list { max-height: 50vh; overflow-y: auto; }
+    .ctx-group-label {
+      padding: 10px 16px 4px; color: var(--dim); font-size: 11px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .ctx-btn.ctx-current { color: var(--accent); }
+
     .icon-btn {
       background: var(--bg3); color: var(--text);
       border: 1px solid var(--border); border-radius: 4px;
@@ -488,19 +498,27 @@
   </div>
 </div>
 
-<!-- ── rename overlay (tap name in header) ── -->
+<!-- ── context jump list + rename (tap context name in header) ── -->
 <div id="ctx-overlay" style="display:none">
   <div id="ctx-box">
-    <p id="ctx-rename-label" style="padding:12px 16px;color:var(--dim);font-size:13px;font-family:var(--font);text-align:center"></p>
-    <div style="padding:0 10px 6px">
-      <input id="ctx-rename-input" type="text"
-             autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
-             style="width:100%;background:var(--bg3);color:var(--text);border:1px solid var(--border);
-                    border-radius:6px;padding:10px 12px;font-size:14px;font-family:var(--font);outline:none">
+    <div id="ctx-list-view">
+      <div id="ctx-list"></div>
+      <div class="ctx-sep"></div>
+      <button class="ctx-btn" id="ctx-rename-open" style="color:var(--accent)">✎  Rename current</button>
+      <button class="ctx-btn ctx-dim" id="ctx-cancel">Cancel</button>
     </div>
-    <button class="ctx-btn" id="ctx-rename-confirm" style="color:var(--accent)">Rename</button>
-    <div class="ctx-sep"></div>
-    <button class="ctx-btn ctx-dim" id="ctx-cancel">Cancel</button>
+    <div id="ctx-rename-form" style="display:none">
+      <p id="ctx-rename-label" style="padding:12px 16px;color:var(--dim);font-size:13px;font-family:var(--font);text-align:center"></p>
+      <div style="padding:0 10px 6px">
+        <input id="ctx-rename-input" type="text"
+               autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+               style="width:100%;background:var(--bg3);color:var(--text);border:1px solid var(--border);
+                      border-radius:6px;padding:10px 12px;font-size:14px;font-family:var(--font);outline:none">
+      </div>
+      <button class="ctx-btn" id="ctx-rename-confirm" style="color:var(--accent)">Rename</button>
+      <div class="ctx-sep"></div>
+      <button class="ctx-btn ctx-dim" id="ctx-rename-back">← Back</button>
+    </div>
   </div>
 </div>
 
