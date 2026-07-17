@@ -78,9 +78,17 @@ def get_sessions():
 		else:
 			output = output.decode(sys.stdout.encoding)
 		if output:
+			seen_groups = set()
 			for s in output.splitlines():
 				# Ignore hidden sessions (named sessions that start with a "_")
 				if s and not s.startswith("_"):
+					# Collapse tmux session groups (e.g. "1", "1-1", "1-2") into a single
+					# menu entry; attaching any member attaches the shared windows.
+					group = re.search(r"\(group (\S+)\)", s)
+					if group:
+						if group.group(1) in seen_groups:
+							continue
+						seen_groups.add(group.group(1))
 					text.append("tmux: %s" % s.strip())
 					sessions.append("tmux____%s" % s.split(":")[0])
 					i += 1
