@@ -39,6 +39,23 @@ if [ "$SHELL" = "/bin/ash" ] || [ "$SHELL" = "ash" ] || [ -z "$SHELL" ]; then
 	[ -x "/bin/bash" ] && export SHELL="/bin/bash"
 fi
 
+# When launched as a non-login, non-interactive command (e.g. an SSH forced
+# command: `ssh host -t byobu`), our shell never sourced /etc/profile, so
+# $LANG can still be "C"/"POSIX"/unset even though the system has a real
+# default locale configured. The first time this process starts the backend
+# (tmux/screen), whatever environment we have right here becomes that
+# server's permanently captured baseline, inherited by every future window
+# and split -- not just the first one, which byobu-shell separately patches
+# up for itself by using a login shell. Fix it here too, so later windows
+# and splits (F2, Shift-F2, Ctrl-F2, ...) inherit a sane locale as well.
+# GH: #120
+case "$LANG" in
+	""|C|POSIX)
+		[ -r /etc/default/locale ] && . /etc/default/locale
+		export LANG LANGUAGE
+	;;
+esac
+
 # Source local byobu config
 if [ -r "$HOME/.byoburc" ]; then
 	# Ensure that this configuration is usable
