@@ -430,7 +430,19 @@ def determine_versions(mode, resume=False):
             for m in [re.search(r"rc(\d+)$", tag)]
             if m
         ]
-        rc_num = (max(existing) if existing else 0) + 1
+        if resume:
+            # Phase 3 (push_pypi_tag) already pushed the tag for the run being
+            # resumed, so "next after highest" would skip ahead to a new RC
+            # number whose /tmp/byobu-release-* dir was never built. Reuse the
+            # highest existing tag instead of incrementing past it.
+            if not existing:
+                die(
+                    f"--start-from: no existing trustmux-v{base_ver}rc* tag found "
+                    f"to resume.\n  Run without --start-from first to create one."
+                )
+            rc_num = max(existing)
+        else:
+            rc_num = (max(existing) if existing else 0) + 1
         pypi_version = f"{base_ver}rc{rc_num}"
         # 0-prefix: 7.1~0rc1~noble1 < 7.1~noble1 in dpkg ordering
         ppa_base = f"{base_ver}~0rc{rc_num}"
