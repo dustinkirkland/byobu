@@ -77,7 +77,7 @@
     }
     #xyz-label:active { color: var(--accent); }
     #machine-select {
-      background: var(--bg3); color: var(--dim);
+      background: var(--bg3); color: var(--text);
       border: 1px solid var(--border); border-radius: 4px;
       padding: 4px 6px; font-size: 11px; font-family: var(--font);
       cursor: pointer; max-width: 140px;
@@ -103,7 +103,7 @@
     }
     #ios-install-tip .close-tip {
       display: block; margin-top: 10px; font-size: 11px;
-      color: var(--dim); cursor: pointer;
+      color: var(--text); cursor: pointer;
     }
 
     .byobu-logo { height: 22px; width: auto; flex-shrink: 0; opacity: 0.85; }
@@ -137,8 +137,8 @@
     .ctx-btn:active { background: var(--bg3); }
     .ctx-sep { height: 1px; background: var(--border); margin: 2px 0; }
     .ctx-danger { color: var(--red); }
-    .ctx-dim { color: var(--dim); text-align: center; font-size: 14px; }
-    #ctx-confirm-msg { padding: 12px 16px; color: var(--dim); font-size: 13px;
+    .ctx-dim { color: var(--text); text-align: center; font-size: 14px; }
+    #ctx-confirm-msg { padding: 12px 16px; color: var(--text); font-size: 13px;
                        font-family: var(--font); text-align: center; }
 
     /* ── context jump list (tap context name in header) ── */
@@ -146,7 +146,7 @@
        buttons off-screen or grow the box past the viewport */
     #ctx-list { max-height: 50vh; overflow-y: auto; }
     .ctx-group-label {
-      padding: 10px 16px 4px; color: var(--dim); font-size: 11px;
+      padding: 10px 16px 4px; color: var(--text); font-size: 11px;
       letter-spacing: 0.04em; text-transform: uppercase;
     }
     .ctx-btn.ctx-current { color: var(--accent); }
@@ -215,7 +215,7 @@
       overflow-wrap: break-word; word-break: break-all;
     }
     #info-popup-body {
-      color: var(--dim); white-space: pre-line; line-height: 1.6;
+      color: var(--text); white-space: pre-line; line-height: 1.6;
       margin-bottom: 8px;
     }
     #info-popup-reload {
@@ -340,7 +340,7 @@
       text-align: center;
     }
     #pair-box h2 { font-size: 18px; color: var(--accent); letter-spacing: 2px; }
-    #pair-prompt { color: var(--dim); font-size: 12px; line-height: 1.55; }
+    #pair-prompt { color: var(--text); font-size: 12px; line-height: 1.55; }
     #pair-code {
       width: 100%; text-align: center;
       background: var(--bg3); color: var(--text);
@@ -373,7 +373,7 @@
       text-align: center;
     }
     #offline-box h2 { font-size: 16px; color: var(--amber); letter-spacing: 1px; }
-    #offline-host { color: var(--dim); font-size: 11px; word-break: break-all; }
+    #offline-host { color: var(--text); font-size: 11px; word-break: break-all; }
     #offline-reason {
       color: var(--text); font-size: 12px; line-height: 1.6;
     }
@@ -391,7 +391,7 @@
       font-size: 13px; font-family: var(--font); cursor: pointer;
     }
     #offline-retry-btn:active { filter: brightness(0.8); }
-    #offline-countdown { color: var(--dim); font-size: 10px; }
+    #offline-countdown { color: var(--text); font-size: 10px; }
 
     /* ── biometric setup + lock screen ── */
     #bio-setup-overlay, #lock-overlay {
@@ -412,7 +412,7 @@
       font-size: 18px; color: var(--accent); letter-spacing: 2px;
     }
     #bio-setup-msg {
-      color: var(--dim); font-size: 12px; line-height: 1.6;
+      color: var(--text); font-size: 12px; line-height: 1.6;
     }
     #lock-icon { font-size: 38px; line-height: 1; }
     #bio-enable-btn, #lock-unlock-btn {
@@ -426,14 +426,14 @@
     #bio-enable-btn:active:not(:disabled),
     #lock-unlock-btn:active:not(:disabled) { filter: brightness(0.85); }
     #bio-skip-btn {
-      background: transparent; color: var(--dim);
+      background: transparent; color: var(--text);
       border: 1px solid var(--border); border-radius: 8px;
       padding: 9px 0; width: 100%;
       font-size: 13px; font-family: var(--font); cursor: pointer;
     }
     #bio-skip-btn:active { background: var(--bg3); }
     #bio-never-btn {
-      background: transparent; color: var(--dim); border: none;
+      background: transparent; color: var(--text); border: none;
       font-size: 12px; font-family: var(--font);
       cursor: pointer; padding: 4px 0;
     }
@@ -508,7 +508,7 @@
       <button class="ctx-btn ctx-dim" id="ctx-cancel">Cancel</button>
     </div>
     <div id="ctx-rename-form" style="display:none">
-      <p id="ctx-rename-label" style="padding:12px 16px;color:var(--dim);font-size:13px;font-family:var(--font);text-align:center"></p>
+      <p id="ctx-rename-label" style="padding:12px 16px;color:var(--text);font-size:13px;font-family:var(--font);text-align:center"></p>
       <div style="padding:0 10px 6px">
         <input id="ctx-rename-input" type="text"
                autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
@@ -533,7 +533,7 @@
       <button class="ctx-btn ctx-dim" id="create-cancel">Cancel</button>
     </div>
     <div id="create-name-form" style="display:none">
-      <p id="create-name-label" style="padding:12px 16px;color:var(--dim);font-size:13px;font-family:var(--font);text-align:center"></p>
+      <p id="create-name-label" style="padding:12px 16px;color:var(--text);font-size:13px;font-family:var(--font);text-align:center"></p>
       <div style="padding:0 10px 6px">
         <input id="create-name-input" type="text"
                autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
