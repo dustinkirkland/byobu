@@ -1,6 +1,21 @@
 FROM cgr.dev/chainguard/wolfi-base:latest
 
-# Install dependencies
+# Install dependencies.
+#
+# cryptography and tornado are trustmux's runtime deps (see
+# mobile/pyproject.toml) -- trustmux is enabled by default (configure.ac's
+# --disable-trustmux is opt-in), so `make install` always installs the
+# trustmux/trustmuxd wrappers, and they need these importable or every
+# invocation dies with ModuleNotFoundError.
+#
+# Pin an explicit Python version (python-3.13, py3.13-*) rather than the
+# unversioned python-3 / py3-cryptography / py3-tornado aliases: on wolfi's
+# rolling package index those unversioned aliases can each independently
+# point at whatever Python minor version that package was *most recently*
+# rebuilt against, and they don't all move in lockstep -- confirmed
+# py3-cryptography resolving to python3.14's site-packages while the
+# unversioned python-3 meta-package pulled in python3.13, leaving the
+# default `python3` binary unable to see it at all.
 RUN apk add --no-cache \
     tmux \
     bash \
@@ -9,7 +24,9 @@ RUN apk add --no-cache \
     autoconf \
     make \
     gawk \
-    python-3 \
+    python-3.13 \
+    py3.13-cryptography \
+    py3.13-tornado \
     coreutils \
     grep \
     sed
