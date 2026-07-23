@@ -70,7 +70,7 @@ if [ -z "${BYOBU_PREFIX}" ]; then
 		. "$HOME/.byoburc"
 	fi
 fi
-export BYOBU_CHARMAP=$(locale charmap)
+export BYOBU_CHARMAP=$(locale charmap 2>/dev/null || echo)
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
