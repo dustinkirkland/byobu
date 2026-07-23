@@ -669,5 +669,36 @@ class TestWarnIfPeerBlocked(unittest.TestCase):
         self.assertIn("acls", msg)
 
 
+# ---------------------------------------------------------------------------
+# main() -- help discoverability
+# ---------------------------------------------------------------------------
+
+class TestMainHelp(unittest.TestCase):
+    """`trustmux help` is a hidden alias for -h/--help (git/docker/kubectl-style),
+    added because a plain 'help' guess otherwise hits argparse's terse
+    "invalid choice" error instead of the actual help text."""
+
+    def _run(self, argv):
+        with patch('trustmux._ctl._refuse_root'), \
+             patch('trustmux._ctl.sys.argv', ['trustmux'] + argv):
+            with self.assertRaises(SystemExit) as cm:
+                ctl.main()
+            return cm.exception.code
+
+    def test_help_subcommand_exits_zero(self):
+        self.assertEqual(self._run(['help']), 0)
+
+    def test_no_args_exits_one(self):
+        self.assertEqual(self._run([]), 1)
+
+    def test_help_subcommand_prints_full_help(self):
+        with patch('trustmux._ctl._refuse_root'), \
+             patch('trustmux._ctl.sys.argv', ['trustmux', 'help']), \
+             patch('trustmux._ctl.argparse.ArgumentParser.print_help') as mock_print:
+            with self.assertRaises(SystemExit):
+                ctl.main()
+            mock_print.assert_called_once()
+
+
 if __name__ == '__main__':
     unittest.main()

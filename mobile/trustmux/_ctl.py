@@ -463,11 +463,12 @@ def main() -> None:
     sub.add_parser("disable",      help="Stop daemon and remove login hook")
     sub.add_parser("pair",         help="Generate a one-time pairing code for a new device")
     sub.add_parser("unpair",       help="List paired devices and revoke tokens")
+    sub.add_parser("help",         help=argparse.SUPPRESS)  # alias for -h/--help
 
     args = parser.parse_args()
-    if not args.cmd:
+    if not args.cmd or args.cmd == "help":
         parser.print_help()
-        sys.exit(1)
+        sys.exit(0 if args.cmd == "help" else 1)
 
     cmd = args.cmd
     if cmd == "setup":
