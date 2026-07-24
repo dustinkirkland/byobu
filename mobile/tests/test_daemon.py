@@ -440,5 +440,24 @@ class TestCapturePaneAnsiFlag(unittest.TestCase):
         self.assertNotIn('-e', captured_args)
 
 
+# ---------------------------------------------------------------------------
+# main() -- help discoverability
+# ---------------------------------------------------------------------------
+
+class TestMainHelp(unittest.TestCase):
+    """`trustmuxd help` is a natural guess (matches `trustmux help`) but
+    argparse has no subcommands here to hang a hidden alias off of --
+    without the intercept it hits "unrecognized arguments: help" instead
+    of the actual help text."""
+
+    def test_help_arg_prints_full_help_and_exits_zero(self):
+        with patch.object(sys, 'argv', ['trustmuxd', 'help']), \
+             patch.object(bm.argparse.ArgumentParser, 'print_help') as mock_print:
+            with self.assertRaises(SystemExit) as cm:
+                bm.main()
+            mock_print.assert_called_once()
+            self.assertEqual(cm.exception.code, 0)
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

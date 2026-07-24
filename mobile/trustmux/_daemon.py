@@ -1269,6 +1269,14 @@ def main():
                         help="HTTPS mode: Secure cookie + trust proxy headers (use with tailscale serve)")
     parser.add_argument("--self-signed", action="store_true",
                         help="Generate a self-signed TLS cert for direct HTTPS without Tailscale")
+
+    # `trustmuxd help` is a natural guess (matches `trustmux help`'s alias for
+    # -h/--help) but argparse has no subcommands here to hang a hidden alias
+    # off of -- it would otherwise hit "unrecognized arguments: help" instead
+    # of the actual help text. Intercept it before parsing.
+    if len(sys.argv) > 1 and sys.argv[1] == "help":
+        parser.print_help()
+        sys.exit(0)
     args = parser.parse_args()
 
     _load_tokens()
