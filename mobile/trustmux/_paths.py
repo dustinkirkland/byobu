@@ -1,6 +1,7 @@
 """Where trustmux keeps its files.
 
-XDG base directories, under a per-instance subdirectory:
+XDG base directories, with one subdirectory per instance so that two daemons
+never share a pid file, socket or token store:
 
     config  $XDG_CONFIG_HOME/trustmux   machines.json — the only thing the user
                                         writes by hand
@@ -25,6 +26,7 @@ BYOBU_CONFIG_DIR.
 """
 import errno
 import os
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -32,6 +34,11 @@ from pathlib import Path
 _PKG = "trustmux"
 
 DEFAULT_INSTANCE = "default"
+INSTANCE_ENV = "TRUSTMUX_INSTANCE"
+# Instance names are path components and are interpolated into the ~/.profile
+# hook line, so keep them to an unambiguous alphabet: no separators, no
+# leading dot.
+INSTANCE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,31}$")
 
 # Pre-instances layout: everything sat directly in the config directory.
 _LEGACY_STATE_FILES = ("tokens.json", "cert.pem", "key.pem", "trustmux.log")
@@ -62,10 +69,9 @@ def machines_file() -> Path:
 
 @dataclass(frozen=True)
 class Instance:
-    """One daemon's state directory.
+    """One daemon's private state directory.
 
-    Only the default instance exists for now; the layout is already keyed by
-    name so that selecting another is purely a matter of plumbing.
+    Two daemons never share a pid file, socket or token store.
     """
     name: str = DEFAULT_INSTANCE
 
@@ -97,13 +103,66 @@ class Instance:
     def pid_file(self) -> Path:
         return self.state / "trustmux.pid"
 
+    def label(self) -> str:
+        """' --instance NAME' for non-default instances, for printed hints."""
+        return "" if self.name == DEFAULT_INSTANCE else f" --instance {self.name}"
+
     def ensure_dirs(self) -> None:
         self.state.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
         self.state.mkdir(mode=0o700, exist_ok=True)
         self.state.chmod(0o700)
 
 
+def resolve_instance(explicit: str | None = None) -> Instance:
+    """--instance, then $TRUSTMUX_INSTANCE, then 'default'. Exits 2 if invalid."""
+    # An explicitly empty --instance is an error, not a silent fall-through;
+    # a blank environment variable is treated as unset.
+    if explicit is None:
+        name = os.environ.get(INSTANCE_ENV, "").strip() or DEFAULT_INSTANCE
+    else:
+        name = explicit
+    if not INSTANCE_RE.match(name):
+        print(f"Error: invalid instance name {name!r} — use letters, digits, "
+              "'.', '_' or '-' (max 32, not starting with '.').", file=sys.stderr)
+        sys.exit(2)
+    inst = Instance(name)
+    # Belt and braces: the regex already forbids separators, so this only fires
+    # if that alphabet is ever widened.  Compares unresolved paths, so a
+    # deliberately symlinked instance directory keeps working.
+    if inst.state.parent.name != "instances":
+        print(f"Error: instance name {name!r} escapes its directory.", file=sys.stderr)
+        sys.exit(2)
+    return inst
 
+
+def check_sock_path(inst: Instance, stream=sys.stderr) -> bool:
+    """False (with a message) if the admin socket path is too long to bind.
+
+    struct sockaddr_un caps sun_path at 108 bytes on Linux and 104 on macOS;
+    without this the failure surfaces as a bare OSError from bind().
+    """
+    limit = 104 if sys.platform == "darwin" else 108
+    encoded = len(str(inst.sock).encode())
+    if encoded < limit:
+        return True
+    print(f"Error: admin socket path is {encoded} bytes, over the {limit}-byte "
+          f"limit for unix sockets:\n  {inst.sock}", file=stream)
+    print("Use a shorter instance name, or set $TRUSTMUX_STATE_DIR to a shorter path.",
+          file=stream)
+    return False
+
+
+def known_instances() -> list[Instance]:
+    """Every instance with a state directory, default first."""
+    try:
+        names = sorted(p.name for p in (state_dir() / "instances").iterdir()
+                       if p.is_dir())
+    except OSError:
+        names = []
+    if DEFAULT_INSTANCE in names:
+        names.remove(DEFAULT_INSTANCE)
+        names.insert(0, DEFAULT_INSTANCE)
+    return [Instance(n) for n in names]
 
 
 def legacy_dir() -> Path:

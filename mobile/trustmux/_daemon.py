@@ -22,7 +22,8 @@ import tornado.httpserver
 import tornado.web
 import tornado.websocket
 
-from trustmux._paths import Instance, machines_file, migrate_legacy_layout
+from trustmux._paths import (Instance, check_sock_path, machines_file,
+                             migrate_legacy_layout, resolve_instance)
 
 def _resolve_version() -> str:
     import subprocess as _sp
@@ -66,7 +67,7 @@ _ws_clients: dict[str, set] = {}     # token → set[WsHandler] — closed on un
 _https_mode: bool = False             # set by --https; enables Secure cookie
 _listen: dict = {}                    # bound host/port/scheme, served by admin "info"
 
-# Which instance's files this daemon owns.
+# Which instance's files this daemon owns; repointed by --instance.
 INSTANCE      = Instance()
 STATE_DIR     = INSTANCE.state
 TOKENS_FILE   = INSTANCE.tokens_file
@@ -75,6 +76,16 @@ CERT_FILE     = INSTANCE.cert_file
 KEY_FILE      = INSTANCE.key_file
 MACHINES_FILE = machines_file()   # shared by every instance
 
+
+def _set_instance(inst: Instance) -> None:
+    """Point this daemon's files at inst. Must run before _load_tokens()."""
+    global INSTANCE, STATE_DIR, TOKENS_FILE, ADMIN_SOCK, CERT_FILE, KEY_FILE
+    INSTANCE    = inst
+    STATE_DIR   = inst.state
+    TOKENS_FILE = inst.tokens_file
+    ADMIN_SOCK  = inst.sock
+    CERT_FILE   = inst.cert_file
+    KEY_FILE    = inst.key_file
 
 
 _INSTALLED_STATIC = Path("/usr/share/trustmux/static")
@@ -1334,6 +1345,9 @@ def main():
                         help="HTTPS mode: Secure cookie + trust proxy headers (use with tailscale serve)")
     parser.add_argument("--self-signed", action="store_true",
                         help="Generate a self-signed TLS cert for direct HTTPS without Tailscale")
+    parser.add_argument("--instance", metavar="NAME", default=None,
+                        help="Instance whose state and runtime files to use "
+                             "(default: default)")
 
     # `trustmuxd help` is a natural guess (matches `trustmux help`'s alias for
     # -h/--help) but argparse has no subcommands here to hang a hidden alias
@@ -1345,6 +1359,10 @@ def main():
     args = parser.parse_args()
 
     migrate_legacy_layout()
+    inst = resolve_instance(args.instance)
+    if not check_sock_path(inst):
+        sys.exit(1)
+    _set_instance(inst)
 
     # Refuse before the event loop starts, so this surfaces as a plain message
     # rather than a traceback out of an asyncio task.  Unlinking a live socket

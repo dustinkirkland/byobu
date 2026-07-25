@@ -151,6 +151,41 @@ class TestPid(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# Two instances, one port: attribution must not be a coin flip
+# ---------------------------------------------------------------------------
+
+class TestPidInstanceAttribution(unittest.TestCase):
+    """Two daemons may share a port on different addresses (127.0.0.1:7432 and
+    192.168.1.5:7432), so lsof reports both pids. The instance's own pid file
+    says which of them is ours -- but only ever to *choose among* processes
+    already known to hold the port, never to invent one."""
+
+    def setUp(self):
+        self.inst = ctl.Instance('attrib')
+        self.inst.ensure_dirs()
+        self.addCleanup(shutil.rmtree, self.inst.state, True)
+
+    def test_prefers_own_pid_over_whichever_lsof_listed_first(self):
+        write_pid(self.inst, 5678)
+        with patch('trustmux._ctl.subprocess.check_output', return_value='1234\n5678\n'):
+            with patch('trustmux._ctl.os.kill', return_value=None):
+                self.assertEqual(ctl._pid(7432, self.inst), 5678)
+
+    def test_another_instances_daemon_on_our_port_is_not_ours(self):
+        # Our pid file names a live daemon, but it is not the one holding this
+        # port -- so this instance is not running on it.
+        write_pid(self.inst, 5678)
+        with patch('trustmux._ctl.subprocess.check_output', return_value='1234\n'):
+            with patch('trustmux._ctl.os.kill', return_value=None):
+                self.assertIsNone(ctl._pid(7432, self.inst))
+
+    def test_admin_socket_attributes_when_the_pidfile_is_gone(self):
+        with patch('trustmux._ctl.subprocess.check_output', return_value='1234\n5678\n'):
+            with patch('trustmux._ctl.daemon_info', return_value={'pid': 5678}):
+                self.assertEqual(ctl._pid(7432, self.inst), 5678)
+
+
+# ---------------------------------------------------------------------------
 # Regression: _pid(port) must never return an unrelated daemon's pid for a
 # port nothing is listening on (verified live: this previously let
 # `trustmux stop --port <unrelated port>` kill an unrelated running daemon).
@@ -1038,6 +1073,11 @@ class TestLaunchPort(unittest.TestCase):
         # Never handed to a shell.
         self.assertNotIn('shell', mock_popen.call_args.kwargs)
 
+    def test_passes_instance_to_daemon(self):
+        mock_popen = self._launch(3389, self.inst)
+        argv = mock_popen.call_args[0][0]
+        self.assertEqual(argv[argv.index('--instance') + 1], 'launchtest')
+
     def test_writes_pid_to_this_instance(self):
         self._launch(3389, self.inst)
         self.assertTrue(self.inst.pid_file.exists())
@@ -1232,6 +1272,228 @@ class TestPairMain(unittest.TestCase):
         with patch('trustmux._pair._wait_for_pair', return_value='10.0.0.4') as w:
             pair.main()
         w.assert_called_once_with(60, ctl.Instance())
+
+
+# ---------------------------------------------------------------------------
+# Instances: isolation, listing, per-instance login hooks
+# ---------------------------------------------------------------------------
+
+class TestInstanceIsolation(unittest.TestCase):
+
+    def test_resolve_port_asks_the_named_instance(self):
+        work = ctl.Instance('work')
+        with patch('trustmux._ctl.daemon_info') as info:
+            info.return_value = {'port': 3389}
+            self.assertEqual(ctl.resolve_port(inst=work), 3389)
+        info.assert_called_once_with(work)
+
+    def test_status_and_stop_address_the_named_instance(self):
+        work = ctl.Instance('work')
+        work.ensure_dirs()
+        self.addCleanup(shutil.rmtree, work.state, True)
+        with patch('trustmux._ctl._pid', return_value=None) as mock_pid:
+            with patch('builtins.print'):
+                ctl.cmd_status(3389, work)
+        self.assertEqual(mock_pid.call_args[0][1], work)
+
+
+class TestCmdList(unittest.TestCase):
+
+    def setUp(self):
+        self.made = []
+        for name in ('default', 'work'):
+            inst = ctl.Instance(name)
+            inst.ensure_dirs()
+            self.made.append(inst)
+            self.addCleanup(shutil.rmtree, inst.state, True)
+
+    def _run(self):
+        with patch('builtins.print') as mock_print:
+            rc = ctl.cmd_list()
+        return rc, ' '.join(str(c) for c in mock_print.call_args_list)
+
+    def test_lists_every_instance(self):
+        rc, out = self._run()
+        self.assertEqual(rc, 0)
+        self.assertIn('default', out)
+        self.assertIn('work', out)
+
+    def test_reports_a_running_instance_with_its_port(self):
+        def fake_info(inst):
+            return {'port': 3389, 'scheme': 'https'} if inst.name == 'work' else None
+        with patch('trustmux._ctl.daemon_info', side_effect=fake_info):
+            with patch('trustmux._ctl._pid', return_value=4321):
+                rc, out = self._run()
+        self.assertEqual(rc, 0)
+        self.assertIn('3389', out)
+        self.assertIn('running (pid 4321)', out)
+
+    def test_reports_stopped_instances(self):
+        with patch('trustmux._ctl._recorded_pid', return_value=None):
+            rc, out = self._run()
+        self.assertIn('stopped', out)
+
+
+class TestPerInstanceHooks(unittest.TestCase):
+
+    def _profile(self, content=''):
+        f = tempfile.NamedTemporaryFile(mode='w', suffix='.profile', delete=False)
+        f.write(content)
+        f.close()
+        self.addCleanup(Path(f.name).unlink, True)
+        return Path(f.name)
+
+    def test_hook_line_carries_instance_and_port(self):
+        line = enable.hook_line(3389, ctl.Instance('work'))
+        self.assertEqual(line,
+                         'trustmux start --instance work --port 3389 2>/dev/null || true\n')
+
+    def test_default_instance_keeps_the_legacy_line(self):
+        self.assertEqual(enable.hook_line(ctl.DEFAULT_PORT, ctl.Instance()), enable._HOOK)
+
+    def test_second_instance_appends_rather_than_replacing(self):
+        p = self._profile('# top\n')
+        enable._install_hook(p, enable.hook_line(7432, ctl.Instance()), ctl.Instance())
+        enable._install_hook(p, enable.hook_line(3389, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        text = p.read_text()
+        self.assertEqual(text.count('trustmux start'), 2)
+        self.assertIn('--instance work', text)
+
+    def test_reenabling_one_instance_rewrites_only_its_line(self):
+        p = self._profile('')
+        enable._install_hook(p, enable.hook_line(7432, ctl.Instance()), ctl.Instance())
+        enable._install_hook(p, enable.hook_line(3389, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        enable._install_hook(p, enable.hook_line(9999, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        text = p.read_text()
+        self.assertEqual(text.count('trustmux start'), 2)
+        self.assertIn('--port 9999', text)
+        self.assertNotIn('--port 3389', text)
+
+    def test_disable_removes_only_that_instance(self):
+        p = self._profile('')
+        enable._install_hook(p, enable.hook_line(7432, ctl.Instance()), ctl.Instance())
+        enable._install_hook(p, enable.hook_line(3389, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        disable._remove_hook(p, ctl.Instance('work'))
+        text = p.read_text()
+        self.assertNotIn('--instance work', text)
+        self.assertIn('trustmux start 2>/dev/null', text)
+
+    def test_disabling_default_leaves_named_instances(self):
+        p = self._profile('')
+        enable._install_hook(p, enable.hook_line(7432, ctl.Instance()), ctl.Instance())
+        enable._install_hook(p, enable.hook_line(3389, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        disable._remove_hook(p, ctl.Instance())
+        text = p.read_text()
+        self.assertIn('--instance work', text)
+        self.assertNotIn('trustmux start 2>/dev/null', text)
+
+
+# ---------------------------------------------------------------------------
+# serve mode is singular: only one daemon can own the tailnet's :443
+# ---------------------------------------------------------------------------
+
+class TestServeModeGuard(unittest.TestCase):
+    """`tailscale serve` publishes on the tailnet's port 443. A second
+    `tailscale serve --bg` silently replaces the first mapping, so a named
+    instance must not be allowed into serve mode at all. --port does not help:
+    it moves only the loopback backend, not the tailnet-facing port."""
+
+    def _stderr(self):
+        import io
+        return io.StringIO()
+
+    def test_default_instance_may_use_serve(self):
+        self.assertTrue(ctl.can_use_serve(ctl.Instance(), self._stderr()))
+
+    def test_named_instance_may_not(self):
+        buf = self._stderr()
+        self.assertFalse(ctl.can_use_serve(ctl.Instance('work'), buf))
+        msg = buf.getvalue()
+        self.assertIn('work', msg)
+        self.assertIn('443', msg)
+        # Points at the modes that actually work for a second instance.
+        self.assertIn('start-direct --instance work', msg)
+        self.assertIn('start-local --instance work', msg)
+
+    def test_cmd_start_serve_refuses_named_instance(self):
+        with patch('trustmux._ctl._launch') as mock_launch:
+            with patch('trustmux._ctl._ensure_ts_serve') as mock_serve:
+                with patch('trustmux._ctl.sys.stderr', self._stderr()):
+                    rc = ctl.cmd_start('serve', 7432, ctl.Instance('work'))
+        self.assertEqual(rc, 1)
+        mock_launch.assert_not_called()
+        # Crucially, the existing serve mapping is never touched.
+        mock_serve.assert_not_called()
+
+    def test_refusal_happens_before_any_probing(self):
+        # The refusal is certain, so it must not first query a daemon or
+        # fork lsof.
+        with patch('trustmux._ctl._pid') as mock_pid:
+            with patch('trustmux._ctl.daemon_info') as mock_info:
+                with patch('trustmux._ctl.sys.stderr', self._stderr()):
+                    ctl.cmd_start('serve', None, ctl.Instance('work'))
+        mock_pid.assert_not_called()
+        mock_info.assert_not_called()
+
+    def test_named_instance_may_still_use_direct_and_local(self):
+        for mode in ('start-direct', 'start-local'):
+            with self.subTest(mode=mode):
+                with patch('trustmux._ctl._launch', return_value=1234) as mock_launch:
+                    with patch('trustmux._ctl._check_tmux', return_value=True):
+                        with patch('trustmux._ctl._check_tls', return_value=True):
+                            with patch('trustmux._ctl._pid', return_value=None):
+                                with patch('builtins.print'):
+                                    rc = ctl.cmd_start(mode, 3389, ctl.Instance('work'))
+                self.assertEqual(rc, 0)
+                mock_launch.assert_called_once()
+
+    def test_restart_refuses_before_stopping_anything(self):
+        # restart brings the daemon back in serve mode; refusing only at the
+        # start step would leave a running named instance stopped.
+        with patch('trustmux._ctl._refuse_root'), \
+             patch('trustmux._ctl.sys.argv',
+                   ['trustmux', 'restart', '--instance', 'work']), \
+             patch('trustmux._ctl.cmd_stop') as mock_stop, \
+             patch('trustmux._ctl.cmd_start') as mock_start, \
+             patch('trustmux._ctl.sys.stderr', self._stderr()):
+            with self.assertRaises(SystemExit) as cm:
+                ctl.main()
+        self.assertEqual(cm.exception.code, 1)
+        mock_stop.assert_not_called()
+        mock_start.assert_not_called()
+
+    def test_cmd_setup_refuses_named_instance(self):
+        with patch('trustmux._ctl._ensure_ts_serve') as mock_serve:
+            with patch('trustmux._ctl.sys.stderr', self._stderr()):
+                rc = ctl.cmd_setup(inst=ctl.Instance('work'))
+        self.assertEqual(rc, 1)
+        mock_serve.assert_not_called()
+
+    def test_enable_refuses_named_instance_without_looping(self):
+        with patch('trustmux._enable.cmd_setup') as mock_setup:
+            with patch('trustmux._enable._install_hook') as mock_hook:
+                with patch('trustmux._ctl.sys.stderr', self._stderr()):
+                    with patch('sys.stderr', self._stderr()):
+                        with self.assertRaises(SystemExit) as cm:
+                            enable.main(3389, ctl.Instance('work'))
+        self.assertEqual(cm.exception.code, 1)
+        # Refused up front: no setup attempt, no hook written.
+        mock_setup.assert_not_called()
+        mock_hook.assert_not_called()
+
+    def test_enable_still_works_for_the_default_instance(self):
+        with patch('trustmux._enable.cmd_setup', return_value=0) as mock_setup:
+            with patch('trustmux._enable.cmd_start', return_value=0):
+                with patch('trustmux._enable._install_hook'):
+                    with patch('trustmux._paths.Instance.tokens_file'):
+                        with patch('builtins.print'):
+                            enable.main(ctl.DEFAULT_PORT, ctl.Instance())
+        mock_setup.assert_called_once()
 
 
 if __name__ == '__main__':

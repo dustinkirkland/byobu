@@ -75,6 +75,47 @@ class TestStaleSocket(unittest.TestCase):
     def test_missing_socket_is_stale(self):
         self.assertTrue(bm._socket_is_stale(self.path))
 
+# ---------------------------------------------------------------------------
+# Instance selection
+# ---------------------------------------------------------------------------
+
+class TestSetInstance(unittest.TestCase):
+    """--instance repoints every path the daemon owns."""
+
+    def setUp(self):
+        self._orig = (bm.INSTANCE, bm.STATE_DIR, bm.TOKENS_FILE,
+                      bm.ADMIN_SOCK, bm.CERT_FILE, bm.KEY_FILE)
+
+    def tearDown(self):
+        (bm.INSTANCE, bm.STATE_DIR, bm.TOKENS_FILE,
+         bm.ADMIN_SOCK, bm.CERT_FILE, bm.KEY_FILE) = self._orig
+
+    def test_repoints_state_and_runtime(self):
+        from trustmux._paths import Instance
+        work = Instance('work')
+        bm._set_instance(work)
+        self.assertEqual(bm.TOKENS_FILE, work.tokens_file)
+        self.assertEqual(bm.ADMIN_SOCK, work.sock)
+        self.assertEqual(bm.CERT_FILE, work.cert_file)
+        self.assertEqual(bm.KEY_FILE, work.key_file)
+        self.assertEqual(bm.STATE_DIR, work.state)
+
+    def test_two_instances_never_collide(self):
+        from trustmux._paths import Instance
+        bm._set_instance(Instance('a'))
+        a = (bm.TOKENS_FILE, bm.ADMIN_SOCK, bm.CERT_FILE)
+        bm._set_instance(Instance('b'))
+        b = (bm.TOKENS_FILE, bm.ADMIN_SOCK, bm.CERT_FILE)
+        for x, y in zip(a, b):
+            self.assertNotEqual(x, y)
+
+    def test_machines_file_stays_shared(self):
+        from trustmux._paths import Instance, machines_file
+        before = bm.MACHINES_FILE
+        bm._set_instance(Instance('work'))
+        self.assertEqual(bm.MACHINES_FILE, before)
+        self.assertEqual(bm.MACHINES_FILE, machines_file())
+
 
 # ---------------------------------------------------------------------------
 # Token persistence
