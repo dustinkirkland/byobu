@@ -306,8 +306,14 @@ get_network_interface() {
         if [ -n "$MONITORED_NETWORK" ]; then
 		# Manual override
                 _RET="$MONITORED_NETWORK"
-        elif [ -e /proc/net/route ]; then
-		# Linux systems, read route and interface from procfs
+        elif [ -r /proc/net/route ]; then
+		# Linux systems, read route and interface from procfs.
+		# -r (not just -e): some hardened/sandboxed environments (Android
+		# via Termux/proot) expose the /proc/net/route dentry but deny
+		# reads with EACCES; under `set -e`, a redirection failure on the
+		# `while read ... done < /proc/net/route` below aborts the whole
+		# (sourced) calling script -- byobu.in itself, at startup, for
+		# callers that reach here through ip_address. GH #121
 		local Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT
 		while read Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT; do
 			[ "$Mask" = "00000000" ] && break

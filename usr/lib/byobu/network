@@ -70,7 +70,14 @@ __network() {
 			[ "$have_cache" -eq 1 ] || continue
 		else
 			local iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed
-			cat /proc/net/dev > "$cache".dev
+			# 2>/dev/null: some hardened/sandboxed environments (Android via
+			# Termux) deny reads of /proc/net/dev with EACCES; cat's own
+			# "Permission denied" message would otherwise leak to the
+			# terminal on every refresh. A failed read leaves "$cache".dev
+			# empty, which the while-read loop below already treats the
+			# same as "no data this cycle" (falls back to the last cached
+			# rate via have_cache). GH #121
+			cat /proc/net/dev > "$cache".dev 2>/dev/null
 			while read iface rbytes rpackets rerrs rdrop rfifo rframe rcompressed rmulticast tbytes tpackets terrs tdrop tfifo tcolls tcarrier tcompressed; do
 				case "$iface" in
 					${interface}:)
