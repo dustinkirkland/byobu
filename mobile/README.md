@@ -71,6 +71,20 @@ trustmux pair           # generate a pairing code for a new device
 trustmux unpair         # list paired devices and remove them
 ```
 
+### A different port
+
+The daemon listens on 7432 by default. `--port` (or `$TRUSTMUX_PORT`) changes
+it for `setup`, `start`, `start-local`, `start-direct`, `stop`, `restart`,
+`status` and `enable`:
+
+```bash
+trustmux start --port 3389
+trustmux status              # finds it — no need to repeat --port
+```
+
+`stop`, `status` and `pair` ask the running daemon which port it is on, so only
+the start command needs the flag. `enable --port` records it in the login hook.
+
 ---
 
 ## Setup from source

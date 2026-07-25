@@ -3,8 +3,10 @@
 import json
 import os
 import signal
+import socket
 import sys
 import tempfile
+import threading
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch
@@ -14,6 +16,20 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import trustmux._ctl as ctl
 import trustmux._enable as enable
 import trustmux._disable as disable
+
+_no_daemon = None
+
+
+def setUpModule():
+    # resolve_port() asks the running daemon which port it is on; without this
+    # the suite would pick up a real trustmux on the developer's machine.
+    global _no_daemon
+    _no_daemon = patch('trustmux._ctl.daemon_info', return_value=None)
+    _no_daemon.start()
+
+
+def tearDownModule():
+    _no_daemon.stop()
 
 
 # ---------------------------------------------------------------------------
@@ -148,7 +164,7 @@ class TestCheckTls(unittest.TestCase):
 class TestEnsureTsServe(unittest.TestCase):
 
     def test_already_configured(self):
-        port_str = f':{ctl.PORT}'
+        port_str = f':{ctl.DEFAULT_PORT}'
         with patch('trustmux._ctl.subprocess.check_output',
                    return_value=f'https/tcp/0:443 → {port_str}\n'):
             with patch('trustmux._ctl.subprocess.run') as mock_run:
@@ -383,7 +399,7 @@ class TestCmdStatus(unittest.TestCase):
         mock_print.assert_called_once_with('trustmux not running')
 
     def test_running_with_tailscale_serve(self):
-        port_str = f':{ctl.PORT}'
+        port_str = f':{ctl.DEFAULT_PORT}'
         with patch('trustmux._ctl._pid', return_value=1234):
             with patch('trustmux._ctl.subprocess.check_output',
                        return_value=f'something {port_str} here'):
@@ -394,16 +410,33 @@ class TestCmdStatus(unittest.TestCase):
         printed = ' '.join(str(c) for c in mock_print.call_args_list)
         self.assertIn('https://engawa.ts.net', printed)
 
-    def test_running_direct_http(self):
+    def test_running_direct_uses_daemon_reported_url(self):
         import subprocess as sp
-        with patch('trustmux._ctl._pid', return_value=1234):
-            with patch('trustmux._ctl.subprocess.check_output',
-                       side_effect=[sp.CalledProcessError(1, 'ts'), '100.64.0.1\n']):
-                with patch('builtins.print') as mock_print:
-                    result = ctl.cmd_status()
+        info = {'host': '0.0.0.0', 'port': 3389, 'scheme': 'https'}
+        with patch('trustmux._ctl.daemon_info', return_value=info):
+            with patch('trustmux._ctl._pid', return_value=1234):
+                with patch('trustmux._ctl._lan_ip', return_value='192.168.1.9'):
+                    with patch('trustmux._ctl.subprocess.check_output',
+                               side_effect=sp.CalledProcessError(1, 'ts')):
+                        with patch('builtins.print') as mock_print:
+                            result = ctl.cmd_status()
         self.assertEqual(result, 0)
         printed = ' '.join(str(c) for c in mock_print.call_args_list)
-        self.assertIn('direct HTTP', printed)
+        self.assertIn('https://192.168.1.9:3389/', printed)
+        self.assertIn('port 3389', printed)
+
+    def test_running_local_reports_loopback_http(self):
+        import subprocess as sp
+        info = {'host': '127.0.0.1', 'port': 3389, 'scheme': 'http'}
+        with patch('trustmux._ctl.daemon_info', return_value=info):
+            with patch('trustmux._ctl._pid', return_value=1234):
+                with patch('trustmux._ctl.subprocess.check_output',
+                           side_effect=sp.CalledProcessError(1, 'ts')):
+                    with patch('builtins.print') as mock_print:
+                        result = ctl.cmd_status()
+        self.assertEqual(result, 0)
+        printed = ' '.join(str(c) for c in mock_print.call_args_list)
+        self.assertIn('http://localhost:3389/', printed)
 
 
 # ---------------------------------------------------------------------------
@@ -698,6 +731,256 @@ class TestMainHelp(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 ctl.main()
             mock_print.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# Port selection: --port / $TRUSTMUX_PORT / running daemon / default
+# ---------------------------------------------------------------------------
+
+class TestValidPort(unittest.TestCase):
+
+    def test_accepts_int_and_numeric_string(self):
+        self.assertEqual(ctl._valid_port(3389), 3389)
+        self.assertEqual(ctl._valid_port('3389'), 3389)
+
+    def test_rejects_out_of_range_and_junk(self):
+        for bad in (0, -1, 65536, 'abc', '', None, 3.5j):
+            self.assertIsNone(ctl._valid_port(bad), bad)
+
+
+class TestResolvePort(unittest.TestCase):
+
+    def setUp(self):
+        self.env = patch.dict(os.environ, {}, clear=False)
+        self.env.start()
+        os.environ.pop(ctl.PORT_ENV, None)
+
+    def tearDown(self):
+        self.env.stop()
+
+    def test_default_when_nothing_set(self):
+        self.assertEqual(ctl.resolve_port(), ctl.DEFAULT_PORT)
+
+    def test_explicit_wins_over_env_and_daemon(self):
+        os.environ[ctl.PORT_ENV] = '4444'
+        with patch('trustmux._ctl.daemon_info', return_value={'port': 5555}):
+            self.assertEqual(ctl.resolve_port(3389), 3389)
+
+    def test_env_wins_over_daemon(self):
+        os.environ[ctl.PORT_ENV] = '4444'
+        with patch('trustmux._ctl.daemon_info', return_value={'port': 5555}):
+            self.assertEqual(ctl.resolve_port(), 4444)
+
+    def test_falls_back_to_running_daemon(self):
+        with patch('trustmux._ctl.daemon_info', return_value={'port': 5555}):
+            self.assertEqual(ctl.resolve_port(), 5555)
+
+    def test_ignores_nonsense_from_daemon(self):
+        with patch('trustmux._ctl.daemon_info', return_value={'port': 'wat'}):
+            self.assertEqual(ctl.resolve_port(), ctl.DEFAULT_PORT)
+
+    def test_blank_env_is_ignored(self):
+        os.environ[ctl.PORT_ENV] = '   '
+        self.assertEqual(ctl.resolve_port(), ctl.DEFAULT_PORT)
+
+    def test_invalid_env_exits_2(self):
+        os.environ[ctl.PORT_ENV] = '99999'
+        with patch('trustmux._ctl.sys.stderr'):
+            with self.assertRaises(SystemExit) as cm:
+                ctl.resolve_port()
+        self.assertEqual(cm.exception.code, 2)
+
+    def test_invalid_explicit_exits_2(self):
+        with patch('trustmux._ctl.sys.stderr'):
+            with self.assertRaises(SystemExit) as cm:
+                ctl.resolve_port(0)
+        self.assertEqual(cm.exception.code, 2)
+
+
+class TestPortOpt(unittest.TestCase):
+
+    def test_empty_for_default(self):
+        self.assertEqual(ctl.port_opt(ctl.DEFAULT_PORT), '')
+
+    def test_flag_for_custom(self):
+        self.assertEqual(ctl.port_opt(3389), ' --port 3389')
+
+
+class TestDaemonInfo(unittest.TestCase):
+    """setUpModule stubs daemon_info out for the rest of the suite; these cases
+    exercise the real implementation against a real unix socket."""
+
+    def setUp(self):
+        _no_daemon.stop()
+        self.addCleanup(_no_daemon.start)
+        self.td = tempfile.TemporaryDirectory()
+        self.addCleanup(self.td.cleanup)
+        self.sock_path = Path(self.td.name) / 'trustmux.sock'
+
+    def _serve_once(self, reply: bytes) -> None:
+        srv = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        srv.bind(str(self.sock_path))
+        srv.listen(1)
+        self.addCleanup(srv.close)
+
+        def handle():
+            conn, _ = srv.accept()
+            with conn:
+                conn.recv(4096)
+                conn.sendall(reply)
+
+        t = threading.Thread(target=handle, daemon=True)
+        t.start()
+        self.addCleanup(t.join, 5)
+
+    def test_none_when_socket_absent(self):
+        with patch('trustmux._ctl.ADMIN_SOCK', self.sock_path):
+            self.assertIsNone(ctl.daemon_info())
+
+    def test_returns_listener_details(self):
+        self._serve_once(b'{"pid": 42, "host": "0.0.0.0", "port": 3389, "scheme": "https"}\n')
+        with patch('trustmux._ctl.ADMIN_SOCK', self.sock_path):
+            info = ctl.daemon_info()
+        self.assertEqual(info['port'], 3389)
+        self.assertEqual(info['scheme'], 'https')
+
+    def test_none_on_error_reply(self):
+        self._serve_once(b'{"error": "unknown action"}\n')
+        with patch('trustmux._ctl.ADMIN_SOCK', self.sock_path):
+            self.assertIsNone(ctl.daemon_info())
+
+    def test_none_on_garbage_reply(self):
+        self._serve_once(b'not json\n')
+        with patch('trustmux._ctl.ADMIN_SOCK', self.sock_path):
+            self.assertIsNone(ctl.daemon_info())
+
+
+class TestDirectUrl(unittest.TestCase):
+
+    def test_loopback_bind_is_localhost(self):
+        url = ctl.direct_url(3389, {'host': '127.0.0.1', 'scheme': 'http'})
+        self.assertEqual(url, 'http://localhost:3389/')
+
+    def test_wildcard_bind_uses_lan_ip(self):
+        with patch('trustmux._ctl._lan_ip', return_value='192.168.1.9'):
+            url = ctl.direct_url(3389, {'host': '0.0.0.0', 'scheme': 'https'})
+        self.assertEqual(url, 'https://192.168.1.9:3389/')
+
+    def test_defaults_to_https_when_daemon_silent(self):
+        with patch('trustmux._ctl._lan_ip', return_value='192.168.1.9'):
+            self.assertEqual(ctl.direct_url(7432, {}), 'https://192.168.1.9:7432/')
+
+    def test_live_daemon_port_wins_over_caller(self):
+        url = ctl.direct_url(4444, {'host': '127.0.0.1', 'port': 3389, 'scheme': 'http'})
+        self.assertEqual(url, 'http://localhost:3389/')
+
+
+class TestLaunchPort(unittest.TestCase):
+
+    def test_passes_resolved_port_to_daemon(self):
+        with patch('trustmux._ctl._ensure_dir'):
+            with patch('trustmux._ctl.LOGFILE'):
+                with patch('trustmux._ctl.PIDFILE'):
+                    with patch('trustmux._ctl.subprocess.Popen') as mock_popen:
+                        with patch('trustmux._ctl.time.sleep'):
+                            with patch('trustmux._ctl._pid', return_value=4321):
+                                ctl._launch(3389, ['--host', '127.0.0.1'])
+        argv = mock_popen.call_args[0][0]
+        self.assertIn('--port', argv)
+        self.assertEqual(argv[argv.index('--port') + 1], '3389')
+        # Never handed to a shell.
+        self.assertNotIn('shell', mock_popen.call_args.kwargs)
+
+
+class TestEnsureTsServePort(unittest.TestCase):
+
+    def test_serves_the_requested_port(self):
+        with patch('trustmux._ctl.subprocess.check_output', return_value='nothing'):
+            with patch('trustmux._ctl.subprocess.run') as mock_run:
+                mock_run.return_value = MagicMock(returncode=0)
+                self.assertTrue(ctl._ensure_ts_serve(3389))
+        self.assertEqual(mock_run.call_args[0][0],
+                         ['tailscale', 'serve', '--bg', '3389'])
+
+
+class TestCmdStartPort(unittest.TestCase):
+
+    def test_start_local_launches_on_requested_port(self):
+        with patch('trustmux._ctl._pid', return_value=None):
+            with patch('trustmux._ctl._launch', return_value=1234) as mock_launch:
+                with patch('builtins.print'):
+                    self.assertEqual(ctl.cmd_start('start-local', 3389), 0)
+        self.assertEqual(mock_launch.call_args[0][0], 3389)
+
+    def test_refuses_when_something_already_owns_that_port(self):
+        with patch('trustmux._ctl._pid', return_value=999) as mock_pid:
+            with patch('builtins.print'):
+                self.assertEqual(ctl.cmd_start('start-local', 3389), 1)
+        mock_pid.assert_called_once_with(3389)
+
+
+class TestCmdStopPort(unittest.TestCase):
+
+    def test_stops_pid_found_on_requested_port(self):
+        with patch('trustmux._ctl._pid', return_value=1234) as mock_pid:
+            with patch('trustmux._ctl.PIDFILE') as mock_pidfile:
+                mock_pidfile.exists.return_value = False
+                with patch('trustmux._ctl.os.kill') as mock_kill:
+                    with patch('builtins.print'):
+                        self.assertEqual(ctl.cmd_stop(3389), 0)
+        mock_pid.assert_called_once_with(3389)
+        mock_kill.assert_called_once_with(1234, signal.SIGTERM)
+
+
+# ---------------------------------------------------------------------------
+# Login hook carries the port
+# ---------------------------------------------------------------------------
+
+class TestHookLine(unittest.TestCase):
+
+    def test_default_port_keeps_legacy_line(self):
+        self.assertEqual(enable.hook_line(ctl.DEFAULT_PORT), enable._HOOK)
+
+    def test_custom_port_is_carried(self):
+        self.assertEqual(enable.hook_line(3389),
+                         'trustmux start --port 3389 2>/dev/null || true\n')
+
+    def test_is_hook_line_matches_both_formats(self):
+        self.assertTrue(enable.is_hook_line('trustmux start 2>/dev/null || true'))
+        self.assertTrue(enable.is_hook_line('trustmux start --port 3389 2>/dev/null || true'))
+        self.assertTrue(enable.is_hook_line('trustmux-ctl start'))
+        self.assertFalse(enable.is_hook_line('# trustmux is great'))
+        self.assertFalse(enable.is_hook_line('alias tm="trustmux status"'))
+
+
+class TestInstallHookPort(unittest.TestCase):
+
+    def _profile(self, content):
+        f = tempfile.NamedTemporaryFile(mode='w', suffix='.profile', delete=False)
+        f.write(content)
+        f.close()
+        self.addCleanup(Path(f.name).unlink)
+        return Path(f.name)
+
+    def test_appends_hook_with_port(self):
+        p = self._profile('# existing\n')
+        enable._install_hook(p, enable.hook_line(3389))
+        self.assertIn('trustmux start --port 3389 2>/dev/null', p.read_text())
+
+    def test_rewrites_existing_hook_with_new_port(self):
+        p = self._profile('# top\ntrustmux start 2>/dev/null || true\n# bottom\n')
+        enable._install_hook(p, enable.hook_line(3389))
+        text = p.read_text()
+        self.assertEqual(text.count('trustmux start'), 1)
+        self.assertIn('--port 3389', text)
+        self.assertIn('# top', text)
+        self.assertIn('# bottom', text)
+
+    def test_disable_removes_hook_with_port(self):
+        p = self._profile('# top\ntrustmux start --port 3389 2>/dev/null || true\n')
+        disable._remove_hook(p)
+        self.assertNotIn('trustmux start', p.read_text())
+        self.assertIn('# top', p.read_text())
 
 
 if __name__ == '__main__':

@@ -3,7 +3,7 @@ import os
 import sys
 from pathlib import Path
 
-from trustmux._ctl import TOKENS_FILE, cmd_setup, cmd_start
+from trustmux._ctl import DEFAULT_PORT, TOKENS_FILE, cmd_setup, cmd_start, port_opt
 
 _HOOK = "trustmux start 2>/dev/null || true\n"
 
@@ -16,26 +16,43 @@ if "zsh" in os.environ.get("SHELL", ""):
     _LOGIN_FILES.append(Path.home() / ".zprofile")
 
 
-def _install_hook(dest: Path) -> None:
+def hook_line(port: int = DEFAULT_PORT) -> str:
+    """Login hook to install. Only carries --port when it is not the default,
+    so profiles written by older versions stay byte-identical."""
+    return f"trustmux start{port_opt(port)} 2>/dev/null || true\n"
+
+
+def is_hook_line(line: str) -> bool:
+    """True for a trustmux login hook in any version's format."""
+    return "trustmux-ctl" in line or ("trustmux start" in line and "2>/dev/null" in line)
+
+
+def _install_hook(dest: Path, hook: str = _HOOK) -> None:
     if not dest.exists():
         return
-    text = dest.read_text()
-    if _HOOK in text or "trustmux-ctl" in text:
+    lines = dest.read_text().splitlines(keepends=True)
+    if any(is_hook_line(l) for l in lines):
+        # Rewrite in place so `enable --port N` updates a hook installed
+        # earlier with a different port instead of silently keeping the old one.
+        updated = [hook if is_hook_line(l) else l for l in lines]
+        if updated != lines:
+            dest.write_text("".join(updated))
         return
     with dest.open("a") as f:
-        f.write(f"\n{_HOOK}")
+        f.write(f"\n{hook}")
 
 
-def main() -> None:
-    if cmd_setup(quiet=True) != 0:
+def main(port: int = DEFAULT_PORT) -> None:
+    if cmd_setup(quiet=True, port=port) != 0:
         print("\nFirst-time setup did not complete. Fix the issue above, then re-run:")
-        print("  trustmux enable")
+        print(f"  trustmux enable{port_opt(port)}")
         sys.exit(1)
 
+    hook = hook_line(port)
     for f in _LOGIN_FILES:
-        _install_hook(f)
+        _install_hook(f, hook)
 
-    started = cmd_start("serve") == 0
+    started = cmd_start("serve", port) == 0
 
     print()
     if started:

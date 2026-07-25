@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 from trustmux._ctl import cmd_stop
+from trustmux._enable import is_hook_line
 
 _LOGIN_FILES = [
     Path.home() / ".profile",
@@ -16,7 +17,7 @@ def _remove_hook(dest: Path) -> None:
     if not dest.exists() or not os.access(dest, os.W_OK):
         return
     lines = dest.read_text().splitlines(keepends=True)
-    filtered = [l for l in lines if "trustmux-ctl" not in l and "trustmux start 2>/dev/null" not in l]
+    filtered = [l for l in lines if not is_hook_line(l)]
     if len(filtered) < len(lines):
         dest.write_text("".join(filtered))
 

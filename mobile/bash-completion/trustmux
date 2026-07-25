@@ -10,11 +10,18 @@ _trustmux() {
         return
     fi
 
+    if [[ $prev == "--port" ]]; then
+        return
+    fi
+
     case "${words[1]}" in
         setup)
-            COMPREPLY=($(compgen -W "--quiet" -- "$cur"))
+            COMPREPLY=($(compgen -W "--quiet --port" -- "$cur"))
             ;;
-        start|start-local|start-direct|stop|restart|status|log|enable|disable|pair|unpair)
+        start|start-local|start-direct|stop|restart|status|enable)
+            COMPREPLY=($(compgen -W "--port" -- "$cur"))
+            ;;
+        log|disable|pair|unpair)
             ;;
     esac
 }
