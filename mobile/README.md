@@ -88,6 +88,29 @@ trustmux status              # finds it — no need to repeat --port
 `stop`, `status` and `pair` ask the running daemon which port it is on, so only
 the start command needs the flag. `enable --port` records it in the login hook.
 
+### Several daemons at once
+
+`--instance NAME` (or `$TRUSTMUX_INSTANCE`) gives a daemon its own pid file,
+admin socket, log, session tokens and TLS certificate, so more than one can run
+side by side — on different ports, or on the same port at different addresses:
+
+```bash
+trustmux start-direct --instance work --port 3389
+trustmux pair  --instance work
+trustmux list
+trustmux stop  --instance work
+```
+
+The unnamed instance is called `default`; it is not special-cased, and lives
+under `instances/default/` like any other.
+
+Only `default` can use `tailscale serve` mode, because `serve` publishes on the
+tailnet's port 443 and only one daemon can own it — a second would silently
+take over the mapping. Named instances use `start-direct` or `start-local`;
+`setup`, `start`, `restart` and `enable` refuse them with a message saying so.
+Note `--port` does not lift this: it moves the loopback backend that
+`tailscale serve` proxies to, not the tailnet-facing port.
+
 ---
 
 ## Setup from source
@@ -113,16 +136,17 @@ export TRUSTMUX_STATE_DIR=$TRUSTMUX_CONFIG_DIR/state
 
 ## Files
 
-Trustmux follows the XDG base directory spec.
+Trustmux follows the XDG base directory spec, with one subdirectory per
+instance. `<I>` below is the `--instance` name, or `default`.
 
 | Path | Purpose |
 |---|---|
-| `$XDG_CONFIG_HOME/trustmux/machines.json` | Optional: sibling machines for the machine selector — the only user-authored file |
-| `$XDG_STATE_HOME/trustmux/instances/default/tokens.json` | Paired device session tokens (mode 0600) |
-| `$XDG_STATE_HOME/trustmux/instances/default/cert.pem`, `key.pem` | Self-signed TLS keypair for `start-direct` |
-| `$XDG_STATE_HOME/trustmux/instances/default/trustmux.log` | Daemon log (mode 0600) |
-| `$XDG_STATE_HOME/trustmux/instances/default/trustmux.sock` | Admin Unix socket (mode 0600) |
-| `$XDG_STATE_HOME/trustmux/instances/default/trustmux.pid` | PID file |
+| `$XDG_CONFIG_HOME/trustmux/machines.json` | Optional: sibling machines for the machine selector. Shared by all instances — the only user-authored file |
+| `$XDG_STATE_HOME/trustmux/instances/<I>/tokens.json` | Paired device session tokens (mode 0600) |
+| `$XDG_STATE_HOME/trustmux/instances/<I>/cert.pem`, `key.pem` | Self-signed TLS keypair for `start-direct` |
+| `$XDG_STATE_HOME/trustmux/instances/<I>/trustmux.log` | Daemon log (mode 0600) |
+| `$XDG_STATE_HOME/trustmux/instances/<I>/trustmux.sock` | Admin Unix socket (mode 0600) |
+| `$XDG_STATE_HOME/trustmux/instances/<I>/trustmux.pid` | PID file |
 
 Defaults are `~/.config` and `~/.local/state`. Config holds only the file you
 write by hand; everything the daemon owns lives together under state, as it
@@ -151,8 +175,8 @@ precedence over the XDG variables.
 
 **Upgrading:** earlier versions kept everything directly in
 `~/.config/trustmux`. On first run `tokens.json`, `cert.pem`, `key.pem` and
-`trustmux.log` are moved into the state directory above with their modes
-preserved. A stale `trustmux.pid`/`trustmux.sock` is left alone, in
+`trustmux.log` are moved into the `default` instance's state directory with
+their modes preserved. A stale `trustmux.pid`/`trustmux.sock` is left alone, in
 case a daemon predating the upgrade is still serving on it.
 
 ---

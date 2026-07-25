@@ -15,8 +15,8 @@ import trustmux._paths as paths
 class BaseDirs(unittest.TestCase):
     """Give each test a clean, fully-overridden environment."""
 
-    ENV = ("TRUSTMUX_CONFIG_DIR", "TRUSTMUX_STATE_DIR",
-           "XDG_CONFIG_HOME", "XDG_STATE_HOME")
+    ENV = ("TRUSTMUX_CONFIG_DIR", "TRUSTMUX_STATE_DIR", "TRUSTMUX_INSTANCE",
+           "XDG_CONFIG_HOME", "XDG_STATE_HOME", "XDG_RUNTIME_DIR")
 
     def setUp(self):
         self.td = tempfile.TemporaryDirectory()
@@ -109,8 +109,80 @@ class TestInstancePaths(BaseDirs):
         inst.ensure_dirs()
         inst.ensure_dirs()   # must not raise
 
+    def test_label_only_set_for_non_default(self):
+        self.assertEqual(paths.Instance().label(), "")
+        self.assertEqual(paths.Instance("work").label(), " --instance work")
 
 
+class TestResolveInstance(BaseDirs):
+
+    def test_default_when_nothing_set(self):
+        self.assertEqual(paths.resolve_instance().name, "default")
+
+    def test_explicit_wins_over_env(self):
+        os.environ["TRUSTMUX_INSTANCE"] = "fromenv"
+        self.assertEqual(paths.resolve_instance("fromflag").name, "fromflag")
+
+    def test_env_used_when_no_flag(self):
+        os.environ["TRUSTMUX_INSTANCE"] = "fromenv"
+        self.assertEqual(paths.resolve_instance().name, "fromenv")
+
+    def test_accepts_reasonable_names(self):
+        for name in ("work", "a", "A1", "my-box", "my_box", "v1.2", "x" * 32):
+            self.assertEqual(paths.resolve_instance(name).name, name)
+
+    def test_rejects_traversal_and_separators(self):
+        for bad in ("..", ".", "../..", "a/b", "a/../b", "/abs", "a\\b",
+                    ".hidden", "", "x" * 33, "sp ace", "semi;colon",
+                    "$(id)", "`id`", "quo'te", "new\nline"):
+            with self.subTest(name=bad):
+                with patch("trustmux._paths.sys.stderr"):
+                    with self.assertRaises(SystemExit) as cm:
+                        paths.resolve_instance(bad)
+                self.assertEqual(cm.exception.code, 2)
+
+    def test_a_rejected_name_never_reaches_the_filesystem(self):
+        os.environ["TRUSTMUX_STATE_DIR"] = str(self.root / "state")
+        with patch("trustmux._paths.sys.stderr"):
+            with self.assertRaises(SystemExit):
+                paths.resolve_instance("../escape")
+        self.assertEqual(list(self.root.rglob("escape")), [])
+
+
+class TestSockPathLength(BaseDirs):
+
+    def test_ok_for_a_normal_path(self):
+        os.environ["TRUSTMUX_STATE_DIR"] = "/home/u/.local/state/trustmux"
+        self.assertTrue(paths.check_sock_path(paths.Instance("work")))
+
+    def test_rejects_an_overlong_path(self):
+        os.environ["TRUSTMUX_STATE_DIR"] = "/" + "d" * 120
+        import io
+        buf = io.StringIO()
+        self.assertFalse(paths.check_sock_path(paths.Instance("work"), buf))
+        self.assertIn("unix socket", buf.getvalue())
+
+
+class TestKnownInstances(BaseDirs):
+
+    def setUp(self):
+        super().setUp()
+        os.environ["TRUSTMUX_STATE_DIR"] = str(self.root / "state")
+        os.environ["TRUSTMUX_RUN_DIR"] = str(self.root / "run")
+
+    def test_empty_before_anything_exists(self):
+        self.assertEqual(paths.known_instances(), [])
+
+    def test_lists_default_first_then_alphabetical(self):
+        for name in ("zulu", "default", "alpha"):
+            paths.Instance(name).ensure_dirs()
+        self.assertEqual([i.name for i in paths.known_instances()],
+                         ["default", "alpha", "zulu"])
+
+    def test_ignores_stray_files(self):
+        paths.Instance("real").ensure_dirs()
+        (self.root / "state" / "instances" / "a-file").write_text("x")
+        self.assertEqual([i.name for i in paths.known_instances()], ["real"])
 
 
 class TestMigration(BaseDirs):

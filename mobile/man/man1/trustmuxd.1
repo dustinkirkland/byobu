@@ -5,6 +5,7 @@ trustmuxd \- Trustmux daemon (mobile companion for tmux/Byobu sessions)
 .B trustmuxd
 [\fB\-\-host\fP \fIADDR\fP]
 [\fB\-\-port\fP \fIPORT\fP]
+[\fB\-\-instance\fP \fINAME\fP]
 [\fB\-\-https\fP]
 [\fB\-\-self\-signed\fP]
 [\fB\-\-version\fP]
@@ -22,8 +23,8 @@ a self-signed ECDSA certificate and binds directly on the network interface.
 .PP
 Authentication uses 6-digit one-time pairing codes (generated with
 .BR trustmux\-pair (1))
-and permanent per-device session tokens stored as described under
-.BR FILES .
+and permanent per-device session tokens stored per instance (see
+.BR FILES ).
 .PP
 In normal use, the daemon is managed via
 .BR trustmux (1)
@@ -44,26 +45,38 @@ Use with \fBtailscale serve\fP.
 Generate a self-signed ECDSA P-256 TLS certificate for direct
 HTTPS access without Tailscale.
 .TP
+.BI \-\-instance " NAME"
+Which instance's state and runtime files to use (default:
+.BR default ).
+Each instance has its own tokens, TLS keypair, log, admin socket and pid file,
+so several daemons can run side by side.
+.B trustmux (1)
+passes this through when it starts a daemon.
+.TP
 .B \-\-version
 Print version and exit.
 .SH FILES
-Paths follow the XDG base directories.
+Paths follow the XDG base directories, one subdirectory per instance;
+.I INSTANCE
+below is the
+.B \-\-instance
+name.
 .B trustmux (1)
 documents the full layout, the fallbacks and the
 .B TRUSTMUX_*_DIR
 overrides.
 .TP
-.I $XDG_STATE_HOME/trustmux/instances/default/tokens.json
+.I $XDG_STATE_HOME/trustmux/instances/INSTANCE/tokens.json
 Persistent session tokens (mode 0600).
 .TP
-.I $XDG_STATE_HOME/trustmux/instances/default/cert.pem
+.I $XDG_STATE_HOME/trustmux/instances/INSTANCE/cert.pem
 Self-signed TLS certificate (mode 0644), created on first
 \fB\-\-self\-signed\fP start.
 .TP
-.I $XDG_STATE_HOME/trustmux/instances/default/key.pem
+.I $XDG_STATE_HOME/trustmux/instances/INSTANCE/key.pem
 TLS private key (mode 0600).
 .TP
-.I $XDG_STATE_HOME/trustmux/instances/default/trustmux.sock
+.I $XDG_STATE_HOME/trustmux/instances/INSTANCE/trustmux.sock
 Admin Unix socket (mode 0600) used by
 .BR trustmux\-pair (1)
 and
