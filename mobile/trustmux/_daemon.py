@@ -22,6 +22,8 @@ import tornado.httpserver
 import tornado.web
 import tornado.websocket
 
+from trustmux._paths import Instance, machines_file, migrate_legacy_layout
+
 def _resolve_version() -> str:
     import subprocess as _sp
     # Prefer the full Debian package version (e.g. 7.14-1~local1) when
@@ -64,10 +66,17 @@ _ws_clients: dict[str, set] = {}     # token → set[WsHandler] — closed on un
 _https_mode: bool = False             # set by --https; enables Secure cookie
 _listen: dict = {}                    # bound host/port/scheme, served by admin "info"
 
-CONFIG_DIR    = Path.home() / ".config" / "trustmux"
-TOKENS_FILE   = CONFIG_DIR / "tokens.json"
-ADMIN_SOCK    = CONFIG_DIR / "trustmux.sock"
-MACHINES_FILE = CONFIG_DIR / "machines.json"
+# Which instance's files this daemon owns.
+INSTANCE      = Instance()
+STATE_DIR     = INSTANCE.state
+TOKENS_FILE   = INSTANCE.tokens_file
+ADMIN_SOCK    = INSTANCE.sock
+CERT_FILE     = INSTANCE.cert_file
+KEY_FILE      = INSTANCE.key_file
+MACHINES_FILE = machines_file()   # shared by every instance
+
+
+
 _INSTALLED_STATIC = Path("/usr/share/trustmux/static")
 _DEV_STATIC       = Path(__file__).parent / "static"
 STATIC            = _INSTALLED_STATIC if _INSTALLED_STATIC.is_dir() else _DEV_STATIC
@@ -111,8 +120,8 @@ def _load_tokens() -> None:
         print(f"Warning: could not load {TOKENS_FILE}: {e} — all sessions lost", flush=True)
 
 def _save_tokens() -> None:
-    CONFIG_DIR.mkdir(parents=True, exist_ok=True, mode=0o700)
-    CONFIG_DIR.chmod(0o700)
+    STATE_DIR.mkdir(parents=True, exist_ok=True, mode=0o700)
+    STATE_DIR.chmod(0o700)
     tmp = TOKENS_FILE.with_suffix(".tmp")
     fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
     try:
@@ -1152,8 +1161,30 @@ async def _handle_admin(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
         await writer.wait_closed()
 
 
+def _socket_is_stale(path: Path) -> bool:
+    """True if path is a socket file with nothing listening on it.
+
+    The state directory persists across logout and reboot, so a socket left
+    behind by a killed daemon stays on disk.  Connecting is the only way to
+    tell that apart from one a live daemon is serving: a leftover file refuses
+    the connection, a live one accepts it.
+    """
+    probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    probe.settimeout(1.5)
+    try:
+        probe.connect(str(path))
+    except OSError:
+        return True
+    finally:
+        probe.close()
+    return False
+
+
 async def _run_admin_server() -> None:
-    if ADMIN_SOCK.exists():
+    STATE_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
+    # Only ever remove a socket nothing is serving; main() has already refused
+    # to start if a live one was there.
+    if ADMIN_SOCK.exists() and _socket_is_stale(ADMIN_SOCK):
         ADMIN_SOCK.unlink()
     old_mask = os.umask(0o177)  # socket created with mode 0o600
     try:
@@ -1202,9 +1233,9 @@ def _ensure_self_signed_cert(lan_ip: str) -> tuple:
     from cryptography.hazmat.primitives import hashes as _hashes, serialization as _ser
     from cryptography.hazmat.primitives.asymmetric import ec as _ec
 
-    cert = CONFIG_DIR / "cert.pem"
-    key  = CONFIG_DIR / "key.pem"
-    CONFIG_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
+    cert = CERT_FILE
+    key  = KEY_FILE
+    STATE_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
     san_parts = [f"IP:{lan_ip}", "IP:127.0.0.1", "DNS:localhost"]
     fqdn = socket.getfqdn()
     if fqdn and fqdn not in ("localhost", lan_ip):
@@ -1312,6 +1343,18 @@ def main():
         parser.print_help()
         sys.exit(0)
     args = parser.parse_args()
+
+    migrate_legacy_layout()
+
+    # Refuse before the event loop starts, so this surfaces as a plain message
+    # rather than a traceback out of an asyncio task.  Unlinking a live socket
+    # would leave the daemon already serving on it running on an unlinked
+    # inode that nothing can reach, silently stealing pair/unpair/info from it.
+    if ADMIN_SOCK.exists() and not _socket_is_stale(ADMIN_SOCK):
+        print(f"Error: another trustmux daemon is already serving {ADMIN_SOCK}",
+              file=sys.stderr)
+        print("  Stop it first, or use a different state directory.", file=sys.stderr)
+        sys.exit(1)
 
     _load_tokens()
 

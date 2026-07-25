@@ -22,8 +22,8 @@ a self-signed ECDSA certificate and binds directly on the network interface.
 .PP
 Authentication uses 6-digit one-time pairing codes (generated with
 .BR trustmux\-pair (1))
-and permanent per-device session tokens stored in
-.IR ~/.config/trustmux/tokens.json .
+and permanent per-device session tokens stored as described under
+.BR FILES .
 .PP
 In normal use, the daemon is managed via
 .BR trustmux (1)
@@ -47,22 +47,27 @@ HTTPS access without Tailscale.
 .B \-\-version
 Print version and exit.
 .SH FILES
+Paths follow the XDG base directories.
+.B trustmux (1)
+documents the full layout, the fallbacks and the
+.B TRUSTMUX_*_DIR
+overrides.
 .TP
-.I ~/.config/trustmux/tokens.json
+.I $XDG_STATE_HOME/trustmux/instances/default/tokens.json
 Persistent session tokens (mode 0600).
 .TP
-.I ~/.config/trustmux/trustmux.sock
+.I $XDG_STATE_HOME/trustmux/instances/default/cert.pem
+Self-signed TLS certificate (mode 0644), created on first
+\fB\-\-self\-signed\fP start.
+.TP
+.I $XDG_STATE_HOME/trustmux/instances/default/key.pem
+TLS private key (mode 0600).
+.TP
+.I $XDG_STATE_HOME/trustmux/instances/default/trustmux.sock
 Admin Unix socket (mode 0600) used by
 .BR trustmux\-pair (1)
 and
 .BR trustmux\-unpair (1).
-.TP
-.I ~/.config/trustmux/cert.pem
-Self-signed TLS certificate (mode 0644), created on first
-\fB\-\-self\-signed\fP start.
-.TP
-.I ~/.config/trustmux/key.pem
-TLS private key (mode 0600).
 .SH SEE ALSO
 .BR trustmux (1),
 .BR trustmux\-pair (1),

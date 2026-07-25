@@ -2,18 +2,19 @@
 import json
 import socket
 import sys
-from pathlib import Path
 
-SOCK = Path.home() / ".config" / "trustmux" / "trustmux.sock"
+from trustmux._ctl import Instance
 
 
-def admin(cmd: dict) -> object:
-    if not SOCK.exists():
+
+def admin(cmd: dict, inst: Instance | None = None) -> object:
+    inst = inst or Instance()
+    if not inst.sock.exists():
         print("Error: Trustmux daemon not running (socket not found)", file=sys.stderr)
         sys.exit(1)
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
         try:
-            s.connect(str(SOCK))
+            s.connect(str(inst.sock))
         except OSError as e:
             print(f"Error: cannot connect to Trustmux daemon: {e}", file=sys.stderr)
             sys.exit(1)
@@ -46,8 +47,9 @@ def _ua_short(label: str) -> str:
     return label[:30]
 
 
-def main():
-    sessions = admin({"action": "sessions_list"})
+def main(inst: Instance | None = None):
+    inst = inst or Instance()
+    sessions = admin({"action": "sessions_list"}, inst)
     if not isinstance(sessions, list):
         print(f"Error: {sessions}", file=sys.stderr)
         sys.exit(1)
@@ -77,7 +79,7 @@ def main():
         print("Cancelled.")
 
     elif choice.upper() == "A":
-        result = admin({"action": "sessions_delete"})
+        result = admin({"action": "sessions_delete"}, inst)
         if isinstance(result, dict) and result.get("ok"):
             print(f"Removed {result.get('removed', 0)} paired client(s).")
         else:
@@ -88,7 +90,7 @@ def main():
         idx = int(choice) - 1
         token = sessions[idx]["token_full"]
         ip = sessions[idx]["ip"]
-        result = admin({"action": "sessions_delete", "token": token})
+        result = admin({"action": "sessions_delete", "token": token}, inst)
         if isinstance(result, dict) and result.get("ok"):
             print(f"Client {ip} unpaired.")
         else:

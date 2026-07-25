@@ -11,14 +11,11 @@ import sys
 import time
 from pathlib import Path
 
+from trustmux._paths import Instance, migrate_legacy_layout
+
 DEFAULT_PORT = 7432
 PORT_ENV   = "TRUSTMUX_PORT"
 SERVE_PORT = 443  # tailscale serve terminates TLS on :443
-CONFIG_DIR = Path.home() / ".config" / "trustmux"
-LOGFILE    = CONFIG_DIR / "trustmux.log"
-PIDFILE    = CONFIG_DIR / "trustmux.pid"
-ADMIN_SOCK = CONFIG_DIR / "trustmux.sock"
-TOKENS_FILE = CONFIG_DIR / "tokens.json"
 
 
 def _check_tmux() -> bool:
@@ -73,12 +70,13 @@ def _valid_port(value: object) -> int | None:
     return port if 1 <= port <= 65535 else None
 
 
-def daemon_info() -> dict | None:
-    """Ask the running daemon what it is listening on.
+def daemon_info(inst: Instance | None = None) -> dict | None:
+    """Ask this instance's running daemon what it is listening on.
 
     Returns {"pid", "host", "port", "scheme"} or None if no daemon answers.
     """
-    if not ADMIN_SOCK.exists():
+    inst = inst or Instance()
+    if not inst.sock.exists():
         return None
     try:
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
@@ -90,7 +88,7 @@ def daemon_info() -> dict | None:
             # turns ordinary commands into a multi-second hang instead of an
             # instant response.
             s.settimeout(1.5)
-            s.connect(str(ADMIN_SOCK))
+            s.connect(str(inst.sock))
             s.sendall(b'{"action": "info"}\n')
             s.shutdown(socket.SHUT_WR)
             chunks = []
@@ -107,13 +105,13 @@ def daemon_info() -> dict | None:
     return info
 
 
-def resolve_port(explicit: int | None = None) -> int:
+def resolve_port(explicit: int | None = None, inst: Instance | None = None) -> int:
     """Return the port to operate on.
 
-    Precedence: --port, then $TRUSTMUX_PORT, then whatever the running daemon
-    reports, then the default.  Consulting the daemon is what lets stop/status/
-    pair find a daemon that was started on a non-default port without having to
-    repeat the flag.
+    Precedence: --port, then $TRUSTMUX_PORT, then whatever this instance's
+    running daemon reports, then the default.  Consulting the daemon is what
+    lets stop/status/pair find a daemon that was started on a non-default port
+    without having to repeat the flag.
     """
     if explicit is not None:
         port = _valid_port(explicit)
@@ -130,7 +128,7 @@ def resolve_port(explicit: int | None = None) -> int:
             sys.exit(2)
         return port
 
-    info = daemon_info()
+    info = daemon_info(inst)
     if info:
         port = _valid_port(info.get("port"))
         if port is not None:
@@ -172,13 +170,14 @@ def direct_url(port: int, info: dict | None = None) -> str:
     return f"{scheme}://{hostname}:{port}/"
 
 
-def _ensure_dir() -> None:
-    CONFIG_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
-    LOGFILE.touch()
-    LOGFILE.chmod(0o600)
+def _ensure_dir(inst: Instance | None = None) -> None:
+    inst = inst or Instance()
+    inst.ensure_dirs()
+    inst.log_file.touch()
+    inst.log_file.chmod(0o600)
 
 
-def _pid(port: int = DEFAULT_PORT) -> int | None:
+def _pid(port: int = DEFAULT_PORT, inst: Instance | None = None) -> int | None:
     """Return the PID of the trustmux daemon listening on `port`, or None.
 
     lsof directly observes what is bound to `port`; when it can run, its
@@ -188,14 +187,13 @@ def _pid(port: int = DEFAULT_PORT) -> int | None:
     which is still port-scoped and authoritative since it is self-reported
     by the live process rather than inferred.
 
-    There is deliberately no further fallback to "PIDFILE's pid is alive,"
-    which cannot say anything about *which* port that pid owns: with a
-    single global PORT constant (pre-multi-port) that was an adequate proxy
-    for "is trustmux running," but once callers can ask about an arbitrary
-    port, trusting it blindly means a query for a port nothing is listening
-    on can return some *other*, unrelated daemon's pid -- which previously
-    let `trustmux stop --port <port nothing is on>` kill the wrong daemon.
+    There is deliberately no further fallback to "the pid file's pid is
+    alive," which cannot say anything about *which* port that pid owns:
+    trusting it blindly means a query for a port nothing is listening on can
+    return some other, unrelated daemon's pid -- which previously let
+    `trustmux stop --port <port nothing is on>` kill the wrong daemon.
     """
+    inst = inst or Instance()
     try:
         out = subprocess.check_output(
             ["lsof", f"-ti:{port}"], stderr=subprocess.DEVNULL, text=True
@@ -207,7 +205,7 @@ def _pid(port: int = DEFAULT_PORT) -> int | None:
     except (FileNotFoundError, ValueError):
         pass  # lsof unusable; fall through to the daemon's own account.
 
-    info = daemon_info()
+    info = daemon_info(inst)
     if info and _valid_port(info.get("port")) == port:
         pid = info.get("pid")
         if isinstance(pid, int) and pid > 0:
@@ -343,9 +341,10 @@ def _ensure_ts_serve(port: int = DEFAULT_PORT) -> bool:
     return False
 
 
-def _launch(port: int, extra_args: list[str]) -> int | None:
+def _launch(port: int, extra_args: list[str], inst: Instance | None = None) -> int | None:
     """Launch daemon as a detached background process. Returns PID or None."""
-    _ensure_dir()
+    inst = inst or Instance()
+    _ensure_dir(inst)
     # Ensure the package directory is on the subprocess's Python path so that
     # `python3 -m trustmux` resolves correctly regardless of how Python was
     # invoked (e.g. bare /usr/bin/python3 from a .deb shim).
@@ -353,7 +352,7 @@ def _launch(port: int, extra_args: list[str]) -> int | None:
     env = os.environ.copy()
     existing = env.get("PYTHONPATH", "")
     env["PYTHONPATH"] = f"{pkg_parent}:{existing}" if existing else pkg_parent
-    with LOGFILE.open("a") as log:
+    with inst.log_file.open("a") as log:
         proc = subprocess.Popen(
             [sys.executable, "-m", "trustmux", "--port", str(port)] + extra_args,
             stdout=log, stderr=log,
@@ -361,13 +360,21 @@ def _launch(port: int, extra_args: list[str]) -> int | None:
             start_new_session=True,
             env=env,
         )
-    PIDFILE.write_text(str(proc.pid))
+    inst.pid_file.write_text(str(proc.pid))
     time.sleep(0.5)
-    return _pid(port)
+    if proc.poll() is not None:
+        # Died on startup — usually the port is taken, which is easy to hit
+        # once more than one instance is in play.  Without this the pid file
+        # still names the (zombie) child and the caller reports success.
+        inst.pid_file.unlink(missing_ok=True)
+        return None
+    return _pid(port, inst)
 
 
-def cmd_setup(quiet: bool = False, port: int | None = None) -> int:
-    port = resolve_port(port)
+def cmd_setup(quiet: bool = False, port: int | None = None,
+              inst: Instance | None = None) -> int:
+    inst = inst or Instance()
+    port = resolve_port(port, inst)
     print("=== trustmux setup ===\n")
 
     # Verify package is importable
@@ -408,9 +415,11 @@ def cmd_setup(quiet: bool = False, port: int | None = None) -> int:
     return 0
 
 
-def cmd_start(mode: str = "serve", port: int | None = None) -> int:
-    port = resolve_port(port)
-    p = _pid(port)
+def cmd_start(mode: str = "serve", port: int | None = None,
+              inst: Instance | None = None) -> int:
+    inst = inst or Instance()
+    port = resolve_port(port, inst)
+    p = _pid(port, inst)
     if p:
         print(f"trustmux already running (pid {p})")
         return 1
@@ -435,7 +444,7 @@ def cmd_start(mode: str = "serve", port: int | None = None) -> int:
         if not _ensure_ts_serve(port):
             return 1
         print("Starting trustmux (HTTPS mode)...")
-        pid = _launch(port, ["--host", "127.0.0.1", "--https"])
+        pid = _launch(port, ["--host", "127.0.0.1", "--https"], inst)
         ok = pid is not None
         if ok:
             print(f"trustmux started (pid {pid})")
@@ -443,7 +452,7 @@ def cmd_start(mode: str = "serve", port: int | None = None) -> int:
 
     elif mode == "start-local":
         print("Starting trustmux (loopback only — SSH tunnel access)...")
-        pid = _launch(port, ["--host", "127.0.0.1"])
+        pid = _launch(port, ["--host", "127.0.0.1"], inst)
         ok = pid is not None
         if ok:
             fqdn = socket.getfqdn()
@@ -457,7 +466,7 @@ def cmd_start(mode: str = "serve", port: int | None = None) -> int:
         if not _check_tls():
             return 1
         print("Starting trustmux (direct HTTPS — self-signed cert)...")
-        pid = _launch(port, ["--host", "0.0.0.0", "--self-signed"])
+        pid = _launch(port, ["--host", "0.0.0.0", "--self-signed"], inst)
         ok = pid is not None
         if ok:
             print(f"trustmux started (pid {pid})")
@@ -469,35 +478,35 @@ def cmd_start(mode: str = "serve", port: int | None = None) -> int:
         return 1
 
     if not ok:
-        print(f"trustmux failed to start — check {LOGFILE}")
+        print(f"trustmux failed to start — check {inst.log_file}")
         return 1
     return 0
 
 
-def cmd_stop(port: int | None = None) -> int:
-    port = resolve_port(port)
-    p = _pid(port)
+def cmd_stop(port: int | None = None, inst: Instance | None = None) -> int:
+    inst = inst or Instance()
+    port = resolve_port(port, inst)
+    p = _pid(port, inst)
     if not p:
         print("trustmux not running")
-        # "Nothing found on *this* port" does not mean PIDFILE is globally
-        # stale -- it may correctly be tracking a different, still-alive
-        # daemon on another port. Only clean it up when its own recorded pid
-        # is actually dead, same condition that made it stale pre-multi-port.
-        if PIDFILE.exists():
+        # "Nothing found on *this* port" does not mean the pid file is stale
+        # -- it may correctly be tracking this instance's daemon on another
+        # port. Only clean it up when its own recorded pid is actually dead.
+        if inst.pid_file.exists():
             try:
-                file_pid = int(PIDFILE.read_text().strip())
+                file_pid = int(inst.pid_file.read_text().strip())
                 os.kill(file_pid, 0)
             except (ValueError, ProcessLookupError, PermissionError, OSError):
-                PIDFILE.unlink(missing_ok=True)
+                inst.pid_file.unlink(missing_ok=True)
         return 0
 
-    if PIDFILE.exists():
+    if inst.pid_file.exists():
         try:
-            file_pid = int(PIDFILE.read_text().strip())
+            file_pid = int(inst.pid_file.read_text().strip())
             if file_pid != p:
-                print(f"Error: pid {p} owns port {port} but PIDFILE contains {file_pid}.",
+                print(f"Error: pid {p} owns port {port} but {inst.pid_file} contains {file_pid}.",
                       file=sys.stderr)
-                print(f"Refusing to kill. Remove {PIDFILE} manually if trustmux is truly stopped.",
+                print(f"Refusing to kill. Remove {inst.pid_file} manually if trustmux is truly stopped.",
                       file=sys.stderr)
                 return 1
         except ValueError:
@@ -505,14 +514,15 @@ def cmd_stop(port: int | None = None) -> int:
 
     os.kill(p, signal.SIGTERM)
     print(f"trustmux stopped (pid {p})")
-    PIDFILE.unlink(missing_ok=True)
+    inst.pid_file.unlink(missing_ok=True)
     return 0
 
 
-def cmd_status(port: int | None = None) -> int:
-    info = daemon_info()
-    port = resolve_port(port)
-    p = _pid(port)
+def cmd_status(port: int | None = None, inst: Instance | None = None) -> int:
+    inst = inst or Instance()
+    info = daemon_info(inst)
+    port = resolve_port(port, inst)
+    p = _pid(port, inst)
     if not p:
         print("trustmux not running")
         return 0
@@ -534,10 +544,12 @@ def cmd_status(port: int | None = None) -> int:
     return 0
 
 
-def cmd_log() -> int:
-    _ensure_dir()
+
+def cmd_log(inst: Instance | None = None) -> int:
+    inst = inst or Instance()
+    _ensure_dir(inst)
     try:
-        subprocess.run(["tail", "-f", str(LOGFILE)])
+        subprocess.run(["tail", "-f", str(inst.log_file)])
     except KeyboardInterrupt:
         pass
     return 0
@@ -547,9 +559,9 @@ def _refuse_root() -> None:
     """Abort if running as root (e.g. via sudo).
 
     Running as root causes three distinct failure modes:
-      1. Path.home() resolves to /root/, so PIDFILE/CONFIG_DIR point to root's
-         home; the PID-mismatch safety check in cmd_stop() is silently bypassed
-         because the user's PIDFILE is invisible to root.
+      1. Path.home() resolves to /root/, so the state and runtime directories
+         point at root's home; the PID-mismatch safety check in cmd_stop() is
+         silently bypassed because the user's pid file is invisible to root.
       2. `tailscale serve` runs as root and creates a conflicting serve config,
          clobbering the user-level config and wedging tailscale.
       3. The daemon relaunches owned by root, creating a privilege-escalation
@@ -575,8 +587,6 @@ def main() -> None:
     )
     sub = parser.add_subparsers(dest="cmd")
 
-    # Shared --port, attached to every subcommand that has to know which
-    # listener it is acting on.
     port_opts = argparse.ArgumentParser(add_help=False)
     port_opts.add_argument("--port", type=int, metavar="PORT",
                            help=f"TCP port (default: {DEFAULT_PORT}, or ${PORT_ENV})")
@@ -592,8 +602,8 @@ def main() -> None:
     sub.add_parser("stop",         parents=[port_opts], help="Stop daemon (tailscale serve config persists)")
     sub.add_parser("restart",      parents=[port_opts], help="Restart daemon")
     sub.add_parser("status",       parents=[port_opts], help="Show running status and URL")
-    sub.add_parser("log",          help="Tail the log file")
     sub.add_parser("enable",       parents=[port_opts], help="Start daemon and install login hook for automatic start")
+    sub.add_parser("log",          help="Tail the log file")
     sub.add_parser("disable",      help="Stop daemon and remove login hook")
     sub.add_parser("pair",         help="Generate a one-time pairing code for a new device")
     sub.add_parser("unpair",       help="List paired devices and revoke tokens")
@@ -604,41 +614,44 @@ def main() -> None:
         parser.print_help()
         sys.exit(0 if args.cmd == "help" else 1)
 
+    migrate_legacy_layout()
+
     cmd = args.cmd
+    inst = Instance()
     # Resolve once: restart must reuse the running daemon's port after stopping
     # it, by which point the daemon can no longer be asked.
-    port = resolve_port(args.port) if hasattr(args, "port") else DEFAULT_PORT
+    port = resolve_port(args.port, inst) if hasattr(args, "port") else DEFAULT_PORT
 
     if cmd == "setup":
-        sys.exit(cmd_setup(quiet=args.quiet, port=port))
+        sys.exit(cmd_setup(quiet=args.quiet, port=port, inst=inst))
     elif cmd in ("start", "serve"):
-        sys.exit(cmd_start("serve", port))
+        sys.exit(cmd_start("serve", port, inst))
     elif cmd == "start-local":
-        sys.exit(cmd_start("start-local", port))
+        sys.exit(cmd_start("start-local", port, inst))
     elif cmd == "start-direct":
-        sys.exit(cmd_start("start-direct", port))
+        sys.exit(cmd_start("start-direct", port, inst))
     elif cmd == "stop":
-        sys.exit(cmd_stop(port))
+        sys.exit(cmd_stop(port, inst))
     elif cmd == "restart":
-        cmd_stop(port)
+        cmd_stop(port, inst)
         time.sleep(0.5)
-        sys.exit(cmd_start("serve", port))
+        sys.exit(cmd_start("serve", port, inst))
     elif cmd == "status":
-        sys.exit(cmd_status(port))
+        sys.exit(cmd_status(port, inst))
     elif cmd == "log":
-        sys.exit(cmd_log())
+        sys.exit(cmd_log(inst))
     elif cmd == "enable":
         from trustmux._enable import main as _run_enable
-        _run_enable(port)
+        _run_enable(port, inst)
     elif cmd == "disable":
         from trustmux._disable import main as _run_disable
-        _run_disable()
+        _run_disable(inst)
     elif cmd == "pair":
         from trustmux._pair import main as _run_pair
-        _run_pair()
+        _run_pair(inst)
     elif cmd == "unpair":
         from trustmux._unpair import main as _run_unpair
-        _run_unpair()
+        _run_unpair(inst)
 
 
 if __name__ == "__main__":

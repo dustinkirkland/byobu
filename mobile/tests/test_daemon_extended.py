@@ -41,6 +41,42 @@ def _clear_sessions():
 
 
 # ---------------------------------------------------------------------------
+# Stale admin socket
+# ---------------------------------------------------------------------------
+
+class TestStaleSocket(unittest.TestCase):
+    """The state directory persists across logout and reboot, so a socket left
+    behind by a killed daemon stays on disk. Connecting is what distinguishes
+    it from one a live daemon is serving -- unlinking blindly would let a
+    second daemon steal a live socket, leaving the first unreachable."""
+
+    def setUp(self):
+        self.td = tempfile.TemporaryDirectory()
+        self.addCleanup(self.td.cleanup)
+        self.path = Path(self.td.name) / 'trustmux.sock'
+
+    def test_leftover_socket_file_is_stale(self):
+        import socket as _socket
+        s = _socket.socket(_socket.AF_UNIX, _socket.SOCK_STREAM)
+        s.bind(str(self.path))
+        s.listen(1)
+        s.close()                       # daemon died without unlinking
+        self.assertTrue(self.path.exists())
+        self.assertTrue(bm._socket_is_stale(self.path))
+
+    def test_live_socket_is_not_stale(self):
+        import socket as _socket
+        s = _socket.socket(_socket.AF_UNIX, _socket.SOCK_STREAM)
+        s.bind(str(self.path))
+        s.listen(1)
+        self.addCleanup(s.close)
+        self.assertFalse(bm._socket_is_stale(self.path))
+
+    def test_missing_socket_is_stale(self):
+        self.assertTrue(bm._socket_is_stale(self.path))
+
+
+# ---------------------------------------------------------------------------
 # Token persistence
 # ---------------------------------------------------------------------------
 
@@ -48,19 +84,19 @@ class TestTokenPersistence(unittest.TestCase):
     def setUp(self):
         _clear_sessions()
         self._tmpdir = tempfile.TemporaryDirectory()
-        self._orig_config = bm.CONFIG_DIR
+        self._orig_state = bm.STATE_DIR
         self._orig_tokens = bm.TOKENS_FILE
-        bm.CONFIG_DIR = Path(self._tmpdir.name) / 'trustmux'
-        bm.TOKENS_FILE = bm.CONFIG_DIR / 'tokens.json'
+        bm.STATE_DIR = Path(self._tmpdir.name) / 'trustmux'
+        bm.TOKENS_FILE = bm.STATE_DIR / 'tokens.json'
 
     def tearDown(self):
         _clear_sessions()
-        bm.CONFIG_DIR = self._orig_config
+        bm.STATE_DIR = self._orig_state
         bm.TOKENS_FILE = self._orig_tokens
         self._tmpdir.cleanup()
 
     def _write_tokens(self, data):
-        bm.CONFIG_DIR.mkdir(parents=True)
+        bm.STATE_DIR.mkdir(parents=True)
         bm.TOKENS_FILE.write_text(json.dumps(data))
 
     def test_load_missing_file_is_no_op(self):
@@ -85,7 +121,7 @@ class TestTokenPersistence(unittest.TestCase):
         self.assertNotIn('bad_missing', bm._sessions)
 
     def test_load_corrupt_json_does_not_raise(self):
-        bm.CONFIG_DIR.mkdir(parents=True)
+        bm.STATE_DIR.mkdir(parents=True)
         bm.TOKENS_FILE.write_text('not json!!!')
         bm._load_tokens()
         self.assertEqual(bm._sessions, {})
@@ -693,6 +729,14 @@ class TestAdminSocket(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn('tok_secret_value', body)
         self.assertNotIn(bm._pair_code, body)
         self.assertEqual(set(resp), {'state', 'expires_in'})
+
+    async def test_info_pid_identifies_which_daemon_answered(self):
+        # Two daemons each own their instance's socket, so the pid in the
+        # reply is how a caller tells them apart.
+        with patch.object(bm, '_listen',
+                          {'host': '127.0.0.1', 'port': 7432, 'scheme': 'https'}):
+            resp = await self._call({'action': 'info'})
+        self.assertEqual(resp['pid'], os.getpid())
 
     async def test_info_reports_listener(self):
         with patch.object(bm, '_listen',
