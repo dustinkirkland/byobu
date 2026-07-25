@@ -652,6 +652,29 @@ class TestAdminSocket(unittest.IsolatedAsyncioTestCase):
         self.assertIn('expires_in', resp)
         self.assertTrue(bm._pair_code)
 
+    async def test_info_reports_listener(self):
+        with patch.object(bm, '_listen',
+                          {'host': '0.0.0.0', 'port': 3389, 'scheme': 'https'}):
+            resp = await self._call({'action': 'info'})
+        self.assertEqual(resp['host'], '0.0.0.0')
+        self.assertEqual(resp['port'], 3389)
+        self.assertEqual(resp['scheme'], 'https')
+        self.assertEqual(resp['pid'], os.getpid())
+
+    async def test_info_leaks_no_session_tokens(self):
+        _add_session('tok_secret_value')
+        with patch.object(bm, '_listen',
+                          {'host': '127.0.0.1', 'port': 7432, 'scheme': 'http'}):
+            resp = await self._call({'action': 'info'})
+        self.assertNotIn('tok_secret_value', json.dumps(resp))
+        self.assertEqual(set(resp), {'pid', 'host', 'port', 'scheme'})
+
+    async def test_info_before_listen_is_empty_not_an_error(self):
+        with patch.object(bm, '_listen', {}):
+            resp = await self._call({'action': 'info'})
+        self.assertEqual(resp['port'], 0)
+        self.assertNotIn('error', resp)
+
     async def test_sessions_list_empty(self):
         resp = await self._call({'action': 'sessions_list'})
         self.assertIsInstance(resp, list)

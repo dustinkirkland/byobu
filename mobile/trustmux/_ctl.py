@@ -11,11 +11,13 @@ import sys
 import time
 from pathlib import Path
 
-PORT       = 7432
+DEFAULT_PORT = 7432
+PORT_ENV   = "TRUSTMUX_PORT"
 SERVE_PORT = 443  # tailscale serve terminates TLS on :443
 CONFIG_DIR = Path.home() / ".config" / "trustmux"
 LOGFILE    = CONFIG_DIR / "trustmux.log"
 PIDFILE    = CONFIG_DIR / "trustmux.pid"
+ADMIN_SOCK = CONFIG_DIR / "trustmux.sock"
 TOKENS_FILE = CONFIG_DIR / "tokens.json"
 
 
@@ -62,17 +64,118 @@ def _check_tls() -> bool:
         return False
 
 
+def _valid_port(value: object) -> int | None:
+    """Return value as a TCP port number, or None if it is not one."""
+    try:
+        port = int(value)   # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return None
+    return port if 1 <= port <= 65535 else None
+
+
+def daemon_info() -> dict | None:
+    """Ask the running daemon what it is listening on.
+
+    Returns {"pid", "host", "port", "scheme"} or None if no daemon answers.
+    """
+    if not ADMIN_SOCK.exists():
+        return None
+    try:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+            s.settimeout(5)
+            s.connect(str(ADMIN_SOCK))
+            s.sendall(b'{"action": "info"}\n')
+            s.shutdown(socket.SHUT_WR)
+            chunks = []
+            while True:
+                chunk = s.recv(4096)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+        info = json.loads(b"".join(chunks))
+    except Exception:
+        return None
+    if not isinstance(info, dict) or "error" in info:
+        return None
+    return info
+
+
+def resolve_port(explicit: int | None = None) -> int:
+    """Return the port to operate on.
+
+    Precedence: --port, then $TRUSTMUX_PORT, then whatever the running daemon
+    reports, then the default.  Consulting the daemon is what lets stop/status/
+    pair find a daemon that was started on a non-default port without having to
+    repeat the flag.
+    """
+    if explicit is not None:
+        port = _valid_port(explicit)
+        if port is None:
+            print(f"Error: invalid port {explicit!r} — expected 1-65535.", file=sys.stderr)
+            sys.exit(2)
+        return port
+
+    env = os.environ.get(PORT_ENV, "").strip()
+    if env:
+        port = _valid_port(env)
+        if port is None:
+            print(f"Error: invalid {PORT_ENV}={env!r} — expected 1-65535.", file=sys.stderr)
+            sys.exit(2)
+        return port
+
+    info = daemon_info()
+    if info:
+        port = _valid_port(info.get("port"))
+        if port is not None:
+            return port
+
+    return DEFAULT_PORT
+
+
+def port_opt(port: int) -> str:
+    """' --port N' when port is not the default, else '' — for printed hints."""
+    return "" if port == DEFAULT_PORT else f" --port {port}"
+
+
+def _lan_ip() -> str:
+    """Best-effort primary LAN address, or 'localhost' if undeterminable."""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "localhost"
+
+
+def direct_url(port: int, info: dict | None = None) -> str:
+    """URL for reaching the daemon directly (no tailscale serve in front).
+
+    Uses the daemon's own reported bind address and scheme when it is running,
+    so loopback-only and self-signed modes each print something usable.
+    """
+    if info is None:
+        info = daemon_info() or {}
+    # A live daemon's own port beats the caller's idea of it.
+    port = _valid_port(info.get("port")) or port
+    scheme = info.get("scheme") or "https"
+    host = info.get("host") or ""
+    hostname = "localhost" if host in ("127.0.0.1", "localhost", "::1") else _lan_ip()
+    return f"{scheme}://{hostname}:{port}/"
+
+
 def _ensure_dir() -> None:
     CONFIG_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
     LOGFILE.touch()
     LOGFILE.chmod(0o600)
 
 
-def _pid() -> int | None:
-    """Return PID of process listening on PORT, or None."""
+def _pid(port: int = DEFAULT_PORT) -> int | None:
+    """Return PID of process listening on port, or None."""
     try:
         out = subprocess.check_output(
-            ["lsof", f"-ti:{PORT}"], stderr=subprocess.DEVNULL, text=True
+            ["lsof", f"-ti:{port}"], stderr=subprocess.DEVNULL, text=True
         ).strip()
         if out:
             return int(out.splitlines()[0])
@@ -183,23 +286,23 @@ def warn_if_peer_blocked(port: int = SERVE_PORT, stream=sys.stderr) -> None:
     print( "", file=stream)
 
 
-def _ensure_ts_serve() -> bool:
-    """Configure tailscale serve for PORT. Returns True on success."""
+def _ensure_ts_serve(port: int = DEFAULT_PORT) -> bool:
+    """Configure tailscale serve for port. Returns True on success."""
     try:
         out = subprocess.check_output(
             ["tailscale", "serve", "status"],
             stderr=subprocess.DEVNULL, text=True,
         )
-        if f":{PORT}" in out:
-            print(f"✓ tailscale serve already configured for port {PORT}")
+        if f":{port}" in out:
+            print(f"✓ tailscale serve already configured for port {port}")
             return True
     except Exception:
         pass
 
-    print(f"Enabling tailscale serve (HTTPS → localhost:{PORT})...")
+    print(f"Enabling tailscale serve (HTTPS → localhost:{port})...")
     try:
         subprocess.run(
-            ["tailscale", "serve", "--bg", str(PORT)],
+            ["tailscale", "serve", "--bg", str(port)],
             check=True, stderr=subprocess.DEVNULL,
         )
         print("✓ tailscale serve configured")
@@ -212,12 +315,12 @@ def _ensure_ts_serve() -> bool:
     print("Error: could not configure tailscale serve.", file=sys.stderr)
     print("Your user needs Tailscale operator permission (one-time setup). Run:", file=sys.stderr)
     print(f"  sudo tailscale set --operator={user}", file=sys.stderr)
-    print(f"  tailscale serve --bg {PORT}", file=sys.stderr)
+    print(f"  tailscale serve --bg {port}", file=sys.stderr)
     print("Then re-run: trustmux start", file=sys.stderr)
     return False
 
 
-def _launch(extra_args: list[str]) -> int | None:
+def _launch(port: int, extra_args: list[str]) -> int | None:
     """Launch daemon as a detached background process. Returns PID or None."""
     _ensure_dir()
     # Ensure the package directory is on the subprocess's Python path so that
@@ -229,7 +332,7 @@ def _launch(extra_args: list[str]) -> int | None:
     env["PYTHONPATH"] = f"{pkg_parent}:{existing}" if existing else pkg_parent
     with LOGFILE.open("a") as log:
         proc = subprocess.Popen(
-            [sys.executable, "-m", "trustmux", "--port", str(PORT)] + extra_args,
+            [sys.executable, "-m", "trustmux", "--port", str(port)] + extra_args,
             stdout=log, stderr=log,
             stdin=subprocess.DEVNULL,
             start_new_session=True,
@@ -237,10 +340,11 @@ def _launch(extra_args: list[str]) -> int | None:
         )
     PIDFILE.write_text(str(proc.pid))
     time.sleep(0.5)
-    return _pid()
+    return _pid(port)
 
 
-def cmd_setup(quiet: bool = False) -> int:
+def cmd_setup(quiet: bool = False, port: int | None = None) -> int:
+    port = resolve_port(port)
     print("=== trustmux setup ===\n")
 
     # Verify package is importable
@@ -268,21 +372,22 @@ def cmd_setup(quiet: bool = False) -> int:
         return 1
     print(f"✓ Tailscale connected as {ts_host}")
 
-    if not _ensure_ts_serve():
+    if not _ensure_ts_serve(port):
         return 1
 
     warn_if_peer_blocked()
 
     if not quiet:
         print("\nSetup complete. Next steps:\n")
-        print("  1. Start the daemon:      trustmux start")
+        print(f"  1. Start the daemon:      trustmux start{port_opt(port)}")
         print("  2. Generate pairing code: trustmux pair")
         print(f"  3. Open on your phone:    https://{ts_host}")
     return 0
 
 
-def cmd_start(mode: str = "serve") -> int:
-    p = _pid()
+def cmd_start(mode: str = "serve", port: int | None = None) -> int:
+    port = resolve_port(port)
+    p = _pid(port)
     if p:
         print(f"trustmux already running (pid {p})")
         return 1
@@ -304,10 +409,10 @@ def cmd_start(mode: str = "serve") -> int:
         if not ts_host:
             print("Error: cannot determine Tailscale hostname (is tailscale up?)", file=sys.stderr)
             return 1
-        if not _ensure_ts_serve():
+        if not _ensure_ts_serve(port):
             return 1
         print("Starting trustmux (HTTPS mode)...")
-        pid = _launch(["--host", "127.0.0.1", "--https"])
+        pid = _launch(port, ["--host", "127.0.0.1", "--https"])
         ok = pid is not None
         if ok:
             print(f"trustmux started (pid {pid})")
@@ -315,13 +420,13 @@ def cmd_start(mode: str = "serve") -> int:
 
     elif mode == "start-local":
         print("Starting trustmux (loopback only — SSH tunnel access)...")
-        pid = _launch(["--host", "127.0.0.1"])
+        pid = _launch(port, ["--host", "127.0.0.1"])
         ok = pid is not None
         if ok:
             fqdn = socket.getfqdn()
             print(f"trustmux started (pid {pid})")
-            print(f"Access via SSH tunnel: ssh -L {PORT}:localhost:{PORT} user@{fqdn}")
-            print(f"Then open: http://localhost:{PORT}")
+            print(f"Access via SSH tunnel: ssh -L {port}:localhost:{port} user@{fqdn}")
+            print(f"Then open: http://localhost:{port}")
 
     elif mode == "start-direct":
         if not _check_tmux():
@@ -329,18 +434,11 @@ def cmd_start(mode: str = "serve") -> int:
         if not _check_tls():
             return 1
         print("Starting trustmux (direct HTTPS — self-signed cert)...")
-        pid = _launch(["--host", "0.0.0.0", "--self-signed"])
+        pid = _launch(port, ["--host", "0.0.0.0", "--self-signed"])
         ok = pid is not None
         if ok:
-            try:
-                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                s.connect(("8.8.8.8", 80))
-                local_ip = s.getsockname()[0]
-                s.close()
-            except Exception:
-                local_ip = "localhost"
             print(f"trustmux started (pid {pid})")
-            print(f"Connect: https://{local_ip}:{PORT}")
+            print(f"Connect: https://{_lan_ip()}:{port}")
             print(f"  (browser will warn about self-signed cert — click through to proceed)")
 
     else:
@@ -353,8 +451,9 @@ def cmd_start(mode: str = "serve") -> int:
     return 0
 
 
-def cmd_stop() -> int:
-    p = _pid()
+def cmd_stop(port: int | None = None) -> int:
+    port = resolve_port(port)
+    p = _pid(port)
     if not p:
         print("trustmux not running")
         PIDFILE.unlink(missing_ok=True)
@@ -364,7 +463,7 @@ def cmd_stop() -> int:
         try:
             file_pid = int(PIDFILE.read_text().strip())
             if file_pid != p:
-                print(f"Error: pid {p} owns port {PORT} but PIDFILE contains {file_pid}.",
+                print(f"Error: pid {p} owns port {port} but PIDFILE contains {file_pid}.",
                       file=sys.stderr)
                 print(f"Refusing to kill. Remove {PIDFILE} manually if trustmux is truly stopped.",
                       file=sys.stderr)
@@ -378,32 +477,28 @@ def cmd_stop() -> int:
     return 0
 
 
-def cmd_status() -> int:
-    p = _pid()
+def cmd_status(port: int | None = None) -> int:
+    info = daemon_info()
+    port = resolve_port(port)
+    p = _pid(port)
     if not p:
         print("trustmux not running")
         return 0
 
-    print(f"trustmux running (pid {p}) — port {PORT}")
+    print(f"trustmux running (pid {p}) — port {port}")
     try:
         out = subprocess.check_output(
             ["tailscale", "serve", "status"],
             stderr=subprocess.DEVNULL, text=True,
         )
-        if f":{PORT}" in out:
+        if f":{port}" in out:
             ts_host = _ts_host()
             if ts_host:
                 print(f"Connect: https://{ts_host}")
             return 0
     except Exception:
         pass
-    try:
-        ts_ip = subprocess.check_output(
-            ["tailscale", "ip", "-4"], stderr=subprocess.DEVNULL, text=True,
-        ).strip()
-    except Exception:
-        ts_ip = "localhost"
-    print(f"Connect: http://{ts_ip}:{PORT}  (direct HTTP)")
+    print(f"Connect: {direct_url(port, info)}")
     return 0
 
 
@@ -448,18 +543,25 @@ def main() -> None:
     )
     sub = parser.add_subparsers(dest="cmd")
 
-    p_setup = sub.add_parser("setup", help="One-time setup: verify install, configure tailscale serve")
+    # Shared --port, attached to every subcommand that has to know which
+    # listener it is acting on.
+    port_opts = argparse.ArgumentParser(add_help=False)
+    port_opts.add_argument("--port", type=int, metavar="PORT",
+                           help=f"TCP port (default: {DEFAULT_PORT}, or ${PORT_ENV})")
+
+    p_setup = sub.add_parser("setup", parents=[port_opts],
+                             help="One-time setup: verify install, configure tailscale serve")
     p_setup.add_argument("--quiet", action="store_true", help="Suppress next-steps output")
 
-    sub.add_parser("start",        help="Start daemon via tailscale serve (HTTPS — default)")
-    sub.add_parser("serve",        help=argparse.SUPPRESS)   # alias
-    sub.add_parser("start-local",  help="Start daemon loopback-only for SSH tunnel access")
-    sub.add_parser("start-direct", help="Start daemon direct HTTPS (self-signed cert, no Tailscale)")
-    sub.add_parser("stop",         help="Stop daemon (tailscale serve config persists)")
-    sub.add_parser("restart",      help="Restart daemon")
-    sub.add_parser("status",       help="Show running status and URL")
+    sub.add_parser("start",        parents=[port_opts], help="Start daemon via tailscale serve (HTTPS — default)")
+    sub.add_parser("serve",        parents=[port_opts], help=argparse.SUPPRESS)   # alias
+    sub.add_parser("start-local",  parents=[port_opts], help="Start daemon loopback-only for SSH tunnel access")
+    sub.add_parser("start-direct", parents=[port_opts], help="Start daemon direct HTTPS (self-signed cert, no Tailscale)")
+    sub.add_parser("stop",         parents=[port_opts], help="Stop daemon (tailscale serve config persists)")
+    sub.add_parser("restart",      parents=[port_opts], help="Restart daemon")
+    sub.add_parser("status",       parents=[port_opts], help="Show running status and URL")
     sub.add_parser("log",          help="Tail the log file")
-    sub.add_parser("enable",       help="Start daemon and install login hook for automatic start")
+    sub.add_parser("enable",       parents=[port_opts], help="Start daemon and install login hook for automatic start")
     sub.add_parser("disable",      help="Stop daemon and remove login hook")
     sub.add_parser("pair",         help="Generate a one-time pairing code for a new device")
     sub.add_parser("unpair",       help="List paired devices and revoke tokens")
@@ -471,27 +573,31 @@ def main() -> None:
         sys.exit(0 if args.cmd == "help" else 1)
 
     cmd = args.cmd
+    # Resolve once: restart must reuse the running daemon's port after stopping
+    # it, by which point the daemon can no longer be asked.
+    port = resolve_port(args.port) if hasattr(args, "port") else DEFAULT_PORT
+
     if cmd == "setup":
-        sys.exit(cmd_setup(quiet=args.quiet))
+        sys.exit(cmd_setup(quiet=args.quiet, port=port))
     elif cmd in ("start", "serve"):
-        sys.exit(cmd_start("serve"))
+        sys.exit(cmd_start("serve", port))
     elif cmd == "start-local":
-        sys.exit(cmd_start("start-local"))
+        sys.exit(cmd_start("start-local", port))
     elif cmd == "start-direct":
-        sys.exit(cmd_start("start-direct"))
+        sys.exit(cmd_start("start-direct", port))
     elif cmd == "stop":
-        sys.exit(cmd_stop())
+        sys.exit(cmd_stop(port))
     elif cmd == "restart":
-        cmd_stop()
+        cmd_stop(port)
         time.sleep(0.5)
-        sys.exit(cmd_start("serve"))
+        sys.exit(cmd_start("serve", port))
     elif cmd == "status":
-        sys.exit(cmd_status())
+        sys.exit(cmd_status(port))
     elif cmd == "log":
         sys.exit(cmd_log())
     elif cmd == "enable":
         from trustmux._enable import main as _run_enable
-        _run_enable()
+        _run_enable(port)
     elif cmd == "disable":
         from trustmux._disable import main as _run_disable
         _run_disable()

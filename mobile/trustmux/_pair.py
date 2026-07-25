@@ -9,7 +9,7 @@ import termios
 import tty
 from pathlib import Path
 
-from trustmux._ctl import warn_if_peer_blocked
+from trustmux._ctl import daemon_info, direct_url, resolve_port, warn_if_peer_blocked
 
 SOCK = Path.home() / ".config" / "trustmux" / "trustmux.sock"
 
@@ -60,16 +60,22 @@ def _ts_url() -> str:
     return ""
 
 
-def _direct_url(port: int = 7432) -> str:
-    """Return a best-effort LAN URL when Tailscale is unavailable."""
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
-        s.close()
-        return f"https://{ip}:{port}/"
-    except Exception:
-        return f"https://localhost:{port}/"
+def _pair_url() -> str:
+    """Return the URL a phone should open to reach this daemon.
+
+    `tailscale serve` fronts the daemon only in the default start mode, which
+    the daemon reports as a loopback bind with an https scheme.  In start-local
+    and start-direct the tailnet name does not answer, so use the daemon's own
+    address and port instead.
+    """
+    info = daemon_info() or {}
+    served = info.get("host") in ("127.0.0.1", "localhost", "::1") \
+        and info.get("scheme") == "https"
+    if served or not info:
+        ts = _ts_url()
+        if ts:
+            return ts
+    return direct_url(resolve_port(), info)
 
 
 def _print_qr(url: str) -> None:
@@ -116,7 +122,7 @@ def main():
         sys.exit(1)
     code = data["code"]
     mins = data["expires_in"] // 60
-    url = _ts_url() or _direct_url()
+    url = _pair_url()
 
     pair_url = f"{url}#{code.replace('-', '')}"
     bar = "═" * 52

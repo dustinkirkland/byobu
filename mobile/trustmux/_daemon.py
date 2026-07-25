@@ -61,6 +61,7 @@ _TOKEN_EXPIRY_DAYS: int = 90          # sessions expire after 90 days of inactiv
 _sessions: dict[str, dict] = {}      # token → {ip, paired_at, label, last_used}
 _ws_clients: dict[str, set] = {}     # token → set[WsHandler] — closed on unpair
 _https_mode: bool = False             # set by --https; enables Secure cookie
+_listen: dict = {}                    # bound host/port/scheme, served by admin "info"
 
 CONFIG_DIR    = Path.home() / ".config" / "trustmux"
 TOKENS_FILE   = CONFIG_DIR / "tokens.json"
@@ -1073,10 +1074,20 @@ async def _handle_admin(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
     try:
         action = cmd.get("action", "")
 
-        if action == "pair_generate":
+        if action == "info":
+            # Lets `trustmux stop/status/pair` discover the live listener
+            # instead of assuming the default port.
+            resp: object = {
+                "pid":    os.getpid(),
+                "host":   _listen.get("host", ""),
+                "port":   _listen.get("port", 0),
+                "scheme": _listen.get("scheme", ""),
+            }
+
+        elif action == "pair_generate":
             code = _generate_pair_code()
             _print_pair_code()
-            resp: object = {"code": f"{code[:3]}-{code[3:]}", "expires_in": _PAIR_CODE_TTL}
+            resp = {"code": f"{code[:3]}-{code[3:]}", "expires_in": _PAIR_CODE_TTL}
 
         elif action == "sessions_list":
             resp = [
@@ -1231,8 +1242,15 @@ def _ensure_self_signed_cert(lan_ip: str) -> tuple:
 
 
 async def _amain(host: str, port: int, https: bool, ssl_ctx=None) -> None:
-    global _https_mode
+    global _https_mode, _listen
     _https_mode = https or ssl_ctx is not None
+    _listen = {
+        "host":   host,
+        "port":   port,
+        # --https means tailscale serve terminates TLS in front of us, so the
+        # URL a client uses is https even though this socket is plain HTTP.
+        "scheme": "https" if _https_mode else "http",
+    }
     app = _make_app()
     # xheaders=True: trust X-Forwarded-For/Proto from tailscale serve proxy.
     # Only set in --https mode; in direct mode leave False to prevent spoofing.
