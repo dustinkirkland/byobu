@@ -82,7 +82,14 @@ def daemon_info() -> dict | None:
         return None
     try:
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
-            s.settimeout(5)
+            # This is a local IPC round trip to a process on the same
+            # machine, not a network call -- a healthy daemon answers in low
+            # milliseconds. Several call paths now consult this (resolve_port,
+            # direct_url, and _pid()'s lsof-unavailable fallback), so a
+            # generous timeout here means an unresponsive-but-alive daemon
+            # turns ordinary commands into a multi-second hang instead of an
+            # instant response.
+            s.settimeout(1.5)
             s.connect(str(ADMIN_SOCK))
             s.sendall(b'{"action": "info"}\n')
             s.shutdown(socket.SHUT_WR)
@@ -172,23 +179,39 @@ def _ensure_dir() -> None:
 
 
 def _pid(port: int = DEFAULT_PORT) -> int | None:
-    """Return PID of process listening on port, or None."""
+    """Return the PID of the trustmux daemon listening on `port`, or None.
+
+    lsof directly observes what is bound to `port`; when it can run, its
+    answer -- found or not -- is authoritative and final. Only when lsof
+    itself is unusable (e.g. not installed) does this fall back to asking
+    the running daemon what port *it* is bound to over the admin socket,
+    which is still port-scoped and authoritative since it is self-reported
+    by the live process rather than inferred.
+
+    There is deliberately no further fallback to "PIDFILE's pid is alive,"
+    which cannot say anything about *which* port that pid owns: with a
+    single global PORT constant (pre-multi-port) that was an adequate proxy
+    for "is trustmux running," but once callers can ask about an arbitrary
+    port, trusting it blindly means a query for a port nothing is listening
+    on can return some *other*, unrelated daemon's pid -- which previously
+    let `trustmux stop --port <port nothing is on>` kill the wrong daemon.
+    """
     try:
         out = subprocess.check_output(
             ["lsof", f"-ti:{port}"], stderr=subprocess.DEVNULL, text=True
         ).strip()
-        if out:
-            return int(out.splitlines()[0])
-    except (FileNotFoundError, subprocess.CalledProcessError, ValueError):
-        pass
-    # Fallback: check PIDFILE
-    if PIDFILE.exists():
-        try:
-            pid = int(PIDFILE.read_text().strip())
-            os.kill(pid, 0)
+        return int(out.splitlines()[0]) if out else None
+    except subprocess.CalledProcessError:
+        # lsof ran fine and found nothing bound to this port -- definitive.
+        return None
+    except (FileNotFoundError, ValueError):
+        pass  # lsof unusable; fall through to the daemon's own account.
+
+    info = daemon_info()
+    if info and _valid_port(info.get("port")) == port:
+        pid = info.get("pid")
+        if isinstance(pid, int) and pid > 0:
             return pid
-        except (ValueError, ProcessLookupError, PermissionError, OSError):
-            pass
     return None
 
 
@@ -456,7 +479,16 @@ def cmd_stop(port: int | None = None) -> int:
     p = _pid(port)
     if not p:
         print("trustmux not running")
-        PIDFILE.unlink(missing_ok=True)
+        # "Nothing found on *this* port" does not mean PIDFILE is globally
+        # stale -- it may correctly be tracking a different, still-alive
+        # daemon on another port. Only clean it up when its own recorded pid
+        # is actually dead, same condition that made it stale pre-multi-port.
+        if PIDFILE.exists():
+            try:
+                file_pid = int(PIDFILE.read_text().strip())
+                os.kill(file_pid, 0)
+            except (ValueError, ProcessLookupError, PermissionError, OSError):
+                PIDFILE.unlink(missing_ok=True)
         return 0
 
     if PIDFILE.exists():

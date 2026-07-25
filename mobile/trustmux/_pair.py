@@ -9,7 +9,7 @@ import termios
 import tty
 from pathlib import Path
 
-from trustmux._ctl import daemon_info, direct_url, resolve_port, warn_if_peer_blocked
+from trustmux._ctl import DEFAULT_PORT, daemon_info, direct_url, resolve_port, warn_if_peer_blocked
 
 SOCK = Path.home() / ".config" / "trustmux" / "trustmux.sock"
 
@@ -75,7 +75,12 @@ def _pair_url() -> str:
         ts = _ts_url()
         if ts:
             return ts
-    return direct_url(resolve_port(), info)
+    # direct_url() prefers info's own port when present, so resolve_port()'s
+    # (possibly daemon-querying) fallback is only actually needed when info
+    # has none -- avoids a second, redundant admin-socket round trip in the
+    # common case where info was already fetched above.
+    port = DEFAULT_PORT if info else resolve_port()
+    return direct_url(port, info)
 
 
 def _print_qr(url: str) -> None:

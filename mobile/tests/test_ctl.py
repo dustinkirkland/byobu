@@ -37,14 +37,80 @@ def tearDownModule():
 # ---------------------------------------------------------------------------
 
 class TestPid(unittest.TestCase):
+    """lsof's answer (found or not-found) is trusted outright and is final --
+    it directly observes what owns the requested port. The only fallback is
+    asking the running daemon what port *it* is on, which is used solely
+    when lsof itself cannot run at all, and only trusted when the daemon's
+    reported port matches the one actually being asked about.
+
+    There must be no fallback that can return a pid without confirming it
+    owns the *requested* port: that is what let a stale/unrelated PIDFILE
+    entry cause `_pid(port)` to return a different daemon's pid for a port
+    nothing was listening on, and in turn let `trustmux stop --port <wrong>`
+    kill the wrong daemon (see TestPidCrossPortRegression below)."""
 
     def test_lsof_returns_pid(self):
         with patch('trustmux._ctl.subprocess.check_output', return_value='1234\n'):
-            self.assertEqual(ctl._pid(), 1234)
+            self.assertEqual(ctl._pid(3389), 1234)
 
     def test_lsof_multiple_lines_uses_first(self):
         with patch('trustmux._ctl.subprocess.check_output', return_value='1234\n5678\n'):
-            self.assertEqual(ctl._pid(), 1234)
+            self.assertEqual(ctl._pid(3389), 1234)
+
+    def test_lsof_empty_output_is_definitive_none(self):
+        # lsof ran fine, found nothing: no fallback, no daemon_info() call.
+        with patch('trustmux._ctl.subprocess.check_output', return_value=''):
+            with patch('trustmux._ctl.daemon_info') as mock_info:
+                self.assertIsNone(ctl._pid(3389))
+        mock_info.assert_not_called()
+
+    def test_lsof_called_process_error_is_definitive_none(self):
+        # The real, common case: lsof -ti:<port> exits non-zero when nothing
+        # matches. Must NOT fall through to a port-blind fallback.
+        import subprocess
+        with patch('trustmux._ctl.subprocess.check_output',
+                   side_effect=subprocess.CalledProcessError(1, 'lsof')):
+            with patch('trustmux._ctl.daemon_info') as mock_info:
+                self.assertIsNone(ctl._pid(3389))
+        mock_info.assert_not_called()
+
+    def test_lsof_missing_falls_back_to_daemon_info_matching_port(self):
+        with patch('trustmux._ctl.subprocess.check_output',
+                   side_effect=FileNotFoundError):
+            with patch('trustmux._ctl.daemon_info',
+                       return_value={'pid': 4321, 'port': 3389}):
+                self.assertEqual(ctl._pid(3389), 4321)
+
+    def test_lsof_missing_and_daemon_info_reports_different_port(self):
+        # The exact regression this class exists to prevent: a live daemon
+        # on some OTHER port must never be returned for the requested one.
+        with patch('trustmux._ctl.subprocess.check_output',
+                   side_effect=FileNotFoundError):
+            with patch('trustmux._ctl.daemon_info',
+                       return_value={'pid': 4321, 'port': 7432}):
+                self.assertIsNone(ctl._pid(3389))
+
+    def test_lsof_missing_and_no_daemon_answers(self):
+        with patch('trustmux._ctl.subprocess.check_output',
+                   side_effect=FileNotFoundError):
+            with patch('trustmux._ctl.daemon_info', return_value=None):
+                self.assertIsNone(ctl._pid(3389))
+
+    def test_lsof_missing_and_daemon_info_reports_junk_pid(self):
+        with patch('trustmux._ctl.subprocess.check_output',
+                   side_effect=FileNotFoundError):
+            with patch('trustmux._ctl.daemon_info',
+                       return_value={'pid': 'not-a-pid', 'port': 3389}):
+                self.assertIsNone(ctl._pid(3389))
+
+
+# ---------------------------------------------------------------------------
+# Regression: _pid(port) must never return an unrelated daemon's pid for a
+# port nothing is listening on (verified live: this previously let
+# `trustmux stop --port <unrelated port>` kill an unrelated running daemon).
+# ---------------------------------------------------------------------------
+
+class TestPidCrossPortRegression(unittest.TestCase):
 
     def _mock_pidfile(self, exists=False, content=''):
         m = MagicMock()
@@ -52,43 +118,35 @@ class TestPid(unittest.TestCase):
         m.read_text.return_value = content
         return m
 
-    def test_lsof_empty_output_falls_back_to_pidfile(self):
-        with patch('trustmux._ctl.subprocess.check_output', return_value=''):
-            with patch('trustmux._ctl.PIDFILE', self._mock_pidfile(exists=False)):
-                self.assertIsNone(ctl._pid())
-
-    def test_lsof_not_found_falls_back_to_pidfile(self):
+    def test_stop_on_unrelated_port_does_not_kill_the_real_daemon(self):
+        import subprocess as sp
+        # Real daemon is on 3389 (PIDFILE reflects it, and is genuinely
+        # alive); lsof is queried for 4444, where nothing listens, and
+        # genuinely finds nothing. Must never send SIGTERM to the pid
+        # PIDFILE names -- only cmd_stop's own liveness *probe* (signal 0,
+        # harmless) is expected, to decide whether to also clean PIDFILE up.
         with patch('trustmux._ctl.subprocess.check_output',
-                   side_effect=FileNotFoundError):
-            with patch('trustmux._ctl.PIDFILE', self._mock_pidfile(exists=False)):
-                self.assertIsNone(ctl._pid())
+                   side_effect=sp.CalledProcessError(1, 'lsof')):
+            with patch('trustmux._ctl.daemon_info', return_value=None):
+                with patch('trustmux._ctl.PIDFILE',
+                           self._mock_pidfile(exists=True, content='3141\n')):
+                    with patch('trustmux._ctl.os.kill', return_value=None) as mock_kill:
+                        with patch('builtins.print'):
+                            result = ctl.cmd_stop(4444)
+        mock_kill.assert_called_once_with(3141, 0)  # liveness probe only
+        self.assertNotIn(call(3141, signal.SIGTERM), mock_kill.call_args_list)
+        self.assertEqual(result, 0)
 
-    def test_pidfile_fallback_live_process(self):
-        import subprocess
+    def test_start_on_unrelated_port_is_not_falsely_refused(self):
+        import subprocess as sp
         with patch('trustmux._ctl.subprocess.check_output',
-                   side_effect=subprocess.CalledProcessError(1, 'lsof')):
-            with patch('trustmux._ctl.PIDFILE',
-                       self._mock_pidfile(exists=True, content='9999\n')):
-                with patch('trustmux._ctl.os.kill', return_value=None):
-                    self.assertEqual(ctl._pid(), 9999)
-
-    def test_pidfile_fallback_dead_process(self):
-        import subprocess
-        with patch('trustmux._ctl.subprocess.check_output',
-                   side_effect=subprocess.CalledProcessError(1, 'lsof')):
-            with patch('trustmux._ctl.PIDFILE',
-                       self._mock_pidfile(exists=True, content='9999\n')):
-                with patch('trustmux._ctl.os.kill',
-                           side_effect=ProcessLookupError):
-                    self.assertIsNone(ctl._pid())
-
-    def test_pidfile_fallback_invalid_content(self):
-        import subprocess
-        with patch('trustmux._ctl.subprocess.check_output',
-                   side_effect=subprocess.CalledProcessError(1, 'lsof')):
-            with patch('trustmux._ctl.PIDFILE',
-                       self._mock_pidfile(exists=True, content='not-a-pid\n')):
-                self.assertIsNone(ctl._pid())
+                   side_effect=sp.CalledProcessError(1, 'lsof')):
+            with patch('trustmux._ctl.daemon_info', return_value=None):
+                with patch('trustmux._ctl._launch', return_value=1234) as mock_launch:
+                    with patch('builtins.print'):
+                        result = ctl.cmd_start('start-local', 4444)
+        mock_launch.assert_called_once()
+        self.assertEqual(result, 0)
 
 
 # ---------------------------------------------------------------------------
@@ -383,6 +441,31 @@ class TestCmdStop(unittest.TestCase):
                     result = ctl.cmd_stop()
         self.assertEqual(result, 0)
         mock_kill.assert_called_once_with(4321, signal.SIGTERM)
+
+    def test_not_found_on_this_port_preserves_pidfile_of_live_other_daemon(self):
+        # Nothing is on the requested port, but PIDFILE tracks a genuinely
+        # alive daemon on some other port -- must not be deleted just
+        # because the wrong port was asked about (regression: previously
+        # unconditional, which threw away bookkeeping for a live daemon).
+        pidfile = self._mock_pidfile(exists=True, content='4321')
+        with patch('trustmux._ctl._pid', return_value=None):
+            with patch('trustmux._ctl.PIDFILE', pidfile):
+                with patch('trustmux._ctl.os.kill', return_value=None) as mock_kill:
+                    result = ctl.cmd_stop(4444)
+        self.assertEqual(result, 0)
+        mock_kill.assert_called_once_with(4321, 0)  # liveness probe, not a real kill
+        pidfile.unlink.assert_not_called()
+
+    def test_not_found_on_this_port_cleans_up_genuinely_dead_pidfile(self):
+        # Same "not found" case, but PIDFILE's own pid is dead: this is the
+        # genuinely-stale case, and should still be cleaned up as before.
+        pidfile = self._mock_pidfile(exists=True, content='4321')
+        with patch('trustmux._ctl._pid', return_value=None):
+            with patch('trustmux._ctl.PIDFILE', pidfile):
+                with patch('trustmux._ctl.os.kill', side_effect=ProcessLookupError):
+                    result = ctl.cmd_stop(4444)
+        self.assertEqual(result, 0)
+        pidfile.unlink.assert_called_once_with(missing_ok=True)
 
 
 # ---------------------------------------------------------------------------
