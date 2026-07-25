@@ -1,4 +1,5 @@
 # bash completion for trustmux(1)
+
 _trustmux() {
     local cur prev words cword
     _init_completion || return

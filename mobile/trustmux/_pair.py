@@ -9,18 +9,19 @@ import termios
 import tty
 from pathlib import Path
 
-from trustmux._ctl import DEFAULT_PORT, daemon_info, direct_url, resolve_port, warn_if_peer_blocked
+from trustmux._ctl import (DEFAULT_PORT, Instance, daemon_info, direct_url,
+                           resolve_port, warn_if_peer_blocked)
 
-SOCK = Path.home() / ".config" / "trustmux" / "trustmux.sock"
 
 
-def admin(cmd: dict) -> object:
-    if not SOCK.exists():
+def admin(cmd: dict, inst: Instance | None = None) -> object:
+    inst = inst or Instance()
+    if not inst.sock.exists():
         print("Error: Trustmux daemon not running (socket not found)", file=sys.stderr)
         sys.exit(1)
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
         try:
-            s.connect(str(SOCK))
+            s.connect(str(inst.sock))
         except OSError as e:
             print(f"Error: cannot connect to Trustmux daemon: {e}", file=sys.stderr)
             sys.exit(1)
@@ -60,7 +61,7 @@ def _ts_url() -> str:
     return ""
 
 
-def _pair_url() -> str:
+def _pair_url(inst: Instance | None = None) -> str:
     """Return the URL a phone should open to reach this daemon.
 
     `tailscale serve` fronts the daemon only in the default start mode, which
@@ -68,7 +69,8 @@ def _pair_url() -> str:
     and start-direct the tailnet name does not answer, so use the daemon's own
     address and port instead.
     """
-    info = daemon_info() or {}
+    inst = inst or Instance()
+    info = daemon_info(inst) or {}
     served = info.get("host") in ("127.0.0.1", "localhost", "::1") \
         and info.get("scheme") == "https"
     if served or not info:
@@ -79,7 +81,7 @@ def _pair_url() -> str:
     # (possibly daemon-querying) fallback is only actually needed when info
     # has none -- avoids a second, redundant admin-socket round trip in the
     # common case where info was already fetched above.
-    port = DEFAULT_PORT if info else resolve_port()
+    port = DEFAULT_PORT if info else resolve_port(inst=inst)
     return direct_url(port, info)
 
 
@@ -120,14 +122,15 @@ def _wait_and_clear() -> None:
     print("\033[2J\033[H", end="", flush=True)
 
 
-def main():
-    data = admin({"action": "pair_generate"})
+def main(inst: Instance | None = None):
+    inst = inst or Instance()
+    data = admin({"action": "pair_generate"}, inst)
     if not isinstance(data, dict) or "error" in data:
         print(f"Error: {data.get('error', data)}", file=sys.stderr)
         sys.exit(1)
     code = data["code"]
     mins = data["expires_in"] // 60
-    url = _pair_url()
+    url = _pair_url(inst)
 
     pair_url = f"{url}#{code.replace('-', '')}"
     bar = "═" * 52

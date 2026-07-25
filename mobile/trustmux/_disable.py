@@ -4,6 +4,7 @@ from pathlib import Path
 
 from trustmux._ctl import cmd_stop
 from trustmux._enable import is_hook_line
+from trustmux._paths import Instance
 
 _LOGIN_FILES = [
     Path.home() / ".profile",
@@ -22,16 +23,17 @@ def _remove_hook(dest: Path) -> None:
         dest.write_text("".join(filtered))
 
 
-def main() -> None:
+def main(inst: Instance | None = None) -> None:
+    inst = inst or Instance()
     for f in _LOGIN_FILES:
         _remove_hook(f)
 
-    cmd_stop()
+    cmd_stop(inst=inst)
 
     print()
     print("Trustmux daemon stopped. It will no longer start automatically at login.")
     print()
-    print("Paired device tokens are preserved in ~/.config/trustmux/tokens.json.")
+    print(f"Paired device tokens are preserved in {inst.tokens_file}.")
     print()
     print("To re-enable later, run:")
     print("  trustmux enable")

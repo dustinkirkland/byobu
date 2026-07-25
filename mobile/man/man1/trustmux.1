@@ -48,8 +48,8 @@ Stop then start the daemon in HTTPS mode.
 Show whether the daemon is running and the URL to connect to.
 .TP
 .B log
-Tail the daemon log at
-.IR ~/.config/trustmux/trustmux.log .
+Tail the daemon log (see
+.BR FILES ).
 .SS "Login hook"
 .TP
 .B enable
@@ -121,25 +121,87 @@ Default port when
 .B \-\-port
 is not given, for users who always want a different port.
 An out-of-range or non-numeric value is an error, not a silent fallback.
+.TP
+.B TRUSTMUX_CONFIG_DIR
+.TQ
+.B TRUSTMUX_STATE_DIR
+Override the configuration and state base directories individually.
+Each takes precedence over the corresponding XDG variable.
+Pointing both at a scratch directory is the supported way to run a throwaway
+daemon — from a development tree, for instance — without touching the real
+one.
 .SH FILES
+Files live in the XDG base directories:
+.I $XDG_CONFIG_HOME
+(default
+.IR ~/.config )
+holds the one file the user writes by hand, and
+.I $XDG_STATE_HOME
+(default
+.IR ~/.local/state )
+holds everything the daemon owns.
+.SS Configuration
 .TP
-.I ~/.config/trustmux/trustmux.log
-Daemon log file.
+.I $XDG_CONFIG_HOME/trustmux/machines.json
+Optional: sibling machine list for the in-app machine selector.
+The only user-authored file here.
+.SS State
 .TP
-.I ~/.config/trustmux/trustmux.pid
-PID file written at daemon startup.
-.TP
-.I ~/.config/trustmux/trustmux.sock
-Admin Unix socket used by
-.B pair
-and
-.BR unpair .
-.TP
-.I ~/.config/trustmux/tokens.json
+.I $XDG_STATE_HOME/trustmux/instances/default/tokens.json
 Paired device session tokens (mode 0600).
 .TP
-.I ~/.config/trustmux/machines.json
-Optional: sibling machine list for the in-app machine selector.
+.I $XDG_STATE_HOME/trustmux/instances/default/cert.pem
+.TQ
+.I $XDG_STATE_HOME/trustmux/instances/default/key.pem
+Self-signed TLS keypair used by
+.BR start\-direct .
+.TP
+.I $XDG_STATE_HOME/trustmux/instances/default/trustmux.log
+Daemon log file, tailed by
+.BR "trustmux log" .
+.TP
+.I $XDG_STATE_HOME/trustmux/instances/default/trustmux.sock
+Admin Unix socket (mode 0600) used by
+.BR pair ,
+.B unpair
+and by
+.B stop
+and
+.B status
+to ask the daemon which port it is on.
+.TP
+.I $XDG_STATE_HOME/trustmux/instances/default/trustmux.pid
+PID file written at daemon startup.
+.PP
+The socket and pid file are deliberately kept here rather than under
+.IR $XDG_RUNTIME_DIR ,
+where the spec would put them: systemd-logind deletes
+.I /run/user/$UID
+when a user's last login session ends unless
+.B loginctl enable-linger
+is set, which would strand a still-running daemon with no socket to reach it
+by — and trustmux exists precisely to be started and then reached later.
+That directory also does not exist on macOS or in most containers.
+A socket or pid file left behind by a killed daemon is therefore detected
+rather than swept away: the socket refuses connections once its daemon is
+gone, and a recorded pid is only believed when it is confirmed to hold the
+port in question.
+.SS Migration
+Earlier versions kept everything directly in
+.IR ~/.config/trustmux .
+On first run,
+.IR tokens.json ,
+.IR cert.pem ,
+.I key.pem
+and
+.I trustmux.log
+are moved from there into the state directory above, preserving their modes.
+Any stale
+.I trustmux.pid
+and
+.I trustmux.sock
+are deliberately left in place, since a daemon predating the upgrade may still
+be serving on that socket.
 .SH EXAMPLES
 Typical first-time setup:
 .PP
@@ -171,6 +233,16 @@ trustmux pair
 trustmux stop
 .fi
 .RE
+.PP
+A throwaway daemon that touches none of the above:
+.PP
+.RS
+.nf
+export TRUSTMUX_CONFIG_DIR=$(mktemp \-d)
+export TRUSTMUX_STATE_DIR=$TRUSTMUX_CONFIG_DIR/state
+trustmux start\-local \-\-port 3389
+.fi
+.RE
 .SH SECURITY
 .SS "Pairing code"
 The one-time pairing code is a 6-digit decimal value drawn from
@@ -190,8 +262,10 @@ An incorrect guess also incurs a 0.5-second artificial delay.
 After a successful pairing the daemon issues a 256-bit URL-safe session token
 .RB ( secrets.token_urlsafe (32))
 stored in
-.I ~/.config/trustmux/tokens.json
-(mode 0600) and delivered to the browser as an
+.I tokens.json
+(mode 0600; see
+.BR FILES )
+and delivered to the browser as an
 .BR httponly ,
 .B SameSite=Strict
 cookie.
