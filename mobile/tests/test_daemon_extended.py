@@ -80,7 +80,7 @@ class TestStaleSocket(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 class TestSetInstance(unittest.TestCase):
-    """--instance repoints every path the daemon owns."""
+    """--name repoints every path the daemon owns."""
 
     def setUp(self):
         self._orig = (bm.INSTANCE, bm.STATE_DIR, bm.TOKENS_FILE,

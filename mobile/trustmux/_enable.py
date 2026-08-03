@@ -19,7 +19,7 @@ if "zsh" in os.environ.get("SHELL", ""):
 
 
 def hook_line(port: int = DEFAULT_PORT, inst: Instance | None = None) -> str:
-    """Login hook to install. Only carries --instance/--port when they are not
+    """Login hook to install. Only carries --name/--port when they are not
     the defaults, so profiles written by older versions stay byte-identical."""
     inst = inst or Instance()
     return f"trustmux start{inst.label()}{port_opt(port)} 2>/dev/null || true\n"
@@ -28,6 +28,13 @@ def hook_line(port: int = DEFAULT_PORT, inst: Instance | None = None) -> str:
 def is_hook_line(line: str) -> bool:
     """True for a trustmux login hook in any version's format."""
     return "trustmux-ctl" in line or ("trustmux start" in line and "2>/dev/null" in line)
+
+
+# The flag that names an instance was called --instance before it was --name.
+# Hooks live in ~/.profile and are not rewritten on upgrade, so a hook written
+# by the older spelling has to stay recognisable or `disable`/`rm` would leave
+# it behind to resurrect an instance that no longer exists.
+_NAME_FLAGS = ("--name", "--instance")
 
 
 def is_hook_for(line: str, inst: Instance | None = None) -> bool:
@@ -39,10 +46,11 @@ def is_hook_for(line: str, inst: Instance | None = None) -> bool:
     inst = inst or Instance()
     if not is_hook_line(line):
         return False
-    if f"--instance {inst.name}" in line:
+    if any(f"{flag} {inst.name}" in line for flag in _NAME_FLAGS):
         return True
-    # A hook with no --instance is the default instance's.
-    return inst.name == Instance().name and "--instance" not in line
+    # A hook that names no instance is the default instance's.
+    return (inst.name == Instance().name
+            and not any(flag in line for flag in _NAME_FLAGS))
 
 
 def _install_hook(dest: Path, hook: str = _HOOK, inst: Instance | None = None) -> None:

@@ -1145,7 +1145,7 @@ class TestLaunchPort(unittest.TestCase):
     def test_passes_instance_to_daemon(self):
         mock_popen = self._launch(3389, self.inst)
         argv = mock_popen.call_args[0][0]
-        self.assertEqual(argv[argv.index('--instance') + 1], 'launchtest')
+        self.assertEqual(argv[argv.index('--name') + 1], 'launchtest')
 
     def test_writes_pid_to_this_instance(self):
         self._launch(3389, self.inst)
@@ -1539,7 +1539,17 @@ class TestPerInstanceHooks(unittest.TestCase):
     def test_hook_line_carries_instance_and_port(self):
         line = enable.hook_line(3389, ctl.Instance('work'))
         self.assertEqual(line,
-                         'trustmux start --instance work --port 3389 2>/dev/null || true\n')
+                         'trustmux start --name work --port 3389 2>/dev/null || true\n')
+
+    def test_a_hook_written_as_dash_dash_instance_is_still_recognised(self):
+        # The flag was --instance before it was --name. Hooks sit in
+        # ~/.profile and are not rewritten on upgrade, so an old-spelling hook
+        # must still be matched or disable/rm would leave it behind to start
+        # an instance that has been deleted.
+        old = 'trustmux start --instance work --port 3389 2>/dev/null || true\n'
+        self.assertTrue(enable.is_hook_for(old, ctl.Instance('work')))
+        self.assertFalse(enable.is_hook_for(old, ctl.Instance()))
+        self.assertFalse(enable.is_hook_for(old, ctl.Instance('other')))
 
     def test_default_instance_keeps_the_legacy_line(self):
         self.assertEqual(enable.hook_line(ctl.DEFAULT_PORT, ctl.Instance()), enable._HOOK)
@@ -1551,7 +1561,7 @@ class TestPerInstanceHooks(unittest.TestCase):
                              ctl.Instance('work'))
         text = p.read_text()
         self.assertEqual(text.count('trustmux start'), 2)
-        self.assertIn('--instance work', text)
+        self.assertIn('--name work', text)
 
     def test_reenabling_one_instance_rewrites_only_its_line(self):
         p = self._profile('')
@@ -1572,7 +1582,7 @@ class TestPerInstanceHooks(unittest.TestCase):
                              ctl.Instance('work'))
         disable._remove_hook(p, ctl.Instance('work'))
         text = p.read_text()
-        self.assertNotIn('--instance work', text)
+        self.assertNotIn('--name work', text)
         self.assertIn('trustmux start 2>/dev/null', text)
 
     def test_disabling_default_leaves_named_instances(self):
@@ -1582,7 +1592,7 @@ class TestPerInstanceHooks(unittest.TestCase):
                              ctl.Instance('work'))
         disable._remove_hook(p, ctl.Instance())
         text = p.read_text()
-        self.assertIn('--instance work', text)
+        self.assertIn('--name work', text)
         self.assertNotIn('trustmux start 2>/dev/null', text)
 
 
@@ -1610,8 +1620,8 @@ class TestServeModeGuard(unittest.TestCase):
         self.assertIn('work', msg)
         self.assertIn('443', msg)
         # Points at the modes that actually work for a second instance.
-        self.assertIn('start-direct --instance work', msg)
-        self.assertIn('start-local --instance work', msg)
+        self.assertIn('start-direct --name work', msg)
+        self.assertIn('start-local --name work', msg)
 
     def test_cmd_start_serve_refuses_named_instance(self):
         with patch('trustmux._ctl._launch') as mock_launch:
@@ -1650,7 +1660,7 @@ class TestServeModeGuard(unittest.TestCase):
         # start step would leave a running named instance stopped.
         with patch('trustmux._ctl._refuse_root'), \
              patch('trustmux._ctl.sys.argv',
-                   ['trustmux', 'restart', '--instance', 'work']), \
+                   ['trustmux', 'restart', '--name', 'work']), \
              patch('trustmux._ctl.cmd_stop') as mock_stop, \
              patch('trustmux._ctl.cmd_start') as mock_start, \
              patch('trustmux._ctl.sys.stderr', self._stderr()):

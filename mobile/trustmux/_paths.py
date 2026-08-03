@@ -105,8 +105,8 @@ class Instance:
         return self.state / "trustmux.pid"
 
     def label(self) -> str:
-        """' --instance NAME' for non-default instances, for printed hints."""
-        return "" if self.name == DEFAULT_INSTANCE else f" --instance {self.name}"
+        """' --name NAME' for non-default instances, for printed hints."""
+        return "" if self.name == DEFAULT_INSTANCE else f" --name {self.name}"
 
     def ensure_dirs(self) -> None:
         self.state.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -115,8 +115,8 @@ class Instance:
 
 
 def resolve_instance(explicit: str | None = None) -> Instance:
-    """--instance, then $TRUSTMUX_INSTANCE, then 'default'. Exits 2 if invalid."""
-    # An explicitly empty --instance is an error, not a silent fall-through;
+    """--name, then $TRUSTMUX_INSTANCE, then 'default'. Exits 2 if invalid."""
+    # An explicitly empty --name is an error, not a silent fall-through;
     # a blank environment variable is treated as unset.
     if explicit is None:
         name = os.environ.get(INSTANCE_ENV, "").strip() or DEFAULT_INSTANCE

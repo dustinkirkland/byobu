@@ -68,7 +68,7 @@ _ws_clients: dict[str, set] = {}     # token → set[WsHandler] — closed on un
 _https_mode: bool = False             # set by --https; enables Secure cookie
 _listen: dict = {}                    # bound host/port/scheme, served by admin "info"
 
-# Which instance's files this daemon owns; repointed by --instance.
+# Which instance's files this daemon owns; repointed by --name.
 INSTANCE      = Instance()
 STATE_DIR     = INSTANCE.state
 TOKENS_FILE   = INSTANCE.tokens_file
@@ -1338,7 +1338,7 @@ def main():
                         help="HTTPS mode: Secure cookie + trust proxy headers (use with tailscale serve)")
     parser.add_argument("--self-signed", action="store_true",
                         help="Generate a self-signed TLS cert for direct HTTPS without Tailscale")
-    parser.add_argument("--instance", metavar="NAME", default=None,
+    parser.add_argument("--name", metavar="NAME", default=None,
                         help="Instance whose state and runtime files to use "
                              "(default: default)")
 
@@ -1352,7 +1352,7 @@ def main():
     args = parser.parse_args()
 
     migrate_legacy_layout()
-    inst = resolve_instance(args.instance)
+    inst = resolve_instance(args.name)
     if not check_sock_path(inst):
         sys.exit(1)
     _set_instance(inst)

@@ -111,7 +111,7 @@ class TestInstancePaths(BaseDirs):
 
     def test_label_only_set_for_non_default(self):
         self.assertEqual(paths.Instance().label(), "")
-        self.assertEqual(paths.Instance("work").label(), " --instance work")
+        self.assertEqual(paths.Instance("work").label(), " --name work")
 
 
 class TestResolveInstance(BaseDirs):

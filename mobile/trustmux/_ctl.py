@@ -413,7 +413,7 @@ def _launch(port: int, extra_args: list[str], inst: Instance | None = None) -> i
     with inst.log_file.open("a") as log:
         proc = subprocess.Popen(
             [sys.executable, "-m", "trustmux",
-             "--port", str(port), "--instance", inst.name] + extra_args,
+             "--port", str(port), "--name", inst.name] + extra_args,
             stdout=log, stderr=log,
             stdin=subprocess.DEVNULL,
             start_new_session=True,
@@ -666,7 +666,7 @@ def cmd_rm(inst: Instance | None = None, force: bool = False) -> int:
     """Delete an instance's state directory, and its login hook if it has one.
 
     Instances are created implicitly by the first `start` and, until now, could
-    only be removed by hand -- so a typo'd --instance stayed in `list` forever,
+    only be removed by hand -- so a typo'd --name stayed in `list` forever,
     holding session tokens and a TLS key nobody meant to keep.
 
     --force covers both refusals below: a running daemon (stopped first) and
@@ -779,11 +779,11 @@ def main() -> None:
     )
     sub = parser.add_subparsers(dest="cmd")
 
-    # --instance selects which daemon's state directory to act on and so is
+    # --name selects which daemon's state directory to act on and so is
     # accepted everywhere; --port only matters to commands that address a
     # listener.
     inst_opts = argparse.ArgumentParser(add_help=False)
-    inst_opts.add_argument("--instance", metavar="NAME",
+    inst_opts.add_argument("--name", metavar="NAME",
                            help=f"Instance name (default: {DEFAULT_INSTANCE}, or ${INSTANCE_ENV})")
 
     port_opts = argparse.ArgumentParser(add_help=False)
@@ -824,7 +824,7 @@ def main() -> None:
     migrate_legacy_layout()
 
     cmd = args.cmd
-    inst = resolve_instance(getattr(args, "instance", None))
+    inst = resolve_instance(getattr(args, "name", None))
     # Resolve once: restart must reuse the running daemon's port after stopping
     # it, by which point the daemon can no longer be asked.
     port = resolve_port(args.port, inst) if hasattr(args, "port") else DEFAULT_PORT

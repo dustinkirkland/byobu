@@ -84,7 +84,7 @@ Only available for the
 instance, since it starts the daemon in
 .B tailscale serve
 mode; see
-.BR \-\-instance .
+.BR \-\-name .
 .TP
 .B disable
 Stop the running daemon and remove the login hook so the daemon no longer
@@ -147,7 +147,7 @@ logout; re-running
 .B "enable \-\-port"
 rewrites an existing hook rather than leaving the old port in place.
 .TP
-.BI \-\-instance " NAME"
+.BI \-\-name " NAME"
 Act on the named instance instead of
 .BR default .
 Accepted by every subcommand.
@@ -204,7 +204,7 @@ An out-of-range or non-numeric value is an error, not a silent fallback.
 .TP
 .B TRUSTMUX_INSTANCE
 Default instance when
-.B \-\-instance
+.B \-\-name
 is not given.
 An invalid name is an error, not a silent fallback.
 .TP
@@ -238,7 +238,7 @@ holds everything the daemon owns.
 Below,
 .I INSTANCE
 is the
-.B \-\-instance
+.B \-\-name
 name, or
 .B default
 when unset.
@@ -347,10 +347,10 @@ A second daemon alongside the first, with its own tokens and log:
 .PP
 .RS
 .nf
-trustmux start\-direct \-\-instance work \-\-port 3389
-trustmux pair \-\-instance work
+trustmux start\-direct \-\-name work \-\-port 3389
+trustmux pair \-\-name work
 trustmux list
-trustmux stop \-\-instance work
+trustmux stop \-\-name work
 .fi
 .RE
 .PP

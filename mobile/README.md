@@ -90,16 +90,16 @@ the start command needs the flag. `enable --port` records it in the login hook.
 
 ### Several daemons at once
 
-`--instance NAME` (or `$TRUSTMUX_INSTANCE`) gives a daemon its own pid file,
+`--name NAME` (or `$TRUSTMUX_INSTANCE`) gives a daemon its own pid file,
 admin socket, log, session tokens and TLS certificate, so more than one can run
 side by side — on different ports, or on the same port at different addresses:
 
 ```bash
-trustmux start-direct --instance work --port 3389
-trustmux pair  --instance work
+trustmux start-direct --name work --port 3389
+trustmux pair  --name work
 trustmux list
-trustmux stop  --instance work
-trustmux rm    --instance work    # delete its state directory for good
+trustmux stop  --name work
+trustmux rm    --name work    # delete its state directory for good
 ```
 
 An instance is created by its first `start` and otherwise lasts forever, so
@@ -150,7 +150,7 @@ avoids the two fighting over the bind.
 ## Files
 
 Trustmux follows the XDG base directory spec, with one subdirectory per
-instance. `<I>` below is the `--instance` name, or `default`.
+instance. `<I>` below is the `--name` name, or `default`.
 
 | Path | Purpose |
 |---|---|

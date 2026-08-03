@@ -1,6 +1,6 @@
 # bash completion for trustmux(1)
 
-# Names of instances that have a state directory, for --instance.
+# Names of instances that have a state directory, for --name.
 _trustmux_instances() {
     local base="${TRUSTMUX_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/trustmux}"
     local d
@@ -24,23 +24,23 @@ _trustmux() {
 
     case "$prev" in
         --port)      return ;;                                     # freeform
-        --instance)  COMPREPLY=($(compgen -W "$(_trustmux_instances)" -- "$cur"))
+        --name)      COMPREPLY=($(compgen -W "$(_trustmux_instances)" -- "$cur"))
                      return ;;
     esac
 
     # `list` acts on every instance, so it takes neither flag.
     case "${words[1]}" in
         setup)
-            COMPREPLY=($(compgen -W "--quiet --port --instance" -- "$cur"))
+            COMPREPLY=($(compgen -W "--quiet --port --name" -- "$cur"))
             ;;
         start|start-local|start-direct|stop|restart|status|enable)
-            COMPREPLY=($(compgen -W "--port --instance" -- "$cur"))
+            COMPREPLY=($(compgen -W "--port --name" -- "$cur"))
             ;;
         log|disable|pair|unpair)
-            COMPREPLY=($(compgen -W "--instance" -- "$cur"))
+            COMPREPLY=($(compgen -W "--name" -- "$cur"))
             ;;
         rm)
-            COMPREPLY=($(compgen -W "--instance --force" -- "$cur"))
+            COMPREPLY=($(compgen -W "--name --force" -- "$cur"))
             ;;
         list)
             ;;
