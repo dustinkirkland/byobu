@@ -1192,7 +1192,9 @@ def _socket_is_stale(path: Path) -> bool:
 
 
 async def _run_admin_server() -> None:
-    STATE_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
+    # ensure_dirs(), not a bare mkdir: it re-asserts 0700 on a directory that
+    # already exists with looser permissions, which is what guards the socket.
+    INSTANCE.ensure_dirs()
     # Only ever remove a socket nothing is serving; main() has already refused
     # to start if a live one was there.
     if ADMIN_SOCK.exists() and _socket_is_stale(ADMIN_SOCK):
