@@ -351,13 +351,28 @@ class TestMigrationHardening(BaseDirs):
         # The original is untouched, so a fixed-up retry still works.
         self.assertEqual((self.legacy / "tokens.json").read_text(), "secret")
 
-    def test_a_legacy_symlink_is_followed_to_its_content(self):
+    def test_a_legacy_symlink_is_dereferenced_not_relinked(self):
+        # Renaming the link itself would leave the state directory holding a
+        # pointer back to the old location rather than owning the secret --
+        # and reading through it would still return the right bytes, so the
+        # content assertion alone does not catch it.
         real = self.root / "elsewhere.json"
         real.write_text("via symlink")
         (self.legacy / "tokens.json").symlink_to(real)
         self._migrate()
-        self.assertEqual((paths.Instance().state / "tokens.json").read_text(),
-                         "via symlink")
+        moved = paths.Instance().state / "tokens.json"
+        self.assertFalse(moved.is_symlink())
+        self.assertEqual(moved.read_text(), "via symlink")
+        self.assertFalse((self.legacy / "tokens.json").exists())
+
+    def test_a_dereferenced_symlink_keeps_the_targets_mode(self):
+        real = self.root / "secret.pem"
+        real.write_text("key")
+        real.chmod(0o600)
+        (self.legacy / "key.pem").symlink_to(real)
+        self._migrate()
+        moved = paths.Instance().state / "key.pem"
+        self.assertEqual(moved.stat().st_mode & 0o777, 0o600)
 
     def test_partial_migration_completes_on_the_next_run(self):
         (self.legacy / "tokens.json").write_text("tok")

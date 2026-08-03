@@ -183,14 +183,19 @@ def _move_preserving_mode(src: Path, dst: Path) -> None:
     fallback recreates the file with the source's mode from the outset rather
     than copying and chmod-ing after, so a 0600 secret is never briefly world
     readable.
+
+    A symlink is copied through rather than renamed: os.replace would move the
+    link itself, leaving the state directory owning a pointer back to the old
+    location instead of the secret.  st_mode is the target's, not the link's.
     """
     mode = src.stat().st_mode & 0o777
-    try:
-        os.replace(src, dst)
-        return
-    except OSError as e:
-        if e.errno != errno.EXDEV:
-            raise
+    if not src.is_symlink():
+        try:
+            os.replace(src, dst)
+            return
+        except OSError as e:
+            if e.errno != errno.EXDEV:
+                raise
     data = src.read_bytes()
     fd = os.open(dst, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, mode)
     with os.fdopen(fd, "wb") as f:
