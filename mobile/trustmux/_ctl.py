@@ -662,6 +662,81 @@ def cmd_list() -> int:
     return 0
 
 
+def cmd_rm(inst: Instance | None = None, force: bool = False) -> int:
+    """Delete an instance's state directory, and its login hook if it has one.
+
+    Instances are created implicitly by the first `start` and, until now, could
+    only be removed by hand -- so a typo'd --instance stayed in `list` forever,
+    holding session tokens and a TLS key nobody meant to keep.
+
+    --force covers both refusals below: a running daemon (stopped first) and
+    the default instance (whose tokens are most likely the real ones).
+    """
+    inst = inst or Instance()
+    if not inst.state.is_dir() and not inst.state.is_symlink():
+        print(f"Error: no such instance: {inst.name}", file=sys.stderr)
+        return 1
+
+    # Belt and braces before an rm -rf: resolve_instance() already rejects
+    # names containing separators, but cmd_rm is callable directly, so confirm
+    # the target really is one instance directory inside our own tree.
+    if inst.state.parent != state_dir() / "instances":
+        print(f"Error: {inst.state} is not inside the instances directory.",
+              file=sys.stderr)
+        return 1
+
+    if inst.name == DEFAULT_INSTANCE and not force:
+        print(f"Error: refusing to remove the {DEFAULT_INSTANCE} instance "
+              "without --force.", file=sys.stderr)
+        print("  This deletes its paired device tokens and TLS keypair.",
+              file=sys.stderr)
+        return 1
+
+    port = resolve_port(None, inst)
+    running = _pid(port, inst)
+    if running and not force:
+        print(f"Error: instance {inst.name} is running (pid {running}).",
+              file=sys.stderr)
+        print(f"  Stop it first:  trustmux stop{inst.label()}", file=sys.stderr)
+        print(f"  Or force it:    trustmux rm{inst.label()} --force", file=sys.stderr)
+        return 1
+
+    if running:
+        if cmd_stop(port, inst) != 0:
+            print("Error: could not stop the daemon; nothing removed.", file=sys.stderr)
+            return 1
+        # SIGTERM is asynchronous, so wait for the daemon to actually go before
+        # pulling the directory out from under it.
+        for _ in range(20):
+            try:
+                os.kill(running, 0)
+            except OSError:
+                break
+            time.sleep(0.1)
+
+    # Otherwise the next login would start it again and recreate everything.
+    from trustmux._disable import _LOGIN_FILES, _remove_hook
+    for f in _LOGIN_FILES:
+        _remove_hook(f, inst)
+
+    had_tokens = inst.tokens_file.exists()
+    try:
+        if inst.state.is_symlink():
+            # Remove the link, never what it points at: that lives outside the
+            # instances directory and is not ours to delete.
+            inst.state.unlink()
+        else:
+            shutil.rmtree(inst.state)
+    except OSError as e:
+        print(f"Error: could not remove {inst.state}: {e}", file=sys.stderr)
+        return 1
+
+    print(f"removed instance {inst.name} ({inst.state})")
+    if had_tokens:
+        print("  paired devices for it will have to pair again")
+    return 0
+
+
 def cmd_log(inst: Instance | None = None) -> int:
     inst = inst or Instance()
     _ensure_dir(inst)
@@ -734,6 +809,11 @@ def main() -> None:
     sub.add_parser("pair",         parents=[inst_opts], help="Generate a one-time pairing code for a new device")
     sub.add_parser("unpair",       parents=[inst_opts], help="List paired devices and revoke tokens")
     sub.add_parser("list",         help="List instances and their listeners")
+    p_rm = sub.add_parser("rm",    parents=[inst_opts],
+                          help="Delete an instance's state directory")
+    p_rm.add_argument("--force", action="store_true",
+                      help="Remove it even if it is running, or is the "
+                           f"{DEFAULT_INSTANCE} instance")
     sub.add_parser("help",         help=argparse.SUPPRESS)  # alias for -h/--help
 
     args = parser.parse_args()
@@ -772,6 +852,8 @@ def main() -> None:
         sys.exit(cmd_status(port, inst))
     elif cmd == "list":
         sys.exit(cmd_list())
+    elif cmd == "rm":
+        sys.exit(cmd_rm(inst, args.force))
     elif cmd == "log":
         sys.exit(cmd_log(inst))
     elif cmd == "enable":

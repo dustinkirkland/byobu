@@ -15,7 +15,7 @@ _trustmux() {
     local cur prev words cword
     _init_completion || return
 
-    local subcommands="setup start start-local start-direct stop restart status log list enable disable pair unpair"
+    local subcommands="setup start start-local start-direct stop restart status log list rm enable disable pair unpair"
 
     if [[ $cword -eq 1 ]]; then
         COMPREPLY=($(compgen -W "$subcommands" -- "$cur"))
@@ -38,6 +38,9 @@ _trustmux() {
             ;;
         log|disable|pair|unpair)
             COMPREPLY=($(compgen -W "--instance" -- "$cur"))
+            ;;
+        rm)
+            COMPREPLY=($(compgen -W "--instance --force" -- "$cur"))
             ;;
         list)
             ;;

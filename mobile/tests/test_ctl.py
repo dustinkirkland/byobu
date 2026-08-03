@@ -1366,6 +1366,119 @@ class TestInstanceIsolation(unittest.TestCase):
         self.assertEqual(mock_pid.call_args[0][1], work)
 
 
+# ---------------------------------------------------------------------------
+# cmd_rm()
+# ---------------------------------------------------------------------------
+
+class TestCmdRm(unittest.TestCase):
+    """Instances are created implicitly by the first start, so there has to be
+    a way to undo that -- including the secrets the directory holds."""
+
+    def setUp(self):
+        self.inst = ctl.Instance('rmtest')
+        self.inst.ensure_dirs()
+        self.inst.tokens_file.write_text('{}')
+        self.addCleanup(shutil.rmtree, self.inst.state, True)
+
+    def _rm(self, inst=None, force=False):
+        with patch('builtins.print') as mock_print:
+            rc = ctl.cmd_rm(inst or self.inst, force)
+        return rc, ' '.join(str(c) for c in mock_print.call_args_list)
+
+    def test_removes_a_stopped_instance(self):
+        with no_socket():
+            rc, out = self._rm()
+        self.assertEqual(rc, 0)
+        self.assertFalse(self.inst.state.exists())
+
+    def test_says_when_tokens_were_discarded(self):
+        with no_socket():
+            rc, out = self._rm()
+        self.assertIn('pair again', out)
+
+    def test_unknown_instance_is_an_error(self):
+        rc, out = self._rm(ctl.Instance('never-existed'))
+        self.assertEqual(rc, 1)
+
+    def test_refuses_while_running(self):
+        with patch('trustmux._ctl._pid', return_value=4321):
+            rc, out = self._rm()
+        self.assertEqual(rc, 1)
+        self.assertTrue(self.inst.state.exists())
+
+    def test_force_stops_a_running_instance_then_removes_it(self):
+        with patch('trustmux._ctl._pid', return_value=4321):
+            with patch('trustmux._ctl.cmd_stop', return_value=0) as mock_stop:
+                with patch('trustmux._ctl.os.kill', side_effect=ProcessLookupError):
+                    rc, out = self._rm(force=True)
+        self.assertEqual(rc, 0)
+        mock_stop.assert_called_once()
+        self.assertFalse(self.inst.state.exists())
+
+    def test_a_failed_stop_removes_nothing(self):
+        with patch('trustmux._ctl._pid', return_value=4321):
+            with patch('trustmux._ctl.cmd_stop', return_value=1):
+                rc, out = self._rm(force=True)
+        self.assertEqual(rc, 1)
+        self.assertTrue(self.inst.state.exists())
+
+    def test_refuses_the_default_instance_without_force(self):
+        default = ctl.Instance()
+        default.ensure_dirs()
+        self.addCleanup(shutil.rmtree, default.state, True)
+        with no_socket():
+            rc, out = self._rm(default)
+        self.assertEqual(rc, 1)
+        self.assertTrue(default.state.exists())
+        self.assertIn('--force', out)
+
+    def test_force_removes_the_default_instance(self):
+        default = ctl.Instance()
+        default.ensure_dirs()
+        self.addCleanup(shutil.rmtree, default.state, True)
+        with no_socket():
+            rc, out = self._rm(default, force=True)
+        self.assertEqual(rc, 0)
+        self.assertFalse(default.state.exists())
+
+    def test_the_login_hook_goes_too(self):
+        # Otherwise the next login starts the instance again and recreates
+        # everything that was just deleted.
+        with no_socket():
+            with patch('trustmux._disable._remove_hook') as mock_hook:
+                ctl.cmd_rm(self.inst)
+        self.assertTrue(mock_hook.called)
+        self.assertEqual(mock_hook.call_args[0][1], self.inst)
+
+    def test_a_symlinked_state_dir_loses_the_link_not_the_target(self):
+        target = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, target, True)
+        (target / 'tokens.json').write_text('{}')
+        linked = ctl.Instance('symlinked')
+        shutil.rmtree(linked.state, ignore_errors=True)
+        linked.state.parent.mkdir(parents=True, exist_ok=True)
+        linked.state.symlink_to(target)
+        self.addCleanup(lambda: linked.state.unlink(missing_ok=True))
+        with no_socket():
+            rc, out = self._rm(linked)
+        self.assertEqual(rc, 0)
+        self.assertFalse(linked.state.is_symlink())
+        self.assertTrue((target / 'tokens.json').exists())   # target untouched
+
+    def test_refuses_a_target_outside_the_instances_directory(self):
+        # cmd_rm is callable directly, so the containment check must not rely
+        # on resolve_instance() having vetted the name.
+        outside = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, outside, True)
+        (outside / 'precious').write_text('do not delete')
+        rogue = ctl.Instance('rogue')
+        with patch.object(type(rogue), 'state',
+                          property(lambda self: outside)):
+            rc, out = self._rm(rogue)
+        self.assertEqual(rc, 1)
+        self.assertTrue((outside / 'precious').exists())
+
+
 class TestCmdList(unittest.TestCase):
 
     def setUp(self):

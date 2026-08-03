@@ -99,7 +99,14 @@ trustmux start-direct --instance work --port 3389
 trustmux pair  --instance work
 trustmux list
 trustmux stop  --instance work
+trustmux rm    --instance work    # delete its state directory for good
 ```
+
+An instance is created by its first `start` and otherwise lasts forever, so
+`rm` is how you get rid of one — it deletes the state directory (session
+tokens and TLS keypair included) and removes that instance's login hook, so it
+does not come back at the next login. It refuses while the daemon is running,
+and refuses on `default`; `--force` overrides both, stopping the daemon first.
 
 The unnamed instance is called `default`; it is not special-cased, and lives
 under `instances/default/` like any other.

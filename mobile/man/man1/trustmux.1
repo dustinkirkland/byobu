@@ -55,6 +55,20 @@ Tail this instance's daemon log (see
 List every instance that has a state directory, with the port, scheme and pid
 of any that are running.
 Instances whose daemon is stopped are shown with dashes.
+.TP
+.B rm
+Delete this instance's state directory — session tokens, TLS keypair, log,
+socket and pid file — and remove its login hook so it does not start again at
+the next login.
+.IP
+An instance is created by its first
+.B start
+and persists until removed, so this is the only way to retire one.
+Refused while the instance's daemon is running, and refused for the
+.B default
+instance;
+.B \-\-force
+overrides both, stopping a running daemon first.
 .SS "Login hook"
 .TP
 .B enable
@@ -172,6 +186,14 @@ Note that
 does not lift this restriction: it moves only the loopback backend that
 .B tailscale serve
 proxies to, not the tailnet-facing port.
+.TP
+.B \-\-force
+Accepted by
+.BR rm .
+Remove the instance even though its daemon is running (it is stopped first),
+or even though it is the
+.B default
+instance.
 .SH ENVIRONMENT
 .TP
 .B TRUSTMUX_PORT
