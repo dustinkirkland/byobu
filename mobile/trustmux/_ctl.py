@@ -587,8 +587,12 @@ def cmd_stop(port: int | None = None, inst: Instance | None = None) -> int:
         print("trustmux not running")
         # "Nothing found on *this* port" does not mean the pid file is stale
         # -- it may correctly be tracking this instance's daemon on another
-        # port. Only clean it up when its own recorded pid is actually dead.
-        if inst.pid_file.exists() and _recorded(inst) is None:
+        # port, which the live socket shows.  Without a live socket there is
+        # no daemon and the file is leftover, whether or not its pid resolves:
+        # across a reboot the state directory survives but pids restart, so a
+        # recorded pid can land on an unrelated live process.
+        if inst.pid_file.exists() and not (socket_is_live(inst.sock)
+                                           and _recorded(inst)):
             inst.pid_file.unlink(missing_ok=True)
         return 0
 

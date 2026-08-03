@@ -578,26 +578,39 @@ class TestCmdStop(unittest.TestCase):
 
     def test_not_found_on_this_port_preserves_pidfile_of_live_other_daemon(self):
         # Nothing is on the requested port, but the pid file tracks a
-        # genuinely alive daemon on some other port -- must not be deleted
-        # just because the wrong port was asked about (regression: previously
-        # unconditional, which threw away bookkeeping for a live daemon).
-        write_pid(self.inst, 4321)
-        with patch('trustmux._ctl._pid', return_value=None):
-            with patch('trustmux._ctl.os.kill', return_value=None) as mock_kill:
+        # genuinely alive daemon on some other port -- shown by its socket
+        # still accepting. Must not be deleted just because the wrong port was
+        # asked about (regression: previously unconditional, which threw away
+        # bookkeeping for a live daemon).
+        write_pid(self.inst, 4321, 3389)
+        with wedged_socket(), patch('trustmux._ctl._pid', return_value=None):
+            with patch('trustmux._ctl.os.kill', return_value=None):
                 result = ctl.cmd_stop(4444, self.inst)
         self.assertEqual(result, 0)
-        mock_kill.assert_called_once_with(4321, 0)  # liveness probe, not a real kill
         self.assertTrue(self.inst.pid_file.exists())
 
     def test_not_found_on_this_port_cleans_up_genuinely_dead_pidfile(self):
         # Same "not found" case, but the pid file's own pid is dead: this is
         # the genuinely-stale case, and should still be cleaned up as before.
-        write_pid(self.inst, 4321)
-        with patch('trustmux._ctl._pid', return_value=None):
+        write_pid(self.inst, 4321, 3389)
+        with wedged_socket(), patch('trustmux._ctl._pid', return_value=None):
             with patch('trustmux._ctl.os.kill', side_effect=ProcessLookupError):
                 result = ctl.cmd_stop(4444, self.inst)
         self.assertEqual(result, 0)
         self.assertFalse(self.inst.pid_file.exists())
+
+    def test_a_pidfile_outliving_a_reboot_is_cleaned_up(self):
+        # The state directory survives a reboot but pids restart, so the
+        # recorded pid may now be an unrelated live process. The dead socket
+        # is what settles it: no daemon here, so the file is leftover.
+        write_pid(self.inst, 4321, 7432)
+        with no_socket(), patch('trustmux._ctl._pid', return_value=None):
+            with patch('trustmux._ctl.os.kill', return_value=None) as mock_kill:
+                result = ctl.cmd_stop(7432, self.inst)
+        self.assertEqual(result, 0)
+        self.assertFalse(self.inst.pid_file.exists())
+        # ...and the innocent process that inherited the pid is not signalled.
+        self.assertEqual([c for c in mock_kill.call_args_list if c.args[1] != 0], [])
 
 
 # ---------------------------------------------------------------------------
