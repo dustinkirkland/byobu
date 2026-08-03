@@ -23,7 +23,8 @@ import tornado.web
 import tornado.websocket
 
 from trustmux._paths import (Instance, check_sock_path, machines_file,
-                             migrate_legacy_layout, resolve_instance)
+                             migrate_legacy_layout, resolve_instance,
+                             socket_is_live)
 
 def _resolve_version() -> str:
     import subprocess as _sp
@@ -1175,20 +1176,10 @@ async def _handle_admin(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
 def _socket_is_stale(path: Path) -> bool:
     """True if path is a socket file with nothing listening on it.
 
-    The state directory persists across logout and reboot, so a socket left
-    behind by a killed daemon stays on disk.  Connecting is the only way to
-    tell that apart from one a live daemon is serving: a leftover file refuses
-    the connection, a live one accepts it.
+    Shares socket_is_live() with the CLI so that "is this instance running?"
+    cannot be answered one way here and another way by `trustmux status`.
     """
-    probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    probe.settimeout(1.5)
-    try:
-        probe.connect(str(path))
-    except OSError:
-        return True
-    finally:
-        probe.close()
-    return False
+    return not socket_is_live(path)
 
 
 async def _run_admin_server() -> None:

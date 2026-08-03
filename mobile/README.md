@@ -132,6 +132,12 @@ export TRUSTMUX_STATE_DIR=$TRUSTMUX_CONFIG_DIR/state
 .venv/bin/python trustmux.in start-local --port 3389
 ```
 
+`start`, `stop`, `status` and `list` only ever act on a daemon the instance
+itself started, which they establish from that instance's own admin socket and
+pid file — never by asking the system who holds a port. So a scratch tree is
+isolated even if it shares a port with your real daemon; `--port` above just
+avoids the two fighting over the bind.
+
 ---
 
 ## Files
@@ -146,7 +152,7 @@ instance. `<I>` below is the `--instance` name, or `default`.
 | `$XDG_STATE_HOME/trustmux/instances/<I>/cert.pem`, `key.pem` | Self-signed TLS keypair for `start-direct` |
 | `$XDG_STATE_HOME/trustmux/instances/<I>/trustmux.log` | Daemon log (mode 0600) |
 | `$XDG_STATE_HOME/trustmux/instances/<I>/trustmux.sock` | Admin Unix socket (mode 0600) |
-| `$XDG_STATE_HOME/trustmux/instances/<I>/trustmux.pid` | PID file |
+| `$XDG_STATE_HOME/trustmux/instances/<I>/trustmux.pid` | PID file — `<pid> <port>` |
 
 Defaults are `~/.config` and `~/.local/state`. Config holds only the file you
 write by hand; everything the daemon owns lives together under state, as it
@@ -157,9 +163,15 @@ spec would put them. systemd-logind deletes `/run/user/$UID` when your last
 login session ends unless `loginctl enable-linger` is set, which would strand a
 still-running daemon with no socket to reach it by — and being started and then
 reached later is the whole point of trustmux. That directory also doesn't exist
-on macOS or in most containers. Leftovers are detected instead of swept away: a
-socket refuses connections once its daemon is gone, and a recorded pid is only
-believed when it's confirmed to hold the port in question.
+on macOS or in most containers. Leftovers are detected instead of swept away:
+once a daemon is gone its socket refuses connections, which is how a stale one
+is told from a live one. A daemon that still accepts connections but has
+stopped replying is still running, so the pid file records `<pid> <port>` —
+enough to stop a hung daemon without having to ask the system who holds a port.
+Asking that question is what an earlier version did, via `lsof`; it answered
+for the whole machine, so it could not tell one instance's daemon from another,
+went blind across network namespaces, and needed a binary that isn't always
+installed and doesn't always support `-ti:<port>`.
 
 `TRUSTMUX_CONFIG_DIR` and `TRUSTMUX_STATE_DIR` override each base, taking
 precedence over the XDG variables.

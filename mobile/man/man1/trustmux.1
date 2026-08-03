@@ -194,6 +194,14 @@ Each takes precedence over the corresponding XDG variable.
 Pointing both at a scratch directory is the supported way to run a throwaway
 daemon — from a development tree, for instance — without touching the real
 one.
+.B start ,
+.B stop ,
+.B status
+and
+.B list
+act only on a daemon that this instance itself started, determined from its own
+admin socket and pid file rather than from who holds a port, so the isolation
+holds even when the scratch daemon shares a port with the real one.
 .SH FILES
 Files live in the XDG base directories, with one subdirectory per instance:
 .I $XDG_CONFIG_HOME
@@ -243,7 +251,12 @@ and
 to ask the daemon which port it is on.
 .TP
 .I $XDG_STATE_HOME/trustmux/instances/INSTANCE/trustmux.pid
-PID file written at daemon startup.
+PID file written at daemon startup, holding
+.RI \(dq pid " " port \(dq.
+The port is recorded so that a daemon which has stopped replying on its admin
+socket can still be matched against the port
+.B stop
+was asked about.
 .PP
 The socket and pid file are deliberately kept here rather than under
 .IR $XDG_RUNTIME_DIR ,

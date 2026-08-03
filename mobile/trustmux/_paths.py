@@ -18,8 +18,8 @@ off by default.  Trustmux exists to be started and then reached later from a
 phone, so a daemon outliving the directory holding its socket -- alive but
 unreachable -- is squarely on the main path.  It also does not exist on macOS
 or in most containers.  Byobu has never used it either (usr/lib/byobu/include/
-dirs.in).  Staleness is instead detected explicitly: see _daemon's admin server
-and _ctl's _pid().
+dirs.in).  Staleness is instead detected explicitly, by socket_is_live() below:
+a socket whose daemon is gone refuses connections.
 
 Each base honours a TRUSTMUX_*_DIR override, mirroring byobu's own
 BYOBU_CONFIG_DIR.
@@ -27,6 +27,7 @@ BYOBU_CONFIG_DIR.
 import errno
 import os
 import re
+import socket
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -150,6 +151,31 @@ def check_sock_path(inst: Instance, stream=sys.stderr) -> bool:
     print("Use a shorter instance name, or set $TRUSTMUX_STATE_DIR to a shorter path.",
           file=stream)
     return False
+
+
+def socket_is_live(path: Path) -> bool:
+    """True if something is accepting connections on the unix socket at path.
+
+    The state directory outlives the daemon, so a socket file left behind by a
+    killed daemon stays on disk; connecting is the only way to tell that apart
+    from one a daemon is serving.  This answers at the kernel level -- the
+    connection completes off the listen backlog -- so a daemon that is alive
+    but too busy to reply still reads as live, which is exactly what `stop`
+    needs in order to be able to kill a wedged one.
+
+    Shared by the daemon (deciding whether it may unlink a leftover socket) and
+    the CLI (deciding whether this instance has a daemon at all), so that the
+    two can never disagree about what "running" means.
+    """
+    probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    probe.settimeout(1.5)
+    try:
+        probe.connect(str(path))
+    except OSError:
+        return False
+    finally:
+        probe.close()
+    return True
 
 
 def known_instances() -> list[Instance]:

@@ -14,7 +14,7 @@ from pathlib import Path
 from trustmux._paths import (DEFAULT_INSTANCE, INSTANCE_ENV, Instance,
                              check_sock_path, known_instances,
                              migrate_legacy_layout, resolve_instance,
-                             state_dir)
+                             socket_is_live, state_dir)
 
 DEFAULT_PORT = 7432
 PORT_ENV   = "TRUSTMUX_PORT"
@@ -86,7 +86,7 @@ def daemon_info(inst: Instance | None = None) -> dict | None:
             # This is a local IPC round trip to a process on the same
             # machine, not a network call -- a healthy daemon answers in low
             # milliseconds. Several call paths now consult this (resolve_port,
-            # direct_url, and _pid()'s lsof-unavailable fallback), so a
+            # direct_url, and _pid(), for which it is the primary source), so a
             # generous timeout here means an unresponsive-but-alive daemon
             # turns ordinary commands into a multi-second hang instead of an
             # instant response.
@@ -112,10 +112,13 @@ def resolve_port(explicit: int | None = None, inst: Instance | None = None) -> i
     """Return the port to operate on.
 
     Precedence: --port, then $TRUSTMUX_PORT, then whatever this instance's
-    running daemon reports, then the default.  Consulting the daemon is what
-    lets stop/status/pair find a daemon that was started on a non-default port
-    without having to repeat the flag.
+    running daemon reports, then the port it was recorded as starting on, then
+    the default.  Consulting the daemon is what lets stop/status/pair find a
+    daemon that was started on a non-default port without having to repeat the
+    flag; the recorded port keeps that working when the daemon is alive but no
+    longer answering, which is exactly when `stop` matters most.
     """
+    inst = inst or Instance()
     if explicit is not None:
         port = _valid_port(explicit)
         if port is None:
@@ -136,6 +139,13 @@ def resolve_port(explicit: int | None = None, inst: Instance | None = None) -> i
         port = _valid_port(info.get("port"))
         if port is not None:
             return port
+
+    # Not answering.  Only believe the recorded port if the socket shows a
+    # daemon still there: a pid file left by a killed daemon must not send the
+    # next `start` to some port the user did not ask for.
+    recorded = _recorded(inst)
+    if recorded and recorded[1] is not None and socket_is_live(inst.sock):
+        return recorded[1]
 
     return DEFAULT_PORT
 
@@ -180,87 +190,85 @@ def _ensure_dir(inst: Instance | None = None) -> None:
     inst.log_file.chmod(0o600)
 
 
-def _pids_on_port(port: int) -> list[int] | None:
-    """PIDs listening on port, per lsof.
+def write_pid_file(inst: Instance, pid: int, port: int) -> None:
+    """Record which pid this instance started, and on which port.
 
-    Empty list means lsof ran and genuinely found nothing -- a definitive
-    answer.  None means lsof could not answer at all (not installed, or output
-    this does not understand), which is the only case where a caller may fall
-    back to guessing.
+    The port is written alongside the pid because the pid alone cannot answer
+    the question `stop`/`status` actually asks -- "is *our* daemon on this
+    port?" -- and every way of asking the operating system that question
+    afterwards is either unportable or system-wide (see _recorded()).
     """
-    try:
-        out = subprocess.check_output(
-            ["lsof", f"-ti:{port}"], stderr=subprocess.DEVNULL, text=True
-        )
-    except subprocess.CalledProcessError:
-        return []          # ran fine, nothing bound to this port
-    except FileNotFoundError:
-        return None        # lsof unusable
-    lines = [x.strip() for x in out.splitlines() if x.strip()]
-    pids = [int(l) for l in lines if l.isdigit()]
-    if lines and not pids:
-        # An lsof that does not understand -ti:<port> prints a full listing
-        # rather than failing; its columns must not be misread as pids.
-        return None
-    return pids
+    inst.pid_file.write_text(f"{pid} {port}\n")
 
 
-def _recorded_pid(inst: Instance) -> int | None:
-    """Live PID from this instance's pid file, or None.
+def _recorded(inst: Instance) -> tuple[int, int | None] | None:
+    """(pid, port) from this instance's pid file, if that pid is still alive.
 
-    Says nothing about which port that pid owns -- only ever used to attribute
-    a pid that is already known to hold the port in question.
+    port is None for a file written before the port was recorded; such a file
+    can still identify the daemon but can no longer place it on a port.
+
+    Nothing here proves the pid is a trustmux daemon rather than a recycled
+    number -- callers must first establish that this instance has a live daemon
+    at all, which is what socket_is_live() is for.
     """
     if not inst.pid_file.exists():
         return None
     try:
-        pid = int(inst.pid_file.read_text().strip())
+        fields = inst.pid_file.read_text().split()
+        pid = int(fields[0])
         os.kill(pid, 0)
-        return pid
-    except (ValueError, ProcessLookupError, PermissionError, OSError):
+    except (IndexError, ValueError, ProcessLookupError, PermissionError, OSError):
         return None
+    return pid, _valid_port(fields[1]) if len(fields) > 1 else None
 
 
 def _pid(port: int = DEFAULT_PORT, inst: Instance | None = None) -> int | None:
-    """Return the PID of this instance's daemon listening on `port`, or None.
+    """Return the PID of *this instance's* daemon listening on `port`, or None.
 
-    lsof directly observes what is bound to `port`; when it can run, its
-    answer -- found or not -- is authoritative and final.  Only when lsof
-    itself is unusable does this fall back to asking the daemon what port *it*
-    is bound to over the admin socket, and only trust the reply when the
-    reported port matches the one being asked about.
+    Everything consulted here lives inside this instance's own state directory:
+    the admin socket and the pid file.  Nothing system-wide is asked, which is
+    the whole point -- see the second invariant below.
 
-    Nothing here may return a pid without confirming it owns the *requested*
-    port: doing so is what previously let `trustmux stop --port <port nothing
-    is on>` kill an unrelated daemon.  The pid file is therefore only ever
-    used to decide *which* of the processes already known to hold the port is
-    ours -- never to conjure one up when the port is idle.
+    The admin socket answers both halves of the question at once.  Whatever
+    replies on it is by construction the daemon this instance started (the
+    socket is 0600, inside the instance's state directory, and a starting
+    daemon refuses to steal a live one), and its reply names the port it
+    actually bound.  Merely *connecting* is a weaker but still useful signal:
+    it completes off the kernel's listen backlog, so it succeeds even for a
+    daemon too wedged to reply, and fails for a socket whose daemon was killed.
+    That is what makes `stop` able to kill a hung daemon: the live socket
+    proves this instance has one, and the pid file names it and its port.
+
+    Two invariants, each from a bug that shipped:
+
+    * Never return a pid without confirming it owns the *requested* port.
+      Violating it let `trustmux stop --port <port nothing is on>` kill an
+      unrelated daemon (11bb4ca7).
+    * Never return a pid this instance does not claim.  Discovering the daemon
+      by asking the system who holds the port let a throwaway instance report
+      -- and stop -- a real daemon that merely happened to share it.
     """
     inst = inst or Instance()
-    listening = _pids_on_port(port)
 
-    if listening is None:
-        info = daemon_info(inst)
-        if info and _valid_port(info.get("port")) == port:
-            pid = info.get("pid")
-            if isinstance(pid, int) and pid > 0:
-                return pid
+    info = daemon_info(inst)
+    if info is not None:
+        pid = info.get("pid")
+        if (isinstance(pid, int) and pid > 0
+                and _valid_port(info.get("port")) == port):
+            return pid
+        # Our daemon answered, about some other port: it is not on this one.
         return None
 
-    if not listening:
+    # No reply.  If the socket still accepts connections the daemon is alive
+    # but not answering; fall back to what was recorded when it was started.
+    # If it does not, this instance has no daemon, whoever else holds the port.
+    if not socket_is_live(inst.sock):
         return None
-
-    # Something holds the port. Attribute it: with two instances bound to the
-    # same port on different addresses, "whichever pid lsof printed first" is
-    # a coin flip, so prefer this instance's own claim when it has one.
-    claimed = _recorded_pid(inst)
-    if claimed is None:
-        info = daemon_info(inst)
-        reported = info.get("pid") if info else None
-        claimed = reported if isinstance(reported, int) and reported > 0 else None
-    if claimed is not None:
-        return claimed if claimed in listening else None
-    return listening[0]
+    recorded = _recorded(inst)
+    if recorded is None:
+        return None
+    pid, recorded_port = recorded
+    return pid if recorded_port == port else None
 
 
 def _ts_host() -> str:
@@ -411,7 +419,7 @@ def _launch(port: int, extra_args: list[str], inst: Instance | None = None) -> i
             start_new_session=True,
             env=env,
         )
-    inst.pid_file.write_text(str(proc.pid))
+    write_pid_file(inst, proc.pid, port)
     time.sleep(0.5)
     if proc.poll() is not None:
         # Died on startup — usually the port is taken, which is easy to hit
@@ -560,7 +568,13 @@ def cmd_start(mode: str = "serve", port: int | None = None,
         return 1
 
     if not ok:
+        # _pid() only names daemons this instance claims, so a port held by
+        # someone else no longer surfaces as "already running" -- it lands here
+        # instead, as a failure to bind.  Name that as the likely cause: the
+        # daemon logged the real errno, but nobody reads a log on a hunch.
         print(f"trustmux failed to start — check {inst.log_file}")
+        print(f"  (most often port {port} is already in use — try another "
+              f"--port)", file=sys.stderr)
         return 1
     return 0
 
@@ -574,20 +588,20 @@ def cmd_stop(port: int | None = None, inst: Instance | None = None) -> int:
         # "Nothing found on *this* port" does not mean the pid file is stale
         # -- it may correctly be tracking this instance's daemon on another
         # port. Only clean it up when its own recorded pid is actually dead.
-        if inst.pid_file.exists() and _recorded_pid(inst) is None:
+        if inst.pid_file.exists() and _recorded(inst) is None:
             inst.pid_file.unlink(missing_ok=True)
         return 0
 
     if inst.pid_file.exists():
         try:
-            file_pid = int(inst.pid_file.read_text().strip())
+            file_pid = int(inst.pid_file.read_text().split()[0])
             if file_pid != p:
                 print(f"Error: pid {p} owns port {port} but {inst.pid_file} contains {file_pid}.",
                       file=sys.stderr)
                 print(f"Refusing to kill. Remove {inst.pid_file} manually if trustmux is truly stopped.",
                       file=sys.stderr)
                 return 1
-        except ValueError:
+        except (IndexError, ValueError):
             pass
 
     os.kill(p, signal.SIGTERM)
@@ -631,7 +645,14 @@ def cmd_list() -> int:
     for inst in instances:
         info = daemon_info(inst) or {}
         port = _valid_port(info.get("port"))
-        p = _pid(port or DEFAULT_PORT, inst) if info else _recorded_pid(inst)
+        if info:
+            p = _pid(port or DEFAULT_PORT, inst)
+        else:
+            # No reply, but a socket still accepting connections means the
+            # daemon is there and merely not answering; the pid file then
+            # supplies both the pid and the port it was started on.
+            recorded = _recorded(inst) if socket_is_live(inst.sock) else None
+            p, port = recorded if recorded else (None, port)
         status = f"running (pid {p})" if p else "stopped"
         print(f"{inst.name:<16} {port or '-':>5}  {info.get('scheme', '-'):<6} {status}")
     return 0
