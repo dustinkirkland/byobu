@@ -147,6 +147,106 @@ logout; re-running
 .B "enable \-\-port"
 rewrites an existing hook rather than leaving the old port in place.
 .TP
+.BI \-\-advertise " SOURCE"
+Address a phone should use, for when it is not the one this host can see.
+Accepted by
+.BR start ,
+.BR start\-local ,
+.BR start\-direct ,
+.B restart
+and
+.BR enable .
+Repeatable.
+.IP
+Behind NAT — a cloud instance, most often — the daemon only ever sees an
+internal address, so both the URL
+.B pair
+prints and the names in the certificate
+.B start\-direct
+generates describe a host nothing outside can route to.
+.I SOURCE
+overrides that.
+It does
+.I not
+change what the daemon binds; combine it with a firewall rule that admits the
+port.
+.IP
+.I SOURCE
+is one of:
+.RS
+.TP
+.I HOST
+or
+.I HOST:PORT
+A literal address or name.
+The daemon's own scheme and port fill in what is omitted, so
+.B \-\-advertise\ 203.0.113.45
+on a daemon serving HTTPS on 7432 advertises
+.IR https://203.0.113.45:7432/ .
+.TP
+.I URL
+A full
+.I http://
+or
+.I https://
+URL, which overrides both scheme and port — for a reverse proxy terminating
+TLS on 443 in front of the daemon.
+A path, query or fragment is rejected: trustmux serves from the root, and the
+pairing code is carried in the fragment.
+.TP
+.BI cmd: PROGRAM
+Run
+.I PROGRAM
+and take one address per line of its standard output.
+.RE
+.IP
+.B cmd:
+is how an address that changes stays correct.
+A cloud instance with an ephemeral public address gets a different one across a
+stop/start cycle, so a literal written down once would quietly go stale, while
+.B cmd:
+is re-run on every daemon start.
+.IP
+.I PROGRAM
+is split into arguments with shell-style quoting but is
+.I not
+run by a shell: no pipelines, no redirection, no
+.IR $(...) .
+Those characters are rejected rather than passed through to the program, so put
+a pipeline in a script and name the script.
+An absolute path is safest, a daemon's
+.B PATH
+being whatever started it.
+.IP
+Resolution is strict, and any failure stops the daemon rather than falling back
+to the address it would have guessed: a non-zero exit, no output, a blank line,
+a value that is not an address, or more than 5 seconds across all sources.
+This is deliberate.
+A shell wrapper whose
+.B curl
+fails typically prints an empty line and still exits 0, and treating that as
+"nothing to advertise" would hand out an unreachable URL and a certificate for
+the wrong host — neither of which a warning would fix.
+.IP
+Every resolved address is added to the certificate as a subject alternative
+name; the first supplies the URL that
+.BR pair ,
+.B status
+and
+.B start
+print.
+A browser rejects a certificate that omits the name in the URL bar outright,
+rather than offering the click-through a self-signed certificate gets, so
+advertising an address without certifying it would be worse than useless.
+.TP
+.B \-\-no\-advertise
+Advertise nothing, ignoring any source in
+.B TRUSTMUX_ADVERTISE
+or the instance's configuration file.
+Accepted wherever
+.B \-\-advertise
+is.
+.TP
 .BI \-\-name " NAME"
 Act on the named instance instead of
 .BR default .
@@ -208,6 +308,21 @@ Default instance when
 is not given.
 An invalid name is an error, not a silent fallback.
 .TP
+.B TRUSTMUX_ADVERTISE
+Default advertise source when
+.B \-\-advertise
+is not given.
+Holds a single source, not a list: no separator would be safe, since
+.RB ` : '
+collides with both URL schemes and the
+.B cmd:
+prefix while
+.RB ` , '
+can appear inside a command's arguments.
+A
+.B cmd:
+source already yields as many addresses as it likes, so nothing is out of reach.
+.TP
 .B TRUSTMUX_CONFIG_DIR
 .TQ
 .B TRUSTMUX_STATE_DIR
@@ -246,7 +361,31 @@ when unset.
 .TP
 .I $XDG_CONFIG_HOME/trustmux/machines.json
 Optional: sibling machine list for the in-app machine selector.
-Shared by every instance, being the only user-authored file here.
+Shared by every instance.
+.TP
+.I $XDG_CONFIG_HOME/trustmux/instances/INSTANCE.json
+Optional per-instance settings, hand-written.
+One key so far:
+.BR advertise ,
+a string or list of strings, each a
+.B \-\-advertise
+source.
+.IP
+.RS
+.nf
+{"advertise": ["cmd:/usr/local/bin/external-ip", "tmux.example.com"]}
+.fi
+.RE
+.IP
+This is the durable home for a source, and the only one a login hook will find:
+.B \-\-advertise
+applies to one daemon and then is gone.
+Sources are re-resolved on every start, which is what makes writing one down
+safe even when the address behind it changes.
+.IP
+Because a source can name a program to run, a file writable by group or other
+is refused rather than read; keep it mode 0600.
+Configuration rather than state because it records intent, not a result.
 .SS State
 .TP
 .I $XDG_STATE_HOME/trustmux/instances/INSTANCE/tokens.json
@@ -363,6 +502,38 @@ export TRUSTMUX_STATE_DIR=$TRUSTMUX_CONFIG_DIR/state
 trustmux start\-local \-\-port 3389
 .fi
 .RE
+.PP
+On a cloud instance whose public address the host itself cannot see.
+Write a program that prints it — here a one-liner against the metadata
+service, which unlike a shell pipeline reports its own failure:
+.PP
+.RS
+.nf
+$ cat /usr/local/bin/external\-ip
+#!/bin/sh
+exec curl \-\-fail \-\-silent \-H Metadata\-Flavor:Google \\
+  http://metadata.google.internal/computeMetadata/v1/instance/\\
+network\-interfaces/0/access\-configs/0/external\-ip
+
+$ trustmux start\-direct \-\-advertise cmd:/usr/local/bin/external\-ip
+$ trustmux pair
+.fi
+.RE
+.PP
+To keep it across reboots, put the source in the instance's configuration file
+(see
+.BR FILES )
+rather than in the command line, and the address is looked up afresh each time:
+.PP
+.RS
+.nf
+mkdir \-p ~/.config/trustmux/instances
+echo '{"advertise": ["cmd:/usr/local/bin/external\-ip"]}' \\
+  > ~/.config/trustmux/instances/default.json
+chmod 600 ~/.config/trustmux/instances/default.json
+trustmux start\-direct
+.fi
+.RE
 .SH SECURITY
 .SS "Pairing code"
 The one-time pairing code is a 6-digit decimal value drawn from
@@ -402,6 +573,16 @@ In
 .B start\-direct
 mode the daemon binds on all interfaces; the pairing-code and session-token
 protections above remain in force, but the network attack surface is broader.
+.B \-\-advertise
+does not itself widen this — it changes only what is published — but
+advertising a public address is normally paired with a firewall rule admitting
+the port, and that does: the daemon then faces the internet with the pairing
+code and session token as its only protection, rather than a local network.
+Prefer
+.B start
+or
+.B start\-local
+where either will do.
 In
 .B start\-local
 mode the daemon binds to 127.0.0.1 only and is accessible solely through an

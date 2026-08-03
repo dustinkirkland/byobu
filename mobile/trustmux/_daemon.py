@@ -16,12 +16,14 @@ import socket
 import subprocess
 import sys
 import time
+from collections.abc import Sequence
 from pathlib import Path
 
 import tornado.httpserver
 import tornado.web
 import tornado.websocket
 
+from trustmux._advertise import AdvertiseError, resolve, resolve_sources
 from trustmux._paths import (Instance, check_sock_path, machines_file,
                              migrate_legacy_layout, resolve_instance,
                              socket_is_live)
@@ -1104,10 +1106,11 @@ async def _handle_admin(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
             # Lets `trustmux stop/status/pair` discover the live listener
             # instead of assuming the default port.
             resp: object = {
-                "pid":    os.getpid(),
-                "host":   _listen.get("host", ""),
-                "port":   _listen.get("port", 0),
-                "scheme": _listen.get("scheme", ""),
+                "pid":       os.getpid(),
+                "host":      _listen.get("host", ""),
+                "port":      _listen.get("port", 0),
+                "scheme":    _listen.get("scheme", ""),
+                "advertise": _listen.get("advertise", []),
             }
 
         elif action == "pair_generate":
@@ -1227,8 +1230,14 @@ def _make_app() -> tornado.web.Application:
 # Entry point
 # ---------------------------------------------------------------------------
 
-def _ensure_self_signed_cert(lan_ip: str) -> tuple:
-    """Generate a self-signed TLS cert for lan_ip. Returns (cert_path, ssl_ctx)."""
+def _ensure_self_signed_cert(lan_ip: str, advertised: Sequence[str] = ()) -> tuple:
+    """Generate a self-signed TLS cert for lan_ip. Returns (cert_path, ssl_ctx).
+
+    advertised are hosts this daemon was told to publish.  They have to be in
+    here: a browser refuses a certificate that omits the name in the URL bar
+    outright, rather than offering the click-through a self-signed one gets, so
+    advertising an address without certifying it would be worse than useless.
+    """
     import ssl as _ssl
     import ipaddress as _ipaddress
     import datetime as _datetime
@@ -1250,6 +1259,16 @@ def _ensure_self_signed_cert(lan_ip: str) -> tuple:
     ts_ip = _tailscale_ip()
     if ts_ip and ts_ip != lan_ip:
         san_parts.append(f"IP:{ts_ip}")
+    for host in advertised:
+        try:
+            _ipaddress.ip_address(host)
+        except ValueError:
+            san_parts.append(f"DNS:{host}")
+        else:
+            san_parts.append(f"IP:{host}")
+    # An advertised host is often one of these already (the fqdn, say), and a
+    # duplicated SAN is legal but pointless.
+    san_parts = list(dict.fromkeys(san_parts))
     try:
         private_key = _ec.generate_private_key(_ec.SECP256R1())
         san_list = []
@@ -1288,11 +1307,13 @@ def _ensure_self_signed_cert(lan_ip: str) -> tuple:
     ctx = _ssl.SSLContext(_ssl.PROTOCOL_TLS_SERVER)
     ctx.minimum_version = _ssl.TLSVersion.TLSv1_3
     ctx.load_cert_chain(str(cert), str(key))
-    print(f"Trustmux: self-signed TLS cert generated for {lan_ip}", flush=True)
+    named = ", ".join(dict.fromkeys([lan_ip, *advertised]))
+    print(f"Trustmux: self-signed TLS cert generated for {named}", flush=True)
     return cert, ctx
 
 
-async def _amain(host: str, port: int, https: bool, ssl_ctx=None) -> None:
+async def _amain(host: str, port: int, https: bool, ssl_ctx=None,
+                 advertise: Sequence[str] = ()) -> None:
     global _https_mode, _listen
     _https_mode = https or ssl_ctx is not None
     _listen = {
@@ -1301,6 +1322,9 @@ async def _amain(host: str, port: int, https: bool, ssl_ctx=None) -> None:
         # --https means tailscale serve terminates TLS in front of us, so the
         # URL a client uses is https even though this socket is plain HTTP.
         "scheme": "https" if _https_mode else "http",
+        # What pair and status should print.  Only the daemon knows which hosts
+        # its certificate actually attests, so it is the one to say.
+        "advertise": list(advertise),
     }
     app = _make_app()
     # xheaders=True: trust X-Forwarded-For/Proto from tailscale serve proxy.
@@ -1341,6 +1365,12 @@ def main():
     parser.add_argument("--name", metavar="NAME", default=None,
                         help="Instance whose state and runtime files to use "
                              "(default: default)")
+    parser.add_argument("--advertise", metavar="SOURCE", action="append",
+                        help="Address to publish and to name in the TLS "
+                             "certificate: HOST, HOST:PORT, a URL, or "
+                             "cmd:PROGRAM to run PROGRAM for it (repeatable)")
+    parser.add_argument("--no-advertise", action="store_true",
+                        help="Advertise nothing, ignoring any configured source")
 
     # `trustmuxd help` is a natural guess (matches `trustmux help`'s alias for
     # -h/--help) but argparse has no subcommands here to hang a hidden alias
@@ -1382,6 +1412,24 @@ def main():
                 host = "127.0.0.1"
                 print("Trustmux: Tailscale not found, binding to localhost only")
 
+    scheme = "https" if (args.https or args.self_signed) else "http"
+
+    # Ahead of the certificate, which has to name these hosts, and ahead of the
+    # admin socket, so a source that cannot be resolved keeps the daemon from
+    # ever answering with an address it has not confirmed.  Refusing to start is
+    # the same stance taken when TLS is unavailable: an unreachable URL or a
+    # certificate for the wrong host is not something a warning would fix.
+    try:
+        advertised = resolve(resolve_sources(args.advertise, args.no_advertise, inst),
+                             scheme, args.port)
+    except AdvertiseError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        print("Trustmux refuses to start rather than publish an address it "
+              "cannot confirm.", file=sys.stderr)
+        sys.exit(1)
+    if advertised:
+        print("Trustmux: advertising " + ", ".join(a.url for a in advertised), flush=True)
+
     ssl_ctx = None
     if args.self_signed:
         lan_ip = host if host not in ("0.0.0.0", None) else _tailscale_ip() or "127.0.0.1"
@@ -1392,11 +1440,11 @@ def main():
             s.close()
         except Exception:
             pass
-        _, ssl_ctx = _ensure_self_signed_cert(lan_ip)
+        _, ssl_ctx = _ensure_self_signed_cert(lan_ip, [a.host for a in advertised])
 
-    scheme = "https" if (args.https or ssl_ctx) else "http"
     print(f"Trustmux daemon on {scheme}://{host}:{args.port} — run 'trustmux-pair' to pair a device.", flush=True)
-    asyncio.run(_amain(host, args.port, args.https, ssl_ctx))
+    asyncio.run(_amain(host, args.port, args.https, ssl_ctx,
+                       [a.url for a in advertised]))
 
 
 if __name__ == "__main__":

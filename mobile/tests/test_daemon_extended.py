@@ -794,7 +794,7 @@ class TestAdminSocket(unittest.IsolatedAsyncioTestCase):
                           {'host': '127.0.0.1', 'port': 7432, 'scheme': 'http'}):
             resp = await self._call({'action': 'info'})
         self.assertNotIn('tok_secret_value', json.dumps(resp))
-        self.assertEqual(set(resp), {'pid', 'host', 'port', 'scheme'})
+        self.assertEqual(set(resp), {'pid', 'host', 'port', 'scheme', 'advertise'})
 
     async def test_info_before_listen_is_empty_not_an_error(self):
         with patch.object(bm, '_listen', {}):

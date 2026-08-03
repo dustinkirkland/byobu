@@ -5,9 +5,11 @@ trustmuxd \- Trustmux daemon (mobile companion for tmux/Byobu sessions)
 .B trustmuxd
 [\fB\-\-host\fP \fIADDR\fP]
 [\fB\-\-port\fP \fIPORT\fP]
-[\fB\-\-instance\fP \fINAME\fP]
+[\fB\-\-name\fP \fINAME\fP]
 [\fB\-\-https\fP]
 [\fB\-\-self\-signed\fP]
+[\fB\-\-advertise\fP \fISOURCE\fP]
+[\fB\-\-no\-advertise\fP]
 [\fB\-\-version\fP]
 .SH DESCRIPTION
 .B trustmuxd
@@ -45,7 +47,7 @@ Use with \fBtailscale serve\fP.
 Generate a self-signed ECDSA P-256 TLS certificate for direct
 HTTPS access without Tailscale.
 .TP
-.BI \-\-instance " NAME"
+.BI \-\-name " NAME"
 Which instance's state and runtime files to use (default:
 .BR default ).
 Each instance has its own tokens, TLS keypair, log, admin socket and pid file,
@@ -53,18 +55,73 @@ so several daemons can run side by side.
 .B trustmux (1)
 passes this through when it starts a daemon.
 .TP
+.BI \-\-advertise " SOURCE"
+Address to publish and to name in the TLS certificate, for when it is not the
+one this host can see.
+Repeatable.
+.I SOURCE
+is a literal
+.IR HOST ,
+.IR HOST:PORT ,
+a full URL, or
+.BI cmd: PROGRAM
+to run
+.I PROGRAM
+and read one address per line of its standard output.
+.IP
+Sources are resolved once, at startup, before the certificate is generated and
+before the admin socket is bound.
+Any failure to resolve one — a non-zero exit, no output, a blank line, a value
+that is not an address, or more than 5 seconds across all sources — stops the
+daemon, in the same way an unavailable TLS implementation does: an unreachable
+URL, or a certificate for the wrong host, is not something a warning would fix.
+.IP
+The resolved addresses are reported over the admin socket, which is how
+.B "trustmux pair"
+and
+.B "trustmux status"
+come to print exactly what the certificate attests.
+.IP
+When no
+.B \-\-advertise
+or
+.B \-\-no\-advertise
+is given, the daemon reads
+.B TRUSTMUX_ADVERTISE
+and then the instance's configuration file itself.
+.B trustmux (1)
+always passes one or the other, so a daemon it starts uses only the sources
+.I it
+resolved.
+See
+.BR trustmux (1)
+for the source syntax in full.
+.TP
+.B \-\-no\-advertise
+Advertise nothing, ignoring
+.B TRUSTMUX_ADVERTISE
+and the instance's configuration file.
+.TP
 .B \-\-version
 Print version and exit.
 .SH FILES
 Paths follow the XDG base directories, one subdirectory per instance;
 .I INSTANCE
 below is the
-.B \-\-instance
+.B \-\-name
 name.
 .B trustmux (1)
 documents the full layout, the fallbacks and the
 .B TRUSTMUX_*_DIR
 overrides.
+.TP
+.I $XDG_CONFIG_HOME/trustmux/instances/INSTANCE.json
+Optional, hand-written: advertise sources for this instance, read when neither
+.B \-\-advertise
+nor
+.B \-\-no\-advertise
+was given.
+Refused if writable by group or other, since a source can name a program to run.
 .TP
 .I $XDG_STATE_HOME/trustmux/instances/INSTANCE/tokens.json
 Persistent session tokens (mode 0600).

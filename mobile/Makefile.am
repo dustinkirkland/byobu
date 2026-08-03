@@ -21,6 +21,7 @@ dist_trustmuxmod_DATA = \
 	trustmux/_daemon.py \
 	trustmux/_ctl.py \
 	trustmux/_paths.py \
+	trustmux/_advertise.py \
 	trustmux/_pair.py \
 	trustmux/_unpair.py \
 	trustmux/_enable.py \
@@ -66,6 +67,7 @@ EXTRA_DIST = \
 	README.md \
 	generate_screenshots.py \
 	tests/__init__.py \
+	tests/test_advertise.py \
 	tests/test_ctl.py \
 	tests/test_paths.py \
 	tests/test_daemon.py \

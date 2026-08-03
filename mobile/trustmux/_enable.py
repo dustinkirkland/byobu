@@ -1,9 +1,11 @@
 """trustmux enable — start Trustmux daemon and enable it at login."""
+import json
 import os
 import re
 import sys
 from pathlib import Path
 
+from trustmux._advertise import ADVERTISE_ENV
 from trustmux._ctl import (DEFAULT_PORT, can_use_serve, cmd_setup, cmd_start,
                            port_opt)
 from trustmux._paths import Instance
@@ -74,7 +76,35 @@ def _install_hook(dest: Path, hook: str = _HOOK, inst: Instance | None = None) -
         f.write(f"\n{hook}")
 
 
-def main(port: int = DEFAULT_PORT, inst: Instance | None = None) -> None:
+def _warn_transient_advertise(advertise: list[str] | None,
+                              no_advertise: bool = False,
+                              inst: Instance | None = None) -> None:
+    """Say so if the advertise source will not survive to the next login.
+
+    The hook this command writes deliberately carries no --advertise: the
+    durable home for a source is the instance's config file, which is also the
+    only one `trustmux start` from a hook will consult.  A source given on the
+    command line applies to this daemon and then vanishes, which is worth one
+    line rather than a surprise after the next reboot.
+    """
+    inst = inst or Instance()
+    if no_advertise:
+        return          # nothing was advertised, so nothing is being lost
+    origin = "--advertise" if advertise else (
+        f"${ADVERTISE_ENV}" if os.environ.get(ADVERTISE_ENV, "").strip() else "")
+    if not origin:
+        return
+    print("", file=sys.stderr)
+    print(f"Note: the advertise source came from {origin}, so the login hook "
+          "will not use it.", file=sys.stderr)
+    print(f"  To make it stick, put it in {inst.config_file}:", file=sys.stderr)
+    print('    {"advertise": ' + json.dumps(advertise or
+          [os.environ.get(ADVERTISE_ENV, "").strip()]) + "}", file=sys.stderr)
+    print("", file=sys.stderr)
+
+
+def main(port: int = DEFAULT_PORT, inst: Instance | None = None,
+         advertise: list[str] | None = None, no_advertise: bool = False) -> None:
     inst = inst or Instance()
     # enable == setup + start in serve mode + login hook, so it inherits the
     # serve restriction. Check up front: otherwise cmd_setup refuses and the
@@ -96,7 +126,10 @@ def main(port: int = DEFAULT_PORT, inst: Instance | None = None) -> None:
     for f in _LOGIN_FILES:
         _install_hook(f, hook, inst)
 
-    started = cmd_start("serve", port, inst) == 0
+    started = cmd_start("serve", port, inst, advertise, no_advertise) == 0
+    # Regardless of whether this invocation started it: the hook was just
+    # written either way, and it is the hook that will not carry the source.
+    _warn_transient_advertise(advertise, no_advertise, inst)
 
     print()
     if started:

@@ -8,6 +8,7 @@ import sys
 import time
 from pathlib import Path
 
+from trustmux._advertise import advertised_urls
 from trustmux._ctl import (DEFAULT_PORT, Instance, daemon_info, direct_url,
                            resolve_port, warn_if_peer_blocked)
 
@@ -63,13 +64,19 @@ def _ts_url() -> str:
 def _pair_url(inst: Instance | None = None) -> str:
     """Return the URL a phone should open to reach this daemon.
 
-    `tailscale serve` fronts the daemon only in the default start mode, which
-    the daemon reports as a loopback bind with an https scheme.  In start-local
-    and start-direct the tailnet name does not answer, so use the daemon's own
-    address and port instead.
+    An advertised address wins outright: it is the operator's answer to this
+    exact question, and the one the daemon's certificate was built around.
+
+    Otherwise, `tailscale serve` fronts the daemon only in the default start
+    mode, which the daemon reports as a loopback bind with an https scheme.  In
+    start-local and start-direct the tailnet name does not answer, so use the
+    daemon's own address and port instead.
     """
     inst = inst or Instance()
     info = daemon_info(inst) or {}
+    advertised = advertised_urls(info)
+    if advertised:
+        return advertised[0]
     served = info.get("host") in ("127.0.0.1", "localhost", "::1") \
         and info.get("scheme") == "https"
     if served or not info:

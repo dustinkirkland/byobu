@@ -3,8 +3,8 @@
 XDG base directories, with one subdirectory per instance so that two daemons
 never share a pid file, socket or token store:
 
-    config  $XDG_CONFIG_HOME/trustmux   machines.json — the only thing the user
-                                        writes by hand
+    config  $XDG_CONFIG_HOME/trustmux   machines.json and instances/NAME.json —
+                                        the only things the user writes by hand
     state   $XDG_STATE_HOME/trustmux    tokens.json, cert.pem, key.pem, log,
                                         admin socket, pid file
 
@@ -79,6 +79,16 @@ class Instance:
     @property
     def state(self) -> Path:
         return state_dir() / "instances" / self.name
+
+    @property
+    def config_file(self) -> Path:
+        """User-authored settings for this instance; hand-edited, often absent.
+
+        Config rather than state because it holds intent, not a result: an
+        advertise source is re-resolved at every start precisely so that what
+        is written here keeps working when the address behind it changes.
+        """
+        return config_dir() / "instances" / f"{self.name}.json"
 
     @property
     def tokens_file(self) -> Path:
