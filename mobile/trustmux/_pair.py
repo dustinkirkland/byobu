@@ -5,8 +5,7 @@ import shutil
 import socket
 import subprocess
 import sys
-import termios
-import tty
+import time
 from pathlib import Path
 
 from trustmux._ctl import DEFAULT_PORT, daemon_info, direct_url, resolve_port, warn_if_peer_blocked
@@ -105,19 +104,62 @@ def _print_qr(url: str) -> None:
         pass
 
 
-def _wait_and_clear() -> None:
-    """Wait for a keypress, then clear the screen."""
-    if not sys.stdin.isatty():
-        return
-    print("  [ press any key to clear ]")
-    fd = sys.stdin.fileno()
-    old = termios.tcgetattr(fd)
+def _poll(cmd: dict) -> dict | None:
+    """Like admin(), but returns None on failure instead of exiting.
+
+    A daemon that goes away mid-wait should end the wait, not crash it.
+    """
+    if not SOCK.exists():
+        return None
     try:
-        tty.setraw(fd)
-        sys.stdin.read(1)
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old)
-    print("\033[2J\033[H", end="", flush=True)
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+            s.settimeout(10)
+            s.connect(str(SOCK))
+            s.sendall(json.dumps(cmd).encode() + b"\n")
+            s.shutdown(socket.SHUT_WR)
+            chunks = []
+            while True:
+                chunk = s.recv(4096)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+        resp = json.loads(b"".join(chunks))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return resp if isinstance(resp, dict) else None
+
+
+def _wait_for_pair(timeout: float) -> str:
+    """Wait for a device to pair, up to timeout seconds.
+
+    Returns the paired device's IP, or "" if nothing paired.
+    """
+    deadline = time.monotonic() + timeout
+    while True:
+        status = _poll({"action": "pair_status"})
+        if status is None:
+            return ""                      # daemon gone -- nothing left to wait for
+        state = status.get("state")
+        if state == "paired":
+            return status.get("ip") or "unknown"
+        if state is None:
+            # Daemon predates pair_status; wait out the code instead of polling.
+            remaining = deadline - time.monotonic()
+            if remaining > 0:
+                time.sleep(remaining)
+            return ""
+        if state != "pending":
+            return ""                      # expired
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return ""
+        time.sleep(min(1.0, remaining))
+
+
+def _clear() -> None:
+    """Clear the (now-useless) code and QR off the screen."""
+    if sys.stdout.isatty():
+        print("\033[2J\033[H", end="", flush=True)
 
 
 def main():
@@ -126,7 +168,8 @@ def main():
         print(f"Error: {data.get('error', data)}", file=sys.stderr)
         sys.exit(1)
     code = data["code"]
-    mins = data["expires_in"] // 60
+    ttl = data["expires_in"]
+    mins = ttl // 60
     url = _pair_url()
 
     pair_url = f"{url}#{code.replace('-', '')}"
@@ -139,9 +182,19 @@ def main():
     warn_if_peer_blocked()
 
     _print_qr(pair_url)
-    print()
+    print(f"\n  [ waiting up to {ttl}s for a device to pair ]")
 
-    _wait_and_clear()
+    try:
+        ip = _wait_for_pair(ttl)
+    except KeyboardInterrupt:
+        print()
+        ip = ""
+
+    _clear()
+    if not ip:
+        print("no client paired")
+        sys.exit(1)
+    print(f"pair accepted from {ip}")
 
 
 if __name__ == "__main__":

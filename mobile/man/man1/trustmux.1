@@ -73,8 +73,13 @@ Ask the running daemon to generate a one-time 6-digit pairing code (valid for
 If
 .BR qrencode (1)
 is installed, a QR code is printed for one-scan pairing.
-The screen is cleared on the next keypress to keep the pairing URL out of the
-terminal scroll-back.
+The command then waits for the code to be used and returns as soon as a device
+pairs, or when the code expires, whichever comes first.
+It clears the screen and prints either
+.B "pair accepted from " \fIIP\fR
+(exit status 0) or
+.B "no client paired"
+(exit status 1).
 .TP
 .B unpair
 List all currently paired devices (IP address, browser label, and pairing

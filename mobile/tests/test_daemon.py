@@ -283,11 +283,13 @@ class TestPairHandler(AsyncHTTPTestCase):
         bm._pair_code = ''
         bm._pair_attempts = 0
         bm._pair_code_mono_expiry = 0.0
+        bm._pair_paired_ip = ''
 
     def tearDown(self):
         bm._pair_code = ''
         bm._pair_attempts = 0
         bm._pair_code_mono_expiry = 0.0
+        bm._pair_paired_ip = ''
         _clear_sessions()
         super().tearDown()
 
@@ -323,6 +325,8 @@ class TestPairHandler(AsyncHTTPTestCase):
         self.assertIn('trustmux_session', resp.headers.get('Set-Cookie', ''))
         # Code consumed — one-time use
         self.assertEqual(bm._pair_code, '')
+        # Outcome recorded for `trustmux pair` to report
+        self.assertTrue(bm._pair_paired_ip)
 
     def test_valid_code_with_dashes(self):
         code = bm._generate_pair_code()

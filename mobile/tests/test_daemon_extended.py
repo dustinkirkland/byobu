@@ -608,12 +608,14 @@ class TestAdminSocket(unittest.IsolatedAsyncioTestCase):
         bm._pair_code = ''
         bm._pair_attempts = 0
         bm._pair_code_mono_expiry = 0.0
+        bm._pair_paired_ip = ''
 
     def tearDown(self):
         _clear_sessions()
         bm._pair_code = ''
         bm._pair_attempts = 0
         bm._pair_code_mono_expiry = 0.0
+        bm._pair_paired_ip = ''
 
     async def _call(self, payload) -> dict:
         """Drive _handle_admin with mock reader/writer; return parsed response."""
@@ -651,6 +653,46 @@ class TestAdminSocket(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(resp['code']), 7)  # XXX-XXX
         self.assertIn('expires_in', resp)
         self.assertTrue(bm._pair_code)
+
+    async def test_pair_status_pending_while_code_live(self):
+        with patch.object(bm, '_print_pair_code'):
+            await self._call({'action': 'pair_generate'})
+        resp = await self._call({'action': 'pair_status'})
+        self.assertEqual(resp['state'], 'pending')
+        self.assertGreater(resp['expires_in'], 0)
+        self.assertLessEqual(resp['expires_in'], bm._PAIR_CODE_TTL)
+
+    async def test_pair_status_paired_reports_ip(self):
+        bm._pair_paired_ip = '100.64.0.7'
+        resp = await self._call({'action': 'pair_status'})
+        self.assertEqual(resp, {'state': 'paired', 'ip': '100.64.0.7'})
+
+    async def test_pair_status_expired_without_code(self):
+        resp = await self._call({'action': 'pair_status'})
+        self.assertEqual(resp, {'state': 'expired'})
+
+    async def test_pair_status_expired_after_ttl(self):
+        bm._pair_code = '123456'
+        bm._pair_code_mono_expiry = time.monotonic() - 1
+        resp = await self._call({'action': 'pair_status'})
+        self.assertEqual(resp, {'state': 'expired'})
+
+    async def test_pair_generate_clears_previous_result(self):
+        bm._pair_paired_ip = '100.64.0.7'
+        with patch.object(bm, '_print_pair_code'):
+            await self._call({'action': 'pair_generate'})
+        resp = await self._call({'action': 'pair_status'})
+        self.assertEqual(resp['state'], 'pending')
+
+    async def test_pair_status_leaks_no_code_or_token(self):
+        _add_session('tok_secret_value')
+        with patch.object(bm, '_print_pair_code'):
+            await self._call({'action': 'pair_generate'})
+        resp = await self._call({'action': 'pair_status'})
+        body = json.dumps(resp)
+        self.assertNotIn('tok_secret_value', body)
+        self.assertNotIn(bm._pair_code, body)
+        self.assertEqual(set(resp), {'state', 'expires_in'})
 
     async def test_info_reports_listener(self):
         with patch.object(bm, '_listen',

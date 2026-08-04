@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import trustmux._ctl as ctl
 import trustmux._enable as enable
 import trustmux._disable as disable
+import trustmux._pair as pair
 
 _no_daemon = None
 
@@ -1064,6 +1065,94 @@ class TestInstallHookPort(unittest.TestCase):
         disable._remove_hook(p)
         self.assertNotIn('trustmux start', p.read_text())
         self.assertIn('# top', p.read_text())
+
+
+class TestPairWait(unittest.TestCase):
+    """`trustmux pair` returns on its own -- paired, expired, or timed out."""
+
+    def setUp(self):
+        self.sleep = patch('trustmux._pair.time.sleep').start()
+        self.addCleanup(patch.stopall)
+
+    def _poll(self, *replies):
+        return patch('trustmux._pair._poll', side_effect=list(replies))
+
+    def test_returns_ip_when_paired(self):
+        with self._poll({'state': 'paired', 'ip': '100.64.0.7'}):
+            self.assertEqual(pair._wait_for_pair(60), '100.64.0.7')
+        self.sleep.assert_not_called()
+
+    def test_polls_until_paired(self):
+        with self._poll({'state': 'pending', 'expires_in': 59},
+                        {'state': 'pending', 'expires_in': 58},
+                        {'state': 'paired', 'ip': '10.0.0.4'}):
+            self.assertEqual(pair._wait_for_pair(60), '10.0.0.4')
+        self.assertEqual(self.sleep.call_count, 2)
+
+    def test_paired_without_ip_still_reports_success(self):
+        with self._poll({'state': 'paired'}):
+            self.assertEqual(pair._wait_for_pair(60), 'unknown')
+
+    def test_returns_empty_when_code_expires(self):
+        with self._poll({'state': 'expired'}):
+            self.assertEqual(pair._wait_for_pair(60), '')
+
+    def test_returns_empty_when_daemon_disappears(self):
+        with self._poll(None):
+            self.assertEqual(pair._wait_for_pair(60), '')
+
+    def test_gives_up_at_deadline(self):
+        with self._poll({'state': 'pending', 'expires_in': 0}):
+            self.assertEqual(pair._wait_for_pair(0), '')
+
+    def test_daemon_without_pair_status_waits_out_the_code(self):
+        with self._poll({'error': "unknown action: 'pair_status'"}):
+            self.assertEqual(pair._wait_for_pair(5), '')
+        self.assertEqual(self.sleep.call_count, 1)
+        self.assertGreater(self.sleep.call_args[0][0], 4)
+
+
+class TestPairMain(unittest.TestCase):
+    """main() prints the outcome and exits instead of waiting for a keypress."""
+
+    def setUp(self):
+        patch('trustmux._pair.admin',
+              return_value={'code': '123-456', 'expires_in': 60}).start()
+        patch('trustmux._pair._pair_url', return_value='https://host/').start()
+        patch('trustmux._pair.warn_if_peer_blocked').start()
+        patch('trustmux._pair._print_qr').start()
+        patch('trustmux._pair._clear').start()
+        self.addCleanup(patch.stopall)
+
+    def test_reports_accepted_pair(self):
+        with patch('trustmux._pair._wait_for_pair', return_value='10.0.0.4'), \
+             patch('builtins.print') as p:
+            pair.main()
+        out = '\n'.join(str(c[0][0]) for c in p.call_args_list if c[0])
+        self.assertIn('pair accepted from 10.0.0.4', out)
+
+    def test_reports_no_pair_and_exits_nonzero(self):
+        with patch('trustmux._pair._wait_for_pair', return_value=''), \
+             patch('builtins.print') as p:
+            with self.assertRaises(SystemExit) as cm:
+                pair.main()
+        self.assertEqual(cm.exception.code, 1)
+        out = '\n'.join(str(c[0][0]) for c in p.call_args_list if c[0])
+        self.assertIn('no client paired', out)
+
+    def test_ctrl_c_reports_no_pair(self):
+        with patch('trustmux._pair._wait_for_pair', side_effect=KeyboardInterrupt), \
+             patch('builtins.print') as p:
+            with self.assertRaises(SystemExit) as cm:
+                pair.main()
+        self.assertEqual(cm.exception.code, 1)
+        out = '\n'.join(str(c[0][0]) for c in p.call_args_list if c[0])
+        self.assertIn('no client paired', out)
+
+    def test_waits_for_the_code_ttl(self):
+        with patch('trustmux._pair._wait_for_pair', return_value='10.0.0.4') as w:
+            pair.main()
+        w.assert_called_once_with(60)
 
 
 if __name__ == '__main__':
