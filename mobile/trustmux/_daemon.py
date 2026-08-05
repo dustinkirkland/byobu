@@ -55,6 +55,7 @@ _pair_code: str = ""
 _pair_code_expiry: float = 0.0        # wall-clock time, for human display only
 _pair_code_mono_expiry: float = 0.0   # monotonic time, for expiry check
 _pair_attempts: int = 0
+_pair_paired_ip: str = ""             # IP that consumed the last code, for admin "pair_status"
 _MAX_PAIR_ATTEMPTS: int = 3
 _PAIR_CODE_TTL: int = 60              # 60 seconds — keep the window tight
 _TOKEN_EXPIRY_DAYS: int = 90          # sessions expire after 90 days of inactivity
@@ -124,10 +125,12 @@ def _save_tokens() -> None:
 
 def _generate_pair_code() -> str:
     global _pair_code, _pair_code_expiry, _pair_code_mono_expiry, _pair_attempts
+    global _pair_paired_ip
     _pair_code = f"{secrets.randbelow(1000000):06d}"
     _pair_code_expiry = time.time() + _PAIR_CODE_TTL
     _pair_code_mono_expiry = time.monotonic() + _PAIR_CODE_TTL
     _pair_attempts = 0
+    _pair_paired_ip = ""
     return _pair_code
 
 def _print_pair_code() -> None:
@@ -629,6 +632,7 @@ class PingHandler(BaseHandler):
 class PairHandler(BaseHandler):
     async def post(self):
         global _pair_attempts, _pair_code, _pair_code_expiry, _pair_code_mono_expiry
+        global _pair_paired_ip
         if not _pair_code:
             return self.json({"error": "no pairing code active — run trustmux-pair"}, 403)
         if time.monotonic() > _pair_code_mono_expiry:
@@ -667,6 +671,7 @@ class PairHandler(BaseHandler):
         _pair_code_expiry = 0.0
         _pair_code_mono_expiry = 0.0
         _pair_attempts = 0
+        _pair_paired_ip = ip
         print(f"✓ Trustmux: device paired ({ip})", flush=True)
         self.set_cookie(
             "trustmux_session", token,
@@ -1088,6 +1093,17 @@ async def _handle_admin(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
             code = _generate_pair_code()
             _print_pair_code()
             resp = {"code": f"{code[:3]}-{code[3:]}", "expires_in": _PAIR_CODE_TTL}
+
+        elif action == "pair_status":
+            # Outcome of the most recent code, so `trustmux pair` can stop waiting.
+            # Never returns the code itself or a session token.
+            if _pair_paired_ip:
+                resp = {"state": "paired", "ip": _pair_paired_ip}
+            elif _pair_code and time.monotonic() < _pair_code_mono_expiry:
+                resp = {"state": "pending",
+                        "expires_in": int(_pair_code_mono_expiry - time.monotonic())}
+            else:
+                resp = {"state": "expired"}
 
         elif action == "sessions_list":
             resp = [

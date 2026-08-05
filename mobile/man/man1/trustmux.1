@@ -69,12 +69,17 @@ Paired device tokens are preserved.
 .TP
 .B pair
 Ask the running daemon to generate a one-time 6-digit pairing code (valid for
-3 minutes) and display it along with the URL your phone should open.
+60 seconds) and display it along with the URL your phone should open.
 If
 .BR qrencode (1)
 is installed, a QR code is printed for one-scan pairing.
-The screen is cleared on the next keypress to keep the pairing URL out of the
-terminal scroll-back.
+The command then waits for the code to be used and returns as soon as a device
+pairs, or when the code expires, whichever comes first.
+It clears the screen and prints either
+.B "pair accepted from " \fIIP\fR
+(exit status 0) or
+.B "no client paired"
+(exit status 1).
 .TP
 .B unpair
 List all currently paired devices (IP address, browser label, and pairing
@@ -176,7 +181,7 @@ trustmux stop
 The one-time pairing code is a 6-digit decimal value drawn from
 .BR secrets.randbelow (1,000,000),
 giving 1,000,000 possible values.
-The code is valid for 3 minutes.
+The code is valid for 60 seconds.
 After three incorrect guesses the code is immediately invalidated and a new one
 must be generated with
 .BR "trustmux pair" .

@@ -124,7 +124,7 @@ trustmux pair
 - Daemon binds to `127.0.0.1:7432` only — not reachable from the network
 - All traffic encrypted by Tailscale WireGuard; HTTPS via `tailscale serve`
 - No relay server — terminal data never leaves your Tailscale mesh
-- Pairing codes: 6-digit, 5-minute TTL, single-use, max 10 attempts
+- Pairing codes: 6-digit, 60-second TTL, single-use, max 3 attempts
 - Session tokens: 256-bit random, stored at mode 0600
 
 ---
