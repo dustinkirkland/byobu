@@ -168,7 +168,6 @@ class TestKnownInstances(BaseDirs):
     def setUp(self):
         super().setUp()
         os.environ["TRUSTMUX_STATE_DIR"] = str(self.root / "state")
-        os.environ["TRUSTMUX_RUN_DIR"] = str(self.root / "run")
 
     def test_empty_before_anything_exists(self):
         self.assertEqual(paths.known_instances(), [])
