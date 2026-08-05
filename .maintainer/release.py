@@ -1931,6 +1931,16 @@ def push_salsa(v, identity):
         f"--prefix={v['pkg']}-{base_ver}/",
         f"--output={tarball}",
         tag,
+        # .gitignore's /debian/ rule exists only to keep prepare_debian()'s
+        # transient, Docker-only checkout out of *this* repo's working tree
+        # (see the comment above prepare_debian()) -- it has no business as
+        # "upstream source". gbp import-orig merges this tarball's tree into
+        # debian/latest, so shipping it would merge that rule into the actual
+        # Debian packaging branch's own .gitignore, where it then makes every
+        # `git add debian/<anything>` -- including the dch commit below --
+        # look like an attempt to add an ignored path. Exactly what happened
+        # cutting 7.17.
+        "--", ".", ":!.gitignore",
     ])
     print(f"  ✓ {tarball}")
 
@@ -1996,7 +2006,11 @@ def push_salsa(v, identity):
         ], cwd=str(salsa_clone), env=env)
         # dch edits debian/changelog on disk; commit it explicitly (gbp
         # import-orig's own commit above never touches debian/).
-        run(["git", "-C", str(salsa_clone), "add", "debian/changelog"])
+        # -f: belt and suspenders alongside excluding .gitignore from the
+        # upstream tarball above -- debian/changelog is always meant to be
+        # tracked here, so forcing past a stray ignore rule (this one or any
+        # other) is correct regardless of where it came from.
+        run(["git", "-C", str(salsa_clone), "add", "-f", "debian/changelog"])
         run(["git", "-C", str(salsa_clone), "commit", "-m",
              f"debian/changelog: new upstream release {base_ver}"])
         print(f"  ✓ debian/changelog: {base_ver}-1 UNRELEASED stanza added")
