@@ -115,23 +115,28 @@ sys.stdout = _TLSStdout(sys.stdout)
 # ── helpers ────────────────────────────────────────────────────────────────
 
 def run(cmd, check=True, capture=False, **kwargs):
-    kw = dict(check=check, text=True, **kwargs)
+    kw = dict(text=True, **kwargs)
     if capture:
         kw.update(stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return subprocess.run(cmd, shell=isinstance(cmd, str), **kw)
+        return subprocess.run(cmd, shell=isinstance(cmd, str), check=check, **kw)
     # In a parallel phase thread, pipe subprocess output into the thread buffer
     # so it is replayed in-order with the rest of that phase's output.
     buf = getattr(_tls, "buf", None)
     if buf is not None:
         kw.update(stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        result = subprocess.run(cmd, shell=isinstance(cmd, str), **kw)
+        # check=False here regardless of the caller's `check`: subprocess.run's
+        # own check=True raises from inside the call, before this function ever
+        # reaches the buf.write() below -- silently discarding exactly the
+        # output a failure needs to be diagnosable. Do the check ourselves,
+        # after capturing.
+        result = subprocess.run(cmd, shell=isinstance(cmd, str), check=False, **kw)
         buf.write(result.stdout or "")
         if check and result.returncode != 0:
             short = (cmd[0] if isinstance(cmd, list) else str(cmd).split()[0])
             buf.write(f"\n[exit {result.returncode}] {short}\n")
             raise subprocess.CalledProcessError(result.returncode, cmd, result.stdout)
         return result
-    return subprocess.run(cmd, shell=isinstance(cmd, str), **kw)
+    return subprocess.run(cmd, shell=isinstance(cmd, str), check=check, **kw)
 
 
 def run_phases_parallel(labeled_fns, log_dir=None):
