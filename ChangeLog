@@ -16,6 +16,30 @@ Entries below 7.15 are the original, unedited history as it existed in
 debian/changelog before this split -- full history preserved, nothing
 lost, just relocated to where all distributions can use it.
 
+byobu (7.17) 2026-08-05  Dustin Kirkland <kirkland@ubuntu.com>
+
+  * trustmux: split config and state into $XDG_CONFIG_HOME/trustmux (user
+    config only) and $XDG_STATE_HOME/trustmux (tokens, TLS keypair, log,
+    socket, pid file); existing installs migrate automatically on first run
+    (Closes: GH #123)
+  * trustmux: add multi-instance support -- `--name` runs several daemons
+    at once, each with its own port, tokens and TLS cert; `trustmux list`
+    and `trustmux rm` manage them (Closes: GH #123)
+  * trustmux: add `--advertise` so a daemon behind NAT or on a cloud
+    instance can publish and certify the address a phone should actually
+    use, instead of the address it can only see for itself
+    (Closes: GH #126)
+  * trustmux: `trustmux pair` now returns on its own as soon as a device
+    pairs or the code expires, instead of waiting for a keypress
+    (Closes: GH #125)
+  * trustmux: fix a daemon left running from before an upgrade being
+    invisible to `stop`/`status`/`restart`; `restart` now finds it and
+    moves it to the new instance layout automatically
+  * security: raise the tornado floor to 6.5.7 and the cryptography floor
+    to 50.0, closing five Dependabot advisories: GHSA-pw6j-qg29-8w7f,
+    GHSA-537c-gmf6-5ccf, GHSA-g6cj-pr64-35w5, GHSA-jwv3-5hgf-82ww,
+    GHSA-m2h6-j472-rp4c
+
 byobu (7.15) 2026-07-09  Dustin Kirkland <kirkland@ubuntu.com>
 
   * trustmux/pwa: fix greedy OSC-8 hyperlink parser silently truncating pane

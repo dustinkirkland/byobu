@@ -71,6 +71,22 @@ def read_configure_ac_version():
         die("Cannot find AC_INIT version in configure.ac")
     return m.group(1), m.group(2)
 
+
+def _changelog_top_entry() -> str | None:
+    """Version named by the top-level ChangeLog's newest stanza, or None if the
+    file is missing or its top line does not parse.
+
+    Shared by determine_versions()'s two ChangeLog checks: a non-blocking
+    reminder on every rc (so a curated entry accretes incrementally, alongside
+    the work, rather than being reconstructed from memory under pressure at
+    final) and the hard gate on final itself.
+    """
+    changelog_path = BYOBU_SRC / "ChangeLog"
+    if not changelog_path.exists():
+        return None
+    m = re.search(r"^byobu \(([^)]+)\)", changelog_path.read_text(), re.MULTILINE)
+    return m.group(1) if m else None
+
 # Set to True by --interactive; when False all confirm() calls auto-proceed.
 _interactive = False
 
@@ -563,6 +579,17 @@ def determine_versions(mode, resume=False):
         ubuntu_ver = None
         print(f"  RC:           {rc_num}  →  trustmux-v{pypi_version}")
         print(f"  PPA base:     {ppa_base}~{{series}}1")
+
+        # Non-blocking: nudge toward writing the curated ChangeLog entry
+        # incrementally, across the rc's that lead up to a release, rather
+        # than reconstructing it from git log under pressure right before
+        # final -- which is the hard gate below, and does block.
+        top = _changelog_top_entry()
+        if top == base_ver:
+            print(f"  ChangeLog:    top entry already covers {base_ver} ✓")
+        else:
+            print(f"  ChangeLog:    top entry is {top!r}, not yet {base_ver!r} — "
+                  f"remember to add/extend a curated entry before running final.")
     else:
         pypi_version = base_ver
         ppa_base = base_ver
@@ -579,17 +606,15 @@ def determine_versions(mode, resume=False):
         # release notes belong in the top-level ChangeLog file, and nothing
         # in this pipeline can write good bullets for you. Catch a forgotten
         # entry here rather than shipping a release with a stale ChangeLog.
-        changelog_path = BYOBU_SRC / "ChangeLog"
-        if not changelog_path.exists():
-            die(f"{changelog_path} not found — cannot verify it has a "
-                f"{base_ver} entry.")
-        top_match = re.search(r"^byobu \(([^)]+)\)", changelog_path.read_text(), re.MULTILINE)
-        if not top_match or top_match.group(1) != base_ver:
-            found = top_match.group(1) if top_match else "(no entry found)"
+        # (The rc branch above prints a non-blocking reminder of the same
+        # check throughout the cycle; this is the hard gate.)
+        top = _changelog_top_entry()
+        if top != base_ver:
+            found = top if top is not None else "(no entry found)"
             die(
                 f"ChangeLog's top entry is {found!r}, expected {base_ver!r}.\n"
                 f"  Add a curated 'byobu ({base_ver}) {{date}}  {{name}} <{{email}}>' "
-                f"stanza to {changelog_path} before running final — "
+                f"stanza to {BYOBU_SRC / 'ChangeLog'} before running final — "
                 f"debian/changelog only ever gets a one-line placeholder."
             )
         print(f"  ChangeLog:    top entry matches {base_ver} ✓")
