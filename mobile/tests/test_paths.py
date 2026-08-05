@@ -95,8 +95,16 @@ class TestInstancePaths(BaseDirs):
     def test_two_instances_share_nothing(self):
         a, b = paths.Instance("a"), paths.Instance("b")
         for attr in ("sock", "pid_file", "tokens_file", "log_file",
-                     "cert_file", "key_file"):
+                     "cert_file", "key_file", "config_file"):
             self.assertNotEqual(getattr(a, attr), getattr(b, attr), attr)
+
+    def test_config_file_is_user_authored_config_not_state(self):
+        # It holds intent (an advertise source), not a result, and is the one
+        # per-instance file the user edits by hand.
+        os.environ["TRUSTMUX_CONFIG_DIR"] = str(self.root / "config")
+        inst = paths.Instance("work")
+        self.assertEqual(inst.config_file,
+                         self.root / "config" / "instances" / "work.json")
 
     def test_ensure_dirs_is_private(self):
         inst = paths.Instance("perms")

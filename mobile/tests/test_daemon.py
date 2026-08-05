@@ -463,5 +463,68 @@ class TestMainHelp(unittest.TestCase):
             self.assertEqual(cm.exception.code, 0)
 
 
+class TestSelfSignedCertSans(unittest.TestCase):
+    """An advertised host has to be in the certificate.
+
+    A browser refuses a certificate that omits the name in the URL bar
+    outright, rather than offering the click-through a self-signed one gets, so
+    advertising an address without certifying it would be worse than useless.
+    """
+
+    def setUp(self):
+        self.td = tempfile.TemporaryDirectory()
+        self.addCleanup(self.td.cleanup)
+        root = Path(self.td.name)
+        for attr, value in (('STATE_DIR', root), ('CERT_FILE', root / 'cert.pem'),
+                            ('KEY_FILE', root / 'key.pem')):
+            p = patch.object(bm, attr, value)
+            p.start()
+            self.addCleanup(p.stop)
+        # Keep the local-discovery SANs deterministic.
+        p = patch.object(bm, '_tailscale_ip', return_value=None)
+        p.start()
+        self.addCleanup(p.stop)
+
+    def _sans(self, lan_ip, advertised=()):
+        from cryptography import x509
+        from cryptography.x509.oid import ExtensionOID
+        with patch('builtins.print'):
+            bm._ensure_self_signed_cert(lan_ip, advertised)
+        cert = x509.load_pem_x509_certificate(bm.CERT_FILE.read_bytes())
+        ext = cert.extensions.get_extension_for_oid(
+            ExtensionOID.SUBJECT_ALTERNATIVE_NAME).value
+        return ([str(ip) for ip in ext.get_values_for_type(x509.IPAddress)],
+                ext.get_values_for_type(x509.DNSName))
+
+    def test_advertised_ip_becomes_an_ip_san(self):
+        ips, _ = self._sans('10.128.0.7', ['34.1.2.3'])
+        self.assertIn('34.1.2.3', ips)
+        self.assertIn('10.128.0.7', ips)     # the local one is still there
+
+    def test_advertised_name_becomes_a_dns_san(self):
+        _, names = self._sans('10.128.0.7', ['tmux.example.com'])
+        self.assertIn('tmux.example.com', names)
+
+    def test_several_advertised_hosts_all_land(self):
+        ips, names = self._sans('10.128.0.7', ['34.1.2.3', 'tmux.example.com'])
+        self.assertIn('34.1.2.3', ips)
+        self.assertIn('tmux.example.com', names)
+
+    def test_advertised_ipv6_becomes_an_ip_san(self):
+        ips, _ = self._sans('10.128.0.7', ['2001:db8::1'])
+        self.assertIn('2001:db8::1', ips)
+
+    def test_a_host_already_covered_is_not_duplicated(self):
+        ips, _ = self._sans('10.128.0.7', ['10.128.0.7', '127.0.0.1'])
+        self.assertEqual(ips.count('10.128.0.7'), 1)
+        self.assertEqual(ips.count('127.0.0.1'), 1)
+
+    def test_no_advertised_hosts_leaves_the_previous_sans_alone(self):
+        ips, names = self._sans('10.128.0.7')
+        self.assertIn('10.128.0.7', ips)
+        self.assertIn('127.0.0.1', ips)
+        self.assertIn('localhost', names)
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

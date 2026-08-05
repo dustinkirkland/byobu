@@ -24,6 +24,7 @@ _trustmux() {
 
     case "$prev" in
         --port)      return ;;                                     # freeform
+        --advertise) return ;;                                     # freeform
         --name)      COMPREPLY=($(compgen -W "$(_trustmux_instances)" -- "$cur"))
                      return ;;
     esac
@@ -33,7 +34,10 @@ _trustmux() {
         setup)
             COMPREPLY=($(compgen -W "--quiet --port --name" -- "$cur"))
             ;;
-        start|start-local|start-direct|stop|restart|status|enable)
+        start|start-local|start-direct|restart|enable)
+            COMPREPLY=($(compgen -W "--port --name --advertise --no-advertise" -- "$cur"))
+            ;;
+        stop|status)
             COMPREPLY=($(compgen -W "--port --name" -- "$cur"))
             ;;
         log|disable|pair|unpair)

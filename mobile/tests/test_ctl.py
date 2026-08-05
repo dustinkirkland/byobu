@@ -1,5 +1,6 @@
 """Tests for trustmux._ctl, _enable, _disable."""
 
+import io
 import json
 import os
 import shutil
@@ -1117,6 +1118,160 @@ class TestDirectUrl(unittest.TestCase):
     def test_live_daemon_port_wins_over_caller(self):
         url = ctl.direct_url(4444, {'host': '127.0.0.1', 'port': 3389, 'scheme': 'http'})
         self.assertEqual(url, 'http://localhost:3389/')
+
+    def test_advertised_address_wins_over_the_discovered_one(self):
+        # The NAT case: the daemon binds every interface and can only see an
+        # internal address, but the operator said what a phone can reach.
+        with patch('trustmux._ctl._lan_ip', return_value='10.128.0.7'):
+            url = ctl.direct_url(7432, {'host': '0.0.0.0', 'port': 7432,
+                                        'scheme': 'https',
+                                        'advertise': ['https://34.1.2.3:7432/']})
+        self.assertEqual(url, 'https://34.1.2.3:7432/')
+
+    def test_first_advertised_address_is_the_one_printed(self):
+        url = ctl.direct_url(7432, {'host': '0.0.0.0', 'scheme': 'https',
+                                    'advertise': ['https://a/', 'https://b/']})
+        self.assertEqual(url, 'https://a/')
+
+    def test_empty_advertise_list_falls_back(self):
+        with patch('trustmux._ctl._lan_ip', return_value='192.168.1.9'):
+            url = ctl.direct_url(7432, {'host': '0.0.0.0', 'scheme': 'https',
+                                        'advertise': []})
+        self.assertEqual(url, 'https://192.168.1.9:7432/')
+
+
+class TestPairUrl(unittest.TestCase):
+    """What `trustmux pair` puts in the URL and QR code."""
+
+    def setUp(self):
+        import trustmux._pair as pair
+        self.pair = pair
+        self.inst = ctl.Instance('pairurl')
+
+    def _url(self, info):
+        with patch('trustmux._pair.daemon_info', return_value=info):
+            return self.pair._pair_url(self.inst)
+
+    def test_advertised_address_beats_the_tailnet_name(self):
+        # The operator's answer to exactly this question wins, and it is the one
+        # the daemon's certificate was built around.
+        with patch('trustmux._pair._ts_url', return_value='https://host.ts.net/') as ts:
+            url = self._url({'host': '127.0.0.1', 'scheme': 'https',
+                             'advertise': ['https://34.1.2.3:7432/']})
+        self.assertEqual(url, 'https://34.1.2.3:7432/')
+        ts.assert_not_called()
+
+    def test_tailnet_name_still_used_when_nothing_is_advertised(self):
+        with patch('trustmux._pair._ts_url', return_value='https://host.ts.net/'):
+            url = self._url({'host': '127.0.0.1', 'scheme': 'https',
+                             'advertise': []})
+        self.assertEqual(url, 'https://host.ts.net/')
+
+    def test_advertised_address_beats_the_lan_address(self):
+        with patch('trustmux._ctl._lan_ip', return_value='10.128.0.7'):
+            url = self._url({'host': '0.0.0.0', 'port': 7432, 'scheme': 'https',
+                             'advertise': ['https://tmux.example.com/']})
+        self.assertEqual(url, 'https://tmux.example.com/')
+
+    def test_pairing_code_appends_cleanly_to_an_advertised_url(self):
+        # The URL always ends in '/', so the fragment never merges with a host.
+        url = self._url({'host': '0.0.0.0', 'scheme': 'https',
+                         'advertise': ['https://tmux.example.com/']})
+        self.assertEqual(f"{url}#123456", 'https://tmux.example.com/#123456')
+
+
+class TestAdvertiseArgs(unittest.TestCase):
+    """What the CLI hands the daemon it launches."""
+
+    def setUp(self):
+        self.inst = ctl.Instance('advargs')
+
+    def test_sources_are_spelled_out_in_order(self):
+        got = ctl.advertise_args(['a.example.com', 'cmd:/bin/prog'], False, self.inst)
+        self.assertEqual(got, ['--advertise', 'a.example.com',
+                               '--advertise', 'cmd:/bin/prog'])
+
+    def test_no_sources_still_says_so_explicitly(self):
+        # Otherwise the daemon would consult the environment and config file
+        # itself, and --no-advertise could not override a configured source.
+        self.assertEqual(ctl.advertise_args(None, False, self.inst),
+                         ['--no-advertise'])
+        self.assertEqual(ctl.advertise_args(None, True, self.inst),
+                         ['--no-advertise'])
+
+    def test_an_unusable_source_is_caught_before_launching(self):
+        with self.assertRaises(ctl.AdvertiseError):
+            ctl.advertise_args(['cmd:/bin/echo host | tr -d x'], False, self.inst)
+
+
+class TestEnableAdvertiseNote(unittest.TestCase):
+    """`enable` writes a hook that carries no --advertise, so a source given on
+    the command line applies once and then vanishes. Say so."""
+
+    def setUp(self):
+        self.inst = ctl.Instance('advnote')
+
+    def _note(self, advertise, no_advertise=False, env=None):
+        with patch.dict(os.environ, {'TRUSTMUX_ADVERTISE': env} if env else {},
+                        clear=False):
+            if env is None:
+                os.environ.pop('TRUSTMUX_ADVERTISE', None)
+            with patch('sys.stderr', new_callable=io.StringIO) as err:
+                enable._warn_transient_advertise(advertise, no_advertise, self.inst)
+            return err.getvalue()
+
+    def test_flag_is_flagged_and_points_at_the_config_file(self):
+        out = self._note(['cmd:/bin/prog'])
+        self.assertIn('--advertise', out)
+        self.assertIn(str(self.inst.config_file), out)
+        self.assertIn('"advertise": ["cmd:/bin/prog"]', out)
+
+    def test_env_var_is_flagged(self):
+        out = self._note(None, env='tmux.example.com')
+        self.assertIn('TRUSTMUX_ADVERTISE', out)
+        self.assertIn('"advertise": ["tmux.example.com"]', out)
+
+    def test_silent_when_the_source_is_already_durable(self):
+        # From the config file, which is exactly what the hook will read.
+        self.assertEqual(self._note(None), '')
+
+    def test_silent_under_no_advertise(self):
+        # Nothing was advertised, so nothing is being lost.
+        self.assertEqual(self._note(None, True, env='tmux.example.com'), '')
+
+
+class TestLogError(unittest.TestCase):
+    """Why a daemon refused to start, taken from what it logged."""
+
+    def setUp(self):
+        self.inst = ctl.Instance('logerror')
+        self.inst.ensure_dirs()
+        self.addCleanup(lambda: self.inst.log_file.unlink(missing_ok=True))
+
+    def test_finds_the_daemons_error_line(self):
+        self.inst.log_file.write_text('Trustmux: starting\n'
+                                      'Error: /bin/prog exited 22: no metadata\n')
+        self.assertEqual(ctl._log_error(self.inst),
+                         'Error: /bin/prog exited 22: no metadata')
+
+    def test_earlier_attempts_are_not_reported(self):
+        # The log is appended to across starts, so an offset is what keeps a
+        # stale error from being blamed for this one.
+        self.inst.log_file.write_text('Error: an old failure\n')
+        mark = self.inst.log_file.stat().st_size
+        with self.inst.log_file.open('a') as f:
+            f.write('Trustmux daemon on https://0.0.0.0:7432\n')
+        self.assertEqual(ctl._log_error(self.inst, mark), '')
+
+    def test_the_last_error_wins(self):
+        self.inst.log_file.write_text('Error: first\nError: second\n')
+        self.assertEqual(ctl._log_error(self.inst), 'Error: second')
+
+    def test_no_error_and_no_log_are_both_empty(self):
+        self.inst.log_file.write_text('Trustmux: nothing wrong here\n')
+        self.assertEqual(ctl._log_error(self.inst), '')
+        self.inst.log_file.unlink()
+        self.assertEqual(ctl._log_error(self.inst), '')
 
 
 class TestLaunchPort(unittest.TestCase):

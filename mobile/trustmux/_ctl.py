@@ -11,6 +11,8 @@ import sys
 import time
 from pathlib import Path
 
+from trustmux._advertise import (ADVERTISE_ENV, AdvertiseError, advertised_urls,
+                                 check_sources, resolve_sources)
 from trustmux._paths import (DEFAULT_INSTANCE, INSTANCE_ENV, Instance,
                              check_sock_path, known_instances,
                              migrate_legacy_layout, resolve_instance,
@@ -19,6 +21,11 @@ from trustmux._paths import (DEFAULT_INSTANCE, INSTANCE_ENV, Instance,
 DEFAULT_PORT = 7432
 PORT_ENV   = "TRUSTMUX_PORT"
 SERVE_PORT = 443  # tailscale serve terminates TLS on :443
+
+# How long to wait for a just-launched daemon to answer on its admin socket.
+# Generous because resolving a cmd: advertise source happens before the socket
+# is bound and may take seconds (trustmux._advertise.CMD_BUDGET).
+LAUNCH_TIMEOUT = 12.0
 
 
 def _check_tmux() -> bool:
@@ -175,6 +182,12 @@ def direct_url(port: int, info: dict | None = None) -> str:
     """
     if info is None:
         info = daemon_info() or {}
+    # An advertised address is the operator saying what a phone can actually
+    # reach, and it is what the daemon built its certificate for, so it outranks
+    # anything discoverable from here.
+    advertised = advertised_urls(info)
+    if advertised:
+        return advertised[0]
     # A live daemon's own port beats the caller's idea of it.
     port = _valid_port(info.get("port")) or port
     scheme = info.get("scheme") or "https"
@@ -420,14 +433,23 @@ def _launch(port: int, extra_args: list[str], inst: Instance | None = None) -> i
             env=env,
         )
     write_pid_file(inst, proc.pid, port)
-    time.sleep(0.5)
-    if proc.poll() is not None:
-        # Died on startup — usually the port is taken, which is easy to hit
-        # once more than one instance is in play.  Without this the pid file
-        # still names the (zombie) child and the caller reports success.
-        inst.pid_file.unlink(missing_ok=True)
-        return None
-    return _pid(port, inst)
+    # Wait for the daemon to answer rather than sleeping a fixed interval:
+    # resolving an advertise source runs before the admin socket is bound and
+    # may take seconds, and a healthy daemon still starting up must not be
+    # reported as a failure to start.
+    deadline = time.monotonic() + LAUNCH_TIMEOUT
+    while True:
+        time.sleep(0.1)
+        if proc.poll() is not None:
+            # Died on startup — usually the port is taken, which is easy to hit
+            # once more than one instance is in play, or an advertise source
+            # that would not resolve.  Without this the pid file still names the
+            # (zombie) child and the caller reports success.
+            inst.pid_file.unlink(missing_ok=True)
+            return None
+        pid = _pid(port, inst)
+        if pid or time.monotonic() >= deadline:
+            return pid
 
 
 def can_use_serve(inst: Instance, stream=sys.stderr) -> bool:
@@ -501,8 +523,43 @@ def cmd_setup(quiet: bool = False, port: int | None = None,
     return 0
 
 
+def advertise_args(advertise: list[str] | None = None, no_advertise: bool = False,
+                   inst: Instance | None = None) -> list[str]:
+    """Resolve advertise sources here and spell them out for the daemon.
+
+    Passing the decision explicitly -- including "none" -- means the daemon we
+    launch never re-derives it from the environment or the config file, so the
+    CLI's precedence is the only one in play.  Raises AdvertiseError.
+    """
+    sources = resolve_sources(advertise, no_advertise, inst)
+    check_sources(sources)
+    if not sources:
+        return ["--no-advertise"]
+    return [arg for source in sources for arg in ("--advertise", source)]
+
+
+def _log_error(inst: Instance, offset: int = 0) -> str:
+    """The daemon's own 'Error:' line from whatever it logged past offset.
+
+    A failure to start has more causes than a taken port now that an advertise
+    source can refuse to resolve, and the daemon already says which -- but
+    nobody reads a log on a hunch.
+    """
+    try:
+        with inst.log_file.open() as f:
+            f.seek(offset)
+            lines = f.read().splitlines()
+    except OSError:
+        return ""
+    for line in reversed(lines):
+        if line.startswith("Error:"):
+            return line
+    return ""
+
+
 def cmd_start(mode: str = "serve", port: int | None = None,
-              inst: Instance | None = None) -> int:
+              inst: Instance | None = None, advertise: list[str] | None = None,
+              no_advertise: bool = False) -> int:
     inst = inst or Instance()
     if mode == "serve" and not can_use_serve(inst):
         return 1
@@ -513,6 +570,21 @@ def cmd_start(mode: str = "serve", port: int | None = None,
     if p:
         print(f"trustmux already running (pid {p})")
         return 1
+
+    # Before anything is started: a source that cannot even be read is a usage
+    # error, and reporting it as one beats a daemon that exits during startup.
+    try:
+        adv = advertise_args(advertise, no_advertise, inst)
+    except AdvertiseError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 2
+
+    # Where this instance's log ends now, so that a failure below is diagnosed
+    # from what this daemon logged rather than from an earlier attempt's error.
+    try:
+        log_mark = inst.log_file.stat().st_size
+    except OSError:
+        log_mark = 0
 
     if mode == "serve":
         if not _check_tmux():
@@ -534,21 +606,23 @@ def cmd_start(mode: str = "serve", port: int | None = None,
         if not _ensure_ts_serve(port):
             return 1
         print("Starting trustmux (HTTPS mode)...")
-        pid = _launch(port, ["--host", "127.0.0.1", "--https"], inst)
+        pid = _launch(port, adv + ["--host", "127.0.0.1", "--https"], inst)
         ok = pid is not None
         if ok:
             print(f"trustmux started (pid {pid})")
-            print(f"Connect: https://{ts_host}")
+            urls = advertised_urls(daemon_info(inst))
+            print(f"Connect: {urls[0] if urls else f'https://{ts_host}'}")
 
     elif mode == "start-local":
         print("Starting trustmux (loopback only — SSH tunnel access)...")
-        pid = _launch(port, ["--host", "127.0.0.1"], inst)
+        pid = _launch(port, adv + ["--host", "127.0.0.1"], inst)
         ok = pid is not None
         if ok:
             fqdn = socket.getfqdn()
+            urls = advertised_urls(daemon_info(inst))
             print(f"trustmux started (pid {pid})")
             print(f"Access via SSH tunnel: ssh -L {port}:localhost:{port} user@{fqdn}")
-            print(f"Then open: http://localhost:{port}")
+            print(f"Then open: {urls[0] if urls else f'http://localhost:{port}'}")
 
     elif mode == "start-direct":
         if not _check_tmux():
@@ -556,11 +630,13 @@ def cmd_start(mode: str = "serve", port: int | None = None,
         if not _check_tls():
             return 1
         print("Starting trustmux (direct HTTPS — self-signed cert)...")
-        pid = _launch(port, ["--host", "0.0.0.0", "--self-signed"], inst)
+        pid = _launch(port, adv + ["--host", "0.0.0.0", "--self-signed"], inst)
         ok = pid is not None
         if ok:
             print(f"trustmux started (pid {pid})")
-            print(f"Connect: https://{_lan_ip()}:{port}")
+            # direct_url() prefers whatever the daemon says it advertises, so
+            # this prints the reachable address rather than the local one.
+            print(f"Connect: {direct_url(port, daemon_info(inst))}")
             print(f"  (browser will warn about self-signed cert — click through to proceed)")
 
     else:
@@ -568,13 +644,17 @@ def cmd_start(mode: str = "serve", port: int | None = None,
         return 1
 
     if not ok:
-        # _pid() only names daemons this instance claims, so a port held by
-        # someone else no longer surfaces as "already running" -- it lands here
-        # instead, as a failure to bind.  Name that as the likely cause: the
-        # daemon logged the real errno, but nobody reads a log on a hunch.
         print(f"trustmux failed to start — check {inst.log_file}")
-        print(f"  (most often port {port} is already in use — try another "
-              f"--port)", file=sys.stderr)
+        reason = _log_error(inst, log_mark)
+        if reason:
+            print(f"  {reason}", file=sys.stderr)
+        else:
+            # _pid() only names daemons this instance claims, so a port held by
+            # someone else no longer surfaces as "already running" -- it lands
+            # here instead, as a failure to bind, and the daemon logs an errno
+            # rather than one of its own "Error:" lines.
+            print(f"  (most often port {port} is already in use — try another "
+                  f"--port)", file=sys.stderr)
         return 1
     return 0
 
@@ -624,18 +704,21 @@ def cmd_status(port: int | None = None, inst: Instance | None = None) -> int:
         return 0
 
     print(f"trustmux running (pid {p}) — port {port}")
-    try:
-        out = subprocess.check_output(
-            ["tailscale", "serve", "status"],
-            stderr=subprocess.DEVNULL, text=True,
-        )
-        if f":{port}" in out:
-            ts_host = _ts_host()
-            if ts_host:
-                print(f"Connect: https://{ts_host}")
-            return 0
-    except Exception:
-        pass
+    # An advertised address is what the daemon certified and what pair prints,
+    # so it wins over the tailnet name here as well.
+    if not advertised_urls(info):
+        try:
+            out = subprocess.check_output(
+                ["tailscale", "serve", "status"],
+                stderr=subprocess.DEVNULL, text=True,
+            )
+            if f":{port}" in out:
+                ts_host = _ts_host()
+                if ts_host:
+                    print(f"Connect: https://{ts_host}")
+                return 0
+        except Exception:
+            pass
     print(f"Connect: {direct_url(port, info)}")
     return 0
 
@@ -790,20 +873,33 @@ def main() -> None:
     port_opts.add_argument("--port", type=int, metavar="PORT",
                            help=f"TCP port (default: {DEFAULT_PORT}, or ${PORT_ENV})")
 
+    # Advertising changes what the daemon publishes — the URL `pair` prints and
+    # the names in its certificate — not what it binds, so only the commands
+    # that start a daemon can set it.
+    adv_opts = argparse.ArgumentParser(add_help=False)
+    adv_opts.add_argument("--advertise", metavar="SOURCE", action="append",
+                          help="Address a phone should use when it is not the one "
+                               "this host can see: HOST, HOST:PORT, a URL, or "
+                               "cmd:PROGRAM to run PROGRAM for it. Repeatable; "
+                               f"replaces ${ADVERTISE_ENV} and the config file")
+    adv_opts.add_argument("--no-advertise", action="store_true",
+                          help="Advertise nothing, ignoring any configured source")
+
     both = [inst_opts, port_opts]
+    starting = both + [adv_opts]
 
     p_setup = sub.add_parser("setup", parents=both,
                              help="One-time setup: verify install, configure tailscale serve")
     p_setup.add_argument("--quiet", action="store_true", help="Suppress next-steps output")
 
-    sub.add_parser("start",        parents=both, help="Start daemon via tailscale serve (HTTPS — default)")
-    sub.add_parser("serve",        parents=both, help=argparse.SUPPRESS)   # alias
-    sub.add_parser("start-local",  parents=both, help="Start daemon loopback-only for SSH tunnel access")
-    sub.add_parser("start-direct", parents=both, help="Start daemon direct HTTPS (self-signed cert, no Tailscale)")
+    sub.add_parser("start",        parents=starting, help="Start daemon via tailscale serve (HTTPS — default)")
+    sub.add_parser("serve",        parents=starting, help=argparse.SUPPRESS)   # alias
+    sub.add_parser("start-local",  parents=starting, help="Start daemon loopback-only for SSH tunnel access")
+    sub.add_parser("start-direct", parents=starting, help="Start daemon direct HTTPS (self-signed cert, no Tailscale)")
     sub.add_parser("stop",         parents=both, help="Stop daemon (tailscale serve config persists)")
-    sub.add_parser("restart",      parents=both, help="Restart daemon")
+    sub.add_parser("restart",      parents=starting, help="Restart daemon")
     sub.add_parser("status",       parents=both, help="Show running status and URL")
-    sub.add_parser("enable",       parents=both, help="Start daemon and install login hook for automatic start")
+    sub.add_parser("enable",       parents=starting, help="Start daemon and install login hook for automatic start")
     sub.add_parser("log",          parents=[inst_opts], help="Tail the log file")
     sub.add_parser("disable",      parents=[inst_opts], help="Stop daemon and remove login hook")
     sub.add_parser("pair",         parents=[inst_opts], help="Generate a one-time pairing code for a new device")
@@ -828,15 +924,17 @@ def main() -> None:
     # Resolve once: restart must reuse the running daemon's port after stopping
     # it, by which point the daemon can no longer be asked.
     port = resolve_port(args.port, inst) if hasattr(args, "port") else DEFAULT_PORT
+    adv = getattr(args, "advertise", None)
+    no_adv = getattr(args, "no_advertise", False)
 
     if cmd == "setup":
         sys.exit(cmd_setup(quiet=args.quiet, port=port, inst=inst))
     elif cmd in ("start", "serve"):
-        sys.exit(cmd_start("serve", port, inst))
+        sys.exit(cmd_start("serve", port, inst, adv, no_adv))
     elif cmd == "start-local":
-        sys.exit(cmd_start("start-local", port, inst))
+        sys.exit(cmd_start("start-local", port, inst, adv, no_adv))
     elif cmd == "start-direct":
-        sys.exit(cmd_start("start-direct", port, inst))
+        sys.exit(cmd_start("start-direct", port, inst, adv, no_adv))
     elif cmd == "stop":
         sys.exit(cmd_stop(port, inst))
     elif cmd == "restart":
@@ -847,7 +945,7 @@ def main() -> None:
             sys.exit(1)
         cmd_stop(port, inst)
         time.sleep(0.5)
-        sys.exit(cmd_start("serve", port, inst))
+        sys.exit(cmd_start("serve", port, inst, adv, no_adv))
     elif cmd == "status":
         sys.exit(cmd_status(port, inst))
     elif cmd == "list":
@@ -858,7 +956,7 @@ def main() -> None:
         sys.exit(cmd_log(inst))
     elif cmd == "enable":
         from trustmux._enable import main as _run_enable
-        _run_enable(port, inst)
+        _run_enable(port, inst, adv, no_adv)
     elif cmd == "disable":
         from trustmux._disable import main as _run_disable
         _run_disable(inst)
