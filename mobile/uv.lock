@@ -317,7 +317,7 @@ wheels = [
 
 [[package]]
 name = "trustmux"
-version = "7.17"
+version = "7.18"
 source = { editable = "." }
 dependencies = [
     { name = "cryptography" },
