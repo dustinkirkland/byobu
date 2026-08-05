@@ -347,6 +347,33 @@ def check_tools(mode="rc"):
     print(f"  Tools OK: {' '.join(required)}")
 
 
+def check_uv_lock_fresh():
+    """Refuse to release if mobile/uv.lock is out of sync with pyproject.toml.
+
+    mobile/uv.lock drifted for months after 68a68a0a raised the tornado floor
+    to clear GHSA-pw6j-qg29-8w7f: pyproject.toml required >=6.5.7 but the
+    committed lock still resolved 6.5.6, because nothing regenerates the lock
+    mid-cycle when a dependency floor changes there. open_dev() now
+    regenerates it at the start of every cycle, but that alone would not have
+    caught this — the floor bump happened mid-cycle, not at open-dev. This is
+    the backstop: any RC or final build fails loudly, immediately, rather
+    than shipping — or worse, silently leaving a stale Dependabot alert open
+    — again.
+    """
+    section("Phase 1: uv.lock freshness check")
+    uv = shutil.which("uv")
+    if not uv:
+        die("uv not found — required to verify mobile/uv.lock is in sync.\n"
+            "  https://docs.astral.sh/uv/getting-started/installation/")
+    r = run([uv, "lock", "--check"], check=False, capture=True,
+            cwd=str(BYOBU_SRC / "mobile"))
+    if r.returncode != 0:
+        die("mobile/uv.lock is out of sync with mobile/pyproject.toml.\n"
+            f"{r.stdout}{r.stderr}\n"
+            "  Fix with:  cd mobile && uv lock && git commit -am 'mobile: refresh uv.lock'")
+    print("  mobile/uv.lock is up to date with pyproject.toml")
+
+
 def prewarm_gpg(identity):
     """Sign a throwaway blob to unlock the gpg-agent now, before the long builds start.
 
@@ -2065,13 +2092,27 @@ def open_dev():
         re.sub(r'^version = "[^"]+"', f'version = "{next_ver}"', pyproject_text, flags=re.MULTILINE)
     )
 
+    # Refresh the lockfile every cycle so it never has the chance to drift for
+    # months the way it did before GHSA-pw6j-qg29-8w7f: mobile/pyproject.toml
+    # picked up a raised tornado floor mid-cycle (68a68a0a) but mobile/uv.lock
+    # was never regenerated, so the vulnerable version stayed locked — and
+    # that's the file Dependabot actually scans. check_uv_lock_fresh() is the
+    # backstop that catches a mid-cycle drift like that one immediately; this
+    # is the routine upkeep that keeps it from accumulating in the first place.
+    uv = shutil.which("uv")
+    if not uv:
+        die("uv not found — required to refresh mobile/uv.lock.\n"
+            "  https://docs.astral.sh/uv/getting-started/installation/")
+    run([uv, "lock"], cwd=str(BYOBU_SRC / "mobile"))
+
     run(["git", "-C", str(BYOBU_SRC), "add",
          "configure.ac",
          "mobile/trustmux/__init__.py",
-         "mobile/pyproject.toml"])
+         "mobile/pyproject.toml",
+         "mobile/uv.lock"])
     run(["git", "-C", str(BYOBU_SRC), "commit",
          "-m", f"bump version to {next_ver} and open for development"])
-    print(f"  ✓ Committed: bump version to {next_ver}")
+    print(f"  ✓ Committed: bump version to {next_ver} (uv.lock refreshed)")
 
 
 # ── main ──────────────────────────────────────────────────────────────────
@@ -2126,6 +2167,7 @@ def main():
 
     identity = load_identity()
     check_tools(mode)
+    check_uv_lock_fresh()
     check_salsa_sync(mode)
     prewarm_gpg(identity)
     tap_trustmux = find_tap("trustmux", mode) if should_run("6d", start_from) else None
