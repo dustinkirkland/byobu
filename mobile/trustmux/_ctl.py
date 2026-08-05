@@ -126,6 +126,12 @@ def daemon_info(inst: Instance | None = None) -> dict | None:
     return _query_socket(inst.sock)
 
 
+# Transitional -- remove once pre-7.17 installs are vanishingly rare, suggest
+# ~2026-11-03 (90 days out) or a couple more minor releases, whichever is
+# later.  Delete _legacy_pid() below and its call sites in resolve_port(),
+# cmd_start(), cmd_stop(), cmd_status(); the legacy_dir import above; and
+# tests/test_ctl.py::TestLegacyDaemon.  Tracked:
+# https://github.com/dustinkirkland/byobu/issues/127
 def _legacy_pid(port: int, inst: Instance) -> int | None:
     """Like _pid(), but for a pre-upgrade daemon still serving at the old,
     pre-instances socket location -- default instance only, since a
