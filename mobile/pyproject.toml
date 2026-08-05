@@ -9,8 +9,8 @@ description = "Monitor and interact with tmux/Byobu sessions from your phone"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
 authors = [{name = "Dustin Kirkland", email = "dustin.kirkland@gmail.com"}]
-requires-python = ">=3.9"
-dependencies = ["tornado>=6.5.7", "cryptography>=43.0"]
+requires-python = ">=3.9.2"
+dependencies = ["tornado>=6.5.7", "cryptography>=50.0"]
 keywords = ["tmux", "byobu", "terminal", "mobile", "pwa"]
 classifiers = [
     "Development Status :: 4 - Beta",
