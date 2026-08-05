@@ -1343,6 +1343,49 @@ class TestPairMain(unittest.TestCase):
         w.assert_called_once_with(60, ctl.Instance())
 
 
+class TestPairPollInstance(unittest.TestCase):
+    """The pairing wait polls the named instance's socket, not a fixed path."""
+
+    def setUp(self):
+        self.inst = ctl.Instance('polltest')
+        self.inst.ensure_dirs()
+        self.addCleanup(shutil.rmtree, self.inst.state, True)
+
+    def _listen(self) -> socket.socket:
+        srv = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        srv.bind(str(self.inst.sock))
+        srv.listen(1)
+        self.addCleanup(srv.close)
+        return srv
+
+    def test_poll_reaches_the_named_instance(self):
+        srv = self._listen()
+
+        def handle():
+            conn, _ = srv.accept()
+            with conn:
+                conn.recv(4096)
+                conn.sendall(b'{"state": "paired", "ip": "10.0.0.4"}\n')
+
+        t = threading.Thread(target=handle, daemon=True)
+        t.start()
+        self.addCleanup(t.join, 5)
+        self.assertEqual(pair._poll({'action': 'pair_status'}, self.inst),
+                         {'state': 'paired', 'ip': '10.0.0.4'})
+
+    def test_poll_ignores_another_instances_live_socket(self):
+        self._listen()
+        self.assertIsNone(pair._poll({'action': 'pair_status'},
+                                     ctl.Instance('polltest-other')))
+
+    def test_wait_polls_the_instance_it_was_given(self):
+        work = ctl.Instance('work')
+        with patch('trustmux._pair._poll',
+                   return_value={'state': 'paired', 'ip': '10.0.0.4'}) as p:
+            self.assertEqual(pair._wait_for_pair(60, work), '10.0.0.4')
+        p.assert_called_once_with({'action': 'pair_status'}, work)
+
+
 # ---------------------------------------------------------------------------
 # Instances: isolation, listing, per-instance login hooks
 # ---------------------------------------------------------------------------
