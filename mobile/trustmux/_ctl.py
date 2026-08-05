@@ -14,7 +14,7 @@ from pathlib import Path
 from trustmux._advertise import (ADVERTISE_ENV, AdvertiseError, advertised_urls,
                                  check_sources, resolve_sources)
 from trustmux._paths import (DEFAULT_INSTANCE, INSTANCE_ENV, Instance,
-                             check_sock_path, known_instances,
+                             check_sock_path, known_instances, legacy_dir,
                              migrate_legacy_layout, resolve_instance,
                              socket_is_live, state_dir)
 
@@ -80,13 +80,15 @@ def _valid_port(value: object) -> int | None:
     return port if 1 <= port <= 65535 else None
 
 
-def daemon_info(inst: Instance | None = None) -> dict | None:
-    """Ask this instance's running daemon what it is listening on.
+def _query_socket(path: Path) -> dict | None:
+    """Ask whatever is listening on the admin socket at path what it is on.
 
-    Returns {"pid", "host", "port", "scheme"} or None if no daemon answers.
+    Returns {"pid", "host", "port", "scheme"} or None if nothing answers.
+    Shared by daemon_info() (an instance's own socket) and _legacy_pid() (the
+    fixed, pre-instances socket location) -- same protocol either way, since
+    every version of trustmux has spoken it there.
     """
-    inst = inst or Instance()
-    if not inst.sock.exists():
+    if not path.exists():
         return None
     try:
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
@@ -98,7 +100,7 @@ def daemon_info(inst: Instance | None = None) -> dict | None:
             # turns ordinary commands into a multi-second hang instead of an
             # instant response.
             s.settimeout(1.5)
-            s.connect(str(inst.sock))
+            s.connect(str(path))
             s.sendall(b'{"action": "info"}\n')
             s.shutdown(socket.SHUT_WR)
             chunks = []
@@ -113,6 +115,38 @@ def daemon_info(inst: Instance | None = None) -> dict | None:
     if not isinstance(info, dict) or "error" in info:
         return None
     return info
+
+
+def daemon_info(inst: Instance | None = None) -> dict | None:
+    """Ask this instance's running daemon what it is listening on.
+
+    Returns {"pid", "host", "port", "scheme"} or None if no daemon answers.
+    """
+    inst = inst or Instance()
+    return _query_socket(inst.sock)
+
+
+def _legacy_pid(port: int, inst: Instance) -> int | None:
+    """Like _pid(), but for a pre-upgrade daemon still serving at the old,
+    pre-instances socket location -- default instance only, since a
+    pre-upgrade install never had named instances to begin with.
+
+    migrate_legacy_layout() moves tokens/cert/key/log into the new location on
+    first run, but deliberately leaves a live daemon's own socket and pid file
+    where they are: it may still be serving.  Nothing in the admin protocol
+    changed when instances were added, so a reply here is exactly as
+    trustworthy as _pid()'s own -- this just checks the one other place a
+    daemon that predates the new directory layout could be.
+    """
+    if inst.name != DEFAULT_INSTANCE:
+        return None
+    info = _query_socket(legacy_dir() / "trustmux.sock")
+    if info is None:
+        return None
+    pid = info.get("pid")
+    if isinstance(pid, int) and pid > 0 and _valid_port(info.get("port")) == port:
+        return pid
+    return None
 
 
 def resolve_port(explicit: int | None = None, inst: Instance | None = None) -> int:
@@ -153,6 +187,16 @@ def resolve_port(explicit: int | None = None, inst: Instance | None = None) -> i
     recorded = _recorded(inst)
     if recorded and recorded[1] is not None and socket_is_live(inst.sock):
         return recorded[1]
+
+    # Nothing at the new location at all: a pre-upgrade daemon on a
+    # non-default port would otherwise be invisible to stop/status/restart,
+    # which have no other way to learn it.
+    if inst.name == DEFAULT_INSTANCE:
+        legacy = _query_socket(legacy_dir() / "trustmux.sock")
+        if legacy:
+            port = _valid_port(legacy.get("port"))
+            if port is not None:
+                return port
 
     return DEFAULT_PORT
 
@@ -570,6 +614,12 @@ def cmd_start(mode: str = "serve", port: int | None = None,
     if p:
         print(f"trustmux already running (pid {p})")
         return 1
+    legacy_p = _legacy_pid(port, inst)
+    if legacy_p:
+        print(f"trustmux already running (pid {legacy_p}) — a pre-upgrade daemon "
+              "still at the old socket location.")
+        print("  Run 'trustmux restart' to move it to the new one.", file=sys.stderr)
+        return 1
 
     # Before anything is started: a source that cannot even be read is a usage
     # error, and reporting it as one beats a daemon that exits during startup.
@@ -664,6 +714,17 @@ def cmd_stop(port: int | None = None, inst: Instance | None = None) -> int:
     port = resolve_port(port, inst)
     p = _pid(port, inst)
     if not p:
+        legacy_p = _legacy_pid(port, inst)
+        if legacy_p:
+            # No pid-file cross-check here: unlike the new location, there is
+            # nothing of ours to cross-check against -- the legacy pid file
+            # predates the port being recorded at all (_recorded()), and the
+            # admin socket reply (the same source _pid() itself trusts) is
+            # already proof enough that this pid holds this port.
+            os.kill(legacy_p, signal.SIGTERM)
+            print(f"trustmux stopped (pid {legacy_p}) — this was a pre-upgrade "
+                  "daemon at the old socket location.")
+            return 0
         print("trustmux not running")
         # "Nothing found on *this* port" does not mean the pid file is stale
         # -- it may correctly be tracking this instance's daemon on another
@@ -700,6 +761,12 @@ def cmd_status(port: int | None = None, inst: Instance | None = None) -> int:
     port = resolve_port(port, inst)
     p = _pid(port, inst)
     if not p:
+        legacy_p = _legacy_pid(port, inst)
+        if legacy_p:
+            print(f"trustmux running (pid {legacy_p}) — port {port}")
+            print("  This is a pre-upgrade daemon at the old socket location.")
+            print("  Run 'trustmux restart' to move it to the new one.")
+            return 0
         print("trustmux not running")
         return 0
 

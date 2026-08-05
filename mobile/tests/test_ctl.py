@@ -234,6 +234,97 @@ class TestPidInstanceIsolation(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# A pre-upgrade daemon at the old, fixed socket location -- default instance
+# only, since a pre-upgrade install never had named instances. Regression:
+# on a real machine with a genuinely running pre-7.17 daemon, `stop` and
+# `status` reported "not running", and `start`/`restart` failed to bind with
+# a misleading port-conflict message, because nothing looked at the legacy
+# location at all once _pid() stopped asking the system machine-wide.
+# ---------------------------------------------------------------------------
+
+class TestLegacyDaemon(unittest.TestCase):
+
+    def setUp(self):
+        self.inst = ctl.Instance()   # default
+        self.inst.ensure_dirs()
+        self.addCleanup(shutil.rmtree, self.inst.state, True)
+        self.legacy_sock = ctl.legacy_dir() / 'trustmux.sock'
+        self.addCleanup(shutil.rmtree, ctl.legacy_dir(), True)
+
+    def _legacy(self, reply):
+        """Route _query_socket to reply only for the legacy path -- the
+        instance's own socket goes through daemon_info(), separately patched
+        to None by setUpModule unless a test overrides it."""
+        def fake(path):
+            return reply if path == self.legacy_sock else None
+        return patch('trustmux._ctl._query_socket', side_effect=fake)
+
+    def test_matches_on_port(self):
+        with self._legacy({'pid': 30989, 'port': 7432}):
+            self.assertEqual(ctl._legacy_pid(7432, self.inst), 30989)
+
+    def test_none_on_port_mismatch(self):
+        with self._legacy({'pid': 30989, 'port': 9999}):
+            self.assertIsNone(ctl._legacy_pid(7432, self.inst))
+
+    def test_none_for_a_named_instance(self):
+        # A pre-upgrade install never had named instances, so there is no
+        # legacy location for one to have predated.
+        work = ctl.Instance('work')
+        with self._legacy({'pid': 30989, 'port': 7432}):
+            self.assertIsNone(ctl._legacy_pid(7432, work))
+
+    def test_none_when_nothing_answers(self):
+        with self._legacy(None):
+            self.assertIsNone(ctl._legacy_pid(7432, self.inst))
+
+    def test_resolve_port_finds_the_legacy_daemons_actual_port(self):
+        with self._legacy({'pid': 30989, 'port': 9000}):
+            self.assertEqual(ctl.resolve_port(inst=self.inst), 9000)
+
+    def test_stop_kills_it_and_says_so(self):
+        with self._legacy({'pid': 30989, 'port': 7432}), \
+             patch('trustmux._ctl.os.kill') as mock_kill, \
+             patch('builtins.print') as mock_print:
+            rc = ctl.cmd_stop(7432, self.inst)
+        self.assertEqual(rc, 0)
+        mock_kill.assert_called_once_with(30989, signal.SIGTERM)
+        printed = ' '.join(str(c) for c in mock_print.call_args_list)
+        self.assertIn('pre-upgrade', printed)
+
+    def test_start_refuses_rather_than_fail_with_a_confusing_bind_error(self):
+        with self._legacy({'pid': 30989, 'port': 7432}), \
+             patch('builtins.print') as mock_print:
+            rc = ctl.cmd_start('start-direct', 7432, self.inst)
+        self.assertEqual(rc, 1)
+        printed = ' '.join(str(c) for c in mock_print.call_args_list)
+        self.assertIn('already running', printed)
+
+    def test_status_reports_it_with_a_restart_hint(self):
+        with self._legacy({'pid': 30989, 'port': 7432}), \
+             patch('builtins.print') as mock_print:
+            rc = ctl.cmd_status(7432, self.inst)
+        self.assertEqual(rc, 0)
+        printed = ' '.join(str(c) for c in mock_print.call_args_list)
+        self.assertIn('30989', printed)
+        self.assertIn('pre-upgrade', printed)
+        self.assertIn('restart', printed)
+
+    def test_a_daemon_already_at_the_new_location_takes_priority(self):
+        # _pid() finding something at the new location must short-circuit
+        # before the legacy socket is ever consulted.
+        with patch('trustmux._ctl.daemon_info',
+                   return_value={'pid': 555, 'port': 7432}), \
+             patch('trustmux._ctl._query_socket') as mock_query, \
+             patch('trustmux._ctl.os.kill') as mock_kill, \
+             patch('builtins.print'):
+            rc = ctl.cmd_stop(7432, self.inst)
+        mock_query.assert_not_called()
+        mock_kill.assert_called_once_with(555, signal.SIGTERM)
+        self.assertEqual(rc, 0)
+
+
+# ---------------------------------------------------------------------------
 # Regression: _pid(port) must never return an unrelated daemon's pid for a
 # port nothing is listening on (verified live: this previously let
 # `trustmux stop --port <unrelated port>` kill an unrelated running daemon).
