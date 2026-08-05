@@ -374,6 +374,51 @@ def check_uv_lock_fresh():
     print("  mobile/uv.lock is up to date with pyproject.toml")
 
 
+def _version_tuple(s):
+    return tuple(int(p) for p in s.split(".") if p.isdigit())
+
+
+def check_homebrew_resources_fresh():
+    """Refuse to release if the Homebrew formula's bundled resources have
+    fallen below mobile/pyproject.toml's dependency floors.
+
+    homebrew/Formula/trustmux.rb pins its own url/sha256 per resource
+    (tornado, cryptography, …), separate from mobile/uv.lock — update_homebrew()
+    only ever rewrites the top-level trustmux package's url/sha256/version at
+    release time and copies the rest of this repo's formula verbatim, so
+    these resource pins drift independently and silently: Dependabot does not
+    parse Ruby resource blocks, so a vulnerable pin here raises no alert at
+    all. Found by hand while chasing GHSA-pw6j-qg29-8w7f (09362753):
+    tornado was still pinned to the pre-fix 6.5.6, and cryptography to
+    48.0.1, which is still vulnerable to GHSA-6vqw-3v5j-54x4 even though it
+    postdates the >=43.0 floor that was in pyproject.toml at the time.
+    """
+    section("Phase 1: Homebrew resource freshness check")
+    formula_path = BYOBU_SRC / "homebrew/Formula/trustmux.rb"
+    formula = formula_path.read_text()
+    resources = dict(re.findall(
+        r'resource "([a-zA-Z0-9_-]+)" do\s*\n\s*url "[^"]*-([0-9][0-9.]*)\.tar\.gz"',
+        formula,
+    ))
+
+    pyproject = (BYOBU_SRC / "mobile" / "pyproject.toml").read_text()
+    floors = dict(re.findall(r'"([a-zA-Z0-9_-]+)>=([0-9.]+)"', pyproject))
+
+    stale = []
+    for name, floor in floors.items():
+        pinned = resources.get(name)
+        if pinned is None:
+            continue   # not bundled as a Homebrew resource (e.g. stdlib-only dep)
+        if _version_tuple(pinned) < _version_tuple(floor):
+            stale.append(f"    {name}: formula has {pinned}, pyproject.toml requires >={floor}")
+    if stale:
+        die("homebrew/Formula/trustmux.rb resource(s) below pyproject.toml's floor:\n"
+            + "\n".join(stale) +
+            "\n  Bump the resource url/sha256 by hand (fetch from "
+            "https://pypi.org/pypi/<name>/<version>/json).")
+    print(f"  Homebrew resources OK: {', '.join(sorted(resources))}")
+
+
 def prewarm_gpg(identity):
     """Sign a throwaway blob to unlock the gpg-agent now, before the long builds start.
 
@@ -2168,6 +2213,7 @@ def main():
     identity = load_identity()
     check_tools(mode)
     check_uv_lock_fresh()
+    check_homebrew_resources_fresh()
     check_salsa_sync(mode)
     prewarm_gpg(identity)
     tap_trustmux = find_tap("trustmux", mode) if should_run("6d", start_from) else None
