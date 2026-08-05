@@ -1,5 +1,6 @@
 """trustmux enable — start Trustmux daemon and enable it at login."""
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -46,7 +47,11 @@ def is_hook_for(line: str, inst: Instance | None = None) -> bool:
     inst = inst or Instance()
     if not is_hook_line(line):
         return False
-    if any(f"{flag} {inst.name}" in line for flag in _NAME_FLAGS):
+    # A trailing \s|$ boundary, not a bare substring check: one instance name
+    # being a prefix of another's (e.g. "work" and "workstation") must not
+    # make enable/disable/rm on one clobber or drop the other's hook line.
+    if any(re.search(rf"{re.escape(flag)} {re.escape(inst.name)}(?:\s|$)", line)
+           for flag in _NAME_FLAGS):
         return True
     # A hook that names no instance is the default instance's.
     return (inst.name == Instance().name

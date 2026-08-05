@@ -1551,6 +1551,35 @@ class TestPerInstanceHooks(unittest.TestCase):
         self.assertFalse(enable.is_hook_for(old, ctl.Instance()))
         self.assertFalse(enable.is_hook_for(old, ctl.Instance('other')))
 
+    def test_instance_name_prefix_does_not_collide(self):
+        # "work" is a string-prefix of "workstation" -- is_hook_for() must not
+        # match on that alone, or enabling/disabling one clobbers the other.
+        workstation = enable.hook_line(3389, ctl.Instance('workstation'))
+        self.assertFalse(enable.is_hook_for(workstation, ctl.Instance('work')))
+        self.assertTrue(enable.is_hook_for(workstation, ctl.Instance('workstation')))
+
+    def test_reenabling_a_prefix_instance_does_not_rewrite_the_longer_one(self):
+        p = self._profile('')
+        enable._install_hook(p, enable.hook_line(3389, ctl.Instance('workstation')),
+                             ctl.Instance('workstation'))
+        enable._install_hook(p, enable.hook_line(7432, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        text = p.read_text()
+        self.assertEqual(text.count('trustmux start'), 2)
+        self.assertIn('--name workstation', text)
+        self.assertIn('--name work ', text)
+
+    def test_disabling_a_prefix_instance_leaves_the_longer_one(self):
+        p = self._profile('')
+        enable._install_hook(p, enable.hook_line(3389, ctl.Instance('workstation')),
+                             ctl.Instance('workstation'))
+        enable._install_hook(p, enable.hook_line(7432, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        disable._remove_hook(p, ctl.Instance('work'))
+        text = p.read_text()
+        self.assertIn('--name workstation', text)
+        self.assertNotIn('--name work ', text)
+
     def test_default_instance_keeps_the_legacy_line(self):
         self.assertEqual(enable.hook_line(ctl.DEFAULT_PORT, ctl.Instance()), enable._HOOK)
 
