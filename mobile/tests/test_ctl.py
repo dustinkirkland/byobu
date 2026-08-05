@@ -2,6 +2,7 @@
 
 import json
 import os
+import shutil
 import signal
 import socket
 import sys
@@ -19,18 +20,51 @@ import trustmux._disable as disable
 import trustmux._pair as pair
 
 _no_daemon = None
+_tmp_root = None
+_tmp_env = None
 
 
 def setUpModule():
+    # Root every base directory in a temp tree so the suite can never read or
+    # write the developer's real trustmux state.
+    global _no_daemon, _tmp_root, _tmp_env
+    _tmp_root = tempfile.TemporaryDirectory()
+    root = Path(_tmp_root.name)
+    _tmp_env = patch.dict(os.environ, {
+        'TRUSTMUX_CONFIG_DIR': str(root / 'config'),
+        'TRUSTMUX_STATE_DIR':  str(root / 'state'),
+    })
+    _tmp_env.start()
     # resolve_port() asks the running daemon which port it is on; without this
     # the suite would pick up a real trustmux on the developer's machine.
-    global _no_daemon
     _no_daemon = patch('trustmux._ctl.daemon_info', return_value=None)
     _no_daemon.start()
 
 
 def tearDownModule():
     _no_daemon.stop()
+    _tmp_env.stop()
+    _tmp_root.cleanup()
+
+
+def write_pid(inst, pid, port=None):
+    """Give inst a pid file naming pid, optionally on port."""
+    inst.ensure_dirs()
+    if port is None:
+        inst.pid_file.write_text(str(pid))      # pre-port format
+    else:
+        ctl.write_pid_file(inst, pid, port)
+    return inst.pid_file
+
+
+def no_socket():
+    """This instance has no daemon: nothing accepts on its admin socket."""
+    return patch('trustmux._ctl.socket_is_live', return_value=False)
+
+
+def wedged_socket():
+    """A daemon is there -- the socket accepts -- but it never replies."""
+    return patch('trustmux._ctl.socket_is_live', return_value=True)
 
 
 # ---------------------------------------------------------------------------
@@ -38,71 +72,164 @@ def tearDownModule():
 # ---------------------------------------------------------------------------
 
 class TestPid(unittest.TestCase):
-    """lsof's answer (found or not-found) is trusted outright and is final --
-    it directly observes what owns the requested port. The only fallback is
-    asking the running daemon what port *it* is on, which is used solely
-    when lsof itself cannot run at all, and only trusted when the daemon's
-    reported port matches the one actually being asked about.
+    """_pid() has to answer two questions at once -- "is this daemon ours?"
+    and "is it on the port asked about?" -- and it answers both from inside
+    the instance's own state directory: the admin socket and the pid file.
 
-    There must be no fallback that can return a pid without confirming it
-    owns the *requested* port: that is what let a stale/unrelated PIDFILE
-    entry cause `_pid(port)` to return a different daemon's pid for a port
-    nothing was listening on, and in turn let `trustmux stop --port <wrong>`
-    kill the wrong daemon (see TestPidCrossPortRegression below)."""
+    Nothing system-wide is consulted, which is deliberate. Two invariants,
+    each from a shipped bug:
 
-    def test_lsof_returns_pid(self):
-        with patch('trustmux._ctl.subprocess.check_output', return_value='1234\n'):
-            self.assertEqual(ctl._pid(3389), 1234)
+    * Never return a pid without confirming it owns the *requested* port --
+      what let a stale PIDFILE entry make `trustmux stop --port <wrong>` kill
+      the wrong daemon (see TestPidCrossPortRegression below).
+    * Never return a pid this instance does not claim -- asking the system who
+      holds a port answers for the whole machine, so it let a scratch instance
+      report and stop a real daemon sharing its port (see
+      TestPidInstanceIsolation below)."""
 
-    def test_lsof_multiple_lines_uses_first(self):
-        with patch('trustmux._ctl.subprocess.check_output', return_value='1234\n5678\n'):
-            self.assertEqual(ctl._pid(3389), 1234)
+    def setUp(self):
+        self.inst = ctl.Instance('pidtest')
+        self.inst.ensure_dirs()
+        self.addCleanup(shutil.rmtree, self.inst.state, True)
 
-    def test_lsof_empty_output_is_definitive_none(self):
-        # lsof ran fine, found nothing: no fallback, no daemon_info() call.
-        with patch('trustmux._ctl.subprocess.check_output', return_value=''):
-            with patch('trustmux._ctl.daemon_info') as mock_info:
-                self.assertIsNone(ctl._pid(3389))
-        mock_info.assert_not_called()
+    def test_our_daemons_own_reply_is_authoritative(self):
+        # A reply on this instance's private socket names both the pid and the
+        # port it actually bound, so nothing else needs asking. This is also
+        # the only path that works in a network namespace whose listening
+        # sockets are invisible from where the CLI runs.
+        with patch('trustmux._ctl.daemon_info',
+                   return_value={'pid': 4321, 'port': 3389}):
+            self.assertEqual(ctl._pid(3389, self.inst), 4321)
 
-    def test_lsof_called_process_error_is_definitive_none(self):
-        # The real, common case: lsof -ti:<port> exits non-zero when nothing
-        # matches. Must NOT fall through to a port-blind fallback.
-        import subprocess
-        with patch('trustmux._ctl.subprocess.check_output',
-                   side_effect=subprocess.CalledProcessError(1, 'lsof')):
-            with patch('trustmux._ctl.daemon_info') as mock_info:
-                self.assertIsNone(ctl._pid(3389))
-        mock_info.assert_not_called()
+    def test_our_daemon_reporting_a_different_port_is_not_on_this_one(self):
+        with patch('trustmux._ctl.daemon_info',
+                   return_value={'pid': 4321, 'port': 7432}):
+            self.assertIsNone(ctl._pid(3389, self.inst))
 
-    def test_lsof_missing_falls_back_to_daemon_info_matching_port(self):
-        with patch('trustmux._ctl.subprocess.check_output',
-                   side_effect=FileNotFoundError):
-            with patch('trustmux._ctl.daemon_info',
-                       return_value={'pid': 4321, 'port': 3389}):
-                self.assertEqual(ctl._pid(3389), 4321)
+    def test_a_junk_pid_from_the_daemon_is_not_believed(self):
+        with patch('trustmux._ctl.daemon_info',
+                   return_value={'pid': 'not-a-pid', 'port': 3389}):
+            self.assertIsNone(ctl._pid(3389, self.inst))
 
-    def test_lsof_missing_and_daemon_info_reports_different_port(self):
-        # The exact regression this class exists to prevent: a live daemon
-        # on some OTHER port must never be returned for the requested one.
-        with patch('trustmux._ctl.subprocess.check_output',
-                   side_effect=FileNotFoundError):
-            with patch('trustmux._ctl.daemon_info',
-                       return_value={'pid': 4321, 'port': 7432}):
-                self.assertIsNone(ctl._pid(3389))
+    def test_a_wedged_daemon_is_still_found_via_its_pid_file(self):
+        # No reply, but the socket still accepts: the daemon is alive and just
+        # not answering. This is what lets `stop` kill a hung daemon.
+        write_pid(self.inst, 1234, 3389)
+        with wedged_socket(), patch('trustmux._ctl.os.kill', return_value=None):
+            self.assertEqual(ctl._pid(3389, self.inst), 1234)
 
-    def test_lsof_missing_and_no_daemon_answers(self):
-        with patch('trustmux._ctl.subprocess.check_output',
-                   side_effect=FileNotFoundError):
-            with patch('trustmux._ctl.daemon_info', return_value=None):
-                self.assertIsNone(ctl._pid(3389))
+    def test_a_wedged_daemon_recorded_on_another_port_is_not_on_this_one(self):
+        write_pid(self.inst, 1234, 7432)
+        with wedged_socket(), patch('trustmux._ctl.os.kill', return_value=None):
+            self.assertIsNone(ctl._pid(3389, self.inst))
 
-    def test_lsof_missing_and_daemon_info_reports_junk_pid(self):
-        with patch('trustmux._ctl.subprocess.check_output',
-                   side_effect=FileNotFoundError):
-            with patch('trustmux._ctl.daemon_info',
-                       return_value={'pid': 'not-a-pid', 'port': 3389}):
-                self.assertIsNone(ctl._pid(3389))
+    def test_a_dead_socket_means_not_running_however_live_the_pid_file(self):
+        # SIGKILLed daemon: the socket file survives but refuses connections.
+        # A pid file naming a genuinely live (recycled) pid must not override
+        # that -- the socket is what proves this instance has a daemon.
+        write_pid(self.inst, 9999, 3389)
+        with no_socket(), patch('trustmux._ctl.os.kill', return_value=None):
+            self.assertIsNone(ctl._pid(3389, self.inst))
+
+    def test_a_dead_pid_in_the_pid_file_is_not_returned(self):
+        write_pid(self.inst, 9999, 3389)
+        with wedged_socket(), patch('trustmux._ctl.os.kill',
+                                    side_effect=ProcessLookupError):
+            self.assertIsNone(ctl._pid(3389, self.inst))
+
+    def test_no_socket_and_no_pid_file_is_not_running(self):
+        with no_socket():
+            self.assertIsNone(ctl._pid(3389, self.inst))
+
+    def test_a_pre_port_pid_file_can_no_longer_place_the_daemon(self):
+        # Upgrade case: a pid file written before the port was recorded still
+        # identifies the daemon, but cannot say which port it is on, so it
+        # must not be credited with one. The socket path covers the normal
+        # case, and the next start rewrites the file.
+        write_pid(self.inst, 1234)
+        with wedged_socket(), patch('trustmux._ctl.os.kill', return_value=None):
+            self.assertIsNone(ctl._pid(3389, self.inst))
+
+    def test_a_garbled_pid_file_is_ignored_not_fatal(self):
+        write_pid(self.inst, 0)
+        self.inst.pid_file.write_text('not a pid at all\n')
+        with wedged_socket():
+            self.assertIsNone(ctl._pid(3389, self.inst))
+
+
+# ---------------------------------------------------------------------------
+# Two instances, one port: attribution must not be a coin flip
+# ---------------------------------------------------------------------------
+
+class TestPidInstanceAttribution(unittest.TestCase):
+    """Two daemons may share a port on different addresses (127.0.0.4:3339 and
+    127.9.9.9:3339), or sit in different network namespaces entirely. Either
+    way "who holds the port" is ambiguous or unanswerable system-wide, so
+    attribution comes from each instance's own socket and pid file."""
+
+    def setUp(self):
+        self.a = ctl.Instance('attrib-a')
+        self.b = ctl.Instance('attrib-b')
+        for i in (self.a, self.b):
+            i.ensure_dirs()
+            self.addCleanup(shutil.rmtree, i.state, True)
+
+    def test_each_instance_reports_its_own_daemon_on_the_shared_port(self):
+        replies = {self.a.sock: {'pid': 1111, 'port': 3339},
+                   self.b.sock: {'pid': 2222, 'port': 3339}}
+        with patch('trustmux._ctl.daemon_info',
+                   side_effect=lambda i: replies[i.sock]):
+            self.assertEqual(ctl._pid(3339, self.a), 1111)
+            self.assertEqual(ctl._pid(3339, self.b), 2222)
+
+    def test_a_wedged_instance_is_attributed_from_its_own_pid_file(self):
+        write_pid(self.a, 1111, 3339)
+        write_pid(self.b, 2222, 3339)
+        with wedged_socket(), patch('trustmux._ctl.os.kill', return_value=None):
+            self.assertEqual(ctl._pid(3339, self.a), 1111)
+            self.assertEqual(ctl._pid(3339, self.b), 2222)
+
+
+# ---------------------------------------------------------------------------
+# Regression: an instance must never be told about, or act on, a daemon it
+# does not own. Reported live against this PR: with a real daemon on the
+# default port and a scratch $TRUSTMUX_STATE_DIR never started in, `status`
+# printed the real daemon's pid and `stop` would have SIGTERMed it.
+# ---------------------------------------------------------------------------
+
+class TestPidInstanceIsolation(unittest.TestCase):
+    """An instance with no claim of its own -- nothing accepting on its socket,
+    no pid file -- is not running, whatever else holds the port."""
+
+    def setUp(self):
+        self.inst = ctl.Instance('isolation')
+        self.inst.ensure_dirs()
+        self.addCleanup(shutil.rmtree, self.inst.state, True)
+
+    def test_an_unstarted_instance_does_not_adopt_a_daemon_on_its_port(self):
+        with no_socket():
+            self.assertIsNone(ctl._pid(7432, self.inst))
+
+    def test_status_of_an_unstarted_instance_reports_not_running(self):
+        with no_socket(), patch('builtins.print') as mock_print:
+            result = ctl.cmd_status(7432, self.inst)
+        self.assertEqual(result, 0)
+        printed = ' '.join(str(c) for c in mock_print.call_args_list)
+        self.assertIn('not running', printed)
+
+    def test_stop_in_an_unstarted_instance_signals_nothing(self):
+        with no_socket(), patch('trustmux._ctl.os.kill') as mock_kill:
+            with patch('builtins.print'):
+                result = ctl.cmd_stop(7432, self.inst)
+        self.assertEqual(result, 0)
+        mock_kill.assert_not_called()
+
+    def test_nothing_in_this_path_shells_out(self):
+        # The whole point: answering "is my daemon running?" must not ask the
+        # system a machine-wide question, so it must not run a subprocess.
+        with no_socket(), patch('trustmux._ctl.subprocess.check_output',
+                                side_effect=AssertionError('must not shell out')):
+            self.assertIsNone(ctl._pid(7432, self.inst))
 
 
 # ---------------------------------------------------------------------------
@@ -113,39 +240,43 @@ class TestPid(unittest.TestCase):
 
 class TestPidCrossPortRegression(unittest.TestCase):
 
-    def _mock_pidfile(self, exists=False, content=''):
-        m = MagicMock()
-        m.exists.return_value = exists
-        m.read_text.return_value = content
-        return m
+    def setUp(self):
+        self.inst = ctl.Instance('crossport')
+        self.inst.ensure_dirs()
+        self.addCleanup(shutil.rmtree, self.inst.state, True)
 
     def test_stop_on_unrelated_port_does_not_kill_the_real_daemon(self):
-        import subprocess as sp
-        # Real daemon is on 3389 (PIDFILE reflects it, and is genuinely
-        # alive); lsof is queried for 4444, where nothing listens, and
-        # genuinely finds nothing. Must never send SIGTERM to the pid
-        # PIDFILE names -- only cmd_stop's own liveness *probe* (signal 0,
-        # harmless) is expected, to decide whether to also clean PIDFILE up.
-        with patch('trustmux._ctl.subprocess.check_output',
-                   side_effect=sp.CalledProcessError(1, 'lsof')):
-            with patch('trustmux._ctl.daemon_info', return_value=None):
-                with patch('trustmux._ctl.PIDFILE',
-                           self._mock_pidfile(exists=True, content='3141\n')):
-                    with patch('trustmux._ctl.os.kill', return_value=None) as mock_kill:
-                        with patch('builtins.print'):
-                            result = ctl.cmd_stop(4444)
-        mock_kill.assert_called_once_with(3141, 0)  # liveness probe only
+        # Our daemon is genuinely alive on 3389; `stop --port 4444` asks about
+        # a port nothing is on. Must never send SIGTERM to the pid the pid file
+        # names -- only the harmless liveness probe (signal 0), used to decide
+        # whether to also clean the pid file up.
+        write_pid(self.inst, 3141, 3389)
+        with wedged_socket(), patch('trustmux._ctl.os.kill', return_value=None) as mock_kill:
+            with patch('builtins.print'):
+                result = ctl.cmd_stop(4444, self.inst)
         self.assertNotIn(call(3141, signal.SIGTERM), mock_kill.call_args_list)
+        for c in mock_kill.call_args_list:
+            self.assertEqual(c, call(3141, 0))   # liveness probes only
         self.assertEqual(result, 0)
 
+    def test_live_pidfile_survives_a_stop_on_a_different_port(self):
+        write_pid(self.inst, 3141, 3389)
+        with wedged_socket(), patch('trustmux._ctl.os.kill', return_value=None):
+            with patch('builtins.print'):
+                ctl.cmd_stop(4444, self.inst)
+        self.assertTrue(self.inst.pid_file.exists())
+
+    def test_dead_pidfile_is_cleaned_up(self):
+        write_pid(self.inst, 3141, 3389)
+        with no_socket(), patch('trustmux._ctl.os.kill', side_effect=ProcessLookupError):
+            with patch('builtins.print'):
+                ctl.cmd_stop(4444, self.inst)
+        self.assertFalse(self.inst.pid_file.exists())
+
     def test_start_on_unrelated_port_is_not_falsely_refused(self):
-        import subprocess as sp
-        with patch('trustmux._ctl.subprocess.check_output',
-                   side_effect=sp.CalledProcessError(1, 'lsof')):
-            with patch('trustmux._ctl.daemon_info', return_value=None):
-                with patch('trustmux._ctl._launch', return_value=1234) as mock_launch:
-                    with patch('builtins.print'):
-                        result = ctl.cmd_start('start-local', 4444)
+        with no_socket(), patch('trustmux._ctl._launch', return_value=1234) as mock_launch:
+            with patch('builtins.print'):
+                result = ctl.cmd_start('start-local', 4444, self.inst)
         mock_launch.assert_called_once()
         self.assertEqual(result, 0)
 
@@ -386,14 +517,14 @@ class TestCmdStart(unittest.TestCase):
                         self.assertEqual(ctl.cmd_start('start-direct'), 0)
 
     def test_returns_1_when_launch_fails(self):
-        with patch('trustmux._ctl._pid', return_value=None):
-            with patch('trustmux._ctl._check_tmux', return_value=True):
-                with patch('trustmux._ctl._check_tls', return_value=True):
-                    with patch('trustmux._ctl.subprocess.run'):
-                        with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
-                            with patch('trustmux._ctl._ensure_ts_serve', return_value=True):
-                                with patch('trustmux._ctl._launch', return_value=None):
-                                    self.assertEqual(ctl.cmd_start('serve'), 1)
+        with patch('trustmux._ctl._pid', return_value=None), \
+             patch('trustmux._ctl._check_tmux', return_value=True), \
+             patch('trustmux._ctl._check_tls', return_value=True), \
+             patch('trustmux._ctl.subprocess.run'), \
+             patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'), \
+             patch('trustmux._ctl._ensure_ts_serve', return_value=True), \
+             patch('trustmux._ctl._launch', return_value=None):
+            self.assertEqual(ctl.cmd_start('serve'), 1)
 
     def test_unknown_mode_returns_1(self):
         with patch('trustmux._ctl._pid', return_value=None):
@@ -406,67 +537,80 @@ class TestCmdStart(unittest.TestCase):
 
 class TestCmdStop(unittest.TestCase):
 
-    def _mock_pidfile(self, exists=False, content=''):
-        m = MagicMock()
-        m.exists.return_value = exists
-        m.read_text.return_value = content
-        return m
+    def setUp(self):
+        self.inst = ctl.Instance('stoptest')
+        self.inst.ensure_dirs()
+        self.addCleanup(shutil.rmtree, self.inst.state, True)
 
     def test_not_running_returns_0(self):
         with patch('trustmux._ctl._pid', return_value=None):
-            with patch('trustmux._ctl.PIDFILE', self._mock_pidfile(exists=False)):
-                self.assertEqual(ctl.cmd_stop(), 0)
+            self.assertEqual(ctl.cmd_stop(inst=self.inst), 0)
+
+    def _signals(self, mock_kill):
+        """Real signals sent, dropping the harmless signal-0 liveness probes."""
+        return [c for c in mock_kill.call_args_list if c.args[1] != 0]
 
     def test_kills_process_and_removes_pidfile(self):
+        write_pid(self.inst, 4321, 7432)
         with patch('trustmux._ctl._pid', return_value=4321):
-            with patch('trustmux._ctl.PIDFILE',
-                       self._mock_pidfile(exists=True, content='4321')):
-                with patch('trustmux._ctl.os.kill') as mock_kill:
-                    result = ctl.cmd_stop()
+            with patch('trustmux._ctl.os.kill') as mock_kill:
+                result = ctl.cmd_stop(inst=self.inst)
         self.assertEqual(result, 0)
-        mock_kill.assert_called_once_with(4321, signal.SIGTERM)
+        self.assertEqual(self._signals(mock_kill), [call(4321, signal.SIGTERM)])
+        self.assertFalse(self.inst.pid_file.exists())
 
     def test_pidfile_mismatch_refuses_to_kill(self):
+        write_pid(self.inst, 9999, 7432)
         with patch('trustmux._ctl._pid', return_value=4321):
-            with patch('trustmux._ctl.PIDFILE',
-                       self._mock_pidfile(exists=True, content='9999')):
-                with patch('trustmux._ctl.os.kill') as mock_kill:
-                    result = ctl.cmd_stop()
+            with patch('trustmux._ctl.os.kill') as mock_kill:
+                result = ctl.cmd_stop(inst=self.inst)
         self.assertEqual(result, 1)
-        mock_kill.assert_not_called()
+        self.assertEqual(self._signals(mock_kill), [])
 
     def test_no_pidfile_still_kills(self):
+        # A pid with no pid file backing it can now only have come from this
+        # instance's own admin socket, so it is still ours to signal.
         with patch('trustmux._ctl._pid', return_value=4321):
-            with patch('trustmux._ctl.PIDFILE', self._mock_pidfile(exists=False)):
-                with patch('trustmux._ctl.os.kill') as mock_kill:
-                    result = ctl.cmd_stop()
+            with patch('trustmux._ctl.os.kill') as mock_kill:
+                result = ctl.cmd_stop(inst=self.inst)
         self.assertEqual(result, 0)
         mock_kill.assert_called_once_with(4321, signal.SIGTERM)
 
     def test_not_found_on_this_port_preserves_pidfile_of_live_other_daemon(self):
-        # Nothing is on the requested port, but PIDFILE tracks a genuinely
-        # alive daemon on some other port -- must not be deleted just
-        # because the wrong port was asked about (regression: previously
-        # unconditional, which threw away bookkeeping for a live daemon).
-        pidfile = self._mock_pidfile(exists=True, content='4321')
-        with patch('trustmux._ctl._pid', return_value=None):
-            with patch('trustmux._ctl.PIDFILE', pidfile):
-                with patch('trustmux._ctl.os.kill', return_value=None) as mock_kill:
-                    result = ctl.cmd_stop(4444)
+        # Nothing is on the requested port, but the pid file tracks a
+        # genuinely alive daemon on some other port -- shown by its socket
+        # still accepting. Must not be deleted just because the wrong port was
+        # asked about (regression: previously unconditional, which threw away
+        # bookkeeping for a live daemon).
+        write_pid(self.inst, 4321, 3389)
+        with wedged_socket(), patch('trustmux._ctl._pid', return_value=None):
+            with patch('trustmux._ctl.os.kill', return_value=None):
+                result = ctl.cmd_stop(4444, self.inst)
         self.assertEqual(result, 0)
-        mock_kill.assert_called_once_with(4321, 0)  # liveness probe, not a real kill
-        pidfile.unlink.assert_not_called()
+        self.assertTrue(self.inst.pid_file.exists())
 
     def test_not_found_on_this_port_cleans_up_genuinely_dead_pidfile(self):
-        # Same "not found" case, but PIDFILE's own pid is dead: this is the
-        # genuinely-stale case, and should still be cleaned up as before.
-        pidfile = self._mock_pidfile(exists=True, content='4321')
-        with patch('trustmux._ctl._pid', return_value=None):
-            with patch('trustmux._ctl.PIDFILE', pidfile):
-                with patch('trustmux._ctl.os.kill', side_effect=ProcessLookupError):
-                    result = ctl.cmd_stop(4444)
+        # Same "not found" case, but the pid file's own pid is dead: this is
+        # the genuinely-stale case, and should still be cleaned up as before.
+        write_pid(self.inst, 4321, 3389)
+        with wedged_socket(), patch('trustmux._ctl._pid', return_value=None):
+            with patch('trustmux._ctl.os.kill', side_effect=ProcessLookupError):
+                result = ctl.cmd_stop(4444, self.inst)
         self.assertEqual(result, 0)
-        pidfile.unlink.assert_called_once_with(missing_ok=True)
+        self.assertFalse(self.inst.pid_file.exists())
+
+    def test_a_pidfile_outliving_a_reboot_is_cleaned_up(self):
+        # The state directory survives a reboot but pids restart, so the
+        # recorded pid may now be an unrelated live process. The dead socket
+        # is what settles it: no daemon here, so the file is leftover.
+        write_pid(self.inst, 4321, 7432)
+        with no_socket(), patch('trustmux._ctl._pid', return_value=None):
+            with patch('trustmux._ctl.os.kill', return_value=None) as mock_kill:
+                result = ctl.cmd_stop(7432, self.inst)
+        self.assertEqual(result, 0)
+        self.assertFalse(self.inst.pid_file.exists())
+        # ...and the innocent process that inherited the pid is not signalled.
+        self.assertEqual([c for c in mock_kill.call_args_list if c.args[1] != 0], [])
 
 
 # ---------------------------------------------------------------------------
@@ -628,7 +772,7 @@ class TestEnableMain(unittest.TestCase):
         with patch('trustmux._enable.cmd_setup', return_value=0):
             with patch('trustmux._enable.cmd_start', return_value=0):
                 with patch('trustmux._enable._LOGIN_FILES', []):
-                    with patch('trustmux._enable.TOKENS_FILE') as tf:
+                    with patch('trustmux._paths.Instance.tokens_file') as tf:
                         tf.exists.return_value = True
                         tf.stat.return_value = MagicMock(st_size=100)
                         enable.main()   # should not raise
@@ -863,6 +1007,25 @@ class TestResolvePort(unittest.TestCase):
         with patch('trustmux._ctl.daemon_info', return_value={'port': 'wat'}):
             self.assertEqual(ctl.resolve_port(), ctl.DEFAULT_PORT)
 
+    def test_falls_back_to_the_recorded_port_for_a_wedged_daemon(self):
+        # Without this, `stop`/`status` on a daemon that stopped replying would
+        # be asked about DEFAULT_PORT, not the port it was started on, and so
+        # would report it as not running -- verified live with SIGSTOP.
+        inst = ctl.Instance('wedgedport')
+        write_pid(inst, 4321, 5555)
+        self.addCleanup(shutil.rmtree, inst.state, True)
+        with wedged_socket(), patch('trustmux._ctl.os.kill', return_value=None):
+            self.assertEqual(ctl.resolve_port(inst=inst), 5555)
+
+    def test_a_recorded_port_is_ignored_once_the_socket_is_dead(self):
+        # SIGKILLed daemon: the pid file survives and its pid may even be
+        # recycled, so `start` must not be diverted to a port nobody asked for.
+        inst = ctl.Instance('deadport')
+        write_pid(inst, 4321, 5555)
+        self.addCleanup(shutil.rmtree, inst.state, True)
+        with no_socket(), patch('trustmux._ctl.os.kill', return_value=None):
+            self.assertEqual(ctl.resolve_port(inst=inst), ctl.DEFAULT_PORT)
+
     def test_blank_env_is_ignored(self):
         os.environ[ctl.PORT_ENV] = '   '
         self.assertEqual(ctl.resolve_port(), ctl.DEFAULT_PORT)
@@ -897,9 +1060,10 @@ class TestDaemonInfo(unittest.TestCase):
     def setUp(self):
         _no_daemon.stop()
         self.addCleanup(_no_daemon.start)
-        self.td = tempfile.TemporaryDirectory()
-        self.addCleanup(self.td.cleanup)
-        self.sock_path = Path(self.td.name) / 'trustmux.sock'
+        self.inst = ctl.Instance('infotest')
+        self.inst.ensure_dirs()
+        self.addCleanup(shutil.rmtree, self.inst.state, True)
+        self.sock_path = self.inst.sock
 
     def _serve_once(self, reply: bytes) -> None:
         srv = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -918,25 +1082,21 @@ class TestDaemonInfo(unittest.TestCase):
         self.addCleanup(t.join, 5)
 
     def test_none_when_socket_absent(self):
-        with patch('trustmux._ctl.ADMIN_SOCK', self.sock_path):
-            self.assertIsNone(ctl.daemon_info())
+        self.assertIsNone(ctl.daemon_info(self.inst))
 
     def test_returns_listener_details(self):
         self._serve_once(b'{"pid": 42, "host": "0.0.0.0", "port": 3389, "scheme": "https"}\n')
-        with patch('trustmux._ctl.ADMIN_SOCK', self.sock_path):
-            info = ctl.daemon_info()
+        info = ctl.daemon_info(self.inst)
         self.assertEqual(info['port'], 3389)
         self.assertEqual(info['scheme'], 'https')
 
     def test_none_on_error_reply(self):
         self._serve_once(b'{"error": "unknown action"}\n')
-        with patch('trustmux._ctl.ADMIN_SOCK', self.sock_path):
-            self.assertIsNone(ctl.daemon_info())
+        self.assertIsNone(ctl.daemon_info(self.inst))
 
     def test_none_on_garbage_reply(self):
         self._serve_once(b'not json\n')
-        with patch('trustmux._ctl.ADMIN_SOCK', self.sock_path):
-            self.assertIsNone(ctl.daemon_info())
+        self.assertIsNone(ctl.daemon_info(self.inst))
 
 
 class TestDirectUrl(unittest.TestCase):
@@ -961,19 +1121,46 @@ class TestDirectUrl(unittest.TestCase):
 
 class TestLaunchPort(unittest.TestCase):
 
+    def setUp(self):
+        self.inst = ctl.Instance('launchtest')
+        self.inst.ensure_dirs()
+        self.addCleanup(shutil.rmtree, self.inst.state, True)
+
+    def _launch(self, port, inst):
+        with patch('trustmux._ctl.subprocess.Popen') as mock_popen:
+            mock_popen.return_value.poll.return_value = None   # still alive
+            with patch('trustmux._ctl.time.sleep'):
+                with patch('trustmux._ctl._pid', return_value=4321):
+                    ctl._launch(port, ['--host', '127.0.0.1'], inst)
+        return mock_popen
+
     def test_passes_resolved_port_to_daemon(self):
-        with patch('trustmux._ctl._ensure_dir'):
-            with patch('trustmux._ctl.LOGFILE'):
-                with patch('trustmux._ctl.PIDFILE'):
-                    with patch('trustmux._ctl.subprocess.Popen') as mock_popen:
-                        with patch('trustmux._ctl.time.sleep'):
-                            with patch('trustmux._ctl._pid', return_value=4321):
-                                ctl._launch(3389, ['--host', '127.0.0.1'])
+        mock_popen = self._launch(3389, self.inst)
         argv = mock_popen.call_args[0][0]
         self.assertIn('--port', argv)
         self.assertEqual(argv[argv.index('--port') + 1], '3389')
         # Never handed to a shell.
         self.assertNotIn('shell', mock_popen.call_args.kwargs)
+
+    def test_passes_instance_to_daemon(self):
+        mock_popen = self._launch(3389, self.inst)
+        argv = mock_popen.call_args[0][0]
+        self.assertEqual(argv[argv.index('--name') + 1], 'launchtest')
+
+    def test_writes_pid_to_this_instance(self):
+        self._launch(3389, self.inst)
+        self.assertTrue(self.inst.pid_file.exists())
+
+    def test_reports_failure_when_the_daemon_dies_on_startup(self):
+        # Port conflicts are easy to hit once several instances are in play;
+        # a child that has already exited must not be reported as started.
+        with patch('trustmux._ctl.subprocess.Popen') as mock_popen:
+            mock_popen.return_value.poll.return_value = 1   # already exited
+            with patch('trustmux._ctl.time.sleep'):
+                with patch('trustmux._ctl._pid', return_value=4321):
+                    result = ctl._launch(3389, ['--host', '127.0.0.1'], self.inst)
+        self.assertIsNone(result)
+        self.assertFalse(self.inst.pid_file.exists())
 
 
 class TestEnsureTsServePort(unittest.TestCase):
@@ -1000,19 +1187,20 @@ class TestCmdStartPort(unittest.TestCase):
         with patch('trustmux._ctl._pid', return_value=999) as mock_pid:
             with patch('builtins.print'):
                 self.assertEqual(ctl.cmd_start('start-local', 3389), 1)
-        mock_pid.assert_called_once_with(3389)
+        mock_pid.assert_called_once_with(3389, ctl.Instance())
 
 
 class TestCmdStopPort(unittest.TestCase):
 
     def test_stops_pid_found_on_requested_port(self):
+        inst = ctl.Instance('stopport')
+        inst.ensure_dirs()
+        self.addCleanup(shutil.rmtree, inst.state, True)
         with patch('trustmux._ctl._pid', return_value=1234) as mock_pid:
-            with patch('trustmux._ctl.PIDFILE') as mock_pidfile:
-                mock_pidfile.exists.return_value = False
-                with patch('trustmux._ctl.os.kill') as mock_kill:
-                    with patch('builtins.print'):
-                        self.assertEqual(ctl.cmd_stop(3389), 0)
-        mock_pid.assert_called_once_with(3389)
+            with patch('trustmux._ctl.os.kill') as mock_kill:
+                with patch('builtins.print'):
+                    self.assertEqual(ctl.cmd_stop(3389, inst), 0)
+        mock_pid.assert_called_once_with(3389, inst)
         mock_kill.assert_called_once_with(1234, signal.SIGTERM)
 
 
@@ -1152,7 +1340,435 @@ class TestPairMain(unittest.TestCase):
     def test_waits_for_the_code_ttl(self):
         with patch('trustmux._pair._wait_for_pair', return_value='10.0.0.4') as w:
             pair.main()
-        w.assert_called_once_with(60)
+        w.assert_called_once_with(60, ctl.Instance())
+
+
+class TestPairPollInstance(unittest.TestCase):
+    """The pairing wait polls the named instance's socket, not a fixed path."""
+
+    def setUp(self):
+        self.inst = ctl.Instance('polltest')
+        self.inst.ensure_dirs()
+        self.addCleanup(shutil.rmtree, self.inst.state, True)
+
+    def _listen(self) -> socket.socket:
+        srv = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        srv.bind(str(self.inst.sock))
+        srv.listen(1)
+        self.addCleanup(srv.close)
+        return srv
+
+    def test_poll_reaches_the_named_instance(self):
+        srv = self._listen()
+
+        def handle():
+            conn, _ = srv.accept()
+            with conn:
+                conn.recv(4096)
+                conn.sendall(b'{"state": "paired", "ip": "10.0.0.4"}\n')
+
+        t = threading.Thread(target=handle, daemon=True)
+        t.start()
+        self.addCleanup(t.join, 5)
+        self.assertEqual(pair._poll({'action': 'pair_status'}, self.inst),
+                         {'state': 'paired', 'ip': '10.0.0.4'})
+
+    def test_poll_ignores_another_instances_live_socket(self):
+        self._listen()
+        self.assertIsNone(pair._poll({'action': 'pair_status'},
+                                     ctl.Instance('polltest-other')))
+
+    def test_wait_polls_the_instance_it_was_given(self):
+        work = ctl.Instance('work')
+        with patch('trustmux._pair._poll',
+                   return_value={'state': 'paired', 'ip': '10.0.0.4'}) as p:
+            self.assertEqual(pair._wait_for_pair(60, work), '10.0.0.4')
+        p.assert_called_once_with({'action': 'pair_status'}, work)
+
+
+# ---------------------------------------------------------------------------
+# Instances: isolation, listing, per-instance login hooks
+# ---------------------------------------------------------------------------
+
+class TestInstanceIsolation(unittest.TestCase):
+
+    def test_resolve_port_asks_the_named_instance(self):
+        work = ctl.Instance('work')
+        with patch('trustmux._ctl.daemon_info') as info:
+            info.return_value = {'port': 3389}
+            self.assertEqual(ctl.resolve_port(inst=work), 3389)
+        info.assert_called_once_with(work)
+
+    def test_status_and_stop_address_the_named_instance(self):
+        work = ctl.Instance('work')
+        work.ensure_dirs()
+        self.addCleanup(shutil.rmtree, work.state, True)
+        with patch('trustmux._ctl._pid', return_value=None) as mock_pid:
+            with patch('builtins.print'):
+                ctl.cmd_status(3389, work)
+        self.assertEqual(mock_pid.call_args[0][1], work)
+
+
+# ---------------------------------------------------------------------------
+# cmd_rm()
+# ---------------------------------------------------------------------------
+
+class TestCmdRm(unittest.TestCase):
+    """Instances are created implicitly by the first start, so there has to be
+    a way to undo that -- including the secrets the directory holds."""
+
+    def setUp(self):
+        self.inst = ctl.Instance('rmtest')
+        self.inst.ensure_dirs()
+        self.inst.tokens_file.write_text('{}')
+        self.addCleanup(shutil.rmtree, self.inst.state, True)
+
+    def _rm(self, inst=None, force=False):
+        with patch('builtins.print') as mock_print:
+            rc = ctl.cmd_rm(inst or self.inst, force)
+        return rc, ' '.join(str(c) for c in mock_print.call_args_list)
+
+    def test_removes_a_stopped_instance(self):
+        with no_socket():
+            rc, out = self._rm()
+        self.assertEqual(rc, 0)
+        self.assertFalse(self.inst.state.exists())
+
+    def test_says_when_tokens_were_discarded(self):
+        with no_socket():
+            rc, out = self._rm()
+        self.assertIn('pair again', out)
+
+    def test_unknown_instance_is_an_error(self):
+        rc, out = self._rm(ctl.Instance('never-existed'))
+        self.assertEqual(rc, 1)
+
+    def test_refuses_while_running(self):
+        with patch('trustmux._ctl._pid', return_value=4321):
+            rc, out = self._rm()
+        self.assertEqual(rc, 1)
+        self.assertTrue(self.inst.state.exists())
+
+    def test_force_stops_a_running_instance_then_removes_it(self):
+        with patch('trustmux._ctl._pid', return_value=4321):
+            with patch('trustmux._ctl.cmd_stop', return_value=0) as mock_stop:
+                with patch('trustmux._ctl.os.kill', side_effect=ProcessLookupError):
+                    rc, out = self._rm(force=True)
+        self.assertEqual(rc, 0)
+        mock_stop.assert_called_once()
+        self.assertFalse(self.inst.state.exists())
+
+    def test_a_failed_stop_removes_nothing(self):
+        with patch('trustmux._ctl._pid', return_value=4321):
+            with patch('trustmux._ctl.cmd_stop', return_value=1):
+                rc, out = self._rm(force=True)
+        self.assertEqual(rc, 1)
+        self.assertTrue(self.inst.state.exists())
+
+    def test_refuses_the_default_instance_without_force(self):
+        default = ctl.Instance()
+        default.ensure_dirs()
+        self.addCleanup(shutil.rmtree, default.state, True)
+        with no_socket():
+            rc, out = self._rm(default)
+        self.assertEqual(rc, 1)
+        self.assertTrue(default.state.exists())
+        self.assertIn('--force', out)
+
+    def test_force_removes_the_default_instance(self):
+        default = ctl.Instance()
+        default.ensure_dirs()
+        self.addCleanup(shutil.rmtree, default.state, True)
+        with no_socket():
+            rc, out = self._rm(default, force=True)
+        self.assertEqual(rc, 0)
+        self.assertFalse(default.state.exists())
+
+    def test_the_login_hook_goes_too(self):
+        # Otherwise the next login starts the instance again and recreates
+        # everything that was just deleted.
+        with no_socket():
+            with patch('trustmux._disable._remove_hook') as mock_hook:
+                ctl.cmd_rm(self.inst)
+        self.assertTrue(mock_hook.called)
+        self.assertEqual(mock_hook.call_args[0][1], self.inst)
+
+    def test_a_symlinked_state_dir_loses_the_link_not_the_target(self):
+        target = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, target, True)
+        (target / 'tokens.json').write_text('{}')
+        linked = ctl.Instance('symlinked')
+        shutil.rmtree(linked.state, ignore_errors=True)
+        linked.state.parent.mkdir(parents=True, exist_ok=True)
+        linked.state.symlink_to(target)
+        self.addCleanup(lambda: linked.state.unlink(missing_ok=True))
+        with no_socket():
+            rc, out = self._rm(linked)
+        self.assertEqual(rc, 0)
+        self.assertFalse(linked.state.is_symlink())
+        self.assertTrue((target / 'tokens.json').exists())   # target untouched
+
+    def test_refuses_a_target_outside_the_instances_directory(self):
+        # cmd_rm is callable directly, so the containment check must not rely
+        # on resolve_instance() having vetted the name.
+        outside = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, outside, True)
+        (outside / 'precious').write_text('do not delete')
+        rogue = ctl.Instance('rogue')
+        with patch.object(type(rogue), 'state',
+                          property(lambda self: outside)):
+            rc, out = self._rm(rogue)
+        self.assertEqual(rc, 1)
+        self.assertTrue((outside / 'precious').exists())
+
+
+class TestCmdList(unittest.TestCase):
+
+    def setUp(self):
+        self.made = []
+        for name in ('default', 'work'):
+            inst = ctl.Instance(name)
+            inst.ensure_dirs()
+            self.made.append(inst)
+            self.addCleanup(shutil.rmtree, inst.state, True)
+
+    def _run(self):
+        with patch('builtins.print') as mock_print:
+            rc = ctl.cmd_list()
+        return rc, ' '.join(str(c) for c in mock_print.call_args_list)
+
+    def test_lists_every_instance(self):
+        rc, out = self._run()
+        self.assertEqual(rc, 0)
+        self.assertIn('default', out)
+        self.assertIn('work', out)
+
+    def test_reports_a_running_instance_with_its_port(self):
+        def fake_info(inst):
+            return {'port': 3389, 'scheme': 'https'} if inst.name == 'work' else None
+        with patch('trustmux._ctl.daemon_info', side_effect=fake_info):
+            with patch('trustmux._ctl._pid', return_value=4321):
+                rc, out = self._run()
+        self.assertEqual(rc, 0)
+        self.assertIn('3389', out)
+        self.assertIn('running (pid 4321)', out)
+
+    def test_reports_stopped_instances(self):
+        with no_socket():
+            rc, out = self._run()
+        self.assertIn('stopped', out)
+
+    def test_reports_a_wedged_instance_from_its_pid_file(self):
+        # Socket accepts but never replies: still running, and the pid file
+        # supplies the port that the daemon can no longer be asked for.
+        inst = ctl.Instance('wedged')
+        write_pid(inst, 4321, 3389)
+        self.addCleanup(shutil.rmtree, inst.state, True)
+        with wedged_socket(), patch('trustmux._ctl.os.kill', return_value=None):
+            rc, out = self._run()
+        self.assertIn('running (pid 4321)', out)
+        self.assertIn('3389', out)
+
+
+class TestPerInstanceHooks(unittest.TestCase):
+
+    def _profile(self, content=''):
+        f = tempfile.NamedTemporaryFile(mode='w', suffix='.profile', delete=False)
+        f.write(content)
+        f.close()
+        self.addCleanup(Path(f.name).unlink, True)
+        return Path(f.name)
+
+    def test_hook_line_carries_instance_and_port(self):
+        line = enable.hook_line(3389, ctl.Instance('work'))
+        self.assertEqual(line,
+                         'trustmux start --name work --port 3389 2>/dev/null || true\n')
+
+    def test_a_hook_written_as_dash_dash_instance_is_still_recognised(self):
+        # The flag was --instance before it was --name. Hooks sit in
+        # ~/.profile and are not rewritten on upgrade, so an old-spelling hook
+        # must still be matched or disable/rm would leave it behind to start
+        # an instance that has been deleted.
+        old = 'trustmux start --instance work --port 3389 2>/dev/null || true\n'
+        self.assertTrue(enable.is_hook_for(old, ctl.Instance('work')))
+        self.assertFalse(enable.is_hook_for(old, ctl.Instance()))
+        self.assertFalse(enable.is_hook_for(old, ctl.Instance('other')))
+
+    def test_instance_name_prefix_does_not_collide(self):
+        # "work" is a string-prefix of "workstation" -- is_hook_for() must not
+        # match on that alone, or enabling/disabling one clobbers the other.
+        workstation = enable.hook_line(3389, ctl.Instance('workstation'))
+        self.assertFalse(enable.is_hook_for(workstation, ctl.Instance('work')))
+        self.assertTrue(enable.is_hook_for(workstation, ctl.Instance('workstation')))
+
+    def test_reenabling_a_prefix_instance_does_not_rewrite_the_longer_one(self):
+        p = self._profile('')
+        enable._install_hook(p, enable.hook_line(3389, ctl.Instance('workstation')),
+                             ctl.Instance('workstation'))
+        enable._install_hook(p, enable.hook_line(7432, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        text = p.read_text()
+        self.assertEqual(text.count('trustmux start'), 2)
+        self.assertIn('--name workstation', text)
+        self.assertIn('--name work ', text)
+
+    def test_disabling_a_prefix_instance_leaves_the_longer_one(self):
+        p = self._profile('')
+        enable._install_hook(p, enable.hook_line(3389, ctl.Instance('workstation')),
+                             ctl.Instance('workstation'))
+        enable._install_hook(p, enable.hook_line(7432, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        disable._remove_hook(p, ctl.Instance('work'))
+        text = p.read_text()
+        self.assertIn('--name workstation', text)
+        self.assertNotIn('--name work ', text)
+
+    def test_default_instance_keeps_the_legacy_line(self):
+        self.assertEqual(enable.hook_line(ctl.DEFAULT_PORT, ctl.Instance()), enable._HOOK)
+
+    def test_second_instance_appends_rather_than_replacing(self):
+        p = self._profile('# top\n')
+        enable._install_hook(p, enable.hook_line(7432, ctl.Instance()), ctl.Instance())
+        enable._install_hook(p, enable.hook_line(3389, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        text = p.read_text()
+        self.assertEqual(text.count('trustmux start'), 2)
+        self.assertIn('--name work', text)
+
+    def test_reenabling_one_instance_rewrites_only_its_line(self):
+        p = self._profile('')
+        enable._install_hook(p, enable.hook_line(7432, ctl.Instance()), ctl.Instance())
+        enable._install_hook(p, enable.hook_line(3389, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        enable._install_hook(p, enable.hook_line(9999, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        text = p.read_text()
+        self.assertEqual(text.count('trustmux start'), 2)
+        self.assertIn('--port 9999', text)
+        self.assertNotIn('--port 3389', text)
+
+    def test_disable_removes_only_that_instance(self):
+        p = self._profile('')
+        enable._install_hook(p, enable.hook_line(7432, ctl.Instance()), ctl.Instance())
+        enable._install_hook(p, enable.hook_line(3389, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        disable._remove_hook(p, ctl.Instance('work'))
+        text = p.read_text()
+        self.assertNotIn('--name work', text)
+        self.assertIn('trustmux start 2>/dev/null', text)
+
+    def test_disabling_default_leaves_named_instances(self):
+        p = self._profile('')
+        enable._install_hook(p, enable.hook_line(7432, ctl.Instance()), ctl.Instance())
+        enable._install_hook(p, enable.hook_line(3389, ctl.Instance('work')),
+                             ctl.Instance('work'))
+        disable._remove_hook(p, ctl.Instance())
+        text = p.read_text()
+        self.assertIn('--name work', text)
+        self.assertNotIn('trustmux start 2>/dev/null', text)
+
+
+# ---------------------------------------------------------------------------
+# serve mode is singular: only one daemon can own the tailnet's :443
+# ---------------------------------------------------------------------------
+
+class TestServeModeGuard(unittest.TestCase):
+    """`tailscale serve` publishes on the tailnet's port 443. A second
+    `tailscale serve --bg` silently replaces the first mapping, so a named
+    instance must not be allowed into serve mode at all. --port does not help:
+    it moves only the loopback backend, not the tailnet-facing port."""
+
+    def _stderr(self):
+        import io
+        return io.StringIO()
+
+    def test_default_instance_may_use_serve(self):
+        self.assertTrue(ctl.can_use_serve(ctl.Instance(), self._stderr()))
+
+    def test_named_instance_may_not(self):
+        buf = self._stderr()
+        self.assertFalse(ctl.can_use_serve(ctl.Instance('work'), buf))
+        msg = buf.getvalue()
+        self.assertIn('work', msg)
+        self.assertIn('443', msg)
+        # Points at the modes that actually work for a second instance.
+        self.assertIn('start-direct --name work', msg)
+        self.assertIn('start-local --name work', msg)
+
+    def test_cmd_start_serve_refuses_named_instance(self):
+        with patch('trustmux._ctl._launch') as mock_launch:
+            with patch('trustmux._ctl._ensure_ts_serve') as mock_serve:
+                with patch('trustmux._ctl.sys.stderr', self._stderr()):
+                    rc = ctl.cmd_start('serve', 7432, ctl.Instance('work'))
+        self.assertEqual(rc, 1)
+        mock_launch.assert_not_called()
+        # Crucially, the existing serve mapping is never touched.
+        mock_serve.assert_not_called()
+
+    def test_refusal_happens_before_any_probing(self):
+        # The refusal is certain, so it must not first query a daemon or
+        # fork lsof.
+        with patch('trustmux._ctl._pid') as mock_pid:
+            with patch('trustmux._ctl.daemon_info') as mock_info:
+                with patch('trustmux._ctl.sys.stderr', self._stderr()):
+                    ctl.cmd_start('serve', None, ctl.Instance('work'))
+        mock_pid.assert_not_called()
+        mock_info.assert_not_called()
+
+    def test_named_instance_may_still_use_direct_and_local(self):
+        for mode in ('start-direct', 'start-local'):
+            with self.subTest(mode=mode):
+                with patch('trustmux._ctl._launch', return_value=1234) as mock_launch:
+                    with patch('trustmux._ctl._check_tmux', return_value=True):
+                        with patch('trustmux._ctl._check_tls', return_value=True):
+                            with patch('trustmux._ctl._pid', return_value=None):
+                                with patch('builtins.print'):
+                                    rc = ctl.cmd_start(mode, 3389, ctl.Instance('work'))
+                self.assertEqual(rc, 0)
+                mock_launch.assert_called_once()
+
+    def test_restart_refuses_before_stopping_anything(self):
+        # restart brings the daemon back in serve mode; refusing only at the
+        # start step would leave a running named instance stopped.
+        with patch('trustmux._ctl._refuse_root'), \
+             patch('trustmux._ctl.sys.argv',
+                   ['trustmux', 'restart', '--name', 'work']), \
+             patch('trustmux._ctl.cmd_stop') as mock_stop, \
+             patch('trustmux._ctl.cmd_start') as mock_start, \
+             patch('trustmux._ctl.sys.stderr', self._stderr()):
+            with self.assertRaises(SystemExit) as cm:
+                ctl.main()
+        self.assertEqual(cm.exception.code, 1)
+        mock_stop.assert_not_called()
+        mock_start.assert_not_called()
+
+    def test_cmd_setup_refuses_named_instance(self):
+        with patch('trustmux._ctl._ensure_ts_serve') as mock_serve:
+            with patch('trustmux._ctl.sys.stderr', self._stderr()):
+                rc = ctl.cmd_setup(inst=ctl.Instance('work'))
+        self.assertEqual(rc, 1)
+        mock_serve.assert_not_called()
+
+    def test_enable_refuses_named_instance_without_looping(self):
+        with patch('trustmux._enable.cmd_setup') as mock_setup:
+            with patch('trustmux._enable._install_hook') as mock_hook:
+                with patch('trustmux._ctl.sys.stderr', self._stderr()):
+                    with patch('sys.stderr', self._stderr()):
+                        with self.assertRaises(SystemExit) as cm:
+                            enable.main(3389, ctl.Instance('work'))
+        self.assertEqual(cm.exception.code, 1)
+        # Refused up front: no setup attempt, no hook written.
+        mock_setup.assert_not_called()
+        mock_hook.assert_not_called()
+
+    def test_enable_still_works_for_the_default_instance(self):
+        with patch('trustmux._enable.cmd_setup', return_value=0) as mock_setup:
+            with patch('trustmux._enable.cmd_start', return_value=0):
+                with patch('trustmux._enable._install_hook'):
+                    with patch('trustmux._paths.Instance.tokens_file'):
+                        with patch('builtins.print'):
+                            enable.main(ctl.DEFAULT_PORT, ctl.Instance())
+        mock_setup.assert_called_once()
 
 
 if __name__ == '__main__':

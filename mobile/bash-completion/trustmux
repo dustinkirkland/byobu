@@ -1,27 +1,48 @@
 # bash completion for trustmux(1)
+
+# Names of instances that have a state directory, for --name.
+_trustmux_instances() {
+    local base="${TRUSTMUX_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/trustmux}"
+    local d
+    for d in "$base"/instances/*/; do
+        [[ -d $d ]] || continue
+        d=${d%/}
+        printf '%s\n' "${d##*/}"
+    done
+}
+
 _trustmux() {
     local cur prev words cword
     _init_completion || return
 
-    local subcommands="setup start start-local start-direct stop restart status log enable disable pair unpair"
+    local subcommands="setup start start-local start-direct stop restart status log list rm enable disable pair unpair"
 
     if [[ $cword -eq 1 ]]; then
         COMPREPLY=($(compgen -W "$subcommands" -- "$cur"))
         return
     fi
 
-    if [[ $prev == "--port" ]]; then
-        return
-    fi
+    case "$prev" in
+        --port)      return ;;                                     # freeform
+        --name)      COMPREPLY=($(compgen -W "$(_trustmux_instances)" -- "$cur"))
+                     return ;;
+    esac
 
+    # `list` acts on every instance, so it takes neither flag.
     case "${words[1]}" in
         setup)
-            COMPREPLY=($(compgen -W "--quiet --port" -- "$cur"))
+            COMPREPLY=($(compgen -W "--quiet --port --name" -- "$cur"))
             ;;
         start|start-local|start-direct|stop|restart|status|enable)
-            COMPREPLY=($(compgen -W "--port" -- "$cur"))
+            COMPREPLY=($(compgen -W "--port --name" -- "$cur"))
             ;;
         log|disable|pair|unpair)
+            COMPREPLY=($(compgen -W "--name" -- "$cur"))
+            ;;
+        rm)
+            COMPREPLY=($(compgen -W "--name --force" -- "$cur"))
+            ;;
+        list)
             ;;
     esac
 }

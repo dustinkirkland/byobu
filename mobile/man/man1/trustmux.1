@@ -48,8 +48,27 @@ Stop then start the daemon in HTTPS mode.
 Show whether the daemon is running and the URL to connect to.
 .TP
 .B log
-Tail the daemon log at
-.IR ~/.config/trustmux/trustmux.log .
+Tail this instance's daemon log (see
+.BR FILES ).
+.TP
+.B list
+List every instance that has a state directory, with the port, scheme and pid
+of any that are running.
+Instances whose daemon is stopped are shown with dashes.
+.TP
+.B rm
+Delete this instance's state directory — session tokens, TLS keypair, log,
+socket and pid file — and remove its login hook so it does not start again at
+the next login.
+.IP
+An instance is created by its first
+.B start
+and persists until removed, so this is the only way to retire one.
+Refused while the instance's daemon is running, and refused for the
+.B default
+instance;
+.B \-\-force
+overrides both, stopping a running daemon first.
 .SS "Login hook"
 .TP
 .B enable
@@ -60,10 +79,18 @@ user's shell login file
 or
 .IR ~/.zprofile )
 so the daemon starts automatically on each login.
+Only available for the
+.B default
+instance, since it starts the daemon in
+.B tailscale serve
+mode; see
+.BR \-\-name .
 .TP
 .B disable
 Stop the running daemon and remove the login hook so the daemon no longer
 starts automatically.
+Only this instance's hook is removed, so disabling one leaves any others in
+place.
 Paired device tokens are preserved.
 .SS "Device pairing"
 .TP
@@ -119,6 +146,54 @@ records the port in the login hook it writes, so a non-default port survives
 logout; re-running
 .B "enable \-\-port"
 rewrites an existing hook rather than leaving the old port in place.
+.TP
+.BI \-\-name " NAME"
+Act on the named instance instead of
+.BR default .
+Accepted by every subcommand.
+Each instance keeps its own pid file, admin socket, log, session tokens and
+TLS certificate, so several daemons can run at once — on different ports,
+or on the same port at different bind addresses.
+.IP
+.I NAME
+must match
+.RB ` [A-Za-z0-9][A-Za-z0-9._-]{0,31} ':
+it becomes a directory name and is written into the login hook, so separators,
+leading dots and shell metacharacters are rejected rather than sanitised.
+.IP
+Only the
+.B default
+instance can use
+.B tailscale serve
+mode.
+.B serve
+publishes on the tailnet's port 443, which just one daemon can own — a
+second would silently take over the mapping and leave the first running but
+unreachable.
+Named instances therefore use
+.B start\-direct
+or
+.BR start\-local ,
+and
+.BR setup ,
+.BR start ,
+.B restart
+and
+.B enable
+refuse them with a message pointing at those modes.
+Note that
+.B \-\-port
+does not lift this restriction: it moves only the loopback backend that
+.B tailscale serve
+proxies to, not the tailnet-facing port.
+.TP
+.B \-\-force
+Accepted by
+.BR rm .
+Remove the instance even though its daemon is running (it is stopped first),
+or even though it is the
+.B default
+instance.
 .SH ENVIRONMENT
 .TP
 .B TRUSTMUX_PORT
@@ -126,25 +201,116 @@ Default port when
 .B \-\-port
 is not given, for users who always want a different port.
 An out-of-range or non-numeric value is an error, not a silent fallback.
-.SH FILES
 .TP
-.I ~/.config/trustmux/trustmux.log
-Daemon log file.
+.B TRUSTMUX_INSTANCE
+Default instance when
+.B \-\-name
+is not given.
+An invalid name is an error, not a silent fallback.
 .TP
-.I ~/.config/trustmux/trustmux.pid
-PID file written at daemon startup.
-.TP
-.I ~/.config/trustmux/trustmux.sock
-Admin Unix socket used by
-.B pair
+.B TRUSTMUX_CONFIG_DIR
+.TQ
+.B TRUSTMUX_STATE_DIR
+Override the configuration and state base directories individually.
+Each takes precedence over the corresponding XDG variable.
+Pointing both at a scratch directory is the supported way to run a throwaway
+daemon — from a development tree, for instance — without touching the real
+one.
+.B start ,
+.B stop ,
+.B status
 and
-.BR unpair .
+.B list
+act only on a daemon that this instance itself started, determined from its own
+admin socket and pid file rather than from who holds a port, so the isolation
+holds even when the scratch daemon shares a port with the real one.
+.SH FILES
+Files live in the XDG base directories, with one subdirectory per instance:
+.I $XDG_CONFIG_HOME
+(default
+.IR ~/.config )
+holds the one file the user writes by hand, and
+.I $XDG_STATE_HOME
+(default
+.IR ~/.local/state )
+holds everything the daemon owns.
+.PP
+Below,
+.I INSTANCE
+is the
+.B \-\-name
+name, or
+.B default
+when unset.
+.SS Configuration
 .TP
-.I ~/.config/trustmux/tokens.json
+.I $XDG_CONFIG_HOME/trustmux/machines.json
+Optional: sibling machine list for the in-app machine selector.
+Shared by every instance, being the only user-authored file here.
+.SS State
+.TP
+.I $XDG_STATE_HOME/trustmux/instances/INSTANCE/tokens.json
 Paired device session tokens (mode 0600).
 .TP
-.I ~/.config/trustmux/machines.json
-Optional: sibling machine list for the in-app machine selector.
+.I $XDG_STATE_HOME/trustmux/instances/INSTANCE/cert.pem
+.TQ
+.I $XDG_STATE_HOME/trustmux/instances/INSTANCE/key.pem
+Self-signed TLS keypair used by
+.BR start\-direct .
+.TP
+.I $XDG_STATE_HOME/trustmux/instances/INSTANCE/trustmux.log
+Daemon log file, tailed by
+.BR "trustmux log" .
+.TP
+.I $XDG_STATE_HOME/trustmux/instances/INSTANCE/trustmux.sock
+Admin Unix socket (mode 0600) used by
+.BR pair ,
+.B unpair
+and by
+.B stop
+and
+.B status
+to ask the daemon which port it is on.
+.TP
+.I $XDG_STATE_HOME/trustmux/instances/INSTANCE/trustmux.pid
+PID file written at daemon startup, holding
+.RI \(dq pid " " port \(dq.
+The port is recorded so that a daemon which has stopped replying on its admin
+socket can still be matched against the port
+.B stop
+was asked about.
+.PP
+The socket and pid file are deliberately kept here rather than under
+.IR $XDG_RUNTIME_DIR ,
+where the spec would put them: systemd-logind deletes
+.I /run/user/$UID
+when a user's last login session ends unless
+.B loginctl enable-linger
+is set, which would strand a still-running daemon with no socket to reach it
+by — and trustmux exists precisely to be started and then reached later.
+That directory also does not exist on macOS or in most containers.
+A socket or pid file left behind by a killed daemon is therefore detected
+rather than swept away: the socket refuses connections once its daemon is
+gone, and a recorded pid is only believed when it is confirmed to hold the
+port in question.
+.SS Migration
+Earlier versions kept everything directly in
+.IR ~/.config/trustmux .
+On first run,
+.IR tokens.json ,
+.IR cert.pem ,
+.I key.pem
+and
+.I trustmux.log
+are moved from there into the
+.B default
+instance's state directory, preserving their modes.
+Any stale
+.I trustmux.pid
+and
+.I trustmux.sock
+are deliberately left in place, since a daemon predating the upgrade may still
+be serving on that socket.
 .SH EXAMPLES
 Typical first-time setup:
 .PP
@@ -176,6 +342,27 @@ trustmux pair
 trustmux stop
 .fi
 .RE
+.PP
+A second daemon alongside the first, with its own tokens and log:
+.PP
+.RS
+.nf
+trustmux start\-direct \-\-name work \-\-port 3389
+trustmux pair \-\-name work
+trustmux list
+trustmux stop \-\-name work
+.fi
+.RE
+.PP
+A throwaway daemon that touches none of the above:
+.PP
+.RS
+.nf
+export TRUSTMUX_CONFIG_DIR=$(mktemp \-d)
+export TRUSTMUX_STATE_DIR=$TRUSTMUX_CONFIG_DIR/state
+trustmux start\-local \-\-port 3389
+.fi
+.RE
 .SH SECURITY
 .SS "Pairing code"
 The one-time pairing code is a 6-digit decimal value drawn from
@@ -194,9 +381,11 @@ An incorrect guess also incurs a 0.5-second artificial delay.
 .SS "Session tokens"
 After a successful pairing the daemon issues a 256-bit URL-safe session token
 .RB ( secrets.token_urlsafe (32))
-stored in
-.I ~/.config/trustmux/tokens.json
-(mode 0600) and delivered to the browser as an
+stored in this instance's
+.I tokens.json
+(mode 0600; see
+.BR FILES )
+and delivered to the browser as an
 .BR httponly ,
 .B SameSite=Strict
 cookie.
