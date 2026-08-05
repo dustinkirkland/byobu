@@ -419,6 +419,40 @@ def check_homebrew_resources_fresh():
     print(f"  Homebrew resources OK: {', '.join(sorted(resources))}")
 
 
+def check_rpm_spec_fresh():
+    """Refuse to release if rpm/byobu.spec's %files list is missing a trustmux
+    module that mobile/Makefile.am actually installs.
+
+    Same drift shape as uv.lock and the Homebrew resources, a third time:
+    rpm/byobu.spec hand-lists every trustmux/*.py file under %{trustmuxlibdir}
+    rather than globbing the directory, so a new module has to be added there
+    by hand too. Found the hard way cutting 7.17-rc3: mobile/Makefile.am's
+    dist_trustmuxmod_DATA had _paths.py and _advertise.py (added by #123/#126)
+    but the spec's %files did not, so rpmbuild refused the package outright --
+    "Installed (but unpackaged) file(s) found" -- rather than silently
+    shipping something broken. Good failure mode, but one Phase 1 should catch
+    before a multi-hour parallel build phase does.
+    """
+    section("Phase 1: RPM spec freshness check")
+    makefile = (BYOBU_SRC / "mobile" / "Makefile.am").read_text()
+    m = re.search(r"dist_trustmuxmod_DATA\s*=\s*\\(.*?)\n\n", makefile, re.S)
+    if not m:
+        die("mobile/Makefile.am: could not find dist_trustmuxmod_DATA — "
+            "check_rpm_spec_fresh()'s parsing has fallen out of sync with it.")
+    installed = set(re.findall(r"trustmux/(\w+\.py)", m.group(1)))
+
+    spec = (BYOBU_SRC / "rpm" / "byobu.spec").read_text()
+    packaged = set(re.findall(r"%\{trustmuxlibdir\}/trustmux/(\w+\.py)", spec))
+
+    missing = sorted(installed - packaged)
+    if missing:
+        die("rpm/byobu.spec's %files is missing trustmux module(s) that "
+            "mobile/Makefile.am installs:\n"
+            + "\n".join(f"    {name}" for name in missing) +
+            "\n  Add %{trustmuxlibdir}/trustmux/<name> to rpm/byobu.spec's %files.")
+    print(f"  rpm/byobu.spec OK: {len(packaged)} trustmux modules packaged")
+
+
 def prewarm_gpg(identity):
     """Sign a throwaway blob to unlock the gpg-agent now, before the long builds start.
 
@@ -2214,6 +2248,7 @@ def main():
     check_tools(mode)
     check_uv_lock_fresh()
     check_homebrew_resources_fresh()
+    check_rpm_spec_fresh()
     check_salsa_sync(mode)
     prewarm_gpg(identity)
     tap_trustmux = find_tap("trustmux", mode) if should_run("6d", start_from) else None

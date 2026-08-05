@@ -144,11 +144,13 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_bindir}/trustmuxd
 %{trustmuxlibdir}/trustmux/__init__.py
 %{trustmuxlibdir}/trustmux/__main__.py
+%{trustmuxlibdir}/trustmux/_advertise.py
 %{trustmuxlibdir}/trustmux/_ctl.py
 %{trustmuxlibdir}/trustmux/_daemon.py
 %{trustmuxlibdir}/trustmux/_disable.py
 %{trustmuxlibdir}/trustmux/_enable.py
 %{trustmuxlibdir}/trustmux/_pair.py
+%{trustmuxlibdir}/trustmux/_paths.py
 %{trustmuxlibdir}/trustmux/_unpair.py
 %{_datadir}/bash-completion/completions/trustmux
 %{_mandir}/man1/trustmux.1.gz
