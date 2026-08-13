@@ -269,6 +269,11 @@ function _getKbdMode(paneId) {
 }
 function _saveKbdMode(paneId, mode) { localStorage.setItem(_kbdModeKey(paneId), mode); }
 
+// ── key-bar visibility per pane (persisted like kbdMode, restored on switch) ─
+function _keybarKey(paneId) { return `keybar:${location.hostname}:${paneId}`; }
+function _getKeybar(paneId) { return localStorage.getItem(_keybarKey(paneId)) === 'true'; }
+function _saveKeybar(paneId, on) { localStorage.setItem(_keybarKey(paneId), on); }
+
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
   connIndicator.title = msg;
@@ -413,16 +418,20 @@ function navigateTo(sessionId, windowId, paneId) {
     _paneCache.set(currentPane, { html: output.innerHTML, scrollTop: output.scrollTop });
     if (_paneCache.size > _PANE_CACHE_MAX) _paneCache.delete(_paneCache.keys().next().value);
   }
-  if (currentPane) _saveKbdMode(currentPane, kbdMode);
+  if (currentPane) {
+    _saveKbdMode(currentPane, kbdMode);
+    _saveKeybar(currentPane, keybarVisible());
+  }
 
   currentSessionId = sessionId;
   currentWindowId  = windowId;
   currentPane      = paneId;
   _saveLastPane(paneId);
 
-  // Restore keyboard mode for the arriving pane.
+  // Restore keyboard mode and key-bar visibility for the arriving pane.
+  // setKeybarVisible applies the keyboard mode itself.
   kbdMode = _getKbdMode(paneId);
-  applyKbdMode();
+  setKeybarVisible(_getKeybar(paneId));
   cmdInput.disabled = false;
   pwdInput.disabled = false;
   btnSend.disabled  = false;
@@ -551,14 +560,30 @@ function sendKeys() {
 // ── events ─────────────────────────────────────────────────────────────────
 xyzLabel.addEventListener('click', () => send({ type: 'list_sessions' }));
 cmdInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendKeys(); }
+  // The Enter that commits an IME composition arrives here with
+  // isComposing=true (or as Android keyCode 229); it must not reach the pane.
+  if (e.isComposing || e.keyCode === 229) return;
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    keybarVisible() ? sendNamedKey('Enter') : sendKeys();
+  } else if (e.key === 'Backspace' && keybarVisible() && !cmdInput.value) {
+    e.preventDefault();
+    sendNamedKey('BSpace');
+  }
 });
 cmdInput.addEventListener('input', () => {
   cmdInput.style.height = 'auto';
   cmdInput.style.height = Math.min(cmdInput.scrollHeight, 160) + 'px';
 });
 pwdInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); sendKeys(); }
+  if (e.isComposing || e.keyCode === 229) return;
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    keybarVisible() ? sendNamedKey('Enter') : sendKeys();
+  } else if (e.key === 'Backspace' && keybarVisible() && !pwdInput.value) {
+    e.preventDefault();
+    sendNamedKey('BSpace');
+  }
 });
 btnSend.addEventListener('click', sendKeys);
 
@@ -572,14 +597,24 @@ function applyKbdMode() {
   cmdInput.style.display = inPwd ? 'none' : '';
   pwdInput.style.display = inPwd ? 'block' : 'none';
 
+  // Direct mode needs raw keystrokes: under spell-check Gboard composes
+  // plain typing and only commits whole words, so force terminal attributes
+  // while the key bar is visible; hiding it restores the user's mode.
+  const direct = keybarVisible();
+
   if (kbdMode === 1) {
-    cmdInput.setAttribute('spellcheck', 'true');
-    cmdInput.setAttribute('autocorrect', 'on');
-    cmdInput.setAttribute('autocapitalize', 'sentences');
+    cmdInput.setAttribute('spellcheck', direct ? 'false' : 'true');
+    cmdInput.setAttribute('autocorrect', direct ? 'off' : 'on');
+    cmdInput.setAttribute('autocapitalize', direct ? 'none' : 'sentences');
     output.style.whiteSpace = 'pre-wrap';
     btnKbdMode.textContent = 'Aa';
     btnKbdMode.title = 'Text mode — tap for terminal mode';
     btnKbdMode.style.color = 'var(--accent)';
+    // Don't advertise spell check while direct mode has it forced off.
+    if (direct) {
+      btnKbdMode.title = 'Text mode: spell check suspended in direct mode';
+      btnKbdMode.style.color = '';
+    }
   } else if (kbdMode === 0) {
     cmdInput.setAttribute('spellcheck', 'false');
     cmdInput.setAttribute('autocorrect', 'off');
@@ -633,12 +668,141 @@ document.getElementById('escape-popup-ctrlc').addEventListener('click', () => {
   hideEscapePopup();
 });
 
+document.getElementById('escape-popup-keys').addEventListener('click', () => {
+  toggleKeybar();
+  hideEscapePopup();
+});
+
 document.addEventListener('click', () => hideEscapePopup());
 document.addEventListener('touchstart', e => {
   if (!escapePopup.contains(e.target) && e.target !== btnEscape) hideEscapePopup();
 }, { passive: true });
 
-// ── pane list — all live panes across all windows and sessions ────────────
+// ── key bar (Esc, Ctrl, Tab, arrows; direct key mode for TUIs like vi) ─────
+// While the bar is visible the text box drains on every input event: a
+// single typed character reaches the pane immediately without Enter, so
+// modal editors get bare keystrokes like "i". Named keys on the bar go out
+// as tmux key names (literal:false). Ctrl is a sticky modifier: it combines
+// with the next typed character or the next named key (C-c, C-Up, ...) and
+// then releases. Hiding the bar restores the normal chunked text-box flow.
+const keybar     = document.getElementById('keybar');
+const keybarCtrl = document.getElementById('keybar-ctrl');
+const _cmdPlaceholder = cmdInput.placeholder;
+const _pwdPlaceholder = pwdInput.placeholder;
+const _directPlaceholder = 'Direct mode: keys go straight to the pane';
+// The password box keeps its keyboard-privacy hint in direct mode too.
+const _directPwdPlaceholder = 'Direct mode: not saved by keyboard';
+let _ctrlArmed = false;
+
+function keybarVisible() { return keybar.style.display !== 'none'; }
+
+function setCtrlArmed(on) {
+  _ctrlArmed = on;
+  keybarCtrl.classList.toggle('armed', on);
+}
+
+function setKeybarVisible(show) {
+  // No-op when the state is unchanged (the common pane-switch case), so the
+  // blur + refocus dance below does not bounce the keyboard on every switch.
+  if (show === keybarVisible()) { applyKbdMode(); return; }
+  keybar.style.display = show ? '' : 'none';
+  // Persistent direct-mode cues: accent border on the input row and a dimmed
+  // Send button, driven by CSS off this class. Unlike the placeholder these
+  // survive typing.
+  document.body.classList.toggle('keybar-on', show);
+  if (!show) setCtrlArmed(false);
+  cmdInput.placeholder = show ? _directPlaceholder : _cmdPlaceholder;
+  pwdInput.placeholder = show ? _directPwdPlaceholder : _pwdPlaceholder;
+  // Re-apply so direct mode forces terminal input attributes and hiding
+  // the bar restores the user's mode. Also scrolls output to bottom.
+  applyKbdMode();
+  // Like btnKbdMode: Android keyboards only re-evaluate input attributes on
+  // refocus, so toggling the bar while the box is focused needs the same
+  // blur + refocus dance for the forced attributes to take effect.
+  const inp = activeInput();
+  if (document.activeElement === inp) {
+    inp.blur();
+    setTimeout(() => inp.focus(), 50);
+  }
+}
+
+function toggleKeybar() {
+  const show = !keybarVisible();
+  setKeybarVisible(show);
+  if (currentPane) _saveKeybar(currentPane, show);
+}
+
+function sendNamedKey(name) {
+  if (!currentPane) return;
+  if (_ctrlArmed) { name = 'C-' + name; setCtrlArmed(false); }
+  send({ type: 'send_keys', pane_id: currentPane, keys: name, enter: false, literal: false });
+}
+
+keybar.querySelectorAll('button[data-key]').forEach(btn => {
+  btn.addEventListener('click', () => sendNamedKey(btn.dataset.key));
+  // Keep focus (and the soft keyboard) in the text box on browsers that
+  // focus buttons on tap; Android and iOS mostly do not, so defensive only.
+  btn.addEventListener('pointerdown', e => e.preventDefault());
+});
+
+keybarCtrl.addEventListener('click', () => setCtrlArmed(!_ctrlArmed));
+keybarCtrl.addEventListener('pointerdown', e => e.preventDefault());
+
+// The X on the bar itself: same toggle path as the escape popup entry, so
+// per-pane persistence stays in one place.
+document.getElementById('keybar-close').addEventListener('click', toggleKeybar);
+
+function drainDirectInput(inp) {
+  const text = inp.value;
+  if (!text) return;
+  inp.value = '';
+  if (inp === cmdInput) cmdInput.style.height = 'auto';
+  if (!currentPane) return;
+  if (_ctrlArmed) {
+    setCtrlArmed(false);
+    // Ctrl combines with the characters tmux can ctrl-modify (letters plus
+    // @ [ \ ] ^ _ and space); iterate by code point so an emoji first
+    // character stays intact instead of splitting its surrogate pair into a
+    // bogus C-<half> key. Anything else falls through and is sent literally.
+    const first = [...text][0];
+    if (/^[a-z@\[\\\]^_ ]$/i.test(first)) {
+      const key = first === ' ' ? 'C-Space' : 'C-' + first.toLowerCase();
+      send({ type: 'send_keys', pane_id: currentPane,
+             keys: key, enter: false, literal: false });
+      const rest = text.slice(first.length);
+      if (rest) send({ type: 'send_keys', pane_id: currentPane, keys: rest, enter: false, literal: true });
+      return;
+    }
+  }
+  send({ type: 'send_keys', pane_id: currentPane, keys: text, enter: false, literal: true });
+}
+
+// IME guard: mobile keyboards fire input events mid-composition; draining
+// (which clears the box) then would duplicate or drop characters. Skip
+// while composing and drain once on compositionend.
+for (const inp of [cmdInput, pwdInput]) {
+  inp.addEventListener('input', e => {
+    if (keybarVisible() && !e.isComposing) drainDirectInput(inp);
+  });
+  inp.addEventListener('compositionend', () => {
+    if (keybarVisible()) drainDirectInput(inp);
+  });
+  // Gboard reports empty-field backspace as keyCode 229, so the keydown
+  // path misses it; catch it here instead. When keydown does handle a
+  // backspace it calls preventDefault, which cancels this event, so one
+  // physical backspace never sends two BSpace. A keyboard that emits
+  // neither event on an empty field gets a dead backspace; the bar's
+  // backspace button covers that, and the sentinel-character trick is the
+  // known fix if it ever matters.
+  inp.addEventListener('beforeinput', e => {
+    if (keybarVisible() && e.inputType === 'deleteContentBackward' && !inp.value) {
+      e.preventDefault();
+      sendNamedKey('BSpace');
+    }
+  });
+}
+
+// ── pane list: all live panes across all windows and sessions ─────────────
 // Deduplicated by pane ID: byobu exposes the same windows/panes under multiple
 // sessions (linked windows / multi-client attach), so skip any already seen.
 function flatPaneList() {

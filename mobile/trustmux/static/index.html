@@ -323,7 +323,42 @@
       letter-spacing: 0.04em;
     }
     #escape-popup button:active { background: var(--bg3); }
-    #escape-popup-sep { height: 1px; background: var(--border); margin: 2px 0; }
+    .escape-popup-sep { height: 1px; background: var(--border); margin: 2px 0; }
+
+    /* ── key bar (Esc, Ctrl, Tab, arrows for TUIs like vi) ── */
+    #keybar {
+      display: flex; gap: 4px; padding: 6px 10px;
+      background: var(--bg2); border-top: 1px solid var(--border);
+      flex-shrink: 0; overflow-x: auto; scrollbar-width: none;
+    }
+    #keybar::-webkit-scrollbar { display: none; }
+    #keybar button {
+      background: var(--bg3); color: var(--text);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 7px 0; font-size: 13px; font-family: var(--font);
+      cursor: pointer; flex: 1; min-width: 34px;
+    }
+    #keybar button:active { background: var(--border); }
+    #keybar-ctrl.armed { color: var(--accent); border-color: var(--accent); }
+    /* close button: dismisses the bar, does not send a key.
+       #keybar prefix keeps these rules above #keybar button in the cascade */
+    #keybar #keybar-close {
+      flex: 0 0 auto; min-width: 44px; min-height: 44px; padding: 10px 0;
+      /* pin to the scrollport edge: the bar's content is ~435px wide, so on
+         360-412px phones it overflows with the scrollbar hidden; without
+         sticky the ✕ (the bar's exit) starts off-screen. Opaque background
+         so keys scroll under it instead of showing through */
+      position: sticky; right: 0; background: var(--bg2);
+      border-color: transparent;
+      /* var(--text), not --dim: --dim over --bg2 is ~2.9:1, the contrast
+         class e894f3db removed, and this X is the bar's exit path */
+      color: var(--text); font-size: 15px;
+    }
+    #keybar #keybar-close:active { background: var(--bg3); color: var(--text); }
+    /* direct mode cues on the input row: accent border on the row, Send
+       recedes (it still sends a chunk, but keystrokes bypass it) */
+    body.keybar-on #inputbar { border-top: 1px solid var(--accent); }
+    body.keybar-on #btn-send:not(:disabled) { opacity: 0.45; }
 
 
     /* ── pairing overlay ── */
@@ -590,6 +625,20 @@
     <div id="statusline-right"></div>
   </div>
 
+  <!-- ── key bar (toggled from the ⎋ popup; direct key mode for TUIs) ── -->
+  <div id="keybar" style="display:none">
+    <button data-key="Escape" title="Escape">Esc</button>
+    <button id="keybar-ctrl" title="Ctrl: combines with the next key">Ctrl</button>
+    <button data-key="Tab" title="Tab">Tab</button>
+    <button data-key="Left" title="Left">←</button>
+    <button data-key="Down" title="Down">↓</button>
+    <button data-key="Up" title="Up">↑</button>
+    <button data-key="Right" title="Right">→</button>
+    <button data-key="BSpace" title="Backspace">⌫</button>
+    <button data-key="Enter" title="Enter">⏎</button>
+    <button id="keybar-close" title="Close key bar: back to chunked input">✕</button>
+  </div>
+
   <div id="inputbar">
     <textarea id="cmd" rows="2" placeholder="Send keys to pane… (Enter = send, Shift+Enter = newline)"
               autocomplete="off" autocorrect="off" autocapitalize="none"
@@ -599,17 +648,19 @@
            spellcheck="false" placeholder="Password — not saved by keyboard"
            disabled>
     <div id="btn-right-col">
-      <button id="btn-escape" class="icon-btn" title="Esc / Ctrl-C">⎋</button>
+      <button id="btn-escape" class="icon-btn" title="Esc / Ctrl-C / key bar">⎋</button>
       <button id="btn-kbd-mode" class="icon-btn" title="Terminal mode — tap to enable spell check">$_</button>
     </div>
     <button id="btn-send" title="Send" disabled>↵</button>
   </div>
 
-  <!-- ── escape / ctrl-c popup ── -->
+  <!-- ── escape / ctrl-c / key bar popup ── -->
   <div id="escape-popup" style="display:none">
     <button id="escape-popup-esc">⎋&nbsp; Esc</button>
-    <div id="escape-popup-sep"></div>
+    <div class="escape-popup-sep"></div>
     <button id="escape-popup-ctrlc">^C&nbsp; Ctrl-C</button>
+    <div class="escape-popup-sep"></div>
+    <button id="escape-popup-keys">⌨&nbsp; Key bar</button>
   </div>
 
 </div>
