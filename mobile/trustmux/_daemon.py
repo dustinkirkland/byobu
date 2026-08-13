@@ -327,11 +327,13 @@ def tmux_list_windows(session_id: str) -> list[dict]:
     return windows
 
 def tmux_list_panes(window_id: str) -> list[dict]:
+    # pane_title is program-controlled (OSC 2) and may contain tabs, so it
+    # goes last and the split is bounded to keep it from shifting pid/dead.
     raw = _tmux("list-panes", "-t", window_id, "-F",
-                "#{pane_id}\t#{pane_index}\t#{pane_active}\t#{pane_current_command}\t#{pane_pid}\t#{pane_dead}")
+                "#{pane_id}\t#{pane_index}\t#{pane_active}\t#{pane_current_command}\t#{pane_pid}\t#{pane_dead}\t#{pane_title}")
     panes = []
     for line in raw.splitlines():
-        parts = line.split("\t")
+        parts = line.split("\t", 6)
         if len(parts) < 3:
             continue
         pane_id_str = parts[0]
@@ -343,6 +345,7 @@ def tmux_list_panes(window_id: str) -> list[dict]:
         cmd     = parts[3] if len(parts) > 3 else ""
         pid_str = parts[4] if len(parts) > 4 else ""
         dead    = parts[5] == "1" if len(parts) > 5 else False
+        title   = parts[6] if len(parts) > 6 else ""
         if not dead and pid_str:
             cmd = _smarter_pane_name(pid_str, cmd)
         panes.append({
@@ -350,6 +353,7 @@ def tmux_list_panes(window_id: str) -> list[dict]:
             "index": idx,
             "active": active,
             "command": cmd,
+            "title": title,
             "dead": dead,
         })
     return panes

@@ -95,27 +95,40 @@ class TestTmuxListPanes(unittest.TestCase):
             return bm.tmux_list_panes('@0')
 
     def test_parses_two_panes(self):
-        out = '%0\t0\t1\tbash\t1234\t0\n%1\t1\t0\tvim\t5678\t1\n'
+        out = '%0\t0\t1\tbash\t1234\t0\tmain task\n%1\t1\t0\tvim\t5678\t1\t\n'
         panes = self._run(out)
         self.assertEqual(len(panes), 2)
-        self.assertEqual(panes[0], {'id': '%0', 'index': 0, 'active': True,  'command': 'bash', 'dead': False})
-        self.assertEqual(panes[1], {'id': '%1', 'index': 1, 'active': False, 'command': 'vim',  'dead': True})
+        self.assertEqual(panes[0], {
+            'id': '%0', 'index': 0, 'active': True,
+            'command': 'bash', 'title': 'main task', 'dead': False,
+        })
+        self.assertEqual(panes[1], {
+            'id': '%1', 'index': 1, 'active': False,
+            'command': 'vim', 'title': '', 'dead': True,
+        })
+
+    def test_tab_in_title_does_not_shift_fields(self):
+        out = '%0\t0\t1\tbash\t1234\t0\tfoo\tbar\n'
+        panes = self._run(out)
+        self.assertEqual(len(panes), 1)
+        self.assertEqual(panes[0]['title'], 'foo\tbar')
+        self.assertFalse(panes[0]['dead'])
 
     def test_empty_output(self):
         self.assertEqual(self._run(''), [])
 
     def test_skips_malformed_lines(self):
-        out = 'garbage\n%0\t0\t1\tbash\t123\n'
+        out = 'garbage\n%0\t0\t1\tbash\t123\t0\ttitle\n'
         panes = self._run(out)
         self.assertEqual(len(panes), 1)
         self.assertEqual(panes[0]['id'], '%0')
 
     def test_active_flag_parsing(self):
-        out = '%5\t0\t1\tzsh\t999\n'
+        out = '%5\t0\t1\tzsh\t999\t0\ttitle\n'
         panes = self._run(out)
         self.assertTrue(panes[0]['active'])
 
-        out = '%5\t0\t0\tzsh\t999\n'
+        out = '%5\t0\t0\tzsh\t999\t0\ttitle\n'
         panes = self._run(out)
         self.assertFalse(panes[0]['active'])
 
@@ -123,7 +136,7 @@ class TestTmuxListPanes(unittest.TestCase):
 class TestTmuxListWindows(unittest.TestCase):
     def test_parses_windows_with_panes(self):
         window_output = '@0\t0\tmain\t1\n@1\t1\twork\t0\n'
-        pane_output   = '%0\t0\t1\tbash\t111\n'
+        pane_output   = '%0\t0\t1\tbash\t111\t0\ttitle\n'
         call_count = 0
 
         def fake_tmux(*args):
