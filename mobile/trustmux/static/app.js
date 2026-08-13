@@ -163,7 +163,8 @@ const machineSelect    = document.getElementById('machine-select');
 const btnInstall       = document.getElementById('btn-install');
 const iosInstallTip    = document.getElementById('ios-install-tip');
 const hostnameDisplay  = document.getElementById('hostname-display');
-function setHostnameDisplay(name) { hostnameDisplay.textContent = '🖥️ ' + name; }
+let serverHostname = '';
+function setHostnameDisplay(name) { serverHostname = name; hostnameDisplay.textContent = '🖥️ ' + name; }
 const headerClock      = document.getElementById('header-clock');
 const updateBadge      = document.getElementById('update-badge');
 const infoPopup       = document.getElementById('info-popup');
@@ -339,12 +340,65 @@ function send(obj) {
   if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
 }
 
-// ── xyz label ─────────────────────────────────────────────────────────────
+// ── current context helpers ───────────────────────────────────────────────
+function currentSession() {
+  return sessions.find(s => s.id === currentSessionId) || null;
+}
+
+function currentWindow() {
+  const s = currentSession();
+  if (!s) return null;
+  return (s.windows || []).find(w => w.id === currentWindowId) || null;
+}
+
+function currentPaneObj() {
+  const w = currentWindow();
+  if (!w) return null;
+  return (w.panes || []).find(p => p.id === currentPane) || null;
+}
+
+function livePanesInWindow(w) {
+  return (w?.panes || []).filter(p => !p.dead);
+}
+
+function firstLivePaneInWindow(w) {
+  return livePanesInWindow(w)[0] || null;
+}
+
+// tmux defaults pane_title to the hostname when no program set one; that is
+// noise, so such a title falls through to the running command instead.
+function isDefaultPaneTitle(title) {
+  if (!title || !serverHostname) return false;
+  const short = s => s.split('.')[0].toLowerCase();
+  return short(title) === short(serverHostname);
+}
+
+function paneDisplayName(p) {
+  if (!p) return 'shell';
+  const title = isDefaultPaneTitle(p.title) ? '' : p.title;
+  return getPaneName(p.id, '') || title || p.command || 'shell';
+}
+
+function contextPath() {
+  const s = currentSession();
+  const w = currentWindow();
+  const p = currentPaneObj();
+  if (!s || !w || !p) return '';
+  return `${s.name} / ${w.index}:${w.name} / ${paneDisplayName(p)}`;
+}
+
+// ── position label ────────────────────────────────────────────────────────
 function activePaneXYZ() {
-  const list = flatPaneList();
-  if (!currentPane || list.length === 0) return '-/-';
-  const idx = list.findIndex(e => e.paneId === currentPane);
-  return idx < 0 ? '-/-' : `${idx + 1}/${list.length}`;
+  const s = currentSession();
+  const w = currentWindow();
+  if (!s || !w || !currentPane) return '-/-';
+  const windows = (s.windows || []).filter(win => firstLivePaneInWindow(win));
+  const wIdx = windows.findIndex(win => win.id === currentWindowId);
+  const panes = livePanesInWindow(w);
+  const pIdx = panes.findIndex(p => p.id === currentPane);
+  const wText = wIdx < 0 ? 'W-/-' : `W${wIdx + 1}/${windows.length}`;
+  const pText = pIdx < 0 ? 'P-/-' : `P${pIdx + 1}/${panes.length}`;
+  return `${wText} ${pText}`;
 }
 
 function updateXYZLabel() {
@@ -441,11 +495,10 @@ function navigateTo(sessionId, windowId, paneId) {
   updateContextName();
 }
 
-// ── context name (custom label or command fallback) ───────────────────────
+// ── context name ──────────────────────────────────────────────────────────
 function updateContextName() {
   if (!currentPane) { ctxName.textContent = ''; return; }
-  const custom = getPaneName(currentPane, '');
-  ctxName.textContent = '🪟 ' + (custom || currentPaneCommand() || 'shell');
+  ctxName.textContent = contextPath() || getPaneName(currentPane, '') || 'shell';
 }
 
 // ── output rendering ───────────────────────────────────────────────────────
@@ -549,7 +602,7 @@ function sendKeys() {
 }
 
 // ── events ─────────────────────────────────────────────────────────────────
-xyzLabel.addEventListener('click', () => send({ type: 'list_sessions' }));
+xyzLabel.addEventListener('click', () => navigateRelativePane(1));
 cmdInput.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendKeys(); }
 });
@@ -638,7 +691,7 @@ document.addEventListener('touchstart', e => {
   if (!escapePopup.contains(e.target) && e.target !== btnEscape) hideEscapePopup();
 }, { passive: true });
 
-// ── pane list — all live panes across all windows and sessions ────────────
+// ── pane list: all live panes across all windows and sessions ─────────────
 // Deduplicated by pane ID: byobu exposes the same windows/panes under multiple
 // sessions (linked windows / multi-client attach), so skip any already seen.
 function flatPaneList() {
@@ -665,6 +718,15 @@ function navigateRelative(delta) {
   navigateTo(next.sessionId, next.windowId, next.paneId);
 }
 
+function navigateRelativePane(delta) {
+  const w = currentWindow();
+  const panes = livePanesInWindow(w);
+  if (!w || panes.length < 2) return;
+  const idx = panes.findIndex(p => p.id === currentPane);
+  const nextPane = panes[((idx < 0 ? 0 : idx) + delta + panes.length) % panes.length];
+  navigateTo(currentSessionId, w.id, nextPane.id);
+}
+
 // ── touch swipe tracking (used for swipe nav) ─────────────────────────────
 let _touchX = 0, _touchY = 0;
 
@@ -678,23 +740,51 @@ btnNext.addEventListener('click', () => navigateRelative(1));
 document.getElementById('btn-create').addEventListener('click', showCreateOverlay);
 
 // ── context jump list (tap context name in header) ─────────────────────────
-// Lists every live pane across every session/window, grouped, so jumping to
-// a specific context is one tap instead of cycling through ‹ › one at a time.
+// Hierarchical picker: sessions first, then windows inside each session, then
+// panes inside each window. This keeps tmux's session/window/pane model visible
+// instead of reducing everything to a long pane list.
 function renderCtxList() {
   ctxList.innerHTML = '';
   for (const s of sessions) {
+    const sessionHasLivePane = (s.windows || []).some(w => firstLivePaneInWindow(w));
+    if (!sessionHasLivePane) continue;
+
+    if (ctxList.children.length) {
+      const sep = document.createElement('div');
+      sep.className = 'ctx-sep';
+      ctxList.appendChild(sep);
+    }
+
+    const sBtn = document.createElement('button');
+    sBtn.className = 'ctx-btn' + (s.id === currentSessionId ? ' ctx-current' : '');
+    sBtn.textContent = (s.id === currentSessionId ? '✓ ' : '') + s.name;
+    sBtn.addEventListener('click', () => {
+      const firstWindow = (s.windows || []).find(w => firstLivePaneInWindow(w));
+      const firstPane = firstLivePaneInWindow(firstWindow);
+      hideCtxOverlay();
+      if (firstWindow && firstPane) navigateTo(s.id, firstWindow.id, firstPane.id);
+    });
+    ctxList.appendChild(sBtn);
+
     for (const w of (s.windows || [])) {
-      const livePanes = (w.panes || []).filter(p => !p.dead);
+      const livePanes = livePanesInWindow(w);
       if (!livePanes.length) continue;
-      const label = document.createElement('div');
-      label.className = 'ctx-group-label';
-      label.textContent = `${s.name} › ${w.name}`;
-      ctxList.appendChild(label);
+      const isCurrentWindow = s.id === currentSessionId && w.id === currentWindowId;
+      const wBtn = document.createElement('button');
+      wBtn.className = 'ctx-btn ctx-window-btn' + (isCurrentWindow ? ' ctx-current' : '');
+      wBtn.textContent = `${isCurrentWindow ? '✓ ' : ''}${w.index}:${w.name}`;
+      wBtn.addEventListener('click', () => {
+        const p = firstLivePaneInWindow(w);
+        hideCtxOverlay();
+        if (p) navigateTo(s.id, w.id, p.id);
+      });
+      ctxList.appendChild(wBtn);
+
       for (const p of livePanes) {
         const isCurrent = p.id === currentPane;
         const btn = document.createElement('button');
-        btn.className = 'ctx-btn' + (isCurrent ? ' ctx-current' : '');
-        const name = getPaneName(p.id, '') || p.command || 'shell';
+        btn.className = 'ctx-btn ctx-pane-btn' + (isCurrent ? ' ctx-current' : '');
+        const name = paneDisplayName(p);
         btn.textContent = (isCurrent ? '✓ ' : '') + name;
         btn.addEventListener('click', () => {
           hideCtxOverlay();
@@ -729,26 +819,25 @@ ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtx
 // ── rename sub-form (reached via "Rename current" inside the jump list) ────
 let _pendingRenameId = null;
 
-function currentPaneCommand() {
-  if (!currentPane) return '';
+function currentPaneDisplayName() {
   for (const s of sessions) {
     for (const w of (s.windows || [])) {
       for (const p of (w.panes || [])) {
-        if (p.id === currentPane) return p.command || '';
+        if (p.id === currentPane) return paneDisplayName(p);
       }
     }
   }
-  return '';
+  return paneDisplayName(null);
 }
 
 function showRenameForm() {
   if (!currentPane) return;
   _pendingRenameId = currentPane;
   const custom = getPaneName(currentPane, '');
-  const cmd = currentPaneCommand();
+  const name = currentPaneDisplayName();
   ctxRenameLabel.textContent = custom
     ? `Rename "${custom}":`
-    : `Name this context (${cmd || 'shell'}):`;
+    : `Name this context (${name}):`;
   ctxRenameInput.value = custom;
   ctxListView.style.display = 'none';
   ctxRenameForm.style.display = '';

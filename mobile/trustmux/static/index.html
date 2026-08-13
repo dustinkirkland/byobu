@@ -63,7 +63,7 @@
       overflow: hidden; white-space: nowrap; flex-shrink: 1; min-width: 0;
     }
     #ctx-name {
-      max-width: 120px; overflow: hidden;
+      max-width: 48vw; overflow: hidden;
       text-overflow: ellipsis; white-space: nowrap;
       color: var(--accent); font-size: 11px;
       letter-spacing: 0.03em; padding: 0 4px;
@@ -71,8 +71,8 @@
     }
     #ctx-name:active { opacity: 0.7; }
     #xyz-label {
-      width: 44px; text-align: center; flex-shrink: 0;
-      color: var(--text); font-size: 13px; letter-spacing: 0.05em;
+      min-width: 86px; text-align: center; flex-shrink: 0;
+      color: var(--text); font-size: 11px; letter-spacing: 0.03em;
       cursor: pointer; user-select: none;
     }
     #xyz-label:active { color: var(--accent); }
@@ -142,13 +142,11 @@
                        font-family: var(--font); text-align: center; }
 
     /* ── context jump list (tap context name in header) ── */
-    /* capped + scrollable so a long pane list doesn't push the Rename/Cancel
-       buttons off-screen or grow the box past the viewport */
-    #ctx-list { max-height: 50vh; overflow-y: auto; }
-    .ctx-group-label {
-      padding: 10px 16px 4px; color: var(--text); font-size: 11px;
-      letter-spacing: 0.04em; text-transform: uppercase;
-    }
+    /* capped + scrollable so a long session/window/pane tree doesn't push the
+       Rename/Cancel buttons off-screen or grow the box past the viewport */
+    #ctx-list { max-height: 58vh; overflow-y: auto; }
+    .ctx-window-btn { padding-left: 28px; }
+    .ctx-pane-btn { padding-left: 40px; font-size: 13px; }
     .ctx-btn.ctx-current { color: var(--accent); }
 
     .icon-btn {
@@ -572,7 +570,7 @@
     <span id="ctx-name"></span>
     <button class="icon-btn" id="btn-create" title="New pane / window / session">+</button>
     <button class="icon-btn" id="btn-prev" title="Previous pane">‹</button>
-    <span id="xyz-label" title="Tap to refresh">-/-</span>
+    <span id="xyz-label" title="Tap for next pane in this window">-/-</span>
     <button class="icon-btn" id="btn-next" title="Next pane">›</button>
   </div>
 
