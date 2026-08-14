@@ -44,6 +44,11 @@ byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
     sandboxed-store packagers (e.g. Nix) don't need to patch source files
     or fight byobu-screen/byobu-tmux's argv[0]-based dispatch (Closes: GH
     #128)
+  * tmux: fix the status bar visibly flickering between two renders on
+    hosts with many windows under high load -- two concurrency races
+    between the independently-running status-left and status-right
+    processes, one in per-tick terminal-width detection, one in the
+    per-segment status cache (Closes: GH #141)
 
 byobu (7.17) 2026-08-05  Dustin Kirkland <kirkland@ubuntu.com>
 
