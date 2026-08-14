@@ -148,6 +148,12 @@
     .ctx-window-btn { padding-left: 28px; }
     .ctx-pane-btn { padding-left: 40px; font-size: 13px; }
     .ctx-btn.ctx-current { color: var(--accent); }
+    /* keyboard highlight for prefix+w navigation: real DOM focus moved from a
+       keydown handler matches :focus-visible, so touch taps stay outline-free */
+    .ctx-btn:focus-visible {
+      outline: 2px solid var(--accent); outline-offset: -2px;
+      background: var(--bg3);
+    }
 
     .icon-btn {
       background: var(--bg3); color: var(--text);
@@ -230,6 +236,16 @@
       border-bottom: 1px solid var(--border); flex-shrink: 0;
     }
     #btn-create { margin-left: auto; }
+
+    /* ── hardware-keyboard mode chip (prefix armed / scroll mode) ──
+       hidden until a hardware Ctrl+B arrives, so touch-only users never see it */
+    #kbd-mode-chip {
+      display: inline-block; padding: 1px 7px; border-radius: 8px;
+      /* var(--bg), not #fff: white on the dark accent is 2.91:1; the page
+         background clears 7:1 on the accent in both themes */
+      background: var(--accent); color: var(--bg);
+      font-size: 10px; letter-spacing: 0.05em; flex-shrink: 0;
+    }
 
     /* ── output area ── */
     #output {
@@ -603,6 +619,7 @@
 
   <div id="statusbar">
     <span id="ctx-name"></span>
+    <span id="kbd-mode-chip" style="display:none"></span>
     <button class="icon-btn" id="btn-create" title="New pane / window / session">+</button>
     <button class="icon-btn" id="btn-prev" title="Previous pane">‹</button>
     <span id="xyz-label" title="Tap for next pane in this window">-/-</span>
