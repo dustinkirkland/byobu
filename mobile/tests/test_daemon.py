@@ -458,6 +458,39 @@ class TestCapturePaneAnsiFlag(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# tmux_capture_pane join flag (-J: reflow soft-wrapped lines on the client)
+# ---------------------------------------------------------------------------
+
+class TestCapturePaneJoinFlag(unittest.TestCase):
+    def test_join_true_passes_j_flag(self):
+        captured_args = []
+        def fake_tmux(*args):
+            captured_args.extend(args)
+            return ''
+        with patch.object(bm, '_tmux', side_effect=fake_tmux):
+            bm.tmux_capture_pane('%0', join=True)
+        self.assertIn('-J', captured_args)
+
+    def test_join_false_omits_j_flag(self):
+        captured_args = []
+        def fake_tmux(*args):
+            captured_args.extend(args)
+            return ''
+        with patch.object(bm, '_tmux', side_effect=fake_tmux):
+            bm.tmux_capture_pane('%0', join=False)
+        self.assertNotIn('-J', captured_args)
+
+    def test_default_omits_j_flag(self):
+        captured_args = []
+        def fake_tmux(*args):
+            captured_args.extend(args)
+            return ''
+        with patch.object(bm, '_tmux', side_effect=fake_tmux):
+            bm.tmux_capture_pane('%0')
+        self.assertNotIn('-J', captured_args)
+
+
+# ---------------------------------------------------------------------------
 # main() -- help discoverability
 # ---------------------------------------------------------------------------
 

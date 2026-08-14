@@ -275,6 +275,11 @@ function _keybarKey(paneId) { return `keybar:${location.hostname}:${paneId}`; }
 function _getKeybar(paneId) { return localStorage.getItem(_keybarKey(paneId)) === 'true'; }
 function _saveKeybar(paneId, on) { localStorage.setItem(_keybarKey(paneId), on); }
 
+// ── line wrap per pane (persisted like kbdMode, restored on switch) ────────
+function _wrapKey(paneId) { return `wrap:${location.hostname}:${paneId}`; }
+function _getWrap(paneId) { return localStorage.getItem(_wrapKey(paneId)) === 'true'; }
+function _saveWrap(paneId, on) { localStorage.setItem(_wrapKey(paneId), on); }
+
 // ── status ─────────────────────────────────────────────────────────────────
 function setStatus(msg, cls) {
   connIndicator.title = msg;
@@ -296,7 +301,7 @@ function connect() {
     _connectedAt = Date.now();
     startClock();
     send({ type: 'list_sessions' });
-    if (currentPane) send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true });
+    if (currentPane) send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true, join: wrapOn });
   };
   ws.onclose = (evt) => {
     stopClock();
@@ -475,6 +480,7 @@ function navigateTo(sessionId, windowId, paneId) {
   if (currentPane) {
     _saveKbdMode(currentPane, kbdMode);
     _saveKeybar(currentPane, keybarVisible());
+    _saveWrap(currentPane, wrapOn);
   }
 
   currentSessionId = sessionId;
@@ -482,9 +488,11 @@ function navigateTo(sessionId, windowId, paneId) {
   currentPane      = paneId;
   _saveLastPane(paneId);
 
-  // Restore keyboard mode and key-bar visibility for the arriving pane.
-  // setKeybarVisible applies the keyboard mode itself.
+  // Restore keyboard mode, wrap state and key-bar visibility for the
+  // arriving pane. setKeybarVisible applies the keyboard mode itself.
   kbdMode = _getKbdMode(paneId);
+  wrapOn  = _getWrap(paneId);
+  applyWrap();
   setKeybarVisible(_getKeybar(paneId));
   cmdInput.disabled = false;
   pwdInput.disabled = false;
@@ -499,7 +507,7 @@ function navigateTo(sessionId, windowId, paneId) {
     output.textContent = 'loading…';
   }
 
-  send({ type: 'subscribe', pane_id: paneId, lines: 300, ansi: true });
+  send({ type: 'subscribe', pane_id: paneId, lines: 300, ansi: true, join: wrapOn });
   updateXYZLabel();
   updateContextName();
 }
@@ -659,7 +667,6 @@ function applyKbdMode() {
     cmdInput.setAttribute('spellcheck', direct ? 'false' : 'true');
     cmdInput.setAttribute('autocorrect', direct ? 'off' : 'on');
     cmdInput.setAttribute('autocapitalize', direct ? 'none' : 'sentences');
-    output.style.whiteSpace = 'pre-wrap';
     btnKbdMode.textContent = 'Aa';
     btnKbdMode.title = 'Text mode — tap for terminal mode';
     btnKbdMode.style.color = 'var(--accent)';
@@ -672,12 +679,10 @@ function applyKbdMode() {
     cmdInput.setAttribute('spellcheck', 'false');
     cmdInput.setAttribute('autocorrect', 'off');
     cmdInput.setAttribute('autocapitalize', 'none');
-    output.style.whiteSpace = 'pre';
     btnKbdMode.textContent = '$_';
     btnKbdMode.title = 'Terminal mode — tap to enable spell check';
     btnKbdMode.style.color = '';
   } else {
-    output.style.whiteSpace = 'pre';
     btnKbdMode.textContent = '**';
     btnKbdMode.title = 'Password mode — keyboard will not learn this text';
     btnKbdMode.style.color = 'var(--accent)';
@@ -723,6 +728,33 @@ document.getElementById('escape-popup-ctrlc').addEventListener('click', () => {
 
 document.getElementById('escape-popup-keys').addEventListener('click', () => {
   toggleKeybar();
+  hideEscapePopup();
+});
+
+// ── line wrap toggle ───────────────────────────────────────────────────────
+// Off (default): tmux's own line breaks, pre with horizontal scroll. On: the
+// daemon captures with -J so soft-wrapped lines come back joined, and
+// pre-wrap reflows them at the phone width. Decoupled from kbdMode.
+let wrapOn = false;
+const escapePopupWrap = document.getElementById('escape-popup-wrap');
+
+function applyWrap() {
+  output.style.whiteSpace = wrapOn ? 'pre-wrap' : 'pre';
+  // Checkmark prefix like the context picker: on-state must not rely on
+  // color alone.
+  escapePopupWrap.textContent = (wrapOn ? '✓ ' : '⤶ ') + 'Wrap';
+  escapePopupWrap.style.color = wrapOn ? 'var(--accent)' : '';
+}
+
+escapePopupWrap.addEventListener('click', () => {
+  wrapOn = !wrapOn;
+  if (currentPane) {
+    _saveWrap(currentPane, wrapOn);
+    // Resubscribe so the snapshot is re-captured with the new join flag.
+    send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true, join: wrapOn });
+  }
+  applyWrap();
+  scrollOutputToBottom();
   hideEscapePopup();
 });
 
