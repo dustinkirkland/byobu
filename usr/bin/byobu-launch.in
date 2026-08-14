@@ -18,6 +18,15 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# NOTE for packagers: this script is meant to be SOURCED into an interactive
+# login shell (it sets PROMPT_COMMAND and inspects $- in the calling shell),
+# not executed as a standalone binary. Wrapping it the same way as byobu's
+# other entry points -- a generated wrapper script that execs the real
+# binary -- breaks sourcing: sourcing a script whose last step execs another
+# process replaces the calling shell's own process image instead of layering
+# behavior into it. If your packaging wraps everything under bin/, exclude
+# this one.
+
 # 1) Prevent recursion, and multiple sourcing of profiles with the BYOBU_SOURCED_PROFILE environment variable.
 # 2) Respect environment variables (LC_BYOBU and BYOBU_DISABLE) passable over SSH to disable
 #    Byobu launch.  This puts that configurability on the SSH client,
