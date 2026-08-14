@@ -796,6 +796,55 @@ assert_eq "backend dispatch: invalid BYOBU_FORCE_BACKEND value is ignored" "$_RE
 unset -f _dispatch
 
 # ---------------------------------------------------------------------------
+# Section 37 — width-detection lock (mirrors byobu-status.in's mkdir lock)
+# ---------------------------------------------------------------------------
+# GH #141: status-left and status-right are two independent, genuinely
+# concurrent processes; this checks the mutual-exclusion primitive itself
+# (mkdir is atomic), not the live tmux calls it guards.
+
+_tmp=$(mktemp -d)
+_lockdir="$_tmp/.width.lock"
+
+mkdir "$_lockdir" 2>/dev/null && _got="ok" || _got="fail"
+assert_eq "width lock: first mkdir succeeds"              "$_got" "ok"
+
+mkdir "$_lockdir" 2>/dev/null && _got="ok" || _got="fail"
+assert_eq "width lock: concurrent mkdir fails while held" "$_got" "fail"
+
+rmdir "$_lockdir" 2>/dev/null
+mkdir "$_lockdir" 2>/dev/null && _got="ok" || _got="fail"
+assert_eq "width lock: mkdir succeeds again after release" "$_got" "ok"
+
+rmdir "$_lockdir" 2>/dev/null
+rm -rf "$_tmp"; unset _tmp _lockdir _got
+
+# ---------------------------------------------------------------------------
+# Section 38 — PID-suffixed cache writes (mirrors get_status() in byobu-status)
+# ---------------------------------------------------------------------------
+# GH #141: get_status() used to write every segment's fresh output to a
+# single shared "$cachepath".new path. status-left and status-right run as
+# separate concurrent processes, so two overlapping writes to that shared
+# path could interleave and corrupt or blank a cache entry for a tick. A
+# PID-suffixed temp path makes concurrent writers independent by
+# construction; this checks that property directly.
+
+_tmp=$(mktemp -d)
+_cachepath="$_tmp/segment"
+
+# Simulate two "processes" (distinct fake PIDs) writing concurrently.
+printf "%s" "value-from-pid-1111" > "$_cachepath.new.1111"
+printf "%s" "value-from-pid-2222" > "$_cachepath.new.2222"
+
+assert_true "cache write: PID-suffixed temp files coexist independently" \
+	"[ -f '$_cachepath.new.1111' ] && [ -f '$_cachepath.new.2222' ]"
+assert_eq "cache write: first writer's content untouched by the second" \
+	"$(cat "$_cachepath.new.1111")" "value-from-pid-1111"
+assert_eq "cache write: second writer's content untouched by the first" \
+	"$(cat "$_cachepath.new.2222")" "value-from-pid-2222"
+
+rm -rf "$_tmp"; unset _tmp _cachepath
+
+# ---------------------------------------------------------------------------
 # Results
 # ---------------------------------------------------------------------------
 

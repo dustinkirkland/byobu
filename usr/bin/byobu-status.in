@@ -49,21 +49,39 @@ case "$BYOBU_BACKEND" in
 	;;
 	tmux)
 		# Fix status printing for small terminal sizes in tmux
-		width=$(tmux list-windows -F "#{session_width}")
-		if [ -r "$BYOBU_RUN_DIR/width" ]; then
-			read w_last < $BYOBU_RUN_DIR/width 2>/dev/null 1>&2
-		else
-			w_last=0
-		fi
-		for w in $width; do
-			if [ "$w" != "$w_last" ]; then
-				# go through cat due to possible tmux/epoll bug
-				tmux set -g status-left-length $(($w*1/4)) | cat >/dev/null 2>&1
-				tmux set -g status-right-length $(($w*3/4)) | cat >/dev/null 2>&1
-				printf "$w" > $BYOBU_RUN_DIR/width
-				break
+		#
+		# tmux runs status-left and status-right as two independent,
+		# genuinely concurrent processes every status-interval tick (this
+		# script gets invoked once per side), and this block runs
+		# unconditionally from both -- with no coordination, both can race
+		# to read $BYOBU_RUN_DIR/width, both decide it's stale, and both
+		# fire "tmux set -g status-left-length/status-right-length" at
+		# once. Under load, that's a plausible contributor to the status
+		# bar's window-list area visibly reflowing between redraws
+		# (GH #141). Lock it: skipping this tick when the lock is already
+		# held is fine, this is periodic maintenance, not something that
+		# must succeed on every single tick, and it'll retry a second
+		# later regardless.
+		if mkdir "$BYOBU_RUN_DIR/.width.lock" 2>/dev/null; then
+			trap 'rmdir "$BYOBU_RUN_DIR/.width.lock" 2>/dev/null' EXIT INT TERM
+			width=$(tmux list-windows -F "#{session_width}")
+			if [ -r "$BYOBU_RUN_DIR/width" ]; then
+				read w_last < $BYOBU_RUN_DIR/width 2>/dev/null 1>&2
+			else
+				w_last=0
 			fi
-		done
+			for w in $width; do
+				if [ "$w" != "$w_last" ]; then
+					# go through cat due to possible tmux/epoll bug
+					tmux set -g status-left-length $(($w*1/4)) | cat >/dev/null 2>&1
+					tmux set -g status-right-length $(($w*3/4)) | cat >/dev/null 2>&1
+					printf "$w" > $BYOBU_RUN_DIR/width
+					break
+				fi
+			done
+			rmdir "$BYOBU_RUN_DIR/.width.lock" 2>/dev/null
+			trap - EXIT INT TERM
+		fi
 	;;
 esac
 
@@ -91,20 +109,32 @@ get_status() {
 	status_freq "$function"
 	local expiry=$(($lastrun+$_RET))
 	find_script "$function" && . "${_RET}"
-	# Update cache now, if necessary
+	# Update cache now, if necessary. The temp file is PID-suffixed, not a
+	# shared "$cachepath".new path: status-left and status-right are two
+	# independent, genuinely concurrent processes (tmux runs each side's
+	# #() command separately), so a shared temp path lets one process's
+	# write interleave with another's on the same segment, corrupting or
+	# blanking a cache entry for a tick -- which under load can plausibly
+	# show up as the status bar's rendered length (and so its window-list
+	# crop point) changing between redraws. GH #141
+	local newcache="$cachepath.new.$$"
 	if [ $NOW -ge $expiry ] || [ "$lastrun" = "0" ]; then
-		"__$function" > "$cachepath".new
+		"__$function" > "$newcache"
 	fi
 	# Check if we have data in the cache
-	if [ -s "$cachepath".new ]; then
+	if [ -s "$newcache" ]; then
 		# Looks like we have an updated cache, use it
-		mv -f "$cachepath".new "$cachepath"
+		mv -f "$newcache" "$cachepath"
 		printf "%s" "$NOW" > "$lastpath"
 		IFS= read line < "$cachepath"; printf "%s" "$line"
 	elif [ -s "$cachepath" ]; then
 		# New cache is empty, but we have data from our last run, use it
 		IFS= read line < "$cachepath"; printf "%s" "$line"
 	fi
+	# $newcache is PID-suffixed and never reused by another process, so an
+	# empty/rejected one (unlike the old shared path) is never overwritten
+	# by a later run -- clean it up explicitly.
+	rm -f "$newcache" 2>/dev/null
 }
 
 case "$1" in
