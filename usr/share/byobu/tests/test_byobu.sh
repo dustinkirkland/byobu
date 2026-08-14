@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # test_byobu.sh — unit tests for byobu core utilities
 #
 # Runs without a live tmux/screen session.  All tests are self-contained:

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #---------------------------------------------------------------------
 # Script to display unicode characters representing the level of
 # some indicator.
