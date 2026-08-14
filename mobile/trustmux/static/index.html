@@ -27,7 +27,42 @@
       --green:    #4ec94e;
       --amber:    #e0a040;
       --red:      #e05050;
-      --font:     'SF Mono', 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+      /* No 'Courier New' before the generic: Android aliases it to Cutive
+         Mono (serif-monospace), which silently replaced the platform default
+         (Droid Sans Mono) for every Android user. Courier stays available as
+         an explicit choice in the font settings. */
+      --font:     'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      /* terminal output colors are separate from the UI accents: ansiToHtml
+         picks the 16-color ANSI palette matching the active theme, so the
+         output area follows light/dark along with these variables */
+      --term-bg:   #141414;
+      --term-text: #d4d4d4;
+      --term-dim:  #666;
+    }
+
+    /* ── light theme (html[data-theme="light"], set before first paint by the
+       inline head script; "auto" resolves via prefers-color-scheme) ──
+       All values checked for >= 4.5:1 contrast against every steady
+       background they sit on, including --bg3 (icon and key-bar buttons:
+       accent 5.19:1, green 5.05:1, red 5.14:1); momentary :active states
+       dip below, which is accepted. --dim intentionally darker than the
+       dark theme's (see e894f3db). */
+    html[data-theme="light"] {
+      --bg:       #f2f2f2;
+      --bg2:      #ffffff;
+      --bg3:      #e6e6e6;
+      --border:   #c4c4c4;
+      --text:     #1e1e1e;
+      --dim:      #616161;
+      --accent:   #15619f;
+      --green:    #1a6f1a;
+      --amber:    #8a5c00;
+      --red:      #b02f22;
+      /* terminal output follows the theme; ansiToHtml switches to the
+         light-tuned ANSI palette to match (>= 4.5:1 on this background) */
+      --term-bg:   #fafafa;
+      --term-text: #1e1e1e;
+      --term-dim:  #616161;
     }
 
     html, body {
@@ -134,8 +169,8 @@
     }
     select:disabled { opacity: 0.4; cursor: default; }
 
-    /* ── context menu + create overlay ── */
-    #ctx-overlay, #create-overlay {
+    /* ── context menu + create + settings overlay ── */
+    #ctx-overlay, #create-overlay, #settings-overlay {
       position: fixed; inset: 0; z-index: 200;
       background: rgba(0,0,0,0.72);
       display: flex; align-items: center; justify-content: center;
@@ -175,6 +210,20 @@
       outline: 2px solid var(--accent); outline-offset: -2px;
       background: var(--bg3);
     }
+
+    /* ── display settings popup (gear in header) ── */
+    /* three sections stack tall on small phones, so the box scrolls */
+    #settings-overlay #ctx-box { max-height: 82vh; overflow-y: auto; }
+    .settings-heading {
+      padding: 10px 16px 2px; color: var(--text); font-size: 11px;
+      letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--font);
+    }
+    #settings-size-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 14px; padding: 8px 16px;
+    }
+    #settings-size-row .icon-btn { min-width: 44px; font-size: 16px; }
+    #settings-size-value { font-size: 15px; min-width: 52px; text-align: center; }
 
     .icon-btn {
       background: var(--bg3); color: var(--text);
@@ -273,12 +322,12 @@
       flex: 1; overflow-y: auto; overflow-x: auto;
       padding: 10px 12px;
       white-space: pre; font-family: var(--font); font-size: 12px;
-      line-height: 1.45; color: var(--text);
+      line-height: 1.45; background: var(--term-bg); color: var(--term-text);
       /* smooth scroll on mobile; contain stops scroll bleeding to page */
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
     }
-    #output.placeholder { white-space: normal; color: var(--dim); font-style: italic; }
+    #output.placeholder { white-space: normal; color: var(--term-dim); font-style: italic; }
 
     /* ── byobu status line ── */
     #statusline {
@@ -509,6 +558,19 @@
     }
     #bio-never-btn:active { color: var(--text); }
   </style>
+  <script>
+    // ── theme bootstrap ── runs before first paint so a light-theme user
+    // never sees a dark flash. app.js re-applies on setting changes.
+    (function () {
+      var pref = localStorage.getItem('theme') || 'dark';
+      var t = pref === 'auto'
+        ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+        : pref;
+      document.documentElement.dataset.theme = t;
+      document.querySelector('meta[name="theme-color"]').content =
+        getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+    })();
+  </script>
 </head>
 <body>
 
@@ -617,6 +679,26 @@
   </div>
 </div>
 
+<!-- ── display settings (gear button in header) ── -->
+<div id="settings-overlay" style="display:none">
+  <div id="ctx-box">
+    <p class="settings-heading">Theme</p>
+    <div id="settings-theme-list"></div>
+    <div class="ctx-sep"></div>
+    <p class="settings-heading">Font</p>
+    <div id="settings-font-list"></div>
+    <div class="ctx-sep"></div>
+    <p class="settings-heading">Terminal font size</p>
+    <div id="settings-size-row">
+      <button class="icon-btn" id="settings-size-down" title="Smaller">−</button>
+      <span id="settings-size-value"></span>
+      <button class="icon-btn" id="settings-size-up" title="Larger">+</button>
+    </div>
+    <div class="ctx-sep"></div>
+    <button class="ctx-btn ctx-dim" id="settings-close">Close</button>
+  </div>
+</div>
+
 <div id="ios-install-tip" style="display:none">
   Tap the <strong>Share</strong> button&nbsp;⎋ below,<br>
   then <strong>"Add to Home Screen"</strong>
@@ -636,6 +718,7 @@
     <span id="header-clock"></span>
     <button id="btn-install" title="Install as app" style="display:none">+ Install app</button>
     <select id="machine-select" title="Switch machine" style="display:none"></select>
+    <button id="btn-settings" class="icon-btn" title="Display settings">⚙</button>
   </div>
 
   <div id="statusbar">
