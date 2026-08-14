@@ -1697,11 +1697,15 @@ function renderSettings() {
   }
   settingsFontList.innerHTML = '';
   for (const f of FONT_FAMILIES) {
-    // Every entry stays visible and selectable; ones the probe says are
-    // missing render dimmed with a suffix. Hiding them made selection a
-    // one-way door: switching away removed the row with no way back.
     const on = f.label === fontFamily;
     const available = _resolvedFonts.has(f.label);
+    // Entries the probe says are missing are hidden, not just dimmed, so the
+    // list only shows choices that actually do something on this device.
+    // Exception: the currently selected font always stays visible, even if
+    // unresolved -- the probe can false-negative (Chrome on Android may not
+    // expose raw platform family names), and a selected font disappearing
+    // out from under you is worse than an unreachable row in the list.
+    if (!available && !on) continue;
     const btn = document.createElement('button');
     btn.className = 'ctx-btn' + (on ? ' ctx-current' : '');
     btn.textContent = (on ? '✓ ' : '') + f.label + (available ? '' : ' (not installed)');
