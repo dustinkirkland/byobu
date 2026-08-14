@@ -16,6 +16,26 @@ Entries below 7.15 are the original, unedited history as it existed in
 debian/changelog before this split -- full history preserved, nothing
 lost, just relocated to where all distributions can use it.
 
+byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
+
+  * trustmux/pwa: make session/window/pane hierarchy visible in the header
+    (breadcrumb, W#/# P#/# position within the current window) and label
+    unnamed panes with their tmux pane title (Closes: GH #129)
+  * trustmux/pwa: add a key bar and per-keystroke direct input mode so
+    modal TUIs (vi, less, htop) can be driven from the phone (Closes: GH
+    #131)
+  * trustmux/pwa: add a per-pane line-wrap toggle that reflows soft-wrapped
+    output at the phone's width instead of the desktop pane's
+    (Closes: GH #133)
+  * trustmux/pwa: add display settings -- font family/size and a
+    light/dark/auto theme, device-global and persisted (Closes: GH #135)
+  * trustmux/pwa: add hardware-keyboard bindings -- a local Ctrl+B prefix
+    for picker navigation, window/pane cycling and a scrollback mode, for
+    phones paired with a physical keyboard (Closes: GH #137)
+  * trustmux/pwa: rework the context picker into a three-level drill-down
+    (sessions, windows, panes) instead of one long indented list, with
+    matching hardware-keyboard navigation (Closes: GH #139)
+
 byobu (7.17) 2026-08-05  Dustin Kirkland <kirkland@ubuntu.com>
 
   * trustmux: split config and state into $XDG_CONFIG_HOME/trustmux (user
