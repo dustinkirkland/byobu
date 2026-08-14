@@ -170,7 +170,15 @@ __battery() {
 		case $state in
 			charging) sign="+" ;;
 			discharging) sign="-" ;;
-			charged|unknown|full|fully-charged) sign="=" ;;
+			# "Not charging" is a legitimate, standard Linux power_supply
+			# status distinct from "Discharging" -- plugged in but not
+			# actively charging (charge-limit threshold, already topped
+			# off, EC quirk on some laptops e.g. Framework). Termux
+			# reports the same state as "NOT_CHARGING". Without this,
+			# the raw state string falls through to the catch-all below
+			# and gets printed as the sign itself, glued to the percent
+			# with no separator (e.g. "65%not charging"). GH #143
+			charged|unknown|full|fully-charged|"not charging"|not_charging) sign="=" ;;
 			*) sign="$state" ;;
 		esac
 		if [ -z "$percent" ]; then

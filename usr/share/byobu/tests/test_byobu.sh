@@ -283,7 +283,7 @@ _batt_sign() {
 	case "$1" in
 		charging)            echo "+" ;;
 		discharging)         echo "-" ;;
-		charged|unknown|full) echo "=" ;;
+		charged|unknown|full|fully-charged|"not charging"|not_charging) echo "=" ;;
 		*)                   echo "$1" ;;
 	esac
 }
@@ -301,11 +301,20 @@ assert_eq "batt color 66%  → yellow" "$(_batt_color 66)"  "yellow"
 assert_eq "batt color 67%  → green"  "$(_batt_color 67)"  "green"
 assert_eq "batt color 100% → green"  "$(_batt_color 100)" "green"
 
-assert_eq "batt sign charging"    "$(_batt_sign charging)"    "+"
-assert_eq "batt sign discharging" "$(_batt_sign discharging)" "-"
-assert_eq "batt sign charged"     "$(_batt_sign charged)"     "="
-assert_eq "batt sign unknown"     "$(_batt_sign unknown)"     "="
-assert_eq "batt sign full"        "$(_batt_sign full)"        "="
+assert_eq "batt sign charging"      "$(_batt_sign charging)"        "+"
+assert_eq "batt sign discharging"   "$(_batt_sign discharging)"     "-"
+assert_eq "batt sign charged"       "$(_batt_sign charged)"         "="
+assert_eq "batt sign unknown"       "$(_batt_sign unknown)"         "="
+assert_eq "batt sign full"          "$(_batt_sign full)"            "="
+assert_eq "batt sign fully-charged" "$(_batt_sign fully-charged)"   "="
+# GH #143: Linux's power_supply status can legitimately be "Not charging"
+# (plugged in, not actively drawing charge -- threshold or already full),
+# lowercased by the real script before reaching this logic; Termux reports
+# the same state as "NOT_CHARGING". Both used to fall through to the
+# catch-all and print the raw state glued to the percentage, e.g.
+# "65%not charging".
+assert_eq "batt sign \"not charging\" (Linux, space)" "$(_batt_sign "not charging")" "="
+assert_eq "batt sign not_charging (Termux, underscore)" "$(_batt_sign not_charging)" "="
 
 # ---------------------------------------------------------------------------
 # Section 13 — Disk unit extraction (from usr/lib/byobu/disk)
