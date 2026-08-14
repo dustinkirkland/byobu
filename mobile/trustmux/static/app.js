@@ -515,13 +515,28 @@ function scrollOutputToBottom() {
   requestAnimationFrame(() => { output.scrollTop = output.scrollHeight; });
 }
 
+// 16-color ANSI palettes, one per theme. Dark is the Tango set the app has
+// always used. Light keeps each hue recognizable but darkens the entries that
+// vanish on a light background (bright yellow, green, cyan, and both whites);
+// every value holds >= 4.5:1 contrast on the light --term-bg (#fafafa).
+// The same array serves SGR background colors (40-47/100-107), so darkened
+// entries make colored backgrounds darker than canonical light schemes;
+// acceptable for rare colored-background output, revisit if it bites.
+const C16_DARK = [
+  '#1e1e1e','#cc0000','#4e9a06','#c4a000','#3465a4','#75507b','#06989a','#d3d7cf',
+  '#555753','#ef2929','#8ae234','#fce94f','#729fcf','#ad7fa8','#34e2e2','#eeeeec',
+];
+const C16_LIGHT = [
+  '#000000','#cc0000','#2d7004','#8a5c00','#3465a4','#75507b','#067a7c','#5d6157',
+  '#555753','#c81e1e','#1c7d1c','#7a6000','#2a65b0','#8f5a8a','#0c7878','#303030',
+];
+
 // Convert ANSI SGR escape codes to HTML spans.
 // Handles: 16/256/truecolor fg+bg, bold, italic, underline. Other sequences discarded.
 function ansiToHtml(text) {
-  const C16 = [
-    '#1e1e1e','#cc0000','#4e9a06','#c4a000','#3465a4','#75507b','#06989a','#d3d7cf',
-    '#555753','#ef2929','#8ae234','#fce94f','#729fcf','#ad7fa8','#34e2e2','#eeeeec',
-  ];
+  // Palette follows the active theme; renders are theme-baked, so a theme
+  // switch clears _paneCache and resubscribes (see rerenderTerminal).
+  const C16 = document.documentElement.dataset.theme === 'light' ? C16_LIGHT : C16_DARK;
   function c256(n) {
     if (n < 16) return C16[n];
     if (n < 232) {
@@ -1377,6 +1392,185 @@ async function applyHostname() {
     if (data.version) applyVersion(data.version);
   } catch { /* ignore */ }
 }
+
+// ── display settings (font family, terminal font size, theme) ─────────────
+// Device-global (plain localStorage keys, not per pane). The theme itself is
+// two CSS palettes on html[data-theme]; the inline head script applies the
+// saved choice before first paint, this section handles live changes. The
+// terminal output follows the theme too (see --term-* in the CSS), and
+// ansiToHtml swaps between C16_DARK and C16_LIGHT to match.
+// Local fonts only, no downloads: every entry is listed, and ones the device
+// cannot render are annotated "(not installed)" but stay selectable (see
+// fontResolves and renderSettings; hiding them made selection a one-way
+// door). The list mixes desktop staples with the monospace families Android
+// ships (Droid Sans Mono, Cutive Mono, and OEM extras).
+const FONT_FAMILIES = [
+  { label: 'System',         value: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace" },
+  { label: 'Fira Code',      value: "'Fira Code', monospace",      probe: 'Fira Code' },
+  { label: 'JetBrains Mono', value: "'JetBrains Mono', monospace", probe: 'JetBrains Mono' },
+  { label: 'Cascadia Code',  value: "'Cascadia Code', monospace",  probe: 'Cascadia Code' },
+  { label: 'Droid Sans Mono', value: "'Droid Sans Mono', monospace", probe: 'Droid Sans Mono' },
+  { label: 'Roboto Mono',    value: "'Roboto Mono', monospace",    probe: 'Roboto Mono' },
+  { label: 'Noto Sans Mono', value: "'Noto Sans Mono', monospace", probe: 'Noto Sans Mono' },
+  { label: 'Cutive Mono',    value: "'Cutive Mono', monospace",    probe: 'Cutive Mono' },
+  { label: 'Courier',        value: "'Courier New', Courier, monospace", probe: 'Courier New' },
+];
+
+// True when the bare family renders, measured against proportional generics.
+// Width measurement rather than document.fonts.check: Chrome on Android
+// resolves 'Courier New' through a font alias that fonts.check misses. The
+// comparison is against serif and sans-serif, NOT monospace: most monospace
+// fonts share the 0.6em advance, so a present family can be width-identical
+// to the monospace default while looking entirely different. A missing
+// family falls back to the generic and measures equal, so this fails closed.
+const _fontProbe = document.createElement('canvas').getContext('2d');
+function fontResolves(family) {
+  const sample = 'mmmmmmmmmmillWW##1234567890';
+  const width = font => {
+    _fontProbe.font = `16px ${font}`;
+    return _fontProbe.measureText(sample).width;
+  };
+  return width(`"${family}", serif`) !== width('serif')
+      && width(`"${family}", sans-serif`) !== width('sans-serif');
+}
+
+// Installed fonts cannot change mid-session; probe once at load.
+const _resolvedFonts = new Set(
+  FONT_FAMILIES.filter(f => !f.probe || fontResolves(f.probe)).map(f => f.label));
+const THEME_CHOICES = [
+  ['dark',  'Dark'],
+  ['light', 'Light'],
+  ['auto',  'Device (auto)'],
+];
+const FONT_SIZE_MIN = 10, FONT_SIZE_MAX = 16, FONT_SIZE_DEFAULT = 12;
+
+let fontFamily = localStorage.getItem('font-family') || 'System';
+if (!FONT_FAMILIES.some(f => f.label === fontFamily)) fontFamily = 'System';
+let fontSize   = parseInt(localStorage.getItem('font-size'), 10);
+if (!(fontSize >= FONT_SIZE_MIN && fontSize <= FONT_SIZE_MAX)) fontSize = FONT_SIZE_DEFAULT;
+let themePref  = localStorage.getItem('theme') || 'dark';
+if (!THEME_CHOICES.some(([v]) => v === themePref)) themePref = 'dark';
+
+const settingsOverlay   = document.getElementById('settings-overlay');
+const settingsThemeList = document.getElementById('settings-theme-list');
+const settingsFontList  = document.getElementById('settings-font-list');
+const settingsSizeValue = document.getElementById('settings-size-value');
+const themeColorMeta    = document.querySelector('meta[name="theme-color"]');
+const _lightSchemeMq    = matchMedia('(prefers-color-scheme: light)');
+// Captured before the first applyFont() so it is the CSS default stack, not
+// a saved override; used to preview the System row from the CSS source.
+const _cssDefaultFont   =
+  getComputedStyle(document.documentElement).getPropertyValue('--font');
+
+function applyFont() {
+  const f = FONT_FAMILIES.find(f => f.label === fontFamily) || FONT_FAMILIES[0];
+  // 'System' leaves --font alone so the CSS default stays the single source
+  // of truth for the default stack.
+  if (f === FONT_FAMILIES[0]) {
+    document.documentElement.style.removeProperty('--font');
+  } else {
+    document.documentElement.style.setProperty('--font', f.value);
+  }
+  // Size scales the terminal output only; the rest of the UI keeps its
+  // tuned per-element sizes.
+  output.style.fontSize = fontSize + 'px';
+}
+
+function applyTheme() {
+  const next = themePref === 'auto' ? (_lightSchemeMq.matches ? 'light' : 'dark') : themePref;
+  // The head script set the theme before app.js ran, so on startup this is a
+  // no-op and only real flips trigger a terminal re-render.
+  const flipped = document.documentElement.dataset.theme !== next;
+  document.documentElement.dataset.theme = next;
+  // PWA chrome follows the active background.
+  themeColorMeta.content =
+    getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  if (flipped) rerenderTerminal();
+}
+
+// Rendered output has ansiToHtml palette colors baked into its HTML, so a
+// theme flip invalidates every cached snapshot. Clear the cache and
+// resubscribe the current pane; the next snapshot renders with the new
+// palette.
+function rerenderTerminal() {
+  _paneCache.clear();
+  if (currentPane) {
+    send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true });
+  }
+}
+
+// Live-update while in auto mode when the device scheme flips.
+_lightSchemeMq.addEventListener('change', () => {
+  if (themePref === 'auto') applyTheme();
+});
+
+function renderSettings() {
+  // Checkmark prefix like the context picker: the selected row must not
+  // rely on color alone.
+  settingsThemeList.innerHTML = '';
+  for (const [value, label] of THEME_CHOICES) {
+    const on = value === themePref;
+    const btn = document.createElement('button');
+    btn.className = 'ctx-btn' + (on ? ' ctx-current' : '');
+    btn.textContent = (on ? '✓ ' : '') + label;
+    btn.addEventListener('click', () => {
+      themePref = value;
+      localStorage.setItem('theme', value);
+      applyTheme();
+      renderSettings();
+    });
+    settingsThemeList.appendChild(btn);
+  }
+  settingsFontList.innerHTML = '';
+  for (const f of FONT_FAMILIES) {
+    // Every entry stays visible and selectable; ones the probe says are
+    // missing render dimmed with a suffix. Hiding them made selection a
+    // one-way door: switching away removed the row with no way back.
+    const on = f.label === fontFamily;
+    const available = _resolvedFonts.has(f.label);
+    const btn = document.createElement('button');
+    btn.className = 'ctx-btn' + (on ? ' ctx-current' : '');
+    btn.textContent = (on ? '✓ ' : '') + f.label + (available ? '' : ' (not installed)');
+    if (!available) btn.style.opacity = '0.55';
+    // Preview each row in its own face; System previews with the CSS default
+    // captured at load so the CSS stays the single source of truth.
+    btn.style.fontFamily = f === FONT_FAMILIES[0] ? _cssDefaultFont : f.value;
+    btn.addEventListener('click', () => {
+      fontFamily = f.label;
+      localStorage.setItem('font-family', f.label);
+      applyFont();
+      renderSettings();
+    });
+    settingsFontList.appendChild(btn);
+  }
+  settingsSizeValue.textContent = fontSize + 'px';
+}
+
+function stepFontSize(delta) {
+  const next = Math.min(FONT_SIZE_MAX, Math.max(FONT_SIZE_MIN, fontSize + delta));
+  if (next === fontSize) return;
+  fontSize = next;
+  localStorage.setItem('font-size', next);
+  applyFont();
+  settingsSizeValue.textContent = next + 'px';
+}
+
+function showSettingsOverlay() {
+  renderSettings();
+  settingsOverlay.style.display = 'flex';
+}
+function hideSettingsOverlay() {
+  settingsOverlay.style.display = 'none';
+}
+
+document.getElementById('btn-settings').addEventListener('click', showSettingsOverlay);
+document.getElementById('settings-close').addEventListener('click', hideSettingsOverlay);
+document.getElementById('settings-size-down').addEventListener('click', () => stepFontSize(-1));
+document.getElementById('settings-size-up').addEventListener('click', () => stepFontSize(1));
+settingsOverlay.addEventListener('click', e => { if (e.target === settingsOverlay) hideSettingsOverlay(); });
+
+applyFont();
+applyTheme();
 
 // ── biometric button wiring ───────────────────────────────────────────────
 
