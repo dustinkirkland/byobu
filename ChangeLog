@@ -35,6 +35,15 @@ byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
   * trustmux/pwa: rework the context picker into a three-level drill-down
     (sessions, windows, panes) instead of one long indented list, with
     matching hardware-keyboard navigation (Closes: GH #139)
+  * battery: fix the status bar printing the raw string "not charging"
+    glued to the percentage instead of a sign, on hardware (e.g. Framework
+    laptops) and Termux that report a "not charging"/"NOT_CHARGING" power
+    state while plugged in (Closes: GH #143)
+  * packaging: add BYOBU_GETTEXT and BYOBU_FORCE_BACKEND override hooks,
+    matching the existing BYOBU_PYTHON escape hatch, so relocatable/
+    sandboxed-store packagers (e.g. Nix) don't need to patch source files
+    or fight byobu-screen/byobu-tmux's argv[0]-based dispatch (Closes: GH
+    #128)
 
 byobu (7.17) 2026-08-05  Dustin Kirkland <kirkland@ubuntu.com>
 
