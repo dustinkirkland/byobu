@@ -23,8 +23,8 @@ PKG="byobu"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
 
-if eval $BYOBU_TEST gettext >/dev/null 2>&1; then
-	command=gettext
+if eval $BYOBU_TEST $BYOBU_GETTEXT >/dev/null 2>&1; then
+	command=$BYOBU_GETTEXT
 else
 	command=echo
 fi

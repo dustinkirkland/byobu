@@ -729,6 +729,64 @@ assert_true "launcher-install: .bashrc contains byobu-launch line" \
 rm -rf "$_tmp"; unset _tmp _install _uninstall
 
 # ---------------------------------------------------------------------------
+# Section 35 — BYOBU_GETTEXT: overridable gettext binary (constants)
+# ---------------------------------------------------------------------------
+
+_tmp=$(mktemp -d)
+_got=$(env -i HOME="$HOME" PATH="$PATH" BYOBU_PREFIX="$BYOBU_PREFIX" PKG="byobu" \
+	BYOBU_CONFIG_DIR="$_tmp/config" BYOBU_RUN_DIR="$_tmp/run" BYOBU_TEST="command -v" \
+	sh -c 'mkdir -p "$BYOBU_CONFIG_DIR" "$BYOBU_RUN_DIR"; . "${BYOBU_PREFIX}/lib/byobu/include/constants"; echo "$BYOBU_GETTEXT"')
+assert_eq "BYOBU_GETTEXT: defaults to \"gettext\" when unset" "$_got" "gettext"
+
+_got=$(env -i HOME="$HOME" PATH="$PATH" BYOBU_PREFIX="$BYOBU_PREFIX" PKG="byobu" \
+	BYOBU_CONFIG_DIR="$_tmp/config" BYOBU_RUN_DIR="$_tmp/run" BYOBU_TEST="command -v" \
+	BYOBU_GETTEXT="/opt/store/bin/gettext" \
+	sh -c '. "${BYOBU_PREFIX}/lib/byobu/include/constants"; echo "$BYOBU_GETTEXT"')
+assert_eq "BYOBU_GETTEXT: a pre-set value is preserved untouched" "$_got" "/opt/store/bin/gettext"
+rm -rf "$_tmp"; unset _tmp _got
+
+# ---------------------------------------------------------------------------
+# Section 36 — BYOBU_FORCE_BACKEND precedence (mirrors usr/bin/byobu.in)
+# ---------------------------------------------------------------------------
+# byobu.in itself launches a full session and isn't safe to source in a unit
+# test, so this exercises the exact backend-selection block copied verbatim
+# from that script -- config file, then argv[0], then BYOBU_FORCE_BACKEND.
+
+_dispatch() {
+	local zero="$1" cfg_backend="$2" force="$3" _out
+	_out=$(BYOBU_BACKEND="" ; [ -n "$cfg_backend" ] && BYOBU_BACKEND="$cfg_backend"
+		case "$zero" in
+			*byobu-screen) BYOBU_BACKEND="screen" ;;
+			*byobu-tmux) BYOBU_BACKEND="tmux" ;;
+		esac
+		case "$force" in
+			screen|tmux) BYOBU_BACKEND="$force" ;;
+		esac
+		echo "$BYOBU_BACKEND")
+	_RET="$_out"
+}
+
+_dispatch "/usr/bin/byobu" "" ""
+assert_eq "backend dispatch: no config, no argv0 match, no override" "$_RET" ""
+
+_dispatch "/usr/bin/byobu" "screen" ""
+assert_eq "backend dispatch: config alone wins" "$_RET" "screen"
+
+_dispatch "/usr/bin/byobu-tmux" "screen" ""
+assert_eq "backend dispatch: argv0 overrides config" "$_RET" "tmux"
+
+_dispatch "/usr/bin/byobu" "screen" "tmux"
+assert_eq "backend dispatch: BYOBU_FORCE_BACKEND overrides config" "$_RET" "tmux"
+
+_dispatch "/usr/bin/byobu-tmux" "" "screen"
+assert_eq "backend dispatch: BYOBU_FORCE_BACKEND overrides argv0" "$_RET" "screen"
+
+_dispatch "/usr/bin/byobu" "screen" "garbage"
+assert_eq "backend dispatch: invalid BYOBU_FORCE_BACKEND value is ignored" "$_RET" "screen"
+
+unset -f _dispatch
+
+# ---------------------------------------------------------------------------
 # Results
 # ---------------------------------------------------------------------------
 

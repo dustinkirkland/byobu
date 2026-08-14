@@ -64,6 +64,12 @@ $BYOBU_SED --follow-symlinks "s///" /dev/null 2>/dev/null && export BYOBU_SED_IN
 # Determine if we have ulimit support
 eval $BYOBU_TEST ulimit >/dev/null 2>&1 && export BYOBU_ULIMIT="ulimit" || export BYOBU_ULIMIT="false"
 
+# Allow overriding the gettext binary, same escape hatch as BYOBU_PYTHON
+# above: packagers whose runtime PATH doesn't resolve a bare "gettext" (e.g.
+# a relocatable/sandboxed store) can set this to an absolute path instead of
+# patching the source. Untouched, this preserves today's exact behavior.
+[ -z "$BYOBU_GETTEXT" ] && export BYOBU_GETTEXT="gettext"
+
 # Find a suitable python interpreter, if undefined.
 # Cache the result in $BYOBU_CONFIG_DIR so each status-bar subprocess
 # (run fresh by tmux every few seconds) does not re-import snack on NFS

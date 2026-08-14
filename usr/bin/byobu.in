@@ -82,6 +82,16 @@ case "$0" in
 	*byobu-tmux) BYOBU_BACKEND="tmux" ;;
 esac
 
+# Explicit override for callers that can't rely on argv[0] matching a
+# "byobu-screen"/"byobu-tmux" filename -- e.g. a package wrapper that execs
+# the real binary under a different on-disk name than what the shell sees as
+# $0. Wins over both the config file and the argv[0] pattern-match above, so
+# it behaves like actually running byobu-screen/byobu-tmux. Unset by default,
+# so this is a no-op for everyone who doesn't set it.
+case "$BYOBU_FORCE_BACKEND" in
+	screen|tmux) BYOBU_BACKEND="$BYOBU_FORCE_BACKEND" ;;
+esac
+
 # At this point, we're sure BYOBU_BACKEND is properly defined
 export BYOBU_BACKEND
 
