@@ -358,11 +358,17 @@ def tmux_list_panes(window_id: str) -> list[dict]:
         })
     return panes
 
-def tmux_capture_pane(pane_id: str, history_lines: int = 200, ansi: bool = False) -> str:
+def tmux_capture_pane(pane_id: str, history_lines: int = 200, ansi: bool = False,
+                      join: bool = False) -> str:
+    args = ["capture-pane", "-t", pane_id, "-p"]
     if ansi:
-        raw = _tmux("capture-pane", "-t", pane_id, "-p", "-e", "-S", f"-{history_lines}")
-    else:
-        raw = _tmux("capture-pane", "-t", pane_id, "-p", "-S", f"-{history_lines}")
+        args.append("-e")
+    if join:
+        # -J joins lines tmux soft-wrapped at the pane width, so the client
+        # can reflow them at its own width.
+        args.append("-J")
+    raw = _tmux(*args, "-S", f"-{history_lines}")
+    if not ansi:
         raw = strip_ansi(raw)
     return raw
 
@@ -863,14 +869,15 @@ class WsHandler(tornado.websocket.WebSocketHandler):
             except Exception:
                 pass
 
-    async def _stream_pane(self, pane_id: str, history_lines: int, ansi: bool = False):
+    async def _stream_pane(self, pane_id: str, history_lines: int, ansi: bool = False,
+                           join: bool = False):
         try:
-            content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi)
+            content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
             self._send({"type": "snapshot", "pane_id": pane_id, "data": content})
             last = content
             while True:
                 await asyncio.sleep(0.5)
-                content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi)
+                content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
                 if content != last:
                     self._send({"type": "update", "pane_id": pane_id, "data": content})
                     last = content
@@ -952,11 +959,12 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     except (ValueError, TypeError):
                         lines = 300
                     ansi = bool(msg.get("ansi", False))
+                    join = bool(msg.get("join", False))
                     if self._stream_task:
                         self._stream_task.cancel()
                         await asyncio.gather(self._stream_task, return_exceptions=True)
                     self._stream_task = asyncio.ensure_future(
-                        self._stream_pane(pane_id, lines, ansi)
+                        self._stream_pane(pane_id, lines, ansi, join)
                     )
 
             elif mtype == "new_session":
