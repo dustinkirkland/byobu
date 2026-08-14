@@ -482,6 +482,10 @@ function navigateTo(sessionId, windowId, paneId) {
     _saveKeybar(currentPane, keybarVisible());
     _saveWrap(currentPane, wrapOn);
   }
+  // Scroll mode is a per-view state: switching panes while in it would leave
+  // the new pane top-anchored under a stale SCROLL chip, since the bottom
+  // re-anchor stays suppressed.
+  if (_scrollMode) exitScrollMode();
 
   currentSessionId = sessionId;
   currentWindowId  = windowId;
@@ -520,6 +524,9 @@ function updateContextName() {
 
 // ── output rendering ───────────────────────────────────────────────────────
 function scrollOutputToBottom() {
+  // Scroll mode owns the viewport: a one-line j/k step stays inside the 60px
+  // bottom-snap zone, so re-anchoring here would yank a live pane back down.
+  if (_scrollMode) return;
   requestAnimationFrame(() => { output.scrollTop = output.scrollHeight; });
 }
 
@@ -921,6 +928,19 @@ function navigateRelativePane(delta) {
   const idx = panes.findIndex(p => p.id === currentPane);
   const nextPane = panes[((idx < 0 ? 0 : idx) + delta + panes.length) % panes.length];
   navigateTo(currentSessionId, w.id, nextPane.id);
+}
+
+// Next/previous window within the current session, wrapping; lands on the
+// window's first live pane. Used by the hardware prefix+n / prefix+p bindings.
+function navigateRelativeWindow(delta) {
+  const s = currentSession();
+  if (!s) return;
+  const windows = (s.windows || []).filter(w => firstLivePaneInWindow(w));
+  if (windows.length < 2) return;
+  const idx = windows.findIndex(w => w.id === currentWindowId);
+  const next = windows[((idx < 0 ? 0 : idx) + delta + windows.length) % windows.length];
+  const p = firstLivePaneInWindow(next);
+  if (p) navigateTo(s.id, next.id, p.id);
 }
 
 // ── touch swipe tracking (used for swipe nav) ─────────────────────────────
@@ -1452,6 +1472,222 @@ document.getElementById('lock-unlock-btn').addEventListener('click', async () =>
   }
 });
 
+
+// ── hardware-keyboard tmux bindings (Ctrl+B prefix) ────────────────────────
+// Local capture for hardware keyboards: Ctrl+B arms a 2s pending-prefix state
+// (chip in the statusbar, Esc cancels), then w opens the context picker with
+// j/k navigation, n/p cycle windows, [ enters a client-side scroll mode on
+// the snapshot div. byobu's remote prefix stays F12/Ctrl-A and the key bar's
+// sticky Ctrl still sends a literal C-b, so capturing Ctrl+B here strands no
+// one. Everything is inert until a hardware Ctrl+B actually arrives, so
+// touch-only users see zero UI change. In scroll mode, unhandled keys
+// (printable or not) are swallowed and ignored so nothing leaks into the
+// inputs; q or Esc exits.
+const kbdModeChip = document.getElementById('kbd-mode-chip');
+const PREFIX_TIMEOUT_MS = 2000;
+let _prefixArmed = false;
+let _prefixTimer = null;
+let _scrollMode  = false;
+
+function _showKbdChip(text) {
+  kbdModeChip.textContent = text;
+  kbdModeChip.style.display = '';
+}
+function _hideKbdChip() { kbdModeChip.style.display = 'none'; }
+
+// The one definition of the prefix chord, used by every mode: unshifted
+// plain Ctrl+B (Ctrl+Shift+B is the browser's bookmarks-bar toggle). Four
+// call sites once drifted apart; keep them on this predicate.
+function isPrefixChord(e) {
+  return e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey
+      && e.key.toLowerCase() === 'b';
+}
+
+function armPrefix() {
+  _prefixArmed = true;
+  clearTimeout(_prefixTimer);
+  _prefixTimer = setTimeout(disarmPrefix, PREFIX_TIMEOUT_MS);
+  _showKbdChip('C-b');
+}
+function disarmPrefix() {
+  _prefixArmed = false;
+  clearTimeout(_prefixTimer);
+  _prefixTimer = null;
+  _hideKbdChip();
+}
+
+// ── scroll mode (prefix+[) ── pure scrollTop manipulation of #output
+function enterScrollMode() {
+  _scrollMode = true;
+  // Move focus off the inputs so nothing types into them while scrolling.
+  const ae = document.activeElement;
+  if (ae && typeof ae.blur === 'function') ae.blur();
+  _showKbdChip('SCROLL');
+}
+function exitScrollMode() {
+  _scrollMode = false;
+  _hideKbdChip();
+  // Entry blurred the input, so q/Esc would strand focus on body and the
+  // next keystrokes would go nowhere. Scroll mode is only reachable via a
+  // hardware Ctrl+B, so refocusing cannot pop a soft keyboard.
+  activeInput().focus();
+}
+
+function handleScrollKey(e) {
+  // Bare modifier keydowns pass; the chord they start is judged on its own.
+  if (['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) return;
+  const line = parseFloat(getComputedStyle(output).lineHeight) || 18;
+  const page = Math.max(line, output.clientHeight - line);
+  const half = Math.max(line, Math.round(output.clientHeight / 2));
+  let step = null;
+  if (!e.ctrlKey && !e.altKey && !e.metaKey) {
+    const k = e.key;
+    if (k === 'q' || k === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      exitScrollMode();
+      return;
+    }
+    if      (k === 'j' || k === 'ArrowDown') step = line;
+    else if (k === 'k' || k === 'ArrowUp')   step = -line;
+    else if (k === 'PageDown')               step = page;
+    else if (k === 'PageUp')                 step = -page;
+  } else if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+    const k = e.key.toLowerCase();
+    if      (k === 'd') step = half;
+    else if (k === 'u') step = -half;
+    else if (isPrefixChord(e)) {
+      // Never let Ctrl+B reach the browser (Firefox opens the bookmarks
+      // sidebar): leave scroll mode and re-arm the prefix instead.
+      e.preventDefault();
+      e.stopPropagation();
+      exitScrollMode();
+      armPrefix();
+      return;
+    }
+    else return; // other Ctrl chords (reload, tab switch, ...) pass through
+  } else {
+    return; // Alt/Meta chords pass through
+  }
+  e.preventDefault();
+  e.stopPropagation();
+  if (step !== null) output.scrollTop += step;
+}
+
+// ── context picker keyboard navigation (prefix+w) ──────────────────────────
+function ctxPickerActive() {
+  return ctxOverlay.style.display !== 'none' && ctxRenameForm.style.display === 'none';
+}
+
+function pickerRows() {
+  return [...ctxList.querySelectorAll('.ctx-btn')];
+}
+
+function movePickerFocus(delta) {
+  const rows = pickerRows();
+  if (!rows.length) return;
+  const idx = rows.indexOf(document.activeElement);
+  const next = idx < 0
+    ? rows[delta > 0 ? 0 : rows.length - 1]
+    : rows[(idx + delta + rows.length) % rows.length];
+  next.focus();
+  next.scrollIntoView({ block: 'nearest' });
+}
+
+function openCtxPickerKeyboard() {
+  showCtxOverlay();
+  // Land on the last ctx-current row rather than the first: the first is the
+  // session row, so prefix+w then Enter would jump to the session's first
+  // live pane instead of staying put (the pane row's click handler is the
+  // real no-op). Fall back to the first row.
+  const rows = pickerRows();
+  const marked = rows.filter(b => b.classList.contains('ctx-current'));
+  const start = marked[marked.length - 1] || rows[0];
+  if (start) start.focus();
+}
+
+function handlePickerKey(e) {
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    e.stopPropagation();
+    hideCtxOverlay();
+    return;
+  }
+  const ae = document.activeElement;
+  const isField = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA');
+  if (isPrefixChord(e)) {
+    // Never let Ctrl+B reach the browser (Firefox opens the bookmarks
+    // sidebar): close the picker and re-arm the prefix, with the same
+    // foreign-field exemption as the neutral-state capture below.
+    if (isField && ae !== cmdInput && ae !== pwdInput) return;
+    e.preventDefault();
+    e.stopPropagation();
+    hideCtxOverlay();
+    armPrefix();
+    return;
+  }
+  // With a text field focused (picker opened by tap while typing), only Esc
+  // acts; j/k keep typing and arrows keep moving the caret.
+  if (isField) return;
+  if (e.key === 'j' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    e.stopPropagation();
+    movePickerFocus(1);
+  } else if (e.key === 'k' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    e.stopPropagation();
+    movePickerFocus(-1);
+  }
+  // Enter falls through: the focused button's native activation fires its
+  // existing click handler.
+}
+
+// ── prefix key dispatch ─────────────────────────────────────────────────────
+function handlePrefixKey(e) {
+  // Bare modifier keydowns (Ctrl going down for a chord) keep the prefix armed.
+  if (['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) return;
+  e.preventDefault();
+  e.stopPropagation();
+  if (isPrefixChord(e)) { armPrefix(); return; } // key repeat re-arms
+  disarmPrefix();
+  // Modified keys are unbound: Ctrl+W while armed must not open the picker.
+  const k = (e.ctrlKey || e.altKey || e.metaKey) ? '' : e.key;
+  if      (k === 'w') openCtxPickerKeyboard();
+  else if (k === 'n') navigateRelativeWindow(1);
+  else if (k === 'p') navigateRelativeWindow(-1);
+  else if (k === 'o') navigateRelativePane(1);
+  else if (k === 'O') navigateRelativePane(-1); // no tmux default for backward; mirrors o
+  // tmux binds prefix+arrows to directional pane selection; the PWA shows one
+  // pane at a time, so down/j means next and up/k means previous.
+  else if (k === 'ArrowDown' || k === 'j') navigateRelativePane(1);
+  else if (k === 'ArrowUp'   || k === 'k') navigateRelativePane(-1);
+  else if (k === '[') enterScrollMode();
+  // Esc and any unbound key: prefix cancelled, keystroke swallowed (tmux-like).
+}
+
+// Capture phase so the bindings run ahead of the input handlers; a handled
+// key calls preventDefault, which also stops the direct-mode input event
+// from ever firing (Ctrl+B itself produces no input event at all).
+document.addEventListener('keydown', e => {
+  // Same IME guard as the input handlers above.
+  if (e.isComposing || e.keyCode === 229) return;
+  if (_isLocked) return;
+
+  if (_scrollMode)       { handleScrollKey(e); return; }
+  if (ctxPickerActive()) { handlePickerKey(e); return; }
+  if (_prefixArmed)      { handlePrefixKey(e); return; }
+
+  if (isPrefixChord(e)) {
+    // Arm from anywhere except foreign text fields (pairing code, rename and
+    // create forms); cmdInput and pwdInput are where keyboard users live.
+    const ae = document.activeElement;
+    const isField = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA');
+    if (isField && ae !== cmdInput && ae !== pwdInput) return;
+    e.preventDefault(); // Ctrl+B is bold/bookmark-ish in some browser contexts
+    e.stopPropagation();
+    armPrefix();
+  }
+}, true);
 
 // ── keyboard-aware viewport (visualViewport) ───────────────────────────────
 // iOS/Android don't resize the layout viewport when the on-screen keyboard
