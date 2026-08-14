@@ -49,6 +49,11 @@ byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
     between the independently-running status-left and status-right
     processes, one in per-tick terminal-width detection, one in the
     per-segment status cache (Closes: GH #141)
+  * packaging: use portable #!/usr/bin/env bash instead of a hardcoded
+    #!/bin/bash in byobu-ugraph, byobu-ulevel, and the test suite scripts;
+    no effect on any FHS-based system, fixes a "bad interpreter" failure
+    under Nix's packaging, whose shebang-patching only rewrites the
+    env-based form (Related: GH #128)
 
 byobu (7.17) 2026-08-05  Dustin Kirkland <kirkland@ubuntu.com>
 
