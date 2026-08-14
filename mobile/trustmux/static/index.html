@@ -63,13 +63,31 @@
       overflow: hidden; white-space: nowrap; flex-shrink: 1; min-width: 0;
     }
     #ctx-name {
-      max-width: 48vw; overflow: hidden;
-      text-overflow: ellipsis; white-space: nowrap;
+      display: flex; align-items: center;
+      max-width: 48vw; white-space: nowrap;
       color: var(--accent); font-size: 11px;
       letter-spacing: 0.03em; padding: 0 4px;
       cursor: pointer; user-select: none; flex-shrink: 0;
     }
-    #ctx-name:active { opacity: 0.7; }
+    /* breadcrumb segments: each ellipsizes on its own; flex-shrink ratios
+       make the pane shrink fastest (all three shrink at once, so this only
+       approximates the old end-of-string truncation). Vertical padding
+       pulled back with a negative margin grows the touch target above the
+       bar without growing it; #ctx-name must not clip (overflow: hidden
+       also clips hit testing). The band below loses to #output's opaque
+       background in hit testing; the band above overlaps the bottom edge of
+       whatever precedes the statusbar and wins there, shaving those targets
+       slightly. min-width floors each segment so a long sibling cannot
+       shrink its tap target away. */
+    .ctx-seg {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      min-width: 1.5em; padding: 10px 2px; margin: -10px 0;
+    }
+    .ctx-seg:active { opacity: 0.7; }
+    .ctx-seg-session { flex-shrink: 1; }
+    .ctx-seg-window  { flex-shrink: 2; }
+    .ctx-seg-pane    { flex-shrink: 4; }
+    .ctx-seg-sep { flex-shrink: 0; padding: 0 3px; opacity: 0.65; }
     #xyz-label {
       min-width: 86px; text-align: center; flex-shrink: 0;
       color: var(--text); font-size: 11px; letter-spacing: 0.03em;
@@ -142,11 +160,14 @@
                        font-family: var(--font); text-align: center; }
 
     /* ── context jump list (tap context name in header) ── */
-    /* capped + scrollable so a long session/window/pane tree doesn't push the
+    /* capped + scrollable so a long window/pane list doesn't push the
        Rename/Cancel buttons off-screen or grow the box past the viewport */
     #ctx-list { max-height: 58vh; overflow-y: auto; }
-    .ctx-window-btn { padding-left: 28px; }
-    .ctx-pane-btn { padding-left: 40px; font-size: 13px; }
+    /* level title of the drill-down picker: which session/window is open */
+    .ctx-title {
+      padding: 10px 16px 2px; color: var(--text); font-size: 11px;
+      letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--font);
+    }
     .ctx-btn.ctx-current { color: var(--accent); }
     /* keyboard highlight for prefix+w navigation: real DOM focus moved from a
        keydown handler matches :focus-visible, so touch taps stay outline-free */

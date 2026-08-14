@@ -323,6 +323,16 @@ function connect() {
       if (msg.new_session) forcedSessionId = msg.new_session;
       if (msg.new_pane) forcedPaneId = msg.new_pane;
       rebuildPaneTree();
+      // An open picker must track topology: without this, rows for a window
+      // that just died stay tappable and navigate to a dead pane, and
+      // _ctxResolveLevel's fallback never runs until the next interaction.
+      // Refocus only when a picker row had focus: focus() can scroll the
+      // list, which would yank a touch user's position on unrelated updates.
+      if (ctxPickerActive()) {
+        const ae = document.activeElement;
+        if (ae && ae.closest('#ctx-list')) _ctxRerender(ae.dataset.ctxId);
+        else renderCtxList();
+      }
     } else if (msg.type === 'snapshot') {
       if (msg.pane_id === currentPane) {
         const forceTop = _scrollTopOnNextSnapshot;
@@ -382,14 +392,6 @@ function paneDisplayName(p) {
   if (!p) return 'shell';
   const title = isDefaultPaneTitle(p.title) ? '' : p.title;
   return getPaneName(p.id, '') || title || p.command || 'shell';
-}
-
-function contextPath() {
-  const s = currentSession();
-  const w = currentWindow();
-  const p = currentPaneObj();
-  if (!s || !w || !p) return '';
-  return `${s.name} / ${w.index}:${w.name} / ${paneDisplayName(p)}`;
 }
 
 // ── position label ────────────────────────────────────────────────────────
@@ -509,9 +511,46 @@ function navigateTo(sessionId, windowId, paneId) {
 }
 
 // ── context name ──────────────────────────────────────────────────────────
+// The breadcrumb is three tap targets, one per picker level: the session
+// segment opens the sessions list, the window segment the current session's
+// windows, the pane segment the current window's panes. A tap that misses
+// every segment falls through to the container listener, which keeps the
+// windows-level default.
+function _ctxSeg(text, cls, level) {
+  const el = document.createElement('span');
+  el.className = 'ctx-seg ' + cls;
+  el.textContent = text;
+  // No stopPropagation: the document-level closers for the info and escape
+  // popups must keep seeing the click; the container listener skips segment
+  // targets itself.
+  el.addEventListener('click', () => showCtxOverlayAt(level));
+  return el;
+}
+
+function _ctxSegSep() {
+  const el = document.createElement('span');
+  el.className = 'ctx-seg-sep';
+  el.textContent = '/';
+  return el;
+}
+
 function updateContextName() {
-  if (!currentPane) { ctxName.textContent = ''; return; }
-  ctxName.textContent = contextPath() || getPaneName(currentPane, '') || 'shell';
+  ctxName.textContent = '';
+  if (!currentPane) return;
+  const s = currentSession();
+  const w = currentWindow();
+  const p = currentPaneObj();
+  if (!s || !w || !p) {
+    ctxName.textContent = getPaneName(currentPane, '') || 'shell';
+    return;
+  }
+  ctxName.append(
+    _ctxSeg(s.name, 'ctx-seg-session', 'sessions'),
+    _ctxSegSep(),
+    _ctxSeg(`${w.index}:${w.name}`, 'ctx-seg-window', 'windows'),
+    _ctxSegSep(),
+    _ctxSeg(paneDisplayName(p), 'ctx-seg-pane', 'panes'),
+  );
 }
 
 // ── output rendering ───────────────────────────────────────────────────────
@@ -924,61 +963,124 @@ btnNext.addEventListener('click', () => navigateRelative(1));
 document.getElementById('btn-create').addEventListener('click', showCreateOverlay);
 
 // ── context jump list (tap context name in header) ─────────────────────────
-// Hierarchical picker: sessions first, then windows inside each session, then
-// panes inside each window. This keeps tmux's session/window/pane model visible
-// instead of reducing everything to a long pane list.
+// Drill-down picker: one list per level (sessions, windows, panes) instead of
+// one flat indented tree, which turned into a giant scroll with many contexts.
+// _ctxLevel/_ctxSessionId/_ctxWindowId hold where the picker is;
+// showCtxOverlayAt resets them to the requested level on every open.
+let _ctxLevel     = 'windows'; // 'sessions' | 'windows' | 'panes'
+let _ctxSessionId = null;
+let _ctxWindowId  = null;
+
+function liveWindowsInSession(s) {
+  return (s?.windows || []).filter(w => firstLivePaneInWindow(w));
+}
+
+function _ctxSessionObj() {
+  return sessions.find(s => s.id === _ctxSessionId) || null;
+}
+
+function _ctxWindowObj() {
+  return (_ctxSessionObj()?.windows || []).find(w => w.id === _ctxWindowId) || null;
+}
+
+// A snapshot update can leave the picker pointing at a session or
+// window that no longer has live panes; fall back to the level above.
+function _ctxResolveLevel() {
+  if (_ctxLevel === 'panes' && !livePanesInWindow(_ctxWindowObj()).length) _ctxLevel = 'windows';
+  if (_ctxLevel === 'windows' && !liveWindowsInSession(_ctxSessionObj()).length) _ctxLevel = 'sessions';
+}
+
+function _ctxAddRow(label, isCurrent, onClick) {
+  const btn = document.createElement('button');
+  btn.className = 'ctx-btn' + (isCurrent ? ' ctx-current' : '');
+  btn.textContent = (isCurrent ? '✓ ' : '') + label;
+  btn.addEventListener('click', onClick);
+  ctxList.appendChild(btn);
+  return btn;
+}
+
+function _ctxAddTitle(text) {
+  const el = document.createElement('div');
+  el.className = 'ctx-title';
+  el.textContent = text;
+  ctxList.appendChild(el);
+}
+
+function _ctxAddBackRow(label, onClick) {
+  const btn = _ctxAddRow('← ' + label, false, onClick);
+  btn.classList.add('ctx-dim');
+  const sep = document.createElement('div');
+  sep.className = 'ctx-sep';
+  ctxList.appendChild(sep);
+}
+
+// Re-render after a level change and move real DOM focus so prefix+w j/k
+// keeps working: prefer the row we came from, then the current-context row.
+function _ctxRerender(focusId) {
+  renderCtxList();
+  const rows = pickerRows();
+  const target = (focusId && rows.find(b => b.dataset.ctxId === focusId))
+    || rows.filter(b => b.classList.contains('ctx-current')).pop()
+    // In a non-current session or window nothing is ctx-current; prefer the
+    // first real entry over the back row so Enter keeps drilling down.
+    || rows.find(b => b.dataset.ctxId)
+    || rows[0];
+  if (target) target.focus();
+}
+
 function renderCtxList() {
   ctxList.innerHTML = '';
-  for (const s of sessions) {
-    const sessionHasLivePane = (s.windows || []).some(w => firstLivePaneInWindow(w));
-    if (!sessionHasLivePane) continue;
+  _ctxResolveLevel();
 
-    if (ctxList.children.length) {
-      const sep = document.createElement('div');
-      sep.className = 'ctx-sep';
-      ctxList.appendChild(sep);
-    }
-
-    const sBtn = document.createElement('button');
-    sBtn.className = 'ctx-btn' + (s.id === currentSessionId ? ' ctx-current' : '');
-    sBtn.textContent = (s.id === currentSessionId ? '✓ ' : '') + s.name;
-    sBtn.addEventListener('click', () => {
-      const firstWindow = (s.windows || []).find(w => firstLivePaneInWindow(w));
-      const firstPane = firstLivePaneInWindow(firstWindow);
-      hideCtxOverlay();
-      if (firstWindow && firstPane) navigateTo(s.id, firstWindow.id, firstPane.id);
-    });
-    ctxList.appendChild(sBtn);
-
-    for (const w of (s.windows || [])) {
-      const livePanes = livePanesInWindow(w);
-      if (!livePanes.length) continue;
-      const isCurrentWindow = s.id === currentSessionId && w.id === currentWindowId;
-      const wBtn = document.createElement('button');
-      wBtn.className = 'ctx-btn ctx-window-btn' + (isCurrentWindow ? ' ctx-current' : '');
-      wBtn.textContent = `${isCurrentWindow ? '✓ ' : ''}${w.index}:${w.name}`;
-      wBtn.addEventListener('click', () => {
-        const p = firstLivePaneInWindow(w);
-        hideCtxOverlay();
-        if (p) navigateTo(s.id, w.id, p.id);
+  if (_ctxLevel === 'sessions') {
+    _ctxAddTitle('Sessions');
+    for (const s of sessions) {
+      if (!liveWindowsInSession(s).length) continue;
+      const btn = _ctxAddRow(s.name, s.id === currentSessionId, () => {
+        _ctxSessionId = s.id;
+        _ctxLevel = 'windows';
+        _ctxRerender(null);
       });
-      ctxList.appendChild(wBtn);
-
-      for (const p of livePanes) {
-        const isCurrent = p.id === currentPane;
-        const btn = document.createElement('button');
-        btn.className = 'ctx-btn ctx-pane-btn' + (isCurrent ? ' ctx-current' : '');
-        const name = paneDisplayName(p);
-        btn.textContent = (isCurrent ? '✓ ' : '') + name;
-        btn.addEventListener('click', () => {
-          hideCtxOverlay();
-          if (!isCurrent) navigateTo(s.id, w.id, p.id);
-        });
-        ctxList.appendChild(btn);
-      }
+      btn.dataset.ctxId = s.id;
+      btn.dataset.descend = '1';
+    }
+  } else if (_ctxLevel === 'windows') {
+    const s = _ctxSessionObj();
+    _ctxAddBackRow('Sessions', () => {
+      _ctxLevel = 'sessions';
+      _ctxRerender(s.id);
+    });
+    _ctxAddTitle(s.name);
+    for (const w of liveWindowsInSession(s)) {
+      const isCurrent = s.id === currentSessionId && w.id === currentWindowId;
+      const btn = _ctxAddRow(`${w.index}:${w.name}`, isCurrent, () => {
+        _ctxWindowId = w.id;
+        _ctxLevel = 'panes';
+        _ctxRerender(null);
+      });
+      btn.dataset.ctxId = w.id;
+      btn.dataset.descend = '1';
+    }
+  } else {
+    const s = _ctxSessionObj();
+    const w = _ctxWindowObj();
+    _ctxAddBackRow(s.name, () => {
+      _ctxLevel = 'windows';
+      _ctxRerender(w.id);
+    });
+    _ctxAddTitle(`${w.index}:${w.name}`);
+    for (const p of livePanesInWindow(w)) {
+      const isCurrent = p.id === currentPane;
+      const btn = _ctxAddRow(paneDisplayName(p), isCurrent, () => {
+        hideCtxOverlay();
+        if (!isCurrent) navigateTo(s.id, w.id, p.id);
+      });
+      btn.dataset.ctxId = p.id;
     }
   }
-  if (!ctxList.children.length) {
+
+  if (!pickerRows().length) {
+    ctxList.innerHTML = '';
     const empty = document.createElement('div');
     empty.className = 'ctx-dim';
     empty.style.padding = '16px';
@@ -987,16 +1089,35 @@ function renderCtxList() {
   }
 }
 
-function showCtxOverlay() {
+// Open at an explicit level: 'sessions' lists all sessions, 'windows' the
+// current session's windows, 'panes' the current window's panes. No
+// persistence across opens.
+function showCtxOverlayAt(level) {
+  // Like navigateTo: the keydown dispatch checks scroll mode before the
+  // picker, so an open picker under scroll mode would have a dead keyboard.
+  if (_scrollMode) exitScrollMode();
+  _ctxLevel     = level;
+  _ctxSessionId = currentSessionId;
+  _ctxWindowId  = level === 'panes' ? currentWindowId : null;
   renderCtxList();
   ctxListView.style.display = '';
   ctxRenameForm.style.display = 'none';
   ctxOverlay.style.display = 'flex';
 }
+
+function showCtxOverlay() {
+  // Windows is the middle ground: sessions are one Back away and the current
+  // window's panes one tap away.
+  showCtxOverlayAt('windows');
+}
 function hideCtxOverlay() {
   ctxOverlay.style.display = 'none';
 }
-ctxName.addEventListener('click', showCtxOverlay);
+ctxName.addEventListener('click', e => {
+  // Segment clicks open their own level; only a miss keeps the default.
+  if (e.target.closest('.ctx-seg')) return;
+  showCtxOverlay();
+});
 ctxCancel.addEventListener('click', hideCtxOverlay);
 ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtxOverlay(); });
 
@@ -1029,8 +1150,9 @@ function showRenameForm() {
 }
 function backToCtxList() {
   ctxRenameForm.style.display = 'none';
-  renderCtxList();
+  // List visible before _ctxRerender: focus() on a hidden element is a no-op.
   ctxListView.style.display = '';
+  _ctxRerender(null);
 }
 ctxRenameOpen.addEventListener('click', showRenameForm);
 ctxRenameBack.addEventListener('click', backToCtxList);
@@ -1542,7 +1664,7 @@ function handleScrollKey(e) {
   if (step !== null) output.scrollTop += step;
 }
 
-// ── context picker keyboard navigation (prefix+w) ──────────────────────────
+// ── context picker keyboard navigation (prefix+w, prefix+s) ────────────────
 function ctxPickerActive() {
   return ctxOverlay.style.display !== 'none' && ctxRenameForm.style.display === 'none';
 }
@@ -1562,23 +1684,30 @@ function movePickerFocus(delta) {
   next.scrollIntoView({ block: 'nearest' });
 }
 
-function openCtxPickerKeyboard() {
-  showCtxOverlay();
-  // Land on the last ctx-current row rather than the first: the first is the
-  // session row, so prefix+w then Enter would jump to the session's first
-  // live pane instead of staying put (the pane row's click handler is the
-  // real no-op). Fall back to the first row.
+function openCtxPickerKeyboard(level) {
+  showCtxOverlayAt(level || 'windows');
+  // The ctx-current row is the current window at the windows level and the
+  // current session at the sessions level: Enter descends into it. Fall back
+  // to the first row.
   const rows = pickerRows();
   const marked = rows.filter(b => b.classList.contains('ctx-current'));
   const start = marked[marked.length - 1] || rows[0];
   if (start) start.focus();
 }
 
+// Esc or h at a deeper picker level goes up one; returns false at the top so
+// the caller closes instead.
+function ctxPickerUp() {
+  if (_ctxLevel === 'panes')   { _ctxLevel = 'windows';  _ctxRerender(_ctxWindowId);  return true; }
+  if (_ctxLevel === 'windows') { _ctxLevel = 'sessions'; _ctxRerender(_ctxSessionId); return true; }
+  return false;
+}
+
 function handlePickerKey(e) {
   if (e.key === 'Escape') {
     e.preventDefault();
     e.stopPropagation();
-    hideCtxOverlay();
+    if (!ctxPickerUp()) hideCtxOverlay();
     return;
   }
   const ae = document.activeElement;
@@ -1597,7 +1726,13 @@ function handlePickerKey(e) {
   // With a text field focused (picker opened by tap while typing), only Esc
   // acts; j/k keep typing and arrows keep moving the caret.
   if (isField) return;
-  if (e.key === 'j' || e.key === 'ArrowDown') {
+  if (e.key === 'q') {
+    // Close outright from any depth, like scroll mode and tmux choose-tree;
+    // Esc walks up a level first, so q is the one-keystroke close.
+    e.preventDefault();
+    e.stopPropagation();
+    hideCtxOverlay();
+  } else if (e.key === 'j' || e.key === 'ArrowDown') {
     e.preventDefault();
     e.stopPropagation();
     movePickerFocus(1);
@@ -1605,6 +1740,16 @@ function handlePickerKey(e) {
     e.preventDefault();
     e.stopPropagation();
     movePickerFocus(-1);
+  } else if (e.key === 'h' || e.key === 'ArrowLeft') {
+    e.preventDefault();
+    e.stopPropagation();
+    ctxPickerUp();
+  } else if (e.key === 'l' || e.key === 'ArrowRight') {
+    // Descend only: pane rows and footer buttons have no descend flag, so l
+    // never navigates or closes by accident.
+    e.preventDefault();
+    e.stopPropagation();
+    if (ae && ae.dataset.descend) ae.click();
   }
   // Enter falls through: the focused button's native activation fires its
   // existing click handler.
@@ -1621,6 +1766,7 @@ function handlePrefixKey(e) {
   // Modified keys are unbound: Ctrl+W while armed must not open the picker.
   const k = (e.ctrlKey || e.altKey || e.metaKey) ? '' : e.key;
   if      (k === 'w') openCtxPickerKeyboard();
+  else if (k === 's') openCtxPickerKeyboard('sessions'); // tmux choose-session analog
   else if (k === 'n') navigateRelativeWindow(1);
   else if (k === 'p') navigateRelativeWindow(-1);
   else if (k === 'o') navigateRelativePane(1);
