@@ -17,7 +17,8 @@ RC phases:
     4c Homebrew trustmux smoke test │
     4d Fedora Rawhide RPM build    │
     4e Homebrew byobu smoke test   │
-    4f Salsa CI (gbp buildpackage) ┘
+    4f Salsa CI (gbp buildpackage) │
+    4g Nix build + smoke test      ┘
     5  PPA source builds
 
 Final skips phase 4 (smoke already passed on RC commit):
@@ -1093,6 +1094,58 @@ def build_fedora_rpm(v):
     print(f"  ✓ Fedora RPM build + install smoke test PASSED ({len(rpms)} package(s)):")
     for r in rpms:
         print(f"    {r.name}")
+
+
+# ── phase 4g: Nix build ──────────────────────────────────────────────────
+#
+# Installs Nix on a stock debian:bookworm base rather than using the minimal
+# nixos/nix image: it's the more representative real-world setup (most Nix
+# users run it on an existing distro, not NixOS), and it comes with
+# /etc/os-release, bash, gawk, and bc already present, all of which the
+# minimal Nix-only image lacks and which byobu's own test suite needs. src
+# is overridden to the local, read-only-mounted checkout so this actually
+# validates the release candidate against Nix's packaging assumptions,
+# matching how the Fedora/Debian phases build from /src rather than a
+# published tarball. See GH #128.
+_NIX_BUILD_SCRIPT = r"""
+set -e
+apt-get update -qq
+apt-get install -y -qq curl xz-utils bc gawk 2>&1 | tail -5
+
+useradd -m nixuser
+mkdir -m 0755 /nix && chown nixuser /nix
+curl -L https://nixos.org/nix/install > /tmp/install-nix.sh
+su nixuser -c 'sh /tmp/install-nix.sh --no-daemon' 2>&1 | tail -10
+
+cat > /tmp/local-byobu.nix <<'NIXEOF'
+with import <nixpkgs> {};
+byobu.overrideAttrs (old: { src = /src; })
+NIXEOF
+
+echo "--- Build step ---"
+su nixuser -c '
+. /home/nixuser/.nix-profile/etc/profile.d/nix.sh
+nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
+nix-channel --update
+nix-build /tmp/local-byobu.nix -o /tmp/result
+'
+echo "--- Build PASSED ($(ls /tmp/result/bin | wc -l) binaries) ---"
+
+echo "--- Smoke: byobu test suite (Nix-built, local source) ---"
+bash /tmp/result/share/byobu/tests/test_byobu.sh
+
+echo "=== Nix build + smoke test PASSED ==="
+"""
+
+
+def build_nix_package(v):
+    section("Phase 4g: Nix build + smoke test (Docker debian:bookworm + Nix)")
+    run([
+        "docker", "run", "--rm",
+        "-v", f"{BYOBU_SRC}:/src:ro",
+        "debian:bookworm", "bash", "-c", _NIX_BUILD_SCRIPT,
+    ])
+    print("  ✓ Nix build + smoke test PASSED")
 
 
 # ── phase 2b: local binary build ─────────────────────────────────────────
@@ -2317,6 +2370,7 @@ def main():
         parallel.append(("local deb",     lambda: build_local_debs(v, identity)))
         parallel.append(("Fedora RPM",    lambda: build_fedora_rpm(v)))
         parallel.append(("Homebrew byobu", lambda: run_homebrew_byobu_smoke_test(v)))
+        parallel.append(("Nix build",     lambda: build_nix_package(v)))
         parallel.append(("Salsa CI",      run_salsa_ci))
     if mode == "rc" and should_run("5", start_from):
         parallel.append(("PPA builds", lambda: build_ppa_packages(v, identity)))
