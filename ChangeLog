@@ -19,8 +19,8 @@ lost, just relocated to where all distributions can use it.
 byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
 
   * trustmux/pwa: make session/window/pane hierarchy visible in the header
-    (breadcrumb, W#/# P#/# position within the current window) and label
-    unnamed panes with their tmux pane title (Closes: GH #129)
+    (breadcrumb) and label unnamed panes with their tmux pane title
+    (Closes: GH #129)
   * trustmux/pwa: add a key bar and per-keystroke direct input mode so
     modal TUIs (vi, less, htop) can be driven from the phone (Closes: GH
     #131)
