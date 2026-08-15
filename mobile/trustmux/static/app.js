@@ -401,16 +401,10 @@ function paneDisplayName(p) {
 
 // ── position label ────────────────────────────────────────────────────────
 function activePaneXYZ() {
-  const s = currentSession();
-  const w = currentWindow();
-  if (!s || !w || !currentPane) return '-/-';
-  const windows = (s.windows || []).filter(win => firstLivePaneInWindow(win));
-  const wIdx = windows.findIndex(win => win.id === currentWindowId);
-  const panes = livePanesInWindow(w);
-  const pIdx = panes.findIndex(p => p.id === currentPane);
-  const wText = wIdx < 0 ? 'W-/-' : `W${wIdx + 1}/${windows.length}`;
-  const pText = pIdx < 0 ? 'P-/-' : `P${pIdx + 1}/${panes.length}`;
-  return `${wText} ${pText}`;
+  const list = flatPaneList();
+  if (!currentPane || list.length === 0) return '-/-';
+  const idx = list.findIndex(e => e.paneId === currentPane);
+  return idx < 0 ? '-/-' : `${idx + 1}/${list.length}`;
 }
 
 function updateXYZLabel() {
@@ -680,7 +674,7 @@ function sendKeys() {
 }
 
 // ── events ─────────────────────────────────────────────────────────────────
-xyzLabel.addEventListener('click', () => navigateRelativePane(1));
+xyzLabel.addEventListener('click', () => send({ type: 'list_sessions' }));
 cmdInput.addEventListener('keydown', e => {
   // The Enter that commits an IME composition arrives here with
   // isComposing=true (or as Android keyCode 229); it must not reach the pane.
