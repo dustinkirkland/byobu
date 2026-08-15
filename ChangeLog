@@ -16,6 +16,17 @@ Entries below 7.15 are the original, unedited history as it existed in
 debian/changelog before this split -- full history preserved, nothing
 lost, just relocated to where all distributions can use it.
 
+byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
+
+  * trustmux/pwa: add opt-in OSC 133 shell integration
+    (byobu-enable-shell-integration / byobu-disable-shell-integration) --
+    prompt/command boundary markers for Trustmux's own future prompt
+    detection, and for any terminal that already understands them
+    (iTerm2, Kitty, Ghostty, VS Code, Warp)
+  * trustmux/pwa: Aa keyboard mode defaults line-wrap on again (and
+    Terminal/Password default it off), restoring the pre-7.18 convenience
+    without losing the independent per-pane Wrap toggle #134 added
+
 byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
 
   * trustmux/pwa: make session/window/pane hierarchy visible in the header
