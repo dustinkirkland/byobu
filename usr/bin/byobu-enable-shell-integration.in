@@ -1,0 +1,57 @@
+#!/bin/sh -e
+#
+#    byobu-enable-shell-integration
+#    Copyright (C) 2026 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@byobu.org>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Emits OSC 133 semantic-prompt markers (prompt start/end, command
+# start/end+exit-code) so terminals and tools that understand them --
+# iTerm2, Kitty, Ghostty, VS Code, Warp, and Trustmux's own daemon -- can
+# locate prompts and command boundaries precisely instead of guessing from
+# rendered text. See usr/share/byobu/profiles/shell-integration.{bash,zsh}
+# for the marker reference. Opt-in: does not touch shells this wasn't asked
+# to run on, and layers onto whatever prompt setup (byobu's own colorized
+# one, oh-my-zsh, starship, plain) is already there rather than replacing it.
+
+PKG="byobu"
+[ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
+
+marker="#byobu-shell-integration#"
+
+case "$SHELL" in
+	*bash) rc="$HOME/.bashrc"; profile="${BYOBU_PREFIX}/share/${PKG}/profiles/shell-integration.bash" ;;
+	*zsh)  rc="$HOME/.zshrc";  profile="${BYOBU_PREFIX}/share/${PKG}/profiles/shell-integration.zsh" ;;
+	*)
+		echo "Shell integration is only supported for bash and zsh (\$SHELL is '$SHELL')." 1>&2
+		exit 1
+	;;
+esac
+
+$PKG-disable-shell-integration --no-reload || true
+printf "[ -r \"%s\" ] && . \"%s\"   %s\n" "$profile" "$profile" "$marker" >> "$rc"
+
+if [ -n "$TMUX" ]; then
+	tmux send-keys " . ~/.${SHELL##*/}rc" \; send-keys Enter
+else
+	echo
+	echo "You will need to reload your shell configuration for this to take effect..."
+	echo "  . ~/.${SHELL##*/}rc"
+	echo
+fi
+
+# vi: syntax=sh ts=4 noexpandtab

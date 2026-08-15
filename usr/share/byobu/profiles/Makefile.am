@@ -1,2 +1,2 @@
 profilesdir = $(datadir)/@PACKAGE@/profiles
-dist_profiles_DATA = bashrc byoburc dircolors screenrc common tmux tmuxrc NONE
+dist_profiles_DATA = bashrc byoburc dircolors screenrc common tmux tmuxrc NONE shell-integration.bash shell-integration.zsh

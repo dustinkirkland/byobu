@@ -845,6 +845,72 @@ assert_eq "cache write: second writer's content untouched by the first" \
 rm -rf "$_tmp"; unset _tmp _cachepath
 
 # ---------------------------------------------------------------------------
+# Section 39 — OSC 133 shell integration (profiles/shell-integration.bash)
+# ---------------------------------------------------------------------------
+# Regression coverage for a real bug caught during development: the B marker
+# embedded in PS1 used ST (ESC \) as its terminator, whose second byte is a
+# literal backslash -- which collided with bash's own \[ \] PS1 escaping and
+# left a stray "]" character in the rendered prompt. Switched to BEL. ${PS1@P}
+# (bash 4.4+) applies real PS1 prompt-expansion without needing a live
+# interactive session/pty, so this exercises the same code path bash itself
+# uses to render a prompt, not just a string check.
+
+# Not a subshell: assert_eq/assert_true update the global PASS/FAIL counters,
+# which wouldn't propagate back out of one. Safe to leave PS1/PROMPT_COMMAND/
+# PS0 set afterward -- this is the last section before Results.
+
+PS1="myprompt\$ "
+unset PROMPT_COMMAND PS0
+. "${BYOBU_PREFIX}/share/byobu/profiles/shell-integration.bash"
+
+rendered="${PS1@P}"
+expected=$(printf 'myprompt$ \033]133;B\a')
+assert_eq "osc133 bash: PS1 renders to exactly prompt + B marker, no stray bytes" \
+	"$rendered" "$expected"
+
+# PROMPT_COMMAND: exit code must be the real preceding command's, not
+# something clobbered by the hook's own internals.
+false
+out=$(eval "$PROMPT_COMMAND")
+want=$(printf '\033]133;D;1\a\033]133;A\a')
+assert_eq "osc133 bash: PROMPT_COMMAND emits D;<real exit code> then A" "$out" "$want"
+
+true
+out=$(eval "$PROMPT_COMMAND")
+want=$(printf '\033]133;D;0\a\033]133;A\a')
+assert_eq "osc133 bash: exit code 0 captured correctly too" "$out" "$want"
+
+# PS0 holds a deferred command substitution, not a literal unexpanded
+# ${...} (the exact class of bug this would have caught: using \${x}
+# instead of \$(x) silently never fires). ${PS0@P} applies real
+# prompt-expansion, same as ${PS1@P} above -- eval would try to execute
+# the marker's raw escape bytes as a command instead of embedding them.
+out="${PS0@P}"
+want=$(printf '\033]133;C\a')
+assert_eq "osc133 bash: PS0 command substitution fires the C marker" "$out" "$want"
+
+# Idempotency: sourcing twice must not duplicate the hook or grow PS1.
+prompt_command_before="$PROMPT_COMMAND"
+ps1_before="$PS1"
+. "${BYOBU_PREFIX}/share/byobu/profiles/shell-integration.bash"
+assert_eq "osc133 bash: re-sourcing does not duplicate PROMPT_COMMAND" \
+	"$PROMPT_COMMAND" "$prompt_command_before"
+assert_eq "osc133 bash: re-sourcing does not duplicate the PS1 marker" \
+	"$PS1" "$ps1_before"
+
+# Chains onto an existing PROMPT_COMMAND/PS1 instead of replacing them.
+PS1="custom\$ "
+PROMPT_COMMAND="echo already-here"
+unset PS0
+. "${BYOBU_PREFIX}/share/byobu/profiles/shell-integration.bash"
+assert_true "osc133 bash: chains onto an existing PROMPT_COMMAND rather than replacing it" \
+	"[[ \"\$PROMPT_COMMAND\" == *already-here* ]]"
+assert_true "osc133 bash: chains onto an existing PS1 rather than replacing it" \
+	"[[ \"\${PS1@P}\" == custom* ]]"
+
+unset PS1 PROMPT_COMMAND PS0 rendered expected out want prompt_command_before ps1_before
+
+# ---------------------------------------------------------------------------
 # Results
 # ---------------------------------------------------------------------------
 

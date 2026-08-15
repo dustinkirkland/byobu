@@ -1,0 +1,43 @@
+#!/bin/sh -e
+#
+#    byobu-disable-shell-integration
+#    Copyright (C) 2026 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@byobu.org>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+PKG="byobu"
+[ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
+
+marker="#byobu-shell-integration#"
+
+for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
+	[ -w "$rc" ] || continue
+	$BYOBU_SED_INLINE -e "/${marker}$/d" "$rc"
+done
+
+if [ "$1" != "--no-reload" ]; then
+	if [ -n "$TMUX" ]; then
+		tmux send-keys " . ~/.${SHELL##*/}rc" \; send-keys Enter
+	else
+		echo
+		echo "You will need to reload your shell configuration for this to take effect..."
+		echo "  . ~/.${SHELL##*/}rc"
+		echo
+	fi
+fi
+
+# vi: syntax=sh ts=4 noexpandtab

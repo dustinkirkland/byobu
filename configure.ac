@@ -37,8 +37,10 @@ AC_OUTPUT(Makefile \
 	usr/bin/byobu-ctrl-a \
 	usr/bin/byobu-disable \
 	usr/bin/byobu-disable-prompt \
+	usr/bin/byobu-disable-shell-integration \
 	usr/bin/byobu-enable \
 	usr/bin/byobu-enable-prompt \
+	usr/bin/byobu-enable-shell-integration \
 	usr/bin/byobu-export \
 	usr/bin/byobu-janitor \
 	usr/bin/byobu-launch \
