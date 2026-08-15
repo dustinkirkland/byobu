@@ -1669,7 +1669,10 @@ function applyTheme() {
 function rerenderTerminal() {
   _paneCache.clear();
   if (currentPane) {
-    send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true });
+    // join must ride every resubscribe: without it the daemon captures this
+    // pane unjoined, and with wrap on the re-render hard-breaks long lines
+    // at the tmux pane width until the next pane switch.
+    send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true, join: wrapOn });
   }
 }
 
