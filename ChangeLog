@@ -54,6 +54,9 @@ byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
     no effect on any FHS-based system, fixes a "bad interpreter" failure
     under Nix's packaging, whose shebang-patching only rewrites the
     env-based form (Related: GH #128)
+  * trustmux/pwa: fix theme switching dropping the wrap flag on resubscribe,
+    which hard-broke long lines mid-word at the tmux pane width until the
+    next pane switch when line wrap (GH #133) was on (Closes: GH #144)
 
 byobu (7.17) 2026-08-05  Dustin Kirkland <kirkland@ubuntu.com>
 
