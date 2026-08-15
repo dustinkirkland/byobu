@@ -1,0 +1,33 @@
+.TH byobu-enable-shell-integration 1 "15 August 2026" byobu "byobu"
+.SH NAME
+byobu-enable-shell-integration, byobu-disable-shell-integration \- add and remove OSC 133 semantic-prompt markers in your shell configuration
+
+.SH SYNOPSIS
+\fBbyobu-enable-shell-integration\fP
+.TP
+\fBbyobu-disable-shell-integration\fP
+
+.SH DESCRIPTION
+
+Byobu can emit OSC 133 semantic-prompt markers: escape sequences marking where a prompt starts, where a prompt ends and command input begins, where a command's output starts, and where a command finishes (with its exit code). This is the same protocol iTerm2, Kitty, Ghostty, VS Code, and Warp already use for jump-to-previous-prompt navigation and command-output selection; any terminal or tool that understands OSC 133 can locate prompts and command boundaries precisely instead of guessing from rendered text.
+
+This is off by default. \fBbyobu-enable-shell-integration\fP adds one line to \fI~/.bashrc\fP (for bash) or \fI~/.zshrc\fP (for zsh), sourcing the marker-emitting logic. It layers onto whatever prompt you already have \(em byobu's own colorized prompt from \fBbyobu-enable-prompt\fP(1), a framework like oh-my-zsh or starship, or a plain unconfigured prompt \(em rather than replacing it.
+
+You can safely remove the line from your shell configuration file yourself; it ends in \fB#byobu-shell-integration#\fP.
+
+\fBbyobu-disable-shell-integration\fP removes that line.
+
+Only bash and zsh are supported. Running \fBbyobu-enable-shell-integration\fP under any other shell prints an error and does nothing.
+
+.SH SEE ALSO
+.PD 0
+.TP
+\fBbash\fP(1), \fBzsh\fP(1), \fBbyobu-enable-prompt\fP(1)
+.TP
+\fIhttps://byobu.org\fP
+.PD
+
+.SH AUTHOR
+This manpage and the utility were written by Dustin Kirkland <kirkland@byobu.org> for Ubuntu systems (but may be used by others).  Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 3 published by the Free Software Foundation.
+
+The complete text of the GNU General Public License can be found in \fI/usr/share/common-licenses/GPL\fP on Debian/Ubuntu systems, or in \fI/usr/share/doc/fedora-release-*/GPL\fP on Fedora systems, or on the web at \fIhttp://www.gnu.org/licenses/gpl.txt\fP.
