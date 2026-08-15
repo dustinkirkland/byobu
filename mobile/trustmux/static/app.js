@@ -747,6 +747,16 @@ function applyKbdMode() {
 btnKbdMode.addEventListener('click', () => {
   kbdMode = (kbdMode + 1) % 3;
   if (currentPane) _saveKbdMode(currentPane, kbdMode);
+  // Aa defaults to wrapped text, Terminal/Password to unwrapped -- applied
+  // once here, on the mode switch itself, not forced on every render. A
+  // manual Wrap toggle afterward (escape popup) still sticks until the
+  // keyboard mode is cycled again.
+  wrapOn = (kbdMode === 1);
+  if (currentPane) {
+    _saveWrap(currentPane, wrapOn);
+    send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true, join: wrapOn });
+  }
+  applyWrap();
   applyKbdMode();
   // blur + refocus so Android keyboard re-evaluates input type/spellcheck
   const inp = activeInput();
@@ -789,7 +799,11 @@ document.getElementById('escape-popup-keys').addEventListener('click', () => {
 // ── line wrap toggle ───────────────────────────────────────────────────────
 // Off (default): tmux's own line breaks, pre with horizontal scroll. On: the
 // daemon captures with -J so soft-wrapped lines come back joined, and
-// pre-wrap reflows them at the phone width. Decoupled from kbdMode.
+// pre-wrap reflows them at the phone width. Its own independent, per-pane-
+// persisted state -- not driven by kbdMode -- but the kbdMode cycle button
+// sets a sensible default on mode switch (Aa on, Terminal/Password off) so
+// entering Aa mode wraps immediately without a separate manual step; a
+// Wrap toggle after that still sticks until the mode is cycled again.
 let wrapOn = false;
 const escapePopupWrap = document.getElementById('escape-popup-wrap');
 
