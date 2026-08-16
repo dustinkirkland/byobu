@@ -329,6 +329,19 @@
     }
     #output.placeholder { white-space: normal; color: var(--term-dim); font-style: italic; }
 
+    /* ── direct-mode composition ghost (attached by _ghostSync in app.js) ──
+       un-sent text-box content shown at the end of the pane's last line.
+       Dim plus dotted underline: distinct in both themes, never color
+       alone. Explicit normal weight/style and transparent background so an
+       ANSI-styled parent span cannot restyle it; pre-wrap so a long ghost
+       wraps instead of widening a non-wrap pane. */
+    #compose-ghost {
+      color: var(--term-dim); background: transparent;
+      font-weight: normal; font-style: normal;
+      text-decoration: underline dotted;
+      white-space: pre-wrap; word-break: break-all;
+    }
+
     /* ── byobu status line ── */
     #statusline {
       display: flex; align-items: center; justify-content: space-between;
@@ -444,6 +457,12 @@
        recedes (it still sends a chunk, but keystrokes bypass it) */
     body.keybar-on #inputbar { border-top: 1px solid var(--accent); }
     body.keybar-on #btn-send:not(:disabled) { opacity: 0.45; }
+    /* direct mode: the pane's composition ghost is the only prompt, so the
+       text box goes fully transparent. Opacity rather than display or a
+       zero height: the box must stay focused, keep receiving keys and
+       composition events, and Android IMEs misbehave when their anchor
+       collapses. The password box (kbdMode 2) stays a visible input. */
+    body.keybar-on #cmd { opacity: 0; caret-color: transparent; }
 
 
     /* ── pairing overlay ── */

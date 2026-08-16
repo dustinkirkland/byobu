@@ -9,6 +9,7 @@ let currentWindowId = null;
 let forcedSessionId = null; // set after creating a new session
 let forcedPaneId = null;    // set after creating a new window (specific pane to navigate to)
 let _scrollTopOnNextSnapshot = false; // scroll to top instead of bottom on next snapshot
+let _paneLoading = false; // output holds the loading placeholder, not pane content
 let statusInterval = null;
 
 // ── pane snapshot cache (in-memory only — never persisted) ────────────────
@@ -470,6 +471,9 @@ function rebuildPaneTree() {
 
 function navigateTo(sessionId, windowId, paneId) {
   // Save departing pane's rendered content + scroll position + keyboard mode.
+  // The composition ghost is view state, never pane content: strip it before
+  // the innerHTML read so it cannot be cached and replayed on a later switch.
+  _ghostRemove();
   if (currentPane && output.innerHTML) {
     _paneCache.set(currentPane, { html: output.innerHTML, scrollTop: output.scrollTop });
     if (_paneCache.size > _PANE_CACHE_MAX) _paneCache.delete(_paneCache.keys().next().value);
@@ -504,8 +508,14 @@ function navigateTo(sessionId, windowId, paneId) {
   if (cached) {
     output.innerHTML  = cached.html;
     output.scrollTop  = cached.scrollTop;
+    // setKeybarVisible ran before the cached HTML landed; re-attach the
+    // ghost onto the restored content (the box's text survives pane
+    // switches). On a cache miss there is only the loading placeholder to
+    // anchor to, so wait for the snapshot render to attach it instead.
+    _ghostSync();
   } else {
     output.textContent = 'loading…';
+    _paneLoading = true;
   }
 
   send({ type: 'subscribe', pane_id: paneId, lines: 300, ansi: true, join: wrapOn });
@@ -656,7 +666,11 @@ function ansiToHtml(text) {
 
 function renderOutput(text, scrollToBottom) {
   output.className = '';
+  _paneLoading = false;
+  // innerHTML replacement drops the composition ghost; re-attach before the
+  // scroll so scrollHeight includes it.
   output.innerHTML = ansiToHtml(text);
+  _ghostSync();
   if (scrollToBottom) scrollOutputToBottom();
 }
 
@@ -672,6 +686,8 @@ function sendKeys() {
   if (inp === cmdInput) {
     cmdInput.style.height = 'auto';
   }
+  // A Send tap mid-composition empties the box; the ghost must follow.
+  _ghostSync();
 }
 
 // ── events ─────────────────────────────────────────────────────────────────
@@ -689,6 +705,9 @@ cmdInput.addEventListener('keydown', e => {
   }
 });
 cmdInput.addEventListener('input', () => {
+  // No auto-grow while the box is invisible in direct mode: a second row
+  // would shrink the pane and shift the ghost the user is watching.
+  if (keybarVisible()) return;
   cmdInput.style.height = 'auto';
   cmdInput.style.height = Math.min(cmdInput.scrollHeight, 160) + 'px';
 });
@@ -756,6 +775,11 @@ function applyKbdMode() {
   for (const [mode, btn] of Object.entries(kbdModePopupButtons)) {
     btn.classList.toggle('current', Number(mode) === kbdMode);
   }
+  // Every keybar/mode transition funnels through here, so this one call
+  // covers show (attach), hide (remove, ahead of the blur+refocus dance so
+  // the ghost never flashes) and the switch to password mode (remove: pwd
+  // stays a visible box and never ghosts).
+  _ghostSync();
   scrollOutputToBottom();
 }
 
@@ -881,8 +905,9 @@ const keybar     = document.getElementById('keybar');
 const keybarCtrl = document.getElementById('keybar-ctrl');
 const _cmdPlaceholder = cmdInput.placeholder;
 const _pwdPlaceholder = pwdInput.placeholder;
-const _directPlaceholder = 'Direct mode: keys go straight to the pane';
-// The password box keeps its keyboard-privacy hint in direct mode too.
+// The direct-mode text box is invisible (see body.keybar-on #cmd in the
+// CSS), so it carries no placeholder while the bar is on; the password box
+// stays visible and keeps its keyboard-privacy hint.
 const _directPwdPlaceholder = 'Direct mode: not saved by keyboard';
 let _ctrlArmed = false;
 
@@ -903,7 +928,7 @@ function setKeybarVisible(show) {
   // survive typing.
   document.body.classList.toggle('keybar-on', show);
   if (!show) setCtrlArmed(false);
-  cmdInput.placeholder = show ? _directPlaceholder : _cmdPlaceholder;
+  cmdInput.placeholder = show ? '' : _cmdPlaceholder;
   pwdInput.placeholder = show ? _directPwdPlaceholder : _pwdPlaceholder;
   // Re-apply so direct mode forces terminal input attributes and hiding
   // the bar restores the user's mode. Also scrolls output to bottom.
@@ -969,15 +994,88 @@ function drainDirectInput(inp) {
   send({ type: 'send_keys', pane_id: currentPane, keys: text, enter: false, literal: true });
 }
 
+// ── direct-mode composition ghost ──────────────────────────────────────────
+// While the key bar is on, the text box is invisible (body.keybar-on #cmd in
+// the CSS) and its un-sent content is mirrored into the pane as ghost text:
+// a composition in progress, or plain text the next input event will drain.
+// The pane becomes the only prompt. Rendering is strictly read-only; the
+// drain and IME guards below stay untouched, and reading inp.value mid-
+// composition is safe (only clearing it is not). Cursor caveat: end of the
+// last line is an approximation of the real cursor, exact at a shell prompt,
+// approximate in full-screen TUIs.
+function _ghostRemove() {
+  const el = document.getElementById('compose-ghost');
+  if (el) el.remove();
+}
+
+function _ghostSync() {
+  _ghostRemove();
+  // No ghost in password mode (the pwd box stays a visible input), in
+  // scroll mode (the viewport is browsing history, not the prompt), or
+  // without a pane to anchor to.
+  if (!keybarVisible() || kbdMode === 2 || _scrollMode || !currentPane) return;
+  // Not over the loading placeholder either: composing during a cache-miss
+  // pane switch would glue the ghost to "loading..." until the snapshot.
+  if (_paneLoading) return;
+  const text = cmdInput.value;
+  if (!text) return;
+  const span = document.createElement('span');
+  span.id = 'compose-ghost';
+  span.textContent = text;
+  // Insert after the last rendered character but before any trailing
+  // newlines, so the ghost sits at the end of the last line rather than on
+  // a line of its own. Splitting a text node is serialization-neutral:
+  // adjacent text nodes read back as the same innerHTML, so once the ghost
+  // is removed (navigateTo strips it before every cache save) nothing of
+  // this leaks into _paneCache.
+  let last = null;
+  const walker = document.createTreeWalker(output, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) last = walker.currentNode;
+  if (!last) {
+    output.appendChild(span);
+    return;
+  }
+  const m = last.textContent.match(/\n+$/);
+  if (m) {
+    const tail = last.splitText(last.textContent.length - m[0].length);
+    tail.parentNode.insertBefore(span, tail);
+  } else {
+    // Climb out of styled ANSI spans: text-decoration propagates into
+    // children and cannot be reset from a descendant, so an SGR-underlined
+    // last line would merge its underline into the ghost's dotted one.
+    // (The trailing-newline branch above keeps in-place insertion; moving
+    // the ghost outside that span would land it after the newlines.)
+    let anchor = last;
+    while (anchor.parentNode !== output) anchor = anchor.parentNode;
+    output.insertBefore(span, anchor.nextSibling);
+  }
+}
+
+// Direct mode has no visible box to tap, so any blur (tapping the pane to
+// look at it) would leave keystrokes with no target: nothing drains, no
+// ghost, dead input. Tapping the pane focuses the hidden input instead,
+// like tapping a real terminal. Skipped in scroll mode and while the user
+// is selecting text to copy.
+output.addEventListener('click', () => {
+  if (!keybarVisible() || _scrollMode) return;
+  if (window.getSelection && String(window.getSelection())) return;
+  activeInput().focus();
+});
+
 // IME guard: mobile keyboards fire input events mid-composition; draining
 // (which clears the box) then would duplicate or drop characters. Skip
-// while composing and drain once on compositionend.
+// while composing and drain once on compositionend. The ghost syncs after
+// the drain decision either way: mid-composition it mirrors the growing
+// word, after a drain (including a sticky-Ctrl C- send) the emptied box
+// clears it.
 for (const inp of [cmdInput, pwdInput]) {
   inp.addEventListener('input', e => {
     if (keybarVisible() && !e.isComposing) drainDirectInput(inp);
+    _ghostSync();
   });
   inp.addEventListener('compositionend', () => {
     if (keybarVisible()) drainDirectInput(inp);
+    _ghostSync();
   });
   // Gboard reports empty-field backspace as keyCode 229, so the keydown
   // path misses it; catch it here instead. When keydown does handle a
@@ -1892,6 +1990,9 @@ function enterScrollMode() {
   const ae = document.activeElement;
   if (ae && typeof ae.blur === 'function') ae.blur();
   _showKbdChip('SCROLL');
+  // Hide the composition ghost: while browsing history it would masquerade
+  // as pane content.
+  _ghostSync();
 }
 function exitScrollMode() {
   _scrollMode = false;
@@ -1900,6 +2001,7 @@ function exitScrollMode() {
   // next keystrokes would go nowhere. Scroll mode is only reachable via a
   // hardware Ctrl+B, so refocusing cannot pop a soft keyboard.
   activeInput().focus();
+  _ghostSync();
 }
 
 function handleScrollKey(e) {
