@@ -26,6 +26,9 @@ byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
   * trustmux/pwa: Aa keyboard mode defaults line-wrap on again (and
     Terminal/Password default it off), restoring the pre-7.18 convenience
     without losing the independent per-pane Wrap toggle #134 added
+  * trustmux/pwa: the $_/Aa/** keyboard-mode button now opens a popup
+    showing all three choices, matching the existing ⎋ button, instead of
+    cycling one tap at a time
 
 byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
 
