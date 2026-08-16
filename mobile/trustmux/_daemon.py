@@ -757,6 +757,17 @@ _TMUX_ID_RE = re.compile(r"^[$@%]\d+$")
 _WS_RATE_WINDOW = 1.0   # seconds
 _WS_RATE_LIMIT  = 20    # max messages per window
 
+# Pane stream cadence. _POLL_IDLE is the background tick; while keystrokes
+# are flowing (a send_keys within the last _POLL_ACTIVE_WINDOW seconds) the
+# stream ticks at _POLL_ACTIVE instead. A send_keys for the subscribed pane
+# also wakes the stream immediately: the loop waits _KEYSTROKE_SETTLE before
+# capturing so the pty echo lands in the capture, and keystrokes arriving
+# inside one settle window are coalesced into a single capture.
+_POLL_IDLE = 0.5            # seconds between captures with no recent input
+_POLL_ACTIVE = 0.15         # seconds between captures while input flows
+_POLL_ACTIVE_WINDOW = 2.0   # seconds of fast cadence after a send_keys
+_KEYSTROKE_SETTLE = 0.03    # seconds between key injection and capture
+
 def _valid_tmux_id(s: str) -> bool:
     return bool(s and _TMUX_ID_RE.match(s))
 
@@ -791,6 +802,9 @@ class WsHandler(tornado.websocket.WebSocketHandler):
 
     def open(self):
         self._stream_task: asyncio.Task | None = None
+        self._stream_pane_id: str | None = None
+        self._stream_wake = asyncio.Event()
+        self._last_input_mono = 0.0
         self._topo_task: asyncio.Task | None = None
         self._auth_timer: asyncio.Task | None = None
         self._rate_window_start = time.monotonic()
@@ -872,11 +886,28 @@ class WsHandler(tornado.websocket.WebSocketHandler):
     async def _stream_pane(self, pane_id: str, history_lines: int, ansi: bool = False,
                            join: bool = False):
         try:
+            self._stream_wake.clear()  # drop wakes aimed at a previous subscription
             content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
             self._send({"type": "snapshot", "pane_id": pane_id, "data": content})
             last = content
             while True:
-                await asyncio.sleep(0.5)
+                if time.monotonic() - self._last_input_mono < _POLL_ACTIVE_WINDOW:
+                    interval = _POLL_ACTIVE
+                else:
+                    interval = _POLL_IDLE
+                try:
+                    await asyncio.wait_for(self._stream_wake.wait(), timeout=interval)
+                except asyncio.TimeoutError:
+                    # No clear() on this path: a wake racing the timeout must
+                    # survive to the next iteration, where its capture gets
+                    # the settle delay.
+                    pass
+                else:
+                    # Keystroke wake: let the shell echo land before capturing.
+                    # Wakes arriving inside the settle are absorbed by the
+                    # clear(), so a burst produces one capture.
+                    await asyncio.sleep(_KEYSTROKE_SETTLE)
+                    self._stream_wake.clear()
                 content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
                 if content != last:
                     self._send({"type": "update", "pane_id": pane_id, "data": content})
@@ -963,6 +994,7 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     if self._stream_task:
                         self._stream_task.cancel()
                         await asyncio.gather(self._stream_task, return_exceptions=True)
+                    self._stream_pane_id = pane_id
                     self._stream_task = asyncio.ensure_future(
                         self._stream_pane(pane_id, lines, ansi, join)
                     )
@@ -1056,6 +1088,11 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     literal = bool(msg.get("literal", True))
                     await asyncio.to_thread(tmux_send_keys, pane_id, keys, enter, literal)
                     del keys  # release sensitive content as early as possible
+                    if pane_id == self._stream_pane_id:
+                        # Wake the pane stream for an immediate capture and
+                        # start the fast-cadence window.
+                        self._last_input_mono = time.monotonic()
+                        self._stream_wake.set()
 
             elif mtype == "rename_window":
                 wid = msg.get("window_id", "")

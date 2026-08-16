@@ -1,5 +1,6 @@
 """Tests for Trustmux daemon — runs locally with stdlib unittest + tornado."""
 
+import asyncio
 import json
 import os
 import sys
@@ -7,6 +8,7 @@ import tempfile
 import time
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -488,6 +490,95 @@ class TestCapturePaneJoinFlag(unittest.TestCase):
         with patch.object(bm, '_tmux', side_effect=fake_tmux):
             bm.tmux_capture_pane('%0')
         self.assertNotIn('-J', captured_args)
+
+
+# ---------------------------------------------------------------------------
+# Pane stream: keystroke wake and burst coalescing
+# ---------------------------------------------------------------------------
+
+class TestStreamPaneWake(unittest.TestCase):
+    """_stream_pane runs against a bare connection stand-in: it only touches
+    _send, _stream_wake, and _last_input_mono, plus module globals patched
+    here. Poll intervals are patched huge so only explicit wakes capture."""
+
+    def _make_conn(self):
+        conn = SimpleNamespace()
+        conn._stream_wake = asyncio.Event()
+        conn._last_input_mono = 0.0
+        conn.sent = []
+        conn._send = conn.sent.append
+        return conn
+
+    def _run_stream(self, conn, fake_capture, driver, settle):
+        async def main():
+            task = asyncio.ensure_future(
+                bm.WsHandler._stream_pane(conn, '%0', 100))
+            await asyncio.sleep(0.05)  # let the initial snapshot land
+            result = await driver()
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+            return result
+        with patch.object(bm, 'tmux_capture_pane', side_effect=fake_capture), \
+             patch.object(bm, '_POLL_IDLE', 60.0), \
+             patch.object(bm, '_POLL_ACTIVE', 60.0), \
+             patch.object(bm, '_KEYSTROKE_SETTLE', settle):
+            return asyncio.run(main())
+
+    def test_send_keys_wake_captures_before_poll_tick(self):
+        conn = self._make_conn()
+        captures = []
+        def fake_capture(pane_id, lines, ansi, join):
+            captures.append(time.monotonic())
+            return f'content-{len(captures)}'
+
+        async def driver():
+            woke = time.monotonic()
+            conn._last_input_mono = woke
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+            return woke
+
+        woke = self._run_stream(conn, fake_capture, driver, settle=0.01)
+        # Snapshot plus exactly one wake-triggered capture, far inside the
+        # 60s patched tick.
+        self.assertEqual(len(captures), 2)
+        self.assertLess(captures[1] - woke, 0.1)
+        self.assertEqual(conn.sent[0]['type'], 'snapshot')
+        self.assertEqual(conn.sent[1]['type'], 'update')
+        self.assertEqual(conn.sent[1]['data'], 'content-2')
+
+    def test_keystroke_burst_coalesces_into_one_capture(self):
+        conn = self._make_conn()
+        captures = []
+        def fake_capture(pane_id, lines, ansi, join):
+            captures.append(time.monotonic())
+            return f'content-{len(captures)}'
+
+        async def driver():
+            # Three keystrokes inside one settle window (0.06s).
+            for _ in range(3):
+                conn._last_input_mono = time.monotonic()
+                conn._stream_wake.set()
+                await asyncio.sleep(0.01)
+            await asyncio.sleep(0.15)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.06)
+        # Snapshot plus one coalesced capture, not one per keystroke.
+        self.assertEqual(len(captures), 2)
+
+    def test_unchanged_content_sends_no_update_on_wake(self):
+        conn = self._make_conn()
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'same'
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01)
+        # Only the snapshot: the no-change suppression still holds on wakes.
+        self.assertEqual(len(conn.sent), 1)
+        self.assertEqual(conn.sent[0]['type'], 'snapshot')
 
 
 # ---------------------------------------------------------------------------
