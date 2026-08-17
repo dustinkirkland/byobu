@@ -29,6 +29,9 @@ byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
   * trustmux/pwa: the $_/Aa/** keyboard-mode button now opens a popup
     showing all three choices, matching the existing ⎋ button, instead of
     cycling one tap at a time
+  * trustmux/pwa: raise the connection-info popup's latency-ping timeout
+    from 3s to 10s, so a real but high-latency link (e.g. plane wifi)
+    shows an actual number instead of "timed out"
 
 byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
 
