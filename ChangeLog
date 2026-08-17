@@ -32,6 +32,9 @@ byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
   * trustmux/pwa: raise the connection-info popup's latency-ping timeout
     from 3s to 10s, so a real but high-latency link (e.g. plane wifi)
     shows an actual number instead of "timed out"
+  * trustmux/pwa: tapping the logo/wordmark now opens a short "about"
+    popup (what Trustmux is, link to trustmux.dev; credit and LinkedIn
+    link for Dustin Kirkland) instead of navigating away to trustmux.dev
 
 byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
 

@@ -91,7 +91,9 @@
        everything after it — connection state, hostname, clock — never has to */
     #logo-link {
       display: flex; align-items: center; gap: 7px;
+      background: none; border: none; padding: 0; font: inherit;
       text-decoration: none; flex-shrink: 1; min-width: 0; overflow: hidden;
+      cursor: pointer; user-select: none;
     }
     #wordmark {
       font-size: 15px; color: var(--accent); letter-spacing: 2px;
@@ -298,6 +300,15 @@
       font-size: 12px; font-family: var(--font); cursor: pointer;
     }
     #info-popup-reload:active { filter: brightness(0.85); }
+
+    /* ── about popup (tap the logo or "Trustmux" wordmark) ── */
+    #about-popup {
+      position: fixed; z-index: 150;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.55);
+      max-width: 260px; font-size: 12px; color: var(--text); line-height: 1.6;
+    }
+    #about-popup a { color: var(--accent); }
 
     /* ── status bar (line 2 — context layer: pane/window/session nav) ── */
     #statusbar {
@@ -709,10 +720,10 @@
 <div id="app">
 
   <div id="header">
-    <a href="https://trustmux.dev" target="_blank" rel="noopener" id="logo-link">
+    <button id="logo-link" aria-label="About Trustmux">
       <img src="/trustmux.svg" class="byobu-logo" alt="Trustmux">
       <span id="wordmark">Trustmux</span>
-    </a>
+    </button>
     <span id="conn-indicator" title="connecting…"></span>
     <span id="hostname-display" title="Tap for version"></span>
     <span id="update-badge" title="Update available — tap to reload" style="display:none">🔄</span>
@@ -736,6 +747,15 @@
     <div id="info-popup-host"></div>
     <div id="info-popup-body"></div>
     <button id="info-popup-reload">Reload</button>
+  </div>
+
+  <!-- ── about popup (tap the logo or "Trustmux" wordmark) ── -->
+  <div id="about-popup" style="display:none">
+    <a href="https://trustmux.dev" target="_blank" rel="noopener">Trustmux</a>
+    is a mobile companion for tmux and Byobu — monitor and drive your
+    terminal sessions from your phone.<br><br>
+    Built and maintained by
+    <a href="https://www.linkedin.com/in/dustinkirkland" target="_blank" rel="noopener">Dustin Kirkland</a>.
   </div>
 
   <div id="output" class="placeholder">Select a pane above.</div>

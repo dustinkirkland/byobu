@@ -171,6 +171,8 @@ const infoPopup       = document.getElementById('info-popup');
 const infoPopupHost   = document.getElementById('info-popup-host');
 const infoPopupBody   = document.getElementById('info-popup-body');
 const infoPopupReload = document.getElementById('info-popup-reload');
+const logoLink        = document.getElementById('logo-link');
+const aboutPopup      = document.getElementById('about-popup');
 const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
 const ctxOverlay       = document.getElementById('ctx-overlay');
@@ -1598,6 +1600,26 @@ document.addEventListener('click', () => hideInfoPopup());
 document.addEventListener('touchstart', e => {
   const isTrigger = e.target === hostnameDisplay || e.target === updateBadge || e.target === connIndicator;
   if (!infoPopup.contains(e.target) && !isTrigger) hideInfoPopup();
+}, { passive: true });
+
+// ── about popup (tap the logo or "Trustmux" wordmark) ──────────────────────
+function showAboutPopup() {
+  const rect = logoLink.getBoundingClientRect();
+  aboutPopup.style.display = 'block';
+  aboutPopup.style.top  = (rect.bottom + 8) + 'px';
+  aboutPopup.style.left = rect.left + 'px';
+}
+function hideAboutPopup() {
+  aboutPopup.style.display = 'none';
+}
+function toggleAboutPopup(e) {
+  e.stopPropagation();
+  aboutPopup.style.display === 'none' ? showAboutPopup() : hideAboutPopup();
+}
+logoLink.addEventListener('click', toggleAboutPopup);
+document.addEventListener('click', () => hideAboutPopup());
+document.addEventListener('touchstart', e => {
+  if (!aboutPopup.contains(e.target) && e.target !== logoLink && !logoLink.contains(e.target)) hideAboutPopup();
 }, { passive: true });
 
 function applyVersion(v) {
