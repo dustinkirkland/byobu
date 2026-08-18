@@ -808,7 +808,7 @@ function applyKbdMode() {
     cmdInput.setAttribute('autocorrect', direct ? 'off' : 'on');
     cmdInput.setAttribute('autocapitalize', direct ? 'none' : 'sentences');
     btnKbdMode.textContent = 'Aa';
-    btnKbdMode.title = 'Text mode — tap to change';
+    btnKbdMode.title = 'Text mode: tap to choose a mode';
     btnKbdMode.style.color = 'var(--accent)';
     // Don't advertise spell check while direct mode has it forced off.
     if (direct) {
@@ -820,11 +820,11 @@ function applyKbdMode() {
     cmdInput.setAttribute('autocorrect', 'off');
     cmdInput.setAttribute('autocapitalize', 'none');
     btnKbdMode.textContent = '$_';
-    btnKbdMode.title = 'Terminal mode — tap to change';
+    btnKbdMode.title = 'Terminal mode: tap to choose a mode';
     btnKbdMode.style.color = '';
   } else {
     btnKbdMode.textContent = '**';
-    btnKbdMode.title = 'Password mode — tap to change';
+    btnKbdMode.title = 'Password mode: tap to choose a mode';
     btnKbdMode.style.color = 'var(--accent)';
   }
   for (const [mode, btn] of Object.entries(kbdModePopupButtons)) {
@@ -844,6 +844,9 @@ function applyKbdMode() {
 }
 
 function setKbdMode(mode) {
+  // Tapping the already-active mode in the popup is a no-op: without this
+  // guard the wrap default below would clobber a manual Wrap toggle.
+  if (mode === kbdMode) return;
   kbdMode = mode;
   if (currentPane) _saveKbdMode(currentPane, kbdMode);
   // Aa defaults to wrapped text, Terminal/Password to unwrapped -- applied
