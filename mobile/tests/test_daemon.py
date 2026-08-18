@@ -493,6 +493,59 @@ class TestCapturePaneJoinFlag(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# tmux_cursor: cursor position mapped to a from-the-end capture line index
+# ---------------------------------------------------------------------------
+
+class TestTmuxCursor(unittest.TestCase):
+    def test_maps_cursor_y_to_from_end_index(self):
+        # Cursor on row 2 of a 10-row pane: 7 lines above the capture's last
+        # line (a piped capture keeps trailing blank screen rows).
+        with patch.object(bm, '_tmux', return_value='47\t2\t10\n'):
+            self.assertEqual(bm.tmux_cursor('%0'),
+                             {'cursor_x': 47, 'cursor_from_end': 7})
+
+    def test_bottom_row_maps_to_zero(self):
+        with patch.object(bm, '_tmux', return_value='0\t9\t10\n'):
+            self.assertEqual(bm.tmux_cursor('%0')['cursor_from_end'], 0)
+
+    def test_malformed_output_returns_none(self):
+        for raw in ('', 'garbage', '1\t2', 'a\tb\tc', '0\t10\t10'):
+            with patch.object(bm, '_tmux', return_value=raw):
+                self.assertIsNone(bm.tmux_cursor('%0'), raw)
+
+
+# ---------------------------------------------------------------------------
+# _clamp_cursor: defense against a tmux that trims trailing blank rows
+# ---------------------------------------------------------------------------
+
+class TestClampCursor(unittest.TestCase):
+    def test_cursor_within_capture_passes(self):
+        cursor = {'cursor_x': 0, 'cursor_from_end': 2}
+        self.assertEqual(bm._clamp_cursor(cursor, 'a\nb\nc'), cursor)
+
+    def test_trailing_newline_closes_the_last_line(self):
+        # 'a\nb\nc\n' is three lines, not four: from_end 2 is the first line.
+        cursor = {'cursor_x': 0, 'cursor_from_end': 2}
+        self.assertEqual(bm._clamp_cursor(cursor, 'a\nb\nc\n'), cursor)
+        self.assertIsNone(
+            bm._clamp_cursor({'cursor_x': 0, 'cursor_from_end': 3}, 'a\nb\nc\n'))
+
+    def test_cursor_beyond_capture_drops(self):
+        # A tmux that trims trailing blank screen rows would leave the
+        # from-the-end index pointing into scrollback; drop the fields so
+        # the client keeps its end-of-buffer anchor.
+        self.assertIsNone(
+            bm._clamp_cursor({'cursor_x': 0, 'cursor_from_end': 5}, 'a\nb'))
+
+    def test_empty_capture_drops(self):
+        self.assertIsNone(
+            bm._clamp_cursor({'cursor_x': 0, 'cursor_from_end': 0}, ''))
+
+    def test_none_stays_none(self):
+        self.assertIsNone(bm._clamp_cursor(None, 'a\nb'))
+
+
+# ---------------------------------------------------------------------------
 # Pane stream: keystroke wake and burst coalescing
 # ---------------------------------------------------------------------------
 
@@ -509,16 +562,19 @@ class TestStreamPaneWake(unittest.TestCase):
         conn._send = conn.sent.append
         return conn
 
-    def _run_stream(self, conn, fake_capture, driver, settle):
+    def _run_stream(self, conn, fake_capture, driver, settle, fake_cursor=None,
+                    join=False):
         async def main():
             task = asyncio.ensure_future(
-                bm.WsHandler._stream_pane(conn, '%0', 100))
+                bm.WsHandler._stream_pane(conn, '%0', 100, False, join))
             await asyncio.sleep(0.05)  # let the initial snapshot land
             result = await driver()
             task.cancel()
             await asyncio.gather(task, return_exceptions=True)
             return result
         with patch.object(bm, 'tmux_capture_pane', side_effect=fake_capture), \
+             patch.object(bm, 'tmux_cursor',
+                          side_effect=fake_cursor or (lambda pane_id: None)), \
              patch.object(bm, '_POLL_IDLE', 60.0), \
              patch.object(bm, '_POLL_ACTIVE', 60.0), \
              patch.object(bm, '_KEYSTROKE_SETTLE', settle):
@@ -579,6 +635,155 @@ class TestStreamPaneWake(unittest.TestCase):
         # Only the snapshot: the no-change suppression still holds on wakes.
         self.assertEqual(len(conn.sent), 1)
         self.assertEqual(conn.sent[0]['type'], 'snapshot')
+
+    def test_cursor_fields_ride_snapshot_and_update(self):
+        conn = self._make_conn()
+        captures = []
+        def fake_capture(pane_id, lines, ansi, join):
+            captures.append(None)
+            return f'a\nb\nc\nd\ncontent-{len(captures)}'
+        def fake_cursor(pane_id):
+            return {'cursor_x': 5, 'cursor_from_end': 3}
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor)
+        # A content change keeps the combined message: cursor fields ride
+        # the full snapshot/update, never a separate cursor message.
+        self.assertEqual([m['type'] for m in conn.sent],
+                         ['snapshot', 'update'])
+        for msg in conn.sent:
+            self.assertEqual(msg['cursor_x'], 5)
+            self.assertEqual(msg['cursor_from_end'], 3)
+
+    def test_no_cursor_omits_the_fields(self):
+        conn = self._make_conn()
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'content'
+
+        async def driver():
+            return None
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01)
+        self.assertEqual(conn.sent[0]['type'], 'snapshot')
+        self.assertNotIn('cursor_x', conn.sent[0])
+        self.assertNotIn('cursor_from_end', conn.sent[0])
+
+    def test_cursor_move_alone_sends_a_cursor_message(self):
+        # vi h/j/k/l moves the cursor without changing content; the client's
+        # ghost anchor must follow without resending the unchanged capture,
+        # so the daemon emits a data-less cursor message.
+        conn = self._make_conn()
+        cursors = []
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'l1\nl2\nl3\nsame'
+        def fake_cursor(pane_id):
+            cursors.append(None)
+            return {'cursor_x': 0, 'cursor_from_end': len(cursors)}
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor)
+        self.assertEqual(len(conn.sent), 2)
+        self.assertEqual(conn.sent[1]['type'], 'cursor')
+        self.assertEqual(conn.sent[1]['pane_id'], '%0')
+        self.assertNotIn('data', conn.sent[1])
+        self.assertEqual(conn.sent[1]['cursor_from_end'], 2)
+
+    def test_unchanged_content_and_cursor_send_nothing(self):
+        conn = self._make_conn()
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'l1\nsame'
+        def fake_cursor(pane_id):
+            return {'cursor_x': 0, 'cursor_from_end': 1}
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor)
+        # Only the snapshot: no-change suppression covers the cursor too.
+        self.assertEqual(len(conn.sent), 1)
+
+    def test_cursor_going_unreadable_sends_one_fieldless_message(self):
+        # The cursor read can start failing mid-stream (tmux hiccup): the
+        # client must revert to its end-of-buffer anchor, so the daemon sends
+        # one cursor message with the fields absent, then stays quiet while
+        # the cursor remains unreadable.
+        conn = self._make_conn()
+        cursor_calls = []
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'l1\nl2\nsame'
+        def fake_cursor(pane_id):
+            cursor_calls.append(None)
+            if len(cursor_calls) == 1:
+                return {'cursor_x': 0, 'cursor_from_end': 1}
+            return None
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor)
+        # Snapshot with cursor fields, then exactly one field-less cursor
+        # message; the second wake repeats nothing (last_cursor advanced).
+        self.assertEqual(len(conn.sent), 2)
+        self.assertEqual(conn.sent[0]['type'], 'snapshot')
+        self.assertEqual(conn.sent[0]['cursor_from_end'], 1)
+        self.assertEqual(conn.sent[1], {'type': 'cursor', 'pane_id': '%0'})
+        self.assertEqual(len(cursor_calls), 3)
+
+    def test_join_subscribers_get_no_cursor(self):
+        # A -J (wrap) capture merges soft-wrapped lines, so the from-the-end
+        # mapping is unusable and the client falls back anyway; the daemon
+        # never even reads the cursor.
+        conn = self._make_conn()
+        cursor_calls = []
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'content'
+        def fake_cursor(pane_id):
+            cursor_calls.append(None)
+            return {'cursor_x': 0, 'cursor_from_end': 0}
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor, join=True)
+        self.assertEqual(cursor_calls, [])
+        self.assertNotIn('cursor_from_end', conn.sent[0])
+
+    def test_cursor_beyond_capture_is_dropped_in_stream(self):
+        # A trimming tmux (fewer capture lines than cursor_from_end + 1
+        # implies) degrades to the client's end-of-buffer anchor: the
+        # fields are dropped and no cursor message fires.
+        conn = self._make_conn()
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'one\ntwo'
+        def fake_cursor(pane_id):
+            return {'cursor_x': 0, 'cursor_from_end': 5}
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor)
+        self.assertEqual(len(conn.sent), 1)
+        self.assertEqual(conn.sent[0]['type'], 'snapshot')
+        self.assertNotIn('cursor_x', conn.sent[0])
+        self.assertNotIn('cursor_from_end', conn.sent[0])
 
 
 # ---------------------------------------------------------------------------

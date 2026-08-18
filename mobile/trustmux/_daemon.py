@@ -372,6 +372,51 @@ def tmux_capture_pane(pane_id: str, history_lines: int = 200, ansi: bool = False
         raw = strip_ansi(raw)
     return raw
 
+def tmux_cursor(pane_id: str) -> dict | None:
+    """Cursor position for the subscribed pane, pre-mapped for the client.
+
+    #{cursor_y} is a row on the visible screen; a piped capture-pane keeps
+    trailing blank screen rows (_clamp_cursor defends against a tmux that
+    trims them), so the visible screen is exactly the capture's trailing
+    #{pane_height} lines and the cursor's line sits
+    pane_height - 1 - cursor_y lines from the end of the capture. Sending
+    that from-the-end index keeps the client mapping independent of how much
+    history the capture holds. cursor_x rides along for clients that want
+    column fidelity. None on any parse trouble: the client then falls back
+    to its end-of-buffer anchor. The capture and this call are two separate
+    tmux invocations, so the cursor can be one screen-state newer than the
+    content it rides with; it self-corrects on the next poll.
+    """
+    raw = _tmux("display-message", "-p", "-t", pane_id,
+                "#{cursor_x}\t#{cursor_y}\t#{pane_height}")
+    parts = raw.strip().split("\t")
+    if len(parts) != 3:
+        return None
+    try:
+        x, y, height = (int(p) for p in parts)
+    except ValueError:
+        return None
+    if not 0 <= y < height:
+        return None
+    return {"cursor_x": x, "cursor_from_end": height - 1 - y}
+
+def _clamp_cursor(cursor: dict | None, content: str) -> dict | None:
+    """Drop the cursor when the capture cannot contain its line.
+
+    tmux_cursor's mapping assumes a piped capture-pane keeps trailing blank
+    screen rows (verified on tmux 3.7b, but version behavior, not spec). A
+    tmux that trims them would make cursor_from_end point into scrollback;
+    dropping the fields degrades to the client's end-of-buffer anchor.
+    """
+    if cursor is None:
+        return None
+    if not content:
+        return None
+    lines = content.count("\n") + (0 if content.endswith("\n") else 1)
+    if cursor["cursor_from_end"] >= lines:
+        return None
+    return cursor
+
 def tmux_new_session(name: str) -> None:
     _tmux("new-session", "-d", "-s", name)
 
@@ -888,8 +933,16 @@ class WsHandler(tornado.websocket.WebSocketHandler):
         try:
             self._stream_wake.clear()  # drop wakes aimed at a previous subscription
             content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
-            self._send({"type": "snapshot", "pane_id": pane_id, "data": content})
-            last = content
+            # Join (-J) merges soft-wrapped lines, so screen rows no longer
+            # map 1:1 to capture lines and the client falls back to its
+            # end-of-buffer anchor anyway; skip the cursor entirely.
+            cursor = None if join else _clamp_cursor(
+                await asyncio.to_thread(tmux_cursor, pane_id), content)
+            msg = {"type": "snapshot", "pane_id": pane_id, "data": content}
+            if cursor:
+                msg.update(cursor)
+            self._send(msg)
+            last_content, last_cursor = content, cursor
             while True:
                 if time.monotonic() - self._last_input_mono < _POLL_ACTIVE_WINDOW:
                     interval = _POLL_ACTIVE
@@ -909,9 +962,25 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     await asyncio.sleep(_KEYSTROKE_SETTLE)
                     self._stream_wake.clear()
                 content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
-                if content != last:
-                    self._send({"type": "update", "pane_id": pane_id, "data": content})
-                    last = content
+                cursor = None if join else _clamp_cursor(
+                    await asyncio.to_thread(tmux_cursor, pane_id), content)
+                if content != last_content:
+                    msg = {"type": "update", "pane_id": pane_id, "data": content}
+                    if cursor:
+                        msg.update(cursor)
+                    self._send(msg)
+                elif cursor != last_cursor:
+                    # Bare cursor move (vi h/j/k/l): the content is unchanged,
+                    # so a full update would make the client re-render (and
+                    # destroy any in-progress text selection) for nothing.
+                    # A data-less cursor message moves the ghost anchor alone;
+                    # fields absent means the cursor became unreadable and the
+                    # client falls back to its end-of-buffer anchor.
+                    msg = {"type": "cursor", "pane_id": pane_id}
+                    if cursor:
+                        msg.update(cursor)
+                    self._send(msg)
+                last_content, last_cursor = content, cursor
         except asyncio.CancelledError:
             raise
         except Exception:
