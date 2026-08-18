@@ -10,6 +10,13 @@ let forcedSessionId = null; // set after creating a new session
 let forcedPaneId = null;    // set after creating a new window (specific pane to navigate to)
 let _scrollTopOnNextSnapshot = false; // scroll to top instead of bottom on next snapshot
 let _paneLoading = false; // output holds the loading placeholder, not pane content
+// Ghost anchor from the daemon: the cursor's capture line as a
+// from-the-end index (0 = last line) plus its column, riding snapshot/update
+// messages and carried alone by data-less cursor messages on a bare cursor
+// move. null when the daemon predates the fields or could not read the
+// cursor; the ghost then falls back to its end-of-buffer anchor.
+let _cursorFromEnd = null;
+let _cursorX = null;
 let statusInterval = null;
 
 // ── pane snapshot cache (in-memory only — never persisted) ────────────────
@@ -160,6 +167,7 @@ const cmdInput      = document.getElementById('cmd');
 const pwdInput      = document.getElementById('pwd');
 const btnSend       = document.getElementById('btn-send');
 const btnKbdMode    = document.getElementById('btn-kbd-mode');
+const keybarKbdMode = document.getElementById('keybar-kbd-mode');
 const machineSelect    = document.getElementById('machine-select');
 const btnInstall       = document.getElementById('btn-install');
 const iosInstallTip    = document.getElementById('ios-install-tip');
@@ -345,13 +353,26 @@ function connect() {
         const forceTop = _scrollTopOnNextSnapshot;
         if (forceTop) _scrollTopOnNextSnapshot = false;
         const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
+        _cursorFromEnd = Number.isInteger(msg.cursor_from_end) ? msg.cursor_from_end : null;
+        _cursorX = Number.isInteger(msg.cursor_x) ? msg.cursor_x : null;
         renderOutput(msg.data, !forceTop && atBottom);
         if (forceTop) output.scrollTop = 0;
       }
     } else if (msg.type === 'update') {
       if (msg.pane_id !== currentPane) return;
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
+      _cursorFromEnd = Number.isInteger(msg.cursor_from_end) ? msg.cursor_from_end : null;
+      _cursorX = Number.isInteger(msg.cursor_x) ? msg.cursor_x : null;
       renderOutput(msg.data, atBottom);
+    } else if (msg.type === 'cursor') {
+      // Bare cursor move: no data field, so no re-render (an innerHTML
+      // replacement would destroy any in-progress text selection); just
+      // re-anchor the ghost. Fields absent means the daemon could not read
+      // the cursor and the end-of-buffer fallback applies.
+      if (msg.pane_id !== currentPane) return;
+      _cursorFromEnd = Number.isInteger(msg.cursor_from_end) ? msg.cursor_from_end : null;
+      _cursorX = Number.isInteger(msg.cursor_x) ? msg.cursor_x : null;
+      _ghostSync();
     } else if (msg.type === 'error') {
       setStatus(`error: ${msg.message}`, 'error');
     }
@@ -474,6 +495,14 @@ function navigateTo(sessionId, windowId, paneId) {
   // The composition ghost is view state, never pane content: strip it before
   // the innerHTML read so it cannot be cached and replayed on a later switch.
   _ghostRemove();
+  // Streamed text stays in the departing pane, un-reconciled: the pane keeps
+  // whatever was streamed so far. The surviving draft (the box's text lives
+  // across switches) re-streams in full to the arriving pane on the next
+  // input event, so the record resets here.
+  _streamed = '';
+  // Cached HTML carries no cursor; end-of-buffer anchor until the snapshot.
+  _cursorFromEnd = null;
+  _cursorX = null;
   if (currentPane && output.innerHTML) {
     _paneCache.set(currentPane, { html: output.innerHTML, scrollTop: output.scrollTop });
     if (_paneCache.size > _PANE_CACHE_MAX) _paneCache.delete(_paneCache.keys().next().value);
@@ -680,11 +709,28 @@ function activeInput() { return kbdMode === 2 ? pwdInput : cmdInput; }
 function sendKeys() {
   const inp  = activeInput();
   const keys = inp.value;
-  if (!keys || !currentPane) return;
-  send({ type: 'send_keys', pane_id: currentPane, keys, enter: true });
+  if (!currentPane) return;
+  // Streaming may already have delivered a prefix of the box to the pane,
+  // including a draft left over from hiding the bar mid-composition; a Send
+  // must reconcile the pane to the box, never resend the prefix. The
+  // reconcile runs before the emptiness check: a fully deleted box still
+  // BSpaces the stale streamed draft off the prompt. The full streaming
+  // diff runs so an edited draft BSpaces the stale streamed suffix before
+  // the tail goes out; a bare Enter then commits, and after the reconcile
+  // an emptied or fully streamed draft sends just that Enter.
+  if (inp === cmdInput && _streamed) {
+    streamDirectInput(inp);
+    send({ type: 'send_keys', pane_id: currentPane, keys: 'Enter', enter: false, literal: false });
+  } else {
+    if (!keys) return;
+    send({ type: 'send_keys', pane_id: currentPane, keys, enter: true });
+  }
+  _streamed = '';
   inp.value = '';
   if (inp === cmdInput) {
-    cmdInput.style.height = 'auto';
+    // '' not 'auto': an inline height would override the direct-mode
+    // collapsed-sliver CSS; without the bar both compute the same.
+    cmdInput.style.height = '';
   }
   // A Send tap mid-composition empties the box; the ghost must follow.
   _ghostSync();
@@ -698,6 +744,10 @@ cmdInput.addEventListener('keydown', e => {
   if (e.isComposing || e.keyCode === 229) return;
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
+    // In direct mode Enter consumes the streamed text but _streamed keeps
+    // recording it: resetting would re-stream the word onto the fresh
+    // prompt. Known edge (like the hide-bar one in setKeybarVisible): a
+    // post-Enter autocorrect rewrite BSpaces the new prompt instead.
     keybarVisible() ? sendNamedKey('Enter') : sendKeys();
   } else if (e.key === 'Backspace' && keybarVisible() && !cmdInput.value) {
     e.preventDefault();
@@ -742,6 +792,11 @@ function applyKbdMode() {
   const inPwd = kbdMode === 2;
   cmdInput.style.display = inPwd ? 'none' : '';
   pwdInput.style.display = inPwd ? 'block' : 'none';
+  // Drives the direct-mode row collapse in the CSS: while the key bar is on
+  // the input row leaves the layout so the pane gets its space, except in
+  // password mode, whose visible row the collapse rules exempt via this
+  // class. Every keybar/mode transition funnels through here.
+  document.body.classList.toggle('kbd-pwd', inPwd);
 
   // Direct mode needs raw keystrokes: under spell-check Gboard composes
   // plain typing and only commits whole words, so force terminal attributes
@@ -775,6 +830,11 @@ function applyKbdMode() {
   for (const [mode, btn] of Object.entries(kbdModePopupButtons)) {
     btn.classList.toggle('current', Number(mode) === kbdMode);
   }
+  // Non-password direct mode hides the row's button column, so the bar
+  // carries a mirror of the mode button; keep the two in sync here.
+  keybarKbdMode.textContent = btnKbdMode.textContent;
+  keybarKbdMode.title = btnKbdMode.title;
+  keybarKbdMode.style.color = btnKbdMode.style.color;
   // Every keybar/mode transition funnels through here, so this one call
   // covers show (attach), hide (remove, ahead of the blur+refocus dance so
   // the ghost never flashes) and the switch to password mode (remove: pwd
@@ -819,6 +879,11 @@ btnKbdMode.addEventListener('click', e => {
   e.stopPropagation();
   kbdModePopup.style.display === 'none' ? showKbdModePopup() : hideKbdModePopup();
 });
+// Same cycle from the key bar (the row's button is display:none while the
+// row is collapsed). pointerdown preventDefault keeps focus in the text box
+// like the other bar buttons; the shared handler refocuses anyway.
+keybarKbdMode.addEventListener('click', () => btnKbdMode.click());
+keybarKbdMode.addEventListener('pointerdown', e => e.preventDefault());
 
 kbdModePopupButtons[0].addEventListener('click', () => { setKbdMode(0); hideKbdModePopup(); });
 kbdModePopupButtons[1].addEventListener('click', () => { setKbdMode(1); hideKbdModePopup(); });
@@ -867,6 +932,7 @@ document.getElementById('escape-popup-keys').addEventListener('click', () => {
 // toggle after that still sticks until the keyboard mode is changed again.
 let wrapOn = false;
 const escapePopupWrap = document.getElementById('escape-popup-wrap');
+const keybarWrap = document.getElementById('keybar-wrap');
 
 function applyWrap() {
   output.style.whiteSpace = wrapOn ? 'pre-wrap' : 'pre';
@@ -874,6 +940,11 @@ function applyWrap() {
   // color alone.
   escapePopupWrap.textContent = (wrapOn ? '✓ ' : '⤶ ') + 'Wrap';
   escapePopupWrap.style.color = wrapOn ? 'var(--accent)' : '';
+  // The wrap toggle also lives on the key bar: the ⎋ popup is unreachable
+  // while non-password direct mode collapses the input row.
+  keybarWrap.textContent = wrapOn ? '✓⤶' : '⤶';
+  keybarWrap.title = (wrapOn ? 'Line wrap on' : 'Line wrap off') + ': tap to toggle';
+  keybarWrap.style.color = wrapOn ? 'var(--accent)' : '';
 }
 
 escapePopupWrap.addEventListener('click', () => {
@@ -887,6 +958,8 @@ escapePopupWrap.addEventListener('click', () => {
   scrollOutputToBottom();
   hideEscapePopup();
 });
+keybarWrap.addEventListener('click', () => escapePopupWrap.click());
+keybarWrap.addEventListener('pointerdown', e => e.preventDefault());
 
 document.addEventListener('click', () => { hideEscapePopup(); hideKbdModePopup(); });
 document.addEventListener('touchstart', e => {
@@ -928,6 +1001,10 @@ function setKeybarVisible(show) {
   // survive typing.
   document.body.classList.toggle('keybar-on', show);
   if (!show) setCtrlArmed(false);
+  // Hiding the bar keeps the streamed record: a draft mid-composition stays
+  // in the box with its streamed prefix already in the pane, and the trim
+  // in sendKeys delivers only the un-streamed tail on the next Send.
+  // navigateTo and the sends themselves reset the record.
   cmdInput.placeholder = show ? '' : _cmdPlaceholder;
   pwdInput.placeholder = show ? _directPwdPlaceholder : _pwdPlaceholder;
   // Re-apply so direct mode forces terminal input attributes and hiding
@@ -936,9 +1013,18 @@ function setKeybarVisible(show) {
   // Like btnKbdMode: Android keyboards only re-evaluate input attributes on
   // refocus, so toggling the bar while the box is focused needs the same
   // blur + refocus dance for the forced attributes to take effect.
+  // Entering direct mode focuses unconditionally: the input row is gone,
+  // so the soft keyboard and the ghost caret are the only signs typing is
+  // live, and they must appear without a second tap.
   const inp = activeInput();
-  if (document.activeElement === inp) {
-    inp.blur();
+  const wasFocused = document.activeElement === inp;
+  if (wasFocused) inp.blur();
+  if (show) {
+    // The auto-grow inline height would override the collapsed sliver's
+    // CSS height; clear it (direct-mode drains reset it to '' as well).
+    cmdInput.style.height = '';
+    setTimeout(() => inp.focus(), 50);
+  } else if (wasFocused) {
     setTimeout(() => inp.focus(), 50);
   }
 }
@@ -969,11 +1055,13 @@ keybarCtrl.addEventListener('pointerdown', e => e.preventDefault());
 // per-pane persistence stays in one place.
 document.getElementById('keybar-close').addEventListener('click', toggleKeybar);
 
+// Whole-box drain, now the password-box path only: #cmd streams per input
+// event via streamDirectInput below.
 function drainDirectInput(inp) {
   const text = inp.value;
   if (!text) return;
   inp.value = '';
-  if (inp === cmdInput) cmdInput.style.height = 'auto';
+  if (inp === cmdInput) cmdInput.style.height = '';
   if (!currentPane) return;
   if (_ctrlArmed) {
     setCtrlArmed(false);
@@ -994,18 +1082,96 @@ function drainDirectInput(inp) {
   send({ type: 'send_keys', pane_id: currentPane, keys: text, enter: false, literal: true });
 }
 
+// ── direct-mode composition streaming ──────────────────────────────────────
+// Composing keyboards (Gboard, swipe) mutate a draft in the box instead of
+// emitting discrete characters. Streaming diffs the box against what already
+// reached the pane on every input event: BSpace over the stale suffix, then
+// the new tail as literal text, so the pane tracks the draft character by
+// character like a real terminal. The box is never touched mid-composition
+// (clearing it corrupts the IME draft); compositionend reconciles the
+// committed text and clears. Non-composing keyboards degrade to the old
+// one-event-one-char drain: the box is empty before each event, so the diff
+// is exactly the new text and no BSpace is ever sent.
+// Accepted hazard: the BSpaces are real terminal backspaces. Line editors
+// delete on them, but vi normal mode and some TUIs treat backspace as
+// cursor-left, so an autocorrect rewrite can garble state there. Direct
+// mode always streams; there is no toggle.
+let _streamed = '';
+
+// Common prefix length of two code-point arrays (callers spread strings so
+// no UTF-16 surrogate half is ever compared), shared by the streaming diff and
+// the ghost's un-streamed-tail computation so the two cannot drift apart.
+// Code points, not UTF-16 units: a rewrite must never backspace through
+// half a surrogate pair (same reason the sticky-Ctrl gate splits this way).
+function _cpCommonPrefix(a, b) {
+  let common = 0;
+  while (common < a.length && common < b.length && a[common] === b[common]) common++;
+  return common;
+}
+
+function streamDirectInput(inp) {
+  if (!currentPane) return;
+  const value = inp.value;
+  if (value === _streamed) return;
+  const sent = [..._streamed];
+  const cur  = [...value];
+  const common = _cpCommonPrefix(sent, cur);
+  for (let i = sent.length; i > common; i--) {
+    send({ type: 'send_keys', pane_id: currentPane, keys: 'BSpace', enter: false, literal: false });
+  }
+  let tail = cur.slice(common).join('');
+  // Sticky Ctrl consumes the first un-streamed character, same combining
+  // rule as drainDirectInput; the rest streams as literal text. The consumed
+  // character still counts as streamed, so a later rewrite over it sends one
+  // BSpace, the closest approximation available.
+  if (tail && _ctrlArmed) {
+    setCtrlArmed(false);
+    const first = [...tail][0];
+    if (/^[a-z@\[\\\]^_ ]$/i.test(first)) {
+      const key = first === ' ' ? 'C-Space' : 'C-' + first.toLowerCase();
+      send({ type: 'send_keys', pane_id: currentPane, keys: key, enter: false, literal: false });
+      tail = tail.slice(first.length);
+    }
+  }
+  if (tail) send({ type: 'send_keys', pane_id: currentPane, keys: tail, enter: false, literal: true });
+  _streamed = value;
+}
+
 // ── direct-mode composition ghost ──────────────────────────────────────────
-// While the key bar is on, the text box is invisible (body.keybar-on #cmd in
-// the CSS) and its un-sent content is mirrored into the pane as ghost text:
-// a composition in progress, or plain text the next input event will drain.
-// The pane becomes the only prompt. Rendering is strictly read-only; the
-// drain and IME guards below stay untouched, and reading inp.value mid-
-// composition is safe (only clearing it is not). Cursor caveat: end of the
-// last line is an approximation of the real cursor, exact at a shell prompt,
+// While the key bar is on, the text box is out of flow and invisible (the
+// body.keybar-on rules in the CSS) and its un-streamed tail is mirrored
+// into the pane as ghost text. With streaming this is normally empty
+// (characters reach the pane as they are typed); it shows text only for a
+// draft that predates streaming, e.g. box content left from before the key
+// bar was turned on. The span
+// attaches even with no tail: its CSS ::after is the block caret that marks
+// where typing lands (filled while the box is focused, hollow when the
+// keyboard was dismissed), so the pane is the only prompt. Rendering is
+// strictly read-only; reading inp.value mid-composition is safe (only
+// clearing it is not). The anchor is the pane's cursor cell (daemon-sent
+// cursor_from_end and cursor_x); without the fields, or with wrap on, it
+// degrades to the end of the last line, exact at a shell prompt,
 // approximate in full-screen TUIs.
 function _ghostRemove() {
   const el = document.getElementById('compose-ghost');
-  if (el) el.remove();
+  if (!el) return;
+  const prev = el.previousSibling;
+  const next = el.nextSibling;
+  el.remove();
+  // Re-join the text node that splitText cut around the span. Without this
+  // every cursor-only sync leaves one more fragment behind (splitText on
+  // static content mints an extra text node per message) and the TreeWalker
+  // scans grow until the next full re-render. Merging adjacent text nodes is
+  // serialization-neutral, the same argument as splitting them, so the
+  // cache-strip guarantee only tightens. Targeted to the span's siblings:
+  // no whole-tree normalize per render. Accepted trade: a selection
+  // endpoint inside the merged node can collapse (a mid-drag cursor-only
+  // sync across the anchor), rarer than the fragment leak this prevents.
+  if (prev && next
+      && prev.nodeType === Node.TEXT_NODE && next.nodeType === Node.TEXT_NODE) {
+    prev.textContent += next.textContent;
+    next.remove();
+  }
 }
 
 function _ghostSync() {
@@ -1017,17 +1183,81 @@ function _ghostSync() {
   // Not over the loading placeholder either: composing during a cache-miss
   // pane switch would glue the ghost to "loading..." until the snapshot.
   if (_paneLoading) return;
-  const text = cmdInput.value;
-  if (!text) return;
+  // Streaming already delivered the box's prefix to the pane, so the ghost
+  // mirrors only the un-streamed tail (value minus the streamed prefix,
+  // diffed by code point). Normally empty: it shows text only when nothing
+  // could stream, e.g. with no pane at the time of typing.
+  const full = [...cmdInput.value];
+  const sent = [..._streamed];
+  const text = full.slice(_cpCommonPrefix(sent, full)).join('');
   const span = document.createElement('span');
   span.id = 'compose-ghost';
   span.textContent = text;
-  // Insert after the last rendered character but before any trailing
-  // newlines, so the ghost sits at the end of the last line rather than on
-  // a line of its own. Splitting a text node is serialization-neutral:
-  // adjacent text nodes read back as the same innerHTML, so once the ghost
-  // is removed (navigateTo strips it before every cache save) nothing of
-  // this leaks into _paneCache.
+  // Cursor-accurate anchor: the daemon maps #{cursor_y} against
+  // #{pane_height} into cursor_from_end, the cursor's capture line as a
+  // from-the-end index, so the ghost lands on the real cursor line even in
+  // full-screen TUIs whose cursor sits mid-screen. Unusable with wrap on:
+  // the -J join capture merges soft-wrapped lines, so screen rows no longer
+  // map 1:1 to capture lines and the index would point at the wrong line;
+  // fall back to end-of-buffer then, as when the fields are missing.
+  // cursor_x places the ghost at the cursor's column within that line: TUIs
+  // that pad the cursor line to the pane width (a bordered input box) put
+  // line-end at the right border while typing lands mid-line. A mid-line
+  // insert shifts the rest of the line right by the ghost's width while it
+  // exists; with streaming the tail is normally empty, so that is the caret
+  // block only, accepted.
+  if (!wrapOn && Number.isInteger(_cursorFromEnd) && _cursorFromEnd >= 0
+      && Number.isInteger(_cursorX) && _cursorX >= 0) {
+    const all = output.textContent;
+    // Offset of the end of the target line: step back one newline per
+    // from-the-end index, starting before the final line-closing newline.
+    let end = all.length;
+    if (all.endsWith('\n')) end--;
+    let ok = all.length > 0;
+    for (let i = 0; ok && i < _cursorFromEnd; i++) {
+      // end === 0 guard: lastIndexOf clamps fromIndex -1 to 0, so a leading
+      // newline would match forever instead of falling through to the
+      // end-of-buffer anchor (unreachable while the daemon clamps, but the
+      // client stays self-contained).
+      const nl = end > 0 ? all.lastIndexOf('\n', end - 1) : -1;
+      if (nl === -1) ok = false;
+      else end = nl;
+    }
+    if (ok) {
+      // Insertion offset: line start plus cursor_x clamped to the line's
+      // length, counted in code points (spread) so the split never lands
+      // inside a surrogate pair. cursor_x is a terminal CELL column, so the
+      // caret drifts one cell right past each double-width character or tab
+      // before it; accepted like the other approximations here.
+      // Guard end 0: lastIndexOf clamps a -1 fromIndex to 0, so a leading
+      // newline would match itself and put lineStart past end.
+      const lineStart = end > 0 ? all.lastIndexOf('\n', end - 1) + 1 : 0;
+      const cps = [...all.slice(lineStart, end)];
+      const at = lineStart + cps.slice(0, Math.min(_cursorX, cps.length)).join('').length;
+      let node = null, start = 0;
+      const w = document.createTreeWalker(output, NodeFilter.SHOW_TEXT);
+      while (w.nextNode()) {
+        const n = w.currentNode;
+        if (start + n.textContent.length >= at) { node = n; break; }
+        start += n.textContent.length;
+      }
+      if (node) {
+        // A mid-buffer insert cannot climb out of a styled ANSI span without
+        // moving the anchor, so an SGR-underline merging into the ghost's
+        // dotted cue is accepted here (the end-of-buffer fallback climbs).
+        const tail = node.splitText(at - start);
+        tail.parentNode.insertBefore(span, tail);
+        return;
+      }
+    }
+    // Capture shorter than the index or no text nodes: fall through.
+  }
+  // End-of-buffer fallback: insert after the last rendered character but
+  // before any trailing newlines, so the ghost sits at the end of the last
+  // line rather than on a line of its own. Splitting a text node is
+  // serialization-neutral: adjacent text nodes read back as the same
+  // innerHTML, so once the ghost is removed (navigateTo strips it before
+  // every cache save) nothing of this leaks into _paneCache.
   let last = null;
   const walker = document.createTreeWalker(output, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) last = walker.currentNode;
@@ -1051,30 +1281,69 @@ function _ghostSync() {
   }
 }
 
+// The ghost caret's fill tracks the box's focus (see #compose-ghost::after
+// in the CSS): filled means keystrokes are live, hollow means tap the pane
+// to bring the keyboard back. A body class so it is pure CSS from here on.
+cmdInput.addEventListener('focus', () => document.body.classList.add('cmd-focused'));
+cmdInput.addEventListener('blur',  () => document.body.classList.remove('cmd-focused'));
+
 // Direct mode has no visible box to tap, so any blur (tapping the pane to
 // look at it) would leave keystrokes with no target: nothing drains, no
 // ghost, dead input. Tapping the pane focuses the hidden input instead,
 // like tapping a real terminal. Skipped in scroll mode and while the user
-// is selecting text to copy.
+// is selecting text to copy. Android's back gesture dismisses the keyboard
+// without blurring the box, and focus() on an already-focused element will
+// not re-open it; when the visual viewport is back to full height (no
+// keyboard) a focus bounce re-summons it.
 output.addEventListener('click', () => {
   if (!keybarVisible() || _scrollMode) return;
   if (window.getSelection && String(window.getSelection())) return;
-  activeInput().focus();
+  const inp = activeInput();
+  if (document.activeElement !== inp) { inp.focus(); return; }
+  const vv = window.visualViewport;
+  if (!vv || vv.height >= window.innerHeight - 50) {
+    inp.blur();
+    setTimeout(() => inp.focus(), 50);
+  }
 });
 
-// IME guard: mobile keyboards fire input events mid-composition; draining
-// (which clears the box) then would duplicate or drop characters. Skip
-// while composing and drain once on compositionend. The ghost syncs after
-// the drain decision either way: mid-composition it mirrors the growing
-// word, after a drain (including a sticky-Ctrl C- send) the emptied box
-// clears it.
+// IME guard: mobile keyboards fire input events mid-composition, and the
+// box must never be cleared then (that corrupts the IME draft). Streaming
+// sidesteps the guard for #cmd: every input event diffs the box against the
+// streamed record without touching the box; only outside a composition
+// (and on compositionend, the one safe point) is the box cleared, which
+// keeps the empty-box Backspace keydown path and the beforeinput fallback
+// live. The password box never streams and keeps the old drain-per-event
+// flow. The ghost syncs after either path.
 for (const inp of [cmdInput, pwdInput]) {
   inp.addEventListener('input', e => {
-    if (keybarVisible() && !e.isComposing) drainDirectInput(inp);
+    if (keybarVisible()) {
+      if (inp === cmdInput) {
+        streamDirectInput(inp);
+        if (!e.isComposing) {
+          inp.value = '';
+          _streamed = '';
+          cmdInput.style.height = '';
+        }
+      } else if (!e.isComposing) {
+        drainDirectInput(inp);
+      }
+    }
     _ghostSync();
   });
   inp.addEventListener('compositionend', () => {
-    if (keybarVisible()) drainDirectInput(inp);
+    if (keybarVisible()) {
+      if (inp === cmdInput) {
+        // Reconcile the committed text against the streamed record: usually
+        // a no-op, or a short BSpace-and-resend on an autocorrect rewrite.
+        streamDirectInput(inp);
+        inp.value = '';
+        _streamed = '';
+        cmdInput.style.height = '';
+      } else {
+        drainDirectInput(inp);
+      }
+    }
     _ghostSync();
   });
   // Gboard reports empty-field backspace as keyCode 229, so the keydown
@@ -2193,11 +2462,30 @@ document.addEventListener('keydown', e => {
 // #app to the current visual viewport on every change (keyboard open/close,
 // resize, orientation) and cancel any page-level scroll iOS applies.
 const appEl = document.getElementById('app');
+let _vvAppliedH = -1;
+let _vvAppliedTop = -1;
 function syncViewportToKeyboard() {
   const vv = window.visualViewport;
   if (!vv) return;
-  appEl.style.height = vv.height + 'px';
-  appEl.style.top = vv.offsetTop + 'px';
+  // Some keyboards report a visualViewport height that oscillates by about
+  // a pixel per keystroke; writing every reading through re-lays-out #app
+  // and the whole screen shifts with it. Round, and skip writes within 1px
+  // of the last applied value (2px hysteresis against the applied value, so
+  // a slow slide still lands within 1px). Keyboard open/close moves the
+  // height by hundreds of pixels and always passes.
+  const h = Math.round(vv.height);
+  const top = Math.round(vv.offsetTop);
+  if (Math.abs(h - _vvAppliedH) > 1 || Math.abs(top - _vvAppliedTop) > 1) {
+    _vvAppliedH = h;
+    _vvAppliedTop = top;
+    appEl.style.height = h + 'px';
+    appEl.style.top = top + 'px';
+  }
+  // The ghost caret fills on actual keyboard visibility, not focus:
+  // Android's back gesture dismisses the keyboard without blurring the box,
+  // so focus alone would keep a filled caret over dead keystrokes. Same
+  // threshold as the pane-tap re-summon check.
+  document.body.classList.toggle('kbd-open', vv.height < window.innerHeight - 50);
   window.scrollTo(0, 0);
 }
 if (window.visualViewport) {
