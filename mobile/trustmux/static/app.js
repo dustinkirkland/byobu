@@ -405,6 +405,13 @@ function connect() {
 }
 
 function send(obj) {
+  // A named key (Enter, an arrow, C-x) moves pane state in ways an appended
+  // character cannot describe; standing predictions are void. Rewrite
+  // BSpaces from streamDirectInput are exempt: they reconciled _pending
+  // themselves before sending.
+  if (obj && obj.type === 'send_keys' && obj.literal === false && !_predSquelch) {
+    _predClear(false);
+  }
   if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
 }
 
@@ -535,6 +542,9 @@ function navigateTo(sessionId, windowId, paneId) {
   // across switches) re-streams in full to the arriving pane on the next
   // input event, so the record resets here.
   _streamed = '';
+  // Predictions are per pane: the arriving pane owes no echo for characters
+  // streamed into the departing one, and its echo behavior is unknown.
+  _predClear(true);
   // Cached HTML carries no cursor; end-of-buffer anchor until the snapshot.
   _cursorFromEnd = null;
   _cursorX = null;
@@ -1194,11 +1204,17 @@ function drainDirectInput(inp) {
       send({ type: 'send_keys', pane_id: currentPane,
              keys: key, enter: false, literal: false });
       const rest = text.slice(first.length);
-      if (rest) send({ type: 'send_keys', pane_id: currentPane, keys: rest, enter: false, literal: true });
+      if (rest) {
+        send({ type: 'send_keys', pane_id: currentPane, keys: rest, enter: false, literal: true });
+        if (inp === cmdInput) _predPush(rest);
+      }
       return;
     }
   }
   send({ type: 'send_keys', pane_id: currentPane, keys: text, enter: false, literal: true });
+  // Never track the password box: _pending would hold the secret in plain
+  // text, and the ghost is hidden in that mode anyway.
+  if (inp === cmdInput) _predPush(text);
 }
 
 // ── direct-mode composition streaming ──────────────────────────────────────
@@ -1235,9 +1251,20 @@ function streamDirectInput(inp) {
   const sent = [..._streamed];
   const cur  = [...value];
   const common = _cpCommonPrefix(sent, cur);
+  const nBs = sent.length - common;
+  if (nBs > 0) {
+    // Rewrite BSpaces first cancel still-pending predictions (the newest
+    // chars, never displayed as deleted); BSpaces beyond that erase echoed
+    // text, which the ghost cannot represent, so drop the rest and let the
+    // server frame show the deletion.
+    if (nBs >= _pending.length) _predClear(false);
+    else _pending.length -= nBs;
+  }
+  _predSquelch = true;
   for (let i = sent.length; i > common; i--) {
     send({ type: 'send_keys', pane_id: currentPane, keys: 'BSpace', enter: false, literal: false });
   }
+  _predSquelch = false;
   let tail = cur.slice(common).join('');
   // Sticky Ctrl consumes the first un-streamed character, same combining
   // rule as drainDirectInput; the rest streams as literal text. The consumed
@@ -1252,8 +1279,76 @@ function streamDirectInput(inp) {
       tail = tail.slice(first.length);
     }
   }
-  if (tail) send({ type: 'send_keys', pane_id: currentPane, keys: tail, enter: false, literal: true });
+  if (tail) {
+    send({ type: 'send_keys', pane_id: currentPane, keys: tail, enter: false, literal: true });
+    _predPush(tail);
+  }
   _streamed = value;
+}
+
+// ── predictive local echo ───────────────────────────────────────────────────
+// Streamed characters are invisible until the daemon's capture echoes them
+// back, a full round trip (~80-100ms on a 36ms-RTT tailnet). Track each
+// streamed printable in _pending and mirror it through the composition
+// ghost at the cursor cell, so typing renders immediately; the ghost's dim
+// dotted-underline style doubles as the provisional cue. Server truth
+// always wins: a prediction is dropped the moment the text left of the
+// caret ends with it (the echo arrived), or after _PRED_TTL if it never
+// does. Display is gated on _predOk, set by the first confirmed echo and
+// cleared by an expiry, so a pane that does not echo (vim normal mode, a
+// password prompt inside the shell) shows at most one wrong burst and then
+// stays quiet until echo provably works again.
+let _pending = [];        // {ch, ts} per streamed code point, oldest first
+let _predOk = false;      // predictions render only after one confirmed echo
+let _predSquelch = false; // rewrite BSpaces already reconciled _pending
+let _predTimer = null;
+const _PRED_TTL = 1200;   // ms before an unconfirmed prediction is abandoned
+
+function _predClear(dropConfidence) {
+  _pending = [];
+  if (dropConfidence) _predOk = false;
+  if (_predTimer) { clearTimeout(_predTimer); _predTimer = null; }
+}
+
+function _predPush(text) {
+  const now = Date.now();
+  for (const ch of text) {
+    // A control character's effect on the line is not an append; anything
+    // already pending is now unverifiable.
+    if (ch < ' ') { _predClear(false); return; }
+    _pending.push({ ch, ts: now });
+  }
+  _predArm();
+}
+
+// Expiry cannot ride on a server message (the failure case is exactly that
+// no echo message comes), so it needs its own timer.
+function _predArm() {
+  if (_predTimer) clearTimeout(_predTimer);
+  _predTimer = setTimeout(_ghostSync, _PRED_TTL + 50);
+}
+
+function _predConfirm(before) {
+  // The longest prefix of _pending that `before` (text left of the caret)
+  // now ends with is echo that came back: drop it, and let any hit license
+  // rendering the rest. Longest-first so a repeated character confirms as
+  // many copies as actually echoed.
+  for (let k = _pending.length; k > 0; k--) {
+    if (before.endsWith(_pending.slice(0, k).map(p => p.ch).join(''))) {
+      _pending.splice(0, k);
+      _predOk = true;
+      break;
+    }
+  }
+}
+
+// Reconcile against `before`, then fill the ghost with the surviving
+// predictions ahead of the un-streamed tail.
+function _ghostFill(span, before, tail) {
+  _predConfirm(before);
+  const pred = _predOk ? _pending.map(p => p.ch).join('') : '';
+  span.textContent = pred + tail;
+  if (_pending.length) _predArm();
 }
 
 // ── direct-mode composition ghost ──────────────────────────────────────────
@@ -1306,12 +1401,17 @@ function _ghostSync() {
   // mirrors only the un-streamed tail (value minus the streamed prefix,
   // diffed by code point). Normally empty: it shows text only when nothing
   // could stream, e.g. with no pane at the time of typing.
+  // Predictions that outlived the round trip are wrong: a pane that does
+  // not echo, or a dropped frame. Drop them and stop rendering predictions
+  // until an echo confirms again.
+  if (_pending.length && Date.now() - _pending[0].ts > _PRED_TTL) {
+    _predClear(true);
+  }
   const full = [...cmdInput.value];
   const sent = [..._streamed];
   const text = full.slice(_cpCommonPrefix(sent, full)).join('');
   const span = document.createElement('span');
   span.id = 'compose-ghost';
-  span.textContent = text;
   // Cursor-accurate anchor: the daemon maps #{cursor_y} against
   // #{pane_height} into cursor_from_end, the cursor's capture line as a
   // from-the-end index, so the ghost lands on the real cursor line even in
@@ -1361,6 +1461,7 @@ function _ghostSync() {
         start += n.textContent.length;
       }
       if (node) {
+        _ghostFill(span, all.slice(0, at), text);
         // A mid-buffer insert cannot climb out of a styled ANSI span without
         // moving the anchor, so an SGR-underline merging into the ghost's
         // dotted cue is accepted here (the end-of-buffer fallback climbs).
@@ -1377,13 +1478,25 @@ function _ghostSync() {
   // serialization-neutral: adjacent text nodes read back as the same
   // innerHTML, so once the ghost is removed (navigateTo strips it before
   // every cache save) nothing of this leaks into _paneCache.
+  // Last text node with a non-newline character: every rendered line is its
+  // own span, so the trailing blank screen rows are bare "\n" nodes and the
+  // plain last-node walk would park the ghost on the bottom blank row
+  // instead of after the prompt (visible in wrap mode, where this fallback
+  // is the only anchor). A join capture preserves the prompt's trailing
+  // space, so landing after it puts the ghost exactly at the caret cell.
   let last = null;
   const walker = document.createTreeWalker(output, NodeFilter.SHOW_TEXT);
-  while (walker.nextNode()) last = walker.currentNode;
+  while (walker.nextNode()) {
+    if (/[^\n]/.test(walker.currentNode.textContent)) last = walker.currentNode;
+  }
   if (!last) {
+    _ghostFill(span, '', text);
     output.appendChild(span);
     return;
   }
+  // The fallback caret sits after the last rendered character, so the text
+  // left of it is everything up to the trailing newlines.
+  _ghostFill(span, output.textContent.replace(/\n+$/, ''), text);
   const m = last.textContent.match(/\n+$/);
   if (m) {
     const tail = last.splitText(last.textContent.length - m[0].length);
@@ -1391,12 +1504,18 @@ function _ghostSync() {
   } else {
     // Climb out of styled ANSI spans: text-decoration propagates into
     // children and cannot be reset from a descendant, so an SGR-underlined
-    // last line would merge its underline into the ghost's dotted one.
-    // (The trailing-newline branch above keeps in-place insertion; moving
-    // the ghost outside that span would land it after the newlines.)
+    // ancestor would merge its underline into the ghost's dotted one.
+    // Stop at the line span's child, not the line span itself: inserting
+    // inside the line, before its trailing "\n" text node, keeps a
+    // mid-buffer anchor (a styled prompt with blank rows below it, the
+    // wrap-mode norm) on the prompt's line; inserting after the whole line
+    // span would land past that newline and start the next line.
     let anchor = last;
-    while (anchor.parentNode !== output) anchor = anchor.parentNode;
-    output.insertBefore(span, anchor.nextSibling);
+    while (anchor.parentNode !== output
+           && anchor.parentNode.parentNode !== output) {
+      anchor = anchor.parentNode;
+    }
+    anchor.parentNode.insertBefore(span, anchor.nextSibling);
   }
 }
 
