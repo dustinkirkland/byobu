@@ -17,6 +17,7 @@ import socket
 import subprocess
 import sys
 import time
+from collections import deque
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -388,9 +389,12 @@ def tmux_cursor(pane_id: str) -> dict | None:
     tmux invocations, so the cursor can be one screen-state newer than the
     content it rides with; it self-corrects on the next poll.
     """
-    raw = _tmux("display-message", "-p", "-t", pane_id,
-                "#{cursor_x}\t#{cursor_y}\t#{pane_height}")
-    parts = raw.strip().split("\t")
+    return _cursor_from_raw(_tmux("display-message", "-p", "-t", pane_id, _CURSOR_FMT))
+
+_CURSOR_FMT = "#{cursor_x} #{cursor_y} #{pane_height}"
+
+def _cursor_from_raw(raw: str) -> dict | None:
+    parts = raw.split()
     if len(parts) != 3:
         return None
     try:
@@ -803,6 +807,247 @@ _TMUX_ID_RE = re.compile(r"^[$@%]\d+$")
 _WS_RATE_WINDOW = 1.0   # seconds
 _WS_RATE_LIMIT  = 20    # max messages per window
 
+# ---------------------------------------------------------------------------
+# tmux control mode: push wakes and forkless captures
+#
+# One `tmux -C attach-session` client per streamed session turns the pane
+# stream from polled into event-driven: tmux pushes an %output notification
+# the moment a pane produces bytes, which wakes the stream loop; read-only
+# commands (capture-pane, display-message) ride the same connection instead
+# of paying a fork+exec each. The client attaches with ignore-size so it
+# never influences window geometry. read-only is deliberately NOT set: tmux
+# resolves some commands through the attached client and a read-only one
+# makes external send-keys fail server-wide ("client is read-only", tmux
+# 3.7). Everything falls back to the subprocess path when the client is
+# missing or mid-respawn, so control mode is an accelerator, not a
+# dependency. Command replies over control mode are byte-identical to the
+# subprocess output, including raw ANSI from capture-pane -e (tmux 3.7).
+#
+# Control-mode commands are LINES that tmux itself parses, so values
+# interpolated into them must be injection-proof: the cm_* helpers accept
+# only _valid_tmux_id ids (falling back to the argv subprocess path
+# otherwise) and clamped ints. Anything user-typed (send-keys text) stays
+# on the argv path by design.
+# ---------------------------------------------------------------------------
+
+_CM_ATTACH_TIMEOUT = 3.0   # seconds to wait for the attach greeting block
+_CM_CMD_TIMEOUT = 5.0      # per-command reply timeout, matches _tmux's
+_CM_BACKOFF = 5.0          # seconds between attach attempts after a failure
+
+
+class _ControlClient:
+    """One control-mode tmux client attached to one session."""
+
+    def __init__(self, session_id: str):
+        self.session_id = session_id
+        self.proc: asyncio.subprocess.Process | None = None
+        self._pending: deque[asyncio.Future] = deque()
+        self._closing = False
+
+    @property
+    def alive(self) -> bool:
+        return self.proc is not None and self.proc.returncode is None \
+            and not self._closing
+
+    async def start(self) -> bool:
+        try:
+            self.proc = await asyncio.create_subprocess_exec(
+                "tmux", "-C", "attach-session", "-t", self.session_id,
+                "-f", "ignore-size",
+                stdin=asyncio.subprocess.PIPE,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.DEVNULL,
+            )
+        except OSError:
+            return False
+        # The attach itself is answered with an empty %begin/%end block;
+        # consume it via a sentinel future so later replies pair with their
+        # commands in FIFO order.
+        greeting: asyncio.Future = asyncio.get_event_loop().create_future()
+        self._pending.append(greeting)
+        asyncio.ensure_future(self._read_loop())
+        try:
+            await asyncio.wait_for(greeting, _CM_ATTACH_TIMEOUT)
+        except asyncio.TimeoutError:
+            self.stop()
+            return False
+        return self.alive
+
+    def stop(self) -> None:
+        self._closing = True
+        if self.proc is not None and self.proc.returncode is None:
+            try:
+                self.proc.terminate()
+            except ProcessLookupError:
+                pass
+
+    async def run(self, cmd: str) -> str | None:
+        """Run one tmux command; its output, "" on %error, None if broken."""
+        if not self.alive:
+            return None
+        fut: asyncio.Future = asyncio.get_event_loop().create_future()
+        self._pending.append(fut)
+        try:
+            self.proc.stdin.write(cmd.encode() + b"\n")
+            await self.proc.stdin.drain()
+            return await asyncio.wait_for(fut, _CM_CMD_TIMEOUT)
+        except (OSError, asyncio.TimeoutError):
+            # A stuck or half-dead client could only pair replies out of
+            # sync; kill it and let the subprocess fallback take over.
+            self.stop()
+            return None
+
+    async def _read_loop(self) -> None:
+        block: list[bytes] | None = None
+        block_id: list[bytes] = []
+        try:
+            while True:
+                line = await self.proc.stdout.readline()
+                if not line:
+                    break
+                if block is not None:
+                    if line.startswith((b"%end ", b"%error ")):
+                        # Match timestamp+number so captured content that
+                        # merely starts with "%end" cannot close the block.
+                        if line.split()[1:3] == block_id:
+                            result = "" if line.startswith(b"%error") else \
+                                b"".join(block).decode("utf-8", "replace")
+                            if self._pending:
+                                fut = self._pending.popleft()
+                                if not fut.done():
+                                    fut.set_result(result)
+                            block = None
+                            continue
+                    block.append(line)
+                elif line.startswith(b"%begin "):
+                    block_id = line.split()[1:3]
+                    block = []
+                elif line.startswith(b"%output "):
+                    pane_id = line.split(b" ", 2)[1].decode("ascii", "replace")
+                    _MONITOR.wake(pane_id)
+                # All other notifications are irrelevant to the stream.
+        except Exception:
+            pass
+        finally:
+            self.stop()
+            while self._pending:
+                fut = self._pending.popleft()
+                if not fut.done():
+                    fut.set_result(None)
+            _MONITOR.client_gone(self)
+
+
+class _TmuxMonitor:
+    """Registry of control clients and the pane watchers they wake."""
+
+    def __init__(self):
+        self._clients: dict[str, _ControlClient] = {}
+        self._watchers: dict[str, set[asyncio.Event]] = {}
+        self._pane_session: dict[str, str] = {}
+        self._backoff_until: dict[str, float] = {}
+        self._spawn_lock: asyncio.Lock | None = None
+
+    def wake(self, pane_id: str) -> None:
+        for event in self._watchers.get(pane_id, ()):
+            event.set()
+
+    def watch(self, pane_id: str, event: asyncio.Event) -> None:
+        self._watchers.setdefault(pane_id, set()).add(event)
+
+    def unwatch(self, pane_id: str, event: asyncio.Event) -> None:
+        events = self._watchers.get(pane_id)
+        if events:
+            events.discard(event)
+            if not events:
+                del self._watchers[pane_id]
+        if pane_id in self._watchers:
+            return
+        session_id = self._pane_session.pop(pane_id, None)
+        if session_id and session_id not in self._pane_session.values():
+            client = self._clients.pop(session_id, None)
+            if client:
+                client.stop()
+
+    async def ensure(self, pane_id: str) -> str | None:
+        """Session id whose control client covers pane_id, or None.
+
+        Cheap when the client is already up or in backoff; attaches one
+        otherwise. pane_id must already be validated (_valid_tmux_id).
+        """
+        session_id = self._pane_session.get(pane_id)
+        if session_id is None:
+            raw = await asyncio.to_thread(
+                _tmux, "display-message", "-p", "-t", pane_id, "#{session_id}")
+            session_id = raw.strip()
+            if not _valid_tmux_id(session_id):
+                return None
+            if pane_id in self._watchers:
+                self._pane_session[pane_id] = session_id
+        client = self._clients.get(session_id)
+        if client is not None and client.alive:
+            return session_id
+        if time.monotonic() < self._backoff_until.get(session_id, 0.0):
+            return None
+        if self._spawn_lock is None:
+            self._spawn_lock = asyncio.Lock()
+        async with self._spawn_lock:
+            client = self._clients.get(session_id)  # lost a spawn race?
+            if client is not None and client.alive:
+                return session_id
+            client = _ControlClient(session_id)
+            if await client.start():
+                self._clients[session_id] = client
+                return session_id
+        self._backoff_until[session_id] = time.monotonic() + _CM_BACKOFF
+        return None
+
+    async def run(self, session_id: str, cmd: str) -> str | None:
+        client = self._clients.get(session_id)
+        if client is None or not client.alive:
+            return None
+        return await client.run(cmd)
+
+    def client_gone(self, client: _ControlClient) -> None:
+        # Reached on any reader exit. Only an unsolicited death still owns
+        # its registry slot (a deliberate stop() was already popped by
+        # unwatch), and only that death earns an attach backoff.
+        if self._clients.get(client.session_id) is client:
+            del self._clients[client.session_id]
+            self._backoff_until[client.session_id] = \
+                time.monotonic() + _CM_BACKOFF
+
+
+_MONITOR = _TmuxMonitor()
+
+
+async def cm_capture_pane(session_id: str | None, pane_id: str,
+                          history_lines: int = 200, ansi: bool = False,
+                          join: bool = False) -> str:
+    """tmux_capture_pane over the control client, subprocess fallback."""
+    if session_id and _valid_tmux_id(pane_id):
+        cmd = f"capture-pane -t {pane_id} -p"
+        if ansi:
+            cmd += " -e"
+        if join:
+            cmd += " -J"
+        cmd += f" -S -{history_lines}"
+        raw = await _MONITOR.run(session_id, cmd)
+        if raw is not None:
+            return raw if ansi else strip_ansi(raw)
+    return await asyncio.to_thread(
+        tmux_capture_pane, pane_id, history_lines, ansi, join)
+
+
+async def cm_cursor(session_id: str | None, pane_id: str) -> dict | None:
+    """tmux_cursor over the control client, subprocess fallback."""
+    if session_id and _valid_tmux_id(pane_id):
+        raw = await _MONITOR.run(
+            session_id, f'display-message -p -t {pane_id} "{_CURSOR_FMT}"')
+        if raw is not None:
+            return _cursor_from_raw(raw)
+    return await asyncio.to_thread(tmux_cursor, pane_id)
+
+
 # Pane stream cadence. _POLL_IDLE is the background tick; while keystrokes
 # are flowing (a send_keys within the last _POLL_ACTIVE_WINDOW seconds) the
 # stream ticks at _POLL_ACTIVE instead. A send_keys for the subscribed pane
@@ -813,6 +1058,10 @@ _POLL_IDLE = 0.5            # seconds between captures with no recent input
 _POLL_ACTIVE = 0.15         # seconds between captures while input flows
 _POLL_ACTIVE_WINDOW = 2.0   # seconds of fast cadence after a send_keys
 _KEYSTROKE_SETTLE = 0.03    # seconds between key injection and capture
+# With a control client pushing %output wakes, the tick is only a safety net
+# for anything a wake cannot carry (a lost notification, a dead client), so
+# it can be slow.
+_POLL_IDLE_MONITORED = 2.0
 
 def _valid_tmux_id(s: str) -> bool:
     return bool(s and _TMUX_ID_RE.match(s))
@@ -956,14 +1205,16 @@ class WsHandler(tornado.websocket.WebSocketHandler):
 
     async def _stream_pane(self, pane_id: str, history_lines: int, ansi: bool = False,
                            join: bool = False, patch: bool = False):
+        _MONITOR.watch(pane_id, self._stream_wake)
         try:
             self._stream_wake.clear()  # drop wakes aimed at a previous subscription
-            content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
+            session_id = await _MONITOR.ensure(pane_id)
+            content = await cm_capture_pane(session_id, pane_id, history_lines, ansi, join)
             # Join (-J) merges soft-wrapped lines, so screen rows no longer
             # map 1:1 to capture lines and the client falls back to its
             # end-of-buffer anchor anyway; skip the cursor entirely.
             cursor = None if join else _clamp_cursor(
-                await asyncio.to_thread(tmux_cursor, pane_id), content)
+                await cm_cursor(session_id, pane_id), content)
             msg = {"type": "snapshot", "pane_id": pane_id, "data": content}
             if cursor:
                 msg.update(cursor)
@@ -973,8 +1224,12 @@ class WsHandler(tornado.websocket.WebSocketHandler):
             # daemon tracks what it last sent, so no client acks are needed.
             # Both sides split on '\n' so op indices mean the same lines.
             last_lines = content.split("\n") if patch else None
+            last_capture_mono = time.monotonic()
             while True:
-                if time.monotonic() - self._last_input_mono < _POLL_ACTIVE_WINDOW:
+                session_id = await _MONITOR.ensure(pane_id)
+                if session_id:
+                    interval = _POLL_IDLE_MONITORED
+                elif time.monotonic() - self._last_input_mono < _POLL_ACTIVE_WINDOW:
                     interval = _POLL_ACTIVE
                 else:
                     interval = _POLL_IDLE
@@ -986,14 +1241,25 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     # the settle delay.
                     pass
                 else:
-                    # Keystroke wake: let the shell echo land before capturing.
-                    # Wakes arriving inside the settle are absorbed by the
-                    # clear(), so a burst produces one capture.
+                    # Keystroke or %output wake: let the pty echo land before
+                    # capturing. Wakes arriving inside the settle are absorbed
+                    # by the clear(), so a burst produces one capture.
                     await asyncio.sleep(_KEYSTROKE_SETTLE)
                     self._stream_wake.clear()
-                content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
+                if session_id:
+                    # %output can fire per byte (a running `yes` produces
+                    # thousands of wakes a second); floor the capture rate at
+                    # the old active cadence so a busy pane costs what it
+                    # always did. Wakes landing inside the floor sleep are
+                    # coalesced into this capture by the clear().
+                    floor = _POLL_ACTIVE - (time.monotonic() - last_capture_mono)
+                    if floor > 0:
+                        await asyncio.sleep(floor)
+                        self._stream_wake.clear()
+                content = await cm_capture_pane(session_id, pane_id, history_lines, ansi, join)
                 cursor = None if join else _clamp_cursor(
-                    await asyncio.to_thread(tmux_cursor, pane_id), content)
+                    await cm_cursor(session_id, pane_id), content)
+                last_capture_mono = time.monotonic()
                 if content != last_content:
                     if patch:
                         new_lines = content.split("\n")
@@ -1032,6 +1298,8 @@ class WsHandler(tornado.websocket.WebSocketHandler):
             raise
         except Exception:
             self._send({"type": "error", "message": "pane stream error"})
+        finally:
+            _MONITOR.unwatch(pane_id, self._stream_wake)
 
     async def _handle(self, raw: str):
         # Handle unauthenticated state — expect auth message first

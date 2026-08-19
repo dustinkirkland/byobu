@@ -573,13 +573,104 @@ class _StreamPaneHarness(unittest.TestCase):
             task.cancel()
             await asyncio.gather(task, return_exceptions=True)
             return result
+        async def no_session(pane_id):
+            # Keep the stream on the subprocess fallback: a live control
+            # client would capture the developer's real tmux instead of the
+            # fakes patched below.
+            return None
         with patch.object(bm, 'tmux_capture_pane', side_effect=fake_capture), \
              patch.object(bm, 'tmux_cursor',
                           side_effect=fake_cursor or (lambda pane_id: None)), \
+             patch.object(bm._MONITOR, 'ensure', new=no_session), \
              patch.object(bm, '_POLL_IDLE', 60.0), \
              patch.object(bm, '_POLL_ACTIVE', 60.0), \
              patch.object(bm, '_KEYSTROKE_SETTLE', settle):
             return asyncio.run(main())
+
+
+class TestControlClient(unittest.TestCase):
+    """Reply-block parsing and %output wake dispatch of _ControlClient,
+    driven through a fake proc whose stdout is a plain StreamReader."""
+
+    def _fake_client(self):
+        client = bm._ControlClient('$9')
+        reader = asyncio.StreamReader()
+        client.proc = SimpleNamespace(stdout=reader, returncode=None,
+                                      terminate=lambda: None)
+        return client, reader
+
+    def test_reply_pairing_wake_error_and_eof(self):
+        async def main():
+            client, reader = self._fake_client()
+            loop = asyncio.get_event_loop()
+            first, second, third = (loop.create_future() for _ in range(3))
+            client._pending.extend([first, second, third])
+            woke = asyncio.Event()
+            bm._MONITOR.watch('%9', woke)
+            try:
+                task = asyncio.ensure_future(client._read_loop())
+                # Reply 1: an %end with mismatched ids is content, the
+                # matching one closes the block.
+                reader.feed_data(b'%begin 100 7 1\n'
+                                 b'alpha\n'
+                                 b'%end 999 8 1\n'
+                                 b'%end 100 7 1\n')
+                # A notification between blocks wakes the pane watcher.
+                reader.feed_data(b'%output %9 abc\n')
+                # Reply 2: %error resolves to "".
+                reader.feed_data(b'%begin 101 8 1\n'
+                                 b'no such pane\n'
+                                 b'%error 101 8 1\n')
+                self.assertEqual(await first, 'alpha\n%end 999 8 1\n')
+                self.assertEqual(await second, '')
+                await asyncio.wait_for(woke.wait(), 1)
+                # EOF: the leftover pending future resolves to None and the
+                # client reports itself gone.
+                reader.feed_eof()
+                self.assertIsNone(await third)
+                await task
+                self.assertFalse(client.alive)
+            finally:
+                bm._MONITOR.unwatch('%9', woke)
+        asyncio.run(main())
+
+    def test_wrong_pane_output_does_not_wake(self):
+        async def main():
+            client, reader = self._fake_client()
+            woke = asyncio.Event()
+            bm._MONITOR.watch('%9', woke)
+            try:
+                task = asyncio.ensure_future(client._read_loop())
+                reader.feed_data(b'%output %8 abc\n')
+                reader.feed_eof()
+                await task
+                self.assertFalse(woke.is_set())
+            finally:
+                bm._MONITOR.unwatch('%9', woke)
+        asyncio.run(main())
+
+    def test_cm_capture_falls_back_to_subprocess(self):
+        async def main():
+            async def no_client(session_id, cmd):
+                return None
+            with patch.object(bm._MONITOR, 'run', new=no_client), \
+                 patch.object(bm, 'tmux_capture_pane',
+                              return_value='fallback') as sub:
+                out = await bm.cm_capture_pane('$1', '%0', 100, False, False)
+            self.assertEqual(out, 'fallback')
+            sub.assert_called_once_with('%0', 100, False, False)
+        asyncio.run(main())
+
+    def test_cm_capture_strips_ansi_like_subprocess_path(self):
+        async def main():
+            async def reply(session_id, cmd):
+                return '\x1b[31mred\x1b[0m\n'
+            with patch.object(bm._MONITOR, 'run', new=reply):
+                plain = await bm.cm_capture_pane('$1', '%0', 100, False, False)
+                ansi = await bm.cm_capture_pane('$1', '%0', 100, True, False)
+            self.assertEqual(plain, 'red\n')
+            self.assertEqual(ansi, '\x1b[31mred\x1b[0m\n')
+        asyncio.run(main())
 
 
 class TestStreamPaneWake(_StreamPaneHarness):
