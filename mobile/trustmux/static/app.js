@@ -17,6 +17,13 @@ let _paneLoading = false; // output holds the loading placeholder, not pane cont
 // cursor; the ghost then falls back to its end-of-buffer anchor.
 let _cursorFromEnd = null;
 let _cursorX = null;
+// Per-line model of the current subscription's capture: element i mirrors
+// the daemon's content.split('\n'), so patch op indices mean the same lines
+// on both sides and #output's children map 1:1 onto it. null whenever the
+// DOM does not hold a snapshot-built render (pane switch, cache restore,
+// loading placeholder); a patch arriving then is a straggler and is dropped
+// (the state that nulled this also subscribed, so a snapshot is coming).
+let _lines = null;
 let statusInterval = null;
 
 // ── pane snapshot cache (in-memory only — never persisted) ────────────────
@@ -311,7 +318,7 @@ function connect() {
     _connectedAt = Date.now();
     startClock();
     send({ type: 'list_sessions' });
-    if (currentPane) send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true, join: wrapOn });
+    if (currentPane) subscribePane(currentPane);
   };
   ws.onclose = (evt) => {
     stopClock();
@@ -364,6 +371,24 @@ function connect() {
       _cursorFromEnd = Number.isInteger(msg.cursor_from_end) ? msg.cursor_from_end : null;
       _cursorX = Number.isInteger(msg.cursor_x) ? msg.cursor_x : null;
       renderOutput(msg.data, atBottom);
+    } else if (msg.type === 'patch') {
+      if (msg.pane_id !== currentPane) return;
+      // _lines null (pane switch, cache restore, loading placeholder) means
+      // a subscribe is already in flight for this pane; this is a straggler
+      // from the stream that subscribe is about to replace, so drop it and
+      // wait for the snapshot rather than cancel-restarting the new stream.
+      if (!_lines) return;
+      const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
+      _cursorFromEnd = Number.isInteger(msg.cursor_from_end) ? msg.cursor_from_end : null;
+      _cursorX = Number.isInteger(msg.cursor_x) ? msg.cursor_x : null;
+      // A mismatching op means the line state diverged from the daemon's;
+      // resubscribe for a fresh snapshot.
+      if (!applyPatch(msg.ops || [])) {
+        _lines = null;
+        subscribePane(currentPane);
+        return;
+      }
+      if (atBottom) scrollOutputToBottom();
     } else if (msg.type === 'cursor') {
       // Bare cursor move: no data field, so no re-render (an innerHTML
       // replacement would destroy any in-progress text selection); just
@@ -381,6 +406,16 @@ function connect() {
 
 function send(obj) {
   if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
+}
+
+// The one subscribe shape: full history with ANSI, join following wrap mode,
+// and incremental patches opted into for unjoined captures only. Join
+// subscribers stay on full snapshots: -J reshuffles soft-wrap line identity
+// on every width-crossing change, so line-indexed patches would churn most
+// of the buffer anyway, and the cursor is already absent under join.
+function subscribePane(paneId) {
+  send({ type: 'subscribe', pane_id: paneId, lines: 300, ansi: true,
+         join: wrapOn, patch: !wrapOn });
 }
 
 // ── current context helpers ───────────────────────────────────────────────
@@ -503,6 +538,10 @@ function navigateTo(sessionId, windowId, paneId) {
   // Cached HTML carries no cursor; end-of-buffer anchor until the snapshot.
   _cursorFromEnd = null;
   _cursorX = null;
+  // The DOM is about to hold cached HTML or the loading placeholder, neither
+  // of which the line model describes; the arriving pane's snapshot rebuilds
+  // it, and a patch racing that snapshot is dropped instead of spliced.
+  _lines = null;
   if (currentPane && output.innerHTML) {
     _paneCache.set(currentPane, { html: output.innerHTML, scrollTop: output.scrollTop });
     if (_paneCache.size > _PANE_CACHE_MAX) _paneCache.delete(_paneCache.keys().next().value);
@@ -547,7 +586,7 @@ function navigateTo(sessionId, windowId, paneId) {
     _paneLoading = true;
   }
 
-  send({ type: 'subscribe', pane_id: paneId, lines: 300, ansi: true, join: wrapOn });
+  subscribePane(paneId);
   updateXYZLabel();
   updateContextName();
 }
@@ -693,14 +732,86 @@ function ansiToHtml(text) {
   return out;
 }
 
+// One span per capture line, so a patch re-renders only its lines and never
+// touches the nodes (or an in-progress text selection) of untouched ones.
+// The newline lives inside the span: output.textContent reads back as the
+// exact capture, which the ghost anchor depends on (it counts newlines).
+// Per-line ansiToHtml resets SGR state at each line, which is safe because
+// tmux capture-pane -e re-emits the full attribute set at the start of every
+// line and resets at its end (verified on tmux 3.7b): capture lines are
+// self-contained, no color leaks across them.
+function _renderLine(line, withNewline) {
+  const span = document.createElement('span');
+  span.innerHTML = ansiToHtml(line) + (withNewline ? '\n' : '');
+  return span;
+}
+
 function renderOutput(text, scrollToBottom) {
   output.className = '';
   _paneLoading = false;
-  // innerHTML replacement drops the composition ghost; re-attach before the
+  _lines = text.split('\n');
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < _lines.length; i++) {
+    frag.appendChild(_renderLine(_lines[i], i < _lines.length - 1));
+  }
+  // Child replacement drops the composition ghost; re-attach before the
   // scroll so scrollHeight includes it.
-  output.innerHTML = ansiToHtml(text);
+  output.replaceChildren(frag);
   _ghostSync();
   if (scrollToBottom) scrollOutputToBottom();
+}
+
+// Apply daemon line-diff ops to _lines and the matching #output spans.
+// Returns false on any shape/bounds mismatch, before touching either, so the
+// caller can resubscribe for a fresh snapshot instead of guessing.
+function applyPatch(ops) {
+  for (const op of ops) {
+    if (!op || !Number.isInteger(op.start) || !Number.isInteger(op.end)
+        || op.start < 0 || op.end < op.start || op.end > _lines.length
+        || (op.op !== 'delete' && !Array.isArray(op.lines))) return false;
+  }
+  // Ghost out first: its splitText fragments merge back and its climb-out
+  // case (a direct #output child) would break the child index = line index
+  // mapping the splices below rely on.
+  _ghostRemove();
+  // Ops are ascending and non-overlapping, so only the final op can reach
+  // the old tail; note it now, before the splices move the end.
+  const oldLen = _lines.length;
+  const tailTouched = ops.length > 0
+    && ops[ops.length - 1].end === oldLen;
+  // Ops carry old-array indices in ascending start order; applying from the
+  // end keeps every earlier op's indices valid.
+  for (let k = ops.length - 1; k >= 0; k--) {
+    const op = ops[k];
+    const lines = op.lines || [];
+    // A pure append after the old tail: difflib emits an insert with
+    // start === end === old length when the trailing '' is absorbed into a
+    // longer equal block (['a',''] -> ['a','','x','']). The old tail span,
+    // rendered without '\n', survives mid-buffer, so give it one while
+    // children indices are still old-array indices; the tailTouched
+    // re-render below only fixes the new last element.
+    if (k === ops.length - 1 && op.start === op.end && op.end === oldLen
+        && op.start > 0) {
+      output.replaceChild(_renderLine(_lines[op.start - 1], true),
+                          output.children[op.start - 1]);
+    }
+    _lines.splice(op.start, op.end - op.start, ...lines);
+    for (let i = op.end - 1; i >= op.start; i--) output.children[i].remove();
+    const anchor = output.children[op.start] || null;
+    for (const line of lines) output.insertBefore(_renderLine(line, true), anchor);
+  }
+  // Inserted spans always carry '\n'; when the ops touched the tail the
+  // element now in last position has one too many (an inserted final line,
+  // or a delete promoting a mid-buffer span). An untouched tail keeps its
+  // ends aligned (equal suffix) and its selection endpoints, so re-render
+  // only when the ops reached it: textContent comparison would strip SGR
+  // escapes and mismatch every styled final line.
+  const lastEl = output.lastElementChild;
+  if (tailTouched && lastEl) {
+    output.replaceChild(_renderLine(_lines[_lines.length - 1], false), lastEl);
+  }
+  _ghostSync();
+  return true;
 }
 
 // ── send keys ─────────────────────────────────────────────────────────────
@@ -856,7 +967,7 @@ function setKbdMode(mode) {
   wrapOn = (kbdMode === 1);
   if (currentPane) {
     _saveWrap(currentPane, wrapOn);
-    send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true, join: wrapOn });
+    subscribePane(currentPane);
   }
   applyWrap();
   applyKbdMode();
@@ -955,7 +1066,7 @@ escapePopupWrap.addEventListener('click', () => {
   if (currentPane) {
     _saveWrap(currentPane, wrapOn);
     // Resubscribe so the snapshot is re-captured with the new join flag.
-    send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true, join: wrapOn });
+    subscribePane(currentPane);
   }
   applyWrap();
   scrollOutputToBottom();
@@ -2084,12 +2195,10 @@ function applyTheme() {
 // palette.
 function rerenderTerminal() {
   _paneCache.clear();
-  if (currentPane) {
-    // join must ride every resubscribe: without it the daemon captures this
-    // pane unjoined, and with wrap on the re-render hard-breaks long lines
-    // at the tmux pane width until the next pane switch.
-    send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true, join: wrapOn });
-  }
+  // subscribePane carries join on every resubscribe: without it the daemon
+  // would capture this pane unjoined, and with wrap on the re-render would
+  // hard-break long lines at the tmux pane width until the next pane switch.
+  if (currentPane) subscribePane(currentPane);
 }
 
 // Live-update while in auto mode when the device scheme flips.

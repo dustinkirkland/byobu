@@ -5,6 +5,7 @@ import argparse
 import asyncio
 import base64
 from datetime import datetime
+import difflib
 import getpass
 import glob
 import hmac
@@ -823,6 +824,27 @@ def _valid_tmux_name(s: str) -> bool:
     return bool(s) and not _TMUX_NAME_BAD.search(s)
 
 
+def _diff_line_ops(old: list[str], new: list[str]) -> list[dict]:
+    """Line-wise ops that turn old into new, for patch subscribers.
+
+    Each op carries indices into the old list ([start, end) half-open) in
+    ascending start order; the client applies them in reverse so earlier
+    indices stay valid without re-mapping. autojunk stays off: a capture
+    repeats blank lines far past the popularity heuristic's 1% threshold,
+    which would junk them and shred a clean scroll into replaces.
+    """
+    ops = []
+    matcher = difflib.SequenceMatcher(None, old, new, autojunk=False)
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == "equal":
+            continue
+        op = {"op": tag, "start": i1, "end": i2}
+        if tag != "delete":
+            op["lines"] = new[j1:j2]
+        ops.append(op)
+    return ops
+
+
 class WsHandler(tornado.websocket.WebSocketHandler):
     """One WebSocket connection per browser tab.
 
@@ -929,7 +951,7 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                 pass
 
     async def _stream_pane(self, pane_id: str, history_lines: int, ansi: bool = False,
-                           join: bool = False):
+                           join: bool = False, patch: bool = False):
         try:
             self._stream_wake.clear()  # drop wakes aimed at a previous subscription
             content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
@@ -943,6 +965,10 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                 msg.update(cursor)
             self._send(msg)
             last_content, last_cursor = content, cursor
+            # Patch subscribers get line-diff ops instead of full updates; the
+            # daemon tracks what it last sent, so no client acks are needed.
+            # Both sides split on '\n' so op indices mean the same lines.
+            last_lines = content.split("\n") if patch else None
             while True:
                 if time.monotonic() - self._last_input_mono < _POLL_ACTIVE_WINDOW:
                     interval = _POLL_ACTIVE
@@ -965,7 +991,24 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                 cursor = None if join else _clamp_cursor(
                     await asyncio.to_thread(tmux_cursor, pane_id), content)
                 if content != last_content:
-                    msg = {"type": "update", "pane_id": pane_id, "data": content}
+                    if patch:
+                        new_lines = content.split("\n")
+                        ops = _diff_line_ops(last_lines, new_lines)
+                        # A diff at least as large as the content buys
+                        # nothing; fall back to a full update, which also
+                        # resyncs a client that lost its line state. Both
+                        # sides go through json.dumps with default
+                        # ensure_ascii, matching how _send encodes them on
+                        # the wire, so \uXXXX escaping of non-ASCII (box
+                        # drawing) inflates ops and content alike instead of
+                        # biasing such panes toward full updates.
+                        if len(json.dumps(ops)) < len(json.dumps(content)):
+                            msg = {"type": "patch", "pane_id": pane_id, "ops": ops}
+                        else:
+                            msg = {"type": "update", "pane_id": pane_id, "data": content}
+                        last_lines = new_lines
+                    else:
+                        msg = {"type": "update", "pane_id": pane_id, "data": content}
                     if cursor:
                         msg.update(cursor)
                     self._send(msg)
@@ -1060,12 +1103,15 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                         lines = 300
                     ansi = bool(msg.get("ansi", False))
                     join = bool(msg.get("join", False))
+                    # Opt-in like join was: clients that never send it keep
+                    # getting full updates, byte-identical to before.
+                    patch = bool(msg.get("patch", False))
                     if self._stream_task:
                         self._stream_task.cancel()
                         await asyncio.gather(self._stream_task, return_exceptions=True)
                     self._stream_pane_id = pane_id
                     self._stream_task = asyncio.ensure_future(
-                        self._stream_pane(pane_id, lines, ansi, join)
+                        self._stream_pane(pane_id, lines, ansi, join, patch)
                     )
 
             elif mtype == "new_session":
