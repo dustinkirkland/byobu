@@ -868,6 +868,10 @@ class WsHandler(tornado.websocket.WebSocketHandler):
         await super().get(*args, **kwargs)
 
     def open(self):
+        # Nagle would hold a small frame (a keystroke, a one-line patch) for
+        # up to an RTT waiting on ACKs; interactive latency outranks the few
+        # bytes of header overhead.
+        self.set_nodelay(True)
         self._stream_task: asyncio.Task | None = None
         self._stream_pane_id: str | None = None
         self._stream_wake = asyncio.Event()
