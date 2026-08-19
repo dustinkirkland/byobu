@@ -449,7 +449,28 @@ def tmux_kill_session(session_id: str) -> None:
 # the paste rather than submit — sending Enter immediately lands inside that
 # window, so Enter is silently swallowed. Codex's window is 120ms; settle
 # past it before sending Enter. https://github.com/dustinkirkland/byobu/issues/115
+#
+# Shells have no such heuristics, so when the process reading the pane's tty
+# is a bare shell prompt the settle is 150ms of pure added latency on every
+# submitted command; skip it there and keep it for everything else, where a
+# swallowed Enter costs far more than the wait.
 _PASTE_BURST_SETTLE = 0.15
+
+_SHELL_NAMES = frozenset(
+    {"bash", "zsh", "fish", "sh", "dash", "ash", "ksh", "tcsh", "csh"})
+
+def _pane_reader_is_shell(pane_id: str) -> bool:
+    """True when the pane's foreground process is a plain shell prompt.
+
+    Walks from pane_pid to the deepest first-child, same as the pane-name
+    display: a shell with a child is running that child, and the child gets
+    the settle. Any doubt (unreadable pid, unknown name) returns False so
+    the caller keeps the safe path.
+    """
+    pid = _tmux("display-message", "-p", "-t", pane_id, "#{pane_pid}").strip()
+    if not pid.isdigit():
+        return False
+    return _smarter_pane_name(pid, "") in _SHELL_NAMES
 
 def tmux_send_keys(pane_id: str, keys: str, enter: bool = True, literal: bool = True) -> None:
     if literal:
@@ -457,7 +478,7 @@ def tmux_send_keys(pane_id: str, keys: str, enter: bool = True, literal: bool = 
     else:
         _tmux("send-keys", "-t", pane_id, keys)
     if enter:
-        if literal:
+        if literal and not _pane_reader_is_shell(pane_id):
             time.sleep(_PASTE_BURST_SETTLE)
         _tmux("send-keys", "-t", pane_id, "Enter")
 

@@ -588,6 +588,35 @@ class _StreamPaneHarness(unittest.TestCase):
             return asyncio.run(main())
 
 
+class TestEnterSettle(unittest.TestCase):
+    """The paste-burst settle before Enter is skipped for a bare shell
+    prompt and kept for anything else."""
+
+    def _send(self, reader_name, pid='123'):
+        calls = []
+        with patch.object(bm, '_tmux',
+                          side_effect=lambda *a: pid if 'display-message' in a else ''), \
+             patch.object(bm, '_smarter_pane_name', return_value=reader_name), \
+             patch.object(bm.time, 'sleep', side_effect=calls.append):
+            bm.tmux_send_keys('%1', 'echo hi', enter=True, literal=True)
+        return calls
+
+    def test_shell_prompt_skips_settle(self):
+        self.assertEqual(self._send('bash'), [])
+
+    def test_running_tui_keeps_settle(self):
+        self.assertEqual(self._send('codex'), [bm._PASTE_BURST_SETTLE])
+
+    def test_unreadable_pid_keeps_settle(self):
+        self.assertEqual(self._send('bash', pid=''), [bm._PASTE_BURST_SETTLE])
+
+    def test_non_literal_never_settles(self):
+        with patch.object(bm, '_tmux'), \
+             patch.object(bm.time, 'sleep') as slept:
+            bm.tmux_send_keys('%1', 'C-c', enter=True, literal=False)
+        slept.assert_not_called()
+
+
 class TestControlClient(unittest.TestCase):
     """Reply-block parsing and %output wake dispatch of _ControlClient,
     driven through a fake proc whose stdout is a plain StreamReader."""
