@@ -17,10 +17,61 @@ let statusInterval = null;
 const _paneCache = new Map();
 const _PANE_CACHE_MAX = 50;
 
-// How long navigateTo() waits after the last pane switch before actually
-// subscribing -- see the comment at its call site for why this exists.
-let _subscribeDebounceTimer = null;
-const _SUBSCRIBE_DEBOUNCE_MS = 150;
+// Pane-switch subscribes are serialized to at most one in flight: a fresh
+// subscribe can't preempt one already sent (once write_message() has been
+// called daemon-side the bytes are committed -- cancelling afterward can't
+// unsend them), so sending a second one before the first's snapshot has
+// even arrived just queues more bytes behind it on the same slow link. If
+// nothing is outstanding, a new pane switch sends immediately -- zero
+// added latency for the common case of an isolated tap. If something is
+// still outstanding, only the *latest* target is remembered and sent the
+// moment the outstanding one resolves (its snapshot arrives), which is the
+// earliest point it's actually safe to send more. See _requestSubscribe's
+// call site in navigateTo for why this exists.
+let _subscribeInFlight = false;
+let _subscribeDeferredPaneId = null;
+let _subscribeSafetyTimer = null;
+// Backstop only: normally cleared the instant the in-flight snapshot
+// arrives. Guards against a subscribe that, for whatever reason, never
+// gets a reply (e.g. the pane died in the gap between tap and send),
+// which would otherwise wedge every subsequent navigation behind a flag
+// that never clears.
+const _SUBSCRIBE_SAFETY_MS = 15000;
+
+function _sendSubscribeNow(paneId) {
+  _subscribeInFlight = true;
+  _subscribeDeferredPaneId = null;
+  clearTimeout(_subscribeSafetyTimer);
+  _subscribeSafetyTimer = setTimeout(() => {
+    _subscribeInFlight = false;
+    if (_subscribeDeferredPaneId !== null) {
+      const target = _subscribeDeferredPaneId;
+      _subscribeDeferredPaneId = null;
+      _sendSubscribeNow(target);
+    }
+  }, _SUBSCRIBE_SAFETY_MS);
+  send({ type: 'subscribe', pane_id: paneId, lines: 300, ansi: true, join: wrapOn });
+}
+
+function _requestSubscribe(paneId) {
+  if (_subscribeInFlight) {
+    _subscribeDeferredPaneId = paneId; // supersedes any earlier deferred target
+  } else {
+    _sendSubscribeNow(paneId);
+  }
+}
+
+// Called whenever a subscribe's response has definitively arrived, so the
+// next queued navigation (if any) can go out immediately.
+function _subscribeSettled() {
+  _subscribeInFlight = false;
+  clearTimeout(_subscribeSafetyTimer);
+  if (_subscribeDeferredPaneId !== null) {
+    const target = _subscribeDeferredPaneId;
+    _subscribeDeferredPaneId = null;
+    _sendSubscribeNow(target);
+  }
+}
 
 // Raw (pre-render) lines of the currently displayed pane, so a "delta"
 // message (drop N lines off the top, append these at the bottom -- see
@@ -318,10 +369,17 @@ function connect() {
     _connectedAt = Date.now();
     startClock();
     send({ type: 'list_sessions' });
-    if (currentPane) send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true, join: wrapOn });
+    if (currentPane) _sendSubscribeNow(currentPane);
   };
   ws.onclose = (evt) => {
     stopClock();
+    // In-flight tracking is scoped to one connection -- a subscribe sent
+    // on the old socket will never get a reply on the new one, so start
+    // clean rather than carrying a stale "in flight" flag (or a stale
+    // deferred target) across the reconnect.
+    _subscribeInFlight = false;
+    _subscribeDeferredPaneId = null;
+    clearTimeout(_subscribeSafetyTimer);
     if (evt.code === 4401) {
       showPairScreen();
       return;
@@ -356,6 +414,10 @@ function connect() {
         else renderCtxList();
       }
     } else if (msg.type === 'snapshot') {
+      // A snapshot is always the first (and only) reply to a subscribe,
+      // so its arrival is exactly the signal that it's now safe to send
+      // whatever navigation target queued up behind it, if any.
+      _subscribeSettled();
       if (msg.pane_id === currentPane) {
         _currentPaneRawLines = msg.data.split('\n');
         _currentPaneRawLinesFor = msg.pane_id;
@@ -541,20 +603,13 @@ function navigateTo(sessionId, windowId, paneId) {
     output.textContent = 'loading…';
   }
 
-  // Debounced: rapid next/prev taps (e.g. flicking from pane 1 to pane 9
-  // through 7 panes nobody wants to see) would otherwise fire a real
-  // subscribe -- and a real tmux capture-pane + WebSocket send -- for
-  // every pane landed on along the way. The daemon cancels the previous
-  // stream on each new subscribe, but only *after* that pane's snapshot
-  // has already been captured and handed to write_message(); once that
-  // call happens the bytes are committed to the send queue and cancelling
-  // afterward can't unsend them. Everything above (cache restore,
-  // position label, breadcrumb) still updates instantly per tap; only the
-  // network round trip waits for navigation to actually settle.
-  clearTimeout(_subscribeDebounceTimer);
-  _subscribeDebounceTimer = setTimeout(() => {
-    send({ type: 'subscribe', pane_id: paneId, lines: 300, ansi: true, join: wrapOn });
-  }, _SUBSCRIBE_DEBOUNCE_MS);
+  // See _requestSubscribe: sends immediately if nothing's outstanding
+  // (the common case -- an isolated tap costs no added latency), or
+  // remembers this as the latest target and sends it the instant the
+  // outstanding subscribe's snapshot arrives, if one is already in
+  // flight. Everything above (cache restore, position label, breadcrumb)
+  // still updates instantly on every tap regardless.
+  _requestSubscribe(paneId);
   updateXYZLabel();
   updateContextName();
 }
@@ -815,7 +870,7 @@ function setKbdMode(mode) {
   wrapOn = (kbdMode === 1);
   if (currentPane) {
     _saveWrap(currentPane, wrapOn);
-    send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true, join: wrapOn });
+    _requestSubscribe(currentPane);
   }
   applyWrap();
   applyKbdMode();
@@ -903,7 +958,7 @@ escapePopupWrap.addEventListener('click', () => {
   if (currentPane) {
     _saveWrap(currentPane, wrapOn);
     // Resubscribe so the snapshot is re-captured with the new join flag.
-    send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true, join: wrapOn });
+    _requestSubscribe(currentPane);
   }
   applyWrap();
   scrollOutputToBottom();
@@ -1788,7 +1843,7 @@ function rerenderTerminal() {
     // join must ride every resubscribe: without it the daemon captures this
     // pane unjoined, and with wrap on the re-render hard-breaks long lines
     // at the tmux pane width until the next pane switch.
-    send({ type: 'subscribe', pane_id: currentPane, lines: 300, ansi: true, join: wrapOn });
+    _requestSubscribe(currentPane);
   }
 }
 
