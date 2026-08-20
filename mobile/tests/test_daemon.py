@@ -491,6 +491,104 @@ class TestCapturePaneJoinFlag(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# _diff_pane_lines -- top-drop/bottom-append delta for pane update streaming
+# ---------------------------------------------------------------------------
+
+class TestDiffPaneLines(unittest.TestCase):
+    def test_pure_append_one_line(self):
+        old = ['a', 'b', 'c']
+        new = ['a', 'b', 'c', 'd']
+        drop, appended = bm._diff_pane_lines(old, new)
+        self.assertEqual(drop, 0)
+        self.assertEqual(appended, ['d'])
+
+    def test_scroll_drops_and_appends(self):
+        # A 3-line window that just scrolled: 'a' fell off the top, 'd'
+        # arrived at the bottom -- the common case for a busy pane at a
+        # fixed capture-pane -S -N window size.
+        old = ['a', 'b', 'c']
+        new = ['b', 'c', 'd']
+        drop, appended = bm._diff_pane_lines(old, new)
+        self.assertEqual(drop, 1)
+        self.assertEqual(appended, ['d'])
+
+    def test_several_lines_appended_at_once(self):
+        old = ['a', 'b', 'c']
+        new = ['b', 'c', 'd', 'e', 'f']
+        drop, appended = bm._diff_pane_lines(old, new)
+        self.assertEqual(drop, 1)
+        self.assertEqual(appended, ['d', 'e', 'f'])
+
+    def test_no_change_returns_zero_drop_empty_append(self):
+        old = ['a', 'b', 'c']
+        drop, appended = bm._diff_pane_lines(old, list(old))
+        self.assertEqual(drop, 0)
+        self.assertEqual(appended, [])
+
+    def test_in_place_redraw_falls_back_to_full_replace(self):
+        # A progress bar or spinner overwrites a line in place rather than
+        # appending -- no top-drop/bottom-append alignment exists, so the
+        # only valid match is "drop everything, append everything".
+        old = ['a', 'b', 'c']
+        new = ['a', 'X', 'c']
+        drop, appended = bm._diff_pane_lines(old, new)
+        self.assertEqual(drop, 3)
+        self.assertEqual(appended, new)
+
+    def test_cleared_pane_falls_back_to_full_replace(self):
+        old = ['a', 'b', 'c']
+        new = ['$ ']
+        drop, appended = bm._diff_pane_lines(old, new)
+        self.assertEqual(drop, 3)
+        self.assertEqual(appended, ['$ '])
+
+    def test_empty_old_lines(self):
+        drop, appended = bm._diff_pane_lines([], ['a', 'b'])
+        self.assertEqual(drop, 0)
+        self.assertEqual(appended, ['a', 'b'])
+
+    def test_appending_a_genuinely_blank_line_is_distinguishable(self):
+        # A single appended blank line ('') must come back as a one-element
+        # list, not something that collapses to the same wire value as "no
+        # lines appended" -- callers that join appended with '\n' before
+        # sending would make ['']  and [] both serialize to "", which is
+        # exactly the ambiguity this shape needs to avoid.
+        old = ['a', 'b']
+        new = ['a', 'b', '']
+        drop, appended = bm._diff_pane_lines(old, new)
+        self.assertEqual(drop, 0)
+        self.assertEqual(appended, [''])
+        self.assertNotEqual(appended, [])
+
+    def test_reconstruction_round_trips_for_arbitrary_inputs(self):
+        # Whatever (drop, appended) comes back, old[drop:] + appended must
+        # equal new -- this is the exact operation the client performs to
+        # rebuild its buffer from a delta message, so it's the real
+        # correctness property, not just the specific-case assertions above.
+        import random
+        rng = random.Random(1234)
+        alphabet = ['a', 'b', 'c', 'd', 'e']
+        for _ in range(200):
+            old = [rng.choice(alphabet) for _ in range(rng.randint(0, 15))]
+            new = [rng.choice(alphabet) for _ in range(rng.randint(0, 15))]
+            drop, appended = bm._diff_pane_lines(old, new)
+            self.assertEqual(old[drop:] + appended, new)
+
+    def test_too_many_lines_returns_none(self):
+        old = ['x'] * (bm._MAX_DIFF_LINES + 1)
+        new = old + ['y']
+        self.assertIsNone(bm._diff_pane_lines(old, new))
+
+    def test_at_max_lines_still_diffs(self):
+        old = ['x'] * bm._MAX_DIFF_LINES
+        new = old + ['y']
+        result = bm._diff_pane_lines(old, new)
+        self.assertIsNotNone(result)
+        drop, appended = result
+        self.assertEqual(old[drop:] + appended, new)
+
+
+# ---------------------------------------------------------------------------
 # main() -- help discoverability
 # ---------------------------------------------------------------------------
 

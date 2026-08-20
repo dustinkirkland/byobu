@@ -17,6 +17,15 @@ let statusInterval = null;
 const _paneCache = new Map();
 const _PANE_CACHE_MAX = 50;
 
+// Raw (pre-render) lines of the currently displayed pane, so a "delta"
+// message (drop N lines off the top, append these at the bottom -- see
+// the daemon's _diff_pane_lines) can be applied without re-fetching the
+// whole pane. Tracked separately from _paneCache, which only ever holds
+// already-rendered HTML. _currentPaneRawLinesFor guards against applying
+// a delta meant for a pane we're no longer tracking raw lines for.
+let _currentPaneRawLines = [];
+let _currentPaneRawLinesFor = null;
+
 // ── offline / connectivity helpers ────────────────────────────────────────
 let _serverVersion = null;
 
@@ -343,6 +352,8 @@ function connect() {
       }
     } else if (msg.type === 'snapshot') {
       if (msg.pane_id === currentPane) {
+        _currentPaneRawLines = msg.data.split('\n');
+        _currentPaneRawLinesFor = msg.pane_id;
         const forceTop = _scrollTopOnNextSnapshot;
         if (forceTop) _scrollTopOnNextSnapshot = false;
         const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
@@ -351,8 +362,23 @@ function connect() {
       }
     } else if (msg.type === 'update') {
       if (msg.pane_id !== currentPane) return;
+      _currentPaneRawLines = msg.data.split('\n');
+      _currentPaneRawLinesFor = msg.pane_id;
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
       renderOutput(msg.data, atBottom);
+    } else if (msg.type === 'delta') {
+      // Bandwidth-saving alternative to 'update': the daemon detected the
+      // pane's captured window merely slid down (old lines dropped off
+      // the top, new ones appended at the bottom -- the common case for
+      // a busy pane) and sent only what changed instead of the whole
+      // capture. If our tracked raw lines don't match this pane (e.g. a
+      // stream from a pane we've since switched away from), there's
+      // nothing safe to apply the delta to -- drop it and wait for the
+      // next snapshot rather than rendering a mismatched reconstruction.
+      if (msg.pane_id !== currentPane || _currentPaneRawLinesFor !== msg.pane_id) return;
+      _currentPaneRawLines = _currentPaneRawLines.slice(msg.drop).concat(msg.append);
+      const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
+      renderOutput(_currentPaneRawLines.join('\n'), atBottom);
     } else if (msg.type === 'error') {
       setStatus(`error: ${msg.message}`, 'error');
     }

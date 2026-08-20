@@ -43,6 +43,13 @@ byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
     wait behind on the same ordered stream. Explains reports of context
     switches taking many seconds to tens of seconds on slow links (LTE,
     plane wifi) despite the daemon itself responding instantly
+  * trustmux daemon: stream pane updates as a delta (lines dropped off
+    the top, lines appended at the bottom) instead of re-sending the
+    whole captured window on every tick. A busy pane's content usually
+    just scrolls -- a few new lines at the bottom -- so most updates now
+    cost tens of bytes instead of the 20-45KB a full 300-line capture
+    runs; a full replacement is still sent automatically when a change
+    isn't a simple scroll (a clear, a redraw, an in-place progress bar)
 
 byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
 

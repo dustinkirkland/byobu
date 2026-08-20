@@ -373,6 +373,43 @@ def tmux_capture_pane(pane_id: str, history_lines: int = 200, ansi: bool = False
         raw = strip_ansi(raw)
     return raw
 
+# Cap how large a pane's captured window can be before _diff_pane_lines
+# skips searching and the caller falls back to a full replacement -- the
+# search below is worst-case quadratic in line count. Default
+# subscriptions ask for 300 lines (see the "lines" default in the
+# subscribe handler); this only matters for a client deliberately
+# requesting a much bigger window (up to _MAX_HISTORY_LINES).
+_MAX_DIFF_LINES = 2000
+
+def _diff_pane_lines(old_lines: list[str], new_lines: list[str]) -> tuple[int, list[str]] | None:
+    """Find the smallest number of lines to drop from the front of
+    old_lines so the remainder lines up with a prefix of new_lines --
+    i.e. the captured window just slid down by that many lines, which is
+    what a busy pane's output looks like tick to tick: old lines scroll
+    out the top, new ones appear at the bottom. Returns
+    (drop_count, appended_lines).
+
+    Always finds *some* match: dropping every line of old_lines leaves an
+    empty tail, which trivially lines up with any prefix, so the search
+    can't fail to terminate. That degenerate case (drop everything,
+    append everything) is exactly correct behavior for a change that
+    isn't a simple append -- a clear, a redraw, an in-place progress bar
+    -- so there's no separate fallback path to get wrong, just a result
+    that happens to carry the whole new pane instead of a small tail.
+
+    Returns None without searching if old_lines is too long to diff
+    cheaply (see _MAX_DIFF_LINES); the caller should send a full
+    replacement instead.
+    """
+    n = len(old_lines)
+    if n > _MAX_DIFF_LINES:
+        return None
+    for drop in range(n + 1):
+        tail = old_lines[drop:]
+        if new_lines[:len(tail)] == tail:
+            return drop, new_lines[len(tail):]
+    return n, new_lines  # unreachable: drop == n always matches above
+
 def tmux_new_session(name: str) -> None:
     _tmux("new-session", "-d", "-s", name)
 
@@ -902,12 +939,26 @@ class WsHandler(tornado.websocket.WebSocketHandler):
             content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
             await self._send_wait({"type": "snapshot", "pane_id": pane_id, "data": content})
             last = content
+            last_lines = content.split("\n")
             while True:
                 await asyncio.sleep(0.5)
                 content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
                 if content != last:
-                    await self._send_wait({"type": "update", "pane_id": pane_id, "data": content})
+                    new_lines = content.split("\n")
+                    diff = _diff_pane_lines(last_lines, new_lines)
+                    if diff is not None:
+                        drop, appended = diff
+                        # A pure top-drop/bottom-append -- the common case
+                        # for a scrolling pane -- costs only the new
+                        # lines instead of the whole captured window.
+                        await self._send_wait({
+                            "type": "delta", "pane_id": pane_id,
+                            "drop": drop, "append": appended,
+                        })
+                    else:
+                        await self._send_wait({"type": "update", "pane_id": pane_id, "data": content})
                     last = content
+                    last_lines = new_lines
         except asyncio.CancelledError:
             raise
         except Exception:

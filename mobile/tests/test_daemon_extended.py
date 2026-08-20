@@ -981,6 +981,41 @@ class TestWsHandler(AsyncHTTPTestCase):
         conn.close()
 
     @gen_test(timeout=5)
+    async def test_stream_pane_sends_delta_for_appended_output(self):
+        # End-to-end: a busy pane whose content grows by one line between
+        # polls should produce a real "delta" message on the wire (not a
+        # full "update"), and that delta must reconstruct the exact new
+        # content -- the actual saving this whole feature exists for.
+        tok = _add_session('ws_tok_delta')
+        with patch.object(bm, 'tmux_list_sessions', return_value=[]):
+            conn = await websocket_connect(self._ws_req(token=tok))
+            await conn.read_message()  # initial sessions push
+
+        captures = ['line1\nline2\nline3', 'line1\nline2\nline3\nline4']
+        def fake_capture(pane_id, history_lines, ansi=False, join=False):
+            return captures[0] if len(captures) == 1 else captures.pop(0)
+
+        with patch.object(bm, 'tmux_capture_pane', side_effect=fake_capture):
+            await conn.write_message(json.dumps({'type': 'subscribe', 'pane_id': '%1', 'lines': 10}))
+            snap = json.loads(await conn.read_message())
+            self.assertEqual(snap['type'], 'snapshot')
+            self.assertEqual(snap['data'], 'line1\nline2\nline3')
+
+            delta = json.loads(await conn.read_message())
+        self.assertEqual(delta['type'], 'delta')
+        self.assertEqual(delta['pane_id'], '%1')
+        self.assertEqual(delta['drop'], 0)
+        # A real JSON array, not a newline-joined string -- a genuinely
+        # blank appended line and "nothing appended" would otherwise both
+        # serialize to "", which the client couldn't tell apart.
+        self.assertEqual(delta['append'], ['line4'])
+
+        # Reconstruction property the client relies on.
+        rebuilt = snap['data'].split('\n')[delta['drop']:] + delta['append']
+        self.assertEqual('\n'.join(rebuilt), 'line1\nline2\nline3\nline4')
+        conn.close()
+
+    @gen_test(timeout=5)
     async def test_stream_pane_awaits_write_before_next_capture(self):
         # Regression test for a real bug found on a live connection: _send
         # used to fire off write_message() without awaiting it, so a
