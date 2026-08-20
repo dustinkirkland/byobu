@@ -50,6 +50,14 @@ byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
     cost tens of bytes instead of the 20-45KB a full 300-line capture
     runs; a full replacement is still sent automatically when a change
     isn't a simple scroll (a clear, a redraw, an in-place progress bar)
+  * trustmux/pwa: debounce pane-switch subscribes by 150ms. Flicking
+    quickly through several panes with next/prev used to subscribe to
+    every pane landed on along the way -- each one a real tmux capture
+    and WebSocket send the daemon couldn't take back once sent, even
+    though the client discards any snapshot for a pane it's already
+    navigated past. Only the pane navigation actually settles on now
+    triggers real network traffic; local UI (position label, breadcrumb,
+    cached content) still updates on every tap with no added delay
 
 byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
 

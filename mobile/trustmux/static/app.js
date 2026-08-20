@@ -17,6 +17,11 @@ let statusInterval = null;
 const _paneCache = new Map();
 const _PANE_CACHE_MAX = 50;
 
+// How long navigateTo() waits after the last pane switch before actually
+// subscribing -- see the comment at its call site for why this exists.
+let _subscribeDebounceTimer = null;
+const _SUBSCRIBE_DEBOUNCE_MS = 150;
+
 // Raw (pre-render) lines of the currently displayed pane, so a "delta"
 // message (drop N lines off the top, append these at the bottom -- see
 // the daemon's _diff_pane_lines) can be applied without re-fetching the
@@ -536,7 +541,20 @@ function navigateTo(sessionId, windowId, paneId) {
     output.textContent = 'loading…';
   }
 
-  send({ type: 'subscribe', pane_id: paneId, lines: 300, ansi: true, join: wrapOn });
+  // Debounced: rapid next/prev taps (e.g. flicking from pane 1 to pane 9
+  // through 7 panes nobody wants to see) would otherwise fire a real
+  // subscribe -- and a real tmux capture-pane + WebSocket send -- for
+  // every pane landed on along the way. The daemon cancels the previous
+  // stream on each new subscribe, but only *after* that pane's snapshot
+  // has already been captured and handed to write_message(); once that
+  // call happens the bytes are committed to the send queue and cancelling
+  // afterward can't unsend them. Everything above (cache restore,
+  // position label, breadcrumb) still updates instantly per tap; only the
+  // network round trip waits for navigation to actually settle.
+  clearTimeout(_subscribeDebounceTimer);
+  _subscribeDebounceTimer = setTimeout(() => {
+    send({ type: 'subscribe', pane_id: paneId, lines: 300, ansi: true, join: wrapOn });
+  }, _SUBSCRIBE_DEBOUNCE_MS);
   updateXYZLabel();
   updateContextName();
 }
