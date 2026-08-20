@@ -20,6 +20,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import tornado.httpserver
+import tornado.iostream
 import tornado.web
 import tornado.websocket
 
@@ -836,19 +837,45 @@ class WsHandler(tornado.websocket.WebSocketHandler):
         if getattr(self, "_auth_timer", None):
             self._auth_timer.cancel()
 
+    def _build_msg(self, obj: dict) -> str:
+        obj["server_ts"] = int(time.time() * 1000)
+        obj["server_tz"] = _SERVER_TZ
+        obj["server_tz_offset_s"] = int(datetime.now().astimezone().utcoffset().total_seconds())
+        obj["server_ip"] = _SERVER_IP
+        return json.dumps(obj)
+
     def _send(self, obj: dict):
         try:
-            obj["server_ts"] = int(time.time() * 1000)
-            obj["server_tz"] = _SERVER_TZ
-            obj["server_tz_offset_s"] = int(datetime.now().astimezone().utcoffset().total_seconds())
-            obj["server_ip"] = _SERVER_IP
-            self.write_message(json.dumps(obj))
+            self.write_message(self._build_msg(obj))
         except tornado.websocket.WebSocketClosedError:
+            pass
+
+    async def _send_wait(self, obj: dict):
+        # Unlike _send, this awaits the write actually draining before
+        # returning. The three streaming loops below (topology poll, pane
+        # snapshot/update) each re-fetch and re-send full state on a fixed
+        # tick with no idea whether the client has caught up -- with a
+        # fire-and-forget _send, a client slower than the tick rate (a
+        # high-latency phone connection) never applies backpressure, so
+        # every tick's full repaint keeps queuing in the kernel socket
+        # buffer behind whatever hasn't drained yet. Measured on a real
+        # connection: this grew to 2.6MB of queued, already-stale pane
+        # updates, which a fresh pane-switch snapshot then had to wait
+        # behind -- explaining reports of context switches taking tens of
+        # seconds on slow links despite the daemon responding instantly.
+        # Awaiting here means a slow client simply pauses the loop instead
+        # of piling more full repaints behind an undelivered one, bounding
+        # the worst-case backlog to a single in-flight message.
+        try:
+            fut = self.write_message(self._build_msg(obj))
+            if fut is not None:
+                await fut
+        except (tornado.websocket.WebSocketClosedError, tornado.iostream.StreamClosedError):
             pass
 
     async def _send_sessions(self):
         sessions = await asyncio.to_thread(tmux_list_sessions)
-        self._send({"type": "sessions", "data": sessions})
+        await self._send_wait({"type": "sessions", "data": sessions})
 
     async def _poll_topology(self):
         try:
@@ -863,7 +890,7 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                 key = json.dumps(sessions, sort_keys=True)
                 if key != last:
                     last = key
-                    self._send({"type": "sessions", "data": sessions})
+                    await self._send_wait({"type": "sessions", "data": sessions})
             except asyncio.CancelledError:
                 raise
             except Exception:
@@ -873,13 +900,13 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                            join: bool = False):
         try:
             content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
-            self._send({"type": "snapshot", "pane_id": pane_id, "data": content})
+            await self._send_wait({"type": "snapshot", "pane_id": pane_id, "data": content})
             last = content
             while True:
                 await asyncio.sleep(0.5)
                 content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
                 if content != last:
-                    self._send({"type": "update", "pane_id": pane_id, "data": content})
+                    await self._send_wait({"type": "update", "pane_id": pane_id, "data": content})
                     last = content
         except asyncio.CancelledError:
             raise

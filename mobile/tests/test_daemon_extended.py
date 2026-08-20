@@ -966,6 +966,77 @@ class TestWsHandler(AsyncHTTPTestCase):
         conn.close()
 
     @gen_test(timeout=5)
+    async def test_subscribe_valid_pane_id_streams_snapshot(self):
+        tok = _add_session('ws_tok_sub_ok')
+        with patch.object(bm, 'tmux_list_sessions', return_value=[]):
+            conn = await websocket_connect(self._ws_req(token=tok))
+            await conn.read_message()
+            with patch.object(bm, 'tmux_capture_pane', return_value='hello pane'):
+                await conn.write_message(json.dumps({'type': 'subscribe', 'pane_id': '%1'}))
+                resp = await conn.read_message()
+        data = json.loads(resp)
+        self.assertEqual(data['type'], 'snapshot')
+        self.assertEqual(data['pane_id'], '%1')
+        self.assertEqual(data['data'], 'hello pane')
+        conn.close()
+
+    @gen_test(timeout=5)
+    async def test_stream_pane_awaits_write_before_next_capture(self):
+        # Regression test for a real bug found on a live connection: _send
+        # used to fire off write_message() without awaiting it, so a
+        # client slower than the daemon's 0.5s poll tick (e.g. a
+        # high-latency phone link) never applied any backpressure -- every
+        # tick's full pane repaint just kept queuing in the kernel socket
+        # buffer behind whatever hadn't drained yet. Measured on a real
+        # connection: this grew to 2.6MB of stale, already-superseded pane
+        # updates, which a fresh pane-switch snapshot then had to wait
+        # behind on the same ordered stream -- explaining reports of
+        # context switches taking tens of seconds despite the daemon
+        # responding instantly. The fix (_send_wait) awaits the write
+        # before the loop captures again, so a stalled client pauses the
+        # loop instead of piling up further sends.
+        tok = _add_session('ws_tok_backpressure')
+        with patch.object(bm, 'tmux_list_sessions', return_value=[]):
+            conn = await websocket_connect(self._ws_req(token=tok))
+            await conn.read_message()  # initial sessions push
+
+        handler = next(iter(bm._ws_clients[tok]))
+
+        capture_calls = []
+        def fake_capture(pane_id, history_lines, ansi=False, join=False):
+            capture_calls.append(time.monotonic())
+            return f'content-{len(capture_calls)}'
+
+        pending_writes = []
+        def fake_write_message(payload):
+            fut = asyncio.get_event_loop().create_future()
+            pending_writes.append(fut)
+            return fut
+
+        with patch.object(bm, 'tmux_capture_pane', side_effect=fake_capture), \
+             patch.object(handler, 'write_message', side_effect=fake_write_message):
+            await conn.write_message(json.dumps({'type': 'subscribe', 'pane_id': '%1', 'lines': 10}))
+            await asyncio.sleep(0.1)
+            self.assertEqual(len(capture_calls), 1)
+
+            # Well past two 0.5s poll ticks -- with the old fire-and-forget
+            # _send this would have captured (and queued sends for) two or
+            # three more times by now.
+            await asyncio.sleep(1.3)
+            self.assertEqual(
+                len(capture_calls), 1,
+                'stream_pane must pause on an undelivered write, not pile up more captures/sends',
+            )
+
+            # Resolving the stuck write lets the loop proceed; the next
+            # 0.5s tick should produce exactly one more capture.
+            pending_writes[0].set_result(None)
+            await asyncio.sleep(0.7)
+            self.assertEqual(len(capture_calls), 2)
+
+        conn.close()
+
+    @gen_test(timeout=5)
     async def test_send_keys_invalid_pane_id_returns_error(self):
         tok = _add_session('ws_tok_sk')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
