@@ -30,8 +30,8 @@ byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
     showing all three choices, matching the existing ⎋ button, instead of
     cycling one tap at a time
   * trustmux/pwa: raise the connection-info popup's latency-ping timeout
-    from 3s to 10s, so a real but high-latency link (e.g. plane wifi)
-    shows an actual number instead of "timed out"
+    from 3s to 60s, so a real but high-latency or backed-up link (e.g.
+    plane wifi) shows an actual number instead of "timed out"
   * trustmux/pwa: tapping the logo/wordmark now opens a short "about"
     popup (what Trustmux is, link to trustmux.dev; credit and LinkedIn
     link for Dustin Kirkland) instead of navigating away to trustmux.dev

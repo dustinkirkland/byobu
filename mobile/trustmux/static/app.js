@@ -1354,11 +1354,12 @@ let _pendingPing = null; // resolver for an in-flight latency ping, or null
 
 // Round-trip latency via a dedicated ping/pong (not list_sessions — that
 // queries tmux, adding noise to a number meant to reflect network time).
-// Resolves to null if no pong arrives within LATENCY_TIMEOUT_MS. 10s rather
-// than the connection's own stall threshold: a real link (e.g. plane wifi)
-// can be connected but well past 3s round-trip, and the popup should show
-// that number instead of "timed out".
-const LATENCY_TIMEOUT_MS = 10000;
+// Resolves to null if no pong arrives within LATENCY_TIMEOUT_MS. Well past
+// the connection's own stall threshold: a real link (e.g. plane wifi, or a
+// connection still working through a backed-up send queue) can be connected
+// but take tens of seconds to round-trip, and the popup should show that
+// number instead of "timed out".
+const LATENCY_TIMEOUT_MS = 60000;
 function measureLatency() {
   return new Promise(resolve => {
     if (_pendingPing) { resolve(null); return; }
