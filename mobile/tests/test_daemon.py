@@ -1,5 +1,6 @@
 """Tests for Trustmux daemon — runs locally with stdlib unittest + tornado."""
 
+import asyncio
 import json
 import os
 import sys
@@ -7,6 +8,7 @@ import tempfile
 import time
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -488,6 +490,505 @@ class TestCapturePaneJoinFlag(unittest.TestCase):
         with patch.object(bm, '_tmux', side_effect=fake_tmux):
             bm.tmux_capture_pane('%0')
         self.assertNotIn('-J', captured_args)
+
+
+# ---------------------------------------------------------------------------
+# tmux_cursor: cursor position mapped to a from-the-end capture line index
+# ---------------------------------------------------------------------------
+
+class TestTmuxCursor(unittest.TestCase):
+    def test_maps_cursor_y_to_from_end_index(self):
+        # Cursor on row 2 of a 10-row pane: 7 lines above the capture's last
+        # line (a piped capture keeps trailing blank screen rows).
+        with patch.object(bm, '_tmux', return_value='47\t2\t10\n'):
+            self.assertEqual(bm.tmux_cursor('%0'),
+                             {'cursor_x': 47, 'cursor_from_end': 7})
+
+    def test_bottom_row_maps_to_zero(self):
+        with patch.object(bm, '_tmux', return_value='0\t9\t10\n'):
+            self.assertEqual(bm.tmux_cursor('%0')['cursor_from_end'], 0)
+
+    def test_malformed_output_returns_none(self):
+        for raw in ('', 'garbage', '1\t2', 'a\tb\tc', '0\t10\t10'):
+            with patch.object(bm, '_tmux', return_value=raw):
+                self.assertIsNone(bm.tmux_cursor('%0'), raw)
+
+
+# ---------------------------------------------------------------------------
+# _clamp_cursor: defense against a tmux that trims trailing blank rows
+# ---------------------------------------------------------------------------
+
+class TestClampCursor(unittest.TestCase):
+    def test_cursor_within_capture_passes(self):
+        cursor = {'cursor_x': 0, 'cursor_from_end': 2}
+        self.assertEqual(bm._clamp_cursor(cursor, 'a\nb\nc'), cursor)
+
+    def test_trailing_newline_closes_the_last_line(self):
+        # 'a\nb\nc\n' is three lines, not four: from_end 2 is the first line.
+        cursor = {'cursor_x': 0, 'cursor_from_end': 2}
+        self.assertEqual(bm._clamp_cursor(cursor, 'a\nb\nc\n'), cursor)
+        self.assertIsNone(
+            bm._clamp_cursor({'cursor_x': 0, 'cursor_from_end': 3}, 'a\nb\nc\n'))
+
+    def test_cursor_beyond_capture_drops(self):
+        # A tmux that trims trailing blank screen rows would leave the
+        # from-the-end index pointing into scrollback; drop the fields so
+        # the client keeps its end-of-buffer anchor.
+        self.assertIsNone(
+            bm._clamp_cursor({'cursor_x': 0, 'cursor_from_end': 5}, 'a\nb'))
+
+    def test_empty_capture_drops(self):
+        self.assertIsNone(
+            bm._clamp_cursor({'cursor_x': 0, 'cursor_from_end': 0}, ''))
+
+    def test_none_stays_none(self):
+        self.assertIsNone(bm._clamp_cursor(None, 'a\nb'))
+
+
+# ---------------------------------------------------------------------------
+# Pane stream: keystroke wake and burst coalescing
+# ---------------------------------------------------------------------------
+
+class _StreamPaneHarness(unittest.TestCase):
+    """_stream_pane runs against a bare connection stand-in: it only touches
+    _send, _stream_wake, and _last_input_mono, plus module globals patched
+    here. Poll intervals are patched huge so only explicit wakes capture."""
+
+    def _make_conn(self):
+        conn = SimpleNamespace()
+        conn._stream_wake = asyncio.Event()
+        conn._last_input_mono = 0.0
+        conn.sent = []
+        conn._send = conn.sent.append
+        return conn
+
+    def _run_stream(self, conn, fake_capture, driver, settle, fake_cursor=None,
+                    join=False, patch_mode=False):
+        async def main():
+            task = asyncio.ensure_future(
+                bm.WsHandler._stream_pane(conn, '%0', 100, False, join,
+                                          patch_mode))
+            await asyncio.sleep(0.05)  # let the initial snapshot land
+            result = await driver()
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+            return result
+        with patch.object(bm, 'tmux_capture_pane', side_effect=fake_capture), \
+             patch.object(bm, 'tmux_cursor',
+                          side_effect=fake_cursor or (lambda pane_id: None)), \
+             patch.object(bm, '_POLL_IDLE', 60.0), \
+             patch.object(bm, '_POLL_ACTIVE', 60.0), \
+             patch.object(bm, '_KEYSTROKE_SETTLE', settle):
+            return asyncio.run(main())
+
+
+class TestStreamPaneWake(_StreamPaneHarness):
+    def test_send_keys_wake_captures_before_poll_tick(self):
+        conn = self._make_conn()
+        captures = []
+        def fake_capture(pane_id, lines, ansi, join):
+            captures.append(time.monotonic())
+            return f'content-{len(captures)}'
+
+        async def driver():
+            woke = time.monotonic()
+            conn._last_input_mono = woke
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+            return woke
+
+        woke = self._run_stream(conn, fake_capture, driver, settle=0.01)
+        # Snapshot plus exactly one wake-triggered capture, far inside the
+        # 60s patched tick.
+        self.assertEqual(len(captures), 2)
+        self.assertLess(captures[1] - woke, 0.1)
+        self.assertEqual(conn.sent[0]['type'], 'snapshot')
+        self.assertEqual(conn.sent[1]['type'], 'update')
+        self.assertEqual(conn.sent[1]['data'], 'content-2')
+
+    def test_keystroke_burst_coalesces_into_one_capture(self):
+        conn = self._make_conn()
+        captures = []
+        def fake_capture(pane_id, lines, ansi, join):
+            captures.append(time.monotonic())
+            return f'content-{len(captures)}'
+
+        async def driver():
+            # Three keystrokes inside one settle window (0.06s).
+            for _ in range(3):
+                conn._last_input_mono = time.monotonic()
+                conn._stream_wake.set()
+                await asyncio.sleep(0.01)
+            await asyncio.sleep(0.15)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.06)
+        # Snapshot plus one coalesced capture, not one per keystroke.
+        self.assertEqual(len(captures), 2)
+
+    def test_unchanged_content_sends_no_update_on_wake(self):
+        conn = self._make_conn()
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'same'
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01)
+        # Only the snapshot: the no-change suppression still holds on wakes.
+        self.assertEqual(len(conn.sent), 1)
+        self.assertEqual(conn.sent[0]['type'], 'snapshot')
+
+    def test_cursor_fields_ride_snapshot_and_update(self):
+        conn = self._make_conn()
+        captures = []
+        def fake_capture(pane_id, lines, ansi, join):
+            captures.append(None)
+            return f'a\nb\nc\nd\ncontent-{len(captures)}'
+        def fake_cursor(pane_id):
+            return {'cursor_x': 5, 'cursor_from_end': 3}
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor)
+        # A content change keeps the combined message: cursor fields ride
+        # the full snapshot/update, never a separate cursor message.
+        self.assertEqual([m['type'] for m in conn.sent],
+                         ['snapshot', 'update'])
+        for msg in conn.sent:
+            self.assertEqual(msg['cursor_x'], 5)
+            self.assertEqual(msg['cursor_from_end'], 3)
+
+    def test_no_cursor_omits_the_fields(self):
+        conn = self._make_conn()
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'content'
+
+        async def driver():
+            return None
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01)
+        self.assertEqual(conn.sent[0]['type'], 'snapshot')
+        self.assertNotIn('cursor_x', conn.sent[0])
+        self.assertNotIn('cursor_from_end', conn.sent[0])
+
+    def test_cursor_move_alone_sends_a_cursor_message(self):
+        # vi h/j/k/l moves the cursor without changing content; the client's
+        # ghost anchor must follow without resending the unchanged capture,
+        # so the daemon emits a data-less cursor message.
+        conn = self._make_conn()
+        cursors = []
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'l1\nl2\nl3\nsame'
+        def fake_cursor(pane_id):
+            cursors.append(None)
+            return {'cursor_x': 0, 'cursor_from_end': len(cursors)}
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor)
+        self.assertEqual(len(conn.sent), 2)
+        self.assertEqual(conn.sent[1]['type'], 'cursor')
+        self.assertEqual(conn.sent[1]['pane_id'], '%0')
+        self.assertNotIn('data', conn.sent[1])
+        self.assertEqual(conn.sent[1]['cursor_from_end'], 2)
+
+    def test_unchanged_content_and_cursor_send_nothing(self):
+        conn = self._make_conn()
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'l1\nsame'
+        def fake_cursor(pane_id):
+            return {'cursor_x': 0, 'cursor_from_end': 1}
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor)
+        # Only the snapshot: no-change suppression covers the cursor too.
+        self.assertEqual(len(conn.sent), 1)
+
+    def test_cursor_going_unreadable_sends_one_fieldless_message(self):
+        # The cursor read can start failing mid-stream (tmux hiccup): the
+        # client must revert to its end-of-buffer anchor, so the daemon sends
+        # one cursor message with the fields absent, then stays quiet while
+        # the cursor remains unreadable.
+        conn = self._make_conn()
+        cursor_calls = []
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'l1\nl2\nsame'
+        def fake_cursor(pane_id):
+            cursor_calls.append(None)
+            if len(cursor_calls) == 1:
+                return {'cursor_x': 0, 'cursor_from_end': 1}
+            return None
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor)
+        # Snapshot with cursor fields, then exactly one field-less cursor
+        # message; the second wake repeats nothing (last_cursor advanced).
+        self.assertEqual(len(conn.sent), 2)
+        self.assertEqual(conn.sent[0]['type'], 'snapshot')
+        self.assertEqual(conn.sent[0]['cursor_from_end'], 1)
+        self.assertEqual(conn.sent[1], {'type': 'cursor', 'pane_id': '%0'})
+        self.assertEqual(len(cursor_calls), 3)
+
+    def test_join_subscribers_get_no_cursor(self):
+        # A -J (wrap) capture merges soft-wrapped lines, so the from-the-end
+        # mapping is unusable and the client falls back anyway; the daemon
+        # never even reads the cursor.
+        conn = self._make_conn()
+        cursor_calls = []
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'content'
+        def fake_cursor(pane_id):
+            cursor_calls.append(None)
+            return {'cursor_x': 0, 'cursor_from_end': 0}
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor, join=True)
+        self.assertEqual(cursor_calls, [])
+        self.assertNotIn('cursor_from_end', conn.sent[0])
+
+    def test_cursor_beyond_capture_is_dropped_in_stream(self):
+        # A trimming tmux (fewer capture lines than cursor_from_end + 1
+        # implies) degrades to the client's end-of-buffer anchor: the
+        # fields are dropped and no cursor message fires.
+        conn = self._make_conn()
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'one\ntwo'
+        def fake_cursor(pane_id):
+            return {'cursor_x': 0, 'cursor_from_end': 5}
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor)
+        self.assertEqual(len(conn.sent), 1)
+        self.assertEqual(conn.sent[0]['type'], 'snapshot')
+        self.assertNotIn('cursor_x', conn.sent[0])
+        self.assertNotIn('cursor_from_end', conn.sent[0])
+
+
+# ---------------------------------------------------------------------------
+# _diff_line_ops: line-wise diff for patch subscribers
+# ---------------------------------------------------------------------------
+
+def _apply_ops(old, ops):
+    """Reference client: apply ops in reverse so old-array indices stay valid."""
+    new = list(old)
+    for op in reversed(ops):
+        new[op['start']:op['end']] = op.get('lines', [])
+    return new
+
+
+class TestDiffLineOps(unittest.TestCase):
+    def test_equal_lists_yield_no_ops(self):
+        self.assertEqual(bm._diff_line_ops(['a', 'b', ''], ['a', 'b', '']), [])
+
+    def test_appended_line_is_one_insert(self):
+        old = ['$ ls', '']
+        new = ['$ ls', 'a.txt', '']
+        ops = bm._diff_line_ops(old, new)
+        # difflib anchors the insert before the trailing '' rather than
+        # after it; both encodings rebuild the same list.
+        self.assertEqual(ops, [{'op': 'insert', 'start': 1, 'end': 1,
+                                'lines': ['a.txt']}])
+        self.assertEqual(_apply_ops(old, ops), new)
+
+    def test_blank_line_appended_after_tail_is_an_insert_at_old_length(self):
+        # When the old trailing '' is absorbed into a longer equal block,
+        # difflib anchors the insert after the old tail (start == end ==
+        # len(old)). The client's applyPatch must then re-render the old
+        # tail span with its newline: it stays mid-buffer otherwise.
+        old = ['a', '']
+        new = ['a', '', 'x', '']
+        ops = bm._diff_line_ops(old, new)
+        self.assertEqual(ops, [{'op': 'insert', 'start': 2, 'end': 2,
+                                'lines': ['x', '']}])
+        self.assertEqual(_apply_ops(old, ops), new)
+
+    def test_replaced_line_carries_no_neighbors(self):
+        old = ['a', 'b', 'c', '']
+        new = ['a', 'B', 'c', '']
+        ops = bm._diff_line_ops(old, new)
+        self.assertEqual(ops, [{'op': 'replace', 'start': 1, 'end': 2,
+                                'lines': ['B']}])
+        self.assertEqual(_apply_ops(old, ops), new)
+
+    def test_delete_op_has_no_lines(self):
+        old = ['a', 'b', 'c', '']
+        new = ['a', 'c', '']
+        ops = bm._diff_line_ops(old, new)
+        self.assertEqual(ops, [{'op': 'delete', 'start': 1, 'end': 2}])
+        self.assertEqual(_apply_ops(old, ops), new)
+
+    def test_scroll_is_a_delete_plus_insert_not_a_rewrite(self):
+        # The steady-state case at full history: one line appended, every
+        # line shifts up. The diff must ride the offset equal block, not
+        # replace the whole buffer.
+        old = [f'line-{i}' for i in range(50)] + ['']
+        new = [f'line-{i}' for i in range(1, 51)] + ['']
+        ops = bm._diff_line_ops(old, new)
+        self.assertEqual(_apply_ops(old, ops), new)
+        patched = sum(len(l) for op in ops for l in op.get('lines', []))
+        self.assertLess(patched, len('\n'.join(new)) // 4)
+
+    def test_repeated_blank_lines_do_not_degrade_the_diff(self):
+        # Blank lines repeat far past SequenceMatcher's autojunk threshold;
+        # with autojunk on they never match and a scroll turns into a
+        # whole-buffer replace.
+        old = [s for i in range(120) for s in (f'line-{i}', '')] + ['']
+        new = old[2:-1] + ['line-120', '', '']
+        ops = bm._diff_line_ops(old, new)
+        self.assertEqual(_apply_ops(old, ops), new)
+        patched = sum(len(l) for op in ops for l in op.get('lines', []))
+        self.assertLess(patched, len('\n'.join(new)) // 4)
+
+
+# ---------------------------------------------------------------------------
+# Pane stream: patch opt-in (line-diff updates)
+# ---------------------------------------------------------------------------
+
+def _longline(i):
+    # Realistic capture-line lengths: the fallback threshold compares the
+    # encoded ops (which carry fixed per-op overhead) against the encoded
+    # content, so toy two-character lines would always fall back to a full
+    # update.
+    return f'line-{i}-' + 'x' * 40
+
+
+class TestStreamPanePatch(_StreamPaneHarness):
+    def _run_two_captures(self, first, second, fake_cursor=None,
+                          patch_mode=True):
+        conn = self._make_conn()
+        captures = []
+        def fake_capture(pane_id, lines, ansi, join):
+            captures.append(None)
+            return first if len(captures) == 1 else second
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor, patch_mode=patch_mode)
+        return conn
+
+    def test_opted_in_change_sends_patch_ops_after_full_snapshot(self):
+        first  = f'{_longline(0)}\n{_longline(1)}\n'
+        second = f'{first}{_longline(2)}\n'
+        conn = self._run_two_captures(first, second)
+        self.assertEqual([m['type'] for m in conn.sent], ['snapshot', 'patch'])
+        self.assertEqual(conn.sent[0]['data'], first)
+        msg = conn.sent[1]
+        self.assertEqual(msg['pane_id'], '%0')
+        self.assertNotIn('data', msg)
+        self.assertEqual(msg['ops'], [{'op': 'insert', 'start': 2, 'end': 2,
+                                       'lines': [_longline(2)]}])
+        self.assertEqual(_apply_ops(first.split('\n'), msg['ops']),
+                         second.split('\n'))
+
+    def test_without_opt_in_the_full_update_is_unchanged(self):
+        conn = self._run_two_captures('l1\nl2\n', 'l1\nl2\nl3\n',
+                                      patch_mode=False)
+        self.assertEqual(conn.sent[1],
+                         {'type': 'update', 'pane_id': '%0',
+                          'data': 'l1\nl2\nl3\n'})
+
+    def test_whole_buffer_rewrite_falls_back_to_full_update(self):
+        # Every line different: the encoded ops outweigh the content, so the
+        # daemon sends a full update instead of a patch as large as one.
+        conn = self._run_two_captures('aaaa\nbbbb\ncccc\n',
+                                      'dddd\neeee\nffff\n')
+        self.assertEqual(conn.sent[1],
+                         {'type': 'update', 'pane_id': '%0',
+                          'data': 'dddd\neeee\nffff\n'})
+
+    def test_box_drawing_pane_still_patches_a_one_line_change(self):
+        # Non-ASCII escapes to \uXXXX (6 bytes per char) under json.dumps;
+        # the threshold compares encoded ops against encoded content, so the
+        # escaping inflates both sides alike. Comparing encoded ops against
+        # raw character count would tip this one-line change (one 40-char
+        # line escaped to ~285 bytes vs 123 content characters) into a full
+        # update.
+        lines = ['│' + '─' * 38 + '│' for _ in range(3)]
+        first = '\n'.join(lines) + '\n'
+        changed = '│ ok' + '─' * 35 + '│'
+        second = '\n'.join([lines[0], changed, lines[2]]) + '\n'
+        conn = self._run_two_captures(first, second)
+        msg = conn.sent[1]
+        self.assertEqual(msg['type'], 'patch')
+        self.assertEqual(_apply_ops(first.split('\n'), msg['ops']),
+                         second.split('\n'))
+
+    def test_cursor_fields_ride_the_patch(self):
+        def fake_cursor(pane_id):
+            return {'cursor_x': 5, 'cursor_from_end': 1}
+        first  = f'{_longline(0)}\n{_longline(1)}\n'
+        second = f'{first}{_longline(2)}\n'
+        conn = self._run_two_captures(first, second,
+                                      fake_cursor=fake_cursor)
+        msg = conn.sent[1]
+        self.assertEqual(msg['type'], 'patch')
+        self.assertEqual(msg['cursor_x'], 5)
+        self.assertEqual(msg['cursor_from_end'], 1)
+
+    def test_cursor_move_alone_still_sends_a_cursor_message(self):
+        conn = self._make_conn()
+        cursors = []
+        def fake_capture(pane_id, lines, ansi, join):
+            return 'l1\nl2\nsame\n'
+        def fake_cursor(pane_id):
+            cursors.append(None)
+            return {'cursor_x': 0, 'cursor_from_end': len(cursors) % 2}
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        self._run_stream(conn, fake_capture, driver, settle=0.01,
+                         fake_cursor=fake_cursor, patch_mode=True)
+        self.assertEqual(conn.sent[1]['type'], 'cursor')
+        self.assertNotIn('ops', conn.sent[1])
+
+    def test_unchanged_content_sends_nothing(self):
+        conn = self._run_two_captures('same\n', 'same\n')
+        self.assertEqual([m['type'] for m in conn.sent], ['snapshot'])
+
+    def test_wake_produces_a_patch_not_a_full_update(self):
+        # The keystroke-wake path and the patch encoding compose: an echoed
+        # keystroke arrives as one replaced prompt line, which is the
+        # latency win this exists for.
+        history = '\n'.join(_longline(i) for i in range(8))
+        first  = f'{history}\n$ l\n'
+        second = f'{history}\n$ ls\n'
+        conn = self._run_two_captures(first, second)
+        self.assertEqual(conn.sent[1]['type'], 'patch')
+        self.assertEqual(conn.sent[1]['ops'],
+                         [{'op': 'replace', 'start': 8, 'end': 9,
+                           'lines': ['$ ls']}])
+        self.assertEqual(_apply_ops(first.split('\n'), conn.sent[1]['ops']),
+                         second.split('\n'))
 
 
 # ---------------------------------------------------------------------------

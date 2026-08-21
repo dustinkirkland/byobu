@@ -5,6 +5,7 @@ import argparse
 import asyncio
 import base64
 from datetime import datetime
+import difflib
 import getpass
 import glob
 import hmac
@@ -371,6 +372,51 @@ def tmux_capture_pane(pane_id: str, history_lines: int = 200, ansi: bool = False
     if not ansi:
         raw = strip_ansi(raw)
     return raw
+
+def tmux_cursor(pane_id: str) -> dict | None:
+    """Cursor position for the subscribed pane, pre-mapped for the client.
+
+    #{cursor_y} is a row on the visible screen; a piped capture-pane keeps
+    trailing blank screen rows (_clamp_cursor defends against a tmux that
+    trims them), so the visible screen is exactly the capture's trailing
+    #{pane_height} lines and the cursor's line sits
+    pane_height - 1 - cursor_y lines from the end of the capture. Sending
+    that from-the-end index keeps the client mapping independent of how much
+    history the capture holds. cursor_x rides along for clients that want
+    column fidelity. None on any parse trouble: the client then falls back
+    to its end-of-buffer anchor. The capture and this call are two separate
+    tmux invocations, so the cursor can be one screen-state newer than the
+    content it rides with; it self-corrects on the next poll.
+    """
+    raw = _tmux("display-message", "-p", "-t", pane_id,
+                "#{cursor_x}\t#{cursor_y}\t#{pane_height}")
+    parts = raw.strip().split("\t")
+    if len(parts) != 3:
+        return None
+    try:
+        x, y, height = (int(p) for p in parts)
+    except ValueError:
+        return None
+    if not 0 <= y < height:
+        return None
+    return {"cursor_x": x, "cursor_from_end": height - 1 - y}
+
+def _clamp_cursor(cursor: dict | None, content: str) -> dict | None:
+    """Drop the cursor when the capture cannot contain its line.
+
+    tmux_cursor's mapping assumes a piped capture-pane keeps trailing blank
+    screen rows (verified on tmux 3.7b, but version behavior, not spec). A
+    tmux that trims them would make cursor_from_end point into scrollback;
+    dropping the fields degrades to the client's end-of-buffer anchor.
+    """
+    if cursor is None:
+        return None
+    if not content:
+        return None
+    lines = content.count("\n") + (0 if content.endswith("\n") else 1)
+    if cursor["cursor_from_end"] >= lines:
+        return None
+    return cursor
 
 def tmux_new_session(name: str) -> None:
     _tmux("new-session", "-d", "-s", name)
@@ -757,6 +803,17 @@ _TMUX_ID_RE = re.compile(r"^[$@%]\d+$")
 _WS_RATE_WINDOW = 1.0   # seconds
 _WS_RATE_LIMIT  = 20    # max messages per window
 
+# Pane stream cadence. _POLL_IDLE is the background tick; while keystrokes
+# are flowing (a send_keys within the last _POLL_ACTIVE_WINDOW seconds) the
+# stream ticks at _POLL_ACTIVE instead. A send_keys for the subscribed pane
+# also wakes the stream immediately: the loop waits _KEYSTROKE_SETTLE before
+# capturing so the pty echo lands in the capture, and keystrokes arriving
+# inside one settle window are coalesced into a single capture.
+_POLL_IDLE = 0.5            # seconds between captures with no recent input
+_POLL_ACTIVE = 0.15         # seconds between captures while input flows
+_POLL_ACTIVE_WINDOW = 2.0   # seconds of fast cadence after a send_keys
+_KEYSTROKE_SETTLE = 0.03    # seconds between key injection and capture
+
 def _valid_tmux_id(s: str) -> bool:
     return bool(s and _TMUX_ID_RE.match(s))
 
@@ -765,6 +822,27 @@ _BYOBU_METRIC_RE = re.compile(r'^[a-zA-Z0-9_]+$')
 
 def _valid_tmux_name(s: str) -> bool:
     return bool(s) and not _TMUX_NAME_BAD.search(s)
+
+
+def _diff_line_ops(old: list[str], new: list[str]) -> list[dict]:
+    """Line-wise ops that turn old into new, for patch subscribers.
+
+    Each op carries indices into the old list ([start, end) half-open) in
+    ascending start order; the client applies them in reverse so earlier
+    indices stay valid without re-mapping. autojunk stays off: a capture
+    repeats blank lines far past the popularity heuristic's 1% threshold,
+    which would junk them and shred a clean scroll into replaces.
+    """
+    ops = []
+    matcher = difflib.SequenceMatcher(None, old, new, autojunk=False)
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == "equal":
+            continue
+        op = {"op": tag, "start": i1, "end": i2}
+        if tag != "delete":
+            op["lines"] = new[j1:j2]
+        ops.append(op)
+    return ops
 
 
 class WsHandler(tornado.websocket.WebSocketHandler):
@@ -791,6 +869,9 @@ class WsHandler(tornado.websocket.WebSocketHandler):
 
     def open(self):
         self._stream_task: asyncio.Task | None = None
+        self._stream_pane_id: str | None = None
+        self._stream_wake = asyncio.Event()
+        self._last_input_mono = 0.0
         self._topo_task: asyncio.Task | None = None
         self._auth_timer: asyncio.Task | None = None
         self._rate_window_start = time.monotonic()
@@ -870,17 +951,79 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                 pass
 
     async def _stream_pane(self, pane_id: str, history_lines: int, ansi: bool = False,
-                           join: bool = False):
+                           join: bool = False, patch: bool = False):
         try:
+            self._stream_wake.clear()  # drop wakes aimed at a previous subscription
             content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
-            self._send({"type": "snapshot", "pane_id": pane_id, "data": content})
-            last = content
+            # Join (-J) merges soft-wrapped lines, so screen rows no longer
+            # map 1:1 to capture lines and the client falls back to its
+            # end-of-buffer anchor anyway; skip the cursor entirely.
+            cursor = None if join else _clamp_cursor(
+                await asyncio.to_thread(tmux_cursor, pane_id), content)
+            msg = {"type": "snapshot", "pane_id": pane_id, "data": content}
+            if cursor:
+                msg.update(cursor)
+            self._send(msg)
+            last_content, last_cursor = content, cursor
+            # Patch subscribers get line-diff ops instead of full updates; the
+            # daemon tracks what it last sent, so no client acks are needed.
+            # Both sides split on '\n' so op indices mean the same lines.
+            last_lines = content.split("\n") if patch else None
             while True:
-                await asyncio.sleep(0.5)
+                if time.monotonic() - self._last_input_mono < _POLL_ACTIVE_WINDOW:
+                    interval = _POLL_ACTIVE
+                else:
+                    interval = _POLL_IDLE
+                try:
+                    await asyncio.wait_for(self._stream_wake.wait(), timeout=interval)
+                except asyncio.TimeoutError:
+                    # No clear() on this path: a wake racing the timeout must
+                    # survive to the next iteration, where its capture gets
+                    # the settle delay.
+                    pass
+                else:
+                    # Keystroke wake: let the shell echo land before capturing.
+                    # Wakes arriving inside the settle are absorbed by the
+                    # clear(), so a burst produces one capture.
+                    await asyncio.sleep(_KEYSTROKE_SETTLE)
+                    self._stream_wake.clear()
                 content = await asyncio.to_thread(tmux_capture_pane, pane_id, history_lines, ansi, join)
-                if content != last:
-                    self._send({"type": "update", "pane_id": pane_id, "data": content})
-                    last = content
+                cursor = None if join else _clamp_cursor(
+                    await asyncio.to_thread(tmux_cursor, pane_id), content)
+                if content != last_content:
+                    if patch:
+                        new_lines = content.split("\n")
+                        ops = _diff_line_ops(last_lines, new_lines)
+                        # A diff at least as large as the content buys
+                        # nothing; fall back to a full update, which also
+                        # resyncs a client that lost its line state. Both
+                        # sides go through json.dumps with default
+                        # ensure_ascii, matching how _send encodes them on
+                        # the wire, so \uXXXX escaping of non-ASCII (box
+                        # drawing) inflates ops and content alike instead of
+                        # biasing such panes toward full updates.
+                        if len(json.dumps(ops)) < len(json.dumps(content)):
+                            msg = {"type": "patch", "pane_id": pane_id, "ops": ops}
+                        else:
+                            msg = {"type": "update", "pane_id": pane_id, "data": content}
+                        last_lines = new_lines
+                    else:
+                        msg = {"type": "update", "pane_id": pane_id, "data": content}
+                    if cursor:
+                        msg.update(cursor)
+                    self._send(msg)
+                elif cursor != last_cursor:
+                    # Bare cursor move (vi h/j/k/l): the content is unchanged,
+                    # so a full update would make the client re-render (and
+                    # destroy any in-progress text selection) for nothing.
+                    # A data-less cursor message moves the ghost anchor alone;
+                    # fields absent means the cursor became unreadable and the
+                    # client falls back to its end-of-buffer anchor.
+                    msg = {"type": "cursor", "pane_id": pane_id}
+                    if cursor:
+                        msg.update(cursor)
+                    self._send(msg)
+                last_content, last_cursor = content, cursor
         except asyncio.CancelledError:
             raise
         except Exception:
@@ -960,11 +1103,15 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                         lines = 300
                     ansi = bool(msg.get("ansi", False))
                     join = bool(msg.get("join", False))
+                    # Opt-in like join was: clients that never send it keep
+                    # getting full updates, byte-identical to before.
+                    patch = bool(msg.get("patch", False))
                     if self._stream_task:
                         self._stream_task.cancel()
                         await asyncio.gather(self._stream_task, return_exceptions=True)
+                    self._stream_pane_id = pane_id
                     self._stream_task = asyncio.ensure_future(
-                        self._stream_pane(pane_id, lines, ansi, join)
+                        self._stream_pane(pane_id, lines, ansi, join, patch)
                     )
 
             elif mtype == "new_session":
@@ -1056,6 +1203,11 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     literal = bool(msg.get("literal", True))
                     await asyncio.to_thread(tmux_send_keys, pane_id, keys, enter, literal)
                     del keys  # release sensitive content as early as possible
+                    if pane_id == self._stream_pane_id:
+                        # Wake the pane stream for an immediate capture and
+                        # start the fast-cadence window.
+                        self._last_input_mono = time.monotonic()
+                        self._stream_wake.set()
 
             elif mtype == "rename_window":
                 wid = msg.get("window_id", "")
