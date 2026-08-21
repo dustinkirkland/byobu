@@ -977,9 +977,9 @@ function setKbdMode(mode) {
   setTimeout(() => inp.focus(), 50);
 }
 
-function showKbdModePopup() {
+function showKbdModePopup(anchor = btnKbdMode) {
   hideEscapePopup();
-  const rect = btnKbdMode.getBoundingClientRect();
+  const rect = anchor.getBoundingClientRect();
   kbdModePopup.style.display = 'flex';
   kbdModePopup.style.right   = (window.innerWidth - rect.right) + 'px';
   kbdModePopup.style.bottom  = (window.innerHeight - rect.top + 8) + 'px';
@@ -993,10 +993,14 @@ btnKbdMode.addEventListener('click', e => {
   e.stopPropagation();
   kbdModePopup.style.display === 'none' ? showKbdModePopup() : hideKbdModePopup();
 });
-// Same cycle from the key bar (the row's button is display:none while the
-// row is collapsed). pointerdown preventDefault keeps focus in the text box
-// like the other bar buttons; the shared handler refocuses anyway.
-keybarKbdMode.addEventListener('click', () => btnKbdMode.click());
+// Same popup from the key bar, anchored to the bar's own button: the row's
+// button is display:none while the row is collapsed, so its rect is unusable
+// as an anchor there. pointerdown preventDefault keeps focus in the text box
+// like the other bar buttons.
+keybarKbdMode.addEventListener('click', e => {
+  e.stopPropagation();
+  kbdModePopup.style.display === 'none' ? showKbdModePopup(keybarKbdMode) : hideKbdModePopup();
+});
 keybarKbdMode.addEventListener('pointerdown', e => e.preventDefault());
 
 kbdModePopupButtons[0].addEventListener('click', () => { setKbdMode(0); hideKbdModePopup(); });
@@ -1078,7 +1082,8 @@ keybarWrap.addEventListener('pointerdown', e => e.preventDefault());
 document.addEventListener('click', () => { hideEscapePopup(); hideKbdModePopup(); });
 document.addEventListener('touchstart', e => {
   if (!escapePopup.contains(e.target) && e.target !== btnEscape) hideEscapePopup();
-  if (!kbdModePopup.contains(e.target) && e.target !== btnKbdMode) hideKbdModePopup();
+  if (!kbdModePopup.contains(e.target) && e.target !== btnKbdMode
+      && e.target !== keybarKbdMode) hideKbdModePopup();
 }, { passive: true });
 
 // ── key bar (Esc, Ctrl, Tab, arrows; direct key mode for TUIs like vi) ─────
