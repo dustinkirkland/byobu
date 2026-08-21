@@ -389,16 +389,50 @@ def tmux_cursor(pane_id: str) -> dict | None:
     tmux invocations, so the cursor can be one screen-state newer than the
     content it rides with; it self-corrects on the next poll.
     """
-    return _cursor_from_raw(_tmux("display-message", "-p", "-t", pane_id, _CURSOR_FMT))
+    return _cursor_from_raw(_cursor_fields(pane_id))
 
-_CURSOR_FMT = "#{cursor_x} #{cursor_y} #{pane_height}"
+_CURSOR_FMT = "#{cursor_x} #{cursor_y} #{pane_height} #{pane_width}"
+
+def _join_cursor(content: str, x: int, y: int, height: int,
+                 width: int) -> dict | None:
+    """Map a screen cursor into joined (-J) capture coordinates.
+
+    A joined capture merges soft-wrapped rows, so #{cursor_y} no longer
+    indexes capture lines. Each joined line occupies ceil(cells/width)
+    screen rows; walking joined lines from the capture's end and summing
+    those rows locates the line holding the cursor's row, and the row's
+    position within that line turns cursor_x into an offset into the joined
+    line. Cells are approximated by code points of the ANSI-stripped line,
+    the same cell-vs-code-point approximation the client's anchor already
+    makes, so double-width characters drift the anchor the same way they
+    always did. None when the geometry is unusable; the client then falls
+    back to its end-of-buffer anchor.
+    """
+    if width <= 0 or not 0 <= y < height:
+        return None
+    lines = strip_ansi(content).split("\n")
+    if lines and lines[-1] == "":
+        lines.pop()                        # the capture's closing newline
+    rows_below = height - 1 - y
+    acc = 0
+    for i in range(len(lines) - 1, -1, -1):
+        rows = max(1, -(-len(lines[i]) // width))
+        if acc + rows > rows_below:
+            row_from_top = rows - 1 - (rows_below - acc)
+            return {"cursor_x": row_from_top * width + x,
+                    "cursor_from_end": len(lines) - 1 - i}
+        acc += rows
+    return None
+
+def _cursor_fields(pane_id: str) -> str:
+    return _tmux("display-message", "-p", "-t", pane_id, _CURSOR_FMT)
 
 def _cursor_from_raw(raw: str) -> dict | None:
     parts = raw.split()
-    if len(parts) != 3:
+    if len(parts) != 4:
         return None
     try:
-        x, y, height = (int(p) for p in parts)
+        x, y, height, _width = (int(p) for p in parts)
     except ValueError:
         return None
     if not 0 <= y < height:
@@ -1069,6 +1103,25 @@ async def cm_cursor(session_id: str | None, pane_id: str) -> dict | None:
     return await asyncio.to_thread(tmux_cursor, pane_id)
 
 
+async def cm_join_cursor(session_id: str | None, pane_id: str,
+                         content: str) -> dict | None:
+    """Cursor for a joined (-J) capture, mapped by _join_cursor."""
+    raw = None
+    if session_id and _valid_tmux_id(pane_id):
+        raw = await _MONITOR.run(
+            session_id, f'display-message -p -t {pane_id} "{_CURSOR_FMT}"')
+    if raw is None:
+        raw = await asyncio.to_thread(_cursor_fields, pane_id)
+    parts = raw.split()
+    if len(parts) != 4:
+        return None
+    try:
+        x, y, height, width = (int(p) for p in parts)
+    except ValueError:
+        return None
+    return _join_cursor(content, x, y, height, width)
+
+
 # Pane stream cadence. _POLL_IDLE is the background tick; while keystrokes
 # are flowing (a send_keys within the last _POLL_ACTIVE_WINDOW seconds) the
 # stream ticks at _POLL_ACTIVE instead. A send_keys for the subscribed pane
@@ -1232,10 +1285,11 @@ class WsHandler(tornado.websocket.WebSocketHandler):
             session_id = await _MONITOR.ensure(pane_id)
             content = await cm_capture_pane(session_id, pane_id, history_lines, ansi, join)
             # Join (-J) merges soft-wrapped lines, so screen rows no longer
-            # map 1:1 to capture lines and the client falls back to its
-            # end-of-buffer anchor anyway; skip the cursor entirely.
-            cursor = None if join else _clamp_cursor(
-                await cm_cursor(session_id, pane_id), content)
+            # map 1:1 to capture lines; cm_join_cursor re-maps the cursor
+            # into joined coordinates instead.
+            cursor = _clamp_cursor(
+                await (cm_join_cursor(session_id, pane_id, content) if join
+                       else cm_cursor(session_id, pane_id)), content)
             msg = {"type": "snapshot", "pane_id": pane_id, "data": content}
             if cursor:
                 msg.update(cursor)
@@ -1278,8 +1332,9 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                         await asyncio.sleep(floor)
                         self._stream_wake.clear()
                 content = await cm_capture_pane(session_id, pane_id, history_lines, ansi, join)
-                cursor = None if join else _clamp_cursor(
-                    await cm_cursor(session_id, pane_id), content)
+                cursor = _clamp_cursor(
+                    await (cm_join_cursor(session_id, pane_id, content) if join
+                           else cm_cursor(session_id, pane_id)), content)
                 last_capture_mono = time.monotonic()
                 if content != last_content:
                     if patch:

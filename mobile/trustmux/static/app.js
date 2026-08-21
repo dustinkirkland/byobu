@@ -1415,17 +1415,17 @@ function _ghostSync() {
   // Cursor-accurate anchor: the daemon maps #{cursor_y} against
   // #{pane_height} into cursor_from_end, the cursor's capture line as a
   // from-the-end index, so the ghost lands on the real cursor line even in
-  // full-screen TUIs whose cursor sits mid-screen. Unusable with wrap on:
-  // the -J join capture merges soft-wrapped lines, so screen rows no longer
-  // map 1:1 to capture lines and the index would point at the wrong line;
-  // fall back to end-of-buffer then, as when the fields are missing.
+  // full-screen TUIs whose cursor sits mid-screen. With wrap on the daemon
+  // re-maps the cursor into joined-capture coordinates (cm_join_cursor), so
+  // the same anchor math applies; a daemon that cannot map (or predates the
+  // mapping) omits the fields and this falls back to end-of-buffer.
   // cursor_x places the ghost at the cursor's column within that line: TUIs
   // that pad the cursor line to the pane width (a bordered input box) put
   // line-end at the right border while typing lands mid-line. A mid-line
   // insert shifts the rest of the line right by the ghost's width while it
   // exists; with streaming the tail is normally empty, so that is the caret
   // block only, accepted.
-  if (!wrapOn && Number.isInteger(_cursorFromEnd) && _cursorFromEnd >= 0
+  if (Number.isInteger(_cursorFromEnd) && _cursorFromEnd >= 0
       && Number.isInteger(_cursorX) && _cursorX >= 0) {
     const all = output.textContent;
     // Offset of the end of the target line: step back one newline per
