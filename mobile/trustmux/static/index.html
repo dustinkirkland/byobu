@@ -329,6 +329,22 @@
     }
     #output.placeholder { white-space: normal; color: var(--term-dim); font-style: italic; }
 
+    /* ── direct-mode composition ghost (attached by _ghostSync in app.js) ──
+       un-streamed tail of the text box shown at the end of the pane's last
+       line; with composition streaming this is normally empty.
+       Dim plus dotted underline: distinct in both themes, never color
+       alone. Explicit normal weight/style and transparent background so an
+       ANSI-styled parent span cannot restyle it; pre-wrap so a long ghost
+       wraps instead of widening a non-wrap pane. */
+    #compose-ghost {
+      color: var(--term-dim); background: transparent;
+      font-weight: normal; font-style: normal;
+      text-decoration: underline dotted;
+      white-space: pre-wrap; word-break: break-all;
+      /* containing block for the absolutely positioned ::after caret */
+      position: relative;
+    }
+
     /* ── byobu status line ── */
     #statusline {
       display: flex; align-items: center; justify-content: space-between;
@@ -435,15 +451,77 @@
          so keys scroll under it instead of showing through */
       position: sticky; right: 0; background: var(--bg2);
       border-color: transparent;
+      /* clearance so the last real button can scroll fully out from under
+         the pinned ✕: at max scroll the ✕ otherwise paints over it (its
+         opaque pinned box lands on the rightmost button). Margin on the ✕
+         rather than padding-right on #keybar: browsers are inconsistent
+         about honoring a scroll container's inline-end padding, a margin
+         between flex items always counts as scrollable content. 44px
+         matches the ✕'s own min-width. No sticky-left element exists. */
+      margin-left: 44px;
       /* var(--text), not --dim: --dim over --bg2 is ~2.9:1, the contrast
          class e894f3db removed, and this X is the bar's exit path */
       color: var(--text); font-size: 15px;
     }
     #keybar #keybar-close:active { background: var(--bg3); color: var(--text); }
-    /* direct mode cues on the input row: accent border on the row, Send
-       recedes (it still sends a chunk, but keystrokes bypass it) */
+    /* direct mode cues on the input row while it is still visible (password
+       mode): accent border on the row, Send recedes (it still sends a
+       chunk, but keystrokes bypass it). In non-password direct mode the
+       row-collapse rules below override both. */
     body.keybar-on #inputbar { border-top: 1px solid var(--accent); }
     body.keybar-on #btn-send:not(:disabled) { opacity: 0.45; }
+    /* direct mode: the input row leaves the layout so the pane gets its
+       space; the ghost caret in the pane is the only prompt. The text box
+       must stay rendered and focusable (Android IMEs misbehave when their
+       anchor collapses), so it goes out of flow instead of display:none: a
+       transparent 2px sliver absolutely positioned at the bottom of #app,
+       which syncViewportToKeyboard pins to the visual viewport, so the
+       sliver always stays on screen (the xterm.js hidden-textarea pattern).
+       The password box (kbdMode 2, body.kbd-pwd, toggled by applyKbdMode)
+       keeps the visible row exactly as before; only #cmd ever collapses. */
+    body.keybar-on:not(.kbd-pwd) #inputbar { padding: 0; border-top: none; }
+    body.keybar-on:not(.kbd-pwd) #btn-right-col,
+    body.keybar-on:not(.kbd-pwd) #btn-send { display: none; }
+    body.keybar-on:not(.kbd-pwd) #cmd {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      height: 2px; min-height: 0; padding: 0; border: none;
+      opacity: 0; caret-color: transparent; overflow: hidden;
+    }
+    /* with the row gone the key bar is the bottom edge: it takes over the
+       accent cue and the home-indicator clearance the row provided */
+    body.keybar-on:not(.kbd-pwd) #keybar {
+      border-top-color: var(--accent);
+      padding-bottom: max(6px, env(safe-area-inset-bottom));
+    }
+    /* ghost caret: block cursor at the ghost position, the pane-side signal
+       that direct-mode typing is live. Filled while the box is focused AND
+       the keyboard is actually open (body.kbd-open, set from visualViewport:
+       Android's back gesture dismisses the keyboard without blurring, so
+       focus alone would lie); hollow otherwise, meaning tap the pane to
+       summon the keyboard. Hardware and floating keyboards never shrink the
+       visual viewport, so kbd-open never sets there and the caret stays
+       hollow while typing is live; that is a known limit, not a bug.
+       ::after so the caret lives and dies with #compose-ghost and the
+       cache-strip rules need no change. Absolutely positioned (off the
+       ghost's own inline box) so it can NEVER change the line-box height:
+       the earlier inline-block caret overflowed the line box, growing the
+       cursor line whenever the ghost existed and shrinking it when the tail
+       emptied, a 1px whole-screen jitter per keystroke via #output's
+       scrollHeight and the bottom anchor. Out of flow also keeps the
+       ghost's dotted underline off it (text-decoration does not propagate
+       to out-of-flow descendants). left:100% of the ghost's box puts it
+       right after the ghost text, on the anchor itself when empty. */
+    #compose-ghost::after {
+      content: ""; position: absolute;
+      left: 100%; bottom: 0; width: 0.6em; height: 1.1em;
+      box-shadow: inset 0 0 0 1px var(--term-dim);
+    }
+    body.kbd-open.cmd-focused #compose-ghost::after {
+      box-shadow: none; background: var(--term-dim);
+    }
+    /* password mode shows the real input row again; the key bar mirrors of
+       the mode and wrap buttons would duplicate it */
+    body.kbd-pwd #keybar-kbd-mode, body.kbd-pwd #keybar-wrap { display: none; }
 
 
     /* ── pairing overlay ── */
@@ -756,6 +834,10 @@
     <button data-key="Right" title="Right">→</button>
     <button data-key="BSpace" title="Backspace">⌫</button>
     <button data-key="Enter" title="Enter">⏎</button>
+    <!-- direct mode hides the input row's button column, so the keyboard-mode
+         popup opener and the wrap toggle live on the bar too -->
+    <button id="keybar-kbd-mode" title="Terminal mode: tap to choose a mode">$_</button>
+    <button id="keybar-wrap" title="Toggle line wrap">⤶</button>
     <button id="keybar-close" title="Close key bar: back to chunked input">✕</button>
   </div>
 
@@ -769,7 +851,7 @@
            disabled>
     <div id="btn-right-col">
       <button id="btn-escape" class="icon-btn" title="Esc / Ctrl-C / key bar">⎋</button>
-      <button id="btn-kbd-mode" class="icon-btn" title="Terminal mode — tap to enable spell check">$_</button>
+      <button id="btn-kbd-mode" class="icon-btn" title="Terminal mode: tap to choose a mode">$_</button>
     </div>
     <button id="btn-send" title="Send" disabled>↵</button>
   </div>

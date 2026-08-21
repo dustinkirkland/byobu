@@ -480,11 +480,14 @@ class TestTmuxWriteOps(unittest.TestCase):
         self.assertIn('split-window', calls[0])
         self.assertIn('@1', calls[0])
 
-    def test_send_keys_with_enter_makes_two_calls(self):
+    def test_send_keys_with_enter_sends_keys_then_enter(self):
+        # A shell-prompt probe (display-message) may run between the two
+        # send-keys; only the send-keys calls are the contract.
         calls = self._capture(bm.tmux_send_keys, '%0', 'ls', True)
-        self.assertEqual(len(calls), 2)
-        self.assertIn('ls', calls[0])
-        self.assertIn('Enter', calls[1])
+        sends = [c for c in calls if 'send-keys' in c]
+        self.assertEqual(len(sends), 2)
+        self.assertIn('ls', sends[0])
+        self.assertIn('Enter', sends[1])
 
     def test_send_keys_without_enter_makes_one_call(self):
         calls = self._capture(bm.tmux_send_keys, '%0', 'ls', False)
