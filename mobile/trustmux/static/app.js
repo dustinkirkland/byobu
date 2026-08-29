@@ -82,6 +82,18 @@ function _subscribeSettled() {
 let _currentPaneRawLines = [];
 let _currentPaneRawLinesFor = null;
 
+// How many of a pane's _currentPaneRawLines have already been read aloud
+// (speakNewOutput() below reads from this cursor to the end, then advances
+// it). Reset to "fully read" on every 'snapshot' or 'update' -- both mean
+// the captured window was replaced wholesale rather than incrementally
+// appended, so old index positions don't correspond to the same lines
+// anymore; treating a full replacement as "nothing new to read" avoids
+// re-narrating content already visible on screen (e.g. right after
+// switching to a pane) rather than genuinely new since last read. Only
+// 'delta' messages are true appends, so only they leave this cursor alone
+// for speakNewOutput() to catch up on later.
+const _spokenLineCounts = new Map();
+
 // ── offline / connectivity helpers ────────────────────────────────────────
 let _serverVersion = null;
 
@@ -224,6 +236,9 @@ const cmdInput      = document.getElementById('cmd');
 const pwdInput      = document.getElementById('pwd');
 const btnSend       = document.getElementById('btn-send');
 const btnKbdMode    = document.getElementById('btn-kbd-mode');
+const btnMic        = document.getElementById('btn-mic');
+const voiceConsent     = document.getElementById('voice-consent');
+const voiceConsentAck  = document.getElementById('voice-consent-ack');
 const machineSelect    = document.getElementById('machine-select');
 const btnInstall       = document.getElementById('btn-install');
 const iosInstallTip    = document.getElementById('ios-install-tip');
@@ -421,6 +436,7 @@ function connect() {
       if (msg.pane_id === currentPane) {
         _currentPaneRawLines = msg.data.split('\n');
         _currentPaneRawLinesFor = msg.pane_id;
+        _spokenLineCounts.set(msg.pane_id, _currentPaneRawLines.length);
         const forceTop = _scrollTopOnNextSnapshot;
         if (forceTop) _scrollTopOnNextSnapshot = false;
         const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
@@ -431,6 +447,7 @@ function connect() {
       if (msg.pane_id !== currentPane) return;
       _currentPaneRawLines = msg.data.split('\n');
       _currentPaneRawLinesFor = msg.pane_id;
+      _spokenLineCounts.set(msg.pane_id, _currentPaneRawLines.length);
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
       renderOutput(msg.data, atBottom);
     } else if (msg.type === 'delta') {
@@ -905,11 +922,18 @@ function applyKbdMode() {
   for (const [mode, btn] of Object.entries(kbdModePopupButtons)) {
     btn.classList.toggle('current', Number(mode) === kbdMode);
   }
+  // Voice input is unavailable while entering a password -- disabling here
+  // (idempotent, runs on every mode/keybar change) is the visible half of
+  // this; setKbdMode below force-stops a session already in progress at
+  // the moment of the actual switch, since disabling the button doesn't
+  // retroactively stop a mic that was already listening.
+  btnMic.disabled = inPwd;
   scrollOutputToBottom();
 }
 
 function setKbdMode(mode) {
   kbdMode = mode;
+  if (mode === 2) stopListening();
   if (currentPane) _saveKbdMode(currentPane, kbdMode);
   // Aa defaults to wrapped text, Terminal/Password to unwrapped -- applied
   // once here, on the mode switch itself, not forced on every render. A
@@ -1010,6 +1034,139 @@ escapePopupWrap.addEventListener('click', () => {
   }
   applyWrap();
   scrollOutputToBottom();
+  hideEscapePopup();
+});
+
+// ── voice input (speech-to-text) ────────────────────────────────────────────
+// Uses the browser's built-in SpeechRecognition -- this is NOT purely
+// on-device: Chrome/Android routes it through Google's cloud STT, and iOS
+// Safari doesn't implement it at all (feature-detected below; the mic
+// button stays hidden there rather than showing something that always
+// fails). Text-to-speech (below) has no such gap -- speechSynthesis is
+// on-device on both platforms. See .maintainer/TRUSTMUX_VOICE_IO_DESIGN.md
+// for the full design and why a heavier on-device model was deliberately
+// deferred rather than built first.
+//
+// The transcript always lands in the input field for review -- this never
+// auto-sends. A misrecognized shell command executed unreviewed is a real,
+// often-irreversible failure mode in a way a misheard chat message never
+// is; this applies uniformly to shell input and Claude prompts, since
+// there's no reliable way (or need) to tell them apart before the field is
+// populated.
+const _SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+const _VOICE_CONSENT_KEY = 'trustmux-voice-consent-ack';
+let _recognition = null;
+let _listening = false;
+
+if (_SpeechRecognitionCtor) btnMic.style.display = '';
+
+function _applyListeningState() {
+  btnMic.classList.toggle('listening', _listening);
+  btnMic.title = _listening
+    ? 'Listening… audio sent to Google — tap to stop'
+    : 'Voice input';
+}
+
+function startListening() {
+  if (!_SpeechRecognitionCtor || kbdMode === 2 || _listening) return;
+  if (localStorage.getItem(_VOICE_CONSENT_KEY) !== '1') {
+    voiceConsent.style.display = 'block';
+    return;
+  }
+  const inp = activeInput();
+  // Anything already typed is kept and spoken text appended after it,
+  // rather than replacing it outright -- dictation is another way to add
+  // to the field, not a takeover of it.
+  const base = inp.value ? inp.value + ' ' : '';
+  _recognition = new _SpeechRecognitionCtor();
+  _recognition.lang = navigator.language || 'en-US';
+  _recognition.interimResults = true;
+  _recognition.continuous = true;
+  _recognition.onresult = e => {
+    let transcript = '';
+    for (let i = 0; i < e.results.length; i++) transcript += e.results[i][0].transcript;
+    inp.value = base + transcript;
+    if (inp === cmdInput) {
+      cmdInput.style.height = 'auto';
+      cmdInput.style.height = Math.min(cmdInput.scrollHeight, 160) + 'px';
+    }
+  };
+  // onend fires both on a natural pause (continuous still stops on long
+  // silence in most implementations) and on error -- either way there's
+  // nothing left listening, so the button state must follow it rather
+  // than only reacting to an explicit stop() call.
+  _recognition.onend = () => { _listening = false; _applyListeningState(); };
+  _recognition.onerror = () => { _listening = false; _applyListeningState(); };
+  try {
+    _recognition.start();
+    _listening = true;
+  } catch {
+    _listening = false;
+  }
+  _applyListeningState();
+}
+
+function stopListening() {
+  if (_recognition) {
+    try { _recognition.abort(); } catch { /* already stopped */ }
+    _recognition = null;
+  }
+  _listening = false;
+  _applyListeningState();
+}
+
+btnMic.addEventListener('click', () => {
+  _listening ? stopListening() : startListening();
+});
+
+voiceConsentAck.addEventListener('click', () => {
+  localStorage.setItem(_VOICE_CONSENT_KEY, '1');
+  voiceConsent.style.display = 'none';
+  startListening();
+});
+
+// ── voice output (text-to-speech) ───────────────────────────────────────────
+// Manual trigger, not automatic narration -- deliberately, for two reasons
+// (both covered in the design doc): there's no reliable "this pane has
+// settled" signal to automate around yet, and a human choosing to read
+// pane content aloud after glancing at it is a real safety property that
+// an always-on narrator in a room with other people is not (on-screen
+// output can contain a secret regardless of keyboard mode, which is what
+// gates voice *input* above -- there's no equivalent gate for output).
+//
+// Strips ANSI/OSC escapes entirely rather than converting them like
+// ansiToHtml does -- spoken output has no equivalent to color/bold, so
+// there's nothing to preserve.
+function _stripAnsiForSpeech(text) {
+  return text.replace(/\x1b(?:\[[0-9;]*[A-Za-z]|\][^\x07\x1b]*(?:\x07|\x1b\\)|.)/g, '');
+}
+
+const _MAX_SPEECH_LINES = 40;
+
+function speakNewOutput() {
+  if (!currentPane || _currentPaneRawLinesFor !== currentPane) return;
+  const already = _spokenLineCounts.get(currentPane) || 0;
+  _spokenLineCounts.set(currentPane, _currentPaneRawLines.length);
+  const lines = _currentPaneRawLines
+    .slice(already)
+    .map(_stripAnsiForSpeech)
+    .map(l => l.trim())
+    // Decorative separators (rules, blank padding) aren't worth speaking.
+    .filter(l => l && !/^[-=_#*~ ]+$/.test(l));
+  if (!lines.length) return;
+  let toSpeak = lines, prefix = '';
+  if (lines.length > _MAX_SPEECH_LINES) {
+    // Keep the tail (most recent), not the head: a big burst of new output
+    // is more useful narrated from "what just happened" than from wherever
+    // the burst started.
+    toSpeak = lines.slice(-_MAX_SPEECH_LINES);
+    prefix = `Skipping ${lines.length - _MAX_SPEECH_LINES} earlier lines. `;
+  }
+  speechSynthesis.speak(new SpeechSynthesisUtterance(prefix + toSpeak.join('. ')));
+}
+
+document.getElementById('escape-popup-speak').addEventListener('click', () => {
+  speakNewOutput();
   hideEscapePopup();
 });
 

@@ -18,6 +18,18 @@ lost, just relocated to where all distributions can use it.
 
 byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
 
+  * trustmux/pwa: add voice input/output (see
+    .maintainer/TRUSTMUX_VOICE_IO_DESIGN.md for the full design) --
+    a mic button (hidden on browsers without SpeechRecognition, i.e.
+    iOS Safari today) dictates into the input field for review, never
+    auto-sends; a "Read new output" action in the escape popup speaks
+    pane content aloud via on-device text-to-speech, narrating only
+    what's new since the last read and skipping decorative lines.
+    Voice input is preceded by a one-time consent notice (audio leaves
+    the device to the browser's speech recognition service) and is
+    disabled -- and force-stopped if already listening -- while in
+    Password keyboard mode
+
   * trustmux/pwa: add opt-in OSC 133 shell integration
     (byobu-enable-shell-integration / byobu-disable-shell-integration) --
     prompt/command boundary markers for Trustmux's own future prompt

@@ -161,6 +161,29 @@
       color: var(--text); cursor: pointer;
     }
 
+    /* Same shape as #ios-install-tip -- a separate block rather than a
+       shared class so a future change to one doesn't risk the other. */
+    #voice-consent {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--bg2); border: 1px solid var(--accent);
+      border-radius: 10px; padding: 14px 18px;
+      font-size: 13px; color: var(--text); text-align: center;
+      max-width: 280px; z-index: 200; box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+      line-height: 1.6;
+    }
+    #voice-consent .close-tip {
+      display: block; margin-top: 10px; font-size: 11px;
+      color: var(--accent); cursor: pointer; font-weight: bold;
+    }
+
+    /* Listening state doubles as the ongoing disclosure that audio is
+       being captured right now -- not just a one-time dialog someone
+       taps through and forgets. */
+    #btn-mic.listening {
+      color: var(--red); animation: mic-pulse 1s ease-in-out infinite;
+    }
+    @keyframes mic-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
     .byobu-logo { height: 22px; width: auto; flex-shrink: 0; opacity: 0.85; }
 
     select {
@@ -233,6 +256,7 @@
       padding: 5px 10px; cursor: pointer; font-size: 14px; flex-shrink: 0;
     }
     .icon-btn:active { background: var(--border); }
+    .icon-btn:disabled { opacity: 0.35; cursor: default; }
 
     /* ── connection indicator ── shape + color + motion, never color alone:
        connecting = spinning amber ring (motion carries the meaning);
@@ -717,6 +741,14 @@
   <span class="close-tip" id="close-tip">Dismiss</span>
 </div>
 
+<!-- ── voice input consent (shown once, before the mic ever arms) ── -->
+<div id="voice-consent" style="display:none">
+  Voice input sends your audio to your phone's speech recognition service
+  (Google, on Android) to be transcribed. Text-to-speech output stays
+  entirely on this device.
+  <span class="close-tip" id="voice-consent-ack">Got it — enable voice input</span>
+</div>
+
 <div id="app">
 
   <div id="header">
@@ -790,6 +822,7 @@
     <div id="btn-right-col">
       <button id="btn-escape" class="icon-btn" title="Esc / Ctrl-C / key bar">⎋</button>
       <button id="btn-kbd-mode" class="icon-btn" title="Terminal mode — tap to enable spell check">$_</button>
+      <button id="btn-mic" class="icon-btn" title="Voice input" style="display:none">🎤</button>
     </div>
     <button id="btn-send" title="Send" disabled>↵</button>
   </div>
@@ -803,6 +836,8 @@
     <button id="escape-popup-keys">⌨&nbsp; Key bar</button>
     <div class="icon-popup-sep"></div>
     <button id="escape-popup-wrap">⤶&nbsp; Wrap</button>
+    <div class="icon-popup-sep"></div>
+    <button id="escape-popup-speak">🔊&nbsp; Read new output</button>
   </div>
 
   <!-- ── keyboard mode popup (tap $_ / Aa / **) ── -->
