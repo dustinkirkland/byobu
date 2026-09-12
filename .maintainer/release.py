@@ -864,7 +864,7 @@ apt-get update -qq
 apt-get install -y --no-install-recommends \
   build-essential dpkg-dev debhelper dh-python \
   gettext-base automake autoconf \
-  python3 python3-all python3-cryptography python3-tornado \
+  python3 python3-all python3-cryptography python3-tornado tmux \
   devscripts bc ca-certificates distro-info 2>&1 | tail -5
 
 WORKDIR=$(mktemp -d)
