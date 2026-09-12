@@ -606,16 +606,16 @@ class TestTmuxCursor(unittest.TestCase):
     def test_maps_cursor_y_to_from_end_index(self):
         # Cursor on row 2 of a 10-row pane: 7 lines above the capture's last
         # line (a piped capture keeps trailing blank screen rows).
-        with patch.object(bm, '_tmux', return_value='47\t2\t10\n'):
+        with patch.object(bm, '_tmux', return_value='47 2 10 80\n'):
             self.assertEqual(bm.tmux_cursor('%0'),
                              {'cursor_x': 47, 'cursor_from_end': 7})
 
     def test_bottom_row_maps_to_zero(self):
-        with patch.object(bm, '_tmux', return_value='0\t9\t10\n'):
+        with patch.object(bm, '_tmux', return_value='0 9 10 80\n'):
             self.assertEqual(bm.tmux_cursor('%0')['cursor_from_end'], 0)
 
     def test_malformed_output_returns_none(self):
-        for raw in ('', 'garbage', '1\t2', 'a\tb\tc', '0\t10\t10'):
+        for raw in ('', 'garbage', '1 2', 'a b c d', '0 10 10 80', '1 2 10'):
             with patch.object(bm, '_tmux', return_value=raw):
                 self.assertIsNone(bm.tmux_cursor('%0'), raw)
 
@@ -675,7 +675,7 @@ class _StreamPaneHarness(unittest.TestCase):
         return conn
 
     def _run_stream(self, conn, fake_capture, driver, settle, fake_cursor=None,
-                    join=False, patch_mode=False):
+                    join=False, patch_mode=False, cursor_fields=''):
         async def main():
             task = asyncio.ensure_future(
                 bm.WsHandler._stream_pane(conn, '%0', 100, False, join,
@@ -685,13 +685,170 @@ class _StreamPaneHarness(unittest.TestCase):
             task.cancel()
             await asyncio.gather(task, return_exceptions=True)
             return result
+        async def no_session(pane_id):
+            # Keep the stream on the subprocess fallback: a live control
+            # client would capture the developer's real tmux instead of the
+            # fakes patched below.
+            return None
         with patch.object(bm, 'tmux_capture_pane', side_effect=fake_capture), \
              patch.object(bm, 'tmux_cursor',
                           side_effect=fake_cursor or (lambda pane_id: None)), \
+             patch.object(bm, '_cursor_fields', return_value=cursor_fields), \
+             patch.object(bm._MONITOR, 'ensure', new=no_session), \
              patch.object(bm, '_POLL_IDLE', 60.0), \
              patch.object(bm, '_POLL_ACTIVE', 60.0), \
              patch.object(bm, '_KEYSTROKE_SETTLE', settle):
             return asyncio.run(main())
+
+
+class TestJoinCursor(unittest.TestCase):
+    """_join_cursor maps a screen cursor into joined (-J) capture
+    coordinates: line index from the end plus an offset into the joined
+    line."""
+
+    def test_prompt_with_blank_rows_below(self):
+        # 3 screen rows: prompt row, two blank rows; cursor at column 8.
+        c = bm._join_cursor('prompt$ \n\n\n', 8, 0, 3, 80)
+        self.assertEqual(c, {'cursor_x': 8, 'cursor_from_end': 2})
+
+    def test_soft_wrapped_line_second_row(self):
+        # A 15-cell line at width 10 occupies 2 rows; cursor on its second
+        # row at column 5 is offset 15 into the joined line.
+        c = bm._join_cursor('abcdefghijklmno\n\n\n', 5, 1, 4, 10)
+        self.assertEqual(c, {'cursor_x': 15, 'cursor_from_end': 2})
+
+    def test_tui_cursor_mid_screen(self):
+        content = 'top\ninput> \n--border--\nstatus\n'
+        c = bm._join_cursor(content, 7, 1, 4, 80)
+        self.assertEqual(c, {'cursor_x': 7, 'cursor_from_end': 2})
+
+    def test_ansi_escapes_do_not_inflate_widths(self):
+        # The styled prompt is 8 visible cells; escapes must not add rows.
+        content = '\x1b[1;32mprompt$\x1b[0m \n\n\n'
+        c = bm._join_cursor(content, 8, 0, 3, 80)
+        self.assertEqual(c, {'cursor_x': 8, 'cursor_from_end': 2})
+
+    def test_unusable_geometry_returns_none(self):
+        self.assertIsNone(bm._join_cursor('x\n', 0, 0, 2, 0))   # width 0
+        self.assertIsNone(bm._join_cursor('x\n', 0, 5, 3, 80))  # y >= height
+
+    def test_capture_shorter_than_screen_returns_none(self):
+        # Cursor row lies above every captured line: no mapping.
+        self.assertIsNone(bm._join_cursor('only\n', 0, 0, 10, 80))
+
+
+class TestEnterSettle(unittest.TestCase):
+    """The paste-burst settle before Enter is skipped for a bare shell
+    prompt and kept for anything else."""
+
+    def _send(self, reader_name, pid='123'):
+        calls = []
+        with patch.object(bm, '_tmux',
+                          side_effect=lambda *a: pid if 'display-message' in a else ''), \
+             patch.object(bm, '_smarter_pane_name', return_value=reader_name), \
+             patch.object(bm.time, 'sleep', side_effect=calls.append):
+            bm.tmux_send_keys('%1', 'echo hi', enter=True, literal=True)
+        return calls
+
+    def test_shell_prompt_skips_settle(self):
+        self.assertEqual(self._send('bash'), [])
+
+    def test_running_tui_keeps_settle(self):
+        self.assertEqual(self._send('codex'), [bm._PASTE_BURST_SETTLE])
+
+    def test_unreadable_pid_keeps_settle(self):
+        self.assertEqual(self._send('bash', pid=''), [bm._PASTE_BURST_SETTLE])
+
+    def test_non_literal_never_settles(self):
+        with patch.object(bm, '_tmux'), \
+             patch.object(bm.time, 'sleep') as slept:
+            bm.tmux_send_keys('%1', 'C-c', enter=True, literal=False)
+        slept.assert_not_called()
+
+
+class TestControlClient(unittest.TestCase):
+    """Reply-block parsing and %output wake dispatch of _ControlClient,
+    driven through a fake proc whose stdout is a plain StreamReader."""
+
+    def _fake_client(self):
+        client = bm._ControlClient('$9')
+        reader = asyncio.StreamReader()
+        client.proc = SimpleNamespace(stdout=reader, returncode=None,
+                                      terminate=lambda: None)
+        return client, reader
+
+    def test_reply_pairing_wake_error_and_eof(self):
+        async def main():
+            client, reader = self._fake_client()
+            loop = asyncio.get_event_loop()
+            first, second, third = (loop.create_future() for _ in range(3))
+            client._pending.extend([first, second, third])
+            woke = asyncio.Event()
+            bm._MONITOR.watch('%9', woke)
+            try:
+                task = asyncio.ensure_future(client._read_loop())
+                # Reply 1: an %end with mismatched ids is content, the
+                # matching one closes the block.
+                reader.feed_data(b'%begin 100 7 1\n'
+                                 b'alpha\n'
+                                 b'%end 999 8 1\n'
+                                 b'%end 100 7 1\n')
+                # A notification between blocks wakes the pane watcher.
+                reader.feed_data(b'%output %9 abc\n')
+                # Reply 2: %error resolves to "".
+                reader.feed_data(b'%begin 101 8 1\n'
+                                 b'no such pane\n'
+                                 b'%error 101 8 1\n')
+                self.assertEqual(await first, 'alpha\n%end 999 8 1\n')
+                self.assertEqual(await second, '')
+                await asyncio.wait_for(woke.wait(), 1)
+                # EOF: the leftover pending future resolves to None and the
+                # client reports itself gone.
+                reader.feed_eof()
+                self.assertIsNone(await third)
+                await task
+                self.assertFalse(client.alive)
+            finally:
+                bm._MONITOR.unwatch('%9', woke)
+        asyncio.run(main())
+
+    def test_wrong_pane_output_does_not_wake(self):
+        async def main():
+            client, reader = self._fake_client()
+            woke = asyncio.Event()
+            bm._MONITOR.watch('%9', woke)
+            try:
+                task = asyncio.ensure_future(client._read_loop())
+                reader.feed_data(b'%output %8 abc\n')
+                reader.feed_eof()
+                await task
+                self.assertFalse(woke.is_set())
+            finally:
+                bm._MONITOR.unwatch('%9', woke)
+        asyncio.run(main())
+
+    def test_cm_capture_falls_back_to_subprocess(self):
+        async def main():
+            async def no_client(session_id, cmd):
+                return None
+            with patch.object(bm._MONITOR, 'run', new=no_client), \
+                 patch.object(bm, 'tmux_capture_pane',
+                              return_value='fallback') as sub:
+                out = await bm.cm_capture_pane('$1', '%0', 100, False, False)
+            self.assertEqual(out, 'fallback')
+            sub.assert_called_once_with('%0', 100, False, False)
+        asyncio.run(main())
+
+    def test_cm_capture_strips_ansi_like_subprocess_path(self):
+        async def main():
+            async def reply(session_id, cmd):
+                return '\x1b[31mred\x1b[0m\n'
+            with patch.object(bm._MONITOR, 'run', new=reply):
+                plain = await bm.cm_capture_pane('$1', '%0', 100, False, False)
+                ansi = await bm.cm_capture_pane('$1', '%0', 100, True, False)
+            self.assertEqual(plain, 'red\n')
+            self.assertEqual(ansi, '\x1b[31mred\x1b[0m\n')
+        asyncio.run(main())
 
 
 class TestStreamPaneWake(_StreamPaneHarness):
@@ -862,14 +1019,14 @@ class TestStreamPaneWake(_StreamPaneHarness):
         self.assertEqual(conn.sent[1], {'type': 'cursor', 'pane_id': '%0'})
         self.assertEqual(len(cursor_calls), 3)
 
-    def test_join_subscribers_get_no_cursor(self):
-        # A -J (wrap) capture merges soft-wrapped lines, so the from-the-end
-        # mapping is unusable and the client falls back anyway; the daemon
-        # never even reads the cursor.
+    def test_join_subscribers_get_a_mapped_cursor(self):
+        # A -J (wrap) capture merges soft-wrapped lines, so the daemon skips
+        # tmux_cursor and sends a joined-coordinate mapping computed by
+        # _join_cursor from the raw cursor fields instead.
         conn = self._make_conn()
         cursor_calls = []
         def fake_capture(pane_id, lines, ansi, join):
-            return 'content'
+            return 'prompt$ \n\n\n'
         def fake_cursor(pane_id):
             cursor_calls.append(None)
             return {'cursor_x': 0, 'cursor_from_end': 0}
@@ -878,10 +1035,14 @@ class TestStreamPaneWake(_StreamPaneHarness):
             conn._stream_wake.set()
             await asyncio.sleep(0.1)
 
+        # x=8 y=0 height=3 width=80: cursor on the prompt row, two blank
+        # rows below it.
         self._run_stream(conn, fake_capture, driver, settle=0.01,
-                         fake_cursor=fake_cursor, join=True)
-        self.assertEqual(cursor_calls, [])
-        self.assertNotIn('cursor_from_end', conn.sent[0])
+                         fake_cursor=fake_cursor, join=True,
+                         cursor_fields='8 0 3 80')
+        self.assertEqual(cursor_calls, [])   # tmux_cursor stays unused
+        self.assertEqual(conn.sent[0]['cursor_from_end'], 2)
+        self.assertEqual(conn.sent[0]['cursor_x'], 8)
 
     def test_cursor_beyond_capture_is_dropped_in_stream(self):
         # A trimming tmux (fewer capture lines than cursor_from_end + 1
