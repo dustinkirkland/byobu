@@ -795,12 +795,15 @@ class TestControlClient(unittest.TestCase):
                                  b'%end 100 7 1\n')
                 # A notification between blocks wakes the pane watcher.
                 reader.feed_data(b'%output %9 abc\n')
-                # Reply 2: %error resolves to "".
+                # Reply 2: %error resolves to None, not "" -- a caller must
+                # be able to tell "the command failed" apart from "the
+                # command succeeded with a genuinely empty result" so it
+                # knows to fall back to the subprocess path on the former.
                 reader.feed_data(b'%begin 101 8 1\n'
                                  b'no such pane\n'
                                  b'%error 101 8 1\n')
                 self.assertEqual(await first, 'alpha\n%end 999 8 1\n')
-                self.assertEqual(await second, '')
+                self.assertIsNone(await second)
                 await asyncio.wait_for(woke.wait(), 1)
                 # EOF: the leftover pending future resolves to None and the
                 # client reports itself gone.

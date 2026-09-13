@@ -475,16 +475,27 @@ def _join_cursor(content: str, x: int, y: int, height: int,
 def _cursor_fields(pane_id: str) -> str:
     return _tmux("display-message", "-p", "-t", pane_id, _CURSOR_FMT)
 
-def _cursor_from_raw(raw: str) -> dict | None:
+def _parse_cursor_fields(raw: str) -> tuple[int, int, int, int] | None:
+    """(x, y, height, width) from a raw '#{cursor_x}\\t#{cursor_y}\\t
+    #{pane_height}\\t#{pane_width}'-shaped reply, or None on any parse
+    trouble -- the one place this validation lives, so _cursor_from_raw and
+    cm_join_cursor can't drift apart on what counts as a valid reply."""
     parts = raw.split()
     if len(parts) != 4:
         return None
     try:
-        x, y, height, _width = (int(p) for p in parts)
+        x, y, height, width = (int(p) for p in parts)
     except ValueError:
         return None
     if not 0 <= y < height:
         return None
+    return x, y, height, width
+
+def _cursor_from_raw(raw: str) -> dict | None:
+    fields = _parse_cursor_fields(raw)
+    if fields is None:
+        return None
+    x, y, height, _width = fields
     return {"cursor_x": x, "cursor_from_end": height - 1 - y}
 
 def _clamp_cursor(cursor: dict | None, content: str) -> dict | None:
@@ -539,7 +550,12 @@ def tmux_kill_session(session_id: str) -> None:
 _PASTE_BURST_SETTLE = 0.15
 
 _SHELL_NAMES = frozenset(
-    {"bash", "zsh", "fish", "sh", "dash", "ash", "ksh", "tcsh", "csh"})
+    {"bash", "zsh", "fish", "sh", "dash", "ash", "ksh", "tcsh", "csh",
+     "nu", "xonsh", "elvish", "pwsh", "powershell", "osh", "oil"}
+    # A closed set can never cover every shell (a renamed/custom binary);
+    # let a user whose shell keeps paying the settle add it without a code
+    # change, e.g. TRUSTMUX_EXTRA_SHELLS=my-shell,another-shell.
+    | {n.strip() for n in os.environ.get("TRUSTMUX_EXTRA_SHELLS", "").split(",") if n.strip()})
 
 def _pane_reader_is_shell(pane_id: str) -> bool:
     """True when the pane's foreground process is a plain shell prompt.
@@ -1042,7 +1058,10 @@ class _ControlClient:
                 pass
 
     async def run(self, cmd: str) -> str | None:
-        """Run one tmux command; its output, "" on %error, None if broken."""
+        """Run one tmux command; its output, or None on %error or a broken
+        connection -- both mean "no trustworthy result", so callers that
+        fall back to the subprocess path on None do so for either case
+        instead of mistaking a %error for a genuinely empty capture."""
         if not self.alive:
             return None
         fut: asyncio.Future = asyncio.get_event_loop().create_future()
@@ -1070,7 +1089,12 @@ class _ControlClient:
                         # Match timestamp+number so captured content that
                         # merely starts with "%end" cannot close the block.
                         if line.split()[1:3] == block_id:
-                            result = "" if line.startswith(b"%error") else \
+                            # %error means the command itself failed (e.g. a
+                            # stale pane mapping) -- None, like a broken
+                            # connection, not "" which a genuinely empty
+                            # capture also produces and callers would then
+                            # be unable to tell apart from a real error.
+                            result = None if line.startswith(b"%error") else \
                                 b"".join(block).decode("utf-8", "replace")
                             if self._pending:
                                 fut = self._pending.popleft()
@@ -1217,13 +1241,10 @@ async def cm_join_cursor(session_id: str | None, pane_id: str,
             session_id, f'display-message -p -t {pane_id} "{_CURSOR_FMT}"')
     if raw is None:
         raw = await asyncio.to_thread(_cursor_fields, pane_id)
-    parts = raw.split()
-    if len(parts) != 4:
+    fields = _parse_cursor_fields(raw)
+    if fields is None:
         return None
-    try:
-        x, y, height, width = (int(p) for p in parts)
-    except ValueError:
-        return None
+    x, y, height, width = fields
     return _join_cursor(content, x, y, height, width)
 
 
@@ -1429,7 +1450,12 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                            join: bool = False, patch: bool = False):
         _MONITOR.watch(pane_id, self._stream_wake)
         try:
-            self._stream_wake.clear()  # drop wakes aimed at a previous subscription
+            # Cleared by the subscribe handler itself before this task was
+            # even scheduled (see _handle's "subscribe" branch), not here:
+            # clearing on this coroutine's first line would race a send_keys
+            # for this same pane arriving after the handler resolved
+            # self._stream_pane_id but before this task got its first turn,
+            # silently dropping that keystroke's fast-cadence wake.
             session_id = await _MONITOR.ensure(pane_id)
             content = await cm_capture_pane(session_id, pane_id, history_lines, ansi, join)
             # Join (-J) merges soft-wrapped lines, so screen rows no longer
@@ -1623,6 +1649,13 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                         self._stream_task.cancel()
                         await asyncio.gather(self._stream_task, return_exceptions=True)
                     self._stream_pane_id = pane_id
+                    # Clear synchronously, here, rather than as the new
+                    # _stream_pane task's first line: a send_keys for this
+                    # pane can otherwise arrive and set() the event in the
+                    # gap between this handler resolving and that task
+                    # actually getting its first turn, and a clear() on that
+                    # first turn would wipe out a wake that was never stale.
+                    self._stream_wake.clear()
                     self._stream_task = asyncio.ensure_future(
                         self._stream_pane(pane_id, lines, ansi, join, patch)
                     )
