@@ -908,27 +908,34 @@ def run_smoke_test():
 # + mobile/tests, all inside Docker) against an isolated `git worktree` of
 # the PR's head commit — never the checked-out working tree, never the host.
 
-def _fetch_pr_ref(pr_ref: str) -> str:
+def _fetch_pr_ref(pr_ref: str, unique_suffix: str) -> str | None:
     """Resolve a PR number or branch name to a local ref, without touching
     the current checkout. A bare number is fetched as refs/pull/<n>/head into
-    a throwaway local branch; anything else is assumed to already be a valid
-    git ref (a local or remote branch name)."""
+    a throwaway local branch unique to this run (returned); anything else is
+    assumed to already be a valid git ref (a local or remote branch name),
+    and None is returned since there is no throwaway branch to clean up.
+
+    The throwaway branch name includes unique_suffix (the caller's worktree
+    dir name) rather than being fixed per PR number: a fixed name collides
+    with, and permanently wedges retries against, a leftover branch from a
+    prior run that was interrupted before its own cleanup ran."""
     if pr_ref.isdigit():
-        local_branch = f"pr-{pr_ref}-test-pr"
+        local_branch = f"pr-{pr_ref}-{unique_suffix}"
         run(["git", "fetch", "origin", f"pull/{pr_ref}/head:{local_branch}"],
             cwd=BYOBU_SRC)
         return local_branch
-    return pr_ref
+    return None
 
 
 def test_pr(pr_ref: str):
     section(f"test-pr: {pr_ref}")
-    missing = [t for t in ("git", "docker", "gh") if not shutil.which(t)]
+    missing = [t for t in ("git", "docker") if not shutil.which(t)]
     if missing:
         die(f"Missing tools: {' '.join(missing)}")
 
-    branch = _fetch_pr_ref(pr_ref)
     worktree_dir = Path(tempfile.mkdtemp(prefix="byobu-test-pr-"))
+    created_branch = _fetch_pr_ref(pr_ref, worktree_dir.name)
+    branch = created_branch or pr_ref
     # Worktree, not a branch switch: the reviewer's current checkout
     # (uncommitted work included) is never touched.
     run(["git", "worktree", "add", "--detach", str(worktree_dir), branch],
@@ -946,8 +953,10 @@ def test_pr(pr_ref: str):
     finally:
         run(["git", "worktree", "remove", "--force", str(worktree_dir)],
             check=False, cwd=BYOBU_SRC)
-        if branch.endswith("-test-pr"):
-            run(["git", "branch", "-D", branch], check=False, cwd=BYOBU_SRC)
+        # Only ever delete a branch this run itself created -- never one a
+        # caller passed in by name, even if it happens to look similar.
+        if created_branch:
+            run(["git", "branch", "-D", created_branch], check=False, cwd=BYOBU_SRC)
 
 
 # ── phase 4b: pip smoke test ─────────────────────────────────────────────
