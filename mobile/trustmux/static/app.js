@@ -17,6 +17,13 @@ let _paneLoading = false; // output holds the loading placeholder, not pane cont
 // cursor; the ghost then falls back to its end-of-buffer anchor.
 let _cursorFromEnd = null;
 let _cursorX = null;
+// Every message type that can carry a cursor (snapshot/update/delta/patch/
+// cursor) sets these the same way; one helper instead of five copies that
+// could silently diverge (e.g. delta once shipped without this call at all).
+function _applyCursorFields(msg) {
+  _cursorFromEnd = Number.isInteger(msg.cursor_from_end) ? msg.cursor_from_end : null;
+  _cursorX = Number.isInteger(msg.cursor_x) ? msg.cursor_x : null;
+}
 // Per-line model of the current subscription's capture: element i mirrors
 // the daemon's content.split('\n'), so patch op indices mean the same lines
 // on both sides and #output's children map 1:1 onto it. null whenever the
@@ -71,8 +78,18 @@ function _sendSubscribeNow(paneId) {
   // width-crossing change, so line-indexed patches would churn most of the
   // buffer anyway, and the cursor is already absent under join.
   send({ type: 'subscribe', pane_id: paneId, lines: 300, ansi: true,
-         join: wrapOn, patch: !wrapOn });
+         join: wrapOn, patch: !wrapOn && !_patchDisabled });
 }
+
+// A patch that fails to apply forces a resubscribe (fresh snapshot); a
+// persistent client/server line-splitting disagreement would otherwise
+// repeat that on every following patch forever (resubscribe -> snapshot ->
+// patch fails again -> resubscribe...), spamming full-snapshot churn. After
+// a few in a row, stop asking for patches for the rest of this session and
+// settle for plain full updates instead.
+let _patchMismatchStreak = 0;
+const _PATCH_MISMATCH_LIMIT = 3;
+let _patchDisabled = false;
 
 function _requestSubscribe(paneId) {
   if (_subscribeInFlight) {
@@ -459,8 +476,7 @@ function connect() {
         const forceTop = _scrollTopOnNextSnapshot;
         if (forceTop) _scrollTopOnNextSnapshot = false;
         const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
-        _cursorFromEnd = Number.isInteger(msg.cursor_from_end) ? msg.cursor_from_end : null;
-        _cursorX = Number.isInteger(msg.cursor_x) ? msg.cursor_x : null;
+        _applyCursorFields(msg);
         renderOutput(msg.data, !forceTop && atBottom);
         if (forceTop) output.scrollTop = 0;
       }
@@ -469,8 +485,7 @@ function connect() {
       _currentPaneRawLines = msg.data.split('\n');
       _currentPaneRawLinesFor = msg.pane_id;
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
-      _cursorFromEnd = Number.isInteger(msg.cursor_from_end) ? msg.cursor_from_end : null;
-      _cursorX = Number.isInteger(msg.cursor_x) ? msg.cursor_x : null;
+      _applyCursorFields(msg);
       renderOutput(msg.data, atBottom);
     } else if (msg.type === 'delta') {
       // Bandwidth-saving alternative to 'update': the daemon detected the
@@ -484,6 +499,7 @@ function connect() {
       if (msg.pane_id !== currentPane || _currentPaneRawLinesFor !== msg.pane_id) return;
       _currentPaneRawLines = _currentPaneRawLines.slice(msg.drop).concat(msg.append);
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
+      _applyCursorFields(msg);
       renderOutput(_currentPaneRawLines.join('\n'), atBottom);
     } else if (msg.type === 'patch') {
       if (msg.pane_id !== currentPane) return;
@@ -493,15 +509,16 @@ function connect() {
       // wait for the snapshot rather than cancel-restarting the new stream.
       if (!_lines) return;
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
-      _cursorFromEnd = Number.isInteger(msg.cursor_from_end) ? msg.cursor_from_end : null;
-      _cursorX = Number.isInteger(msg.cursor_x) ? msg.cursor_x : null;
+      _applyCursorFields(msg);
       // A mismatching op means the line state diverged from the daemon's;
       // resubscribe for a fresh snapshot.
       if (!applyPatch(msg.ops || [])) {
         _lines = null;
+        if (++_patchMismatchStreak >= _PATCH_MISMATCH_LIMIT) _patchDisabled = true;
         _requestSubscribe(currentPane);
         return;
       }
+      _patchMismatchStreak = 0;
       if (atBottom) scrollOutputToBottom();
     } else if (msg.type === 'cursor') {
       // Bare cursor move: no data field, so no re-render (an innerHTML
@@ -509,8 +526,7 @@ function connect() {
       // re-anchor the ghost. Fields absent means the daemon could not read
       // the cursor and the end-of-buffer fallback applies.
       if (msg.pane_id !== currentPane) return;
-      _cursorFromEnd = Number.isInteger(msg.cursor_from_end) ? msg.cursor_from_end : null;
-      _cursorX = Number.isInteger(msg.cursor_x) ? msg.cursor_x : null;
+      _applyCursorFields(msg);
       _ghostSync();
     } else if (msg.type === 'error') {
       // A definitive failure -- restore immediately rather than waiting out
