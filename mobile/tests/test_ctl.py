@@ -1417,7 +1417,11 @@ class TestLaunchPort(unittest.TestCase):
 class TestEnsureTsServePort(unittest.TestCase):
 
     def test_serves_the_requested_port(self):
-        with patch('trustmux._ctl.subprocess.check_output', return_value='nothing'):
+        # tailscale_cmd is pinned because it resolves differently per platform
+        # (a bare name from PATH on Linux, an in-bundle path on stock macOS);
+        # what this asserts is the subcommand, not where the binary was found.
+        with patch('trustmux._paths.tailscale_cmd', return_value='tailscale'), \
+             patch('trustmux._ctl.subprocess.check_output', return_value='nothing'):
             with patch('trustmux._ctl.subprocess.run') as mock_run:
                 mock_run.return_value = MagicMock(returncode=0)
                 self.assertTrue(ctl._ensure_ts_serve(3389))

@@ -301,6 +301,36 @@ byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
     green, slow pong grades amber, no response for 15s+ grades into the
     error bucket even with the socket still open, a concurrent caller
     never triggers a duplicate ping, disconnecting stops the monitor)
+  * mobile/trustmux/_paths.py, _ctl.py, _daemon.py, _pair.py: find the
+    tailscale CLI on macOS, where every tailscale-dependent command
+    ("trustmux setup", "trustmux start", "trustmux pair", "trustmux
+    status") failed on an otherwise working install. On Linux tailscale
+    is a binary in PATH; on macOS it is not a separate binary at all --
+    it *is* Tailscale.app's own executable, at
+    /Applications/Tailscale.app/Contents/MacOS/Tailscale, and nothing
+    lands in PATH unless the user happens to run the app's "Install
+    CLI" menu item. Every call site hardcoded ["tailscale", ...] as
+    argv and so hit FileNotFoundError, reporting "tailscale not found
+    in PATH" on a machine with Tailscale installed, connected and
+    serving. Resolution now goes through tailscale_argv() in _paths.py,
+    which keeps returning the bare name whenever PATH has it -- Linux
+    behaviour, and macOS installs via Homebrew or "Install CLI", are
+    byte-for-byte unchanged -- and only falls back to probing
+    /Applications and ~/Applications for the app bundle on Darwin. Note
+    the bundled binary must be exec'd by its real path: a *symlink* to
+    it does not work, because it locates its own .app from its
+    executable path and aborts with "The current bundleIdentifier is
+    unknown to the registry" (which is why Tailscale's own Install CLI
+    writes an exec wrapper rather than a link). When tailscale genuinely
+    isn't installed, tailscale_argv() raises the same FileNotFoundError
+    subprocess itself would, so all existing error handling is
+    unaffected; the two Linux-only "not found" messages now name
+    Tailscale.app's Install CLI on macOS instead of pointing at the
+    Linux install docs. Also stops hardcoding /usr/bin/tailscale into
+    the sudoers line suggested for Unix-socket serve mode, which was
+    already wrong for Homebrew installs. Three existing tests asserted
+    on the literal argv and were quietly passing only where tailscale
+    was in PATH; they now pin the resolver explicitly
 
 byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
 

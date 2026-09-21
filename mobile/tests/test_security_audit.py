@@ -244,7 +244,8 @@ class TestServeMappingLifecycle(unittest.TestCase):
 
     def test_stop_removes_the_mapping_and_the_marker(self):
         self.inst.serve_marker.write_text('7432\n')
-        with patch('trustmux._ctl._pid', return_value=None), \
+        with patch('trustmux._paths.tailscale_cmd', return_value='tailscale'), \
+             patch('trustmux._ctl._pid', return_value=None), \
              patch('trustmux._ctl.subprocess.run') as run, \
              patch('builtins.print'):
             self.assertEqual(ctl.cmd_stop(7432, self.inst), 0)
@@ -595,7 +596,8 @@ class TestUnixServeCli(unittest.TestCase):
     def test_stop_removes_a_unix_mapping(self):
         target = f'unix:{self.inst.http_sock}'
         self.inst.serve_marker.write_text(target + '\n')
-        with patch('trustmux._ctl._pid', return_value=None), \
+        with patch('trustmux._paths.tailscale_cmd', return_value='tailscale'), \
+             patch('trustmux._ctl._pid', return_value=None), \
              patch('trustmux._ctl.subprocess.run') as run, \
              patch('builtins.print'):
             self.assertEqual(ctl.cmd_stop(7432, self.inst), 0)

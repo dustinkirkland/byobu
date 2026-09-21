@@ -419,5 +419,69 @@ class TestMigrationHardening(BaseDirs):
         self.assertTrue((self.legacy / "machines.json").exists())
 
 
+class TailscaleCli(unittest.TestCase):
+    """Finding the tailscale CLI, which on macOS is inside Tailscale.app."""
+
+    def _bundle(self, root: Path) -> Path:
+        cli = root / paths._MACOS_BUNDLE_CLI
+        cli.parent.mkdir(parents=True)
+        cli.write_text("#!/bin/sh\n")
+        cli.chmod(0o755)
+        return cli
+
+    def test_path_wins_and_stays_a_bare_name(self):
+        # The bare name keeps Linux behaviour byte-identical, and keeps working
+        # if PATH is reordered between resolution and exec.
+        with patch.object(paths.shutil, "which", return_value="/usr/bin/tailscale"):
+            self.assertEqual(paths.tailscale_cmd(), "tailscale")
+            self.assertEqual(paths.tailscale_argv("serve", "status"),
+                             ["tailscale", "serve", "status"])
+
+    def test_macos_falls_back_to_the_app_bundle(self):
+        td = tempfile.TemporaryDirectory()
+        self.addCleanup(td.cleanup)
+        cli = self._bundle(Path(td.name))
+        with patch.object(paths.shutil, "which", return_value=None), \
+             patch.object(paths.sys, "platform", "darwin"), \
+             patch.object(paths, "_MACOS_APP_DIRS", (td.name,)):
+            self.assertEqual(paths.tailscale_cmd(), str(cli))
+            # Absolute, because exec'ing the bundle binary by its real path is
+            # the only way it can find its own .app -- a symlink cannot.
+            self.assertEqual(paths.tailscale_argv("ip", "-4"),
+                             [str(cli), "ip", "-4"])
+
+    def test_non_executable_bundle_is_not_offered(self):
+        td = tempfile.TemporaryDirectory()
+        self.addCleanup(td.cleanup)
+        self._bundle(Path(td.name)).chmod(0o644)
+        with patch.object(paths.shutil, "which", return_value=None), \
+             patch.object(paths.sys, "platform", "darwin"), \
+             patch.object(paths, "_MACOS_APP_DIRS", (td.name,)):
+            self.assertIsNone(paths.tailscale_cmd())
+
+    def test_linux_does_not_probe_for_a_bundle(self):
+        td = tempfile.TemporaryDirectory()
+        self.addCleanup(td.cleanup)
+        self._bundle(Path(td.name))
+        with patch.object(paths.shutil, "which", return_value=None), \
+             patch.object(paths.sys, "platform", "linux"), \
+             patch.object(paths, "_MACOS_APP_DIRS", (td.name,)):
+            self.assertIsNone(paths.tailscale_cmd())
+
+    def test_argv_raises_what_subprocess_would_have(self):
+        # Callers already handle FileNotFoundError from subprocess itself, so
+        # raising it here keeps every existing error path intact.
+        with patch.object(paths, "tailscale_cmd", return_value=None):
+            with self.assertRaises(FileNotFoundError) as cm:
+                paths.tailscale_argv("status")
+        self.assertEqual(cm.exception.filename, "tailscale")
+
+    def test_install_hint_names_the_app_on_macos(self):
+        with patch.object(paths.sys, "platform", "darwin"):
+            self.assertIn("Install CLI", paths.tailscale_install_hint())
+        with patch.object(paths.sys, "platform", "linux"):
+            self.assertNotIn("Install CLI", paths.tailscale_install_hint())
+
+
 if __name__ == "__main__":
     unittest.main()

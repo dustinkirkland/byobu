@@ -16,7 +16,8 @@ from trustmux._advertise import (ADVERTISE_ENV, AdvertiseError, advertised_urls,
 from trustmux._paths import (DEFAULT_INSTANCE, INSTANCE_ENV, Instance,
                              check_sock_path, known_instances, legacy_dir,
                              migrate_legacy_layout, resolve_instance,
-                             socket_is_live, state_dir)
+                             socket_is_live, state_dir, tailscale_argv,
+                             tailscale_cmd, tailscale_install_hint)
 
 DEFAULT_PORT = 7432
 PORT_ENV   = "TRUSTMUX_PORT"
@@ -338,7 +339,7 @@ def _ts_host() -> str:
     """Return Tailscale DNS name, or empty string."""
     try:
         out = subprocess.check_output(
-            ["tailscale", "status", "--json"],
+            tailscale_argv("status", "--json"),
             stderr=subprocess.DEVNULL, timeout=5, text=True,
         )
         return json.loads(out).get("Self", {}).get("DNSName", "").rstrip(".")
@@ -356,7 +357,7 @@ def _peer_acl_allows_tcp(port: int = SERVE_PORT) -> bool | None:
     """
     try:
         out = subprocess.check_output(
-            ["tailscale", "debug", "netmap"],
+            tailscale_argv("debug", "netmap"),
             stderr=subprocess.DEVNULL, timeout=3, text=True,
         )
         nm = json.loads(out)
@@ -435,7 +436,7 @@ def _ts_serve_supports_unix() -> bool:
     feature is what matters, and the help names it when it is there.
     """
     try:
-        r = subprocess.run(["tailscale", "serve", "--help"],
+        r = subprocess.run(tailscale_argv("serve", "--help"),
                            capture_output=True, text=True, timeout=10)
     except Exception:
         return False
@@ -471,7 +472,7 @@ def _try_ts_serve_target(target: str) -> tuple[bool, bool, str]:
     fallback rather than an error."""
     try:
         out = subprocess.check_output(
-            ["tailscale", "serve", "status"],
+            tailscale_argv("serve", "status"),
             stderr=subprocess.DEVNULL, text=True,
         )
         if _serve_needle(target) in out:
@@ -479,7 +480,7 @@ def _try_ts_serve_target(target: str) -> tuple[bool, bool, str]:
     except Exception:
         pass
     try:
-        r = subprocess.run(["tailscale", "serve", "--bg", target],
+        r = subprocess.run(tailscale_argv("serve", "--bg", target),
                            capture_output=True, text=True)
         return r.returncode == 0, False, r.stderr
     except Exception as e:
@@ -512,7 +513,11 @@ def _ensure_ts_serve_target(target: str) -> bool:
     if target.startswith("unix:") and _UNIX_SERVE_NEEDS_SUDO in err:
         print("Serving a Unix socket needs more than operator permission: your user must", file=sys.stderr)
         print("also be able to run 'sudo tailscale' without a password prompt. Either:", file=sys.stderr)
-        print(f"  echo '{user} ALL=(root) NOPASSWD: /usr/bin/tailscale' | sudo tee /etc/sudoers.d/tailscale-{user}", file=sys.stderr)
+        # sudoers needs an absolute path, so resolve one rather than assuming
+        # /usr/bin: Homebrew, Tailscale.app's own CLI wrapper and the macOS
+        # bundle all live elsewhere.
+        ts_path = shutil.which("tailscale") or tailscale_cmd() or "/usr/bin/tailscale"
+        print(f"  echo '{user} ALL=(root) NOPASSWD: {ts_path}' | sudo tee /etc/sudoers.d/tailscale-{user}", file=sys.stderr)
         print("  chmod 440 /etc/sudoers.d/tailscale-" + user, file=sys.stderr)
         print("or trustmux will fall back to serving a loopback port instead.", file=sys.stderr)
     else:
@@ -539,14 +544,14 @@ def _remove_ts_serve(target: str) -> bool:
     """
     target = str(target)
     try:
-        subprocess.run(["tailscale", "serve", "--bg", target, "off"],
+        subprocess.run(tailscale_argv("serve", "--bg", target, "off"),
                        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                        timeout=15)
         return True
     except (FileNotFoundError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
         pass
     try:
-        out = subprocess.check_output(["tailscale", "serve", "status"],
+        out = subprocess.check_output(tailscale_argv("serve", "status"),
                                       stderr=subprocess.DEVNULL, text=True, timeout=15)
         if _serve_needle(target) not in out:
             return True     # already gone, whoever removed it
@@ -661,11 +666,11 @@ def cmd_setup(quiet: bool = False, port: int | None = None,
 
     # Tailscale presence
     try:
-        subprocess.run(["tailscale", "--version"], check=True,
+        subprocess.run(tailscale_argv("--version"), check=True,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except (FileNotFoundError, subprocess.CalledProcessError):
-        print("\nError: tailscale not found in PATH.", file=sys.stderr)
-        print("Install from https://tailscale.com/download, connect, then re-run.", file=sys.stderr)
+        print("\nError: tailscale not found.", file=sys.stderr)
+        print(tailscale_install_hint(), file=sys.stderr)
         return 1
 
     ts_host = _ts_host()
@@ -764,11 +769,11 @@ def cmd_start(mode: str = "serve", port: int | None = None,
         if not _check_tls():
             return 1
         try:
-            subprocess.run(["tailscale", "--version"], check=True,
+            subprocess.run(tailscale_argv("--version"), check=True,
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except (FileNotFoundError, subprocess.CalledProcessError):
             print("Error: tailscale not found.", file=sys.stderr)
-            print("Install: https://tailscale.com/docs/install/linux", file=sys.stderr)
+            print(tailscale_install_hint(), file=sys.stderr)
             print("Or use 'start-direct' for self-signed HTTPS without Tailscale.", file=sys.stderr)
             return 1
         ts_host = _ts_host()
@@ -960,7 +965,7 @@ def cmd_status(port: int | None = None, inst: Instance | None = None) -> int:
         served = _serve_marker_target(inst)
         if served is not None:
             try:
-                out = subprocess.check_output(["tailscale", "serve", "status"],
+                out = subprocess.check_output(tailscale_argv("serve", "status"),
                                               stderr=subprocess.DEVNULL, text=True,
                                               timeout=15)
             except Exception:
@@ -988,7 +993,7 @@ def cmd_status(port: int | None = None, inst: Instance | None = None) -> int:
     if not advertised_urls(info):
         try:
             out = subprocess.check_output(
-                ["tailscale", "serve", "status"],
+                tailscale_argv("serve", "status"),
                 stderr=subprocess.DEVNULL, text=True,
             )
             if f":{port}" in out or str(inst.http_sock) in out:
