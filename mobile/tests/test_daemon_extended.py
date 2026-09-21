@@ -894,15 +894,18 @@ class TestWsHandler(AsyncHTTPTestCase):
         """tailscale serve's Unix-socket target (the `start` default) hands
         the daemon Host: localhost and carries the real tailnet name in
         X-Forwarded-Host. check_origin() must compare against that, not the
-        raw Host header, or it rejects every real browser as cross-origin."""
+        raw Host header, or it rejects every real browser as cross-origin.
+        Only trustworthy with _trust_forwarded_host on, i.e. real --https/
+        serve mode (see _external_host) -- so it's patched on here."""
         url = f'ws://localhost:{self.get_http_port()}/ws'
         headers = HTTPHeaders({
             'Origin': 'https://frink.tailbbeaa.ts.net',
             'X-Forwarded-Host': 'frink.tailbbeaa.ts.net',
             'Cookie': 'trustmux_session=badtoken',
         })
-        conn = await websocket_connect(HTTPRequest(url, headers=headers))
-        msg = await conn.read_message()
+        with patch.object(bm, '_trust_forwarded_host', True):
+            conn = await websocket_connect(HTTPRequest(url, headers=headers))
+            msg = await conn.read_message()
         self.assertIsNone(msg)   # got past check_origin; closed for the bad token instead
 
     @gen_test(timeout=5)
@@ -911,6 +914,25 @@ class TestWsHandler(AsyncHTTPTestCase):
         headers = HTTPHeaders({
             'Origin': 'https://evil.example',
             'X-Forwarded-Host': 'frink.tailbbeaa.ts.net',
+        })
+        with patch.object(bm, '_trust_forwarded_host', True):
+            with self.assertRaises(Exception):
+                await websocket_connect(HTTPRequest(url, headers=headers))
+
+    @gen_test(timeout=5)
+    async def test_forwarded_host_ignored_outside_serve_mode(self):
+        """_trust_forwarded_host is off by default (start-local/start-direct:
+        no tailscale serve proxy in front, so nothing but the client itself
+        could have set this header). A handshake that spoofs
+        X-Forwarded-Host to match its own cross-site Origin, hoping to
+        launder past check_origin, must still be refused -- _external_host
+        falls back to the real Host, which the attacker's Origin genuinely
+        does not match."""
+        self.assertFalse(bm._trust_forwarded_host)  # the default outside serve mode
+        url = f'ws://localhost:{self.get_http_port()}/ws'
+        headers = HTTPHeaders({
+            'Origin': 'https://evil.example',
+            'X-Forwarded-Host': 'evil.example',  # attacker-controlled, matches Origin
         })
         with self.assertRaises(Exception):
             await websocket_connect(HTTPRequest(url, headers=headers))

@@ -19,6 +19,7 @@ import sys
 import time
 from collections.abc import Sequence
 from pathlib import Path
+from urllib.parse import urlparse
 
 import tornado.httpserver
 import tornado.iostream
@@ -77,8 +78,15 @@ _PAIR_CODE_TTL: int = 60              # 60 seconds — keep the window tight
 _TOKEN_EXPIRY_DAYS: int = 90          # sessions expire after 90 days of inactivity
 _sessions: dict[str, dict] = {}      # token → {ip, paired_at, label, last_used}
 _ws_clients: dict[str, set] = {}     # token → set[WsHandler] — closed on unpair
-_https_mode: bool = False             # set by --https; enables Secure cookie
+_https_mode: bool = False             # set by --https or --self-signed; enables Secure cookie
 _listen: dict = {}                    # bound host/port/scheme, served by admin "info"
+# True only for --https (the Unix-socket/loopback tailscale-serve modes), never
+# for --self-signed (start-direct: also TLS, also folds into _https_mode above,
+# but exposed straight to 0.0.0.0 with no proxy in front at all). Narrower than
+# _https_mode on purpose: _external_host() must trust X-Forwarded-Host exactly
+# when, and only when, tailscale serve -- not an arbitrary direct client -- is
+# the one who could have set it. Mirrors xheaders, which gates the same way.
+_trust_forwarded_host: bool = False
 
 # Which instance's files this daemon owns; repointed by --name.
 INSTANCE      = Instance()
@@ -739,11 +747,23 @@ def _external_host(request) -> str:
     carries the tailnet name the browser used in X-Forwarded-Host instead.
     request.host is otherwise correct -- start-local and start-direct have no
     proxy in front, so the browser's own Host reaches the daemon unchanged.
-    xheaders=True already means this process trusts X-Forwarded-For/Proto from
-    whatever is in front of it; trusting X-Forwarded-Host is the same trust
-    boundary, not a new one.
+
+    X-Forwarded-Host is trusted only when _trust_forwarded_host -- true for
+    --https (tailscale serve) alone, deliberately NOT for --self-signed
+    (start-direct): that mode also sets _https_mode (it needs the Secure
+    cookie attribute and reports an https:// scheme too) but is exposed
+    straight to 0.0.0.0 with no proxy in front, so a client there could set
+    its own X-Forwarded-Host to defeat the origin check this function feeds
+    (_cross_site, WsHandler.check_origin) if this trusted _https_mode
+    instead. The header is trustworthy exactly when, and only when,
+    tailscale serve -- not an arbitrary direct client -- is the one setting
+    it; xheaders is gated the same way, for the same reason.
     """
-    return request.headers.get("X-Forwarded-Host", "").strip() or request.host
+    if _trust_forwarded_host:
+        forwarded = request.headers.get("X-Forwarded-Host", "").strip()
+        if forwarded:
+            return forwarded
+    return request.host
 
 
 def _cross_site(request) -> bool:
@@ -762,7 +782,6 @@ def _cross_site(request) -> bool:
         return True
     origin = request.headers.get("Origin", "").strip()
     if origin and origin.lower() != "null":
-        from urllib.parse import urlparse
         if urlparse(origin).netloc.lower() != _external_host(request).lower():
             return True
     return False
@@ -899,7 +918,6 @@ class WsHandler(tornado.websocket.WebSocketHandler):
     """
 
     def check_origin(self, origin: str) -> bool:
-        from urllib.parse import urlparse
         return urlparse(origin).netloc.lower() == _external_host(self.request).lower()
 
     def get_compression_options(self):
@@ -1605,8 +1623,9 @@ def _ensure_self_signed_cert(lan_ip: str, advertised: Sequence[str] = ()) -> tup
 
 async def _amain(host: str, port: int, https: bool, ssl_ctx=None,
                  advertise: Sequence[str] = (), unix: str = "") -> None:
-    global _https_mode, _listen
+    global _https_mode, _trust_forwarded_host, _listen
     _https_mode = https or ssl_ctx is not None
+    _trust_forwarded_host = https
     _listen = {
         "host":   host if not unix else "",
         # In Unix-socket mode the port is nominal: nothing is bound to it, but

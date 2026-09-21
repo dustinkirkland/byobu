@@ -81,8 +81,11 @@ class TestPairCrossSiteAndBudget(AsyncHTTPTestCase):
         its own Host header (typically "localhost") and carries the tailnet
         name the browser actually used in X-Forwarded-Host. Comparing Origin
         against request.host directly -- ignoring X-Forwarded-Host -- refuses
-        every legitimate pairing attempt made through that proxy."""
-        with patch('trustmux._daemon._save_tokens'):
+        every legitimate pairing attempt made through that proxy. Only
+        trustworthy with _trust_forwarded_host on, i.e. real --https/serve
+        mode (see _external_host) -- so it's patched on here explicitly."""
+        with patch('trustmux._daemon._save_tokens'), \
+             patch.object(bm, '_trust_forwarded_host', True):
             resp = self._post('424242', **{
                 'Sec-Fetch-Site': 'same-origin',
                 'Origin': 'https://frink.tailbbeaa.ts.net',
@@ -92,10 +95,28 @@ class TestPairCrossSiteAndBudget(AsyncHTTPTestCase):
         self.assertEqual(resp.code, 200)
 
     def test_forwarded_host_mismatch_is_still_refused(self):
+        with patch.object(bm, '_trust_forwarded_host', True):
+            resp = self._post(**{
+                'Sec-Fetch-Site': 'same-origin',
+                'Origin': 'https://evil.example',
+                'X-Forwarded-Host': 'frink.tailbbeaa.ts.net',
+            })
+        self.assertEqual(resp.code, 403)
+        self.assertEqual(bm._pair_attempts, 0)
+
+    def test_forwarded_host_ignored_outside_serve_mode(self):
+        """_trust_forwarded_host is off by default (start-local/start-direct:
+        no tailscale serve proxy in front, so nothing but the client itself
+        could have set this header). A request that spoofs X-Forwarded-Host
+        to match its own cross-site Origin, hoping to launder past the
+        origin check, must still be refused -- _external_host falls back to
+        the real Host, which the attacker's Origin genuinely does not
+        match."""
+        self.assertFalse(bm._trust_forwarded_host)  # the default outside serve mode
         resp = self._post(**{
             'Sec-Fetch-Site': 'same-origin',
             'Origin': 'https://evil.example',
-            'X-Forwarded-Host': 'frink.tailbbeaa.ts.net',
+            'X-Forwarded-Host': 'evil.example',  # attacker-controlled, matches Origin
         })
         self.assertEqual(resp.code, 403)
         self.assertEqual(bm._pair_attempts, 0)
