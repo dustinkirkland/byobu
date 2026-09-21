@@ -890,10 +890,17 @@ def _valid_tmux_name(s: str) -> bool:
 class WsHandler(tornado.websocket.WebSocketHandler):
     """One WebSocket connection per browser tab.
 
-    check_origin() is intentionally left at Tornado's default, which requires
-    Origin == Host. This is a security measure against cross-site WebSocket
-    hijacking and is correct for our setup in all modes.
+    check_origin() requires Origin == Host, as a security measure against
+    cross-site WebSocket hijacking -- but against _external_host(), not
+    Tornado's default of the raw Host header. In serve mode's Unix-socket
+    proxying, Host is always "localhost" (see _external_host), which would
+    otherwise make Tornado's own default reject every real browser's upgrade
+    request as cross-origin.
     """
+
+    def check_origin(self, origin: str) -> bool:
+        from urllib.parse import urlparse
+        return urlparse(origin).netloc.lower() == _external_host(self.request).lower()
 
     def get_compression_options(self):
         # permessage-deflate was never turned on, so every snapshot/update/

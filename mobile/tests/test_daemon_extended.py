@@ -890,6 +890,32 @@ class TestWsHandler(AsyncHTTPTestCase):
         self.assertIsNone(msg)
 
     @gen_test(timeout=5)
+    async def test_forwarded_host_from_the_serve_proxy_is_honoured(self):
+        """tailscale serve's Unix-socket target (the `start` default) hands
+        the daemon Host: localhost and carries the real tailnet name in
+        X-Forwarded-Host. check_origin() must compare against that, not the
+        raw Host header, or it rejects every real browser as cross-origin."""
+        url = f'ws://localhost:{self.get_http_port()}/ws'
+        headers = HTTPHeaders({
+            'Origin': 'https://frink.tailbbeaa.ts.net',
+            'X-Forwarded-Host': 'frink.tailbbeaa.ts.net',
+            'Cookie': 'trustmux_session=badtoken',
+        })
+        conn = await websocket_connect(HTTPRequest(url, headers=headers))
+        msg = await conn.read_message()
+        self.assertIsNone(msg)   # got past check_origin; closed for the bad token instead
+
+    @gen_test(timeout=5)
+    async def test_forwarded_host_mismatch_is_still_refused(self):
+        url = f'ws://localhost:{self.get_http_port()}/ws'
+        headers = HTTPHeaders({
+            'Origin': 'https://evil.example',
+            'X-Forwarded-Host': 'frink.tailbbeaa.ts.net',
+        })
+        with self.assertRaises(Exception):
+            await websocket_connect(HTTPRequest(url, headers=headers))
+
+    @gen_test(timeout=5)
     async def test_valid_token_receives_initial_sessions(self):
         tok = _add_session('ws_tok_init')
         with patch.object(bm, 'tmux_list_sessions', return_value=[]):
