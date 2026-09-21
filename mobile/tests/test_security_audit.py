@@ -76,6 +76,30 @@ class TestPairCrossSiteAndBudget(AsyncHTTPTestCase):
         resp = self._post()                       # no browser headers at all
         self.assertEqual(bm._pair_attempts, 2)
 
+    def test_forwarded_host_from_the_serve_proxy_is_honoured(self):
+        """tailscale serve (default `start` mode) proxies to the daemon with
+        its own Host header (typically "localhost") and carries the tailnet
+        name the browser actually used in X-Forwarded-Host. Comparing Origin
+        against request.host directly -- ignoring X-Forwarded-Host -- refuses
+        every legitimate pairing attempt made through that proxy."""
+        with patch('trustmux._daemon._save_tokens'):
+            resp = self._post('424242', **{
+                'Sec-Fetch-Site': 'same-origin',
+                'Origin': 'https://frink.tailbbeaa.ts.net',
+                'X-Forwarded-Host': 'frink.tailbbeaa.ts.net',
+                'Host': 'localhost',
+            })
+        self.assertEqual(resp.code, 200)
+
+    def test_forwarded_host_mismatch_is_still_refused(self):
+        resp = self._post(**{
+            'Sec-Fetch-Site': 'same-origin',
+            'Origin': 'https://evil.example',
+            'X-Forwarded-Host': 'frink.tailbbeaa.ts.net',
+        })
+        self.assertEqual(resp.code, 403)
+        self.assertEqual(bm._pair_attempts, 0)
+
     def test_attempts_are_counted_per_source_address(self):
         for _ in range(bm._MAX_PAIR_ATTEMPTS):
             self.assertEqual(self._post().code, 403)

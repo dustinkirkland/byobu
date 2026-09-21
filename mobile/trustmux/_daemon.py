@@ -731,6 +731,21 @@ class PingHandler(BaseHandler):
             self.json({"auth": False}, 401)
 
 
+def _external_host(request) -> str:
+    """The Host the browser actually dialed, as far as this handler can tell.
+
+    In serve mode `tailscale serve` proxies to the daemon over a Unix socket
+    or loopback port with its own Host header (typically "localhost"), and
+    carries the tailnet name the browser used in X-Forwarded-Host instead.
+    request.host is otherwise correct -- start-local and start-direct have no
+    proxy in front, so the browser's own Host reaches the daemon unchanged.
+    xheaders=True already means this process trusts X-Forwarded-For/Proto from
+    whatever is in front of it; trusting X-Forwarded-Host is the same trust
+    boundary, not a new one.
+    """
+    return request.headers.get("X-Forwarded-Host", "").strip() or request.host
+
+
 def _cross_site(request) -> bool:
     """True if a browser says this request came from another site.
 
@@ -748,7 +763,7 @@ def _cross_site(request) -> bool:
     origin = request.headers.get("Origin", "").strip()
     if origin and origin.lower() != "null":
         from urllib.parse import urlparse
-        if urlparse(origin).netloc.lower() != request.host.lower():
+        if urlparse(origin).netloc.lower() != _external_host(request).lower():
             return True
     return False
 
@@ -824,7 +839,7 @@ class PairHandler(BaseHandler):
 class MachinesHandler(BaseAuthHandler):
     async def get(self):
         try:
-            current_url = f"{self.request.protocol}://{self.request.host}"
+            current_url = f"{self.request.protocol}://{_external_host(self.request)}"
             siblings = []
             if MACHINES_FILE.exists():
                 raw = json.loads(await asyncio.to_thread(MACHINES_FILE.read_text))
