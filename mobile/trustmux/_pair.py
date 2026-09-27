@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 
 from trustmux._advertise import advertised_urls
+from trustmux._paths import tailscale_argv
 from trustmux._ctl import (DEFAULT_PORT, Instance, daemon_info, direct_url,
                            resolve_port, warn_if_peer_blocked)
 
@@ -49,7 +50,7 @@ def _ts_url() -> str:
     """Return the HTTPS URL from tailscale serve, or empty string if unavailable."""
     try:
         out = subprocess.check_output(
-            ["tailscale", "status", "--json"],
+            tailscale_argv("status", "--json"),
             stderr=subprocess.DEVNULL, timeout=5
         )
         d = json.loads(out)

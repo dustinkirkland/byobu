@@ -32,7 +32,7 @@ import tornado.websocket
 from trustmux._advertise import AdvertiseError, resolve, resolve_sources
 from trustmux._paths import (Instance, check_sock_path, machines_file,
                              migrate_legacy_layout, resolve_instance,
-                             socket_is_live)
+                             socket_is_live, tailscale_argv)
 
 def _resolve_version() -> str:
     import subprocess as _sp
@@ -206,7 +206,7 @@ _IPV4_RE = re.compile(r'^\d{1,3}(?:\.\d{1,3}){3}$')
 
 def _tailscale_ip() -> str | None:
     try:
-        r = subprocess.run(["tailscale", "ip", "-4"], capture_output=True, text=True, timeout=3)
+        r = subprocess.run(tailscale_argv("ip", "-4"), capture_output=True, text=True, timeout=3)
         if r.returncode == 0:
             ip = r.stdout.strip().splitlines()[0].strip()
             if _IPV4_RE.match(ip):

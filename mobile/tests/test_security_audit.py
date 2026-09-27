@@ -274,6 +274,11 @@ class TestServeMappingLifecycle(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.inst.state, True)
         p = patch('trustmux._ctl.daemon_info', return_value=None)
         p.start(); self.addCleanup(p.stop)
+        # tailscale_argv() resolves the real CLI before any mocked
+        # subprocess call below is reached; without this a host with no
+        # tailscale on PATH short-circuits before the mocks matter.
+        p = patch('trustmux._paths.tailscale_cmd', return_value='tailscale')
+        p.start(); self.addCleanup(p.stop)
 
     def test_serve_start_records_a_marker(self):
         with patch('trustmux._ctl._check_tmux', return_value=True), \
@@ -530,6 +535,11 @@ class TestUnixServeCli(unittest.TestCase):
         self.inst.ensure_dirs()
         self.addCleanup(shutil.rmtree, self.inst.state, True)
         p = patch('trustmux._ctl.daemon_info', return_value=None)
+        p.start(); self.addCleanup(p.stop)
+        # tailscale_argv() resolves the real CLI before any mocked
+        # subprocess call below is reached; without this a host with no
+        # tailscale on PATH short-circuits before the mocks matter.
+        p = patch('trustmux._paths.tailscale_cmd', return_value='tailscale')
         p.start(); self.addCleanup(p.stop)
 
     def test_probe_reads_the_help_text(self):

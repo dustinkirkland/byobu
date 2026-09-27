@@ -19,6 +19,10 @@ Two tiers:
   interfaces — reachable from anywhere the host is) and `start-local` (loopback
   only, reached through an SSH tunnel) need no Tailscale at all
 
+  On macOS the `tailscale` CLI ships *inside* Tailscale.app and is not added to
+  `PATH` unless you use the app's **Install CLI** menu item. trustmux looks in
+  the app bundle as well, so a stock install needs no extra setup.
+
 ---
 
 ## Install

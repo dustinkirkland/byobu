@@ -27,6 +27,7 @@ BYOBU_CONFIG_DIR.
 import errno
 import os
 import re
+import shutil
 import socket
 import sys
 from dataclasses import dataclass
@@ -66,6 +67,57 @@ def state_dir() -> Path:
 def machines_file() -> Path:
     """Sibling-machine list for the in-app selector; shared by all instances."""
     return config_dir() / "machines.json"
+
+
+# On macOS the tailscale CLI is not a separate binary: it *is* the GUI app's
+# executable inside Tailscale.app, and nothing lands in PATH unless the user
+# runs the app's own "Install CLI" menu item -- which writes an `exec` wrapper
+# to /usr/local/bin/tailscale (Contents/Resources/InstallTailscaleCLI.scpt).
+# Probing the bundle ourselves means trustmux works on a stock install.
+#
+# It must be exec'd by its real path, as subprocess does.  A *symlink* to it
+# does not work: the binary locates its own .app from its executable path and
+# aborts with "The current bundleIdentifier is unknown to the registry".
+_MACOS_APP_DIRS = ("/Applications", "~/Applications")
+_MACOS_BUNDLE_CLI = "Tailscale.app/Contents/MacOS/Tailscale"
+
+
+def tailscale_cmd() -> str | None:
+    """argv[0] for invoking the tailscale CLI, or None if it is not installed.
+
+    Returns the bare name whenever PATH has it, so on Linux -- and on a macOS
+    that has had the CLI installed by Homebrew or by Tailscale.app itself --
+    the resolved command is exactly what it has always been.
+    """
+    if shutil.which("tailscale"):
+        return "tailscale"
+    if sys.platform == "darwin":
+        for d in _MACOS_APP_DIRS:
+            cli = Path(d).expanduser() / _MACOS_BUNDLE_CLI
+            if os.access(cli, os.X_OK):
+                return str(cli)
+    return None
+
+
+def tailscale_argv(*args: str) -> list[str]:
+    """Full argv for a tailscale subcommand.
+
+    Raises FileNotFoundError when tailscale is not installed -- the same thing
+    subprocess.run() itself raises for a missing `tailscale` in PATH, so every
+    caller's existing error handling covers this unchanged.
+    """
+    cmd = tailscale_cmd()
+    if cmd is None:
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), "tailscale")
+    return [cmd, *args]
+
+
+def tailscale_install_hint() -> str:
+    """One-line hint naming how to get a tailscale CLI on this platform."""
+    if sys.platform == "darwin":
+        return ("Install from https://tailscale.com/download, then connect. If Tailscale.app "
+                "is already installed, use its menu bar icon > Install CLI.")
+    return "Install from https://tailscale.com/download, connect, then re-run."
 
 
 @dataclass(frozen=True)
