@@ -120,6 +120,34 @@ function _subscribeSettled() {
 let _currentPaneRawLines = [];
 let _currentPaneRawLinesFor = null;
 
+// A content re-render (renderOutput's full replaceChildren, or applyPatch's
+// splice of the touched lines) destroys whatever DOM nodes it touches --
+// including the text nodes an in-progress native text selection is anchored
+// to. Android in particular loses track of a selection handle the instant
+// its anchor node is removed, and appears to recover by ballooning the
+// selection to the whole container rather than collapsing it -- so a pane
+// that updates while the user is mid-drag makes copying anything in it feel
+// broken. The 'cursor' handler already avoids this for a bare cursor move by
+// never calling renderOutput; _hasOutputSelection/_deferredForSelection
+// extend the same protection to real content updates: skip applying one
+// while a selection is active, and let the existing mismatch/resubscribe
+// path (applyPatch's bounds check, or a forced resubscribe here) resync the
+// instant the selection clears, rather than tracking a queue of missed diffs.
+let _deferredForSelection = false;
+
+function _hasOutputSelection() {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed || sel.rangeCount === 0) return false;
+  return output.contains(sel.getRangeAt(0).commonAncestorContainer);
+}
+
+document.addEventListener('selectionchange', () => {
+  if (_deferredForSelection && !_hasOutputSelection()) {
+    _deferredForSelection = false;
+    if (currentPane) _requestSubscribe(currentPane);
+  }
+});
+
 // ── offline / connectivity helpers ────────────────────────────────────────
 let _serverVersion = null;
 
@@ -482,6 +510,9 @@ function connect() {
       }
     } else if (msg.type === 'update') {
       if (msg.pane_id !== currentPane) return;
+      // Rebuilds every line's DOM node -- never while the user has an
+      // active selection in the pane (see _deferredForSelection above).
+      if (_hasOutputSelection()) { _deferredForSelection = true; return; }
       _currentPaneRawLines = msg.data.split('\n');
       _currentPaneRawLinesFor = msg.pane_id;
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
@@ -497,6 +528,14 @@ function connect() {
       // nothing safe to apply the delta to -- drop it and wait for the
       // next snapshot rather than rendering a mismatched reconstruction.
       if (msg.pane_id !== currentPane || _currentPaneRawLinesFor !== msg.pane_id) return;
+      // Same reasoning as 'update': renderOutput below rebuilds every line's
+      // DOM node regardless of whether it actually changed. Applying the
+      // drop/append to _currentPaneRawLines while skipping the render would
+      // leave it byte-correct but the DOM stale, so skip both together and
+      // let the forced resubscribe once the selection clears fetch a fresh
+      // snapshot -- an incremental delta computed against content the client
+      // never rendered is not safe to trust on its own.
+      if (_hasOutputSelection()) { _deferredForSelection = true; return; }
       _currentPaneRawLines = _currentPaneRawLines.slice(msg.drop).concat(msg.append);
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
       _applyCursorFields(msg);
@@ -508,6 +547,14 @@ function connect() {
       // from the stream that subscribe is about to replace, so drop it and
       // wait for the snapshot rather than cancel-restarting the new stream.
       if (!_lines) return;
+      // applyPatch only touches the lines its ops actually cover, but a
+      // selection anchored on exactly one of those lines is still destroyed
+      // when its span is replaced -- skip whenever a selection is active
+      // rather than trying to tell whether this particular patch would
+      // reach it; the next patch after the selection clears will fail its
+      // own bounds check against the now-stale _lines and self-heal via the
+      // same resubscribe path below, so nothing further is needed here.
+      if (_hasOutputSelection()) { _deferredForSelection = true; return; }
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
       _applyCursorFields(msg);
       // A mismatching op means the line state diverged from the daemon's;
