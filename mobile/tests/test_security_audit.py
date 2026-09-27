@@ -229,6 +229,11 @@ class TestServeMappingLifecycle(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.inst.state, True)
         p = patch('trustmux._ctl.daemon_info', return_value=None)
         p.start(); self.addCleanup(p.stop)
+        # tailscale_argv() resolves the real CLI before any mocked
+        # subprocess call below is reached; without this a host with no
+        # tailscale on PATH short-circuits before the mocks matter.
+        p = patch('trustmux._paths.tailscale_cmd', return_value='tailscale')
+        p.start(); self.addCleanup(p.stop)
 
     def test_serve_start_records_a_marker(self):
         with patch('trustmux._ctl._check_tmux', return_value=True), \
@@ -244,8 +249,7 @@ class TestServeMappingLifecycle(unittest.TestCase):
 
     def test_stop_removes_the_mapping_and_the_marker(self):
         self.inst.serve_marker.write_text('7432\n')
-        with patch('trustmux._paths.tailscale_cmd', return_value='tailscale'), \
-             patch('trustmux._ctl._pid', return_value=None), \
+        with patch('trustmux._ctl._pid', return_value=None), \
              patch('trustmux._ctl.subprocess.run') as run, \
              patch('builtins.print'):
             self.assertEqual(ctl.cmd_stop(7432, self.inst), 0)
@@ -487,6 +491,11 @@ class TestUnixServeCli(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.inst.state, True)
         p = patch('trustmux._ctl.daemon_info', return_value=None)
         p.start(); self.addCleanup(p.stop)
+        # tailscale_argv() resolves the real CLI before any mocked
+        # subprocess call below is reached; without this a host with no
+        # tailscale on PATH short-circuits before the mocks matter.
+        p = patch('trustmux._paths.tailscale_cmd', return_value='tailscale')
+        p.start(); self.addCleanup(p.stop)
 
     def test_probe_reads_the_help_text(self):
         with patch('trustmux._ctl.subprocess.run',
@@ -596,8 +605,7 @@ class TestUnixServeCli(unittest.TestCase):
     def test_stop_removes_a_unix_mapping(self):
         target = f'unix:{self.inst.http_sock}'
         self.inst.serve_marker.write_text(target + '\n')
-        with patch('trustmux._paths.tailscale_cmd', return_value='tailscale'), \
-             patch('trustmux._ctl._pid', return_value=None), \
+        with patch('trustmux._ctl._pid', return_value=None), \
              patch('trustmux._ctl.subprocess.run') as run, \
              patch('builtins.print'):
             self.assertEqual(ctl.cmd_stop(7432, self.inst), 0)

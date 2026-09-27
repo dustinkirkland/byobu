@@ -383,7 +383,8 @@ class TestTsHost(unittest.TestCase):
         return json.dumps({'Self': {'DNSName': dns}})
 
     def test_returns_name_without_trailing_dot(self):
-        with patch('trustmux._ctl.subprocess.check_output',
+        with patch('trustmux._paths.tailscale_cmd', return_value='tailscale'), \
+             patch('trustmux._ctl.subprocess.check_output',
                    return_value=self._ts_json()):
             self.assertEqual(ctl._ts_host(), 'engawa.ts.net')
 
@@ -444,6 +445,15 @@ class TestCheckTls(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 class TestEnsureTsServe(unittest.TestCase):
+
+    def setUp(self):
+        # tailscale_argv() resolves the real CLI before subprocess.run/
+        # check_output is ever reached below, so a host with no tailscale
+        # on PATH (any CI/Docker box, including release.py's own RC smoke
+        # test) would otherwise short-circuit every test here before the
+        # mocked calls ran at all.
+        p = patch('trustmux._paths.tailscale_cmd', return_value='tailscale')
+        p.start(); self.addCleanup(p.stop)
 
     def test_already_configured(self):
         port_str = f':{ctl.DEFAULT_PORT}'
@@ -535,10 +545,11 @@ class TestCmdSetup(unittest.TestCase):
         self.assertEqual(result, 1)
 
     def test_returns_0_on_success(self):
-        with patch('trustmux._ctl.subprocess.run'):
-            with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
-                with patch('trustmux._ctl._ensure_ts_serve', return_value=True):
-                    result = ctl.cmd_setup()
+        with patch('trustmux._paths.tailscale_cmd', return_value='tailscale'):
+            with patch('trustmux._ctl.subprocess.run'):
+                with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
+                    with patch('trustmux._ctl._ensure_ts_serve', return_value=True):
+                        result = ctl.cmd_setup()
         self.assertEqual(result, 0)
 
     def test_quiet_suppresses_next_steps(self):
@@ -587,14 +598,15 @@ class TestCmdStart(unittest.TestCase):
                                 self.assertEqual(ctl.cmd_start('serve'), 1)
 
     def test_serve_mode_success(self):
-        with patch('trustmux._ctl._pid', return_value=None):
-            with patch('trustmux._ctl._check_tmux', return_value=True):
-                with patch('trustmux._ctl._check_tls', return_value=True):
-                    with patch('trustmux._ctl.subprocess.run'):
-                        with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
-                            with patch('trustmux._ctl._ensure_ts_serve', return_value=True):
-                                with patch('trustmux._ctl._launch', return_value=5678):
-                                    self.assertEqual(ctl.cmd_start('serve'), 0)
+        with patch('trustmux._paths.tailscale_cmd', return_value='tailscale'):
+            with patch('trustmux._ctl._pid', return_value=None):
+                with patch('trustmux._ctl._check_tmux', return_value=True):
+                    with patch('trustmux._ctl._check_tls', return_value=True):
+                        with patch('trustmux._ctl.subprocess.run'):
+                            with patch('trustmux._ctl._ts_host', return_value='engawa.ts.net'):
+                                with patch('trustmux._ctl._ensure_ts_serve', return_value=True):
+                                    with patch('trustmux._ctl._launch', return_value=5678):
+                                        self.assertEqual(ctl.cmd_start('serve'), 0)
 
     def test_start_local_success(self):
         with patch('trustmux._ctl._pid', return_value=None):
@@ -715,6 +727,11 @@ class TestCmdStatus(unittest.TestCase):
         # A serve-mode start elsewhere in the suite leaves the default
         # instance's serve marker behind; status would then (rightly) warn.
         ctl.Instance().serve_marker.unlink(missing_ok=True)
+        # tailscale_argv() resolves the real CLI before any mocked
+        # subprocess call below is reached; without this a host with no
+        # tailscale on PATH short-circuits before the mocks matter.
+        p = patch('trustmux._paths.tailscale_cmd', return_value='tailscale')
+        p.start(); self.addCleanup(p.stop)
 
     def test_not_running(self):
         with patch('trustmux._ctl._pid', return_value=None):
@@ -896,6 +913,16 @@ def _netmap(rules, self_addrs=("100.93.98.28/32",)):
 
 
 class TestPeerAclAllowsTcp(unittest.TestCase):
+
+    def setUp(self):
+        # tailscale_argv() resolves the real CLI before subprocess.
+        # check_output is reached below; without this a host with no
+        # tailscale on PATH returns None from _peer_acl_allows_tcp
+        # before ever consulting the mocked netmap, which happens to
+        # keep the assertFalse cases passing (None is falsy) while
+        # silently failing every assertTrue one.
+        p = patch('trustmux._paths.tailscale_cmd', return_value='tailscale')
+        p.start(); self.addCleanup(p.stop)
 
     def _patch_netmap(self, output):
         return patch('trustmux._ctl.subprocess.check_output', return_value=output)
