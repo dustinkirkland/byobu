@@ -7,6 +7,13 @@ Usage:
     ./release.py [rc] --interactive # same, but prompt for confirmation at each step
     ./release.py final              # cut a full release
     ./release.py salsa-ci           # local Docker dry-run of the Debian Salsa CI
+    ./release.py test-pr <PR#|branch>
+        # Pre-merge PR review: runs the Phase 4 smoke test (build +
+        # test_byobu.sh + mobile/tests) against an isolated `git worktree`
+        # of the PR's head commit, entirely inside Docker. Never touches the
+        # reviewer's checkout or host state (~/.local/state/trustmux, the
+        # live tmux/byobu session, etc.) — use this instead of running
+        # mobile/tests or any daemon-spawning code by hand on the host.
 
 RC phases:
     1  Pre-flight checks
@@ -51,6 +58,7 @@ import shlex
 import shutil
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 import urllib.request
@@ -856,7 +864,7 @@ apt-get update -qq
 apt-get install -y --no-install-recommends \
   build-essential dpkg-dev debhelper dh-python \
   gettext-base automake autoconf \
-  python3 python3-all python3-cryptography python3-tornado \
+  python3 python3-all python3-cryptography python3-tornado tmux \
   devscripts bc ca-certificates distro-info 2>&1 | tail -5
 
 WORKDIR=$(mktemp -d)
@@ -886,6 +894,69 @@ def run_smoke_test():
         "ubuntu:noble", "bash", "-c", _SMOKE_SCRIPT,
     ])
     print("  ✓ Smoke test PASSED")
+
+
+# ── test-pr: RC-style test barrage for a single PR, pre-merge ────────────
+#
+# 2026-09-12 incident: reviewing PR147 by hand, the mobile/trustmux suite got
+# run directly on the host. test_ctl.py rmtree's whatever the XDG path
+# helpers resolve to; unisolated, that's the real ~/.local/state/trustmux,
+# which took the live daemon's socket down along with the byobu/tmux session
+# the reviewing Claude Code process was itself running inside. This command
+# exists so that never has to happen again, or get re-explained: it runs the
+# exact same Phase 4 smoke test (build + usr/share/byobu/tests/test_byobu.sh
+# + mobile/tests, all inside Docker) against an isolated `git worktree` of
+# the PR's head commit — never the checked-out working tree, never the host.
+
+def _fetch_pr_ref(pr_ref: str, unique_suffix: str) -> str | None:
+    """Resolve a PR number or branch name to a local ref, without touching
+    the current checkout. A bare number is fetched as refs/pull/<n>/head into
+    a throwaway local branch unique to this run (returned); anything else is
+    assumed to already be a valid git ref (a local or remote branch name),
+    and None is returned since there is no throwaway branch to clean up.
+
+    The throwaway branch name includes unique_suffix (the caller's worktree
+    dir name) rather than being fixed per PR number: a fixed name collides
+    with, and permanently wedges retries against, a leftover branch from a
+    prior run that was interrupted before its own cleanup ran."""
+    if pr_ref.isdigit():
+        local_branch = f"pr-{pr_ref}-{unique_suffix}"
+        run(["git", "fetch", "origin", f"pull/{pr_ref}/head:{local_branch}"],
+            cwd=BYOBU_SRC)
+        return local_branch
+    return None
+
+
+def test_pr(pr_ref: str):
+    section(f"test-pr: {pr_ref}")
+    missing = [t for t in ("git", "docker") if not shutil.which(t)]
+    if missing:
+        die(f"Missing tools: {' '.join(missing)}")
+
+    worktree_dir = Path(tempfile.mkdtemp(prefix="byobu-test-pr-"))
+    created_branch = _fetch_pr_ref(pr_ref, worktree_dir.name)
+    branch = created_branch or pr_ref
+    # Worktree, not a branch switch: the reviewer's current checkout
+    # (uncommitted work included) is never touched.
+    run(["git", "worktree", "add", "--detach", str(worktree_dir), branch],
+        cwd=BYOBU_SRC)
+    try:
+        _extract_debian_into(worktree_dir)  # dh build needs debian/ present
+        print(f"  Testing {branch} from an isolated worktree: {worktree_dir}")
+        print("  This takes a few minutes…")
+        run([
+            "docker", "run", "--rm",
+            "-v", f"{worktree_dir}:/src:ro",
+            "ubuntu:noble", "bash", "-c", _SMOKE_SCRIPT,
+        ])
+        print(f"  ✓ test-pr PASSED — {pr_ref} is clean under the RC-style test barrage")
+    finally:
+        run(["git", "worktree", "remove", "--force", str(worktree_dir)],
+            check=False, cwd=BYOBU_SRC)
+        # Only ever delete a branch this run itself created -- never one a
+        # caller passed in by name, even if it happens to look similar.
+        if created_branch:
+            run(["git", "branch", "-D", created_branch], check=False, cwd=BYOBU_SRC)
 
 
 # ── phase 4b: pip smoke test ─────────────────────────────────────────────
@@ -2271,19 +2342,27 @@ def record_debian_latest(sha):
     _DEBIAN_LATEST_SEEN.write_text(sha + "\n")
 
 
-def prepare_debian():
-    dst = BYOBU_SRC / "debian"
+def _extract_debian_into(dst_root: Path):
+    """Fetch salsa/debian/latest and extract its debian/ tree under dst_root
+    (BYOBU_SRC for a real release build, an isolated worktree for test-pr).
+    The fetch itself only updates refs in BYOBU_SRC's .git — safe to repeat
+    against any target."""
+    dst = dst_root / "debian"
     if dst.exists():
         shutil.rmtree(dst)
     run(["git", "-C", str(BYOBU_SRC), "fetch", "salsa", "debian/latest"])
-    review_debian_latest()
     run([
         "bash", "-c",
         f"git -C {shlex.quote(str(BYOBU_SRC))} archive salsa/debian/latest debian "
-        f"| tar -x -C {shlex.quote(str(BYOBU_SRC))}",
+        f"| tar -x -C {shlex.quote(str(dst_root))}",
     ])
     if not dst.is_dir():
-        die("prepare_debian(): fetched salsa/debian/latest but debian/ was not extracted")
+        die(f"_extract_debian_into({dst_root}): fetched salsa/debian/latest but debian/ was not extracted")
+
+
+def prepare_debian():
+    review_debian_latest()
+    _extract_debian_into(BYOBU_SRC)
 
 
 def cleanup_debian():
@@ -2707,12 +2786,16 @@ def main():
     parser = argparse.ArgumentParser(
         description="byobu/trustmux release pipeline",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="Modes: rc (default), final, open-dev, salsa-ci",
+        epilog="Modes: rc (default), final, open-dev, salsa-ci, test-pr <PR#|branch>",
     )
     parser.add_argument(
         "mode", nargs="?",
-        choices=["rc", "final", "open-dev", "salsa-ci"],
+        choices=["rc", "final", "open-dev", "salsa-ci", "test-pr"],
         default="rc",
+    )
+    parser.add_argument(
+        "pr_ref", nargs="?", metavar="PR",
+        help="PR number or branch to test — required for, and only used by, test-pr mode",
     )
     parser.add_argument(
         "--start-from",
@@ -2740,6 +2823,12 @@ def main():
 
     global _interactive
     _interactive = args.interactive
+
+    if mode == "test-pr":
+        if not args.pr_ref:
+            die("test-pr requires a PR number or branch: ./release.py test-pr <PR#|branch>")
+        test_pr(args.pr_ref)
+        return
 
     if mode == "open-dev":
         open_dev()
