@@ -134,16 +134,34 @@ fi
 # Sanitize the environment
 byobu-janitor --force
 
-# Set the window title if this is a TTY
+# Set the window title if this is a TTY.  Everything in this block is
+# cosmetic (a status setting, an IP address to show in the title) and must
+# never be able to take the whole session down with it: we run under
+# "sh -e", and a user's statusrc erroring out, or a failure inside
+# ip_address's network detection, previously killed byobu outright with a
+# silent exit 1 -- no session, no explanation. -e is disabled for exactly
+# this block, restored right after, and either failure is now named on
+# stderr so there is something to act on instead of a bare exit code.
+# GH: #146
 if [ -t 1 ]; then
-	[ -r "$BYOBU_CONFIG_DIR/statusrc" ] && . "$BYOBU_CONFIG_DIR/statusrc"
+	set +e
+	if [ -r "$BYOBU_CONFIG_DIR/statusrc" ]; then
+		. "$BYOBU_CONFIG_DIR/statusrc"
+		_byobu_rc=$?
+		[ "$_byobu_rc" = 0 ] || echo "byobu: warning: error reading $BYOBU_CONFIG_DIR/statusrc (exit $_byobu_rc); some status settings may be missing" 1>&2
+	fi
 	. $BYOBU_PREFIX/lib/$PKG/ip_address
 	if [ -n "$BYOBU_ALT_TITLE" ]; then
 		_byobu_title="$BYOBU_ALT_TITLE"
 	else
-		_byobu_title="${USER}@$(hostname 2>/dev/null || cat /proc/sys/kernel/hostname 2>/dev/null) ($(__ip_address t)) - ${PKG}"
+		_byobu_ip="$(__ip_address t)"
+		_byobu_rc=$?
+		[ "$_byobu_rc" = 0 ] || { echo "byobu: warning: error determining IP address for the terminal title (exit $_byobu_rc); continuing without it" 1>&2; _byobu_ip=; }
+		_byobu_title="${USER}@$(hostname 2>/dev/null || cat /proc/sys/kernel/hostname 2>/dev/null) ($_byobu_ip) - ${PKG}"
 	fi
 	[ -n "$BYOBU_NO_TITLE" ] || printf '\033]0;%s\007' "$_byobu_title"
+	unset _byobu_rc _byobu_ip
+	set -e
 fi
 
 # Drop a symlink to the ssh socket in $HOME, since we can ensure that exists.
