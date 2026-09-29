@@ -16,7 +16,7 @@ Entries below 7.15 are the original, unedited history as it existed in
 debian/changelog before this split -- full history preserved, nothing
 lost, just relocated to where all distributions can use it.
 
-byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
+byobu (7.20) 2026-09-29  Dustin Kirkland <kirkland@ubuntu.com>
 
   * mobile/trustmux/_ctl.py: fix `trustmux start` failing outright when
     Unix-socket serve mode is available but the current user can't
@@ -53,18 +53,6 @@ byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
     a real failure this caused across all four packaging smoke tests
     (pip, Homebrew, .deb, RPM) and confirmed fixed end-to-end via the
     same pip/Chainguard-Wolfi path that failed
-  * mobile: security: raise the tornado floor to 6.5.8, closing three
-    Dependabot advisories: GHSA-mpf4-983q-p7j4 (high -- urlencoded body
-    parsing omits max_num_fields, can stall the event loop),
-    GHSA-8423-8fgw-73vq (medium -- multipart parsing builds an unbounded
-    temp list before checking max_parts, memory-amplification DoS), and
-    GHSA-wwv5-g3v4-889x (low -- incomplete fix for an earlier cookie-
-    attribute-injection CVE). mobile/uv.lock and mobile/requirements.txt
-    regenerated to match; homebrew/Formula/trustmux.rb's separately
-    pinned tornado resource updated too, since it drifts independently
-    of pyproject.toml/uv.lock and Dependabot doesn't parse Ruby resource
-    blocks (the exact class of gap release.py's
-    check_homebrew_resources_fresh() exists to catch)
   * security: follow-ups to the 2026-09 audit
     - trustmux: in "start" (tailscale serve) mode the daemon now listens on
       a Unix socket in its 0700 state directory and tailscale serve proxies
@@ -78,6 +66,204 @@ byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
       built here; pin nixpkgs to a commit in the Nix smoke test
     - Dependabot keeps the GitHub Actions SHA pins and requirements.txt
       current
+  * trustmux/pwa: stop silently losing typed input on a slow or flaky
+    connection. `sendKeys()` cleared the input box the instant
+    `ws.send()` returned, but that call succeeding says nothing about
+    whether the daemon ever received or processed the message -- on a
+    high-latency link (reported from an airplane wifi connection) a
+    long prompt could sit unconfirmed for seconds to minutes, or get
+    dropped outright, with no way to tell which and no way to recover
+    it short of retyping. Added an opaque `req_id` to `send_keys`,
+    echoed back by the daemon in a new `send_keys_ack` message on
+    success and in the existing error replies on failure (including the
+    outer exception handler, not just pane_id validation, since a
+    mid-processing failure is exactly when a correlatable reply matters
+    most); every other send_keys call site (key bar taps, Esc/Ctrl-C)
+    omits req_id and continues to get no reply at all, unchanged. The
+    PWA now tracks the single most recent pending send and shows a
+    "Restore & resend" banner if it isn't acked within 12 seconds or the
+    connection drops before then; restoring only ever fills an empty
+    input box, never clobbering something typed since. Recovery is
+    always a manual tap, never automatic -- silently replaying a send
+    whose fate is genuinely unknown risks double-executing a command
+    that actually landed the first time. Verified with 4 new real
+    WebSocket integration tests against the daemon (ack on success,
+    silence when req_id is omitted, req_id echoed on both error paths)
+    and a standalone Node harness exercising the client-side state
+    machine (ack clears pending, error restores into an empty box but
+    not over new text, disconnect shows the banner immediately, a stale
+    reply for an already-superseded send is ignored)
+  * trustmux daemon: enable WebSocket permessage-deflate compression,
+    never turned on before now (Tornado disables it unless explicitly
+    opted into via get_compression_options()). Pane captures are
+    brutally repetitive -- tmux pads every line out to the pane's full
+    width with spaces, and colored output repeats the same ANSI escapes
+    constantly -- so every snapshot/update/delta had been shipping raw
+    and uncompressed this whole time. Measured on real `tmux
+    capture-pane -e` output: a 220x50 pane full of colorized `ls`
+    output compressed from 35KB to 4.6KB (87% smaller); even a plain,
+    uncolored pane of short shell output still compressed ~90% just
+    from the line-padding whitespace. This directly attacks the same
+    root cause as the delta-encoding and backpressure fixes above: the
+    daemon can only ever have one write in flight per connection (see
+    _send_wait), and once handed to the OS that write's bytes are
+    already committed to the kernel's send queue in order -- a
+    pane-switch's cancel() stops the *next* tick, but can't claw back
+    bytes already queued for the one in flight, so it waits behind
+    them regardless. An order-of-magnitude smaller payload shrinks that
+    worst-case wait by roughly the same factor: at a genuinely
+    bandwidth-starved 2 KB/s, the measured 35KB snapshot's transmit
+    time drops from ~138s to ~18s. Reported as switching between
+    window contexts taking minutes on airplane wifi, to the point
+    that force-quitting and reopening the app -- discarding the stuck
+    connection for a fresh one with an empty send queue -- was
+    consistently faster than just waiting. Verified end-to-end with a
+    real WebSocket handshake asserting the server actually negotiates
+    and uses permessage-deflate when the client offers it (Tornado
+    silently declines the extension otherwise, regardless of what the
+    client asks for)
+  * trustmux/pwa: grade the top-bar connection checkmark by measured
+    round-trip latency instead of just WebSocket readyState. It used to
+    show a solid green check throughout a connection that was, in
+    practice, unusable -- the browser's WebSocket object reports OPEN
+    even when the underlying link is badly degraded or fully dead (TCP
+    doesn't always notice a vanished path quickly), so "green" carried
+    no actual information about whether anything was getting through.
+    Now pings the daemon every 5 seconds and grades the indicator: green
+    under 2s round-trip, amber ("degraded") from 2s up to 15s, and the
+    existing red/black "error" look from 15s with no response onward --
+    the same bucket used for an outright disconnect, since a socket
+    that's technically open but not answering in 15+ seconds isn't
+    meaningfully different from the user's perspective. The amber/red
+    escalation also kicks in *while* a slow ping is still outstanding
+    rather than only once it finally resolves, so a stalling link is
+    reflected live instead of showing a stale color for up to 15
+    seconds. Shares its single in-flight ping with the existing
+    on-demand latency popup (the daemon's pong carries no correlation
+    id, so two concurrent pings would be indistinguishable) -- fixed a
+    latent falsy-zero bug caught by the new test harness along the way,
+    where the "no ping in flight" sentinel was 0, which collides with a
+    ping legitimately sent at performance.now() === 0. Verified with a
+    standalone Node harness against a fake clock (fast pong grades
+    green, slow pong grades amber, no response for 15s+ grades into the
+    error bucket even with the socket still open, a concurrent caller
+    never triggers a duplicate ping, disconnecting stops the monitor)
+  * mobile/trustmux/_paths.py, _ctl.py, _daemon.py, _pair.py: find the
+    tailscale CLI on macOS, where every tailscale-dependent command
+    ("trustmux setup", "trustmux start", "trustmux pair", "trustmux
+    status") failed on an otherwise working install. On Linux tailscale
+    is a binary in PATH; on macOS it is not a separate binary at all --
+    it *is* Tailscale.app's own executable, at
+    /Applications/Tailscale.app/Contents/MacOS/Tailscale, and nothing
+    lands in PATH unless the user happens to run the app's "Install
+    CLI" menu item. Every call site hardcoded ["tailscale", ...] as
+    argv and so hit FileNotFoundError, reporting "tailscale not found
+    in PATH" on a machine with Tailscale installed, connected and
+    serving. Resolution now goes through tailscale_argv() in _paths.py,
+    which keeps returning the bare name whenever PATH has it -- Linux
+    behaviour, and macOS installs via Homebrew or "Install CLI", are
+    byte-for-byte unchanged -- and only falls back to probing
+    /Applications and ~/Applications for the app bundle on Darwin. Note
+    the bundled binary must be exec'd by its real path: a *symlink* to
+    it does not work, because it locates its own .app from its
+    executable path and aborts with "The current bundleIdentifier is
+    unknown to the registry" (which is why Tailscale's own Install CLI
+    writes an exec wrapper rather than a link). When tailscale genuinely
+    isn't installed, tailscale_argv() raises the same FileNotFoundError
+    subprocess itself would, so all existing error handling is
+    unaffected; the two Linux-only "not found" messages now name
+    Tailscale.app's Install CLI on macOS instead of pointing at the
+    Linux install docs. Also stops hardcoding /usr/bin/tailscale into
+    the sudoers line suggested for Unix-socket serve mode, which was
+    already wrong for Homebrew installs. Three existing tests asserted
+    on the literal argv and were quietly passing only where tailscale
+    was in PATH; they now pin the resolver explicitly
+  * trustmux/pwa: make direct-mode typing feel like a local terminal.
+    A keystroke now wakes the pane stream immediately (a 30ms settle
+    for the pty echo to land) instead of waiting on the poll tick, and
+    the input box's un-sent tail is mirrored into the pane as dotted-
+    underline "ghost" text at the cursor cell, so the pane is the only
+    prompt the user watches. Composing keyboards (Gboard, swipe) diff
+    the box against what has already streamed and send only the
+    difference character by character, so autocorrect rewrites correct
+    themselves in place instead of being retyped word by word. The
+    daemon reports the real cursor position, mapped into a from-the-end
+    line index so it survives however much history a capture holds, so
+    the ghost anchors correctly even mid-screen in a full-screen TUI;
+    content changes ship as line-diff patches instead of a full
+    300-line ANSI snapshot on every keystroke, falling back to a full
+    update automatically whenever the diff would not be smaller. Also
+    fixes the test suite rmtree-ing the developer's real
+    ~/.local/state/trustmux (pairing tokens, the live daemon's socket
+    and log) on a plain run -- isolated to a per-run temp dir now
+  * trustmux daemon: cut server-push latency from a measured ~250ms
+    mean to ~36ms by replacing the fixed poll with an event-driven tmux
+    control-mode client (one `tmux -C attach-session` per streamed
+    pane) that pushes a wake the instant a pane's content actually
+    changes, rather than waiting out the poll tick; the old poll
+    survives underneath as a 2s safety net, with a subprocess fallback
+    whenever a control-mode client cannot attach. Also disables Nagle
+    (TCP_NODELAY) on the WebSocket, skips the paste-burst Enter settle
+    when the pane's foreground process is a plain shell (submitting a
+    command at a bare prompt: ~160ms to ~11ms), and predicts each
+    streamed keystroke through the ghost text immediately, clearing the
+    prediction the moment the real echo confirms it (or after 1.2s)
+    instead of waiting for the full round trip
+  * trustmux daemon: fix pairing and WebSocket upgrades being rejected
+    as cross-site/cross-origin under "start" (tailscale serve) mode.
+    Serving over a Unix socket hands the daemon Host: localhost and
+    carries the tailnet hostname the browser actually used in
+    X-Forwarded-Host instead -- the /pair CSRF check and the
+    WebSocket's check_origin() both compared the browser's Origin
+    against the raw Host, so every legitimate pairing attempt and every
+    WebSocket upgrade made through serve mode was refused regardless of
+    a correct pairing code. Both now compare against X-Forwarded-Host
+    when, and only when, the daemon was actually launched behind
+    tailscale serve -- never in start-local/start-direct mode, where
+    there is no proxy in front of the daemon to have set that header
+    trustworthily
+  * mobile: narrow trustmux's declared Python floor from >=3.9.2 to
+    >=3.10, matching what the README has always documented. Every
+    module uses PEP 604 union type annotations (e.g. `Path | None`),
+    a syntax error before 3.10 -- `pip install trustmux` on 3.9
+    succeeded and then crashed on first import. pip now refuses the
+    install up front with a clear "requires a different Python"
+    message instead of shipping a package that cannot be imported
+  * trustmux/pwa: stop destroying an in-progress text selection (e.g.
+    copying a pairing/login URL out of the pane) every time the pane's
+    content updates. Android in particular loses track of a selection's
+    drag handle the instant the DOM node it is anchored to is replaced,
+    and appears to recover by expanding the selection to the entire
+    scrollback rather than collapsing it -- and a busy pane, or even
+    just a blinking prompt cursor, produces a steady trickle of
+    updates, so a selection rarely survived long enough to actually
+    drag a handle onto it. Incoming content updates are now deferred
+    while the pane has an active selection and applied the instant it
+    is released
+  * byobu: a broken statusrc, or a failure while looking up the IP
+    address for the terminal title, could silently kill the entire
+    session at launch instead of just the status line -- both ran
+    under the launcher's `set -e` with no error handling at all, so a
+    single bad config line (or a `set -e`/command-substitution
+    interaction known to vary across bash builds) meant no session and
+    no explanation. Both are now best-effort: a clear
+    "byobu: warning: ..." message names what went wrong, and the
+    session starts anyway (Closes: GH #146)
+
+byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
+
+  * mobile: security: raise the tornado floor to 6.5.8, closing three
+    Dependabot advisories: GHSA-mpf4-983q-p7j4 (high -- urlencoded body
+    parsing omits max_num_fields, can stall the event loop),
+    GHSA-8423-8fgw-73vq (medium -- multipart parsing builds an unbounded
+    temp list before checking max_parts, memory-amplification DoS), and
+    GHSA-wwv5-g3v4-889x (low -- incomplete fix for an earlier cookie-
+    attribute-injection CVE). mobile/uv.lock and mobile/requirements.txt
+    regenerated to match; homebrew/Formula/trustmux.rb's separately
+    pinned tornado resource updated too, since it drifts independently
+    of pyproject.toml/uv.lock and Dependabot doesn't parse Ruby resource
+    blocks (the exact class of gap release.py's
+    check_homebrew_resources_fresh() exists to catch)
   * usr/bin/tmpfsffs: removed. Never actually shipped in any package
     (missing from dist_bin_SCRIPTS since it was added) and was always a
     proof-of-concept, not a real part of byobu -- rather than fix its
@@ -219,118 +405,6 @@ byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
     byobu-disable-shell-integration removes it along with everything
     else -- one on/off switch for both, since there's no separate
     opt-in yet
-  * trustmux/pwa: stop silently losing typed input on a slow or flaky
-    connection. `sendKeys()` cleared the input box the instant
-    `ws.send()` returned, but that call succeeding says nothing about
-    whether the daemon ever received or processed the message -- on a
-    high-latency link (reported from an airplane wifi connection) a
-    long prompt could sit unconfirmed for seconds to minutes, or get
-    dropped outright, with no way to tell which and no way to recover
-    it short of retyping. Added an opaque `req_id` to `send_keys`,
-    echoed back by the daemon in a new `send_keys_ack` message on
-    success and in the existing error replies on failure (including the
-    outer exception handler, not just pane_id validation, since a
-    mid-processing failure is exactly when a correlatable reply matters
-    most); every other send_keys call site (key bar taps, Esc/Ctrl-C)
-    omits req_id and continues to get no reply at all, unchanged. The
-    PWA now tracks the single most recent pending send and shows a
-    "Restore & resend" banner if it isn't acked within 12 seconds or the
-    connection drops before then; restoring only ever fills an empty
-    input box, never clobbering something typed since. Recovery is
-    always a manual tap, never automatic -- silently replaying a send
-    whose fate is genuinely unknown risks double-executing a command
-    that actually landed the first time. Verified with 4 new real
-    WebSocket integration tests against the daemon (ack on success,
-    silence when req_id is omitted, req_id echoed on both error paths)
-    and a standalone Node harness exercising the client-side state
-    machine (ack clears pending, error restores into an empty box but
-    not over new text, disconnect shows the banner immediately, a stale
-    reply for an already-superseded send is ignored)
-  * trustmux daemon: enable WebSocket permessage-deflate compression,
-    never turned on before now (Tornado disables it unless explicitly
-    opted into via get_compression_options()). Pane captures are
-    brutally repetitive -- tmux pads every line out to the pane's full
-    width with spaces, and colored output repeats the same ANSI escapes
-    constantly -- so every snapshot/update/delta had been shipping raw
-    and uncompressed this whole time. Measured on real `tmux
-    capture-pane -e` output: a 220x50 pane full of colorized `ls`
-    output compressed from 35KB to 4.6KB (87% smaller); even a plain,
-    uncolored pane of short shell output still compressed ~90% just
-    from the line-padding whitespace. This directly attacks the same
-    root cause as the delta-encoding and backpressure fixes above: the
-    daemon can only ever have one write in flight per connection (see
-    _send_wait), and once handed to the OS that write's bytes are
-    already committed to the kernel's send queue in order -- a
-    pane-switch's cancel() stops the *next* tick, but can't claw back
-    bytes already queued for the one in flight, so it waits behind
-    them regardless. An order-of-magnitude smaller payload shrinks that
-    worst-case wait by roughly the same factor: at a genuinely
-    bandwidth-starved 2 KB/s, the measured 35KB snapshot's transmit
-    time drops from ~138s to ~18s. Reported as switching between
-    window contexts taking minutes on airplane wifi, to the point
-    that force-quitting and reopening the app -- discarding the stuck
-    connection for a fresh one with an empty send queue -- was
-    consistently faster than just waiting. Verified end-to-end with a
-    real WebSocket handshake asserting the server actually negotiates
-    and uses permessage-deflate when the client offers it (Tornado
-    silently declines the extension otherwise, regardless of what the
-    client asks for)
-  * trustmux/pwa: grade the top-bar connection checkmark by measured
-    round-trip latency instead of just WebSocket readyState. It used to
-    show a solid green check throughout a connection that was, in
-    practice, unusable -- the browser's WebSocket object reports OPEN
-    even when the underlying link is badly degraded or fully dead (TCP
-    doesn't always notice a vanished path quickly), so "green" carried
-    no actual information about whether anything was getting through.
-    Now pings the daemon every 5 seconds and grades the indicator: green
-    under 2s round-trip, amber ("degraded") from 2s up to 15s, and the
-    existing red/black "error" look from 15s with no response onward --
-    the same bucket used for an outright disconnect, since a socket
-    that's technically open but not answering in 15+ seconds isn't
-    meaningfully different from the user's perspective. The amber/red
-    escalation also kicks in *while* a slow ping is still outstanding
-    rather than only once it finally resolves, so a stalling link is
-    reflected live instead of showing a stale color for up to 15
-    seconds. Shares its single in-flight ping with the existing
-    on-demand latency popup (the daemon's pong carries no correlation
-    id, so two concurrent pings would be indistinguishable) -- fixed a
-    latent falsy-zero bug caught by the new test harness along the way,
-    where the "no ping in flight" sentinel was 0, which collides with a
-    ping legitimately sent at performance.now() === 0. Verified with a
-    standalone Node harness against a fake clock (fast pong grades
-    green, slow pong grades amber, no response for 15s+ grades into the
-    error bucket even with the socket still open, a concurrent caller
-    never triggers a duplicate ping, disconnecting stops the monitor)
-  * mobile/trustmux/_paths.py, _ctl.py, _daemon.py, _pair.py: find the
-    tailscale CLI on macOS, where every tailscale-dependent command
-    ("trustmux setup", "trustmux start", "trustmux pair", "trustmux
-    status") failed on an otherwise working install. On Linux tailscale
-    is a binary in PATH; on macOS it is not a separate binary at all --
-    it *is* Tailscale.app's own executable, at
-    /Applications/Tailscale.app/Contents/MacOS/Tailscale, and nothing
-    lands in PATH unless the user happens to run the app's "Install
-    CLI" menu item. Every call site hardcoded ["tailscale", ...] as
-    argv and so hit FileNotFoundError, reporting "tailscale not found
-    in PATH" on a machine with Tailscale installed, connected and
-    serving. Resolution now goes through tailscale_argv() in _paths.py,
-    which keeps returning the bare name whenever PATH has it -- Linux
-    behaviour, and macOS installs via Homebrew or "Install CLI", are
-    byte-for-byte unchanged -- and only falls back to probing
-    /Applications and ~/Applications for the app bundle on Darwin. Note
-    the bundled binary must be exec'd by its real path: a *symlink* to
-    it does not work, because it locates its own .app from its
-    executable path and aborts with "The current bundleIdentifier is
-    unknown to the registry" (which is why Tailscale's own Install CLI
-    writes an exec wrapper rather than a link). When tailscale genuinely
-    isn't installed, tailscale_argv() raises the same FileNotFoundError
-    subprocess itself would, so all existing error handling is
-    unaffected; the two Linux-only "not found" messages now name
-    Tailscale.app's Install CLI on macOS instead of pointing at the
-    Linux install docs. Also stops hardcoding /usr/bin/tailscale into
-    the sudoers line suggested for Unix-socket serve mode, which was
-    already wrong for Homebrew installs. Three existing tests asserted
-    on the literal argv and were quietly passing only where tailscale
-    was in PATH; they now pin the resolver explicitly
 
 byobu (7.18) 2026-08-14  Dustin Kirkland <kirkland@ubuntu.com>
 
