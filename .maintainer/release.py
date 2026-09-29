@@ -306,18 +306,18 @@ def should_run(phase, start_from):
 
 # ── phase 1: pre-flight ────────────────────────────────────────────────────
 
+def _extract_bashrc_var(key):
+    bashrc = Path("~/.bashrc").expanduser().read_text()
+    m = re.search(rf"export {key}=['\"]?([^'\"#\n]+)['\"]?", bashrc)
+    return m.group(1).strip() if m else ""
+
+
 def load_identity():
     section("Phase 1: Pre-flight checks")
-    bashrc = Path("~/.bashrc").expanduser().read_text()
-
-    def extract(key):
-        m = re.search(rf"export {key}=['\"]?([^'\"#\n]+)['\"]?", bashrc)
-        return m.group(1).strip() if m else ""
-
     identity = {
-        "DEBEMAIL":    extract("DEBEMAIL"),
-        "DEBFULLNAME": extract("DEBFULLNAME"),
-        "GPGKEY":      extract("GPGKEY"),
+        "DEBEMAIL":    _extract_bashrc_var("DEBEMAIL"),
+        "DEBFULLNAME": _extract_bashrc_var("DEBFULLNAME"),
+        "GPGKEY":      _extract_bashrc_var("GPGKEY"),
     }
     for k, v in identity.items():
         print(f"  {k}={v}")
@@ -668,6 +668,28 @@ def determine_versions(mode, resume=False):
                 f"debian/changelog only ever gets a one-line placeholder."
             )
         print(f"  ChangeLog:    top entry matches {base_ver} ✓")
+
+        # open_dev() stamps a fresh heading as "UNRELEASED" so a curated
+        # entry always has a correctly-versioned home from day one (see
+        # that function); replace it with the real date now, at the point
+        # the version is actually being cut. Committed immediately: the tag
+        # push_pypi_tag() creates next tags whatever HEAD is at that point,
+        # and every build downstream of it (PPA, Homebrew, GitHub's own
+        # archive of the tag) pulls from committed git state, not the
+        # working tree -- an uncommitted edit here would ship "UNRELEASED"
+        # regardless of what this printed.
+        changelog_path = BYOBU_SRC / "ChangeLog"
+        changelog_text = changelog_path.read_text()
+        unreleased_heading = f"byobu ({base_ver}) UNRELEASED"
+        if unreleased_heading in changelog_text:
+            today = time.strftime("%Y-%m-%d")
+            changelog_path.write_text(
+                changelog_text.replace(unreleased_heading,
+                                       f"byobu ({base_ver}) {today}", 1))
+            run(["git", "-C", str(BYOBU_SRC), "add", "ChangeLog"])
+            run(["git", "-C", str(BYOBU_SRC), "commit",
+                 "-m", f"ChangeLog: stamp {today} release date for {base_ver}"])
+            print(f"  ChangeLog:    stamped and committed release date {today}")
 
     # Supported Ubuntu series
     try:
@@ -1742,6 +1764,15 @@ def update_homebrew_byobu(v, tap_dir):
     section("Phase 6d: Homebrew byobu tap update (dustinkirkland/homebrew-byobu)")
     import hashlib
 
+    # create_github_release() just created this tag (v["base_ver"]) via
+    # `gh release create`, which only creates it on the GitHub remote -- it
+    # does not fetch the new tag back into the local repo. The git archive
+    # comparison below needs it locally; best-effort here, since a genuinely
+    # missing tag (release creation itself failed) still surfaces as a clear
+    # "bad revision" error from that archive call either way.
+    run(["git", "-C", str(BYOBU_SRC), "fetch", "origin", "tag", v["base_ver"]],
+        check=False)
+
     tarball_url = (
         f"https://github.com/dustinkirkland/byobu"
         f"/archive/refs/tags/{v['base_ver']}.tar.gz"
@@ -2757,6 +2788,32 @@ def open_dev():
         re.sub(r'^version = "[^"]+"', f'version = "{next_ver}"', pyproject_text, flags=re.MULTILINE)
     )
 
+    # Give the new cycle its own ChangeLog home from day one. Without this,
+    # every curated entry added during the cycle has nowhere correct to go
+    # and ends up appended under the previous (already-shipped) version's
+    # heading instead -- caught only much later by determine_versions()'s
+    # hard gate on the *next* final, by which point untangling months of
+    # misfiled entries is exactly the kind of judgment call this pipeline
+    # deliberately leaves to a human instead of automating (see that gate's
+    # own comment) -- so avoid ever needing it again rather than get better
+    # at doing it. UNRELEASED stands in for the date: _changelog_top_entry()
+    # only ever reads the version out of the heading, so the gate is
+    # satisfied as soon as a bullet lands here, and final's version check
+    # below replaces it with the real date at cut time.
+    fullname = _extract_bashrc_var("DEBFULLNAME")
+    email = _extract_bashrc_var("DEBEMAIL")
+    if not fullname or not email:
+        die("Missing identity in ~/.bashrc for the new ChangeLog stanza. Add:\n"
+            "  export DEBFULLNAME='Your Name'\n"
+            "  export DEBEMAIL='you@example.com'")
+    changelog = BYOBU_SRC / "ChangeLog"
+    changelog_text = changelog.read_text()
+    marker = "Entries below 7.15 are the original, unedited history"
+    idx = changelog_text.index(marker)
+    idx = changelog_text.index("\n\n", idx) + 2
+    stanza = f"byobu ({next_ver}) UNRELEASED  {fullname} <{email}>\n\n"
+    changelog.write_text(changelog_text[:idx] + stanza + changelog_text[idx:])
+
     # Refresh the lockfile every cycle so it never has the chance to drift for
     # months the way it did before GHSA-pw6j-qg29-8w7f: mobile/pyproject.toml
     # picked up a raised tornado floor mid-cycle (68a68a0a) but mobile/uv.lock
@@ -2774,7 +2831,8 @@ def open_dev():
          "configure.ac",
          "mobile/trustmux/__init__.py",
          "mobile/pyproject.toml",
-         "mobile/uv.lock"])
+         "mobile/uv.lock",
+         "ChangeLog"])
     run(["git", "-C", str(BYOBU_SRC), "commit",
          "-m", f"bump version to {next_ver} and open for development"])
     print(f"  ✓ Committed: bump version to {next_ver} (uv.lock refreshed)")
