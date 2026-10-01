@@ -691,6 +691,53 @@ def determine_versions(mode, resume=False):
                  "-m", f"ChangeLog: stamp {today} release date for {base_ver}"])
             print(f"  ChangeLog:    stamped and committed release date {today}")
 
+        # rpm/byobu.spec's Version:/%changelog drift silently otherwise (GH
+        # #164): build_fedora_rpm() already patches Version/Release into a
+        # throwaway copy of the spec at build time via sed, so a stale
+        # committed value here has never broken an actual RPM build -- it
+        # just means the spec file checked into the repo (and baked into
+        # this tag's GitHub release tarball, which Fedora dist-git syncs
+        # from) silently lies about what version it packages. Committed here,
+        # before push_pypi_tag() cuts the tag, for the same reason as the
+        # ChangeLog stamp above: downstream only ever sees committed state.
+        # Minimal one-line stanza, matching push_salsa()'s debian/changelog
+        # placeholder -- no hand-curated highlights; those belong solely in
+        # the top-level ChangeLog now (see the ChangeLog-currency gate above).
+        spec_path = BYOBU_SRC / "rpm" / "byobu.spec"
+        spec_text = spec_path.read_text()
+        m = re.search(r"^Version:\s*(\S+)", spec_text, re.MULTILINE)
+        if not m:
+            die("rpm/byobu.spec: could not find a Version: line — "
+                "the final-mode version-bump logic has fallen out of sync with it.")
+        spec_ver = m.group(1)
+        if spec_ver == base_ver:
+            print(f"  rpm/byobu.spec: already at {base_ver} ✓")
+        else:
+            fullname = _extract_bashrc_var("DEBFULLNAME")
+            email = _extract_bashrc_var("DEBEMAIL")
+            if not fullname or not email:
+                die("Missing identity in ~/.bashrc for the rpm/byobu.spec "
+                    "changelog stanza. Add:\n"
+                    "  export DEBFULLNAME='Your Name'\n"
+                    "  export DEBEMAIL='you@example.com'")
+            spec_text = re.sub(r"^Version:\s*\S+", f"Version:\t{base_ver}",
+                                spec_text, count=1, flags=re.MULTILINE)
+            spec_text = re.sub(r"^Release:\s*\S+", "Release:\t1%{?dist}",
+                                spec_text, count=1, flags=re.MULTILINE)
+            today_rpm = time.strftime("%a %b %d %Y")
+            marker = "%changelog\n"
+            idx = spec_text.index(marker) + len(marker)
+            entry = (
+                f"* {today_rpm} {fullname} <{email}> - {base_ver}-1\n"
+                f"- Update to {base_ver}; see the upstream ChangeLog for full details.\n\n"
+            )
+            spec_text = spec_text[:idx] + entry + spec_text[idx:]
+            spec_path.write_text(spec_text)
+            run(["git", "-C", str(BYOBU_SRC), "add", "rpm/byobu.spec"])
+            run(["git", "-C", str(BYOBU_SRC), "commit",
+                 "-m", f"rpm/byobu.spec: update to {base_ver}"])
+            print(f"  rpm/byobu.spec: {spec_ver} → {base_ver}, changelog stanza added")
+
     # Supported Ubuntu series
     try:
         r = run(["ubuntu-distro-info", "--supported"], capture=True, check=False)
