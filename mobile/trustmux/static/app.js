@@ -1347,6 +1347,15 @@ const keybarWrap = document.getElementById('keybar-wrap');
 
 function applyWrap() {
   output.style.whiteSpace = wrapOn ? 'pre-wrap' : 'pre';
+  // pre-wrap alone only breaks at existing whitespace; one unbroken run
+  // with none (a long URL, hash, or path -- exactly what a nonce login
+  // link looks like) stays one long line, stretching #output's scrollable
+  // width to fit it and leaving a wide dead strip of horizontal scroll
+  // behind every other, already-wrapped line. break-word breaks such a
+  // run only when it would otherwise overflow, leaving normal wrapping
+  // alone everywhere else. Irrelevant (and left at the default) off wrap:
+  // 'pre' never wraps at all regardless of this.
+  output.style.overflowWrap = wrapOn ? 'break-word' : '';
   // Checkmark prefix like the context picker: on-state must not rely on
   // color alone.
   escapePopupWrap.textContent = (wrapOn ? '✓ ' : '⤶ ') + 'Wrap';
