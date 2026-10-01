@@ -301,6 +301,37 @@ class TestStaticHandlers(AsyncHTTPTestCase):
         resp = self.fetch('/icons/icon-192.png')
         self.assertIn('no-cache', resp.headers.get('Cache-Control', ''))
 
+    def test_font_invalid_name_returns_404(self):
+        resp = self.fetch('/fonts/nonexistent_font_99999.woff2')
+        self.assertEqual(resp.code, 404)
+
+    def test_font_path_traversal_blocked(self):
+        resp = self.fetch('/fonts/../trustmux.svg')
+        self.assertIn(resp.code, (404, 400))
+
+    def test_font_name_with_illegal_chars_returns_404(self):
+        resp = self.fetch('/fonts/foo;bar.woff2')
+        self.assertEqual(resp.code, 404)
+
+    def test_font_wrong_extension_returns_404(self):
+        # Only .woff2 is servable here -- LICENSE ships alongside the fonts
+        # on disk for packaging compliance, not as something the PWA fetches.
+        resp = self.fetch('/fonts/LICENSE')
+        self.assertEqual(resp.code, 404)
+
+    def test_font_existing_returns_200(self):
+        resp = self.fetch('/fonts/DejaVuSansMono.woff2')
+        self.assertEqual(resp.code, 200)
+        self.assertEqual(resp.headers.get('Content-Type'), 'font/woff2')
+
+    def test_font_cache_header_is_long_lived(self):
+        # Unlike icons (no-cache): this file never changes without also
+        # changing its own filename, so a long-lived cache is safe.
+        resp = self.fetch('/fonts/DejaVuSansMono.woff2')
+        cc = resp.headers.get('Cache-Control', '')
+        self.assertIn('max-age=31536000', cc)
+        self.assertIn('immutable', cc)
+
     def test_app_js_returns_200_with_js_content_type(self):
         resp = self.fetch('/app.js')
         self.assertEqual(resp.code, 200)

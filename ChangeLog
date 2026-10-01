@@ -249,6 +249,34 @@ byobu (7.20) 2026-09-29  Dustin Kirkland <kirkland@ubuntu.com>
     no explanation. Both are now best-effort: a clear
     "byobu: warning: ..." message names what went wrong, and the
     session starts anyway (Closes: GH #146)
+  * trustmux/pwa: fix a large dead strip of horizontal scroll in Aa
+    (wrap) mode. white-space: pre-wrap only wraps at existing
+    whitespace -- one unbroken run with none (a long URL, hash, or
+    path; exactly what a pairing/login link looks like) stayed a
+    single long line, stretching the whole pane's scrollable width to
+    fit it and leaving every other, already-correctly-wrapped line
+    with the same wide dead space behind it. overflow-wrap: break-word
+    now applies while wrapped, breaking such a run only when it would
+    otherwise overflow; non-wrap (Terminal) mode, where a long line is
+    still meant to scroll horizontally, is unaffected
+  * trustmux/pwa: bundle DejaVu Sans Mono (fonts/, OFL-compatible
+    Bitstream Vera Fonts license, LICENSE shipped alongside) as the
+    last resort in the default font stack, ahead of the browser's own
+    generic "monospace". Box-drawing table columns (the kind Claude
+    Code prints) were silently misaligning on any device with none of
+    SF Mono/Fira Code/Cascadia Code installed -- the common case on
+    stock Android and most Linux desktops -- because the browser's own
+    last-resort substitute turns out to have inconsistent per-glyph
+    advance widths between a plain "|" and a "+"/"T"-shaped junction
+    character, even though the underlying text is correctly,
+    consistently padded. Verified directly, pixel by pixel, against a
+    real reported table: 96px of drift before, 0px after, across both
+    a bare Chromium with no monospace font at all and a real daemon
+    serving the bundled font over the network. Picked over Fira Code
+    (equally correct alignment, verified the same way) for having no
+    programming ligatures: a terminal viewer whose whole job is
+    faithfully showing real output shouldn't quietly redraw a literal
+    "..." as a single merged glyph the way a code editor might
 
 byobu (7.19) 2026-08-15  Dustin Kirkland <kirkland@ubuntu.com>
 

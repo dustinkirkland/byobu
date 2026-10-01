@@ -850,6 +850,23 @@ class IconHandler(BaseHandler):
         self.finish(content)
 
 
+class FontHandler(BaseHandler):
+    async def get(self, filename: str):
+        if not re.match(r'^[\w\-]+\.woff2$', filename):
+            return self.json({"error": "not found"}, 404)
+        path = STATIC / "fonts" / filename
+        if not path.exists():
+            return self.json({"error": "not found"}, 404)
+        content = await asyncio.to_thread(path.read_bytes)
+        self.set_header("Content-Type", "font/woff2")
+        # Unlike icons/sw.js/app.js, this file never changes between
+        # releases without also changing its own filename (there is no
+        # cache-busting query param on the @font-face url), so a long-lived
+        # cache is safe and saves re-fetching ~150KB on every page load.
+        self.set_header("Cache-Control", "public, max-age=31536000, immutable")
+        self.finish(content)
+
+
 class PingHandler(BaseHandler):
     def get(self):
         self.set_header("Cache-Control", "no-store")
@@ -1996,6 +2013,7 @@ def _make_app() -> tornado.web.Application:
         (r"/sw\.js",         ServiceWorkerHandler),
         (r"/app\.js",        AppJsHandler),
         (r"/icons/(.+)",     IconHandler),
+        (r"/fonts/(.+)",     FontHandler),
         (r"/ping",           PingHandler),
         (r"/pair",           PairHandler),
         (r"/machines",       MachinesHandler),

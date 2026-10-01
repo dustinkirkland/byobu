@@ -40,6 +40,16 @@ dist_trustmuxicons_DATA = \
 	trustmux/static/icons/icon-192.png \
 	trustmux/static/icons/icon-512.png
 
+# Bundled fallback monospace font (see index.html's @font-face comment for
+# why): guarantees correct box-drawing table alignment on any device, no
+# matter what's locally installed. LICENSE is Bitstream Vera Fonts license
+# text, required alongside the font files by its own terms.
+trustmuxfontsdir = $(datadir)/trustmux/static/fonts
+dist_trustmuxfonts_DATA = \
+	trustmux/static/fonts/DejaVuSansMono.woff2 \
+	trustmux/static/fonts/DejaVuSansMono-Bold.woff2 \
+	trustmux/static/fonts/LICENSE
+
 dist_man1_MANS = \
 	man/man1/trustmux.1 \
 	man/man1/trustmuxd.1

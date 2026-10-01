@@ -42,4 +42,7 @@ trustmux = [
     "static/trustmux-logo.svg",
     "static/icons/icon-192.png",
     "static/icons/icon-512.png",
+    "static/fonts/DejaVuSansMono.woff2",
+    "static/fonts/DejaVuSansMono-Bold.woff2",
+    "static/fonts/LICENSE",
 ]

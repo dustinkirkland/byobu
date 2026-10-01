@@ -1,14 +1,16 @@
 'use strict';
 
-const CACHE = 'trustmux-v7';
+const CACHE = 'trustmux-v8';
 
-// Only truly static assets are cached — icons and logo never change between
-// releases and are safe to serve from cache indefinitely.
+// Only truly static assets are cached — icons, logo, and the bundled font
+// never change between releases and are safe to serve from cache
+// indefinitely.
 // index.html and app.js are intentionally excluded: they change with every
 // release and must always be fetched fresh so updates are visible immediately
 // without any cache-busting dance. The server is always local/Tailscale, so
 // there is no latency cost to fetching them from the network.
-const SHELL = ['/trustmux.svg', '/icons/icon-192.png?v=3', '/icons/icon-512.png?v=3'];
+const SHELL = ['/trustmux.svg', '/icons/icon-192.png?v=3', '/icons/icon-512.png?v=3',
+              '/fonts/DejaVuSansMono.woff2', '/fonts/DejaVuSansMono-Bold.woff2'];
 
 // These are always fetched from the network — never cache.
 const NETWORK_ONLY = ['/ws', '/pair', '/ping', '/status', '/machines',

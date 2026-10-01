@@ -2621,13 +2621,19 @@ async function applyHostname() {
 // saved choice before first paint, this section handles live changes. The
 // terminal output follows the theme too (see --term-* in the CSS), and
 // ansiToHtml swaps between C16_DARK and C16_LIGHT to match.
-// Local fonts only, no downloads: every entry is listed, and ones the device
-// cannot render are annotated "(not installed)" but stay selectable (see
-// fontResolves and renderSettings; hiding them made selection a one-way
-// door). The list mixes desktop staples with the monospace families Android
-// ships (Droid Sans Mono, Cutive Mono, and OEM extras).
+// Every other entry here is a local-fonts-only hint: it stays selectable
+// even when the device can't actually render it (see fontResolves and
+// renderSettings; hiding an unresolved entry made selection a one-way
+// door), annotated "(not installed)" rather than silently falling back. The
+// list mixes desktop staples with the monospace families Android ships
+// (Droid Sans Mono, Cutive Mono, and OEM extras). 'DejaVu Sans Mono' is the
+// one exception: it is bundled (fonts/, @font-face in index.html), not a
+// device hint, so it carries no probe and is always available -- it is
+// also what 'System' now falls through to ahead of the browser's own
+// unpredictable last-resort substitute (see --font's comment).
 const FONT_FAMILIES = [
-  { label: 'System',         value: "'SF Mono', 'Fira Code', 'Cascadia Code', monospace" },
+  { label: 'System',         value: "'SF Mono', 'Fira Code', 'Cascadia Code', 'DejaVu Sans Mono', monospace" },
+  { label: 'DejaVu Sans Mono', value: "'DejaVu Sans Mono', monospace" },
   { label: 'Fira Code',      value: "'Fira Code', monospace",      probe: 'Fira Code' },
   { label: 'JetBrains Mono', value: "'JetBrains Mono', monospace", probe: 'JetBrains Mono' },
   { label: 'Cascadia Code',  value: "'Cascadia Code', monospace",  probe: 'Cascadia Code' },

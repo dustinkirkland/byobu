@@ -163,6 +163,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/trustmux/static/trustmux.svg
 %{_datadir}/trustmux/static/icons/icon-192.png
 %{_datadir}/trustmux/static/icons/icon-512.png
+%{_datadir}/trustmux/static/fonts/DejaVuSansMono.woff2
+%{_datadir}/trustmux/static/fonts/DejaVuSansMono-Bold.woff2
+%{_datadir}/trustmux/static/fonts/LICENSE
 
 
 %changelog

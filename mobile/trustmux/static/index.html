@@ -16,6 +16,34 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* Bundled, not device-dependent: fixes box-drawing table columns
+       (├┼┤┬┴ etc.) silently misaligning on any device with no properly-
+       designed monospace font installed, which is common (stock Android
+       ships none of SF Mono/Fira Code/Cascadia Code), and otherwise falls
+       through to the browser's own last-resort substitute -- confirmed
+       directly to have inconsistent per-glyph advance widths for box-
+       drawing characters specifically, while plain text stays fine. DejaVu
+       Sans Mono was chosen over Fira Code for having no ligatures: this is
+       a terminal viewer, so a sequence like "..." rendering as a single
+       merged glyph is a fidelity cost a code editor wouldn't mind but a
+       tool for faithfully reading real output should avoid. License:
+       fonts/LICENSE (Bitstream Vera Fonts license -- free to embed and
+       redistribute).  Regular and Bold both shipped since ansiToHtml sets
+       font-weight:bold for SGR bold; a synthetic (skewed) bold could
+       reintroduce the same misalignment this exists to fix. */
+    @font-face {
+      font-family: 'DejaVu Sans Mono';
+      src: url('/fonts/DejaVuSansMono.woff2') format('woff2');
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'DejaVu Sans Mono';
+      src: url('/fonts/DejaVuSansMono-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-display: swap;
+    }
+
     :root {
       --bg:       #141414;
       --bg2:      #1e1e1e;
@@ -30,8 +58,14 @@
       /* No 'Courier New' before the generic: Android aliases it to Cutive
          Mono (serif-monospace), which silently replaced the platform default
          (Droid Sans Mono) for every Android user. Courier stays available as
-         an explicit choice in the font settings. */
-      --font:     'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+         an explicit choice in the font settings. 'DejaVu Sans Mono' (bundled
+         above, see its @font-face comment) sits last, before the generic
+         'monospace' catch-all: a device with SF Mono/Fira Code/Cascadia Code
+         installed is unaffected (those win first, unchanged), but anything
+         else -- most Android/Linux devices -- now lands on a font actually
+         verified to render box-drawing tables correctly, instead of
+         whatever the browser's own last-resort substitute turns out to be. */
+      --font:     'SF Mono', 'Fira Code', 'Cascadia Code', 'DejaVu Sans Mono', monospace;
       /* terminal output colors are separate from the UI accents: ansiToHtml
          picks the 16-color ANSI palette matching the active theme, so the
          output area follows light/dark along with these variables */
