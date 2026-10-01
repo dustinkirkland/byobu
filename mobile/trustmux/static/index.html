@@ -122,7 +122,11 @@
       border-bottom: 1px solid var(--border); flex-shrink: 0;
     }
     /* logo+wordmark is the one thing allowed to shrink (down to icon-only) so
-       everything after it — connection state, hostname, clock — never has to */
+       everything after it — connection state, hostname, clock — never has to.
+       #wordmark keeps flex-shrink/overflow:hidden purely so JS (see
+       updateWordmarkVisibility() in app.js) can detect clipping via
+       scrollWidth > clientWidth; it is then hidden outright rather than left
+       partially clipped — "Trustmux" is all-or-nothing, never "Trust". */
     #logo-link {
       display: flex; align-items: center; gap: 7px;
       background: none; border: none; padding: 0; font: inherit;

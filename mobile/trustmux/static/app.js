@@ -306,6 +306,32 @@ const infoPopupHost   = document.getElementById('info-popup-host');
 const infoPopupBody   = document.getElementById('info-popup-body');
 const infoPopupReload = document.getElementById('info-popup-reload');
 const logoLink        = document.getElementById('logo-link');
+const wordmark        = document.getElementById('wordmark');
+
+// "Trustmux" must be all-or-nothing: CSS flex-shrink alone would let it clip
+// mid-word (e.g. down to "Trust") as the hostname/clock crowd the header on
+// narrow screens or with a long hostname. Instead, whenever #logo-link's
+// rendered width changes for any reason (window resize, hostname text
+// changing, install button or machine selector appearing), re-measure
+// whether the wordmark's full text still fits and hide it outright if not.
+function updateWordmarkVisibility() {
+  const wasHidden = wordmark.style.display === 'none';
+  if (wasHidden) wordmark.style.display = '';
+  const clipped = wordmark.scrollWidth > wordmark.clientWidth;
+  wordmark.style.display = clipped ? 'none' : '';
+}
+// Watching #logo-link alone isn't enough: once it settles to its small
+// icon-only footprint, nothing about *its own* box changes again as space
+// frees up (window grows, hostname shrinks back), so it would never recover.
+// Instead watch every determinant of its available space — the header's own
+// width (viewport/orientation changes) plus each fixed-size sibling that
+// competes with it for room — so a recheck fires in both directions.
+{
+  const headerEl = document.getElementById('header');
+  const ro = new ResizeObserver(updateWordmarkVisibility);
+  [headerEl, connIndicator, hostnameDisplay, updateBadge, headerClock, btnInstall, machineSelect]
+    .forEach((el) => ro.observe(el));
+}
 const aboutPopup      = document.getElementById('about-popup');
 const statuslineLeft   = document.getElementById('statusline-left');
 const statuslineRight  = document.getElementById('statusline-right');
