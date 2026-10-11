@@ -3015,6 +3015,30 @@ def main():
         if mode == "final" and should_run("9", start_from):
             push_salsa(v, identity)
 
+        if mode == "final":
+            # A final release pins the just-shipped version as immutable on
+            # PyPI (and everywhere else): any further commit to master is now
+            # homeless unless something bumps configure.ac first. Forgetting
+            # this step is exactly what happened after 7.20 shipped: ten real
+            # commits (font bundling, a scroll-mode fix, a tornado security
+            # bump, the wordmark fix, GH #164's own rpm spec fix) landed on
+            # master still labeled "7.20", because nobody ran open-dev right
+            # after that release. Nothing caught it until the *next* final
+            # attempt, when determine_versions() found PyPI's immutable 7.20
+            # didn't match current HEAD — by which point it was a manual
+            # recovery (bump to 7.21, re-run final) instead of a routine
+            # pipeline step. Closing the loop here means the next cycle
+            # always has a home from the moment this one's process exits.
+            section("Phase 10: Open next development cycle")
+            if confirm(
+                f"Final release {v['base_ver']} is complete. Run open-dev now "
+                f"to bump configure.ac/trustmux to the next version and open "
+                f"a fresh ChangeLog heading, so post-release commits don't "
+                f"accumulate under the {v['base_ver']} label again?",
+                skippable=True,
+            ):
+                open_dev()
+
         print_summary(v, mode)
     finally:
         cleanup_debian()
