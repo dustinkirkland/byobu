@@ -16,6 +16,8 @@ Entries below 7.15 are the original, unedited history as it existed in
 debian/changelog before this split -- full history preserved, nothing
 lost, just relocated to where all distributions can use it.
 
+byobu (7.22) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
+
 byobu (7.21) 2026-10-11  Dustin Kirkland <kirkland@ubuntu.com>
 
   * trustmux/pwa: fix a large dead strip of horizontal scroll in Aa
