@@ -16,6 +16,8 @@ Entries below 7.15 are the original, unedited history as it existed in
 debian/changelog before this split -- full history preserved, nothing
 lost, just relocated to where all distributions can use it.
 
+byobu (7.21) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
+
 byobu (7.20) 2026-09-29  Dustin Kirkland <kirkland@ubuntu.com>
 
   * mobile/trustmux/_ctl.py: fix `trustmux start` failing outright when
