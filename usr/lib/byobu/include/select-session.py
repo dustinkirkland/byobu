@@ -37,6 +37,7 @@ SHELL = os.getenv("SHELL", "/bin/bash")
 HOME = os.getenv("HOME")
 BYOBU_CONFIG_DIR = os.getenv("BYOBU_CONFIG_DIR", HOME + "/.byobu")
 BYOBU_BACKEND = os.getenv("BYOBU_BACKEND", "tmux")
+BYOBU_TERM = os.getenv("BYOBU_TERM")
 choice = -1
 sessions = []
 text = []
@@ -140,6 +141,23 @@ def attach_session(session):
 	cull_zombies(session_name)
 	# must use the binary, not the wrapper!
 	if backend == "tmux":
+		# default-terminal is a server-global tmux option, set only once,
+		# by whichever client happened to create this server's first
+		# session (see profiles/tmux's "set -g default-terminal
+		# $BYOBU_TERM", sourced only on that first new-session). Every
+		# later attach lands here instead and never touched it, so a
+		# session created from a client with poor terminfo (no
+		# tmux-256color, say) stayed stuck with that choice forever,
+		# even once attached from a client that has it -- GH #96's
+		# italic-renders-as-reverse bug, just one creation away from the
+		# original fix. BYOBU_TERM is byobu.in's freshly-computed
+		# preference for *this* attaching client's own environment, so
+		# nudge the server to it now: it only affects $TERM for panes
+		# created after this point, so it cannot disrupt anything already
+		# running in the session.
+		if BYOBU_TERM:
+			subprocess.call(["tmux", "set-option", "-g", "default-terminal", BYOBU_TERM],
+			                 stdout=open(os.devnull, "w"))
 		if reuse_sessions:
 			os.execvp("tmux", ["tmux", "-u", "attach", "-t", session_name])
 		else:
