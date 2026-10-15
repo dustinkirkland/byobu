@@ -851,7 +851,46 @@ function scrollOutputToBottom() {
   // Scroll mode owns the viewport: a one-line j/k step stays inside the 60px
   // bottom-snap zone, so re-anchoring here would yank a live pane back down.
   if (_scrollMode) return;
-  requestAnimationFrame(() => { output.scrollTop = output.scrollHeight; });
+  requestAnimationFrame(() => {
+    const el = _bottomContentLine();
+    output.scrollTop = el
+      ? el.offsetTop + el.offsetHeight - output.clientHeight
+      : output.scrollHeight;
+  });
+}
+
+// The #output child "scrolled to bottom" should land on. capture-pane keeps
+// trailing blank screen rows (tmux_cursor()'s doc comment in _daemon.py) --
+// real content whenever the pane is taller than what it's currently showing
+// (any short command in a tall terminal), but nothing worth scrolling past:
+// scrolling to the buffer's literal end pushes the actual prompt/output off
+// the top of the viewport, which is the "I have to scroll up to find my
+// output" bug this fixes. Walk back over trailing blank lines to the last
+// one with real content -- but never further than the cursor's own line
+// (same cursor_from_end mapping _ghostSync() uses): a full-screen app (vim,
+// htop) can legitimately draw a status/command line below where the cursor
+// sits, and that must stay in view same as before.
+function _bottomContentLine() {
+  const kids = output.children;
+  if (!kids.length) return null;
+  if (!_lines) return kids[kids.length - 1];   // no snapshot model; old behavior
+
+  // #output always mirrors _lines 1:1, except a capture ending in '\n'
+  // (the common case) splits into one extra empty trailing element that
+  // is not a captured row at all -- just split()'s artifact of the final
+  // newline, carrying no line of its own in the DOM.
+  const endsNl = output.textContent.endsWith('\n');
+  let last = kids.length - 1 - (endsNl ? 1 : 0);
+  if (last < 0) return kids[kids.length - 1];
+
+  while (last > 0 && _lines[last] === '') last--;
+
+  if (Number.isInteger(_cursorFromEnd) && _cursorFromEnd >= 0) {
+    const realLast = kids.length - 1 - (endsNl ? 1 : 0);
+    const cursorIdx = realLast - _cursorFromEnd;
+    if (cursorIdx > last && cursorIdx <= realLast) last = cursorIdx;
+  }
+  return kids[last];
 }
 
 // 16-color ANSI palettes, one per theme. Dark is the Tango set the app has
