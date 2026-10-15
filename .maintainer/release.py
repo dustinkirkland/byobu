@@ -864,25 +864,64 @@ def determine_versions(mode, resume=False):
 
 # ── phase 3: PyPI tag ─────────────────────────────────────────────────────
 
-def push_pypi_tag(v):
+def push_pypi_tag(v, mode):
     section("Phase 3: Push PyPI tag (triggers GH Actions → PyPI upload)")
     tag = f"trustmux-v{v['pypi_version']}"
-    if not confirm(f"Push git tag {tag} to origin?", skippable=True):
+    # On final, the bare byobu tag (e.g. "7.22") is cut here too, on the same
+    # commit. Left to create_github_release()'s `gh release create`, GitHub
+    # creates it at origin's master HEAD instead -- which does not yet have
+    # the ChangeLog-stamp and rpm/byobu.spec commits determine_versions() just
+    # made locally (pushing a tag does not move master). That is how 7.21's
+    # GitHub tarball shipped a 7.20 spec and an "UNRELEASED" ChangeLog (GH
+    # #164). With the tag already on origin, `gh release create` reuses it.
+    tags = [tag] if mode == "rc" else [tag, v["base_ver"]]
+    if not confirm(f"Push git tag(s) {', '.join(tags)} to origin?", skippable=True):
         print(f"  (tag push skipped — downstream phases will use existing tag state)")
         return
+
+    def _local_sha(t):
+        r = run(["git", "-C", str(BYOBU_SRC), "rev-parse", "-q", "--verify",
+                 f"refs/tags/{t}^{{commit}}"], capture=True, check=False)
+        return r.stdout.strip() if r.returncode == 0 else None
+
     # Idempotent: skip local creation if tag already exists (e.g. re-run after partial failure)
-    local = run(["git", "-C", str(BYOBU_SRC), "tag", "--list", tag], capture=True)
-    if tag not in local.stdout.split():
-        run(["git", "-C", str(BYOBU_SRC), "tag", tag])
-    else:
-        print(f"  (local tag {tag} already exists — skipping creation)")
-    # Skip push if tag already on remote
-    remote = run(["git", "-C", str(BYOBU_SRC), "ls-remote", "--tags", "origin", tag], capture=True)
-    if remote.stdout.strip():
-        print(f"  (tag {tag} already on remote — skipping push)")
-    else:
-        run(["git", "-C", str(BYOBU_SRC), "push", "origin", tag])
-    print(f"  ✓ Tag {tag} ready.")
+    for t in tags:
+        if _local_sha(t) is None:
+            # Every tag after the first goes on the first one's commit, not
+            # HEAD, so a resumed run where HEAD has since moved still keeps
+            # them together.
+            run(["git", "-C", str(BYOBU_SRC), "tag", t] + ([] if t == tag else [tag]))
+        else:
+            print(f"  (local tag {t} already exists — skipping creation)")
+    sha = _local_sha(tag)
+    for t in tags[1:]:
+        if _local_sha(t) != sha:
+            die(f"Local tag {t} is on {_local_sha(t)[:12]}, but {tag} is on {sha[:12]}.\n"
+                f"  Both must tag the same commit — delete the stale one and re-run.")
+
+    # Skip push if tag already on remote. Full refs: ls-remote matches patterns
+    # against ref name suffixes, so a bare "7.22" would also match the
+    # Debian-side "upstream/7.22" tag.
+    to_push = []
+    for t in tags:
+        remote = run(["git", "-C", str(BYOBU_SRC), "ls-remote", "origin",
+                      f"refs/tags/{t}", f"refs/tags/{t}^{{}}"], capture=True)
+        # An annotated tag lists its tag object first, then the commit it
+        # peels to as "<ref>^{}"; keep the last, which is the commit either way.
+        lines = remote.stdout.split("\n")
+        remote_sha = [l.split()[0] for l in lines if l.strip()][-1:] or [None]
+        remote_sha = remote_sha[0]
+        if remote_sha is None:
+            to_push.append(t)
+        elif remote_sha != sha:
+            die(f"Tag {t} is already on origin at {remote_sha[:12]}, not {sha[:12]}.\n"
+                f"  Refusing to release from mismatched tags.")
+        else:
+            print(f"  (tag {t} already on remote — skipping push)")
+    if to_push:
+        run(["git", "-C", str(BYOBU_SRC), "push", "origin"]
+            + [f"refs/tags/{t}" for t in to_push])
+    print(f"  ✓ Tag(s) {', '.join(tags)} ready on {sha[:12]}.")
     print("    Monitor: https://github.com/dustinkirkland/byobu/actions")
 
 
@@ -1811,12 +1850,12 @@ def update_homebrew_byobu(v, tap_dir):
     section("Phase 6d: Homebrew byobu tap update (dustinkirkland/homebrew-byobu)")
     import hashlib
 
-    # create_github_release() just created this tag (v["base_ver"]) via
-    # `gh release create`, which only creates it on the GitHub remote -- it
-    # does not fetch the new tag back into the local repo. The git archive
-    # comparison below needs it locally; best-effort here, since a genuinely
-    # missing tag (release creation itself failed) still surfaces as a clear
-    # "bad revision" error from that archive call either way.
+    # push_pypi_tag() cuts this tag (v["base_ver"]) locally and pushes it, but
+    # a --start-from resume in a different checkout (or a skipped tag push,
+    # where `gh release create` makes it on GitHub only) may not have it.
+    # The git archive comparison below needs it locally; best-effort here,
+    # since a genuinely missing tag still surfaces as a clear "bad revision"
+    # error from that archive call either way.
     run(["git", "-C", str(BYOBU_SRC), "fetch", "origin", "tag", v["base_ver"]],
         check=False)
 
@@ -2962,7 +3001,7 @@ def main():
     v = determine_versions(mode, resume=(start_from is not None))
 
     if should_run("3", start_from):
-        push_pypi_tag(v)
+        push_pypi_tag(v, mode)
 
     # ── phases 4 / 5 / 5b (RC) or 5b / 6c (final): run in parallel ────
     #
