@@ -37,6 +37,8 @@
 #RELEASE_ABBREVIATED=1
 
 # Default: /
+# The disk status can show several, space separated mount points or devices,
+# e.g. MONITORED_DISK="/ /home /dev/sdb1"; disk_io monitors only the first
 #MONITORED_DISK=/
 
 # Minimum disk throughput that triggers the notification (in kB/s)

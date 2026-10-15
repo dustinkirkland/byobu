@@ -23,10 +23,11 @@ __disk_detail() {
 	df -h
 }
 
-__disk() {
-	local out="" MP="" size="" pct="" unit=""
-	# Default to /, but let users override
-	[ -z "$MONITORED_DISK" ] && MP="/" || MP="$MONITORED_DISK"
+# __disk_usage(path, label)
+# print the size and percentage used of one mount point or device, prefixed
+# with "label:" when a label is given; prints nothing if it isn't mounted
+__disk_usage() {
+	local MP="$1" label="$2" out="" size="" pct="" unit=""
 	case $MP in
 		/dev/*)
 			if [ -r /proc/mounts ]; then
@@ -36,6 +37,7 @@ __disk() {
 			fi
 		;;
 	esac
+	[ -n "$MP" ] || return 0
 	# this could be done faster with 'stat --file-system --format'
 	# but then we'd have to do blocks -> human units ourselves
 	out=$(df -h "$MP" 2>/dev/null | awk 'END { printf("%s %s", $2, $5); }')
@@ -50,9 +52,30 @@ __disk() {
 		g*|G*) unit="$ICON_GB" ;;
 		t*|T*) unit="$ICON_TB" ;;
 	esac
-	[ -n "$size" ] || return
+	[ -n "$size" ] || return 0
+	[ -z "$label" ] || { color m W; printf_status "$label:"; }
 	color b m W; printf "%s" "$size"; color -; color m W; printf "%s" "$unit"; color -;
-	color b m W; printf "%s" "$pct";  color -; color m W; printf "%s" "$PCT"; color --;
+	color b m W; printf "%s" "$pct";  color -; color m W; printf "%s" "$PCT";
+}
+
+__disk() {
+	local disk="" label="" out="" shown=""
+	# Default to /, but let users override with one or more space separated
+	# mount points or devices, e.g. MONITORED_DISK="/ /home /dev/sdb1"
+	set -- ${MONITORED_DISK:-/}
+	for disk in "$@"; do
+		# Label each disk only when there's more than one to tell apart
+		label=""
+		if [ $# -gt 1 ]; then
+			label="${disk%/}"; label="${label##*/}"; [ -n "$label" ] || label="/"
+		fi
+		out=$(__disk_usage "$disk" "$label")
+		[ -n "$out" ] || continue
+		[ -z "$shown" ] || printf " "
+		printf "%s" "$out"
+		shown=1
+	done
+	[ -z "$shown" ] || color --
 }
 
 # vi: syntax=sh ts=4 noexpandtab

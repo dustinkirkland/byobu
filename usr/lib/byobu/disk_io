@@ -55,7 +55,7 @@ getdisk() {
 
 __disk_io_openbsd() {
 	local mount_point disk part kb xfr t2 t1 cache x1 x2 rate symbol unit
-	[ -z "$MONITORED_DISK" ] && mount_point="/" || mount_point="$MONITORED_DISK"
+	[ -z "$MONITORED_DISK" ] && mount_point="/" || mount_point="${MONITORED_DISK%% *}"
 	[ -n "$DISK_IO_THRESHOLD" ] || DISK_IO_THRESHOLD=50
 	# Find the disk device for the mount point (e.g., /dev/sd0a -> sd0)
 	part=$(mount | awk -v mp="$mount_point" '$3 == mp { print $1; exit }')
@@ -114,7 +114,8 @@ __disk_io() {
 		return
 	fi
 	# Default to disk providing /, but let users override with MONITORED_DISK
-	[ -z "$MONITORED_DISK" ] && mount_point="/" ||  mount_point="$MONITORED_DISK"
+	# (only its first entry, if it lists several for the disk status)
+	[ -z "$MONITORED_DISK" ] && mount_point="/" ||  mount_point="${MONITORED_DISK%% *}"
 	# By default, we won't bug the user with the display of disk throughput
 	# below DISK_IO_THRESHOLD in kB/s; override in $BYOBU_CONFIG_DIR/status
 	[ -n "$DISK_IO_THRESHOLD" ] || DISK_IO_THRESHOLD=50
