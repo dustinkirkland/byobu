@@ -43,7 +43,15 @@ sessions = []
 text = []
 reuse_sessions = os.path.exists("%s/.reuse-session" % (BYOBU_CONFIG_DIR))
 
-BYOBU_UPDATE_ENVVARS = ["DISPLAY", "DBUS_SESSION_BUS_ADDRESS", "SESSION_MANAGER", "GPG_AGENT_INFO", "XDG_SESSION_COOKIE", "XDG_SESSION_PATH", "GNOME_KEYRING_CONTROL", "GNOME_KEYRING_PID", "GPG_AGENT_INFO", "SSH_ASKPASS", "SSH_AUTH_SOCK", "SSH_AGENT_PID", "WINDOWID", "UPSTART_JOB", "UPSTART_EVENTS", "UPSTART_SESSION", "UPSTART_INSTANCE"]
+# LANG/LANGUAGE: byobu.in normalizes these (falling back to
+# /etc/default/locale) before it ever execs in here, including on a
+# reattach -- but that corrected value only reaches an *existing* session's
+# own captured environment (what new windows/splits there inherit) via this
+# same update_environment() push, same as every other var below. Without
+# it, a session whose server-start environment had a bad LANG (e.g. created
+# as an SSH forced command, GH #120) stays stuck with it forever, even once
+# reattached from a client whose LANG is already correct.
+BYOBU_UPDATE_ENVVARS = ["DISPLAY", "DBUS_SESSION_BUS_ADDRESS", "SESSION_MANAGER", "GPG_AGENT_INFO", "XDG_SESSION_COOKIE", "XDG_SESSION_PATH", "GNOME_KEYRING_CONTROL", "GNOME_KEYRING_PID", "GPG_AGENT_INFO", "SSH_ASKPASS", "SSH_AUTH_SOCK", "SSH_AGENT_PID", "WINDOWID", "UPSTART_JOB", "UPSTART_EVENTS", "UPSTART_SESSION", "UPSTART_INSTANCE", "LANG", "LANGUAGE"]
 
 
 def get_sessions():
