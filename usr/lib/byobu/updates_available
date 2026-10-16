@@ -116,7 +116,17 @@ ___update_needed() {
 			return 1
 		fi
 	elif [ -e "/var/lib/PackageKit/transactions.db" ]; then
-		[ "/var/lib/PackageKit/transactions.db" -nt "$mycache" ]
+		# PackageKit records our own get-updates in transactions.db, which
+		# can land just after the cache is written; then the db always
+		# looks newer and pkcon re-runs on every check. Only count changes
+		# more than 5s after the cache. LP: #1828115
+		local c d
+		if c=$(stat -c %Y "$mycache" 2>/dev/null) && d=$(stat -c %Y /var/lib/PackageKit/transactions.db 2>/dev/null); then
+			[ "$d" -gt $(($c+5)) ]
+		else
+			# No GNU stat (or no cache yet)
+			[ "/var/lib/PackageKit/transactions.db" -nt "$mycache" ]
+		fi
 		return $?
 	elif eval $BYOBU_TEST pacman >/dev/null; then
 		# Archlinux
