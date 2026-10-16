@@ -285,10 +285,7 @@ PuTTY users should configure enable UTF-8 characters in order to fix status refr
 
 PuTTY users should avoid resizing their window to one character tall, as this can sometimes crash \fBbyobu-screen\fP.
 
-Apple Mac OSX terminal users have reported 'flashing text'.  You can fix this in the advanced settings of the terminal application, with 'Declare Terminal As: xterm-color'.
-
-Apple Mac keyboard users may need to specify a vt100 terminal by adding this to your OSX profile, in order to get Byobu's function keys and colors to work:
-  alias ssh='TERM=vt100 ssh'
+Apple macOS users: by default the Option key types special characters instead of acting as Alt.  To use Byobu's Alt keybindings, enable 'Use Option as Meta key' in Terminal (Settings > Profiles > Keyboard), or set the Left Option key to 'Esc+' in iTerm2 (Settings > Profiles > Keys).  If Ctrl-F2 or Shift-F2 behave like plain F2, the terminal is not sending modified function keys.  Byobu's prefix bindings still work: \fBF12\fP then \fB%\fP for a vertical split, or \fBF12\fP then \fB"\fP for a horizontal split.  macOS also reserves some Ctrl-F-keys as system shortcuts (System Settings > Keyboard > Keyboard Shortcuts), and the F-keys may need \fBfn\fP unless 'Use F1, F2, etc. keys as standard function keys' is enabled.
 
 URxvt users have reported that Ctrl+Shift+F-key combinations do not work by default, because URxvt does not send the expected escape sequences for those key chords.  You can fix this by adding the following to \fI~/.Xresources\fP (then running \fBxrdb -merge ~/.Xresources\fP):
 .nf
