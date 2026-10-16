@@ -95,7 +95,8 @@ __ip_address() {
 				if [ -x /sbin/ip ]; then
 					# 'ip route get' reports the preferred source for outbound
 					# traffic without needing to guess the interface. LP: #2015819
-					ipaddr=$(LC_ALL=C /sbin/ip route get 1.1.1.1 2>/dev/null | \
+					# But an explicit MONITORED_NETWORK (eg. tun0) wins. LP: #1918295
+					[ -n "$MONITORED_NETWORK" ] || ipaddr=$(LC_ALL=C /sbin/ip route get 1.1.1.1 2>/dev/null | \
 						awk '/src/{for(i=1;i<=NF;i++) if($i=="src"){print $(i+1); exit}}')
 					# Fall back to interface-based detection (no default route, VPN, etc.)
 					if [ -z "$ipaddr" ]; then

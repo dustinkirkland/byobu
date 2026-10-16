@@ -2,7 +2,7 @@ Byobu is a suite of enhancements to tmux, as a command line
 tool providing live system status, dynamic window management,
 and some convenient keybindings:
 
-  F1                             * Used by X11 *
+  F1                             Display this help
     Shift-F1                     Display this help
   F2                             Create a new window
     Shift-F2                     Create a horizontal split

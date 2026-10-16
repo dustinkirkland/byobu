@@ -45,7 +45,8 @@
 # Default: 50
 #DISK_IO_THRESHOLD=50
 
-# Default: eth0
+# Network interface for the network, ip_address and wifi_quality indicators
+# Default: auto-detected (for network and ip_address, the default route's interface)
 #MONITORED_NETWORK=eth0
 
 # Unit used for network throughput (either bits per second or bytes per second)
