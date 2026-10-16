@@ -266,6 +266,7 @@ status_freq() {
 		color)		_RET=9999991 ;;
 		cpu_count)	_RET=5 ;;
 		cpu_freq)	_RET=2 ;;
+		cpu_usage)	_RET=2 ;;
 		cpu_temp)	_RET=19 ;;
 		custom)		_RET=5 ;;
 		date)		_RET=9999991 ;;
