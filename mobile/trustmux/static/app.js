@@ -1186,8 +1186,15 @@ function sendKeys() {
     streamDirectInput(inp);
     send({ type: 'send_keys', pane_id: currentPane, keys: 'Enter', enter: false, literal: false });
     _streamed = '';
+  } else if (!keys) {
+    // Empty box: Send is a bare Enter, for answering "1/2/3", yes/no and
+    // "press Enter" prompts without typing a character first. Not from the
+    // password box, where a stray tap would submit an empty password.
+    // Untracked, like the streamed-draft Enter above.
+    if (inp !== cmdInput) return;
+    send({ type: 'send_keys', pane_id: currentPane, keys: 'Enter', enter: false, literal: false });
+    return;
   } else {
-    if (!keys) return;
     const reqId = `s${++_pendingSendId}`;
     _pendingSend = { reqId, text: keys, inp };
     clearTimeout(_pendingSendTimer);
