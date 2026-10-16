@@ -567,6 +567,46 @@ def find_tap(name, mode):
 
 # ── phase 2: versions ─────────────────────────────────────────────────────
 
+def ubuntu_series():
+    """Return (supported, devel, devel_status) Ubuntu series names.
+
+    Launchpad is authoritative: the host's distro-info-data lags behind each
+    Ubuntu release (on 26.10 release week it still listed stonking as the
+    newest series and `ubuntu-distro-info --devel` failed), and the old
+    hardcoded fallback then pointed final uploads at a released series.
+    ubuntu-distro-info is only a fallback for when Launchpad is unreachable,
+    and must then actually know a devel series (--devel fails when stale).
+    supported excludes the devel series; it's what the PPA builds for.
+    """
+    try:
+        def lp(url):
+            return json.loads(urllib.request.urlopen(url, timeout=30).read())
+        devel = lp("https://api.launchpad.net/1.0/ubuntu")["current_series_link"].rsplit("/", 1)[1]
+        entries = lp("https://api.launchpad.net/1.0/ubuntu/series")["entries"]
+        status = {e["name"]: e["status"] for e in entries}
+        supported = [
+            e["name"]
+            for e in sorted(entries, key=lambda e: float(e.get("version") or "0"))
+            if e["status"] in ("Current Stable Release", "Supported")
+            and float(e.get("version") or "0") >= 22.04
+        ]
+        if devel not in status or devel in supported or not supported:
+            raise RuntimeError(f"implausible Launchpad series data: devel={devel}")
+        return supported, devel, status[devel]
+    except Exception as e:
+        print(f"  (Launchpad series query failed: {e} — falling back to ubuntu-distro-info)")
+    try:
+        supported = run(["ubuntu-distro-info", "--supported"], capture=True).stdout.split()
+        devel = run(["ubuntu-distro-info", "--devel"], capture=True, check=False).stdout.strip()
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        supported, devel = [], ""
+    if not devel:
+        die("Could not determine the Ubuntu development series: Launchpad is unreachable\n"
+            "  and ubuntu-distro-info has no devel series (update distro-info-data).")
+    supported = [s for s in supported if s != devel]
+    return supported, devel, "unknown (from distro-info)"
+
+
 def determine_versions(mode, resume=False):
     section("Phase 2: Determine versions")
 
@@ -738,34 +778,12 @@ def determine_versions(mode, resume=False):
                  "-m", f"rpm/byobu.spec: update to {base_ver}"])
             print(f"  rpm/byobu.spec: {spec_ver} → {base_ver}, changelog stanza added")
 
-    # Supported Ubuntu series
-    try:
-        r = run(["ubuntu-distro-info", "--supported"], capture=True, check=False)
-        series = r.stdout.split() if r.returncode == 0 else []
-        if not series:
-            raise RuntimeError
-    except (FileNotFoundError, RuntimeError):
-        print("  (ubuntu-distro-info unavailable — querying Launchpad API)")
-        d = json.loads(
-            urllib.request.urlopen(
-                "https://api.launchpad.net/1.0/ubuntu/series"
-            , timeout=30).read()
-        )
-        active = {"Active Development", "Current Stable Release", "Supported"}
-        series = [
-            e["name"]
-            for e in d["entries"]
-            if e["status"] in active and float(e.get("version") or "0") >= 22.04
-        ]
-
-    try:
-        r = run(["ubuntu-distro-info", "--devel"], capture=True, check=False)
-        devel_series = r.stdout.strip() if r.returncode == 0 else "stonking"
-    except FileNotFoundError:
-        devel_series = "stonking"
-
+    series, devel_series, devel_status = ubuntu_series()
     print(f"  Series:       {' '.join(series)}")
-    print(f"  Devel series: {devel_series}")
+    print(f"  Devel series: {devel_series}  ({devel_status})")
+    if mode == "final" and devel_status != "Active Development":
+        print(f"  ⚠ {devel_series} is in '{devel_status}', not 'Active Development';\n"
+              f"    an upload may sit in the unapproved queue until the archive opens.")
 
     # Final releases do not upload to the PPA; skip the slot check entirely.
     # Also skip on resume — slots are already occupied.
