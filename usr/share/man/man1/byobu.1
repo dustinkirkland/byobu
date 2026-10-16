@@ -216,7 +216,7 @@ byobu uses decimal for measurements of network data transfer, meaning multiple o
 
 .SH KEYBINDINGS
 
-byobu keybindings can be user defined in /usr/share/byobu/keybindings/ (or within .screenrc if byobu-export was used). The common key bindings are:
+Add your own tmux keybindings to \fI$BYOBU_CONFIG_DIR/keybindings.tmux\fP and other tmux settings to \fI$BYOBU_CONFIG_DIR/.tmux.conf\fP (usually ~/.byobu or ~/.config/byobu); byobu loads both after its defaults and never overwrites them.  Don't edit \fIprofile.tmux\fP, which loads byobu's defaults.  The common key bindings are:
 
 \fBF2\fP \- Create a new window
 
