@@ -25,7 +25,8 @@ RC phases:
     4d Fedora Rawhide RPM build    │
     4e Homebrew byobu smoke test   │
     4f Salsa CI (gbp buildpackage) │
-    4g Nix build + smoke test      ┘
+    4g Nix build + smoke test      │
+    4h trustmux PWA end-to-end     ┘
     5  PPA source builds
 
 Final skips phase 4 (smoke already passed on RC commit):
@@ -1102,6 +1103,19 @@ pip install --break-system-packages /tmp/trustmux-src
 echo "=== pip smoke test PASSED ==="
 """
 )
+
+
+def run_pwa_e2e_test():
+    """Drive the trustmux PWA in headless Chromium against a real daemon.
+
+    mobile/tests/e2e/run.sh pairs a phone-sized Chromium with trustmux in a
+    throwaway container and taps the real UI (Send, keyboard Enter, key bar,
+    Esc/Ctrl-C, direct mode, password mode, pane switching), checking the
+    exact bytes each tmux pane receives.  Catches app.js regressions that the
+    Python tests and install smoke tests can't see.
+    """
+    section("Phase 4h: trustmux PWA end-to-end (Docker, headless Chromium)")
+    run([str(BYOBU_SRC / "mobile" / "tests" / "e2e" / "run.sh")])
 
 
 def run_pip_smoke_test(v):
@@ -3037,6 +3051,7 @@ def main():
         parallel.append(("Fedora RPM",    lambda: build_fedora_rpm(v)))
         parallel.append(("Homebrew byobu", lambda: run_homebrew_byobu_smoke_test(v)))
         parallel.append(("Nix build",     lambda: build_nix_package(v)))
+        parallel.append(("PWA e2e",       run_pwa_e2e_test))
         parallel.append(("Salsa CI",      run_salsa_ci))
     if mode == "rc" and should_run("5", start_from):
         parallel.append(("PPA builds", lambda: build_ppa_packages(v, identity)))
