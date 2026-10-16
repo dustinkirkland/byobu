@@ -179,10 +179,11 @@ sessions = get_sessions()
 show_shell = os.path.exists("%s/.always-select" % (BYOBU_CONFIG_DIR))
 if len(sessions) > 1 or show_shell:
 	sessions.append("NEW")
-	text.append("Create a new Byobu session (%s)" % BYOBU_BACKEND)
+	text.append("Create a new Byobu session (%s)  [n, or n NAME]" % BYOBU_BACKEND)
 	sessions.append("SHELL")
-	text.append("Run a shell without Byobu (%s)" % SHELL)
+	text.append("Run a shell without Byobu (%s)  [s]" % SHELL)
 
+new_name = None
 if len(sessions) > 1:
 	sys.stdout.write("\nByobu sessions...\n\n")
 	tries = 0
@@ -198,6 +199,22 @@ if len(sessions) > 1:
 				user_input = ""
 			if not user_input or user_input == "":
 				choice = 1
+				break
+			# Fixed keys for the last two entries, whatever their number:
+			# "n" (or "n NAME" to name it) for a new session, "s" for a
+			# shell. Debian: #701055, #690582
+			words = user_input.split()
+			if words[0].lower() == "n" and len(words) <= 2:
+				if len(words) == 2 and not re.match(r"^[A-Za-z0-9_-]+$", words[1]):
+					tries += 1
+					choice = -1
+					sys.stderr.write("\nERROR: Session names may only use letters, digits, - and _\n")
+					continue
+				new_name = words[1] if len(words) == 2 else None
+				choice = sessions.index("NEW") + 1
+				break
+			if words[0].lower() == "s" and len(words) == 1:
+				choice = sessions.index("SHELL") + 1
 				break
 			try:
 				choice = int(user_input.strip())
@@ -230,9 +247,11 @@ if choice >= 1:
 	if sessions[choice - 1] == "NEW":
 		# Create a new session
 		if BYOBU_BACKEND == "tmux":
-			os.execvp("byobu", ["byobu", "new-session", SHELL])
+			name = ["-s", new_name] if new_name else []
+			os.execvp("byobu", ["byobu", "new-session"] + name + [SHELL])
 		else:
-			os.execvp("byobu", ["byobu", SHELL])
+			name = ["-S", new_name] if new_name else []
+			os.execvp("byobu", ["byobu"] + name + [SHELL])
 	elif sessions[choice - 1] == "SHELL":
 		os.execvp(SHELL, [SHELL])
 	else:
