@@ -70,7 +70,14 @@ if [ -z "${BYOBU_PREFIX}" ]; then
 		. "$HOME/.byoburc"
 	fi
 fi
-export BYOBU_CHARMAP=$(locale charmap 2>/dev/null || echo)
+BYOBU_CHARMAP=$(locale charmap 2>/dev/null) || BYOBU_CHARMAP=
+if [ -z "$BYOBU_CHARMAP" ]; then
+	# OpenBSD's locale(1) has no 'charmap' keyword; use the locale's name. LP: #1697314
+	case "${LC_ALL:-${LC_CTYPE:-$LANG}}" in
+		*[Uu][Tt][Ff]-8*|*[Uu][Tt][Ff]8*) BYOBU_CHARMAP="UTF-8" ;;
+	esac
+fi
+export BYOBU_CHARMAP
 [ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
 [ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
 . "${BYOBU_PREFIX}/lib/${PKG}/include/common"
