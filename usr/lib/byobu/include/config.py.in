@@ -365,7 +365,9 @@ def autolaunch():
 				return 1
 	except Exception:
 		return 0
-	if os.path.exists("/etc/profile.d/Z97-%s.sh" % PKG):
+	# /etc/profile.d/Z97-byobu.sh is always installed, but only launches
+	# byobu when this flag (set by `dpkg-reconfigure byobu`) exists. LP: #1813644
+	if os.path.exists("/etc/%s/autolaunch" % PKG):
 		return 1
 	return 0
 
