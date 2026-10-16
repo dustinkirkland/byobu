@@ -82,4 +82,19 @@ bind-key -n C-S-F12 new-window $BYOBU_PREFIX/lib/byobu/include/mondrian
 bind-key -n M-F12 source $BYOBU_PREFIX/share/byobu/keybindings/mouse.tmux.enable
 bind-key -n M-IC paste-buffer
 
+# F12 then an F-key sends that F-key to the application (eg. Midnight
+# Commander) instead of running byobu's binding. LP: #1814466
+bind-key F1 send-keys F1
+bind-key F2 send-keys F2
+bind-key F3 send-keys F3
+bind-key F4 send-keys F4
+bind-key F5 send-keys F5
+bind-key F6 send-keys F6
+bind-key F7 send-keys F7
+bind-key F8 send-keys F8
+bind-key F9 send-keys F9
+bind-key F10 send-keys F10
+bind-key F11 send-keys F11
+bind-key F12 send-keys F12
+
 bind-key -n C-a new-window -n "ctrl-a" "byobu-ctrl-a"
