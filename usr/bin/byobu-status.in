@@ -134,7 +134,7 @@ get_status() {
 	# $newcache is PID-suffixed and never reused by another process, so an
 	# empty/rejected one (unlike the old shared path) is never overwritten
 	# by a later run -- clean it up explicitly.
-	rm -f "$newcache" 2>/dev/null
+	[ ! -e "$newcache" ] || rm -f "$newcache" 2>/dev/null
 }
 
 case "$1" in

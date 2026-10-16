@@ -49,8 +49,12 @@ if [ -z "${BYOBU_INCLUDED_LIBS}" ]; then
 
 	. "${BYOBU_PREFIX}/lib/${PKG}/include/shutil"
 	. "${BYOBU_PREFIX}/lib/${PKG}/include/constants"
-	get_distro || true
-	export BYOBU_DISTRO="$_RET"
+	# Inherited from the tmux server's environment on every status tick, so
+	# only detect it once: on macOS, detection execs sw_vers each time.
+	if [ -z "$BYOBU_DISTRO" ]; then
+		get_distro || true
+		export BYOBU_DISTRO="$_RET"
+	fi
 
 	# Needed by every gettext call site (usr/lib/byobu/menu,
 	# byobu-select-profile) so translated strings actually get looked up:
