@@ -4,7 +4,7 @@
 %global trustmuxlibdir %{_prefix}/lib/trustmux
 
 Name:		byobu
-Version:	7.21
+Version:	7.22
 Release:	1%{?dist}
 Summary:	Light-weight, configurable window manager built upon GNU screen
 
@@ -169,6 +169,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Oct 17 2026 Dustin Kirkland <kirkland@ubuntu.com> - 7.22-1
+- Update to 7.22; see the upstream ChangeLog for full details.
+
 * Sun Oct 11 2026 Dustin Kirkland <kirkland@ubuntu.com> - 7.21-1
 - Update to 7.21; see the upstream ChangeLog for full details.
 
