@@ -171,7 +171,14 @@ function isTailscaleHost() {
 // idle/background lock — not a replacement for server-side auth.
 
 const LOCK_IDLE_MS   = 5 * 60 * 1000;  // lock after 5 min inactivity
-const LOCK_HIDDEN_MS = 30 * 1000;       // lock if backgrounded > 30s
+const LOCK_HIDDEN_CHOICES = [
+  ['30000', '30 seconds (default)'],
+  ['60000', '1 minute'],
+  ['120000', '2 minutes'],
+  ['300000', '5 minutes'],
+];
+let lockHiddenMs = localStorage.getItem('lock-hidden-ms');
+if (!LOCK_HIDDEN_CHOICES.some(([value]) => value === lockHiddenMs)) lockHiddenMs = '30000';
 
 let _lockEnabled = localStorage.getItem('lock-enabled');  // 'true'/'false'/null
 let _lockCredId  = localStorage.getItem('lock-cred-id');  // base64url
@@ -267,13 +274,13 @@ function maybeOfferBiometric() {
   }, { passive: true })
 );
 
-// Lock when app returns from background (if gone > LOCK_HIDDEN_MS)
+// The app locks on return once the chosen background timeout has elapsed.
 document.addEventListener('visibilitychange', () => {
   if (_lockEnabled !== 'true') return;
   if (document.hidden) {
     _hiddenAt = Date.now();
   } else {
-    if (_hiddenAt && Date.now() - _hiddenAt >= LOCK_HIDDEN_MS) lockApp();
+    if (_hiddenAt && Date.now() - _hiddenAt >= Number(lockHiddenMs)) lockApp();
     _hiddenAt = 0;
   }
 });
@@ -2755,6 +2762,7 @@ const settingsOverlay   = document.getElementById('settings-overlay');
 const settingsThemeList = document.getElementById('settings-theme-list');
 const settingsFontList  = document.getElementById('settings-font-list');
 const settingsSizeValue = document.getElementById('settings-size-value');
+const settingsLockList  = document.getElementById('settings-lock-list');
 const themeColorMeta    = document.querySelector('meta[name="theme-color"]');
 const _lightSchemeMq    = matchMedia('(prefers-color-scheme: light)');
 // Captured before the first applyFont() so it is the CSS default stack, not
@@ -2807,6 +2815,19 @@ _lightSchemeMq.addEventListener('change', () => {
 });
 
 function renderSettings() {
+  settingsLockList.innerHTML = '';
+  for (const [value, label] of LOCK_HIDDEN_CHOICES) {
+    const on = value === lockHiddenMs;
+    const btn = document.createElement('button');
+    btn.className = 'ctx-btn' + (on ? ' ctx-current' : '');
+    btn.textContent = (on ? '✓ ' : '') + label;
+    btn.addEventListener('click', () => {
+      lockHiddenMs = value;
+      localStorage.setItem('lock-hidden-ms', value);
+      renderSettings();
+    });
+    settingsLockList.appendChild(btn);
+  }
   // Checkmark prefix like the context picker: the selected row must not
   // rely on color alone.
   settingsThemeList.innerHTML = '';

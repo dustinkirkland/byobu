@@ -79,6 +79,7 @@ EXTRA_DIST = \
 	tests/__init__.py \
 	tests/test_advertise.py \
 	tests/test_ctl.py \
+	tests/test_lock.cjs \
 	tests/test_paths.py \
 	tests/test_daemon.py \
 	tests/test_daemon_extended.py

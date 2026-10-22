@@ -833,9 +833,14 @@
   </div>
 </div>
 
-<!-- ── display settings (gear button in header) ── -->
+<!-- Settings appear in the header gear menu. -->
 <div id="settings-overlay" style="display:none">
   <div id="ctx-box">
+    <p class="settings-heading">Background screen lock</p>
+    <p>When screen lock is enabled, the app locks after this long in the background.
+      The 5-minute inactivity lock still applies. This choice is saved in this browser.</p>
+    <div id="settings-lock-list"></div>
+    <div class="ctx-sep"></div>
     <p class="settings-heading">Theme</p>
     <div id="settings-theme-list"></div>
     <div class="ctx-sep"></div>
@@ -872,7 +877,7 @@
     <span id="header-clock"></span>
     <button id="btn-install" title="Install as app" style="display:none">+ Install app</button>
     <select id="machine-select" title="Switch machine" style="display:none"></select>
-    <button id="btn-settings" class="icon-btn" title="Display settings">⚙</button>
+    <button id="btn-settings" class="icon-btn" title="Settings">⚙</button>
   </div>
 
   <div id="statusbar">

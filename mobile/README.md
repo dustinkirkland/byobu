@@ -78,6 +78,13 @@ trustmux pair           # generate a pairing code for a new device
 trustmux unpair         # list paired devices and remove them
 ```
 
+### Screen lock
+
+The client gear menu includes a **Background screen lock** setting: 30 seconds
+(default), 1 minute, 2 minutes or 5 minutes. The browser saves the choice for
+that site. It applies when screen lock is enabled; the separate 5-minute
+inactivity lock still applies, including while the app is in the background.
+
 ### A different port
 
 The daemon listens on 7432 by default. `--port` (or `$TRUSTMUX_PORT`) changes
@@ -309,6 +316,7 @@ case a daemon predating the upgrade is still serving on it.
 ```bash
 cd mobile/
 python3 -m unittest discover -s tests -t .
+node tests/test_lock.cjs
 ```
 
 Needs `tornado` and `cryptography` (`pip install -r requirements.txt`). The
