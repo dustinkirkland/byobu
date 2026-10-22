@@ -80,10 +80,11 @@ trustmux unpair         # list paired devices and remove them
 
 ### Screen lock
 
-The client gear menu includes a **Background screen lock** setting: 30 seconds
-(default), 1 minute, 2 minutes or 5 minutes. The browser saves the choice for
-that site. It applies when screen lock is enabled; the separate 5-minute
-inactivity lock still applies, including while the app is in the background.
+The client gear menu includes a **Background screen lock** setting:
+immediately, 30 seconds (default), 1 minute, 2 minutes or 5 minutes. The
+browser saves the choice for that site. It applies when screen lock is
+enabled; the separate 5-minute inactivity lock still applies, including while
+the app is in the background.
 
 ### A different port
 

@@ -45,13 +45,16 @@ function client(saved, enabled = 'true') {
   return {
     context, storage, timers, overlay,
     run: code => vm.runInContext(code, context),
-    away(ms) {
+    hide() {
       context.document.hidden = true;
       listeners.visibilitychange();
+    },
+    show(ms) {
       now += ms;
       context.document.hidden = false;
       listeners.visibilitychange();
     },
+    away(ms) { this.hide(); this.show(ms); },
     activity: () => listeners.keydown(),
   };
 }
@@ -67,7 +70,7 @@ test('background timeout locks at the boundary for every choice', () => {
 });
 
 test('missing and invalid saved choices fall back to 30 seconds', () => {
-  for (const saved of [undefined, '', 'garbage', '0', '-1', 'Infinity', '30000ms', '3e4', '3000000']) {
+  for (const saved of [undefined, '', 'garbage', '00', '-1', 'Infinity', '30000ms', '3e4', '3000000']) {
     const app = client(saved);
     assert.equal(app.run('lockHiddenMs'), '30000');
     app.away(30000);
@@ -78,7 +81,7 @@ test('missing and invalid saved choices fall back to 30 seconds', () => {
 test('settings select, persist and restore each choice', () => {
   const app = client();
   app.run('renderSettings()');
-  for (const [index, value] of ['30000', '60000', '120000', '300000'].entries()) {
+  for (const [index, value] of ['0', '30000', '60000', '120000', '300000'].entries()) {
     app.context.settingsLockList.children[index].listeners.click();
     assert.equal(app.storage.get('lock-hidden-ms'), value);
     assert.match(app.context.settingsLockList.children[index].textContent, /^✓ /);
@@ -109,4 +112,19 @@ test('background intervals do not accumulate and disabled lock stays off', () =>
   disabled.away(300000);
   assert.equal(disabled.run('_isLocked'), false);
   assert.equal(disabled.timers.size, 0);
+});
+
+test('immediately locks on hide and an unlock is not undone on return', () => {
+  const app = client('0');
+  app.hide();
+  assert.equal(app.run('_isLocked'), true);
+  app.run('unlockApp()');
+  app.show(0);
+  assert.equal(app.run('_isLocked'), false);
+});
+
+test('a clock moved backwards while hidden locks', () => {
+  const app = client('300000');
+  app.away(-1);
+  assert.equal(app.run('_isLocked'), true);
 });

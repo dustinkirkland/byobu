@@ -172,6 +172,7 @@ function isTailscaleHost() {
 
 const LOCK_IDLE_MS   = 5 * 60 * 1000;  // lock after 5 min inactivity
 const LOCK_HIDDEN_CHOICES = [
+  ['0', 'Immediately'],
   ['30000', '30 seconds (default)'],
   ['60000', '1 minute'],
   ['120000', '2 minutes'],
@@ -274,13 +275,18 @@ function maybeOfferBiometric() {
   }, { passive: true })
 );
 
-// The app locks on return once the chosen background timeout has elapsed.
+// "Immediately" locks on hide, so a biometric prompt that briefly hides the
+// page cannot relock it after unlock. Other choices lock on return once the
+// timeout has elapsed, or when the clock moved backwards.
 document.addEventListener('visibilitychange', () => {
   if (_lockEnabled !== 'true') return;
+  const timeoutMs = Number(lockHiddenMs);
   if (document.hidden) {
     _hiddenAt = Date.now();
+    if (timeoutMs === 0) lockApp();
   } else {
-    if (_hiddenAt && Date.now() - _hiddenAt >= Number(lockHiddenMs)) lockApp();
+    const awayMs = Date.now() - _hiddenAt;
+    if (_hiddenAt && timeoutMs > 0 && (awayMs < 0 || awayMs >= timeoutMs)) lockApp();
     _hiddenAt = 0;
   }
 });
