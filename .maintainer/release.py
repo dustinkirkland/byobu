@@ -43,10 +43,12 @@ Final adds:
     GitHub release (non-prerelease, both byobu and trustmux tags)
     8  Regenerate PWA screenshots → commit + push trustmux-web
     9  Push release commit + tag to Debian Salsa (salsa/debian/latest); also
-       adds a minimal "New upstream release" debian/changelog stanza (9c) —
+       writes a minimal "New upstream release" debian/changelog stanza (9c),
+       folding any not-yet-uploaded stanzas (and their Closes:/LP: lines)
+       into it so the next upload closes those bugs —
        debian/changelog is packaging-only per Andreas Tille's 2026-07-14
-       guidance, so phase 2's version check requires a matching curated
-       entry already exist in the top-level ChangeLog file before this runs
+       guidance, so phase 2's version check requires a matching, non-empty
+       curated entry already exist in the top-level ChangeLog file before this runs
 """
 
 import argparse
@@ -96,6 +98,85 @@ def _changelog_top_entry() -> str | None:
         return None
     m = re.search(r"^byobu \(([^)]+)\)", changelog_path.read_text(), re.MULTILINE)
     return m.group(1) if m else None
+
+
+def _changelog_top_body() -> str:
+    """Text of the top-level ChangeLog's newest stanza, heading excluded.
+
+    The heading alone proves nothing: open_dev() writes the next version's
+    'UNRELEASED' heading the moment development opens, so a version-only
+    check passes on an empty entry -- which is exactly how 7.22 shipped
+    with no release notes at all.
+    """
+    changelog_path = BYOBU_SRC / "ChangeLog"
+    if not changelog_path.exists():
+        return ""
+    parts = re.split(r"^byobu \([^)]+\).*$", changelog_path.read_text(),
+                     maxsplit=2, flags=re.MULTILINE)
+    return parts[1].strip() if len(parts) > 1 else ""
+
+
+def fold_debian_changelog(path: Path, pkg: str, base_ver: str,
+                          fullname: str, email: str) -> None:
+    """Make debian/changelog's top stanza '{base_ver}-1 UNRELEASED', folding
+    every not-yet-uploaded stanza into it.
+
+    Debian closes bugs (and Launchpad, on sync, marks LP bugs fixed) only
+    from the stanzas an upload's .changes covers, which by default is just
+    the top one. Stacking a fresh stanza on top of an UNRELEASED one --
+    what a plain `dch --newversion` does -- strands every Closes:/LP: line
+    added since the last upload one stanza down, where no upload will ever
+    see it. That happened on 7.21 and 7.22, after each round of Debian bug
+    triage. Standard Debian practice is one stanza per upload, so collapse
+    all the leading UNRELEASED stanzas into the new one, keeping every
+    bullet except their "New upstream release" placeholders.
+    """
+    from email.utils import formatdate
+    text = path.read_text()
+    stanzas = re.split(r"(?m)^(?=\S+ \()", text)
+    stanzas = [s for s in stanzas if s.strip()]
+    pending, rest = [], stanzas
+    while rest and re.match(r"\S+ \([^)]+\) UNRELEASED;", rest[0]):
+        pending.append(rest[0])
+        rest = rest[1:]
+
+    upstream_vers, bullets = [], []
+    for s in pending:
+        ver = re.match(r"\S+ \(([^)]+)\)", s).group(1)
+        uv = re.sub(r"-[^-]*$", "", ver)
+        if uv not in upstream_vers:
+            upstream_vers.append(uv)
+        body = [l for l in s.splitlines()[1:]
+                if l.strip() and not l.startswith(" -- ")]
+        keep, placeholder, skipping = [], [], False
+        for l in body:
+            if l.startswith("  * "):
+                skipping = l.startswith("  * New upstream release")
+            (placeholder if skipping else keep).append(l)
+        bullets.extend(keep)
+        # A stanza folded earlier names its versions in the placeholder
+        # ("New upstream releases 7.20, 7.21 and 7.22"); keep them.
+        m = re.search(r"New upstream releases (.*?)\. See", " ".join(placeholder))
+        for uv in re.findall(r"[0-9][0-9.~a-z]*[0-9]", m.group(1) if m else ""):
+            if uv not in upstream_vers:
+                upstream_vers.append(uv)
+    if base_ver not in upstream_vers:
+        upstream_vers.insert(0, base_ver)
+    upstream_vers.sort(key=lambda s: [int(x) if x.isdigit() else x
+                                      for x in re.split(r"[.~]", s)])
+
+    if len(upstream_vers) == 1:
+        first = ["  * New upstream release. See /usr/share/doc/byobu/changelog for",
+                 "    upstream changes."]
+    else:
+        vers = ", ".join(upstream_vers[:-1]) + " and " + upstream_vers[-1]
+        first = [f"  * New upstream releases {vers}. See",
+                 "    /usr/share/doc/byobu/changelog for upstream changes."]
+    stamp = formatdate(localtime=True)
+    top = (f"{pkg} ({base_ver}-1) UNRELEASED; urgency=medium\n\n"
+           + "\n".join(first + bullets) + "\n\n"
+           + f" -- {fullname} <{email}>  {stamp}\n\n")
+    path.write_text(top + "".join(rest))
 
 # Set to True by --interactive; when False all confirm() calls auto-proceed.
 _interactive = False
@@ -676,8 +757,11 @@ def determine_versions(mode, resume=False):
         # than reconstructing it from git log under pressure right before
         # final -- which is the hard gate below, and does block.
         top = _changelog_top_entry()
-        if top == base_ver:
+        if top == base_ver and _changelog_top_body():
             print(f"  ChangeLog:    top entry already covers {base_ver} ✓")
+        elif top == base_ver:
+            print(f"  ChangeLog:    {base_ver} entry is still empty — add curated "
+                  f"bullets before running final (final refuses an empty entry).")
         else:
             print(f"  ChangeLog:    top entry is {top!r}, not yet {base_ver!r} — "
                   f"remember to add/extend a curated entry before running final.")
@@ -708,7 +792,13 @@ def determine_versions(mode, resume=False):
                 f"stanza to {BYOBU_SRC / 'ChangeLog'} before running final — "
                 f"debian/changelog only ever gets a one-line placeholder."
             )
-        print(f"  ChangeLog:    top entry matches {base_ver} ✓")
+        if not _changelog_top_body():
+            die(
+                f"ChangeLog's {base_ver} entry has a heading but no bullets.\n"
+                f"  Write the curated release notes under 'byobu ({base_ver})' in "
+                f"{BYOBU_SRC / 'ChangeLog'} before running final."
+            )
+        print(f"  ChangeLog:    top entry matches {base_ver} and has notes ✓")
 
         # open_dev() stamps a fresh heading as "UNRELEASED" so a curated
         # entry always has a correctly-versioned home from day one (see
@@ -2655,18 +2745,19 @@ def push_salsa(v, identity):
 
         # ── minimal debian/changelog stanza (packaging-only; see docstring) ──
         section("Phase 9c: debian/changelog — minimal new-upstream-release stanza")
-        env = os.environ.copy()
-        env["DEBFULLNAME"] = identity["DEBFULLNAME"]
-        env["DEBEMAIL"] = identity["DEBEMAIL"]
-        run([
-            "dch", "--newversion", f"{base_ver}-1",
-            "--distribution", "UNRELEASED",
-            "--release-heuristic", "log",
-            "--package", v["pkg"],
-            "New upstream release. See /usr/share/doc/byobu/changelog for "
-            "upstream changes.",
-        ], cwd=str(salsa_clone), env=env)
-        # dch edits debian/changelog on disk; commit it explicitly (gbp
+        # Not `dch --newversion`: that stacks a new stanza on top of any
+        # not-yet-uploaded one and strands its Closes:/LP: lines (see
+        # fold_debian_changelog()).
+        changelog = salsa_clone / "debian" / "changelog"
+        fold_debian_changelog(changelog, v["pkg"], base_ver,
+                              identity["DEBFULLNAME"], identity["DEBEMAIL"])
+        closes = run(["dpkg-parsechangelog", "-l", str(changelog), "-S", "Closes"],
+                     capture=True, check=False).stdout.split()
+        lp = run(["dpkg-parsechangelog", "-l", str(changelog),
+                  "-S", "Launchpad-Bugs-Fixed"], capture=True, check=False).stdout.split()
+        print(f"  {base_ver}-1 closes: Debian {' '.join('#' + b for b in closes) or '(none)'}"
+              f"; LP {' '.join('#' + b for b in lp) or '(none)'}")
+        # That edits debian/changelog on disk; commit it explicitly (gbp
         # import-orig's own commit above never touches debian/).
         # -f: belt and suspenders alongside excluding .gitignore from the
         # upstream tarball above -- debian/changelog is always meant to be
@@ -2675,7 +2766,7 @@ def push_salsa(v, identity):
         run(["git", "-C", str(salsa_clone), "add", "-f", "debian/changelog"])
         run(["git", "-C", str(salsa_clone), "commit", "-m",
              f"debian/changelog: new upstream release {base_ver}"])
-        print(f"  ✓ debian/changelog: {base_ver}-1 UNRELEASED stanza added")
+        print(f"  ✓ debian/changelog: {base_ver}-1 UNRELEASED stanza written")
 
         # Push all three branches plus the upstream tag — never force.  A
         # rejected push here means Salsa moved since we cloned; re-run

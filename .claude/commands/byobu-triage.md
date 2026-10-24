@@ -50,7 +50,7 @@ Work through each open GitHub issue one at a time. For each issue:
 - **ALREADY FIXED** — The issue describes a bug that no longer exists in current master. Close it politely, noting the approximate commit/version that fixed it.
 - **STALE / NO INFO** — Reporter never followed up, no reproduction steps, very old with no activity (>2 years). Close politely, invite reopening with more detail.
 - **DUPLICATE** — Same root cause as another issue. Close with a reference to the canonical issue.
-- **REAL + FIXABLE** — Confirmed, reproducible, worth addressing now. Propose a fix to the user; only after they approve, commit it and close with the fix commit.
+- **REAL + FIXABLE** — Confirmed, reproducible, worth addressing now. Propose a fix to the user; only after they approve, commit it and close with the fix commit. The fix commit also adds a bullet under the top `byobu (X.Y) UNRELEASED` heading of the top-level `ChangeLog` (see "Release notes and bug closures" below).
 - **REAL + DEFERRED** — Confirmed but complex, platform-specific, or requires hardware we can't test. Leave open, add a comment summarizing the status.
 - **NEEDS MORE INFO** — Plausible but unverifiable. Post a polite comment asking for specific details (OS, version, reproduction steps), don't close yet.
 - **WONTFIX** — Out of scope, working as intended, or the "fix" would harm other users. Close politely with an explanation.
@@ -136,15 +136,7 @@ You can apply Launchpad changes directly using the Python scripts in `~/src/laun
 
 Always confirm the batch with the user before the live run — show them the planned entries (bug number, title, new status, importance).
 
-**Closing Launchpad bugs via debian/changelog**: When a fix is committed (or already in master), the proper way to officially close a Launchpad Ubuntu bug is to add `- LP: #NNNNNN` as a sub-bullet under the relevant change entry in `debian/changelog`. The Ubuntu archive infrastructure automatically marks the bug Fix Released when a package containing that changelog entry is uploaded. The format used in this repo is:
-
-```
-  * path/to/file:
-    - description of the fix
-    - LP: #NNNNNN
-```
-
-If the fix is already in master but the changelog entry lacks the LP reference, add it. If a new fix is being committed, add the `LP: #NNNNNN` line as part of that commit. Always add LP references to the topmost (UNRELEASED) changelog stanza. Multiple LP references for a single changelog bullet are fine on separate lines.
+**Closing Launchpad bugs**: an `LP: #NNNNNN` line in the salsa `debian/changelog` marks the Ubuntu task Fix Released when that package reaches Ubuntu. See "Release notes and bug closures" below for where it goes. For an upstream-only `byobu` task, flip it to Fix Committed when the fix lands on master and to Fix Released at the next final release.
 
 ---
 
@@ -157,24 +149,27 @@ For each open Debian bug:
 - Check if it's a Debian-packaging issue vs. an upstream code issue
 - If it's an upstream fix needed: check whether it's already in the GitHub issues list
 
-**Closing Debian bugs via debian/changelog**: Debian bugs are officially closed by including `Closes: #NNNNNN` in a `debian/changelog` entry that reaches the Debian archive. The format used in this repo is:
+**Closing Debian bugs**: a `Closes: #NNNNNN` line in the salsa `debian/changelog` closes the bug when that changelog reaches the Debian archive. See "Release notes and bug closures" below.
+
+---
+
+## Release notes and bug closures
+
+Two changelogs, two jobs. Get both right **in the same turn as the fix**, not at release time.
+
+1. **Top-level `ChangeLog` (this repo): what changed upstream.** Every user-visible fix gets a bullet under the top `byobu (X.Y) UNRELEASED` heading, committed with the fix. `open-dev` writes that heading on day one; a final release refuses an entry with no bullets.
+2. **`debian/changelog`: packaging and bug closures only.** It lives only on salsa `debian/latest` (git@salsa.debian.org:debian/byobu.git), never in this repo. Add the `Closes:` / `LP:` lines to its **top stanza**, whatever version that stanza names. Describe the fix in one line per bug, like this:
 
 ```
-  * path/to/file:
-    - description of the fix
-    - Closes: #NNNNNN
+  * Upstream fixes for bugs reported in Debian:
+    - session chooser: 'n NAME' names the new session (Closes: #690582)
+  * Upstream fixes for bugs reported in Ubuntu:
+    - byobu-config detects launch-at-login correctly (LP: #1813644)
 ```
 
-When a Debian bug is confirmed fixed in current master, add the `Closes: #NNNNNN` line under the relevant entry in the topmost (UNRELEASED) changelog stanza. If no single change entry is a natural home for it (e.g., the fix was incidental), add a dedicated bullet:
+Debian and Launchpad act only on the stanzas an upload covers, which by default is just the top one. So a closure in any stanza below the top one is silently lost. `release.py` phase 9c handles this: it folds every leading `UNRELEASED` stanza, closures included, into the new `X.Y-1` stanza and prints the bugs that stanza closes. Before telling the user a bug "will close on the next upload", check with `dpkg-parsechangelog -S Closes` (and `-S Launchpad-Bugs-Fixed`) on salsa's `debian/changelog` that the bug is listed.
 
-```
-  * debian/changelog: close Debian bug fixed in prior commit
-    - Closes: #NNNNNN
-```
-
-Show the changelog diff, and once the user approves, commit and push it, then note it in your triage summary. The bug will be closed automatically when the next Debian package upload containing that entry is processed by the archive.
-
-Note: `LP:` and `Closes:` references can coexist in the same changelog entry when a fix addresses both a Launchpad and a Debian bug simultaneously.
+Show the user the salsa diff, and once they approve, commit and push it. Don't email the BTS: the maintainer closes Debian bugs only through the changelog.
 
 ---
 
@@ -202,7 +197,7 @@ Debian BTS        |        X |    n/a |   n/a |      n/a |         X
 - **Confirm before acting** on anything destructive (close, merge, push). A quick "shall I go ahead?" costs nothing.
 - **One item at a time** — don't batch-close without user awareness of what's being closed.
 - **Cite your work** — when closing as "already fixed", name the commit or version. When closing a PR with fixes applied, link the follow-up commit.
-- **Close Launchpad bugs via changelog** — add `- LP: #NNNNNN` under the relevant entry in the UNRELEASED `debian/changelog` stanza and commit it. The archive does the rest on next upload.
-- **Close Debian bugs via changelog** — add `- Closes: #NNNNNN` under the relevant entry in the UNRELEASED `debian/changelog` stanza and commit it. Both references can coexist in the same entry.
+- **Every fix gets a top-level `ChangeLog` bullet in the same commit.** Release notes are never reconstructed at release time.
+- **Close Debian/LP bugs from salsa's top `debian/changelog` stanza**, never from this repo, and confirm the closure with `dpkg-parsechangelog`. See "Release notes and bug closures".
 - **Match the existing comment tone** — warm, direct, grateful, never terse or dismissive.
 - Use `gh` CLI for all GitHub operations. Use WebFetch for Launchpad and Debian BTS pages. Use the scripts in `~/src/launchpad-tools/` to apply Launchpad changes directly (triage or close bugs).
