@@ -20,6 +20,61 @@ byobu (7.23) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
 
 byobu (7.22) 2026-10-17  Dustin Kirkland <kirkland@ubuntu.com>
 
+  * byobu-status: start fewer processes on every status tick. tmux
+    runs byobu-status for each side of the status bar every second,
+    and on macOS every process is expensive (0.5-0.9s per run
+    reported). The distro and sed probes are now inherited from the
+    tmux server's environment rather than re-detected each tick, the
+    per-segment temp file is removed only if it exists, and Homebrew's
+    prefix comes from $HOMEBREW_PREFIX or a single `brew --prefix`
+    (LP: #1837153, LP: #1983910)
+  * updates_available: stop querying PackageKit on every check. pkcon
+    records its own get-updates in transactions.db, so the db always
+    looked newer than byobu's cache; only db changes more than 5s
+    after the cache now count (LP: #1828115)
+  * ip_address: honor an explicit MONITORED_NETWORK (e.g. tun0 for a
+    VPN) again; since 7.7 the default route's address always won
+    (LP: #1918295)
+  * disk: MONITORED_DISK can list several mount points or devices,
+    e.g. MONITORED_DISK="/ /home /dev/sdb1", each labeled by name when
+    more than one is listed; a single disk renders as before
+    (discussion #157)
+  * cpu_usage: new status item showing the busy share of CPU time
+    since the last update, from /proc/stat; off by default (Debian
+    #566255)
+  * f-keys.tmux: F12 followed by any F-key sends that F-key straight
+    to the application, for programs that need keys byobu binds
+  * byobu: when 'locale charmap' fails or prints nothing (e.g. on
+    OpenBSD), decide UTF-8 support from the locale name instead
+  * byobu-config: the F9 menu reports "launch at login" from the real
+    system-wide flag, /etc/byobu/autolaunch, instead of claiming byobu
+    launched at login on every fresh account (LP: #1813644)
+  * byobu-launch: don't fail when sourced by zsh before the runtime
+    directory exists (Debian #781176)
+  * byobu-select-session: the 'n' and 's' keys work for the last two
+    menu entries, and 'n NAME' names the new session (Debian #701055,
+    #690582)
+  * byobu-select-session: re-apply default-terminal and push
+    LANG/LANGUAGE on every reattach, so a session first created from a
+    poorly-configured client no longer keeps its terminal type and
+    locale forever (GH #96, GH #120)
+  * mondrian: restyle only the mondrian window's pane borders instead
+    of every pane in every session (GH #167)
+  * trustmux/pwa: the blue Send button sends a bare Enter when the text
+    box is empty, for answering numbered or yes/no prompts in one tap
+  * trustmux/pwa: auto-scroll stops at the last line of real output
+    instead of landing on the blank padding below it in tall panes
+  * byobu.1, help.tmux.txt: document the paste keys that work (F12 ]
+    in both backends, Alt-Insert in tmux, ctrl-a ] only in Screen mode)
+    (GH #168); explain the tmux scrollback position indicator; tmux
+    keeps 100,000 lines of scrollback, not 10,000; point at
+    keybindings.tmux and .tmux.conf; replace stale macOS terminal
+    advice; F1 opens help, it isn't "used by X11"
+  * release.py: Ubuntu series come from Launchpad rather than stale
+    distro-info; the bare byobu tag is cut alongside trustmux-v* on
+    final (GH #164); RCs now run browser end-to-end tests of the
+    trustmux PWA (mobile/tests/e2e)
+
 byobu (7.21) 2026-10-11  Dustin Kirkland <kirkland@ubuntu.com>
 
   * trustmux/pwa: fix a large dead strip of horizontal scroll in Aa
