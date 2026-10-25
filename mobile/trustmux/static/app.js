@@ -141,12 +141,36 @@ function _hasOutputSelection() {
   return output.contains(sel.getRangeAt(0).commonAncestorContainer);
 }
 
-document.addEventListener('selectionchange', () => {
-  if (_deferredForSelection && !_hasOutputSelection()) {
+// A selection only exists once the gesture that makes it has finished: the
+// long press, the double tap, the mouse drag. A re-render during that
+// gesture breaks the selection before it starts, so the freeze also covers
+// any pointer held down on #output, plus a grace period after it lifts
+// (the gap between the two taps of a double tap, and the moment Android
+// takes to turn a long press into a selection).
+const OUTPUT_GESTURE_GRACE_MS = 400;
+const _outputPointers = new Set();   // pointerIds down on #output
+let _outputGestureUntil = 0;
+
+function _outputFrozen() {
+  return _outputPointers.size > 0
+    || performance.now() < _outputGestureUntil
+    || _hasOutputSelection();
+}
+
+function _resyncIfThawed() {
+  if (_deferredForSelection && !_outputFrozen()) {
     _deferredForSelection = false;
     if (currentPane) _requestSubscribe(currentPane);
   }
-});
+}
+
+function _outputPointerUp(e) {
+  if (!_outputPointers.delete(e.pointerId)) return;
+  _outputGestureUntil = performance.now() + OUTPUT_GESTURE_GRACE_MS;
+  setTimeout(_resyncIfThawed, OUTPUT_GESTURE_GRACE_MS + 20);
+}
+
+document.addEventListener('selectionchange', _resyncIfThawed);
 
 // ── offline / connectivity helpers ────────────────────────────────────────
 let _serverVersion = null;
@@ -548,8 +572,8 @@ function connect() {
     } else if (msg.type === 'update') {
       if (msg.pane_id !== currentPane) return;
       // Rebuilds every line's DOM node -- never while the user has an
-      // active selection in the pane (see _deferredForSelection above).
-      if (_hasOutputSelection()) { _deferredForSelection = true; return; }
+      // active selection or gesture in the pane (see _outputFrozen above).
+      if (_outputFrozen()) { _deferredForSelection = true; return; }
       _currentPaneRawLines = msg.data.split('\n');
       _currentPaneRawLinesFor = msg.pane_id;
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
@@ -572,7 +596,7 @@ function connect() {
       // let the forced resubscribe once the selection clears fetch a fresh
       // snapshot -- an incremental delta computed against content the client
       // never rendered is not safe to trust on its own.
-      if (_hasOutputSelection()) { _deferredForSelection = true; return; }
+      if (_outputFrozen()) { _deferredForSelection = true; return; }
       _currentPaneRawLines = _currentPaneRawLines.slice(msg.drop).concat(msg.append);
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
       _applyCursorFields(msg);
@@ -591,7 +615,7 @@ function connect() {
       // reach it; the next patch after the selection clears will fail its
       // own bounds check against the now-stale _lines and self-heal via the
       // same resubscribe path below, so nothing further is needed here.
-      if (_hasOutputSelection()) { _deferredForSelection = true; return; }
+      if (_outputFrozen()) { _deferredForSelection = true; return; }
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
       _applyCursorFields(msg);
       // A mismatching op means the line state diverged from the daemon's;
@@ -611,6 +635,9 @@ function connect() {
       // the cursor and the end-of-buffer fallback applies.
       if (msg.pane_id !== currentPane) return;
       _applyCursorFields(msg);
+      // Moving the ghost splits and re-joins the cursor line's text node,
+      // which collapses a selection ending in it; catch up after.
+      if (_outputFrozen()) { _deferredForSelection = true; return; }
       _ghostSync();
     } else if (msg.type === 'error') {
       // A definitive failure -- restore immediately rather than waiting out
@@ -1915,7 +1942,17 @@ cmdInput.addEventListener('blur',  () => document.body.classList.remove('cmd-foc
 // without blurring the box, and focus() on an already-focused element will
 // not re-open it; when the visual viewport is back to full height (no
 // keyboard) a focus bounce re-summons it.
+// The focus waits out the double-tap window: opening the keyboard on the
+// first tap of a double tap shrinks #output under the second one, so the
+// word select misses. A second tap restarts the wait, and if it selected
+// a word there is a selection by then and the keyboard stays down.
+const PANE_TAP_FOCUS_MS = 350;
+let _paneTapFocusTimer = 0;
 output.addEventListener('click', () => {
+  clearTimeout(_paneTapFocusTimer);
+  _paneTapFocusTimer = setTimeout(_paneTapFocus, PANE_TAP_FOCUS_MS);
+});
+function _paneTapFocus() {
   if (!keybarVisible() || _scrollMode) return;
   if (window.getSelection && String(window.getSelection())) return;
   const inp = activeInput();
@@ -1925,6 +1962,20 @@ output.addEventListener('click', () => {
     inp.blur();
     setTimeout(() => inp.focus(), 50);
   }
+}
+
+// Pointers held on #output freeze re-renders (_outputFrozen). Up and cancel
+// listen on the document: a drag that ends outside #output still ends.
+// A lost pointerup must not freeze the pane for good: a new primary pointer
+// means nothing else is down, and leaving the app ends any gesture.
+output.addEventListener('pointerdown', e => {
+  if (e.isPrimary) _outputPointers.clear();
+  _outputPointers.add(e.pointerId);
+});
+document.addEventListener('pointerup', _outputPointerUp, true);
+document.addEventListener('pointercancel', _outputPointerUp, true);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) _outputPointers.clear();
 });
 
 // IME guard: mobile keyboards fire input events mid-composition, and the
@@ -2369,9 +2420,10 @@ output.addEventListener('pointerup', e => {
   if (ttsSpeaking()) ttsStop();
   else ttsReadAt(line);
 });
-// Desktop double/triple click would select a word or line first.
+// Desktop triple click would select a line first. Double click still
+// selects a word: that is how a copy starts.
 output.addEventListener('mousedown', e => {
-  if (ttsEnabled && e.detail > 1) e.preventDefault();
+  if (ttsEnabled && e.detail > 2) e.preventDefault();
 });
 
 // ── double swipe: same as the ‹ › buttons ────────────────────────────────

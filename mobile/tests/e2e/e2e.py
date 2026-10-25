@@ -691,6 +691,161 @@ def read_aloud_settings_persist(ui, p0, p1):
         set_tts(ui, False, rate_steps=-2)
 
 
+# ── text selection ────────────────────────────────────────────────────────
+def cdp(ui):
+    if not hasattr(ui, "_e2e_cdp"):
+        ui._e2e_cdp = ui.context.new_cdp_session(ui)
+    return ui._e2e_cdp
+
+
+def js(ui, expr):
+    """Evaluate in the page over CDP. DevTools evaluation isn't subject to the
+    page's CSP, so this works without loosening it (unlike page.evaluate's
+    polling helpers)."""
+    r = cdp(ui).send("Runtime.evaluate", {"expression": expr, "returnByValue": True})
+    if "exceptionDetails" in r:
+        raise RuntimeError(f"js failed: {r['exceptionDetails']}")
+    return r["result"].get("value")
+
+
+SELECTED = "String(window.getSelection())"
+
+
+def select_text(ui, text):
+    """Select `text` inside #output, as a double tap and drag would."""
+    return js(ui, """(() => {
+      const want = %s;
+      const w = document.createTreeWalker(document.getElementById('output'),
+                                          NodeFilter.SHOW_TEXT);
+      let n, last = null;
+      while ((n = w.nextNode())) if (n.data.includes(want)) last = n;
+      if (!last) return false;
+      const i = last.data.indexOf(want);
+      const r = document.createRange();
+      r.setStart(last, i); r.setEnd(last, i + want.length);
+      const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      return true;
+    })()""" % json.dumps(text))
+
+
+def clear_selection(ui):
+    js(ui, "window.getSelection().removeAllRanges()")
+
+
+def write_pane0(text):
+    tty = tmux_fmt("e2e.0", "#{pane_tty}")
+    with open(tty, "w") as f:
+        f.write("\x1b[2J\x1b[H" + text)
+    return tty
+
+
+def output_point(ui, text):
+    # Same care as triple_tap: earlier scenarios can leave #output scrolled
+    # either way, which would put the line, and the touch, off screen.
+    line = ui.locator("#output > span", has_text=text).last
+    line.scroll_into_view_if_needed()
+    time.sleep(0.2)
+    box = line.bounding_box()
+    out = ui.locator("#output").bounding_box()
+    y = box["y"] + box["height"] / 2
+    if not out["y"] < y < out["y"] + out["height"]:
+        raise RuntimeError(f"line {text!r} isn't on screen to touch")
+    return max(box["x"], out["x"]) + 20, y
+
+
+def touch(ui, kind, x=0, y=0):
+    pts = [{"x": x, "y": y}] if kind != "touchEnd" else []
+    cdp(ui).send("Input.dispatchTouchEvent", {"type": kind, "touchPoints": pts})
+
+
+@scenario
+def pane_does_not_redraw_under_a_held_finger(ui, p0, p1):
+    tty = write_pane0("HOLD-ONE first line\r\n")
+    try:
+        wait_output(ui, "HOLD-ONE")
+        x, y = output_point(ui, "HOLD-ONE")
+        touch(ui, "touchStart", x, y)
+        try:
+            with open(tty, "w") as f:
+                f.write("HOLD-TWO arrives mid gesture\r\n")
+            time.sleep(1.5)
+            if ui.locator("#output", has_text="HOLD-TWO").count():
+                raise AssertionError("pane re-rendered while a finger was down on it")
+        finally:
+            touch(ui, "touchEnd")
+        clear_selection(ui)   # a long press may have selected a word
+        wait_output(ui, "HOLD-TWO", timeout=4000)
+    finally:
+        clear_selection(ui)
+        restore_pane0(tty, p0)
+
+
+@scenario
+def selection_survives_cursor_moves(ui, p0, p1):
+    # The key bar's ghost caret sits at the pane cursor; moving it splits and
+    # re-joins the cursor line's text, which used to collapse a selection.
+    popup(ui, "#btn-escape", "#escape-popup-keys")
+    ui.wait_for_selector("#keybar", state="visible", timeout=3000)
+    tty = write_pane0("SEL-ALPHA bravo charlie delta echo")
+    try:
+        wait_output(ui, "delta echo")
+        time.sleep(0.5)
+        if not select_text(ui, "bravo charlie"):
+            raise AssertionError("couldn't find the text to select")
+        for move in ("\x1b[20D", "\x1b[3C", "\x1b[4D", "\x1b[10C"):
+            with open(tty, "w") as f:
+                f.write(move)
+            time.sleep(0.6)
+            got = js(ui, SELECTED)
+            if got != "bravo charlie":
+                raise AssertionError(f"selection became {got!r} after a cursor move")
+        clear_selection(ui)
+        time.sleep(0.5)
+        # Once the selection is gone the ghost catches up with the cursor.
+        if ui.locator("#compose-ghost").count() != 1:
+            raise AssertionError("ghost caret didn't come back after the selection cleared")
+    finally:
+        clear_selection(ui)
+        ui.tap("#keybar-close")
+        ui.wait_for_selector("#keybar", state="hidden", timeout=3000)
+        restore_pane0(tty, p0)
+
+
+@scenario
+def pane_tap_waits_out_a_double_tap_before_the_keyboard(ui, p0, p1):
+    popup(ui, "#btn-escape", "#escape-popup-keys")
+    ui.wait_for_selector("#keybar", state="visible", timeout=3000)
+    tty = write_pane0("TAP-LINE some words to select\r\n")
+    focused = "document.activeElement && document.activeElement.id"
+    try:
+        wait_output(ui, "TAP-LINE")
+        x, y = output_point(ui, "TAP-LINE")
+        # A lone tap still brings the keyboard up, just not instantly.
+        js(ui, "document.activeElement.blur()")
+        touch(ui, "touchStart", x, y); time.sleep(0.04); touch(ui, "touchEnd")
+        time.sleep(0.1)
+        if js(ui, focused) == "cmd":
+            raise AssertionError("keyboard opened on the first tap of a possible double tap")
+        time.sleep(0.6)
+        if js(ui, focused) != "cmd":
+            raise AssertionError("a single tap on the pane no longer focuses the input")
+        # A double tap that selects a word keeps the keyboard down.
+        js(ui, "document.activeElement.blur()")
+        touch(ui, "touchStart", x, y); time.sleep(0.04); touch(ui, "touchEnd")
+        time.sleep(0.12)
+        select_text(ui, "words")   # what the second tap does on a phone
+        time.sleep(0.6)
+        if js(ui, focused) == "cmd":
+            raise AssertionError("keyboard opened over a fresh word selection")
+        if js(ui, SELECTED) != "words":
+            raise AssertionError(f"selection is {js(ui, SELECTED)!r}, expected 'words'")
+    finally:
+        clear_selection(ui)
+        ui.tap("#keybar-close")
+        ui.wait_for_selector("#keybar", state="hidden", timeout=3000)
+        restore_pane0(tty, p0)
+
+
 def main(filters):
     chosen = [s for s in SCENARIOS if not filters or any(f in s.__name__ for f in filters)]
     if not chosen:
