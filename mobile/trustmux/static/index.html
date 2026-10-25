@@ -258,12 +258,22 @@
       padding: 10px 16px 2px; color: var(--text); font-size: 11px;
       letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--font);
     }
-    #settings-size-row {
+    #settings-size-row, .settings-step-row {
       display: flex; align-items: center; justify-content: center;
       gap: 14px; padding: 8px 16px;
     }
-    #settings-size-row .icon-btn { min-width: 44px; font-size: 16px; }
-    #settings-size-value { font-size: 15px; min-width: 52px; text-align: center; }
+    #settings-size-row .icon-btn, .settings-step-row .icon-btn { min-width: 44px; font-size: 16px; }
+    #settings-size-value, #settings-tts-rate-value { font-size: 15px; min-width: 52px; text-align: center; }
+
+    /* ── read aloud (app.js ttsReadAt): the block, and the sentence being read ── */
+    #output .tts-block { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+    #output .tts-reading { background: color-mix(in srgb, var(--accent) 32%, transparent); }
+    #tts-stop {
+      position: fixed; left: 50%; bottom: 30%; transform: translateX(-50%);
+      z-index: 60; padding: 10px 18px; border-radius: 20px; border: none;
+      background: var(--accent); color: var(--bg); font-size: 14px;
+      font-family: var(--font); box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+    }
 
     .icon-btn {
       background: var(--bg3); color: var(--text);
@@ -859,6 +869,14 @@
       <button class="icon-btn" id="settings-size-up" title="Larger">+</button>
     </div>
     <div class="ctx-sep"></div>
+    <p class="settings-heading">Read aloud</p>
+    <button class="ctx-btn" id="settings-tts-toggle"></button>
+    <div id="settings-tts-rate-row" class="settings-step-row">
+      <button class="icon-btn" id="settings-tts-slower" title="Slower">−</button>
+      <span id="settings-tts-rate-value"></span>
+      <button class="icon-btn" id="settings-tts-faster" title="Faster">+</button>
+    </div>
+    <div class="ctx-sep"></div>
     <button class="ctx-btn ctx-dim" id="settings-close">Close</button>
   </div>
 </div>
@@ -912,6 +930,7 @@
 
   <div id="output" class="placeholder">Select a pane above.</div>
   <div id="swipe-hint" aria-hidden="true"></div>
+  <button id="tts-stop" style="display:none">■ Stop reading</button>
 
   <div id="statusline">
     <div id="statusline-left"></div>

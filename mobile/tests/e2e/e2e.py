@@ -10,6 +10,7 @@ To add a scenario, write a function decorated with @scenario that drives
 browser session, so each must leave the UI as it found it: terminal
 keyboard mode, key bar closed, pane 0 selected, text box empty.
 """
+import json
 import os
 import subprocess
 import sys
@@ -21,6 +22,27 @@ from playwright.sync_api import sync_playwright
 WORK = os.path.expanduser("~/e2e")
 LOGGER = os.path.join(WORK, "logger.py")
 PORT = "8443"
+
+# Stands in for speechSynthesis: records each utterance (text and rate) and
+# each cancel on <html data-tts-log>, readable through a locator (the app's
+# CSP rules out evaluating JS to read it). Each utterance "takes" 500ms.
+TTS_MOCK = r"""
+(() => {
+  const log = [];
+  const write = () => document.documentElement.setAttribute('data-tts-log', JSON.stringify(log));
+  let timer = 0;
+  class Utterance { constructor(text) { this.text = text; } }
+  const synth = {
+    speak(u) { log.push({ t: u.text, r: u.rate }); write();
+               timer = setTimeout(() => u.onend && u.onend(), 500); },
+    cancel() { clearTimeout(timer); log.push('CANCEL'); write(); },
+    resume() {}, pause() {}, getVoices() { return []; },
+    addEventListener() {}, speaking: false,
+  };
+  Object.defineProperty(window, 'speechSynthesis', { value: synth, configurable: true });
+  Object.defineProperty(window, 'SpeechSynthesisUtterance', { value: Utterance, configurable: true });
+})();
+"""
 
 LOGGER_SRC = r"""
 import os, sys, tty
@@ -89,6 +111,7 @@ def start_backend():
 def open_ui(browser, url, banner):
     ctx = browser.new_context(ignore_https_errors=True, viewport={"width": 390, "height": 844},
                               has_touch=True, is_mobile=True)
+    ctx.add_init_script(TTS_MOCK)
     page = ctx.new_page()
     page.goto(url)
     wait_output(page, banner, timeout=20000)
@@ -481,6 +504,191 @@ def terminal_mode_sideways_scroll_is_not_a_swipe(ui, p0, p1):
     wait_output(ui, p0.banner)
     with open(tty, "w") as f:
         f.write("\x1b[2J\x1b[H" + p0.banner + "\r\n")
+
+
+TTS_SAMPLE = [
+    "user@host:~$ echo hi",
+    "hi there friend. How are you?",
+    "⏺ I updated the parser. It now handles tabs.",
+    "  Second line of the same sentence",
+    "  continues here.",
+    "  +-+-+ ---- ===",
+    "",
+    "⏺ Bash(git status)",
+    "  ⎿  On branch master",
+    "     nothing to commit",
+    "",
+    "⏺ One. Two. Three. Four. Five. Six.",
+    "╭──────╮",
+]
+
+
+def tts_log(ui):
+    raw = ui.locator("html").get_attribute("data-tts-log")
+    return json.loads(raw) if raw else []
+
+
+def tts_spoken_since(ui, mark, settle=0.0, timeout=8.0):
+    """Utterances logged after index `mark`, once reading has finished."""
+    time.sleep(settle)
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if ui.locator("#tts-stop").is_hidden():
+            break
+        time.sleep(0.1)
+    return tts_log(ui)[mark:]
+
+
+def triple_tap(ui, text):
+    # The latest copy: earlier scenarios' output can still be in scrollback.
+    # Reading scrolls #output to follow the highlight, so a later sample can
+    # sit below the fold; bring it into view like a user would.
+    line = ui.locator("#output > span", has_text=text).last
+    line.scroll_into_view_if_needed()
+    time.sleep(0.2)
+    box = line.bounding_box()
+    touch = Touch(ui)
+    # #output may be scrolled sideways (an earlier Terminal-mode scenario
+    # leaves it at the right edge), so tap inside the visible part of it.
+    out = ui.locator("#output").bounding_box()
+    x = max(box["x"], out["x"]) + 20
+    y = box["y"] + box["height"] / 2
+    for _ in range(3):
+        touch.cdp.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": x, "y": y}]})
+        time.sleep(0.04)
+        touch.cdp.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+        time.sleep(0.12)
+
+
+def set_tts(ui, on, rate_steps=0):
+    ui.tap("#btn-settings")
+    ui.wait_for_selector("#settings-tts-toggle", state="visible", timeout=3000)
+    def toggle():
+        if ui.locator("#settings-tts-toggle").inner_text().startswith("✓") != on:
+            ui.tap("#settings-tts-toggle")
+    if on:
+        toggle()
+    # The speed row only shows while read aloud is on.
+    for _ in range(abs(rate_steps)):
+        ui.tap("#settings-tts-faster" if rate_steps > 0 else "#settings-tts-slower")
+    if not on:
+        toggle()
+    ui.tap("#settings-close")
+
+
+def write_sample(p0):
+    tty = tmux_fmt("e2e.0", "#{pane_tty}")
+    with open(tty, "w") as f:
+        f.write("\x1b[2J\x1b[H" + "\r\n".join(TTS_SAMPLE) + "\r\n")
+    return tty
+
+
+def restore_pane0(tty, p0):
+    with open(tty, "w") as f:
+        f.write("\x1b[2J\x1b[H" + p0.banner + "\r\n")
+
+
+@scenario
+def read_aloud_is_off_until_enabled(ui, p0, p1):
+    tty = write_sample(p0)
+    try:
+        ui.locator("#output", has_text="continues here.").wait_for(timeout=5000)
+        mark = len(tts_log(ui))
+        triple_tap(ui, "Second line")
+        if tts_spoken_since(ui, mark, settle=0.8):
+            raise AssertionError("read aloud spoke while disabled")
+    finally:
+        restore_pane0(tty, p0)
+
+
+@scenario
+def read_aloud_reads_the_tapped_block(ui, p0, p1):
+    tty = write_sample(p0)
+    set_tts(ui, True)
+    try:
+        ui.locator("#output", has_text="continues here.").wait_for(timeout=5000)
+        cases = [
+            ("Second line", ["I updated the parser.", "It now handles tabs.",
+                             "Second line of the same sentence continues here."]),
+            ("nothing to commit", ["Bash: git status"]),
+            ("hi there", ["echo hi", "hi there friend.", "How are you?"]),
+        ]
+        for tap_on, want in cases:
+            mark = len(tts_log(ui))
+            triple_tap(ui, tap_on)
+            got = tts_spoken_since(ui, mark, settle=0.3)
+            texts = [g["t"] for g in got if g != "CANCEL"]
+            if texts != want:
+                raise AssertionError(f"tapping {tap_on!r} spoke {texts!r}, expected {want!r}")
+            if any(g["r"] != 1.2 for g in got if g != "CANCEL"):
+                raise AssertionError(f"expected rate 1.2, got {got!r}")
+        if ui.locator(".tts-block, .tts-reading").count():
+            raise AssertionError("highlight left behind after reading")
+    finally:
+        set_tts(ui, False)
+        restore_pane0(tty, p0)
+    expect(p0, b"")
+
+
+@scenario
+def read_aloud_highlights_and_triple_tap_stops(ui, p0, p1):
+    tty = write_sample(p0)
+    set_tts(ui, True)
+    try:
+        ui.locator("#output", has_text="Four. Five.").wait_for(timeout=5000)
+        mark = len(tts_log(ui))
+        triple_tap(ui, "Four. Five.")
+        ui.wait_for_selector("#tts-stop", state="visible", timeout=2000)
+        if ui.locator("#output .tts-reading", has_text="Four. Five.").count() < 1:
+            raise AssertionError("the line being read isn't highlighted")
+        time.sleep(0.6)                      # into the second sentence
+        triple_tap(ui, "Four. Five.")        # stop
+        ui.wait_for_selector("#tts-stop", state="hidden", timeout=2000)
+        got = tts_log(ui)[mark:]
+        spoken = [g for g in got if g != "CANCEL"]
+        if not (1 <= len(spoken) < 6) or got[-1] != "CANCEL":
+            raise AssertionError(f"triple tap didn't stop reading: {got!r}")
+        time.sleep(1.2)
+        if len(tts_log(ui)) != mark + len(got):
+            raise AssertionError("kept speaking after stop")
+        if ui.locator(".tts-block, .tts-reading").count():
+            raise AssertionError("highlight left behind after stop")
+        # The Stop pill stops it too.
+        triple_tap(ui, "Four. Five.")
+        ui.wait_for_selector("#tts-stop", state="visible", timeout=2000)
+        ui.tap("#tts-stop")
+        ui.wait_for_selector("#tts-stop", state="hidden", timeout=2000)
+    finally:
+        set_tts(ui, False)
+        restore_pane0(tty, p0)
+
+
+@scenario
+def read_aloud_settings_persist(ui, p0, p1):
+    set_tts(ui, True, rate_steps=2)          # 1.2 -> 1.4
+    try:
+        ui.reload()
+        wait_output(ui, p0.banner, timeout=20000)
+        ui.tap("#btn-settings")
+        ui.wait_for_selector("#settings-tts-toggle", state="visible", timeout=3000)
+        if not ui.locator("#settings-tts-toggle").inner_text().startswith("✓"):
+            raise AssertionError("read aloud didn't stay enabled across a reload")
+        rate = ui.locator("#settings-tts-rate-value").inner_text()
+        if rate != "1.4×":
+            raise AssertionError(f"speed after reload is {rate!r}, expected 1.4×")
+        ui.tap("#settings-close")
+        tty = write_sample(p0)
+        try:
+            ui.locator("#output", has_text="hi there").wait_for(timeout=5000)
+            mark = len(tts_log(ui))
+            triple_tap(ui, "hi there")
+            got = [g for g in tts_spoken_since(ui, mark, settle=0.3) if g != "CANCEL"]
+            if not got or any(g["r"] != 1.4 for g in got):
+                raise AssertionError(f"expected rate 1.4, got {got!r}")
+        finally:
+            restore_pane0(tty, p0)
+    finally:
+        set_tts(ui, False, rate_steps=-2)
 
 
 def main(filters):

@@ -18,6 +18,18 @@ lost, just relocated to where all distributions can use it.
 
 byobu (7.23) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
 
+  * trustmux/pwa: read aloud, opt in under Settings. Triple tap a spot
+    in the output and the block it belongs to is read with the phone's
+    own on-device voice, one sentence at a time, highlighting the
+    sentence being read. A block runs from the nearest break above to
+    the next one below: a shell prompt (the command and its output), or
+    Claude Code's response and tool-call markers. Box-drawing, tool
+    output and symbol-heavy lines (diffs, code, tables) are skipped, and
+    lines wrapped at the screen width are joined back into sentences.
+    Another triple tap, the Stop pill, switching context or leaving the
+    app stops it. The on/off setting and the speed (0.8x to 2x, default
+    1.2x) are kept on the device
+
   * trustmux/pwa: double swipe to move between contexts: two quick
     swipes left go to the next pane, two right to the previous, the
     same as the header's arrows. The first swipe shows a faint chevron.

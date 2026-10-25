@@ -741,6 +741,8 @@ function rebuildPaneTree() {
 }
 
 function navigateTo(sessionId, windowId, paneId) {
+  // Reading aloud belongs to the pane it was started in.
+  ttsStop();
   // Save departing pane's rendered content + scroll position + keyboard mode.
   // The composition ghost is view state, never pane content: strip it before
   // the innerHTML read so it cannot be cached and replayed on a later switch.
@@ -1073,6 +1075,7 @@ function renderOutput(text, scrollToBottom) {
   // scroll so scrollHeight includes it.
   output.replaceChildren(frag);
   _ghostSync();
+  _ttsAfterRender();
   if (scrollToBottom) scrollOutputToBottom();
 }
 
@@ -1126,6 +1129,7 @@ function applyPatch(ops) {
     output.replaceChild(_renderLine(_lines[_lines.length - 1], false), lastEl);
   }
   _ghostSync();
+  _ttsAfterRender();
   return true;
 }
 
@@ -2025,6 +2029,350 @@ function navigateRelativeWindow(delta) {
   const p = firstLivePaneInWindow(next);
   if (p) navigateTo(s.id, next.id, p.id);
 }
+
+// ── read aloud (triple tap, opt-in in Settings) ────────────────────────────
+// Triple tap a spot in the output and the block it belongs to is read aloud
+// with the browser's speechSynthesis (the phone's own on-device voice), one
+// sentence at a time, with the sentence being read highlighted. Another
+// triple tap, the Stop pill, switching context or leaving the app stops it.
+//
+// A block runs from the nearest break above the tapped line to the next
+// break below it. Breaks:
+//   - a shell prompt line (starts a block: the command and its output);
+//   - Claude Code's ⏺ (a response or tool call) and "> " (your message);
+//   - rules, box edges, Claude's input box and its "✻ Thinking…" status
+//     line (never part of a block).
+// Before speaking, terminal decoration is dropped: box-drawing, markers,
+// Claude's ⎿ tool output (a tool call reads as its one-line summary), and
+// lines that are mostly symbols (diffs, code, tables). Lines a program
+// wrapped at the screen width are joined back into sentences.
+//
+// The parsing helpers below are pure (strings in, strings out) so the e2e
+// tests can check exactly what gets spoken.
+const TTS_ENABLED_KEY = 'tts-enabled';
+const TTS_RATE_KEY    = 'tts-rate';
+const TTS_RATE_MIN = 0.8, TTS_RATE_MAX = 2.0, TTS_RATE_DEFAULT = 1.2;
+const TTS_MAX_SENTENCES = 60;
+const TTS_SUPPORTED = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+
+let ttsEnabled = TTS_SUPPORTED && localStorage.getItem(TTS_ENABLED_KEY) === '1';
+let ttsRate = parseFloat(localStorage.getItem(TTS_RATE_KEY));
+if (!(ttsRate >= TTS_RATE_MIN && ttsRate <= TTS_RATE_MAX)) ttsRate = TTS_RATE_DEFAULT;
+
+function ttsPlain(raw) {
+  return String(raw)
+    .replace(/\x1b\][^\x07\x1b]*(\x07|\x1b\\)/g, '')   // OSC
+    .replace(/\x1b\[[0-?]*[ -\/]*[@-~]/g, '')          // CSI
+    .replace(/\x1b[@-_]/g, '')                         // other escapes
+    .replace(/[\x00-\x08\x0b-\x1f\x7f]/g, '');
+}
+
+var _TTS_SHELLS = new Set(['bash', 'zsh', 'sh', 'dash', 'fish', 'ksh', 'tcsh', 'csh', 'mksh']);
+// Learned per pane from the cursor line while a shell waits for input:
+// { stem, term }, e.g. { stem: 'kirkland@host', term: '$' }.
+var _ttsPrompts = new Map();
+
+function _ttsLearnPrompt() {
+  const p = currentPaneObj();
+  if (!p || !_lines || !_TTS_SHELLS.has(p.command)) return;
+  if (!Number.isInteger(_cursorFromEnd) || !Number.isInteger(_cursorX)) return;
+  const realLast = _lines.length - 1 - (_lines[_lines.length - 1] === '' ? 1 : 0);
+  const line = _lines[realLast - _cursorFromEnd];
+  if (line === undefined) return;
+  const prompt = [...ttsPlain(line)].slice(0, _cursorX).join('').trimEnd();
+  const term = prompt.slice(-1);
+  if (!prompt || !'$#%>❯➜»λ'.includes(term)) return;
+  const stem = prompt.split(/[:\s]/)[0];
+  if (stem.length >= 2 && stem !== term) _ttsPrompts.set(p.id, { stem, term });
+}
+
+// The command typed at a prompt line, or null if the line is no prompt.
+function ttsPromptCommand(line, prompt) {
+  if (prompt && line.startsWith(prompt.stem)) {
+    const i = line.indexOf(prompt.term + ' ', prompt.stem.length);
+    if (i >= 0) return line.slice(i + 2).trim();
+    if (line.trimEnd().endsWith(prompt.term)) return '';
+  }
+  let m = line.match(/^[\w.-]+@[\w.-]+[:\s][^$#%]*[$#%](?: (.*)|$)/);
+  if (m) return (m[1] || '').trim();
+  m = line.match(/^\s*[❯➜λ»](?:\s+\S+\s+[❯$%#]|\s)?(?: (.*)|$)/);
+  if (m) return (m[1] || '').trim();
+  return null;
+}
+
+function _ttsIsBlockStart(line, prompt) {
+  return /^\s*[⏺●]\s/.test(line) || /^\s*>\s\S/.test(line)
+    || ttsPromptCommand(line, prompt) !== null;
+}
+
+function _ttsIsBoundary(line) {
+  if (/^\s*[╭╰]/.test(line) || /^\s*│\s*>/.test(line)) return true;
+  if (/^\s*[✻✳✶✢✽·*]\s+\S.*(…|\.\.\.)/.test(line)) return true;
+  const t = line.trim();
+  return t.length >= 3 && /^[─━═╌┄\-_=]+$/.test(t);
+}
+
+// [start, end) of the block holding line idx, or null on a break line.
+function ttsFindBlock(lines, idx, prompt) {
+  if (idx < 0 || idx >= lines.length || _ttsIsBoundary(lines[idx])) return null;
+  let start = 0;
+  for (let i = idx; i >= 0; i--) {
+    if (_ttsIsBlockStart(lines[i], prompt)) { start = i; break; }
+    if (_ttsIsBoundary(lines[i])) { start = i + 1; break; }
+  }
+  let end = lines.length;
+  for (let j = idx + 1; j < lines.length; j++) {
+    if (_ttsIsBlockStart(lines[j], prompt) || _ttsIsBoundary(lines[j])) { end = j; break; }
+  }
+  return { start, end };
+}
+
+// The sentences to speak for lines [start, end): [{ text, lines: [idx...] }].
+function ttsSentences(lines, start, end, prompt) {
+  const tool = (lines[start] || '').match(/^\s*[⏺●]\s+([A-Za-z][\w ]*)\((.*)\)\s*$/);
+  if (tool) {
+    const args = tool[2].length > 100 ? tool[2].slice(0, 100) + '…' : tool[2];
+    const name = tool[1].trim();
+    return [{ text: args ? `${name}: ${args}` : name, lines: [start] }];
+  }
+  const paras = [];
+  let para = [];
+  const flush = () => { if (para.length) paras.push(para); para = []; };
+  let inToolOutput = false;
+  let skipped = 0;
+  for (let i = start; i < end; i++) {
+    let t = lines[i];
+    if (/^\s*⎿/.test(t)) { inToolOutput = true; flush(); continue; }
+    if (inToolOutput && /^\s{4,}\S/.test(t)) continue;
+    inToolOutput = false;
+    const tableRow = /[│┃║]/.test(t);
+    const cmd = ttsPromptCommand(t, prompt);
+    if (cmd !== null) {
+      flush();
+      if (cmd) paras.push([{ text: cmd, line: i }]);
+      continue;
+    }
+    t = t.replace(/^\s*[⏺●]\s/, '').replace(/^\s*>\s/, '')
+         .replace(/[│┃║╭╮╰╯├┤┬┴┼─━═]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!t) { flush(); continue; }
+    const letters = (t.match(/\p{L}/gu) || []).length;
+    const visible = t.replace(/\s/g, '').length;
+    if (letters === 0 || letters / visible < 0.5) { skipped++; flush(); continue; }
+    if (tableRow || /^([-*•◦▪]|\d+[.)])\s/.test(t)) {
+      flush();
+      t = t.replace(/^[-*•◦▪]\s/, '');
+    }
+    para.push({ text: t, line: i });
+    if (tableRow) flush();          // one table row per paragraph
+  }
+  flush();
+
+  const out = [];
+  for (const p of paras) {
+    let joined = '';
+    const spans = [];
+    for (const { text, line } of p) {
+      if (joined) joined += ' ';
+      spans.push({ from: joined.length, to: joined.length + text.length, line });
+      joined += text;
+    }
+    // A sentence ends at . ! or ? followed by a space and a capital or
+    // digit, so "e.g. this" and "1.2" stay whole.
+    const ends = /[.!?]["')\]]*\s+(?=[A-Z0-9"'(\[])/g;
+    let from = 0, m;
+    const cut = to => {
+      const text = joined.slice(from, to).trim();
+      if (text) {
+        const lns = spans.filter(sp => sp.from < to && sp.to > from).map(sp => sp.line);
+        out.push({ text, lines: lns });
+      }
+      from = to;
+    };
+    while ((m = ends.exec(joined))) cut(m.index + m[0].length);
+    cut(joined.length);
+  }
+  if (out.length > TTS_MAX_SENTENCES) {
+    const rest = new Set(out.slice(TTS_MAX_SENTENCES).flatMap(x => x.lines)).size;
+    out.length = TTS_MAX_SENTENCES;
+    out.push({ text: `And ${rest} more lines.`, lines: [] });
+  }
+  return out;
+}
+
+// ── speaking ──
+// var, not let/const: renderOutput and navigateTo call into this section,
+// and either can run before the script reaches it.
+var ttsStopBtn = document.getElementById('tts-stop');
+var _tts = null;     // { gen, items, i, start, origStart, raw } while reading
+var _ttsGen = 0;
+var _ttsNoteTimer = 0;
+
+function ttsSpeaking() { return !!_tts; }
+
+function ttsStop() {
+  if (!ttsStopBtn || (!_tts && ttsStopBtn.style.display === 'none')) return;
+  _ttsGen++;
+  _tts = null;
+  try { speechSynthesis.cancel(); } catch (_) {}
+  _ttsPaint();
+  ttsStopBtn.style.display = 'none';
+}
+
+function _ttsNote(text) {
+  ttsStopBtn.textContent = text;
+  ttsStopBtn.style.display = '';
+  clearTimeout(_ttsNoteTimer);
+  _ttsNoteTimer = setTimeout(() => { if (!_tts) ttsStopBtn.style.display = 'none'; }, 1500);
+}
+
+function _ttsVoice() {
+  const voices = speechSynthesis.getVoices() || [];
+  const lang = (navigator.language || 'en').toLowerCase();
+  const base = lang.split('-')[0];
+  const ok = v => v.lang && v.lang.toLowerCase().replace('_', '-');
+  return voices.find(v => ok(v) === lang && v.localService)
+    || voices.find(v => ok(v) === lang)
+    || voices.find(v => ok(v) && ok(v).startsWith(base) && v.localService)
+    || voices.find(v => ok(v) && ok(v).startsWith(base))
+    || null;
+}
+
+function ttsReadAt(lineIdx) {
+  ttsStop();
+  if (!_lines || !currentPane) return;
+  const plain = _lines.map(ttsPlain);
+  const prompt = _ttsPrompts.get(currentPane) || null;
+  const block = ttsFindBlock(plain, lineIdx, prompt);
+  const items = block ? ttsSentences(plain, block.start, block.end, prompt) : [];
+  if (!items.length) { _ttsNote('Nothing to read here'); return; }
+  const gen = ++_ttsGen;
+  _tts = { gen, items, i: 0, start: block.start, origStart: block.start,
+           raw: _lines.slice(block.start, block.end) };
+  ttsStopBtn.textContent = '■ Stop reading';
+  ttsStopBtn.style.display = '';
+  try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch (_) {}
+  _ttsSpeakNext(gen);
+}
+
+function _ttsSpeakNext(gen) {
+  if (!_tts || _tts.gen !== gen) return;
+  if (_tts.i >= _tts.items.length) { ttsStop(); return; }
+  const item = _tts.items[_tts.i];
+  const u = new SpeechSynthesisUtterance(item.text);
+  u.rate = ttsRate;
+  u.lang = navigator.language || 'en-US';
+  const v = _ttsVoice();
+  if (v) u.voice = v;
+  const next = () => {
+    if (!_tts || _tts.gen !== gen) return;
+    _tts.i++;
+    _ttsSpeakNext(gen);
+  };
+  u.onend = next;
+  u.onerror = next;
+  _ttsPaint(true);
+  speechSynthesis.speak(u);
+}
+
+// Where the block is now: renders and patches move lines (output scrolling
+// off the top, a spinner line inserted), so find the block's lines again,
+// nearest to where they were. null when they are gone.
+function _ttsLocate() {
+  if (!_tts || !_lines) return null;
+  const n = _tts.raw.length;
+  const at = i => { for (let k = 0; k < n; k++) if (_lines[i + k] !== _tts.raw[k]) return false; return true; };
+  if (at(_tts.start)) return _tts.start;
+  let best = null;
+  for (let i = 0; i + n <= _lines.length; i++) {
+    if (at(i) && (best === null || Math.abs(i - _tts.start) < Math.abs(best - _tts.start))) best = i;
+  }
+  if (best !== null) _tts.start = best;
+  return best;
+}
+
+function _ttsPaint(scroll) {
+  for (const el of output.querySelectorAll('.tts-block, .tts-reading')) {
+    el.classList.remove('tts-block', 'tts-reading');
+  }
+  if (!_tts) return;
+  const base = _ttsLocate();
+  if (base === null) return;
+  const kids = output.children;
+  // Item line indices were taken when reading started; shift them with it.
+  const shift = base - _tts.origStart;
+  for (let k = 0; k < _tts.raw.length; k++) kids[base + k]?.classList.add('tts-block');
+  const item = _tts.items[_tts.i];
+  let first = null;
+  for (const ln of (item ? item.lines : [])) {
+    const el = kids[ln + shift];
+    if (el) { el.classList.add('tts-reading'); first = first || el; }
+  }
+  if (scroll && first && !_scrollMode) first.scrollIntoView({ block: 'nearest' });
+}
+
+function _ttsAfterRender() {
+  if (!_ttsPrompts) return;
+  _ttsLearnPrompt();
+  if (_tts) _ttsPaint();
+}
+
+ttsStopBtn.addEventListener('click', ttsStop);
+document.addEventListener('visibilitychange', () => { if (document.hidden) ttsStop(); });
+
+// ── triple tap ──
+// Three taps within TTS_TAP_GAP_MS of each other, none moving more than
+// TTS_TAP_SLOP px from the first. The line is taken from the first tap:
+// the first tap can open the keyboard (direct mode), which moves the text
+// under the finger before the third tap lands.
+const TTS_TAP_GAP_MS = 400, TTS_TAP_SLOP = 16, TTS_TAP_HOLD_MS = 350;
+let _ttsTaps = [];
+let _ttsDown = null;
+
+function _ttsLineAt(target, y) {
+  const kids = output.children;
+  let el = target && target.closest ? target.closest('#output > span') : null;
+  if (el && el.id === 'compose-ghost') el = null;
+  if (el) return Array.prototype.indexOf.call(kids, el);
+  for (let i = 0; i < kids.length; i++) {
+    const r = kids[i].getBoundingClientRect();
+    if (y >= r.top && y < r.bottom) return i;
+  }
+  return -1;
+}
+
+output.addEventListener('pointerdown', e => {
+  if (!ttsEnabled || !e.isPrimary) return;
+  _ttsDown = { x: e.clientX, y: e.clientY, t: performance.now(),
+               line: _ttsLineAt(e.target, e.clientY) };
+});
+output.addEventListener('pointercancel', () => { _ttsDown = null; _ttsTaps = []; });
+output.addEventListener('pointerup', e => {
+  const d = _ttsDown;
+  _ttsDown = null;
+  if (!ttsEnabled || !d || !e.isPrimary) return;
+  const now = performance.now();
+  if (now - d.t > TTS_TAP_HOLD_MS || Math.hypot(e.clientX - d.x, e.clientY - d.y) > TTS_TAP_SLOP) {
+    _ttsTaps = [];
+    return;
+  }
+  const last = _ttsTaps[_ttsTaps.length - 1];
+  const first = _ttsTaps[0];
+  if (!last || now - last.t > TTS_TAP_GAP_MS
+      || Math.hypot(d.x - first.x, d.y - first.y) > TTS_TAP_SLOP) {
+    _ttsTaps = [];
+  }
+  _ttsTaps.push({ x: d.x, y: d.y, t: now, line: d.line });
+  if (_ttsTaps.length < 3) return;
+  const line = _ttsTaps[0].line;
+  _ttsTaps = [];
+  try { window.getSelection().removeAllRanges(); } catch (_) {}
+  if (ttsSpeaking()) ttsStop();
+  else ttsReadAt(line);
+});
+// Desktop double/triple click would select a word or line first.
+output.addEventListener('mousedown', e => {
+  if (ttsEnabled && e.detail > 1) e.preventDefault();
+});
 
 // ── double swipe: same as the ‹ › buttons ────────────────────────────────
 // A single horizontal swipe used to navigate, and was removed because it
@@ -2941,7 +3289,42 @@ function renderSettings() {
     settingsFontList.appendChild(btn);
   }
   settingsSizeValue.textContent = fontSize + 'px';
+  renderTtsSettings();
 }
+
+const settingsTtsToggle = document.getElementById('settings-tts-toggle');
+const settingsTtsRate   = document.getElementById('settings-tts-rate-row');
+const settingsTtsValue  = document.getElementById('settings-tts-rate-value');
+
+function renderTtsSettings() {
+  if (!TTS_SUPPORTED) {
+    settingsTtsToggle.textContent = 'Read aloud: not supported in this browser';
+    settingsTtsToggle.disabled = true;
+    settingsTtsRate.style.display = 'none';
+    return;
+  }
+  settingsTtsToggle.className = 'ctx-btn' + (ttsEnabled ? ' ctx-current' : '');
+  settingsTtsToggle.textContent = (ttsEnabled ? '✓ ' : '') + 'Triple tap reads aloud';
+  settingsTtsRate.style.display = ttsEnabled ? '' : 'none';
+  settingsTtsValue.textContent = ttsRate.toFixed(1) + '×';
+}
+
+settingsTtsToggle.addEventListener('click', () => {
+  ttsEnabled = !ttsEnabled;
+  localStorage.setItem(TTS_ENABLED_KEY, ttsEnabled ? '1' : '0');
+  if (!ttsEnabled) ttsStop();
+  renderTtsSettings();
+});
+
+function stepTtsRate(delta) {
+  const next = Math.round(Math.min(TTS_RATE_MAX, Math.max(TTS_RATE_MIN, ttsRate + delta)) * 10) / 10;
+  if (next === ttsRate) return;
+  ttsRate = next;
+  localStorage.setItem(TTS_RATE_KEY, String(next));
+  renderTtsSettings();
+}
+document.getElementById('settings-tts-slower').addEventListener('click', () => stepTtsRate(-0.1));
+document.getElementById('settings-tts-faster').addEventListener('click', () => stepTtsRate(0.1));
 
 function stepFontSize(delta) {
   const next = Math.min(FONT_SIZE_MAX, Math.max(FONT_SIZE_MIN, fontSize + delta));
