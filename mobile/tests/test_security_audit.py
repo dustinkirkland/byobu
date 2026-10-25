@@ -140,12 +140,29 @@ class TestPairCrossSiteAndBudget(AsyncHTTPTestCase):
         self.assertEqual(bm._pair_attempts_by_ip, {})
 
     def test_user_agent_is_sanitised_before_being_stored(self):
+        # Tab and obs-text are legal in a header value, so these reach the
+        # handler on every tornado; anything outside printable ASCII becomes
+        # "?" before `trustmux unpair` prints the label on a terminal.
         code = bm._generate_pair_code()
         with patch('trustmux._daemon._save_tokens'):
-            resp = self._post(code, **{'User-Agent': 'Evil\x1b[2J\x07Agent/1.0 \xe9'})
+            resp = self._post(code, **{'User-Agent': 'Evil\tAgent/1.0 \xe9'})
         self.assertEqual(resp.code, 200)
         label = next(iter(bm._sessions.values()))['label']
-        self.assertEqual(label, 'Evil?[2J?Agent/1.0 ?')
+        self.assertEqual(label, 'Evil?Agent/1.0 ?')
+
+    def test_user_agent_control_characters_never_stored(self):
+        # tornado >= 6.5 refuses a header with control characters outright
+        # (400, nothing paired); older tornado passes it through and the
+        # handler must replace them. Either way no escape sequence is stored.
+        code = bm._generate_pair_code()
+        with patch('trustmux._daemon._save_tokens'):
+            resp = self._post(code, **{'User-Agent': 'Evil\x1b[2J\x07Agent/1.0'})
+        if resp.code == 400:
+            self.assertEqual(bm._sessions, {})
+        else:
+            self.assertEqual(resp.code, 200)
+            label = next(iter(bm._sessions.values()))['label']
+            self.assertEqual(label, 'Evil?[2J?Agent/1.0')
 
 
 class TestCsp(AsyncHTTPTestCase):
