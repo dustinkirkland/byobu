@@ -2026,13 +2026,70 @@ function navigateRelativeWindow(delta) {
   if (p) navigateTo(s.id, next.id, p.id);
 }
 
-// ── touch swipe tracking (used for swipe nav) ─────────────────────────────
-let _touchX = 0, _touchY = 0;
+// ── double swipe: same as the ‹ › buttons ────────────────────────────────
+// A single horizontal swipe used to navigate, and was removed because it
+// fired during ordinary scrolling. Two things keep this one out of the way:
+// - It takes two quick swipes in the same direction.
+// - A swipe that scrolled #output sideways doesn't count. In Terminal mode
+//   (wrap off) long lines make #output scroll horizontally, so there a swipe
+//   only counts once the content is at that edge (or has nothing to
+//   scroll); in Aa mode (wrap on) there is normally nothing to scroll.
+// Swipe left is next (like ›), swipe right is previous (like ‹).
+const SWIPE_MIN_DX    = 50;   // px of horizontal travel
+const SWIPE_RATIO     = 2;    // horizontal travel / vertical travel
+const SWIPE_MAX_MS    = 500;  // a flick, not a slow drag or text selection
+const SWIPE_DOUBLE_MS = 700;  // max gap between the two swipes
+
+let _swipe = null;        // the touch in progress
+let _swipeArmed = null;   // { dir, t } after a first qualifying swipe
 
 output.addEventListener('touchstart', e => {
-  _touchX = e.touches[0].clientX;
-  _touchY = e.touches[0].clientY;
+  if (e.touches.length !== 1) { _swipe = null; return; }
+  const t = e.touches[0];
+  _swipe = { x: t.clientX, y: t.clientY, t: performance.now(),
+             scrollLeft: output.scrollLeft, multi: false };
 }, { passive: true });
+
+output.addEventListener('touchmove', e => {
+  if (_swipe && e.touches.length !== 1) _swipe.multi = true;
+}, { passive: true });
+
+output.addEventListener('touchcancel', () => { _swipe = null; }, { passive: true });
+
+output.addEventListener('touchend', e => {
+  const sw = _swipe;
+  _swipe = null;
+  if (!sw || sw.multi || e.touches.length) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - sw.x;
+  const dy = t.clientY - sw.y;
+  const now = performance.now();
+  const isSwipe = Math.abs(dx) >= SWIPE_MIN_DX
+    && Math.abs(dx) >= Math.abs(dy) * SWIPE_RATIO
+    && now - sw.t <= SWIPE_MAX_MS
+    && Math.abs(output.scrollLeft - sw.scrollLeft) < 1
+    && !String(window.getSelection() || '');
+  if (!isSwipe) return;
+  const dir = dx < 0 ? 1 : -1;
+  if (_swipeArmed && _swipeArmed.dir === dir && sw.t - _swipeArmed.t <= SWIPE_DOUBLE_MS) {
+    _swipeArmed = null;
+    navigateRelative(dir);
+  } else {
+    _swipeArmed = { dir, t: now };
+    _flashSwipeHint(dir);
+  }
+}, { passive: true });
+
+// A faint chevron on the side the next swipe will bring in, so the first
+// swipe visibly registered.
+const swipeHint = document.getElementById('swipe-hint');
+let _swipeHintTimer = 0;
+function _flashSwipeHint(dir) {
+  swipeHint.textContent = dir > 0 ? '›' : '‹';
+  swipeHint.className = dir > 0 ? 'show right' : 'show left';
+  clearTimeout(_swipeHintTimer);
+  _swipeHintTimer = setTimeout(() => { swipeHint.className = ''; }, SWIPE_DOUBLE_MS);
+}
 
 btnPrev.addEventListener('click', () => navigateRelative(-1));
 btnNext.addEventListener('click', () => navigateRelative(1));

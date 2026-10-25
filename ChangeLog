@@ -18,6 +18,13 @@ lost, just relocated to where all distributions can use it.
 
 byobu (7.23) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
 
+  * trustmux/pwa: double swipe to move between contexts: two quick
+    swipes left go to the next pane, two right to the previous, the
+    same as the header's arrows. The first swipe shows a faint chevron.
+    A swipe that scrolls a long line sideways (Terminal mode) doesn't
+    count, so it only navigates once the content is at that edge; the
+    single swipe removed in May fired during ordinary scrolling
+
   * trustmux/pwa: the header names your place as session / window, plus
     / pane only when the window is split. Sessions show their tmux
     number. Window and pane names now live in tmux, so a rename on

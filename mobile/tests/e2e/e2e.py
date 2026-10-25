@@ -378,6 +378,111 @@ def unsplit_window_has_no_pane_segment(ui, p0, p1):
         sh("tmux", "kill-window", "-t", "e2e:5", check=False)
 
 
+class Touch:
+    """Real touch input through CDP, so Chromium scrolls natively exactly as
+    it would under a finger (Playwright's own API has taps, not swipes)."""
+
+    def __init__(self, ui):
+        self.ui = ui
+        self.cdp = ui.context.new_cdp_session(ui)
+
+    def swipe(self, dx, dy=0, ms=180, steps=8):
+        box = self.ui.locator("#output").bounding_box()
+        x0 = box["x"] + box["width"] / 2 - dx / 2
+        y0 = box["y"] + box["height"] / 2
+        send = lambda kind, pts: self.cdp.send(
+            "Input.dispatchTouchEvent", {"type": kind, "touchPoints": pts})
+        send("touchStart", [{"x": x0, "y": y0}])
+        for i in range(1, steps + 1):
+            time.sleep(ms / 1000 / steps)
+            send("touchMove", [{"x": x0 + dx * i / steps, "y": y0 + dy * i / steps}])
+        send("touchEnd", [])
+        time.sleep(0.05)
+
+    def double(self, dx, gap=0.15):
+        self.swipe(dx)
+        time.sleep(gap)
+        self.swipe(dx)
+
+
+def showing(ui, pane):
+    return ui.locator("#output", has_text=pane.banner).count() == 1
+
+
+def assert_showing(ui, pane, still=1.0):
+    time.sleep(still)
+    if not showing(ui, pane):
+        raise AssertionError(f"expected to still be on pane {pane.index}")
+
+
+def set_wrap(ui, on):
+    label = ui.locator("#escape-popup-wrap").inner_text()
+    if label.startswith("✓") != on:
+        popup(ui, "#btn-escape", "#escape-popup-wrap")
+        time.sleep(0.3)
+
+
+@scenario
+def double_swipe_navigates_like_the_arrows(ui, p0, p1):
+    touch = Touch(ui)
+    set_wrap(ui, True)
+    try:
+        touch.double(-150)                   # swipe left twice: next
+        wait_output(ui, p1.banner)
+        touch.double(150)                    # swipe right twice: previous
+        wait_output(ui, p0.banner)
+    finally:
+        set_wrap(ui, False)
+    expect(p0, b"")
+    expect(p1, b"")
+
+
+@scenario
+def single_or_slow_or_vertical_swipes_do_not_navigate(ui, p0, p1):
+    touch = Touch(ui)
+    set_wrap(ui, True)
+    try:
+        touch.swipe(-150)                    # one swipe only
+        assert_showing(ui, p0)
+        touch.swipe(-150, ms=900)            # slow drag, twice
+        touch.swipe(-150, ms=900)
+        assert_showing(ui, p0)
+        touch.swipe(-60, dy=200)             # mostly vertical, twice
+        touch.swipe(-60, dy=200)
+        assert_showing(ui, p0)
+        touch.swipe(-150)                    # left then right: no pair
+        time.sleep(0.15)
+        touch.swipe(150)
+        assert_showing(ui, p0)
+    finally:
+        set_wrap(ui, False)
+
+
+@scenario
+def terminal_mode_sideways_scroll_is_not_a_swipe(ui, p0, p1):
+    # A line wider than the phone makes #output scroll sideways in
+    # Terminal mode (wrap off). Swipes that scroll it must not navigate;
+    # once it is scrolled to that edge, a double swipe does.
+    tty = tmux_fmt("e2e.0", "#{pane_tty}")
+    with open(tty, "w") as f:
+        f.write("\r\n" + "W" * 95 + "\r\n")
+    touch = Touch(ui)
+    set_wrap(ui, False)
+    ui.locator("#output", has_text="W" * 95).wait_for(timeout=5000)
+    time.sleep(1.5)
+    touch.double(-150)                       # scrolls the long line left
+    assert_showing(ui, p0)
+    for _ in range(6):                       # slow drags (never a swipe)
+        touch.swipe(-300, ms=900)            # to reach the right edge
+    time.sleep(1.0)
+    touch.double(-150)                       # at the edge: navigates
+    wait_output(ui, p1.banner)
+    ui.tap("#btn-prev")
+    wait_output(ui, p0.banner)
+    with open(tty, "w") as f:
+        f.write("\x1b[2J\x1b[H" + p0.banner + "\r\n")
+
+
 def main(filters):
     chosen = [s for s in SCENARIOS if not filters or any(f in s.__name__ for f in filters)]
     if not chosen:

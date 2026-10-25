@@ -387,6 +387,16 @@
     }
     #output.placeholder { white-space: normal; color: var(--term-dim); font-style: italic; }
 
+    /* ── double-swipe hint (app.js _flashSwipeHint): first swipe registered ── */
+    #swipe-hint {
+      position: fixed; top: 45%; z-index: 50; pointer-events: none;
+      font-size: 56px; line-height: 1; color: var(--accent);
+      opacity: 0; transition: opacity 0.15s;
+    }
+    #swipe-hint.show { opacity: 0.45; }
+    #swipe-hint.left { left: 12px; }
+    #swipe-hint.right { right: 12px; }
+
     /* ── direct-mode composition ghost (attached by _ghostSync in app.js) ──
        un-streamed tail of the text box shown at the end of the pane's last
        line; with composition streaming this is normally empty.
@@ -901,6 +911,7 @@
   </div>
 
   <div id="output" class="placeholder">Select a pane above.</div>
+  <div id="swipe-hint" aria-hidden="true"></div>
 
   <div id="statusline">
     <div id="statusline-left"></div>
