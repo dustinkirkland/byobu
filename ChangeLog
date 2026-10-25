@@ -18,6 +18,18 @@ lost, just relocated to where all distributions can use it.
 
 byobu (7.23) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
 
+  * trustmux/pwa: the header names your place as session / window, plus
+    / pane only when the window is split. Sessions show their tmux
+    number. Window and pane names now live in tmux, so a rename on
+    either side shows on the other within a couple of seconds:
+    renaming a window in Trustmux runs rename-window (an empty name
+    hands it back to automatic naming), and naming a pane sets its
+    tmux pane title (select-pane -T) with allow-set-title off, so
+    programs can't overwrite it. Pane names were previously kept only
+    in that one browser
+  * trustmux: window and session names starting with "-" are no longer
+    mistaken for tmux flags
+
 byobu (7.22) 2026-10-17  Dustin Kirkland <kirkland@ubuntu.com>
 
   * byobu-status: start fewer processes on every status tick. tmux

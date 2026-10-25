@@ -350,11 +350,14 @@ def tmux_list_windows(session_id: str) -> list[dict]:
 def tmux_list_panes(window_id: str) -> list[dict]:
     # pane_title is program-controlled (OSC 2) and may contain tabs, so it
     # goes last and the split is bounded to keep it from shifting pid/dead.
+    # allow-set-title is off exactly when the pane was given a name (see
+    # tmux_rename_pane), which is what makes its title a name and not just
+    # whatever the running program last set.
     raw = _tmux("list-panes", "-t", window_id, "-F",
-                "#{pane_id}\t#{pane_index}\t#{pane_active}\t#{pane_current_command}\t#{pane_pid}\t#{pane_dead}\t#{pane_title}")
+                "#{pane_id}\t#{pane_index}\t#{pane_active}\t#{pane_current_command}\t#{pane_pid}\t#{pane_dead}\t#{allow-set-title}\t#{pane_title}")
     panes = []
     for line in raw.splitlines():
-        parts = line.split("\t", 6)
+        parts = line.split("\t", 7)
         if len(parts) < 3:
             continue
         pane_id_str = parts[0]
@@ -366,7 +369,8 @@ def tmux_list_panes(window_id: str) -> list[dict]:
         cmd     = parts[3] if len(parts) > 3 else ""
         pid_str = parts[4] if len(parts) > 4 else ""
         dead    = parts[5] == "1" if len(parts) > 5 else False
-        title   = parts[6] if len(parts) > 6 else ""
+        named   = parts[6] == "0" if len(parts) > 6 else False
+        title   = parts[7] if len(parts) > 7 else ""
         if not dead and pid_str:
             cmd = _smarter_pane_name(pid_str, cmd)
         panes.append({
@@ -375,6 +379,7 @@ def tmux_list_panes(window_id: str) -> list[dict]:
             "active": active,
             "command": cmd,
             "title": title,
+            "named": named,
             "dead": dead,
         })
     return panes
@@ -588,11 +593,30 @@ def tmux_send_keys(pane_id: str, keys: str, enter: bool = True, literal: bool = 
             time.sleep(_PASTE_BURST_SETTLE)
         _tmux("send-keys", "-t", pane_id, "Enter")
 
+# "--" so a name starting with "-" isn't parsed as a flag.
 def tmux_rename_window(window_id: str, name: str) -> None:
-    _tmux("rename-window", "-t", window_id, name)
+    if name:
+        _tmux("rename-window", "-t", window_id, "--", name)
+    else:
+        # An empty name hands the window back to tmux's automatic naming
+        # (rename-window turned it off for this window).
+        _tmux("set-option", "-wu", "-t", window_id, "automatic-rename")
 
 def tmux_rename_session(session_id: str, name: str) -> None:
-    _tmux("rename-session", "-t", session_id, name)
+    _tmux("rename-session", "-t", session_id, "--", name)
+
+def tmux_rename_pane(pane_id: str, name: str) -> None:
+    """Name a pane through its tmux title, the same one `select-pane -T`
+    sets and pane-border-format shows, so it reads the same in tmux.
+    allow-set-title off keeps programs (OSC 2) from overwriting it; an
+    empty name unlocks the title again.
+    """
+    if name:
+        _tmux("select-pane", "-t", pane_id, "-T", name)
+        _tmux("set-option", "-p", "-t", pane_id, "allow-set-title", "off")
+    else:
+        _tmux("set-option", "-pu", "-t", pane_id, "allow-set-title")
+        _tmux("select-pane", "-t", pane_id, "-T", "")
 
 # ---------------------------------------------------------------------------
 # Byobu status line — reads pre-computed cache from /dev/shm
@@ -1323,6 +1347,13 @@ _BYOBU_METRIC_RE = re.compile(r'^[a-zA-Z0-9_]+$')
 def _valid_tmux_name(s: str) -> bool:
     return bool(s) and not _TMUX_NAME_BAD.search(s)
 
+_PANE_TITLE_BAD = re.compile(r'[\x00-\x1f\x7f]')
+
+def _valid_pane_title(s: str) -> bool:
+    # A pane title is never parsed as a target, so only control characters
+    # (which would garble the status line and pane borders) are refused.
+    return not _PANE_TITLE_BAD.search(s)
+
 
 def _diff_line_ops(old: list[str], new: list[str]) -> list[dict]:
     """Line-wise ops that turn old into new, for patch subscribers.
@@ -1834,11 +1865,26 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                 if not _valid_tmux_id(wid):
                     self._send({"type": "error", "message": "invalid window_id"})
                 else:
+                    # Empty is allowed: it restores automatic naming.
                     name = str(msg.get("name", "")).strip()[:128]
-                    if not name or not _valid_tmux_name(name):
+                    if name and not _valid_tmux_name(name):
                         self._send({"type": "error", "message": "invalid window name"})
                     else:
                         await asyncio.to_thread(tmux_rename_window, wid, name)
+                        sessions_list = await asyncio.to_thread(tmux_list_sessions)
+                        self._send({"type": "sessions", "data": sessions_list})
+
+            elif mtype == "rename_pane":
+                pid = msg.get("pane_id", "")
+                if not (_valid_tmux_id(pid) and pid.startswith("%")):
+                    self._send({"type": "error", "message": "invalid pane_id"})
+                else:
+                    # Empty is allowed: it clears the name.
+                    name = str(msg.get("name", "")).strip()[:128]
+                    if not _valid_pane_title(name):
+                        self._send({"type": "error", "message": "invalid pane name"})
+                    else:
+                        await asyncio.to_thread(tmux_rename_pane, pid, name)
                         sessions_list = await asyncio.to_thread(tmux_list_sessions)
                         self._send({"type": "sessions", "data": sessions_list})
 

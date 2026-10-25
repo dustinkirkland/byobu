@@ -97,42 +97,81 @@ class TestTmuxListPanes(unittest.TestCase):
             return bm.tmux_list_panes('@0')
 
     def test_parses_two_panes(self):
-        out = '%0\t0\t1\tbash\t1234\t0\tmain task\n%1\t1\t0\tvim\t5678\t1\t\n'
+        out = '%0\t0\t1\tbash\t1234\t0\t0\tmain task\n%1\t1\t0\tvim\t5678\t1\t1\t\n'
         panes = self._run(out)
         self.assertEqual(len(panes), 2)
         self.assertEqual(panes[0], {
             'id': '%0', 'index': 0, 'active': True,
-            'command': 'bash', 'title': 'main task', 'dead': False,
+            'command': 'bash', 'title': 'main task', 'named': True, 'dead': False,
         })
         self.assertEqual(panes[1], {
             'id': '%1', 'index': 1, 'active': False,
-            'command': 'vim', 'title': '', 'dead': True,
+            'command': 'vim', 'title': '', 'named': False, 'dead': True,
         })
 
     def test_tab_in_title_does_not_shift_fields(self):
-        out = '%0\t0\t1\tbash\t1234\t0\tfoo\tbar\n'
+        out = '%0\t0\t1\tbash\t1234\t0\t1\tfoo\tbar\n'
         panes = self._run(out)
         self.assertEqual(len(panes), 1)
         self.assertEqual(panes[0]['title'], 'foo\tbar')
+        self.assertFalse(panes[0]['named'])
         self.assertFalse(panes[0]['dead'])
 
     def test_empty_output(self):
         self.assertEqual(self._run(''), [])
 
     def test_skips_malformed_lines(self):
-        out = 'garbage\n%0\t0\t1\tbash\t123\t0\ttitle\n'
+        out = 'garbage\n%0\t0\t1\tbash\t123\t0\t1\ttitle\n'
         panes = self._run(out)
         self.assertEqual(len(panes), 1)
         self.assertEqual(panes[0]['id'], '%0')
 
     def test_active_flag_parsing(self):
-        out = '%5\t0\t1\tzsh\t999\t0\ttitle\n'
+        out = '%5\t0\t1\tzsh\t999\t0\t1\ttitle\n'
         panes = self._run(out)
         self.assertTrue(panes[0]['active'])
 
-        out = '%5\t0\t0\tzsh\t999\t0\ttitle\n'
+        out = '%5\t0\t0\tzsh\t999\t0\t1\ttitle\n'
         panes = self._run(out)
         self.assertFalse(panes[0]['active'])
+
+
+class TestTmuxRename(unittest.TestCase):
+    def _calls(self, fn, *args):
+        with patch.object(bm, '_tmux', return_value='') as t:
+            fn(*args)
+        return [c.args for c in t.call_args_list]
+
+    def test_window_name_after_double_dash(self):
+        self.assertEqual(self._calls(bm.tmux_rename_window, '@1', '-x'),
+                         [('rename-window', '-t', '@1', '--', '-x')])
+
+    def test_empty_window_name_restores_automatic_rename(self):
+        self.assertEqual(self._calls(bm.tmux_rename_window, '@1', ''),
+                         [('set-option', '-wu', '-t', '@1', 'automatic-rename')])
+
+    def test_session_name_after_double_dash(self):
+        self.assertEqual(self._calls(bm.tmux_rename_session, '$1', '-x'),
+                         [('rename-session', '-t', '$1', '--', '-x')])
+
+    def test_pane_name_sets_title_and_locks_it(self):
+        self.assertEqual(self._calls(bm.tmux_rename_pane, '%3', 'build'), [
+            ('select-pane', '-t', '%3', '-T', 'build'),
+            ('set-option', '-p', '-t', '%3', 'allow-set-title', 'off'),
+        ])
+
+    def test_empty_pane_name_unlocks_and_clears(self):
+        self.assertEqual(self._calls(bm.tmux_rename_pane, '%3', ''), [
+            ('set-option', '-pu', '-t', '%3', 'allow-set-title'),
+            ('select-pane', '-t', '%3', '-T', ''),
+        ])
+
+    def test_pane_title_validation(self):
+        self.assertTrue(bm._valid_pane_title('a: b.c@d%e'))
+        self.assertTrue(bm._valid_pane_title(''))
+        self.assertFalse(bm._valid_pane_title('a\nb'))
+        self.assertFalse(bm._valid_pane_title('a\x1b[31m'))
+
 
 
 class TestTmuxListWindows(unittest.TestCase):

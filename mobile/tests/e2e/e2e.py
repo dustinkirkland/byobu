@@ -264,6 +264,120 @@ def pane_switching_targets_the_right_pane(ui, p0, p1):
     expect(p0, b"one\r")
 
 
+def tmux_fmt(target, fmt):
+    return sh("tmux", "display-message", "-p", "-t", target, fmt)
+
+
+def wait_seg(ui, cls, want, timeout=6.0):
+    """Wait for header segment .ctx-seg-<cls> to read `want` (None: absent)."""
+    loc = ui.locator(f"#ctx-name .ctx-seg-{cls}")
+    deadline = time.time() + timeout
+    got = None
+    while time.time() < deadline:
+        got = loc.inner_text() if loc.count() else None
+        if got == want:
+            return
+        time.sleep(0.1)
+    raise AssertionError(f"header {cls} segment is {got!r}, expected {want!r}")
+
+
+def wait_tmux(target, fmt, want, timeout=4.0):
+    deadline = time.time() + timeout
+    got = None
+    while time.time() < deadline:
+        got = tmux_fmt(target, fmt)
+        if got == want:
+            return
+        time.sleep(0.1)
+    raise AssertionError(f"tmux {fmt} on {target} is {got!r}, expected {want!r}")
+
+
+def rename_via_ui(ui, seg, name):
+    ui.tap(f"#ctx-name .ctx-seg-{seg}")
+    ui.wait_for_selector("#ctx-rename-open", state="visible", timeout=3000)
+    ui.tap("#ctx-rename-open")
+    ui.wait_for_selector("#ctx-rename-input", state="visible", timeout=3000)
+    ui.fill("#ctx-rename-input", name)
+    ui.tap("#ctx-rename-confirm")
+    ui.wait_for_selector("#ctx-overlay", state="hidden", timeout=3000)
+
+
+@scenario
+def header_is_session_number_window_name_pane(ui, p0, p1):
+    sid = tmux_fmt("e2e", "#{session_id}").lstrip("$")
+    wait_seg(ui, "session", sid)
+    wait_seg(ui, "window", tmux_fmt("e2e:0", "#{window_name}"))
+    if ui.locator("#ctx-name .ctx-seg-pane").count() != 1:
+        raise AssertionError("split window should show a pane segment")
+
+
+@scenario
+def window_rename_in_app_reaches_tmux(ui, p0, p1):
+    rename_via_ui(ui, "window", "editor")
+    wait_tmux("e2e:0", "#{window_name}", "editor")
+    wait_seg(ui, "window", "editor")
+    rename_via_ui(ui, "window", "")          # back to automatic naming
+    wait_tmux("e2e:0", "#{automatic-rename}", "1")
+    wait_seg(ui, "window", tmux_fmt("e2e:0", "#{window_name}"))
+
+
+@scenario
+def window_rename_in_tmux_reaches_app(ui, p0, p1):
+    sh("tmux", "rename-window", "-t", "e2e:0", "fromtmux")
+    wait_seg(ui, "window", "fromtmux")
+    sh("tmux", "set-option", "-wu", "-t", "e2e:0", "automatic-rename")
+    wait_seg(ui, "window", tmux_fmt("e2e:0", "#{window_name}"))
+
+
+@scenario
+def pane_rename_in_app_sets_locked_tmux_title(ui, p0, p1):
+    pane = tmux_fmt("e2e.0", "#{pane_id}")
+    rename_via_ui(ui, "pane", "left side")
+    wait_tmux(pane, "#{pane_title}", "left side")
+    wait_tmux(pane, "#{allow-set-title}", "0")
+    wait_seg(ui, "pane", "left side")
+    rename_via_ui(ui, "pane", "")
+    wait_tmux(pane, "#{allow-set-title}", "1")
+    wait_tmux(pane, "#{pane_title}", "")
+    expect(p0, b"")                          # nothing typed into the pane
+
+
+@scenario
+def pane_title_set_in_tmux_reaches_app(ui, p0, p1):
+    pane = tmux_fmt("e2e.0", "#{pane_id}")
+    sh("tmux", "select-pane", "-t", pane, "-T", "from tmux")
+    wait_seg(ui, "pane", "from tmux")
+    sh("tmux", "select-pane", "-t", pane, "-T", "")
+
+
+def pick(ui, window_label, pane_nth):
+    """Navigate through the picker: window row, then the nth pane row."""
+    ui.tap("#ctx-name .ctx-seg-window")
+    ui.locator("#ctx-list .ctx-btn", has_text=window_label).tap()
+    rows = ui.locator("#ctx-list .ctx-btn[data-ctx-id]")
+    rows.first.wait_for(timeout=3000)
+    rows.nth(pane_nth).tap()
+    ui.wait_for_selector("#ctx-overlay", state="hidden", timeout=3000)
+
+
+@scenario
+def unsplit_window_has_no_pane_segment(ui, p0, p1):
+    solo = Pane(2)
+    sh("tmux", "new-window", "-d", "-t", "e2e:5", "-n", "solo", solo.command())
+    try:
+        time.sleep(2.5)                      # one topology poll
+        pick(ui, "5:solo", 0)
+        wait_output(ui, solo.banner)
+        wait_seg(ui, "window", "solo")
+        wait_seg(ui, "pane", None)
+        if ui.locator("#ctx-name .ctx-seg-sep").count() != 1:
+            raise AssertionError("unsplit window should show exactly one '/'")
+        pick(ui, "0:", 0)                    # back to pane 0
+        wait_output(ui, p0.banner)
+    finally:
+        sh("tmux", "kill-window", "-t", "e2e:5", check=False)
+
+
 def main(filters):
     chosen = [s for s in SCENARIOS if not filters or any(f in s.__name__ for f in filters)]
     if not chosen:

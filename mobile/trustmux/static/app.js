@@ -411,14 +411,25 @@ offlineRetryBtn.addEventListener('click', () => {
   init();
 });
 
-// ── pane names (user-defined, stored in localStorage) ─────────────────────
-// Key is scoped to the server hostname so names don't bleed across machines.
-function _paneKey(paneId) { return `pane-name:${location.hostname}:${paneId}`; }
-function getPaneName(paneId, fallback) { return localStorage.getItem(_paneKey(paneId)) || fallback; }
-function setPaneName(paneId, name) {
-  if (name) localStorage.setItem(_paneKey(paneId), name);
-  else localStorage.removeItem(_paneKey(paneId));
+// ── names ─────────────────────────────────────────────────────────────────
+// Window and pane names live in tmux (window_name, and the pane title that
+// `select-pane -T` sets), so a rename on either side shows up on the other
+// within one topology poll. Pane names used to be kept per browser in
+// localStorage under pane-name:*; drop those leftovers.
+try {
+  for (const k of Object.keys(localStorage)) {
+    if (k.startsWith('pane-name:')) localStorage.removeItem(k);
+  }
+} catch (_) {}
+
+// Sessions are shown by number: tmux names an unnamed session after its id
+// ($3 is "3"), and the id stays the same when the session is renamed.
+function sessionLabel(s) {
+  return s ? String(s.id).replace(/^\$/, '') : '';
 }
+
+// tmux refuses these in a window name (they would parse as a target).
+const _BAD_WINDOW_NAME = /[:.@%]/;
 
 // ── last-viewed pane (persisted so reopening the PWA restores context) ────
 function _lastPaneKey() { return `last-pane:${location.hostname}`; }
@@ -656,8 +667,9 @@ function isDefaultPaneTitle(title) {
 
 function paneDisplayName(p) {
   if (!p) return 'shell';
+  if (p.named && p.title) return p.title;
   const title = isDefaultPaneTitle(p.title) ? '' : p.title;
-  return getPaneName(p.id, '') || title || p.command || 'shell';
+  return title || p.command || 'shell';
 }
 
 // ── position label ────────────────────────────────────────────────────────
@@ -834,16 +846,18 @@ function updateContextName() {
   const w = currentWindow();
   const p = currentPaneObj();
   if (!s || !w || !p) {
-    ctxName.textContent = getPaneName(currentPane, '') || 'shell';
+    ctxName.textContent = 'shell';
     return;
   }
+  // session / window, plus / pane only when the window is split.
   ctxName.append(
-    _ctxSeg(s.name, 'ctx-seg-session', 'sessions'),
+    _ctxSeg(sessionLabel(s), 'ctx-seg-session', 'sessions'),
     _ctxSegSep(),
-    _ctxSeg(`${w.index}:${w.name}`, 'ctx-seg-window', 'windows'),
-    _ctxSegSep(),
-    _ctxSeg(paneDisplayName(p), 'ctx-seg-pane', 'panes'),
+    _ctxSeg(w.name, 'ctx-seg-window', 'windows'),
   );
+  if (livePanesInWindow(w).length > 1) {
+    ctxName.append(_ctxSegSep(), _ctxSeg(paneDisplayName(p), 'ctx-seg-pane', 'panes'));
+  }
 }
 
 // ── output rendering ───────────────────────────────────────────────────────
@@ -2093,12 +2107,13 @@ function _ctxRerender(focusId) {
 function renderCtxList() {
   ctxList.innerHTML = '';
   _ctxResolveLevel();
+  _updateRenameButton();
 
   if (_ctxLevel === 'sessions') {
     _ctxAddTitle('Sessions');
     for (const s of sessions) {
       if (!liveWindowsInSession(s).length) continue;
-      const btn = _ctxAddRow(s.name, s.id === currentSessionId, () => {
+      const btn = _ctxAddRow(sessionLabel(s), s.id === currentSessionId, () => {
         _ctxSessionId = s.id;
         _ctxLevel = 'windows';
         _ctxRerender(null);
@@ -2112,7 +2127,7 @@ function renderCtxList() {
       _ctxLevel = 'sessions';
       _ctxRerender(s.id);
     });
-    _ctxAddTitle(s.name);
+    _ctxAddTitle(`Session ${sessionLabel(s)}`);
     for (const w of liveWindowsInSession(s)) {
       const isCurrent = s.id === currentSessionId && w.id === currentWindowId;
       const btn = _ctxAddRow(`${w.index}:${w.name}`, isCurrent, () => {
@@ -2126,7 +2141,7 @@ function renderCtxList() {
   } else {
     const s = _ctxSessionObj();
     const w = _ctxWindowObj();
-    _ctxAddBackRow(s.name, () => {
+    _ctxAddBackRow(`Session ${sessionLabel(s)}`, () => {
       _ctxLevel = 'windows';
       _ctxRerender(w.id);
     });
@@ -2149,6 +2164,15 @@ function renderCtxList() {
     empty.textContent = 'No contexts';
     ctxList.appendChild(empty);
   }
+}
+
+// The rename button names whatever the open level lists: the current
+// window, or the current pane. Sessions are numbers, so there is nothing to
+// rename at that level.
+function _updateRenameButton() {
+  const what = _ctxLevel === 'windows' ? 'window' : _ctxLevel === 'panes' ? 'pane' : null;
+  ctxRenameOpen.style.display = what ? '' : 'none';
+  if (what) ctxRenameOpen.textContent = `✎  Rename current ${what}`;
 }
 
 // Open at an explicit level: 'sessions' lists all sessions, 'windows' the
@@ -2184,28 +2208,25 @@ ctxCancel.addEventListener('click', hideCtxOverlay);
 ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtxOverlay(); });
 
 // ── rename sub-form (reached via "Rename current" inside the jump list) ────
-let _pendingRenameId = null;
-
-function currentPaneDisplayName() {
-  for (const s of sessions) {
-    for (const w of (s.windows || [])) {
-      for (const p of (w.panes || [])) {
-        if (p.id === currentPane) return paneDisplayName(p);
-      }
-    }
-  }
-  return paneDisplayName(null);
-}
+// Renames go to tmux; the daemon answers with a fresh topology, and the
+// local copy is updated right away so the header doesn't lag a round trip.
+let _pendingRename = null; // { kind: 'window' | 'pane', id }
 
 function showRenameForm() {
   if (!currentPane) return;
-  _pendingRenameId = currentPane;
-  const custom = getPaneName(currentPane, '');
-  const name = currentPaneDisplayName();
-  ctxRenameLabel.textContent = custom
-    ? `Rename "${custom}":`
-    : `Name this context (${name}):`;
-  ctxRenameInput.value = custom;
+  const w = currentWindow();
+  const p = currentPaneObj();
+  if (_ctxLevel === 'windows' && w) {
+    _pendingRename = { kind: 'window', id: w.id };
+    ctxRenameLabel.textContent = 'Rename this window (empty = automatic name):';
+    ctxRenameInput.value = w.name;
+  } else if (_ctxLevel === 'panes' && p) {
+    _pendingRename = { kind: 'pane', id: p.id };
+    ctxRenameLabel.textContent = 'Name this pane (empty = no name):';
+    ctxRenameInput.value = p.named ? p.title : '';
+  } else {
+    return;
+  }
   ctxListView.style.display = 'none';
   ctxRenameForm.style.display = '';
   setTimeout(() => { ctxRenameInput.focus(); ctxRenameInput.select(); }, 80);
@@ -2220,10 +2241,23 @@ ctxRenameOpen.addEventListener('click', showRenameForm);
 ctxRenameBack.addEventListener('click', backToCtxList);
 
 function submitRename() {
-  if (!_pendingRenameId) return;
+  if (!_pendingRename) return;
   const name = ctxRenameInput.value.trim();
-  setPaneName(_pendingRenameId, name);
-  _pendingRenameId = null;
+  const { kind, id } = _pendingRename;
+  if (kind === 'window') {
+    if (_BAD_WINDOW_NAME.test(name)) {
+      ctxRenameLabel.textContent = 'Window names can\'t contain : . @ or %';
+      return;
+    }
+    send({ type: 'rename_window', window_id: id, name });
+    const w = currentWindow();
+    if (w && w.id === id && name) w.name = name;
+  } else {
+    send({ type: 'rename_pane', pane_id: id, name });
+    const p = currentPaneObj();
+    if (p && p.id === id) { p.named = !!name; p.title = name; }
+  }
+  _pendingRename = null;
   hideCtxOverlay();
   updateContextName();
 }
