@@ -39,7 +39,8 @@ function client(saved, enabled = 'true') {
     clearTimeout: id => timers.delete(id),
     settingsLockList: element(), settingsThemeList: element(),
     settingsFontList: element(), settingsSizeValue: element(),
-    THEME_CHOICES: [], FONT_FAMILIES: [], fontSize: 12,
+    settingsTtsToggle: element(), settingsTtsRate: element(),
+    THEME_CHOICES: [], FONT_FAMILIES: [], fontSize: 12, TTS_SUPPORTED: false,
   });
   vm.runInContext(lockSource + renderSource, context);
   return {
