@@ -26,7 +26,9 @@ byobu (7.23) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     selection; and a tap on the pane waits out the double-tap window
     before opening the keyboard, so the screen doesn't shrink under the
     second tap of a word select. With read aloud on, desktop double
-    click selects a word again.
+    click selects a word again. Dragging a selection handle down no
+    longer runs on to the bottom of the pane: while text is selected the
+    output can't scroll into the blank rows tmux keeps below the cursor.
   * trustmux/pwa: read aloud, opt in under Settings. Triple tap a spot
     in the output and the block it belongs to is read with the phone's
     own on-device voice, one sentence at a time, highlighting the

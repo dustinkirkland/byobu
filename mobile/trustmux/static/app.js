@@ -895,12 +895,35 @@ function scrollOutputToBottom() {
   // bottom-snap zone, so re-anchoring here would yank a live pane back down.
   if (_scrollMode) return;
   requestAnimationFrame(() => {
-    const el = _bottomContentLine();
-    output.scrollTop = el
-      ? el.offsetTop + el.offsetHeight - output.clientHeight
-      : output.scrollHeight;
+    output.scrollTop = _bottomScrollTop();
   });
 }
+
+function _bottomScrollTop() {
+  const el = _bottomContentLine();
+  return el ? el.offsetTop + el.offsetHeight - output.clientHeight
+            : output.scrollHeight;
+}
+
+// The blank rows below the bottom content line are still there, scrolled out
+// of view. Dragging a selection handle near the bottom edge makes Chrome
+// scroll #output to follow it, into those rows and on to the end, and the
+// selection runs to the bottom with it. While a selection exists, #output
+// doesn't scroll past the content (or past wherever it already was when the
+// selection started).
+let _selScrollCap = null;
+document.addEventListener('selectionchange', () => {
+  if (!_hasOutputSelection()) { _selScrollCap = null; return; }
+  if (_selScrollCap === null) {
+    _selScrollCap = Math.max(_bottomScrollTop(), output.scrollTop);
+  }
+});
+output.addEventListener('scroll', () => {
+  if (_selScrollCap !== null && output.scrollTop > _selScrollCap + 1
+      && _hasOutputSelection()) {
+    output.scrollTop = _selScrollCap;
+  }
+}, { passive: true });
 
 // The #output child "scrolled to bottom" should land on. capture-pane keeps
 // trailing blank screen rows (tmux_cursor()'s doc comment in _daemon.py) --

@@ -846,6 +846,53 @@ def pane_tap_waits_out_a_double_tap_before_the_keyboard(ui, p0, p1):
         restore_pane0(tty, p0)
 
 
+@scenario
+def selection_drag_cannot_scroll_into_blank_rows(ui, p0, p1):
+    # tmux sends the pane's blank rows below the cursor; the live view parks
+    # the last content line at the bottom with those rows scrolled out of
+    # sight. Chrome's drag-to-select autoscroll used to run on into them,
+    # taking the selection to the bottom. Set scrollTop as that autoscroll
+    # would, during a selection and without one.
+    lines = [f"DRAG-{i} line of output" for i in range(1, 6)]
+    # Filler scrolls into tmux history so #output has height to scroll;
+    # then home + clear-to-end (which keeps history) draws the lines at the
+    # top of the screen, with the rest of the 30 rows blank below them.
+    filler = "".join(f"filler {i}\r\n" for i in range(60))
+    tty = write_pane0(filler + "\x1b[H\x1b[J" + "\r\n".join(lines))
+    top = "document.getElementById('output').scrollTop"
+    try:
+        wait_output(ui, "DRAG-5")
+        # Start from the live view: earlier scenarios can leave #output
+        # scrolled up, and then it doesn't follow the bottom.
+        js(ui, "scrollOutputToBottom()")
+        time.sleep(0.6)
+        parked = js(ui, top)
+        room = js(ui, "(() => { const o = document.getElementById('output');"
+                      " return o.scrollHeight - o.clientHeight; })()")
+        if room - parked < 100:
+            raise AssertionError(f"no hidden blank rows to test with ({parked} of {room})")
+        if not select_text(ui, "DRAG-3 line"):
+            raise AssertionError("couldn't find the text to select")
+        time.sleep(0.2)
+        js(ui, f"document.getElementById('output').scrollTop = {parked + 300}")
+        time.sleep(0.3)
+        got = js(ui, top)
+        if got > parked + 2:
+            raise AssertionError(f"selecting, #output scrolled to {got}, past the content at {parked}")
+        if js(ui, SELECTED) != "DRAG-3 line":
+            raise AssertionError(f"selection changed to {js(ui, SELECTED)!r}")
+        # Without a selection, scrolling is the user's to do as they like.
+        clear_selection(ui)
+        time.sleep(0.2)
+        js(ui, f"document.getElementById('output').scrollTop = {parked + 300}")
+        time.sleep(0.3)
+        if js(ui, top) <= parked + 2:
+            raise AssertionError("scrolling was clamped with no selection")
+    finally:
+        clear_selection(ui)
+        restore_pane0(tty, p0)
+
+
 def main(filters):
     chosen = [s for s in SCENARIOS if not filters or any(f in s.__name__ for f in filters)]
     if not chosen:
