@@ -27,8 +27,32 @@ __ip_address_detail() {
 	fi
 }
 
+___ip_address_refresh() {
+	local cache="$1" tmp="$1.$$"
+	shift
+	(
+		ip=$("$@" </dev/null 2>/dev/null)
+		[ -n "$ip" ] || exit 0
+		{ printf "%s\n" "$ip" > "$tmp" && mv -f "$tmp" "$cache"; } || rm -f "$tmp"
+	) </dev/null >/dev/null 2>&1 &
+}
+
+___ip_address_external4() {
+	local ip=
+	if [ -n "$EXTERNAL_IP_SOURCE" ]; then
+		# User-specified URL (e.g. https://api.ipify.org). LP: #1869483
+		ip=$(timeout 1 wget -q -O- "$EXTERNAL_IP_SOURCE")
+	elif command -v dig >/dev/null 2>&1; then
+		# Try dig with OpenDNS first (faster), fall back to wget
+		ip=$(timeout 1 dig +short myip.opendns.com @resolver1.opendns.com)
+	fi
+	# Fall back to wget if primary source didn't work
+	[ -n "$ip" ] || ip=$(timeout 1 wget -q -O- http://v4.ipv6-test.com/api/myip.php)
+	printf "%s" "$ip"
+}
+
 __ip_address() {
-	local interface ipaddr cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/ip_address"
+	local interface ipaddr cache="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/ip_address" cache6="$BYOBU_RUN_DIR/cache.$BYOBU_BACKEND/ip_address6"
 	# Allow interface overrides in $BYOBU_CONFIG_DIR/statusrc
 	if [ -n "$MONITORED_NETWORK" ]; then
 		interface="$MONITORED_NETWORK"
@@ -48,19 +72,18 @@ __ip_address() {
 		1|true|yes)
 			if [ "$IP_EXTERNAL" = "1" ]; then
 				# Background an update
-				timeout 1 wget -q -O- http://v6.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
+				___ip_address_refresh "$cache6" timeout 1 wget -q -O- http://v6.ipv6-test.com/api/myip.php
 				# Brief sleep for cold-start display optimization (requires bash)
 				sleep 0.02
+				[ -s "$cache6" ] && read ipaddr < "$cache6"
 			else
-				# Background an update
 				if [ -x /sbin/ip ]; then
-					LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global </dev/null >"$cache" 2>/dev/null &
+					ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global 2>/dev/null)
 				elif eval $BYOBU_TEST ifconfig >/dev/null 2>&1; then
-					LC_ALL=c ifconfig "$interface" | grep "inet6 " | awk '{print $2}' | sed -e "s/%.*//" >"$cache" 2>/dev/null &
+					ipaddr=$(LC_ALL=c ifconfig "$interface" | grep "inet6 " | awk '{print $2}' | sed -e "s/%.*//" | head -n 1)
 
 				fi
 			fi
-			[ -s "$cache" ] && read ipaddr < "$cache"
 			# Print 'None' if we have no global address
 			[ -z "$ipaddr" ] && ipaddr="None"
 			ipaddr=${ipaddr#* inet6 }
@@ -68,26 +91,13 @@ __ip_address() {
 		;;
 		*)
 			if [ "$IP_EXTERNAL" = "1" ]; then
-				if [ -n "$EXTERNAL_IP_SOURCE" ]; then
-					# User-specified URL (e.g. https://api.ipify.org). LP: #1869483
-					timeout 1 wget -q -O- "$EXTERNAL_IP_SOURCE" </dev/null >"$cache" 2>/dev/null &
-					sleep 0.02
-				elif command -v dig >/dev/null 2>&1; then
-					# Try dig with OpenDNS first (faster), fall back to wget
-					timeout 1 dig +short myip.opendns.com @resolver1.opendns.com </dev/null 2>/dev/null | tr -d '\n' >"$cache" &
-					# Brief sleep for cold-start display optimization (requires bash)
-					sleep 0.1
-				fi
-				# Fall back to wget if primary source didn't work
-				if [ ! -s "$cache" ]; then
-					timeout 1 wget -q -O- http://v4.ipv6-test.com/api/myip.php </dev/null >"$cache" 2>/dev/null &
-					# Brief sleep for cold-start display optimization (requires bash)
-					sleep 0.02
-				fi
+				___ip_address_refresh "$cache" ___ip_address_external4
+				# Brief sleep for cold-start display optimization (requires bash)
+				sleep 0.1
 				[ -s "$cache" ] && read ipaddr < "$cache"
 			elif metadata_available; then
 				# We're in EC2, so get our public IP address
-				timeout 0.2 wget -q -O- http://169.254.169.254/latest/meta-data/public-ipv4 </dev/null >"$cache" 2>/dev/null &
+				___ip_address_refresh "$cache" timeout 0.2 wget -q -O- http://169.254.169.254/latest/meta-data/public-ipv4
 				# Brief sleep for cold-start display optimization (requires bash)
 				sleep 0.02
 				[ -s "$cache" ] && read ipaddr < "$cache"
