@@ -411,6 +411,130 @@ def drag_while_the_pane_is_printing(ctx):
         time.sleep(1.5)
 
 
+class Printer:
+    """Appends a line to the pane every `every` seconds, like a busy
+    command or an agent streaming output, until stopped."""
+
+    def __init__(self, every=0.2):
+        import threading
+        self.every, self.stop = every, False
+        self.t = threading.Thread(target=self.run, daemon=True)
+
+    def run(self):
+        tty = tmux_fmt("e2e.0", "#{pane_tty}")
+        i = 0
+        while not self.stop:
+            with open(tty, "w") as f:
+                f.write(f"P{i:04d} streaming output in the background\r\n")
+            i += 1
+            time.sleep(self.every)
+
+    def __enter__(self):
+        self.t.start()
+        time.sleep(1)
+        return self
+
+    def __exit__(self, *exc):
+        self.stop = True
+        self.t.join()
+
+
+LINE_AT = """(() => {
+  const o = document.getElementById('output'), b = o.getBoundingClientRect();
+  const hit = document.elementFromPoint(b.left + 40, b.top + %f);
+  let el = hit;
+  while (el && el.parentElement !== o) el = el.parentElement;
+  return el ? el.textContent.slice(0, 40)
+            : 'not a line: ' + (hit ? hit.tagName + '#' + hit.id + '.' + hit.className : hit); })()"""
+
+
+def watch_line(cdp, y, secs, every=0.25):
+    """The text of the line y CSS px down #output, sampled for secs."""
+    seen = []
+    end = time.time() + secs
+    while time.time() < end:
+        seen.append(cdp.js(LINE_AT % y))
+        time.sleep(every)
+    return seen
+
+
+def expect_still(seen, what):
+    moved = [t for t in seen if t != seen[0]]
+    if moved or not seen[0]:
+        raise AssertionError(f"{what}: the line in view went from {seen[0]!r} "
+                             f"to {moved[:1]!r} ({len(moved)} of {len(seen)} samples)")
+
+
+def restore_pane():
+    sh("tmux", "clear-history", "-t", "e2e.0")
+    fill_pane(sample_lines())
+    time.sleep(1.5)
+
+
+def held_finger_holds_still(ctx, lines):
+    """Finger down on #output, scroll `lines` lines up into the history, and
+    keep holding while the pane prints: the text under it mustn't move."""
+    import threading
+    ctx.reset()
+    box = ctx.cdp.js("(() => { const b = document.getElementById('output')"
+                     ".getBoundingClientRect(); return [b.left, b.top, b.right, b.bottom]; })()")
+    lh = ctx.cdp.js("(() => { const k = document.getElementById('output').children;"
+                    " return k[k.length - 2].getBoundingClientRect().height; })()")
+    x, y = ctx.dev.screen(box[0] + 200, box[1] + (box[3] - box[1]) * 0.4)
+    dy = round(lines * lh * ctx.dev.dpr)
+    n = max(1, dy // 6)
+    with Printer():
+        before = ctx.cdp.js("document.getElementById('output').scrollTop")
+        steps = [("down", x, y), ("sleep", 0.1)]
+        steps += [("move", x, y + dy * i // n) for i in range(1, n + 1)]
+        steps += [("sleep", 4), ("up", x, y + dy)]
+        t = threading.Thread(target=ctx.dev.touch_script, args=(steps,))
+        t.start()
+        time.sleep(1.2)   # the pan is done, the finger is holding
+        scrolled = before - ctx.cdp.js("document.getElementById('output').scrollTop")
+        seen = watch_line(ctx.cdp, (box[3] - box[1]) * 0.5, 1.2)
+        ctx.dev.shot(f"holding_{lines}")
+        seen += watch_line(ctx.cdp, (box[3] - box[1]) * 0.5, 1.2)
+        t.join()
+    if scrolled < lh:
+        raise AssertionError(f"the finger should have scrolled #output up; it moved {-scrolled:+.0f}px")
+    expect_still(seen, "held finger")
+
+
+@scenario
+def held_finger_near_the_bottom_holds_the_pane_still(ctx):
+    # Within the bottom-snap zone: every update used to yank it back down.
+    try:
+        held_finger_holds_still(ctx, 2)
+    finally:
+        restore_pane()
+
+
+@scenario
+def held_finger_scrolled_up_holds_the_pane_still(ctx):
+    # Past the 300-line capture window, so lines leave the top as they print.
+    fill_pane([f"H{i:03d} history line" for i in range(400)])
+    try:
+        held_finger_holds_still(ctx, 12)
+    finally:
+        restore_pane()
+
+
+@scenario
+def scrolled_up_reading_stays_put_while_it_prints(ctx):
+    # No finger down: a busy pane past the capture window drops lines off the
+    # top, which used to slide the text up a line per update.
+    fill_pane([f"H{i:03d} history line" for i in range(400)])
+    try:
+        ctx.reset(scroll_up=600)
+        h = ctx.cdp.js("document.getElementById('output').clientHeight")
+        with Printer():
+            seen = watch_line(ctx.cdp, h * 0.5, 3)
+        expect_still(seen, "scrolled up, no finger")
+    finally:
+        restore_pane()
+
+
 def set_wrap(cdp, on):
     label = "document.getElementById('escape-popup-wrap').textContent"
     if cdp.js(label).startswith("✓") != on:

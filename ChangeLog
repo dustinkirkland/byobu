@@ -37,6 +37,12 @@ byobu (7.23) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     straight to the end. Now a dragged end stays on the visible lines,
     and each drag past an edge scrolls one line. Finger scrolling is
     unchanged.
+  * trustmux/pwa: a finger held on the pane holds it still while output
+    keeps arriving: it moves only with the finger. Once a held finger
+    started scrolling, Chrome stopped reporting it, so updates resumed
+    under it, and near the bottom each one yanked the view back down.
+    Updates now wait until the finger lifts and any fling settles; a
+    scrolled-up view keeps the same lines in place as new ones arrive.
   * mobile/tests/android: real-Android tests for the PWA. An x86_64
     Android emulator (KVM) in Docker runs real Chrome against trustmux,
     touched through adb, so text selection handles and long press are

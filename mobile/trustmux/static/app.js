@@ -154,6 +154,7 @@ let _outputGestureUntil = 0;
 
 function _outputFrozen() {
   return _outputPointers.size > 0
+    || _outputTouching
     || performance.now() < _outputGestureUntil
     || _hasOutputSelection();
 }
@@ -566,9 +567,11 @@ function connect() {
         const forceTop = _scrollTopOnNextSnapshot;
         if (forceTop) _scrollTopOnNextSnapshot = false;
         const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
+        const place = forceTop ? null : _outputPlace(atBottom);
         _applyCursorFields(msg);
         renderOutput(msg.data, !forceTop && atBottom);
         if (forceTop) output.scrollTop = 0;
+        _restoreOutputPlace(place);
       }
     } else if (msg.type === 'update') {
       if (msg.pane_id !== currentPane) return;
@@ -578,8 +581,10 @@ function connect() {
       _currentPaneRawLines = msg.data.split('\n');
       _currentPaneRawLinesFor = msg.pane_id;
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
+      const place = _outputPlace(atBottom);
       _applyCursorFields(msg);
       renderOutput(msg.data, atBottom);
+      _restoreOutputPlace(place);
     } else if (msg.type === 'delta') {
       // Bandwidth-saving alternative to 'update': the daemon detected the
       // pane's captured window merely slid down (old lines dropped off
@@ -600,8 +605,10 @@ function connect() {
       if (_outputFrozen()) { _deferredForSelection = true; return; }
       _currentPaneRawLines = _currentPaneRawLines.slice(msg.drop).concat(msg.append);
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
+      const place = _outputPlace(atBottom);
       _applyCursorFields(msg);
       renderOutput(_currentPaneRawLines.join('\n'), atBottom);
+      if (place) _restoreOutputPlace(place, place.idx - msg.drop);
     } else if (msg.type === 'patch') {
       if (msg.pane_id !== currentPane) return;
       // _lines null (pane switch, cache restore, loading placeholder) means
@@ -618,6 +625,7 @@ function connect() {
       // same resubscribe path below, so nothing further is needed here.
       if (_outputFrozen()) { _deferredForSelection = true; return; }
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
+      const place = _outputPlace(atBottom);
       _applyCursorFields(msg);
       // A mismatching op means the line state diverged from the daemon's;
       // resubscribe for a fresh snapshot.
@@ -629,6 +637,7 @@ function connect() {
       }
       _patchMismatchStreak = 0;
       if (atBottom) scrollOutputToBottom();
+      else _restoreOutputPlace(place);
     } else if (msg.type === 'cursor') {
       // Bare cursor move: no data field, so no re-render (an innerHTML
       // replacement would destroy any in-progress text selection); just
@@ -932,6 +941,7 @@ function _bottomScrollTop() {
 //   (or past wherever it already was when the selection started).
 const SEL_EDGE_STEP_MS = 120;
 const OUTPUT_FLING_MS = 1500;
+const OUTPUT_FLING_SETTLE_MS = 250;
 let _selEnds = null;        // [anchorNode, anchorOffset, focusNode, focusOffset]
 let _selLastMoved = null;   // 'anchor' | 'focus': the end being dragged
 let _selEdgeStepAt = 0;
@@ -946,8 +956,25 @@ for (const t of ['touchend', 'touchcancel']) {
     if (e.touches.length) return;
     _outputTouching = false;
     _outputTouchUntil = performance.now() + OUTPUT_FLING_MS;
+    _outputHoldFor(OUTPUT_GESTURE_GRACE_MS);
   }, { passive: true });
 }
+
+// A finger on #output holds the pane still (_outputFrozen), through a pan
+// too: Chrome cancels the pointer once it takes a touch over for scrolling,
+// but touch events last until the finger lifts. Once it lifts, a fling
+// still moving the pane keeps the hold until it settles.
+function _outputHoldFor(ms) {
+  const until = performance.now() + ms;
+  if (until <= _outputGestureUntil) return;
+  _outputGestureUntil = until;
+  setTimeout(_resyncIfThawed, ms + 20);
+}
+output.addEventListener('scroll', () => {
+  if (!_outputTouching && performance.now() < _outputTouchUntil) {
+    _outputHoldFor(OUTPUT_FLING_SETTLE_MS);
+  }
+}, { passive: true });
 
 // Our own scrolls while selecting go through here, so the scroll listener
 // doesn't take them for Chrome's.
@@ -1296,6 +1323,40 @@ function renderOutput(text, scrollToBottom) {
   _ghostSync();
   _ttsAfterRender();
   if (scrollToBottom) scrollOutputToBottom();
+}
+
+// A re-render while scrolled up must leave the same lines under the
+// reader's eyes. The capture is a window of the pane's last N lines, so on
+// a busy pane lines drop off the top as new ones arrive, and a kept
+// scrollTop would slide the text up under them. Chrome's scroll anchoring
+// already holds the view (tests/android checks it); this is for browsers
+// without it, and a no-op where anchoring did its job. Note the first
+// visible line (and the two after it, to tell repeats apart) before the
+// render; after it, find that line again -- at hint if the caller knows
+// where it went, else the nearest match at or above its old index, since
+// lines only leave from the top -- and scroll it back to where it was.
+function _outputPlace(atBottom) {
+  if (atBottom || !_lines || _paneLoading) return null;
+  const vis = _visibleLineSpans();
+  if (!vis) return null;
+  const idx = Array.prototype.indexOf.call(output.children, vis[0]);
+  if (idx < 0 || idx >= _lines.length) return null;
+  return { idx, key: _lines.slice(idx, idx + 3).join('\n'),
+           top: vis[0].getBoundingClientRect().top - output.getBoundingClientRect().top };
+}
+
+function _restoreOutputPlace(place, hint) {
+  if (!place || !_lines) return;
+  const at = i => i >= 0 && i < _lines.length
+    && _lines.slice(i, i + 3).join('\n') === place.key;
+  let i = Number.isInteger(hint) && at(hint) ? hint : -1;
+  for (let j = Math.min(place.idx, _lines.length - 1); i < 0 && j >= 0; j--) {
+    if (at(j)) i = j;
+  }
+  const el = i >= 0 && output.children[i];
+  if (!el) return;
+  const moved = el.getBoundingClientRect().top - output.getBoundingClientRect().top - place.top;
+  if (Math.abs(moved) >= 1) output.scrollTop += moved;
 }
 
 // Apply daemon line-diff ops to _lines and the matching #output spans.
@@ -2167,7 +2228,7 @@ output.addEventListener('pointerdown', e => {
 document.addEventListener('pointerup', _outputPointerUp, true);
 document.addEventListener('pointercancel', _outputPointerUp, true);
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) _outputPointers.clear();
+  if (document.hidden) { _outputPointers.clear(); _outputTouching = false; }
 });
 
 // IME guard: mobile keyboards fire input events mid-composition, and the
