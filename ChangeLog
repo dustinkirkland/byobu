@@ -37,6 +37,10 @@ byobu (7.23) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     straight to the end. Now a dragged end stays on the visible lines,
     and each drag past an edge scrolls one line. Finger scrolling is
     unchanged.
+  * mobile/tests/android: real-Android tests for the PWA. An x86_64
+    Android emulator (KVM) in Docker runs real Chrome against trustmux,
+    touched through adb, so text selection handles and long press are
+    exercised; new RC phase 4i.
   * trustmux/pwa: read aloud, opt in under Settings. Triple tap a spot
     in the output and the block it belongs to is read with the phone's
     own on-device voice, one sentence at a time, highlighting the
