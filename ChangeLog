@@ -29,6 +29,14 @@ byobu (7.23) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     click selects a word again. Dragging a selection handle down no
     longer runs on to the bottom of the pane: while text is selected the
     output can't scroll into the blank rows tmux keeps below the cursor.
+  * trustmux/pwa: dragging a selection handle toward the top or bottom
+    of the pane no longer selects the whole scrollback. Found on real
+    Android Chrome: dragged past the edge, a handle put that end of the
+    selection on the header or input bar, taking in all the hidden
+    scrollback in between; and Chrome's handle autoscroll jumped the pane
+    straight to the end. Now a dragged end stays on the visible lines,
+    and each drag past an edge scrolls one line. Finger scrolling is
+    unchanged.
   * trustmux/pwa: read aloud, opt in under Settings. Triple tap a spot
     in the output and the block it belongs to is read with the phone's
     own on-device voice, one sentence at a time, highlighting the

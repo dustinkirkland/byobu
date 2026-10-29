@@ -138,7 +138,8 @@ let _deferredForSelection = false;
 function _hasOutputSelection() {
   const sel = window.getSelection();
   if (!sel || sel.isCollapsed || sel.rangeCount === 0) return false;
-  return output.contains(sel.getRangeAt(0).commonAncestorContainer);
+  // Either end: a handle dragged off #output puts one end outside it.
+  return output.contains(sel.anchorNode) || output.contains(sel.focusNode);
 }
 
 // A selection only exists once the gesture that makes it has finished: the
@@ -905,24 +906,192 @@ function _bottomScrollTop() {
             : output.scrollHeight;
 }
 
-// The blank rows below the bottom content line are still there, scrolled out
-// of view. Dragging a selection handle near the bottom edge makes Chrome
-// scroll #output to follow it, into those rows and on to the end, and the
-// selection runs to the bottom with it. While a selection exists, #output
-// doesn't scroll past the content (or past wherever it already was when the
-// selection started).
-let _selScrollCap = null;
+// ── selecting text in #output ─────────────────────────────────────────────
+// #output is a scroller inside a page that doesn't scroll, with the header
+// above it and the input bar below. On an ordinary page the document itself
+// scrolls, and Chrome's selection handles behave; here two things go wrong
+// when a handle is dragged toward either edge (easy: a line is ~36 device
+// px), both seen on real Android Chrome (the mobile/tests/android harness;
+// headless Chromium has no selection handles):
+// - Chrome autoscrolls #output to follow the handle, and in a nested
+//   scroller that's a jump straight to the end, not a glide, so the
+//   selection runs to the bottom (or top) of the scrollback at once.
+// - Past the edge, Chrome puts that end on the header or the input bar,
+//   and the selection takes in everything between in document order: all
+//   the hidden scrollback above the visible lines, or everything below.
+// So while a selection exists:
+// - #output only scrolls under a finger (or its fling). A scroll with no
+//   finger on #output is Chrome's handle autoscroll -- a handle drag sends
+//   the page no touch events at all -- and is undone, along with the
+//   selection change that came with it.
+// - An end that moves outside the visible lines is pulled back to the
+//   first/last visible line, and each further drag past the edge scrolls
+//   one line, so a longer selection still works, at a pace a finger can
+//   follow.
+// - #output never scrolls into the blank rows tmux keeps below the cursor
+//   (or past wherever it already was when the selection started).
+const SEL_EDGE_STEP_MS = 120;
+const OUTPUT_FLING_MS = 1500;
+let _selEnds = null;        // [anchorNode, anchorOffset, focusNode, focusOffset]
+let _selLastMoved = null;   // 'anchor' | 'focus': the end being dragged
+let _selEdgeStepAt = 0;
+let _selScrollPos = null;   // the scrollTop #output may have while selecting
+let _selScrollCap = null;   // and the furthest down it may go
+let _outputTouching = false;
+let _outputTouchUntil = 0;
+
+output.addEventListener('touchstart', () => { _outputTouching = true; }, { passive: true });
+for (const t of ['touchend', 'touchcancel']) {
+  output.addEventListener(t, e => {
+    if (e.touches.length) return;
+    _outputTouching = false;
+    _outputTouchUntil = performance.now() + OUTPUT_FLING_MS;
+  }, { passive: true });
+}
+
+// Our own scrolls while selecting go through here, so the scroll listener
+// doesn't take them for Chrome's.
+function _selScrollTo(top) {
+  output.scrollTop = top;
+  _selScrollPos = output.scrollTop;
+}
+
+function _visibleLineSpans() {
+  const kids = output.children;
+  if (!kids.length) return null;
+  const box = output.getBoundingClientRect();
+  // Binary search: line spans are in visual order.
+  const firstBelow = y => {
+    let lo = 0, hi = kids.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (kids[mid].getBoundingClientRect().bottom > y) hi = mid; else lo = mid + 1;
+    }
+    return lo;
+  };
+  const first = Math.min(firstBelow(box.top + 2), kids.length - 1);
+  const last = Math.max(first, firstBelow(box.bottom - 2) - 1);
+  return [kids[first], kids[Math.min(last, kids.length - 1)]];
+}
+
+// -1 if (node, offset) is before span's content, 1 if after, 0 inside.
+function _cmpToSpan(span, node, offset) {
+  const r = document.createRange();
+  r.selectNodeContents(span);
+  try { return r.comparePoint(node, offset); } catch (_) { return 0; }
+}
+
+function _clampSelectionEnd(sel, which) {
+  const node = which === 'focus' ? sel.focusNode : sel.anchorNode;
+  const off = which === 'focus' ? sel.focusOffset : sel.anchorOffset;
+  let vis = _visibleLineSpans();
+  if (!vis || !node) return false;
+  const step = performance.now() - _selEdgeStepAt > SEL_EDGE_STEP_MS;
+  let to = null;
+  if (_cmpToSpan(vis[0], node, off) < 0) {
+    if (step && output.scrollTop > 0) {
+      _selEdgeStepAt = performance.now();
+      _selScrollTo(output.scrollTop - (vis[0].getBoundingClientRect().height || 16));
+      vis = _visibleLineSpans();
+    }
+    to = [vis[0], 0];
+  } else if (_cmpToSpan(vis[1], node, off) > 0) {
+    const down = output.scrollTop + (vis[1].getBoundingClientRect().height || 16);
+    if (step && down <= _selScrollCap) {
+      _selEdgeStepAt = performance.now();
+      _selScrollTo(down);
+      vis = _visibleLineSpans();
+    }
+    to = [vis[1], vis[1].childNodes.length];
+  }
+  if (!to) return false;
+  if (which === 'focus') sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, to[0], to[1]);
+  else sel.setBaseAndExtent(to[0], to[1], sel.focusNode, sel.focusOffset);
+  return true;
+}
+
+function _outputFingerScroll() {
+  return _outputTouching || performance.now() < _outputTouchUntil;
+}
+
+// Chrome scrolled #output on its own: following a dragged handle. Its jump
+// can come from mid-screen and lands the dragged end somewhere arbitrary
+// (seen: dragging up from mid-screen jumped to the last line), so undo the
+// scroll and put the selection back as it was. If the dragged end was
+// already on the first/last visible line, the drag is heading off that
+// edge: step one line that way, so a longer selection still extends.
+function _selUndoForeignScroll(sel) {
+  _selScrollTo(_selScrollPos);
+  if (!_selEnds) return;
+  sel.setBaseAndExtent(..._selEnds);
+  const node = _selLastMoved === 'anchor' ? _selEnds[0] : _selEnds[2];
+  const el = node && (node.nodeType === Node.TEXT_NODE ? node.parentElement : node);
+  const line = el && el.closest('#output > span');
+  const vis = _visibleLineSpans();
+  if (!line || !vis || performance.now() - _selEdgeStepAt <= SEL_EDGE_STEP_MS) return;
+  if (line === vis[0] && output.scrollTop > 0) {
+    _selEdgeStepAt = performance.now();
+    _selScrollTo(output.scrollTop - (line.getBoundingClientRect().height || 16));
+  } else if (line === vis[1]) {
+    const down = output.scrollTop + (line.getBoundingClientRect().height || 16);
+    if (down <= _selScrollCap) {
+      _selEdgeStepAt = performance.now();
+      _selScrollTo(down);
+    }
+  }
+}
+
 document.addEventListener('selectionchange', () => {
-  if (!_hasOutputSelection()) { _selScrollCap = null; return; }
-  if (_selScrollCap === null) {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || sel.isCollapsed
+      || !(output.contains(sel.anchorNode) || output.contains(sel.focusNode))) {
+    _selEnds = _selLastMoved = _selScrollPos = _selScrollCap = null;
+    return;
+  }
+  // The selection change that comes with one of Chrome's jumps can arrive
+  // before the scroll event does.
+  if (_selScrollPos !== null && !_outputFingerScroll()
+      && Math.abs(output.scrollTop - _selScrollPos) > 1) {
+    _selUndoForeignScroll(sel);
+    return;
+  }
+  // An end outside #output (on the header or the input bar) is never one a
+  // person meant; pull it back whichever end Chrome says moved (crossing
+  // the edge, it can report both, swapping base and extent).
+  const outside = ['anchor', 'focus'].filter(w =>
+    !output.contains(w === 'anchor' ? sel.anchorNode : sel.focusNode));
+  if (outside.length) {
+    _selLastMoved = outside[0];
+    for (const w of outside) _clampSelectionEnd(sel, w);
+    return;
+  }
+  const now = [sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset];
+  const prev = _selEnds;
+  _selEnds = now;
+  // A brand-new selection (long press, double tap) is where the finger is;
+  // only an end that moved on its own is a drag.
+  if (!prev) {
+    _selScrollPos = output.scrollTop;
     _selScrollCap = Math.max(_bottomScrollTop(), output.scrollTop);
+    return;
   }
+  const anchorMoved = prev[0] !== now[0] || prev[1] !== now[1];
+  const focusMoved = prev[2] !== now[2] || prev[3] !== now[3];
+  if (anchorMoved === focusMoved) return;
+  _selLastMoved = focusMoved ? 'focus' : 'anchor';
+  _clampSelectionEnd(sel, _selLastMoved);
 });
+
 output.addEventListener('scroll', () => {
-  if (_selScrollCap !== null && output.scrollTop > _selScrollCap + 1
-      && _hasOutputSelection()) {
-    output.scrollTop = _selScrollCap;
+  if (_selScrollPos === null || !_hasOutputSelection()) return;
+  if (!_outputFingerScroll()) {
+    if (Math.abs(output.scrollTop - _selScrollPos) > 1) {
+      _selUndoForeignScroll(window.getSelection());
+    }
+    return;
   }
+  if (output.scrollTop > _selScrollCap + 1) _selScrollTo(_selScrollCap);
+  else _selScrollPos = output.scrollTop;
 }, { passive: true });
 
 // The #output child "scrolled to bottom" should land on. capture-pane keeps
