@@ -2743,8 +2743,11 @@ def push_salsa(v, identity):
         # gbp also tags the imported commit upstream/<version> locally —
         # that tag must be pushed too, or it only ever exists in this
         # throwaway clone and is lost the moment tmpdir is removed.
+        # gbp guesses the version from the tarball name and asks to confirm
+        # it unless told: it's base_ver, from configure.ac, so say so.
         run([
-            "gbp", "import-orig",
+            "gbp", "import-orig", "--no-interactive",
+            f"--upstream-version={base_ver}",
             "--upstream-branch=upstream/latest",
             "--debian-branch=debian/latest",
             str(tarball),

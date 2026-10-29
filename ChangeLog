@@ -18,6 +18,10 @@ lost, just relocated to where all distributions can use it.
 
 byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
 
+  * release.py: a final release no longer stops to ask "What is the
+    upstream version?" while importing into Salsa. gbp import-orig is
+    now handed the version (from configure.ac) and runs non-interactively.
+
 byobu (7.23) 2026-10-29  Dustin Kirkland <kirkland@ubuntu.com>
 
   * trustmux/pwa: selecting text to copy is less erratic. The pane no
