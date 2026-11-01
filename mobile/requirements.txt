@@ -4,4 +4,4 @@
 tornado==6.5.10
 cryptography==50.0.1
 cffi==2.1.1
-pycparser==3.0
+pycparser==3.11
