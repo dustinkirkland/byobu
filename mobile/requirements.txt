@@ -2,6 +2,6 @@
 # (with hashes) for a development or CI environment: `uv sync` in mobile/.
 # pyproject.toml carries the version floors that installs must satisfy.
 tornado==6.5.10
-cryptography==50.0.1
+cryptography==50.0.2
 cffi==2.1.1
 pycparser==3.0
