@@ -521,7 +521,13 @@ def check_homebrew_resources_fresh():
     ))
 
     pyproject = (BYOBU_SRC / "mobile" / "pyproject.toml").read_text()
-    floors = dict(re.findall(r'"([a-zA-Z0-9_-]+)>=([0-9.]+)"', pyproject))
+    # A dependency may carry environment markers and appear more than once
+    # (tornado: >=6.6 on Python 3.11+, >=6.5.8 below). The formula pins one
+    # modern Python, so hold its resources to the highest floor listed.
+    floors = {}
+    for name, floor in re.findall(r'"([a-zA-Z0-9_-]+)>=([0-9.]+)[";]', pyproject):
+        if name not in floors or _version_tuple(floor) > _version_tuple(floors[name]):
+            floors[name] = floor
 
     stale = []
     for name, floor in floors.items():

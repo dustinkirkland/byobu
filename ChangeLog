@@ -21,6 +21,21 @@ byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
   * release.py: a final release no longer stops to ask "What is the
     upstream version?" while importing into Salsa. gbp import-orig is
     now handed the version (from configure.ac) and runs non-interactively.
+  * mobile: security: raise the tornado floor to 6.6 on Python 3.11+,
+    closing three Dependabot advisories: GHSA-r4j5-9xpp-3985 (medium --
+    chunked bodies with many small chunks block the event loop and use
+    excess memory), GHSA-pcg2-g6cj-q92c (medium -- quadratic CPU parsing
+    HTTP headers with line folding), and GHSA-pw9p-v7r6-gx4p (low -- open
+    redirect in RedirectHandler; trustmux doesn't use it). tornado 6.6
+    needs Python 3.11, so Python 3.10 keeps the >=6.5.8 floor via an
+    environment marker; no 6.5.x release carries these fixes. Also bumps
+    cryptography to 50.0.2 and pycparser to 3.12 (3.11 on Python 3.10).
+    mobile/uv.lock, mobile/requirements.txt and the Homebrew formula's
+    resource pins updated to match. release.py's Homebrew freshness check
+    now reads floors that carry environment markers; it used to skip them,
+    which would have quietly dropped tornado from the check
+  * ci: bump actions/setup-python to 7.1.0 and pypa/gh-action-pypi-publish
+    to 1.14.3
 
 byobu (7.23) 2026-10-29  Dustin Kirkland <kirkland@ubuntu.com>
 

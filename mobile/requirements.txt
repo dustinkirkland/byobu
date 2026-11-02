@@ -1,7 +1,9 @@
 # Pinned to the versions in uv.lock, which is the authoritative resolution
 # (with hashes) for a development or CI environment: `uv sync` in mobile/.
 # pyproject.toml carries the version floors that installs must satisfy.
-tornado==6.5.10
-cryptography==50.0.1
+tornado==6.6; python_version >= '3.11'
+tornado==6.5.10; python_version < '3.11'
+cryptography==50.0.2
 cffi==2.1.1
-pycparser==3.0
+pycparser==3.12; python_version >= '3.11'
+pycparser==3.11; python_version < '3.11'
