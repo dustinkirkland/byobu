@@ -53,6 +53,12 @@ byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     long has passed, or if the clock went backwards meanwhile. The
     5-minute inactivity lock is unchanged. Thanks to maxgio92 (Closes: GH
     #170, GH #171)
+  * trustmux: stop looking for a pre-7.17 daemon at the old, pre-instances
+    socket location. That fallback covered upgrading straight past 7.17
+    with the old daemon still running; six releases on, it's dead weight
+    and the one exception to "an instance only ever looks in its own
+    directory". The one-time move of tokens, certificate and key out of
+    the old layout stays. (Closes: GH #127)
 
 byobu (7.23) 2026-10-29  Dustin Kirkland <kirkland@ubuntu.com>
 
