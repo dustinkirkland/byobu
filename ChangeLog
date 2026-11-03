@@ -46,6 +46,12 @@ byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     empty; and only something that looks like an address is cached, so a
     captive portal's HTML page can't land on the status bar. Thanks to
     Nerahikada (Closes: GH #172, GH #173)
+  * ip_address: local IPv6 (IPV6=1) shows this host's address on machines
+    with Docker, libvirt or other bridges. It used the last interface in
+    the IPv6 routing table (often docker0, which has no global address)
+    and so printed "None"; it now asks the kernel for the outbound source
+    address, as IPv4 already did, and otherwise uses the default route's
+    interface. MONITORED_NETWORK still overrides it
   * trustmux/pwa: the background screen lock timeout is now a choice in
     the gear menu: immediately, 30 seconds (still the default), 1 minute,
     2 minutes or 5 minutes, saved per browser. "Immediately" locks as the

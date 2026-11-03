@@ -721,6 +721,12 @@ assert_true "ip_address: accepts IPv4 and IPv6 addresses" \
 	"sh -c '. \"$_ip\"; ___ip_address_valid 203.0.113.7 && ___ip_address_valid 2001:db8::1'"
 assert_false "ip_address: rejects HTML, error text and empty answers" \
 	"sh -c '. \"$_ip\"; ___ip_address_valid \"<html>\" || ___ip_address_valid \";; connection timed out\" || ___ip_address_valid \"\"'"
+# Local IPv6 uses the outbound source address, like IPv4, and otherwise the
+# default route's interface rather than the last one listed (eg. docker0)
+assert_true "ip_address: local IPv6 uses ip -6 route get" \
+	"grep -q 'ip -6 route get' '$_ip'"
+assert_true "ip_address: IPv6 interface follows the default route" \
+	"grep -q 'def != \"\" ? def : iface' '$_ip'"
 unset _ip
 
 # ---------------------------------------------------------------------------

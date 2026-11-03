@@ -69,7 +69,9 @@ __ip_address() {
 		case "$IPV6" in
 			1|true|yes)
 				if [ -r /proc/net/ipv6_route ]; then
-					interface=$(awk '$10 != "lo" { iface=$10 ; }; END { print iface; }' /proc/net/ipv6_route)
+					# The default route's interface; the last non-lo route
+					# (often docker0 or a bridge) only if there is none.
+					interface=$(awk '$10 != "lo" { iface=$10; if ($1 ~ /^0+$/ && $2 == "00" && def == "") def=$10 }; END { print (def != "" ? def : iface) }' /proc/net/ipv6_route)
 				else
 					get_network_interface; interface="$_RET"
 				fi
@@ -87,7 +89,11 @@ __ip_address() {
 				[ -s "$cache6" ] && read ipaddr < "$cache6"
 			else
 				if [ -x /sbin/ip ]; then
-					ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global 2>/dev/null)
+					# Preferred outbound source, as for IPv4 below, unless
+					# MONITORED_NETWORK names an interface
+					[ -n "$MONITORED_NETWORK" ] || ipaddr=$(LC_ALL=C /sbin/ip -6 route get 2001:4860:4860::8888 2>/dev/null | \
+						awk '/src/{for(i=1;i<=NF;i++) if($i=="src"){print $(i+1); exit}}')
+					[ -n "$ipaddr" ] || ipaddr=$(LC_ALL=C /sbin/ip -6 addr list dev "$interface" scope global 2>/dev/null)
 				elif eval $BYOBU_TEST ifconfig >/dev/null 2>&1; then
 					ipaddr=$(LC_ALL=c ifconfig "$interface" | grep "inet6 " | awk '{print $2}' | sed -e "s/%.*//" | head -n 1)
 
