@@ -938,6 +938,83 @@ def selection_drag_cannot_scroll_into_blank_rows(ui, p0, p1):
         restore_pane0(tty, p0)
 
 
+# ── background screen lock ────────────────────────────────────────────────
+# A real lock needs a WebAuthn credential; the background timeout logic
+# doesn't, so these turn the lock on in page state and drive the app's own
+# visibilitychange handler, skewing Date.now() for the time spent away.
+def lock_choice(ui):
+    ui.tap("#btn-settings")
+    ui.wait_for_selector("#settings-lock-list .ctx-btn", state="visible", timeout=3000)
+    on = [t for t in ui.locator("#settings-lock-list .ctx-btn").all_inner_texts() if t.startswith("✓")]
+    ui.tap("#settings-close")
+    return on
+
+
+def choose_lock(ui, label):
+    ui.tap("#btn-settings")
+    ui.wait_for_selector("#settings-lock-list .ctx-btn", state="visible", timeout=3000)
+    ui.locator("#settings-lock-list .ctx-btn", has_text=label).tap()
+    ui.tap("#settings-close")
+
+
+def set_hidden(ui, hidden, skew_ms=0):
+    js(ui, f"""(() => {{
+        const now = Date.now;
+        Object.defineProperty(document, 'hidden', {{value: {str(hidden).lower()}, configurable: true}});
+        if ({skew_ms}) Date.now = () => now.call(Date) + {skew_ms};
+        try {{ document.dispatchEvent(new Event('visibilitychange')); }}
+        finally {{ Date.now = now; delete document.hidden; }}
+    }})()""")
+
+
+def locked(ui):
+    return js(ui, "_isLocked") and ui.locator("#lock-overlay").is_visible()
+
+
+@scenario
+def background_lock_follows_the_gear_menu_choice(ui, p0, p1):
+    if lock_choice(ui) != ["✓ 30 seconds (default)"]:
+        raise AssertionError(f"default choice is {lock_choice(ui)!r}")
+    try:
+        js(ui, "_lockEnabled = 'true'")
+        set_hidden(ui, True); set_hidden(ui, False, skew_ms=20_000)
+        if locked(ui):
+            raise AssertionError("locked after 20s away with the 30s default")
+        set_hidden(ui, True); set_hidden(ui, False, skew_ms=31_000)
+        if not locked(ui):
+            raise AssertionError("didn't lock after 31s away with the 30s default")
+        js(ui, "unlockApp()")
+
+        choose_lock(ui, "1 minute")
+        ui.reload()
+        wait_output(ui, p0.banner, timeout=20000)
+        if lock_choice(ui) != ["✓ 1 minute"]:
+            raise AssertionError(f"after reload the choice is {lock_choice(ui)!r}, expected 1 minute")
+        js(ui, "_lockEnabled = 'true'")
+        set_hidden(ui, True); set_hidden(ui, False, skew_ms=31_000)
+        if locked(ui):
+            raise AssertionError("locked after 31s away with 1 minute chosen")
+        set_hidden(ui, True); set_hidden(ui, False, skew_ms=61_000)
+        if not locked(ui):
+            raise AssertionError("didn't lock after 61s away with 1 minute chosen")
+        js(ui, "unlockApp()")
+
+        choose_lock(ui, "Immediately")
+        set_hidden(ui, True)
+        if not locked(ui):
+            raise AssertionError("Immediately didn't lock on hide")
+        # A biometric prompt can hide the page; unlocking while it's hidden
+        # must not be undone when the page comes back.
+        js(ui, "unlockApp()")
+        set_hidden(ui, False)
+        if locked(ui):
+            raise AssertionError("Immediately relocked on return after an unlock")
+    finally:
+        js(ui, "localStorage.removeItem('lock-hidden-ms'); unlockApp()")
+        ui.reload()
+        wait_output(ui, p0.banner, timeout=20000)
+
+
 def main(filters):
     chosen = [s for s in SCENARIOS if not filters or any(f in s.__name__ for f in filters)]
     if not chosen:
