@@ -27,12 +27,20 @@ __ip_address_detail() {
 	fi
 }
 
+# An address is hex digits, dots and colons, nothing else: keeps a captive
+# portal's HTML page or a ";; connection timed out" line off the status bar.
+___ip_address_valid() {
+	case "$1" in
+		""|*[!0-9a-fA-F.:]*) return 1 ;;
+	esac
+}
+
 ___ip_address_refresh() {
 	local cache="$1" tmp="$1.$$"
 	shift
 	(
 		ip=$("$@" </dev/null 2>/dev/null)
-		[ -n "$ip" ] || exit 0
+		___ip_address_valid "$ip" || exit 0
 		{ printf "%s\n" "$ip" > "$tmp" && mv -f "$tmp" "$cache"; } || rm -f "$tmp"
 	) </dev/null >/dev/null 2>&1 &
 }
@@ -43,11 +51,12 @@ ___ip_address_external4() {
 		# User-specified URL (e.g. https://api.ipify.org). LP: #1869483
 		ip=$(timeout 1 wget -q -O- "$EXTERNAL_IP_SOURCE")
 	elif command -v dig >/dev/null 2>&1; then
-		# Try dig with OpenDNS first (faster), fall back to wget
-		ip=$(timeout 1 dig +short myip.opendns.com @resolver1.opendns.com)
+		# Try dig with OpenDNS first (faster), fall back to wget.  -4: asked
+		# over IPv6, OpenDNS has no IPv4 address to report and answers empty.
+		ip=$(timeout 1 dig -4 +short myip.opendns.com @resolver1.opendns.com)
 	fi
 	# Fall back to wget if primary source didn't work
-	[ -n "$ip" ] || ip=$(timeout 1 wget -q -O- http://v4.ipv6-test.com/api/myip.php)
+	___ip_address_valid "$ip" || ip=$(timeout 1 wget -q -O- https://api.ipify.org)
 	printf "%s" "$ip"
 }
 
@@ -72,7 +81,7 @@ __ip_address() {
 		1|true|yes)
 			if [ "$IP_EXTERNAL" = "1" ]; then
 				# Background an update
-				___ip_address_refresh "$cache6" timeout 1 wget -q -O- http://v6.ipv6-test.com/api/myip.php
+				___ip_address_refresh "$cache6" timeout 1 wget -q -O- https://api6.ipify.org
 				# Brief sleep for cold-start display optimization (requires bash)
 				sleep 0.02
 				[ -s "$cache6" ] && read ipaddr < "$cache6"
