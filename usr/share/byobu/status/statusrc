@@ -77,10 +77,10 @@
 #IP_EXTERNAL=0
 
 # When IP_EXTERNAL=1, override the URL used to look up your public IP.
-# Useful if the defaults (OpenDNS dig / ipv6-test.com) are blocked.
+# Useful if the defaults (OpenDNS dig / api.ipify.org) are blocked.
 # The URL must return a plain IP address as the response body.
-# Default: unset (uses OpenDNS dig, then http://v4.ipv6-test.com/api/myip.php)
-#EXTERNAL_IP_SOURCE="https://api.ipify.org"
+# Default: unset (uses OpenDNS dig, then https://api.ipify.org)
+#EXTERNAL_IP_SOURCE="https://ipv4.icanhazip.com"
 
 # The users notification normally counts ssh sessions; set this configuration to '1'
 # to instead count number of distinct users logged onto the system

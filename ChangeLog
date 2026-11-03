@@ -36,6 +36,16 @@ byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     which would have quietly dropped tornado from the check
   * ci: bump actions/setup-python to 7.1.0 and pypa/gh-action-pypi-publish
     to 1.14.3
+  * ip_address: external and IPv6 addresses show up again. Each status
+    refresh emptied the cache before the background fetch had written to
+    it, so external addresses were read back blank; IPv4 and IPv6 shared a
+    cache file and overwrote each other; and local IPv6 read the interface
+    header line instead of the address. The fallback and IPv6 lookups moved
+    off ipv6-test.com, whose endpoints now 404, to api.ipify.org and
+    api6.ipify.org; dig asks OpenDNS over IPv4, since over IPv6 it answers
+    empty; and only something that looks like an address is cached, so a
+    captive portal's HTML page can't land on the status bar. Thanks to
+    Nerahikada (Closes: GH #172, GH #173)
 
 byobu (7.23) 2026-10-29  Dustin Kirkland <kirkland@ubuntu.com>
 

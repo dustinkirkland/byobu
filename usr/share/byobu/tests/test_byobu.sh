@@ -709,6 +709,18 @@ assert_true "ip_address: ip route get has ifaddr fallback" \
 # statusrc documents EXTERNAL_IP_SOURCE
 assert_true "statusrc: documents EXTERNAL_IP_SOURCE" \
 	"grep -q 'EXTERNAL_IP_SOURCE' '$BYOBU_PREFIX/share/byobu/status/statusrc'"
+# GH #172/#173: dead endpoints gone, dig asks over IPv4, separate v6 cache,
+# and only address-shaped answers are cached
+assert_false "ip_address: no ipv6-test.com endpoints (they 404)" \
+	"grep -q 'ipv6-test.com' '$_ip'"
+assert_true "ip_address: dig asks OpenDNS over IPv4" \
+	"grep -q 'dig -4 ' '$_ip'"
+assert_true "ip_address: external IPv6 has its own cache file" \
+	"grep -q 'ip_address6' '$_ip'"
+assert_true "ip_address: accepts IPv4 and IPv6 addresses" \
+	"sh -c '. \"$_ip\"; ___ip_address_valid 203.0.113.7 && ___ip_address_valid 2001:db8::1'"
+assert_false "ip_address: rejects HTML, error text and empty answers" \
+	"sh -c '. \"$_ip\"; ___ip_address_valid \"<html>\" || ___ip_address_valid \";; connection timed out\" || ___ip_address_valid \"\"'"
 unset _ip
 
 # ---------------------------------------------------------------------------
