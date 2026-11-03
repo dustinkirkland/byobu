@@ -26,7 +26,8 @@ RC phases:
     4e Homebrew byobu smoke test   │
     4f Salsa CI (gbp buildpackage) │
     4g Nix build + smoke test      │
-    4h trustmux PWA end-to-end     ┘
+    4h trustmux PWA end-to-end     │
+    4i trustmux PWA on Android     ┘
     5  PPA source builds
 
 Final skips phase 4 (smoke already passed on RC commit):
@@ -520,7 +521,13 @@ def check_homebrew_resources_fresh():
     ))
 
     pyproject = (BYOBU_SRC / "mobile" / "pyproject.toml").read_text()
-    floors = dict(re.findall(r'"([a-zA-Z0-9_-]+)>=([0-9.]+)"', pyproject))
+    # A dependency may carry environment markers and appear more than once
+    # (tornado: >=6.6 on Python 3.11+, >=6.5.8 below). The formula pins one
+    # modern Python, so hold its resources to the highest floor listed.
+    floors = {}
+    for name, floor in re.findall(r'"([a-zA-Z0-9_-]+)>=([0-9.]+)[";]', pyproject):
+        if name not in floors or _version_tuple(floor) > _version_tuple(floors[name]):
+            floors[name] = floor
 
     stale = []
     for name, floor in floors.items():
@@ -1206,6 +1213,22 @@ def run_pwa_e2e_test():
     """
     section("Phase 4h: trustmux PWA end-to-end (Docker, headless Chromium)")
     run([str(BYOBU_SRC / "mobile" / "tests" / "e2e" / "run.sh")])
+
+
+def run_pwa_android_test():
+    """Drive the trustmux PWA in real Chrome on an Android emulator.
+
+    mobile/tests/android/run.sh boots an x86_64 Android emulator (KVM) in a
+    throwaway container and touches the PWA through adb, so Chrome's own
+    text-selection handles and long press are exercised -- what headless
+    Chromium (4h) can't do. Needs /dev/kvm; without it this phase is
+    skipped with a warning rather than failing the release.
+    """
+    section("Phase 4i: trustmux PWA on Android (Docker, emulator + Chrome)")
+    if not os.access("/dev/kvm", os.R_OK | os.W_OK):
+        print("  ⚠ /dev/kvm isn't usable here; skipping the Android emulator tests")
+        return
+    run([str(BYOBU_SRC / "mobile" / "tests" / "android" / "run.sh")])
 
 
 def run_pip_smoke_test(v):
@@ -2726,8 +2749,11 @@ def push_salsa(v, identity):
         # gbp also tags the imported commit upstream/<version> locally —
         # that tag must be pushed too, or it only ever exists in this
         # throwaway clone and is lost the moment tmpdir is removed.
+        # gbp guesses the version from the tarball name and asks to confirm
+        # it unless told: it's base_ver, from configure.ac, so say so.
         run([
-            "gbp", "import-orig",
+            "gbp", "import-orig", "--no-interactive",
+            f"--upstream-version={base_ver}",
             "--upstream-branch=upstream/latest",
             "--debian-branch=debian/latest",
             str(tarball),
@@ -3143,6 +3169,7 @@ def main():
         parallel.append(("Homebrew byobu", lambda: run_homebrew_byobu_smoke_test(v)))
         parallel.append(("Nix build",     lambda: build_nix_package(v)))
         parallel.append(("PWA e2e",       run_pwa_e2e_test))
+        parallel.append(("PWA Android",   run_pwa_android_test))
         parallel.append(("Salsa CI",      run_salsa_ci))
     if mode == "rc" and should_run("5", start_from):
         parallel.append(("PPA builds", lambda: build_ppa_packages(v, identity)))

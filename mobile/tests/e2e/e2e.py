@@ -781,6 +781,51 @@ def pane_does_not_redraw_under_a_held_finger(ui, p0, p1):
 
 
 @scenario
+def scrolled_up_view_stays_put_while_the_pane_prints(ui, p0, p1):
+    # The capture is the pane's last 300 lines; past that, each new line
+    # drops one off the top, which used to slide a scrolled-up view up a
+    # line per update.
+    import threading
+    tty = write_pane0("".join(f"KEEP-{i:03d} history\r\n" for i in range(400)))
+    line_at = """(() => {
+      const o = document.getElementById('output'), b = o.getBoundingClientRect();
+      let el = document.elementFromPoint(b.left + 40, b.top + b.height / 2);
+      while (el && el.parentElement !== o) el = el.parentElement;
+      return el ? el.textContent.slice(0, 30) : null; })()"""
+    stop = []
+
+    def printer():
+        for i in range(40):
+            if stop:
+                return
+            with open(tty, "w") as f:
+                f.write(f"NEW-{i:03d} streamed\r\n")
+            time.sleep(0.1)
+    try:
+        wait_output(ui, "KEEP-399")
+        js(ui, "scrollOutputToBottom()")
+        time.sleep(0.6)
+        js(ui, "document.getElementById('output').scrollTop -= 600")
+        time.sleep(0.4)
+        before = js(ui, line_at)
+        t = threading.Thread(target=printer)
+        t.start()
+        seen = []
+        while t.is_alive():
+            seen.append(js(ui, line_at))
+            time.sleep(0.2)
+        time.sleep(0.6)
+        seen.append(js(ui, line_at))
+        moved = [x for x in seen if x != before]
+        if not before or moved:
+            raise AssertionError(f"the line in view went from {before!r} to {moved[:1]!r}")
+    finally:
+        stop.append(1)
+        sh("tmux", "clear-history", "-t", "e2e.0")
+        restore_pane0(tty, p0)
+
+
+@scenario
 def selection_survives_cursor_moves(ui, p0, p1):
     # The key bar's ghost caret sits at the pane cursor; moving it splits and
     # re-joins the cursor line's text, which used to collapse a selection.

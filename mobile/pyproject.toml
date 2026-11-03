@@ -4,13 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "trustmux"
-version = "7.23"
+version = "7.24"
 description = "Monitor and interact with tmux/Byobu sessions from your phone"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
 authors = [{name = "Dustin Kirkland", email = "dustin.kirkland@gmail.com"}]
 requires-python = ">=3.10"
-dependencies = ["tornado>=6.5.8", "cryptography>=50.0"]
+dependencies = [
+    # tornado 6.6 (security fixes) needs Python 3.11+; 3.10 keeps 6.5.8+.
+    "tornado>=6.6; python_version >= '3.11'",
+    "tornado>=6.5.8; python_version < '3.11'",
+    "cryptography>=50.0",
+]
 keywords = ["tmux", "byobu", "terminal", "mobile", "pwa"]
 classifiers = [
     "Development Status :: 4 - Beta",

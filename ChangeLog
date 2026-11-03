@@ -16,7 +16,28 @@ Entries below 7.15 are the original, unedited history as it existed in
 debian/changelog before this split -- full history preserved, nothing
 lost, just relocated to where all distributions can use it.
 
-byobu (7.23) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
+byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
+
+  * release.py: a final release no longer stops to ask "What is the
+    upstream version?" while importing into Salsa. gbp import-orig is
+    now handed the version (from configure.ac) and runs non-interactively.
+  * mobile: security: raise the tornado floor to 6.6 on Python 3.11+,
+    closing three Dependabot advisories: GHSA-r4j5-9xpp-3985 (medium --
+    chunked bodies with many small chunks block the event loop and use
+    excess memory), GHSA-pcg2-g6cj-q92c (medium -- quadratic CPU parsing
+    HTTP headers with line folding), and GHSA-pw9p-v7r6-gx4p (low -- open
+    redirect in RedirectHandler; trustmux doesn't use it). tornado 6.6
+    needs Python 3.11, so Python 3.10 keeps the >=6.5.8 floor via an
+    environment marker; no 6.5.x release carries these fixes. Also bumps
+    cryptography to 50.0.2 and pycparser to 3.12 (3.11 on Python 3.10).
+    mobile/uv.lock, mobile/requirements.txt and the Homebrew formula's
+    resource pins updated to match. release.py's Homebrew freshness check
+    now reads floors that carry environment markers; it used to skip them,
+    which would have quietly dropped tornado from the check
+  * ci: bump actions/setup-python to 7.1.0 and pypa/gh-action-pypi-publish
+    to 1.14.3
+
+byobu (7.23) 2026-10-29  Dustin Kirkland <kirkland@ubuntu.com>
 
   * trustmux/pwa: selecting text to copy is less erratic. The pane no
     longer redraws while a finger (or mouse button) is down on it or
@@ -29,6 +50,24 @@ byobu (7.23) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     click selects a word again. Dragging a selection handle down no
     longer runs on to the bottom of the pane: while text is selected the
     output can't scroll into the blank rows tmux keeps below the cursor.
+  * trustmux/pwa: dragging a selection handle toward the top or bottom
+    of the pane no longer selects the whole scrollback. Found on real
+    Android Chrome: dragged past the edge, a handle put that end of the
+    selection on the header or input bar, taking in all the hidden
+    scrollback in between; and Chrome's handle autoscroll jumped the pane
+    straight to the end. Now a dragged end stays on the visible lines,
+    and each drag past an edge scrolls one line. Finger scrolling is
+    unchanged.
+  * trustmux/pwa: a finger held on the pane holds it still while output
+    keeps arriving: it moves only with the finger. Once a held finger
+    started scrolling, Chrome stopped reporting it, so updates resumed
+    under it, and near the bottom each one yanked the view back down.
+    Updates now wait until the finger lifts and any fling settles; a
+    scrolled-up view keeps the same lines in place as new ones arrive.
+  * mobile/tests/android: real-Android tests for the PWA. An x86_64
+    Android emulator (KVM) in Docker runs real Chrome against trustmux,
+    touched through adb, so text selection handles and long press are
+    exercised; new RC phase 4i.
   * trustmux/pwa: read aloud, opt in under Settings. Triple tap a spot
     in the output and the block it belongs to is read with the phone's
     own on-device voice, one sentence at a time, highlighting the
