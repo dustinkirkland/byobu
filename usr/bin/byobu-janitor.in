@@ -79,6 +79,9 @@ MC=0
 # Affects: tmux 3.6 rejects \#RRGGBB hex escape — strip the backslash (GH: #105)
 # Skip sed -i if color.tmux is a symlink — sed -i replaces symlinks with regular files (GH: #112)
 [ -L "$BYOBU_CONFIG_DIR/color.tmux" ] || sed -i 's/="\\#/="#/g' "$BYOBU_CONFIG_DIR/color.tmux" 2>/dev/null || true
+# Affects: 7.24 moved the default highlight from Ubuntu orange to white; update
+# a color.tmux still carrying the stock orange, and leave any other choice (GH: #169)
+[ -L "$BYOBU_CONFIG_DIR/color.tmux" ] || sed -i 's/^BYOBU_HIGHLIGHT="#DD4814"$/BYOBU_HIGHLIGHT="#FFFFFF"/' "$BYOBU_CONFIG_DIR/color.tmux" 2>/dev/null || true
 [ -r "$BYOBU_CONFIG_DIR/datetime.tmux" ] || printf 'BYOBU_DATE="%%Y-%%m-%%d "\nBYOBU_TIME="%%H:%%M:%%S"\n' > "$BYOBU_CONFIG_DIR/datetime.tmux"
 [ -r "$BYOBU_CONFIG_DIR/profile" ] || echo "source \$BYOBU_PREFIX/share/$PKG/profiles/common" > "$BYOBU_CONFIG_DIR/profile"
 [ -r "$BYOBU_CONFIG_DIR/profile.tmux" ] || echo "source \$BYOBU_PREFIX/share/$PKG/profiles/tmux" > "$BYOBU_CONFIG_DIR/profile.tmux"

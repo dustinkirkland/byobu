@@ -39,7 +39,10 @@ set-window-option -g xterm-keys on
 
 #set-option -g set-titles on
 #set-option -g set-titles-string '#(whoami)@#H - byobu (#S)'
-set-option -g pane-active-border-style bg=$BYOBU_HIGHLIGHT,fg=$BYOBU_HIGHLIGHT
+set-option -g pane-active-border-style fg=$BYOBU_HIGHLIGHT
+# A heavy line rather than a solid block of colour (GH: #169); tmux 3.2+, -q
+# keeps older tmux quiet
+set-option -gq pane-border-lines heavy
 set-option -g pane-border-style fg=$BYOBU_ACCENT
 set-option -g history-limit 100000
 set-option -g display-panes-time 150

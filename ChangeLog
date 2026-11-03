@@ -52,6 +52,16 @@ byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     and so printed "None"; it now asks the kernel for the outbound source
     address, as IPv4 already did, and otherwise uses the default route's
     interface. MONITORED_NETWORK still overrides it
+  * tmux: the active pane's border is now a heavy white line instead of a
+    solid block of Ubuntu orange. byobu runs on far more than Ubuntu these
+    days, and the thick bar read as a rendering glitch. The default
+    highlight (BYOBU_HIGHLIGHT, also the active number in display-panes)
+    is now white, and a ~/.byobu/color.tmux still holding the stock orange
+    is updated to match; a highlight you chose yourself is left alone. To
+    keep the old look, add to ~/.byobu/.tmux.conf:
+      set -g pane-active-border-style bg=#DD4814,fg=#DD4814
+      set -g pane-border-lines single
+    (Closes: GH #169)
   * trustmux/pwa: the background screen lock timeout is now a choice in
     the gear menu: immediately, 30 seconds (still the default), 1 minute,
     2 minutes or 5 minutes, saved per browser. "Immediately" locks as the

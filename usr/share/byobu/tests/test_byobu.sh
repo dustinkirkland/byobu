@@ -523,7 +523,29 @@ assert_true "tmuxrc: sets pane-active-border-style from BYOBU_HIGHLIGHT" \
 	"grep -q 'pane-active-border-style.*BYOBU_HIGHLIGHT' '$_tmuxrc'"
 assert_true "tmuxrc: pane styles come AFTER color.tmux source" \
 	"awk '/source-file.*color.tmux/{found=1} /pane-border-style/{if(!found)exit 1; exit 0}' '$_tmuxrc'"
-unset _tmuxrc
+# GH #169: the active border is a white heavy line, not a solid orange block;
+# a color.tmux still holding the stock orange is moved to white
+for _f in "$_tmuxrc" "$BYOBU_PREFIX/share/byobu/profiles/tmux"; do
+	assert_false "${_f##*/}: active border has no solid background" \
+		"grep -q 'pane-active-border-style.*bg=' '$_f'"
+	assert_true "${_f##*/}: heavy pane border lines" \
+		"grep -q 'set-option -gq pane-border-lines heavy' '$_f'"
+done
+assert_true "colors: default highlight is white" \
+	"grep -q 'BYOBU_HIGHLIGHT=\"#FFFFFF\"' '$BYOBU_PREFIX/lib/byobu/include/colors'"
+_cfg=$(mktemp -d)
+printf 'BYOBU_ACCENT="#75507B"\nBYOBU_HIGHLIGHT="#DD4814"\n' > "$_cfg/stock"
+printf 'BYOBU_HIGHLIGHT="#00AA00"\n' > "$_cfg/custom"
+_mig=$(grep 'BYOBU_HIGHLIGHT="#DD4814"' "$BYOBU_PREFIX/bin/byobu-janitor.in" 2>/dev/null || grep 'BYOBU_HIGHLIGHT="#DD4814"' "$BYOBU_PREFIX/bin/byobu-janitor")
+for _n in stock custom; do
+	BYOBU_CONFIG_DIR="$_cfg" sh -c "$(printf '%s' "$_mig" | sed "s|color.tmux|$_n|g")"
+done
+assert_true "janitor: stock orange highlight moves to white" \
+	"grep -q 'BYOBU_HIGHLIGHT=\"#FFFFFF\"' '$_cfg/stock'"
+assert_true "janitor: a custom highlight is left alone" \
+	"grep -q 'BYOBU_HIGHLIGHT=\"#00AA00\"' '$_cfg/custom'"
+rm -rf "$_cfg"
+unset _tmuxrc _f _cfg _mig _n
 
 # ---------------------------------------------------------------------------
 # Section 22 — LP: #1618516  BYOBU_SHELL_ARGS written by byobu-janitor

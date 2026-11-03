@@ -30,5 +30,5 @@ export BYOBU_LIGHT="#EEEEEE"
 # Aubergine
 export BYOBU_ACCENT="#75507B"
 
-# Ubuntu orange
-export BYOBU_HIGHLIGHT="#DD4814"
+# White: the active pane border and display-panes number (GH: #169)
+export BYOBU_HIGHLIGHT="#FFFFFF"
