@@ -56,8 +56,10 @@ byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     solid block of Ubuntu orange. byobu runs on far more than Ubuntu these
     days, and the thick bar read as a rendering glitch. The default
     highlight (BYOBU_HIGHLIGHT, also the active number in display-panes)
-    is now white, and a ~/.byobu/color.tmux still holding the stock orange
-    is updated to match; a highlight you chose yourself is left alone. To
+    is now white, as is the one Ctrl-Shift-F5's random colours pick (it
+    was red), and a ~/.byobu/color.tmux still holding the stock orange is
+    updated to match; a highlight you chose yourself is left alone. byobu(1)
+    now describes the pane borders and how to restyle them. To
     keep the old look, add to ~/.byobu/.tmux.conf:
       set -g pane-active-border-style bg=#DD4814,fg=#DD4814
       set -g pane-border-lines single

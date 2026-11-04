@@ -156,7 +156,7 @@ setcolor_tmux() {
 	get_contrast "$dark"
 	light="$_RET"
 	accent="magenta"
-	highlight="red"
+	highlight="white"
 	monochrome="0"
 	printf "BYOBU_DARK=\"$dark\"\nBYOBU_LIGHT=$light\nBYOBU_ACCENT=$accent\nBYOBU_HIGHLIGHT=$highlight\nMONOCHROME=$MONOCHROME" > "$FILE".tmux
 	tmux source "$BYOBU_PREFIX/share/byobu/profiles/tmuxrc"

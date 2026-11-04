@@ -19,7 +19,7 @@ Options to \fBbyobu\fP are simply passed through \fBscreen\fP(1) or \fBtmux\fP(1
 Note that BYOBU_CONFIG_DIR=\fI$XDG_CONFIG_HOME/byobu\fP if defined, and \fI$HOME/.byobu\fP otherwise.
 
 .SH BACKGROUND COLORS
-The background colors of the \fBbyobu\fP status lines can be adjusted by editing the files \fI$HOME/.byobu/color\fP (for \fBbyobu\-screen\fP) and \fI$HOME/.byobu/color.tmux\fP (for \fBbyobu\-tmux\fP).  The command \fBCtrl-Shift-F5\fP will change the background to a randomly selected color when running in \fBbyobu\-tmux\fP mode.  Simply remove those files to return to the default color configuration.
+The background colors of the \fBbyobu\fP status lines can be adjusted by editing the files \fI$HOME/.byobu/color\fP (for \fBbyobu\-screen\fP) and \fI$HOME/.byobu/color.tmux\fP (for \fBbyobu\-tmux\fP).  The command \fBCtrl-Shift-F5\fP will change the background to a randomly selected color when running in \fBbyobu\-tmux\fP mode.  Simply remove those files to return to the default color configuration.  In \fBbyobu\-tmux\fP, the active pane is marked by a heavy border line in \fBBYOBU_HIGHLIGHT\fP (white by default) and the other panes by a line in \fBBYOBU_ACCENT\fP; set either in \fI$HOME/.byobu/color.tmux\fP, or restyle the borders with tmux's \fBpane\-active\-border\-style\fP, \fBpane\-border\-style\fP and \fBpane\-border\-lines\fP options in \fI$HOME/.byobu/.tmux.conf\fP, which is read after Byobu's own settings.
 
 .SH STATUS NOTIFICATIONS
 
