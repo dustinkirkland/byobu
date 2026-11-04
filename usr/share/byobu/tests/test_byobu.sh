@@ -536,7 +536,10 @@ assert_true "colors: default highlight is white" \
 _cfg=$(mktemp -d)
 printf 'BYOBU_ACCENT="#75507B"\nBYOBU_HIGHLIGHT="#DD4814"\n' > "$_cfg/stock"
 printf 'BYOBU_HIGHLIGHT="#00AA00"\n' > "$_cfg/custom"
-_mig=$(grep 'BYOBU_HIGHLIGHT="#DD4814"' "$BYOBU_PREFIX/bin/byobu-janitor.in" 2>/dev/null || grep 'BYOBU_HIGHLIGHT="#DD4814"' "$BYOBU_PREFIX/bin/byobu-janitor")
+# Source tree, plain install, or Nix (which moves the script to bin/.byobu-janitor
+# and leaves a makeWrapper stub at bin/byobu-janitor)
+_mig=$(cat "$BYOBU_PREFIX/bin/byobu-janitor.in" "$BYOBU_PREFIX/bin/byobu-janitor" \
+	"$BYOBU_PREFIX/bin/.byobu-janitor" 2>/dev/null | grep -m1 'BYOBU_HIGHLIGHT="#DD4814"')
 for _n in stock custom; do
 	BYOBU_CONFIG_DIR="$_cfg" sh -c "$(printf '%s' "$_mig" | sed "s|color.tmux|$_n|g")"
 done
