@@ -18,6 +18,18 @@ lost, just relocated to where all distributions can use it.
 
 byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
 
+  * tmux: keystrokes no longer lag behind a large tmux server. tmux runs
+    each #() in the status line by fork()ing its whole server, about once
+    a second per side per attached client, and fork() copies the server's
+    page tables: a 16 GB server (long-lived sessions, deep scrollback) sat
+    at 100% CPU in the kernel, with 0.4-2 second round trips. The new
+    byobu-status-tmux, started by byobu-status once per tmux server,
+    gathers the status in its own small process and publishes it in
+    @byobu_status_left/@byobu_status_right, which status-left/status-right
+    read with #{E:...}: no forks in the server at all, and one gathering
+    per tick instead of one per client and side. Needs tmux 2.9; older
+    tmux keeps running byobu-status directly, and so does anyone with
+    ~/.byobu/status-tmux.disable.
   * release.py: a final release no longer stops to ask "What is the
     upstream version?" while importing into Salsa. gbp import-orig is
     now handed the version (from configure.ac) and runs non-interactively.

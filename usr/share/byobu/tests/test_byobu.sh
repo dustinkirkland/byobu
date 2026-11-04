@@ -1265,6 +1265,34 @@ for _f in hostname release distro whoami; do
 done
 unset _f
 
+# str_replace: literal, every occurrence; byobu-status-tmux uses it to swap
+# the #() status commands for #{E:} options, and to double % for strftime
+str_replace '#[fg=red]#(byobu-status tmux_left) x #(byobu-status tmux_left)' \
+	'#(byobu-status tmux_left)' '#{E:@byobu_status_left}'
+assert_eq "str_replace: every occurrence, rest untouched" "$_RET" \
+	'#[fg=red]#{E:@byobu_status_left} x #{E:@byobu_status_left}'
+str_replace 'cpu 38% mem 4%%' '%' '%%'
+assert_eq "str_replace: % doubled" "$_RET" 'cpu 38%% mem 4%%%%'
+str_replace 'a*b?c[d]' '*b?c[' 'X'
+assert_eq "str_replace: glob characters are literal" "$_RET" 'aXd]'
+str_replace 'abc' 'zz' 'X'
+assert_eq "str_replace: no match is a no-op" "$_RET" 'abc'
+str_replace 'abc' '' 'X'
+assert_eq "str_replace: empty pattern is a no-op" "$_RET" 'abc'
+
+# tmux_version_at_least: #{E:} needs tmux 2.9
+assert_true  "tmux version: 3.4 >= 2.9"            "tmux_version_at_least 2 9 'tmux 3.4'"
+assert_true  "tmux version: 2.9 >= 2.9"            "tmux_version_at_least 2 9 'tmux 2.9'"
+assert_true  "tmux version: 2.9a >= 2.9"           "tmux_version_at_least 2 9 'tmux 2.9a'"
+assert_true  "tmux version: 3.0 >= 2.9"            "tmux_version_at_least 2 9 'tmux 3.0'"
+assert_true  "tmux version: next-3.6 >= 2.9"       "tmux_version_at_least 2 9 'tmux next-3.6'"
+assert_true  "tmux version: openbsd build assumed" "tmux_version_at_least 2 9 'tmux openbsd-7.6'"
+assert_true  "tmux version: master assumed"        "tmux_version_at_least 2 9 'tmux master'"
+assert_false "tmux version: 2.8 < 2.9"             "tmux_version_at_least 2 9 'tmux 2.8'"
+assert_false "tmux version: 1.9a < 2.9"            "tmux_version_at_least 2 9 'tmux 1.9a'"
+assert_false "tmux version: 2.10 is not read as 2.1 < 2.9 (control)" \
+	"! tmux_version_at_least 2 9 'tmux 2.10'"
+
 # byobu-ulevel: option values are numbers or nothing (they reach bc and eval).
 # Section 17's temp copy is gone by now (rm'd once its own tests finished) --
 # build a fresh one the same way it did: @prefix@-substituted .in from the

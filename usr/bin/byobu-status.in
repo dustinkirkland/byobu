@@ -37,6 +37,30 @@ for i in "${BYOBU_PREFIX}/share/$PKG/status/status" "${BYOBU_PREFIX}/share/$PKG/
 done
 [ -r "$BYOBU_CONFIG_DIR/datetime.tmux" ] && . "$BYOBU_CONFIG_DIR/datetime.tmux"
 
+# Start byobu-status-tmux for this tmux server, unless one is running already
+# or has found this tmux too old for it.  It takes over gathering the status,
+# so that tmux stops fork()ing its whole server to run us.
+start_status_tmux() {
+	local socket server lock pid=
+	[ -n "$TMUX" ] || return 0
+	[ -e "$BYOBU_CONFIG_DIR/status-tmux.disable" ] && return 0
+	socket="${TMUX%%,*}"
+	server="${TMUX#*,}"; server="${server%%,*}"
+	lock="$BYOBU_RUN_DIR/.status-tmux.${socket##*/}"
+	if [ -r "$lock/unsupported" ]; then
+		read pid < "$lock/unsupported"
+		[ "$pid" = "$server" ] && return 0
+		rm -rf "$lock"
+	elif [ -r "$lock/pid" ]; then
+		read pid < "$lock/pid"
+		kill -0 "$pid" 2>/dev/null && return 0
+		rm -rf "$lock"
+	fi
+	mkdir "$lock" 2>/dev/null || return 0
+	byobu-status-tmux "$lock" </dev/null >/dev/null 2>&1 &
+	printf "%s\n" "$!" > "$lock/pid"
+}
+
 case "$BYOBU_BACKEND" in
 	screen)
 		# Reload profile, if necessary
@@ -48,6 +72,8 @@ case "$BYOBU_BACKEND" in
 		fi
 	;;
 	tmux)
+		[ "$1" = "tmux_left" ] && [ -z "$BYOBU_STATUS_TMUX" ] && start_status_tmux
+
 		# Fix status printing for small terminal sizes in tmux
 		#
 		# tmux runs status-left and status-right as two independent,
