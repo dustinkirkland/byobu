@@ -1401,6 +1401,12 @@ assert_true  "purge-old-kernels: quotes \$@" "grep -q 'apt-get \"\$@\" autoremov
 assert_false "byobu-ctrl-a: stray character after keybindings path removed" "grep -q '\"\$keybindings\"e' '${BYOBU_PREFIX}/bin/byobu-ctrl-a.in'"
 assert_false "updates_available: cache path not spliced into sh -c" "grep -q 'sh -c \".*mycache' '${BYOBU_PREFIX}/lib/${PKG}/updates_available'"
 
+# byobu-config's catalogs: make install puts them in share/locale (po/Makefile.am)
+_cfgpy=$(cat "${BYOBU_PREFIX}/lib/${PKG}/include/config.py.in" "${BYOBU_PREFIX}/lib/${PKG}/include/config.py" 2>/dev/null)
+assert_true  "byobu-config: gettext reads share/locale, where make install puts catalogs" \
+	"printf '%s' \"\$_cfgpy\" | grep -q \"bindtextdomain(PKG, BYOBU_PREFIX + '/share/locale')\""
+unset _cfgpy
+
 # ---------------------------------------------------------------------------
 # Results
 # ---------------------------------------------------------------------------

@@ -68,7 +68,9 @@ RELOAD_FLAG = "%s/reload-required" % (BYOBU_RUN_DIR)
 ESC = ''
 snack.hotkeys[ESC] = ord(ESC)
 snack.hotkeys[ord(ESC)] = ESC
-gettext.bindtextdomain(PKG, SHARE + '/po')
+# make install puts the catalogs in $prefix/share/locale (po/Makefile.am),
+# not $prefix/share/byobu/po, so no translation ever loaded from there
+gettext.bindtextdomain(PKG, BYOBU_PREFIX + '/share/locale')
 gettext.textdomain(PKG)
 _ = gettext.gettext
 
