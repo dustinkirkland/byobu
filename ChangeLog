@@ -85,6 +85,7 @@ byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     translations in share/byobu/po, where nothing installs them; make
     install has put them in share/locale since 7.20, so every language
     showed English
+  * po: Vietnamese translation. Thanks to dinhkarate (Closes: GH #178)
   * trustmux/pwa: the background screen lock timeout is now a choice in
     the gear menu: immediately, 30 seconds (still the default), 1 minute,
     2 minutes or 5 minutes, saved per browser. "Immediately" locks as the
