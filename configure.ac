@@ -65,6 +65,7 @@ AC_OUTPUT(Makefile \
 	usr/bin/byobu-silent \
 	usr/bin/byobu-status \
 	usr/bin/byobu-status-detail \
+	usr/bin/byobu-status-tmux \
 	usr/bin/byobu-ugraph \
 	usr/bin/byobu-ulevel \
 	usr/lib/byobu/include/config.py \

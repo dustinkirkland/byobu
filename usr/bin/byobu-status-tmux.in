@@ -1,0 +1,133 @@
+#!/bin/sh
+#
+#    byobu-status-tmux: gather byobu's tmux status outside the tmux server
+#
+#    Copyright (C) 2026 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@byobu.org>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# tmux runs every #() in the status line by fork()ing the whole tmux server,
+# about once a second, per side, per attached client.  fork() copies the
+# server's page tables, so its cost grows with the server's memory: a server
+# that has grown to many gigabytes (long-lived sessions, deep scrollback)
+# spends hundreds of milliseconds in every one of those forks, inside its
+# single-threaded event loop, and keystrokes queue up behind them.
+#
+# Instead, this gathers the status once a second, in its own small process,
+# and hands it to tmux in the user options @byobu_status_left and
+# @byobu_status_right, which the status line reads with #{E:...}: no fork in
+# the server at all.  byobu-status starts one of these per tmux server, from
+# the first "#(byobu-status tmux_left)" that tmux runs; it then swaps the #()
+# commands in status-left/status-right for the options, and swaps them back
+# when it exits, so tmux falls back to running byobu-status (which starts a
+# new one).
+
+PKG="byobu"
+[ -r "$HOME/.byoburc" ] && . "$HOME/.byoburc"
+[ -z "${BYOBU_PREFIX}" ] && export BYOBU_PREFIX="@prefix@" || export BYOBU_PREFIX
+. "${BYOBU_PREFIX}/lib/${PKG}/include/common"
+
+LOCK="$1"
+[ -n "$LOCK" ] && [ -d "$LOCK" ] && [ -n "$TMUX" ] || exit 1
+
+# #{E:...} needs tmux 2.9; leave a marker so that byobu-status does not keep
+# starting us against this server
+if ! tmux_version_at_least 2 9 "$(tmux -V 2>/dev/null)"; then
+	server="${TMUX#*,}"; server="${server%%,*}"
+	printf "%s\n" "$server" > "$LOCK/unsupported"
+	exit 0
+fi
+
+JOB_LEFT="#(byobu-status tmux_left)"
+JOB_RIGHT="#(byobu-status tmux_right)"
+OPT_LEFT="#{E:@byobu_status_left}"
+OPT_RIGHT="#{E:@byobu_status_right}"
+
+# tmux_arg(value)
+# tmux splits commands on an argument ending in ";", so escape a trailing one
+tmux_arg() {
+	case "$1" in
+		*\;) _RET="${1%;}\\;" ;;
+		*) _RET="$1" ;;
+	esac
+}
+
+# read_status()
+# One round trip to the server: status-left, status-right, attached clients
+read_status() {
+	local out
+	out=$(tmux show -gv status-left \; show -gv status-right \; list-clients -F . 2>/dev/null) || return 1
+	{
+		IFS= read -r sl; IFS= read -r sr
+		clients=0
+		while read -r _; do clients=$((clients + 1)); done
+	} <<EOF
+$out
+EOF
+}
+
+# swap_status(from-left, to-left, from-right, to-right)
+# Rewrite status-left/status-right ($sl/$sr), leaving whatever else is in
+# them alone; the results are in $left/$right
+swap_status() {
+	str_replace "$sl" "$1" "$2"; left="$_RET"
+	str_replace "$sr" "$3" "$4"; right="$_RET"
+	[ "$left$right" = "$sl$sr" ] && return 0
+	tmux_arg "$left"; local l="$_RET"
+	tmux_arg "$right"
+	tmux set -g status-left "$l" \; set -g status-right "$_RET"
+}
+
+# publish(side)
+# byobu-status's output for one side, ready for #{E:...}: that expands
+# strftime formats, which #() output never was, so a literal % is doubled
+publish() {
+	tmux_format_literal "$(byobu-status "$1")"
+	str_replace "$_RET" "%" "%%"
+	tmux_arg "$_RET"
+}
+
+cleanup() {
+	read_status && swap_status "$OPT_LEFT" "$JOB_LEFT" "$OPT_RIGHT" "$JOB_RIGHT"
+	rm -rf "$LOCK"
+}
+
+export BYOBU_STATUS_TMUX=1
+last_left= last_right=
+trap cleanup EXIT
+trap 'exit 0' HUP INT TERM
+
+while read_status; do
+	[ -e "$BYOBU_CONFIG_DIR/status-tmux.disable" ] && break
+	swap_status "$JOB_LEFT" "$OPT_LEFT" "$JOB_RIGHT" "$OPT_RIGHT" || break
+	# Nothing reads the options any more (customized away), so stop
+	case "$left$right" in
+		*@byobu_status_*) ;;
+		*) break ;;
+	esac
+	if [ "$clients" -gt 0 ]; then
+		publish tmux_left; left="$_RET"
+		publish tmux_right
+		# Every set-option redraws every client in full, not just its status
+		# line, so only set the options when the status has changed
+		if [ "$left" != "$last_left" ] || [ "$_RET" != "$last_right" ]; then
+			tmux set -gq @byobu_status_left "$left" \; set -gq @byobu_status_right "$_RET" || break
+			last_left="$left"; last_right="$_RET"
+		fi
+	fi
+	sleep 1
+done
+
+# vi: syntax=sh ts=4 noexpandtab

@@ -1,0 +1,26 @@
+.TH byobu-status-tmux 1 "4 Nov 2026" byobu "byobu"
+.SH NAME
+byobu\-status\-tmux \- gathers byobu's tmux status outside the tmux server
+
+.SH DESCRIPTION
+tmux runs every \fI#(command)\fP in its status line by forking the whole tmux server, about once a second, for each side of the status line and each attached client.  The cost of each fork grows with the server's memory, so a long\-lived server with deep scrollback can spend most of its time forking, and keystrokes lag behind.
+
+\fBbyobu\-status\-tmux\fP avoids that.  \fBbyobu\-status\fP(1) starts one per tmux server, the first time tmux runs it; it then gathers the status once a second in its own process, publishes it in the tmux user options \fI@byobu_status_left\fP and \fI@byobu_status_right\fP, and replaces \fI#(byobu\-status tmux_left)\fP and \fI#(byobu\-status tmux_right)\fP in \fIstatus\-left\fP and \fIstatus\-right\fP with \fI#{E:@byobu_status_left}\fP and \fI#{E:@byobu_status_right}\fP, leaving the rest of those options alone.  It skips gathering while no client is attached, exits along with the tmux server, and on exit puts the \fI#()\fP commands back.
+
+It needs tmux 2.9 or later; with older versions, tmux keeps running \fBbyobu\-status\fP directly.  To keep that behaviour on any version, create \fI$BYOBU_CONFIG_DIR/status\-tmux.disable\fP; a running \fBbyobu\-status\-tmux\fP notices within a second, puts the \fI#()\fP commands back and exits.
+
+Because \fI#{E:...}\fP would run any \fI#(command)\fP it found, which tmux never did for the output of \fI#()\fP, every \fI#\fP in the status is shown as text, apart from \fI#[style]\fP: a custom status script in \fI$BYOBU_CONFIG_DIR/bin\fP (see \fBbyobu\fP(1)) can still set colours with \fI#[fg=...]\fP, but a \fI#{format}\fP it prints appears literally.
+
+It is not meant to be run by hand.
+
+.SH SEE ALSO
+\fBbyobu\-status\fP(1), \fBtmux\fP(1)
+
+.TP
+\fIhttps://byobu.org\fP
+.PD
+
+.SH AUTHOR
+This manpage and the utility were written by Dustin Kirkland <kirkland@byobu.org> for Ubuntu systems (but may be used by others).  Permission is granted to copy, distribute and/or modify this document and the utility under the terms of the GNU General Public License, Version 3 published by the Free Software Foundation.
+
+The complete text of the GNU General Public License can be found in \fI/usr/share/common-licenses/GPL\fP on Debian/Ubuntu systems, or in \fI/usr/share/doc/fedora-release-*/GPL\fP on Fedora systems, or on the web at \fIhttp://www.gnu.org/licenses/gpl.txt\fP.

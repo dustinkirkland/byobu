@@ -135,6 +135,68 @@ printf_status() {
 	esac
 }
 
+# str_replace(string, from, to)
+# Replace every literal occurrence of 'from' in 'string' with 'to', in _RET
+str_replace() {
+	local s="$1" from="$2" to="$3" out=
+	if [ -z "$from" ]; then
+		_RET="$s"
+		return
+	fi
+	while :; do
+		case "$s" in
+			*"$from"*)
+				out="$out${s%%"$from"*}$to"
+				s="${s#*"$from"}"
+			;;
+			*)
+				break
+			;;
+		esac
+	done
+	_RET="$out$s"
+}
+
+# tmux_format_literal(string)
+# For byobu-status-tmux, in _RET.  tmux expands #() output with jobs turned
+# off, but #{E:...} runs every #(command) and expands every #{format} it
+# meets.  Keep byobu's #[style] and ## escapes and double every other "#",
+# so that nothing a widget prints (a custom script relaying a headline, say,
+# or "#{E:pane_title}", which any program can set) can run a command or
+# read tmux state
+tmux_format_literal() {
+	local s="$1" out= head=
+	while :; do
+		case "$s" in
+			*"#"*) ;;
+			*) break ;;
+		esac
+		head="${s%%#*}"
+		out="$out$head"
+		s="${s#"$head"}"
+		case "$s" in
+			"##"*|"#["*) out="$out${s%"${s#??}"}"; s="${s#??}" ;;
+			*) out="$out##"; s="${s#?}" ;;
+		esac
+	done
+	_RET="$out$s"
+}
+
+# tmux_version_at_least(major, minor, version)
+# Is 'version' (as printed by "tmux -V") at least major.minor?  Builds
+# without a numeric version (master, openbsd-7.6) are assumed current.
+tmux_version_at_least() {
+	local v="${3#tmux }" maj= min=
+	v="${v#next-}"
+	case "$v" in
+		[0-9]*.[0-9]*) ;;
+		*) return 0 ;;
+	esac
+	maj="${v%%.*}"
+	min="${v#*.}"; min="${min%%[!0-9]*}"
+	[ "$maj" -gt "$1" ] || { [ "$maj" -eq "$1" ] && [ "${min:-0}" -ge "$2" ]; }
+}
+
 color() {
 	case "$BYOBU_BACKEND" in
 		tmux)
