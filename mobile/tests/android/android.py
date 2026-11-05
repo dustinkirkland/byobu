@@ -10,6 +10,15 @@ Chrome's remote debugging protocol.
 Coordinates: page code works in CSS pixels relative to the viewport; adb
 works in screen pixels. calibrate() finds the mapping by tapping a known
 screen point and reading where the page saw it.
+
+Timing: never sleep in place of "the device has caught up". On a busy host
+every adb `input` call (one JVM each) and every frame can take far longer
+than on an idle one, so wait for the thing itself -- the page seeing the
+finger lift, the scroll settling, the selection appearing -- with
+wait_until()/wait_stable(). Sleeps are only for what a person does (how
+long a press is held, a drag's pace) or for letting the pane print.
+Before changing these tests, run them under load:
+ANDROID_CPUS=2 REPEAT=10 mobile/tests/android/run.sh, with no failures.
 """
 import json
 import os
@@ -38,6 +47,84 @@ def tmux_fmt(target, fmt):
     return sh("tmux", "display-message", "-p", "-t", target, fmt)
 
 
+def wait_until(fn, what, timeout=10, every=0.1):
+    """Poll fn() until it returns something true, and return that."""
+    end = time.time() + timeout
+    while True:
+        got = fn()
+        if got:
+            return got
+        if time.time() > end:
+            raise AssertionError(f"timed out after {timeout}s waiting for {what}")
+        time.sleep(every)
+
+
+def wait_stable(fn, what, quiet=0.3, timeout=10, every=0.1):
+    """Poll fn() until its value has held for `quiet` seconds; return it."""
+    end = time.time() + timeout
+    last, since = fn(), time.time()
+    while time.time() - since < quiet:
+        if time.time() > end:
+            raise AssertionError(f"timed out after {timeout}s waiting for {what}")
+        time.sleep(every)
+        cur = fn()
+        if cur != last:
+            last, since = cur, time.time()
+    return last
+
+
+# Page-side record of real touches: how many have started and ended, where
+# the finger last was, and where #output was scrolled when it landed.
+TOUCH_TRACKER = """(() => {
+  if (window.__t) return 0;
+  const t = window.__t = {down: 0, up: 0, x: null, y: null, top0: null};
+  const opt = {capture: true, passive: true};
+  document.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1) return;
+    t.down++; t.x = e.touches[0].clientX; t.y = e.touches[0].clientY;
+    t.top0 = document.getElementById('output').scrollTop;
+  }, opt);
+  document.addEventListener('touchmove', e => {
+    t.x = e.touches[0].clientX; t.y = e.touches[0].clientY;
+  }, opt);
+  for (const k of ['touchend', 'touchcancel'])
+    document.addEventListener(k, e => { if (!e.touches.length) t.up++; }, opt);
+  return 0; })()"""
+
+# A tap on #output focuses the input PANE_TAP_FOCUS_MS later (app.js
+# _paneTapFocus), and the soft keyboard then resizes the page. Count those
+# runs, so a test can wait for the focus and then for the layout to settle.
+FOCUS_HOOK = """(() => {
+  if (window.__focusRuns !== undefined) return 0;
+  window.__focusRuns = 0;
+  const f = _paneTapFocus;
+  _paneTapFocus = function () { try { return f.apply(this, arguments); } finally { window.__focusRuns++; } };
+  return 0; })()"""
+LAYOUT = """(() => { const b = document.getElementById('output').getBoundingClientRect();
+  const v = window.visualViewport;
+  return [innerHeight, v ? v.height : 0, b.top, b.bottom, document.activeElement && document.activeElement.id]; })()"""
+
+SCROLL_TOP = "document.getElementById('output').scrollTop"
+
+
+def to_bottom(cdp):
+    """scrollOutputToBottom() scrolls in a requestAnimationFrame callback:
+    wait for that frame (and the next) as well as for the position, or a
+    scroll the test makes next is undone when it runs."""
+    cdp.js("""(() => { window.__frames = 0; scrollOutputToBottom();
+      requestAnimationFrame(() => requestAnimationFrame(() => { window.__frames = 1; }));
+      return 0; })()""")
+    wait_until(lambda: cdp.js("window.__frames"), "scrollOutputToBottom's frame")
+    wait_until(lambda: cdp.js(AT_BOTTOM), "#output to scroll to the bottom")
+# The last non-blank line in #output (the cursor's row below it is blank)
+LAST_TEXT_LINE = """[...document.getElementById('output').children]
+  .map(e => e.textContent).filter(t => t.trim()).pop() || ''"""
+# Where scrollOutputToBottom() puts #output (within what it can scroll)
+AT_BOTTOM = """(() => { const o = document.getElementById('output');
+  const want = Math.max(0, Math.min(_bottomScrollTop(), o.scrollHeight - o.clientHeight));
+  return Math.abs(o.scrollTop - want) < 1; })()"""
+
+
 # ── Chrome DevTools ───────────────────────────────────────────────────────
 class Cdp:
     def __init__(self):
@@ -46,7 +133,9 @@ class Cdp:
         self.connect()
 
     def connect(self):
-        deadline = time.time() + 30
+        # Chrome's devtools socket can take a while, and drop the first
+        # requests, on a loaded emulator
+        deadline = time.time() + 90
         while True:
             try:
                 targets = json.load(urllib.request.urlopen(f"http://localhost:{DEVTOOLS}/json"))
@@ -93,17 +182,10 @@ class Device:
             e => { window.__cal = [e.touches[0].clientX, e.touches[0].clientY]; },
             { capture: true, once: true })""")
         sx, sy = 540, 1300
-        adb("shell", "input", "tap", str(sx), str(sy))
-        for _ in range(40):
-            got = self.cdp.js("window.__cal")
-            if got:
-                break
-            time.sleep(0.1)
-        else:
-            raise RuntimeError("calibration tap never reached the page")
+        self.tap(sx, sy)
+        got = wait_until(lambda: self.cdp.js("window.__cal"), "the calibration tap")
         self.ox = sx - got[0] * self.dpr
         self.oy = sy - got[1] * self.dpr
-        time.sleep(0.6)
 
     def screen(self, x, y):
         return round(self.ox + x * self.dpr), round(self.oy + y * self.dpr)
@@ -118,6 +200,29 @@ class Device:
             else:
                 cmds.append(f"input motionevent {st[0].upper()} {st[1]} {st[2]}")
         adb("shell", "; ".join(cmds))
+
+    def lifts(self):
+        return self.cdp.js("window.__t.up")
+
+    def gesture(self, steps):
+        """touch_script() for a whole gesture on the page, ending in 'up':
+        returns once the page has seen the finger lift. (A selection handle
+        drag sends the page no touch events at all; use touch_script.)"""
+        up0 = self.lifts()
+        self.touch_script(steps)
+        wait_until(lambda: self.lifts() > up0, "the page to see the finger lift")
+
+    def tap(self, sx, sy):
+        """Tap, and if it was a tap on #output, wait for the input focus it
+        schedules and for the keyboard to finish resizing the page."""
+        runs = self.cdp.js("window.__focusRuns")
+        self.gesture([("down", sx, sy), ("up", sx, sy)])
+        try:
+            wait_until(lambda: self.cdp.js("window.__focusRuns") > runs,
+                       "the tap's input focus", timeout=3)
+        except AssertionError:
+            pass   # not a tap Chrome turned into a click on #output
+        wait_stable(lambda: self.cdp.js(LAYOUT), "the layout to settle after a tap", quiet=0.4)
 
     def shot(self, name):
         os.makedirs(SHOTS, exist_ok=True)
@@ -140,9 +245,18 @@ def sample_lines(n=90):
 
 
 def fill_pane(lines):
+    """Clear the pane, print lines, and wait for #output to show them. A
+    selection defers every re-render (app.js _outputFrozen), so dismiss
+    any first."""
+    if DEV[0]:
+        dismiss_selection(CDP[0], DEV[0])
     tty = tmux_fmt("e2e.0", "#{pane_tty}")
     with open(tty, "w") as f:
         f.write("\x1b[2J\x1b[H" + "\r\n".join(lines) + "\r\n")
+    if CDP[0]:
+        last = json.dumps(lines[-1])
+        wait_until(lambda: CDP[0].js(f"({LAST_TEXT_LINE})" + f".startsWith({last})"),
+                   f"the pane to show {lines[-1][:12]!r} at the bottom")
 
 
 # ── selection probes (page side) ──────────────────────────────────────────
@@ -183,8 +297,7 @@ def long_press_word(cdp, dev, prefix, dx=None):
     if not (box[0] + 20 < r[1] and r[3] < box[1] - 20):
         cdp.js("document.getElementById('output').scrollTop += %f"
                % (r[1] - (box[0] + box[1]) / 2))
-        time.sleep(0.5)
-        r = line_rect(cdp, prefix)
+        r = wait_stable(lambda: line_rect(cdp, prefix), f"{prefix.strip()} to scroll into view")
     if dx is None:
         # Middle of the word after "Lnn ": a press on a space selects nothing.
         cw = cdp.js("(() => { const s = document.createElement('span'); s.textContent = 'x'.repeat(10);"
@@ -192,12 +305,20 @@ def long_press_word(cdp, dev, prefix, dx=None):
                     " const w = s.getBoundingClientRect().width / 10; s.remove(); return w; })()")
         dx = cw * (len(prefix) + 1.5)
     x, y = dev.screen(r[0] + dx, (r[1] + r[3]) / 2)
-    dev.touch_script([("down", x, y), ("sleep", 0.9), ("up", x, y)])
+    dev.gesture([("down", x, y), ("sleep", 0.9), ("up", x, y)])
+    try:
+        wait_until(lambda: cdp.js(SEL_INFO), "the long press to select", timeout=5)
+    except AssertionError:
+        return None
+    s = wait_stable(lambda: cdp.js(SEL_INFO), "the selection to settle")
+    # A person's pause before reaching for a handle. Chrome only shows the
+    # handles once the finger is up, and the page can't see them, so a
+    # drag that starts sooner can miss them.
     time.sleep(0.8)
-    return cdp.js(SEL_INFO)
+    return s
 
 
-def drag_handle(cdp, dev, which, lines, ms=700, settle=0.8):
+def drag_handle(cdp, dev, which, lines, ms=700):
     """Drag the start or end selection handle by `lines` text lines, at a
     steady finger pace. Chrome draws the end handle's bulb below and to the
     right of the selection end, the start handle's below and to the left."""
@@ -216,9 +337,11 @@ def drag_handle(cdp, dev, which, lines, ms=700, settle=0.8):
     for i in range(1, n + 1):
         steps += [("move", hx, hy + dy * i // n), ("sleep", round(ms / 1000 / n, 3))]
     steps += [("sleep", 0.1), ("up", hx, hy + dy)]
+    # A handle drag sends the page no touch events; adb returns once the
+    # finger is up, then the selection and any edge scrolling settle.
     dev.touch_script(steps)
-    time.sleep(settle)
-    return cdp.js(SEL_INFO)
+    return wait_stable(lambda: [cdp.js(SEL_INFO), cdp.js(SCROLL_TOP)],
+                       "the selection to settle after the drag", quiet=0.5)[0]
 
 
 def dismiss_selection(cdp, dev):
@@ -228,10 +351,9 @@ def dismiss_selection(cdp, dev):
     box = cdp.js("(() => { const b = document.getElementById('output')"
                  ".getBoundingClientRect(); return [b.left, b.top, b.right, b.bottom]; })()")
     x, y = dev.screen(box[2] - 12, (box[1] + box[3]) / 2)
-    adb("shell", "input", "tap", str(x), str(y))
-    time.sleep(0.5)
+    dev.tap(x, y)
+    # A tap inside a wide selection keeps it; clear it either way.
     cdp.js("window.getSelection().removeAllRanges()")
-    time.sleep(0.3)
 
 
 # ── harness ───────────────────────────────────────────────────────────────
@@ -261,17 +383,18 @@ def open_chrome(url):
         "com.android.chrome")
     adb("forward", f"tcp:{DEVTOOLS}", "localabstract:chrome_devtools_remote")
     cdp = Cdp()
-    deadline = time.time() + 30
-    while not cdp.js("!!document.getElementById('output') && "
-                     "document.getElementById('output').className !== 'placeholder'"):
-        if time.time() > deadline:
-            raise RuntimeError("trustmux didn't come up in Chrome")
-        time.sleep(0.5)
+    wait_until(lambda: cdp.js("!!document.getElementById('output') && "
+                              "document.getElementById('output').className !== 'placeholder'"),
+               "trustmux to come up in Chrome", timeout=90, every=0.5)
+    cdp.js(TOUCH_TRACKER)
+    cdp.js(FOCUS_HOOK)
     cdp.js("document.getElementById('bio-never-btn') && document.getElementById('bio-never-btn').click()")
     return cdp
 
 
 SCENARIOS = []
+CDP = [None]   # the one page connection, for helpers called without a ctx
+DEV = [None]   # and the device, once calibrated
 
 
 def scenario(fn):
@@ -285,11 +408,10 @@ class Ctx:
 
     def reset(self, scroll_up=0):
         dismiss_selection(self.cdp, self.dev)
-        self.cdp.js("scrollOutputToBottom()")
-        time.sleep(0.8)
+        to_bottom(self.cdp)
         if scroll_up:
-            self.cdp.js(f"document.getElementById('output').scrollTop -= {scroll_up}")
-            time.sleep(0.6)
+            self.cdp.js(f"{SCROLL_TOP} -= {scroll_up}")
+            wait_stable(lambda: self.cdp.js(SCROLL_TOP), "#output to settle after scrolling up")
 
     def drag(self, line, which, lines, ms=700):
         s = long_press_word(self.cdp, self.dev, line)
@@ -375,10 +497,10 @@ def finger_scroll_still_scrolls_with_a_selection(ctx):
     before = ctx.cdp.js("document.getElementById('output').scrollTop")
     r = line_rect(ctx.cdp, "L30 ")
     x, y = ctx.dev.screen(300, r[1] - 120)
-    ctx.dev.touch_script([("down", x, y)] + [("move", x, y + k * 40) for k in range(1, 9)]
-                         + [("up", x, y + 320)])
-    time.sleep(1.5)
-    after = ctx.cdp.js("document.getElementById('output').scrollTop")
+    ctx.dev.gesture([("down", x, y)] + [("move", x, y + k * 40) for k in range(1, 9)]
+                    + [("up", x, y + 320)])
+    # and any fling after it
+    after = wait_stable(lambda: ctx.cdp.js(SCROLL_TOP), "the finger scroll to settle", quiet=0.5)
     if before - after < 60:
         raise AssertionError(f"a finger scroll moved #output {before - after:.0f}px; "
                              "it should scroll freely while text is selected")
@@ -407,8 +529,7 @@ def drag_while_the_pane_is_printing(ctx):
     finally:
         stop.append(1)
         t.join()
-        fill_pane(sample_lines())
-        time.sleep(1.5)
+        restore_pane()
 
 
 class Printer:
@@ -468,34 +589,48 @@ def expect_still(seen, what):
 def restore_pane():
     sh("tmux", "clear-history", "-t", "e2e.0")
     fill_pane(sample_lines())
-    time.sleep(1.5)
 
 
 def held_finger_holds_still(ctx, lines):
     """Finger down on #output, scroll `lines` lines up into the history, and
-    keep holding while the pane prints: the text under it mustn't move."""
-    import threading
+    keep holding while the pane prints: the text under it mustn't move.
+
+    The finger goes down and pans in one adb call, and lifts in another, so
+    it is held for as long as the checks take, however slow the device. The
+    pan is done when the page has seen the finger at its final point and
+    #output has stopped moving."""
     ctx.reset()
     box = ctx.cdp.js("(() => { const b = document.getElementById('output')"
                      ".getBoundingClientRect(); return [b.left, b.top, b.right, b.bottom]; })()")
     lh = ctx.cdp.js("(() => { const k = document.getElementById('output').children;"
                     " return k[k.length - 2].getBoundingClientRect().height; })()")
-    x, y = ctx.dev.screen(box[0] + 200, box[1] + (box[3] - box[1]) * 0.4)
+    cy = box[1] + (box[3] - box[1]) * 0.4
+    x, y = ctx.dev.screen(box[0] + 200, cy)
     dy = round(lines * lh * ctx.dev.dpr)
+    final_y = cy + dy / ctx.dev.dpr
     n = max(1, dy // 6)
+    mid = (box[3] - box[1]) * 0.5
     with Printer():
-        before = ctx.cdp.js("document.getElementById('output').scrollTop")
-        steps = [("down", x, y), ("sleep", 0.1)]
-        steps += [("move", x, y + dy * i // n) for i in range(1, n + 1)]
-        steps += [("sleep", 4), ("up", x, y + dy)]
-        t = threading.Thread(target=ctx.dev.touch_script, args=(steps,))
-        t.start()
-        time.sleep(1.2)   # the pan is done, the finger is holding
-        scrolled = before - ctx.cdp.js("document.getElementById('output').scrollTop")
-        seen = watch_line(ctx.cdp, (box[3] - box[1]) * 0.5, 1.2)
-        ctx.dev.shot(f"holding_{lines}")
-        seen += watch_line(ctx.cdp, (box[3] - box[1]) * 0.5, 1.2)
-        t.join()
+        down0, up0 = ctx.cdp.js("window.__t.down"), ctx.dev.lifts()
+        ctx.dev.touch_script([("down", x, y), ("sleep", 0.1)]
+                             + [("move", x, y + dy * i // n) for i in range(1, n + 1)])
+        try:
+            wait_until(lambda: ctx.cdp.js("window.__t.down") > down0
+                       and abs(ctx.cdp.js("window.__t.y") - final_y) < 2,
+                       "the pan to reach its final point", timeout=20)
+            wait_stable(lambda: ctx.cdp.js(SCROLL_TOP), "the pan to settle")
+            # From where #output was when the finger landed: until then it
+            # follows the printer down.
+            scrolled = ctx.cdp.js(f"window.__t.top0 - {SCROLL_TOP}")
+            seen = watch_line(ctx.cdp, mid, 1.2)
+            ctx.dev.shot(f"holding_{lines}")
+            seen += watch_line(ctx.cdp, mid, 1.2)
+            lifted = ctx.dev.lifts() > up0
+        finally:
+            ctx.dev.touch_script([("up", x, y + dy)])
+            wait_until(lambda: ctx.dev.lifts() > up0, "the page to see the finger lift")
+    if lifted:
+        raise AssertionError("the touch ended before the checks did (Chrome cancelled it?)")
     if scrolled < lh:
         raise AssertionError(f"the finger should have scrolled #output up; it moved {-scrolled:+.0f}px")
     expect_still(seen, "held finger")
@@ -503,9 +638,10 @@ def held_finger_holds_still(ctx, lines):
 
 @scenario
 def held_finger_near_the_bottom_holds_the_pane_still(ctx):
-    # Within the bottom-snap zone: every update used to yank it back down.
+    # Within the bottom-snap zone (60px): every update used to yank it back
+    # down. Three lines, as Chrome's touch slop eats most of the first.
     try:
-        held_finger_holds_still(ctx, 2)
+        held_finger_holds_still(ctx, 3)
     finally:
         restore_pane()
 
@@ -539,9 +675,13 @@ def set_wrap(cdp, on):
     label = "document.getElementById('escape-popup-wrap').textContent"
     if cdp.js(label).startswith("✓") != on:
         cdp.js("document.getElementById('btn-escape').click()")
-        time.sleep(0.3)
+        wait_until(lambda: cdp.js("document.getElementById('escape-popup-wrap')"
+                                  ".getClientRects().length > 0"), "the escape popup")
         cdp.js("document.getElementById('escape-popup-wrap').click()")
-        time.sleep(0.8)
+        wait_until(lambda: cdp.js(label).startswith("✓") == on, "wrap mode to toggle")
+        # the pane re-renders, wrapped or not
+        wait_stable(lambda: cdp.js("document.getElementById('output').scrollHeight"),
+                    "the pane to re-render")
 
 
 @scenario
@@ -568,12 +708,12 @@ def main(filters):
     chosen = chosen * int(os.environ.get("REPEAT", "1"))
     pair, url = start_backend()
     cdp = open_chrome(url)
+    CDP[0] = cdp
     dev = Device(cdp)
     fill_pane(sample_lines())
-    time.sleep(2)
-    cdp.js("scrollOutputToBottom()")
-    time.sleep(0.8)
+    to_bottom(cdp)
     dev.calibrate()
+    DEV[0] = dev
     ctx = Ctx(cdp, dev)
     results = []
     for s in chosen:

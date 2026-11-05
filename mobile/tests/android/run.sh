@@ -11,7 +11,11 @@
 #    Chromium (tests/e2e) can't do. With no arguments every scenario runs;
 #    otherwise only those whose names contain one of the arguments. Set
 #    ANDROID_SHOTS=DIR to keep a screenshot per scenario, REPEAT=N to run
-#    each N times (flaky behavior). Exits non-zero if any scenario fails.
+#    each N times (flaky behavior), ANDROID_CPUS=N to give the emulator only
+#    N CPUs (a busy host). Exits non-zero if any scenario fails.
+#
+#    Any change to these tests must pass under load first:
+#        ANDROID_CPUS=2 REPEAT=10 mobile/tests/android/run.sh
 
 set -e
 here=$(cd "$(dirname "$0")" && pwd)
@@ -36,5 +40,5 @@ if [ -n "$ANDROID_SHOTS" ]; then
 	shots="-v $(cd "$ANDROID_SHOTS" && pwd):/shots"
 fi
 # shellcheck disable=SC2086
-exec docker run --rm --device /dev/kvm -v "$repo:/src:ro" -e REPEAT="${REPEAT:-1}" $shots "$tag" \
+exec docker run --rm ${ANDROID_CPUS:+--cpus "$ANDROID_CPUS"} --device /dev/kvm -v "$repo:/src:ro" -e REPEAT="${REPEAT:-1}" $shots "$tag" \
 	sh /src/mobile/tests/android/in_container.sh "$@"
