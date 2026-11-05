@@ -9,6 +9,8 @@ tmux runs every \fI#(command)\fP in its status line by forking the whole tmux se
 
 It needs tmux 2.9 or later; with older versions, tmux keeps running \fBbyobu\-status\fP directly.  To keep that behaviour on any version, create \fI$BYOBU_CONFIG_DIR/status\-tmux.disable\fP; a running \fBbyobu\-status\-tmux\fP notices within a second, puts the \fI#()\fP commands back and exits.
 
+Because \fI#{E:...}\fP would run any \fI#(command)\fP it found, which tmux never did for the output of \fI#()\fP, every \fI#\fP in the status is shown as text, apart from \fI#[style]\fP: a custom status script in \fI$BYOBU_CONFIG_DIR/bin\fP (see \fBbyobu\fP(1)) can still set colours with \fI#[fg=...]\fP, but a \fI#{format}\fP it prints appears literally.
+
 It is not meant to be run by hand.
 
 .SH SEE ALSO

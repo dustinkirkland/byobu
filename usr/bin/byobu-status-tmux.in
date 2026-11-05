@@ -94,7 +94,8 @@ swap_status() {
 # byobu-status's output for one side, ready for #{E:...}: that expands
 # strftime formats, which #() output never was, so a literal % is doubled
 publish() {
-	str_replace "$(byobu-status "$1")" "%" "%%"
+	tmux_format_literal "$(byobu-status "$1")"
+	str_replace "$_RET" "%" "%%"
 	tmux_arg "$_RET"
 }
 
@@ -104,6 +105,7 @@ cleanup() {
 }
 
 export BYOBU_STATUS_TMUX=1
+last_left= last_right=
 trap cleanup EXIT
 trap 'exit 0' HUP INT TERM
 
@@ -118,7 +120,12 @@ while read_status; do
 	if [ "$clients" -gt 0 ]; then
 		publish tmux_left; left="$_RET"
 		publish tmux_right
-		tmux set -gq @byobu_status_left "$left" \; set -gq @byobu_status_right "$_RET" || break
+		# Every set-option redraws every client in full, not just its status
+		# line, so only set the options when the status has changed
+		if [ "$left" != "$last_left" ] || [ "$_RET" != "$last_right" ]; then
+			tmux set -gq @byobu_status_left "$left" \; set -gq @byobu_status_right "$_RET" || break
+			last_left="$left"; last_right="$_RET"
+		fi
 	fi
 	sleep 1
 done

@@ -29,7 +29,12 @@ byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     read with #{E:...}: no forks in the server at all, and one gathering
     per tick instead of one per client and side. Needs tmux 2.9; older
     tmux keeps running byobu-status directly, and so does anyone with
-    ~/.byobu/status-tmux.disable.
+    ~/.byobu/status-tmux.disable. #{E:} runs any #(command) it meets,
+    which tmux never did for #() output, so every "#" in the status other
+    than #[style] is shown as text: a custom script relaying text from
+    elsewhere can't run commands, and a #{format} it prints now shows
+    literally. The options are set only when the status changes, since
+    each set-option redraws every client in full.
   * release.py: a final release no longer stops to ask "What is the
     upstream version?" while importing into Salsa. gbp import-orig is
     now handed the version (from configure.ac) and runs non-interactively.

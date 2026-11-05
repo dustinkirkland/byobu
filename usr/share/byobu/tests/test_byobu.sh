@@ -1280,6 +1280,22 @@ assert_eq "str_replace: no match is a no-op" "$_RET" 'abc'
 str_replace 'abc' '' 'X'
 assert_eq "str_replace: empty pattern is a no-op" "$_RET" 'abc'
 
+# tmux_format_literal: byobu-status-tmux hands the status to #{E:}, which
+# runs #() and expands #{}; only byobu's #[style] and ## escapes survive
+tmux_format_literal 'news:#(touch /tmp/x) #{E:pane_title} #D'
+assert_eq "tmux_format_literal: #(), #{} and #X aliases made literal" "$_RET" \
+	'news:##(touch /tmp/x) ##{E:pane_title} ##D'
+tmux_format_literal '#[default]#[fg=#EEEEEE,bg=#333333]42% host##name'
+assert_eq "tmux_format_literal: styles and ## kept, colours inside escaped" "$_RET" \
+	'#[default]#[fg=##EEEEEE,bg=##333333]42% host##name'
+tmux_format_literal '###(id)#'
+assert_eq "tmux_format_literal: an odd run of # can't open a job" "$_RET" '####(id)##'
+tmux_format_literal '#[fg=#{E:pane_title}]x'
+assert_eq "tmux_format_literal: a format hidden inside a style is escaped" "$_RET" \
+	'#[fg=##{E:pane_title}]x'
+tmux_format_literal 'no hashes [*?] here'
+assert_eq "tmux_format_literal: text without # unchanged" "$_RET" 'no hashes [*?] here'
+
 # tmux_version_at_least: #{E:} needs tmux 2.9
 assert_true  "tmux version: 3.4 >= 2.9"            "tmux_version_at_least 2 9 'tmux 3.4'"
 assert_true  "tmux version: 2.9 >= 2.9"            "tmux_version_at_least 2 9 'tmux 2.9'"
