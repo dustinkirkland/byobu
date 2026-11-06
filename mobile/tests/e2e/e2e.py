@@ -9,6 +9,15 @@ To add a scenario, write a function decorated with @scenario that drives
 `ui` and calls expect().  Scenarios run in file order and share one
 browser session, so each must leave the UI as it found it: terminal
 keyboard mode, key bar closed, pane 0 selected, text box empty.
+
+Timing: never sleep in place of "the browser caught up".  Wait for the
+condition itself (wait_until/wait_stable, a locator wait, a page-side
+counter), because under load anything can take longer than a guess.  A
+sleep is right only for pacing a gesture or for a window in which
+something must NOT happen.  Gestures the app times (swipes, triple taps)
+are timed by what the page saw (see GESTURES); one that load stretched
+past the app's limits raises GestureMissed and the scenario runs again.
+Any change here must pass the load gate in run.sh with no failures.
 """
 import json
 import os
@@ -25,7 +34,8 @@ PORT = "8443"
 
 # Stands in for speechSynthesis: records each utterance (text and rate) and
 # each cancel on <html data-tts-log>, readable through a locator (the app's
-# CSP rules out evaluating JS to read it). Each utterance "takes" 500ms.
+# CSP rules out evaluating JS to read it). Each utterance "takes" 500ms,
+# or until window.__ttsHold is cleared (set over CDP) while that is true.
 TTS_MOCK = r"""
 (() => {
   const log = [];
@@ -34,7 +44,9 @@ TTS_MOCK = r"""
   class Utterance { constructor(text) { this.text = text; } }
   const synth = {
     speak(u) { log.push({ t: u.text, r: u.rate }); write();
-               timer = setTimeout(() => u.onend && u.onend(), 500); },
+               const done = () => window.__ttsHold ? (timer = setTimeout(done, 50))
+                                                   : u.onend && u.onend();
+               timer = setTimeout(done, 500); },
     cancel() { clearTimeout(timer); log.push('CANCEL'); write(); },
     resume() {}, pause() {}, getVoices() { return []; },
     addEventListener() {}, speaking: false,
@@ -60,6 +72,63 @@ with open(log, "ab", buffering=0) as f:
 
 def sh(*cmd, check=True):
     return subprocess.run(cmd, check=check, capture_output=True, text=True).stdout.strip()
+
+
+def wait_until(fn, what, timeout=10, every=0.05):
+    """Poll fn() until it returns something true, and return that."""
+    end = time.time() + timeout
+    while True:
+        got = fn()
+        if got:
+            return got
+        if time.time() > end:
+            raise AssertionError(f"timed out after {timeout}s waiting for {what}")
+        time.sleep(every)
+
+
+def wait_stable(fn, what, quiet=0.3, timeout=10, every=0.05):
+    """Poll fn() until its value has held for `quiet` seconds; return it."""
+    end = time.time() + timeout
+    last, since = fn(), time.time()
+    while time.time() - since < quiet:
+        if time.time() > end:
+            raise AssertionError(f"timed out after {timeout}s waiting for {what}")
+        time.sleep(every)
+        cur = fn()
+        if cur != last:
+            last, since = cur, time.time()
+    return last
+
+
+class GestureMissed(Exception):
+    """Load stretched a gesture past the app's own time limits, so the app
+    rightly ignored it and the scenario proves nothing; main() runs it again."""
+
+
+# Page-side record of the input the app saw, in the app's own clock: when
+# each touch and primary pointer went down and up, every navigateRelative()
+# call, and every #output scroll event.  Capture listeners on window run in
+# the same dispatch as the app's handlers, so once a count here moves, the
+# app has handled that event too.  A reload wipes it; gestures() reinstalls.
+GESTURES = """(() => {
+  if (window.__g) return 0;
+  const g = window.__g = {ts: [], te: [], pd: [], pu: [], nav: 0, scrolls: 0};
+  const at = a => () => a.push(performance.now());
+  addEventListener('touchstart', at(g.ts), {capture: true, passive: true});
+  addEventListener('touchend', at(g.te), {capture: true, passive: true});
+  addEventListener('pointerdown', e => e.isPrimary && g.pd.push(performance.now()), true);
+  addEventListener('pointerup', e => e.isPrimary && g.pu.push(performance.now()), true);
+  const nav = navigateRelative;
+  navigateRelative = (...a) => { g.nav++; return nav(...a); };
+  document.getElementById('output').addEventListener('scroll', () => { g.scrolls++; },
+                                                     {passive: true});
+  return 1;
+})()"""
+
+
+def gestures(ui):
+    js(ui, GESTURES)
+    return js(ui, "window.__g")
 
 
 class Pane:
@@ -115,16 +184,16 @@ def open_ui(browser, url, banner):
     page = ctx.new_page()
     page.goto(url)
     wait_output(page, banner, timeout=20000)
-    # The one-time "Lock Trustmux?" prompt shows up right after pairing.
-    try:
-        page.wait_for_selector("#bio-never-btn", state="visible", timeout=3000)
+    # The one-time "Lock Trustmux?" prompt: the app shows it (if WebAuthn
+    # is there at all) in the same task that starts connecting, so by the
+    # time the pane's output is up it is either showing or never will be.
+    if page.locator("#bio-setup-overlay").is_visible():
         page.tap("#bio-never-btn")
-    except Exception:
-        pass
+        page.wait_for_selector("#bio-setup-overlay", state="hidden", timeout=10000)
     return page
 
 
-def expect(pane, want, timeout=4.0):
+def expect(pane, want, timeout=10.0):
     """Wait for pane to have received exactly `want` (and nothing more)."""
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -134,7 +203,7 @@ def expect(pane, want, timeout=4.0):
         if len(got) > len(want):
             break
         time.sleep(0.05)
-    time.sleep(0.4)   # anything extra arriving late is a failure too
+    time.sleep(0.4)   # a window for anything extra (a failure) to show up in
     got = pane.received()
     if got != want:
         raise AssertionError(f"pane {pane.index} received {got!r}, expected {want!r}")
@@ -219,9 +288,14 @@ def escape_popup_ctrl_c(ui, p0, p1):
 def keybar_keys(ui, p0, p1):
     popup(ui, "#btn-escape", "#escape-popup-keys")
     ui.wait_for_selector("#keybar", state="visible", timeout=3000)
-    for key in ("Escape", "Tab", "Left", "BSpace", "Enter"):
+    want = b""
+    for key, sends in (("Escape", b"\x1b"), ("Tab", b"\t"), ("Left", b"\x1b[D"),
+                       ("BSpace", b"\x7f"), ("Enter", b"\r")):
         ui.tap(f'#keybar button[data-key="{key}"]')
-        time.sleep(0.15)   # keep the order deterministic
+        want += sends
+        # Each key lands before the next is tapped, so the order is fixed.
+        wait_until(lambda: p0.received() == want or len(p0.received()) > len(want),
+                   f"the pane to receive {want!r}")
     expect(p0, b"\x1b\t\x1b[D\x7f\r")
     ui.tap("#keybar-close")
     ui.wait_for_selector("#keybar", state="hidden", timeout=3000)
@@ -291,7 +365,7 @@ def tmux_fmt(target, fmt):
     return sh("tmux", "display-message", "-p", "-t", target, fmt)
 
 
-def wait_seg(ui, cls, want, timeout=6.0):
+def wait_seg(ui, cls, want, timeout=10.0):
     """Wait for header segment .ctx-seg-<cls> to read `want` (None: absent)."""
     loc = ui.locator(f"#ctx-name .ctx-seg-{cls}")
     deadline = time.time() + timeout
@@ -304,7 +378,7 @@ def wait_seg(ui, cls, want, timeout=6.0):
     raise AssertionError(f"header {cls} segment is {got!r}, expected {want!r}")
 
 
-def wait_tmux(target, fmt, want, timeout=4.0):
+def wait_tmux(target, fmt, want, timeout=10.0):
     deadline = time.time() + timeout
     got = None
     while time.time() < deadline:
@@ -388,7 +462,8 @@ def unsplit_window_has_no_pane_segment(ui, p0, p1):
     solo = Pane(2)
     sh("tmux", "new-window", "-d", "-t", "e2e:5", "-n", "solo", solo.command())
     try:
-        time.sleep(2.5)                      # one topology poll
+        # The open picker re-renders when the next topology poll brings
+        # the window, and the row tap waits for it to appear.
         pick(ui, "5:solo", 0)
         wait_output(ui, solo.banner)
         wait_seg(ui, "window", "solo")
@@ -401,48 +476,104 @@ def unsplit_window_has_no_pane_segment(ui, p0, p1):
         sh("tmux", "kill-window", "-t", "e2e:5", check=False)
 
 
+# app.js's own limits on the gestures it times.
+SWIPE_MAX_MS, SWIPE_DOUBLE_MS = 500, 700
+TAP_HOLD_MS, TAP_GAP_MS = 350, 400
+OUT = "document.getElementById('output')"
+
+
 class Touch:
     """Real touch input through CDP, so Chromium scrolls natively exactly as
-    it would under a finger (Playwright's own API has taps, not swipes)."""
+    it would under a finger (Playwright's own API has taps, not swipes).
+    Each gesture returns once the page has handled its last event, with the
+    times the page saw it at (see GESTURES)."""
 
     def __init__(self, ui):
         self.ui = ui
-        self.cdp = ui.context.new_cdp_session(ui)
+        gestures(ui)
+
+    def send(self, kind, pts):
+        cdp(self.ui).send("Input.dispatchTouchEvent", {"type": kind, "touchPoints": pts})
 
     def swipe(self, dx, dy=0, ms=180, steps=8):
+        """One swipe; returns (start, end) in the page's clock."""
         box = self.ui.locator("#output").bounding_box()
         x0 = box["x"] + box["width"] / 2 - dx / 2
         y0 = box["y"] + box["height"] / 2
-        send = lambda kind, pts: self.cdp.send(
-            "Input.dispatchTouchEvent", {"type": kind, "touchPoints": pts})
-        send("touchStart", [{"x": x0, "y": y0}])
+        n = len(gestures(self.ui)["te"])
+        self.send("touchStart", [{"x": x0, "y": y0}])
         for i in range(1, steps + 1):
-            time.sleep(ms / 1000 / steps)
-            send("touchMove", [{"x": x0 + dx * i / steps, "y": y0 + dy * i / steps}])
-        send("touchEnd", [])
-        time.sleep(0.05)
+            time.sleep(ms / 1000 / steps)    # the swipe's pace
+            self.send("touchMove", [{"x": x0 + dx * i / steps, "y": y0 + dy * i / steps}])
+        self.send("touchEnd", [])
+        g = wait_until(lambda: (lambda g: len(g["te"]) > n and g)(gestures(self.ui)),
+                       "the page to see the swipe end")
+        return g["ts"][-1], g["te"][-1]
+
+    def flick(self, dx, dy=0):
+        """A swipe the app times as one, or GestureMissed."""
+        t0, t1 = self.swipe(dx, dy)
+        if t1 - t0 > SWIPE_MAX_MS:
+            raise GestureMissed(f"a flick took {t1 - t0:.0f}ms")
+        return t0, t1
+
+    def drag(self, dx, dy=0):
+        """A swipe too slow for the app to count, or GestureMissed."""
+        t0, t1 = self.swipe(dx, dy, ms=900)
+        if t1 - t0 <= SWIPE_MAX_MS:
+            raise GestureMissed(f"a slow drag took only {t1 - t0:.0f}ms")
+        return t0, t1
 
     def double(self, dx, gap=0.15):
-        self.swipe(dx)
+        """Two flicks the app pairs up, or GestureMissed."""
+        _, end = self.flick(dx)
         time.sleep(gap)
-        self.swipe(dx)
+        start, _ = self.flick(dx)
+        if start - end > SWIPE_DOUBLE_MS:
+            raise GestureMissed(f"{start - end:.0f}ms between the two swipes")
+
+    def taps(self, x, y, n):
+        """n quick taps the app counts as one multi-tap, or GestureMissed."""
+        k = len(gestures(self.ui)["pu"])
+        for _ in range(n):
+            self.send("touchStart", [{"x": x, "y": y}])
+            time.sleep(0.04)                 # a tap's length
+            self.send("touchEnd", [])
+            time.sleep(0.12)                 # and the pause between taps
+        g = wait_until(lambda: (lambda g: len(g["pu"]) >= k + n and g)(gestures(self.ui)),
+                       "the page to see the taps")
+        downs, ups = g["pd"][-n:], g["pu"][-n:]
+        if max(u - d for d, u in zip(downs, ups)) > TAP_HOLD_MS or \
+                max((b - a for a, b in zip(ups, ups[1:])), default=0) > TAP_GAP_MS:
+            raise GestureMissed(f"taps seen down {downs} up {ups}")
 
 
 def showing(ui, pane):
     return ui.locator("#output", has_text=pane.banner).count() == 1
 
 
-def assert_showing(ui, pane, still=1.0):
-    time.sleep(still)
-    if not showing(ui, pane):
+def navigations(ui):
+    return gestures(ui)["nav"]
+
+
+def assert_stayed(ui, pane, nav):
+    """No gesture since navigations() returned `nav` navigated.  The page
+    handled each one before Touch returned, so this needs no waiting."""
+    if navigations(ui) != nav or not showing(ui, pane):
         raise AssertionError(f"expected to still be on pane {pane.index}")
 
 
+def scroll_left(ui):
+    return wait_stable(lambda: js(ui, f"{OUT}.scrollLeft"), "#output to stop scrolling")
+
+
 def set_wrap(ui, on):
-    label = ui.locator("#escape-popup-wrap").inner_text()
-    if label.startswith("✓") != on:
+    label = lambda: ui.locator("#escape-popup-wrap").inner_text().startswith("✓")
+    if label() != on:
         popup(ui, "#btn-escape", "#escape-popup-wrap")
-        time.sleep(0.3)
+        wait_until(lambda: label() == on, "the wrap setting to change")
+        wait_stable(lambda: js(ui, f"[{OUT}.scrollWidth, {OUT}.scrollHeight]"),
+                    "#output to re-render for the wrap setting")
 
 
 @scenario
@@ -450,9 +581,14 @@ def double_swipe_navigates_like_the_arrows(ui, p0, p1):
     touch = Touch(ui)
     set_wrap(ui, True)
     try:
+        nav = navigations(ui)
         touch.double(-150)                   # swipe left twice: next
+        if navigations(ui) != nav + 1:
+            raise AssertionError("a double swipe left didn't navigate")
         wait_output(ui, p1.banner)
         touch.double(150)                    # swipe right twice: previous
+        if navigations(ui) != nav + 2:
+            raise AssertionError("a double swipe right didn't navigate")
         wait_output(ui, p0.banner)
     finally:
         set_wrap(ui, False)
@@ -465,18 +601,19 @@ def single_or_slow_or_vertical_swipes_do_not_navigate(ui, p0, p1):
     touch = Touch(ui)
     set_wrap(ui, True)
     try:
-        touch.swipe(-150)                    # one swipe only
-        assert_showing(ui, p0)
-        touch.swipe(-150, ms=900)            # slow drag, twice
-        touch.swipe(-150, ms=900)
-        assert_showing(ui, p0)
+        nav = navigations(ui)
+        touch.flick(-150)                    # one swipe only
+        assert_stayed(ui, p0, nav)
+        touch.drag(-150)                     # slow drag, twice
+        touch.drag(-150)
+        assert_stayed(ui, p0, nav)
         touch.swipe(-60, dy=200)             # mostly vertical, twice
         touch.swipe(-60, dy=200)
-        assert_showing(ui, p0)
-        touch.swipe(-150)                    # left then right: no pair
-        time.sleep(0.15)
-        touch.swipe(150)
-        assert_showing(ui, p0)
+        assert_stayed(ui, p0, nav)
+        touch.flick(-150)                    # left then right: no pair
+        time.sleep(0.15)                     # the pause between them
+        touch.flick(150)
+        assert_stayed(ui, p0, nav)
     finally:
         set_wrap(ui, False)
 
@@ -491,19 +628,38 @@ def terminal_mode_sideways_scroll_is_not_a_swipe(ui, p0, p1):
         f.write("\r\n" + "W" * 95 + "\r\n")
     touch = Touch(ui)
     set_wrap(ui, False)
-    ui.locator("#output", has_text="W" * 95).wait_for(timeout=5000)
-    time.sleep(1.5)
-    touch.double(-150)                       # scrolls the long line left
-    assert_showing(ui, p0)
-    for _ in range(6):                       # slow drags (never a swipe)
-        touch.swipe(-300, ms=900)            # to reach the right edge
-    time.sleep(1.0)
-    touch.double(-150)                       # at the edge: navigates
-    wait_output(ui, p1.banner)
-    ui.tap("#btn-prev")
-    wait_output(ui, p0.banner)
-    with open(tty, "w") as f:
-        f.write("\x1b[2J\x1b[H" + p0.banner + "\r\n")
+    try:
+        ui.locator("#output", has_text="W" * 95).wait_for(timeout=10000)
+        js(ui, f"{OUT}.scrollLeft = 0")
+        room = wait_stable(lambda: js(ui, f"{OUT}.scrollWidth - {OUT}.clientWidth"),
+                           "the long line's layout")
+        if room < 300 or scroll_left(ui) != 0:
+            raise AssertionError(f"#output can't scroll sideways ({room}px)")
+        nav = navigations(ui)
+        try:
+            touch.double(-150)               # scrolls the long line left
+        except GestureMissed:
+            pass                             # not navigating is the point
+        assert_stayed(ui, p0, nav)
+        if scroll_left(ui) < 1:
+            raise AssertionError("the swipes didn't scroll the long line")
+        for _ in range(12):                  # slow drags (never a swipe)
+            if scroll_left(ui) >= room - 1:  # to reach the right edge
+                break
+            touch.drag(-300)
+        else:
+            raise AssertionError("slow drags never reached the right edge")
+        assert_stayed(ui, p0, nav)
+        touch.double(-150)                   # at the edge: navigates
+        if navigations(ui) != nav + 1:
+            raise AssertionError("a double swipe at the edge didn't navigate")
+        wait_output(ui, p1.banner)
+    finally:
+        if not showing(ui, p0):
+            ui.tap("#btn-prev")
+            wait_output(ui, p0.banner)
+        with open(tty, "w") as f:
+            f.write("\x1b[2J\x1b[H" + p0.banner + "\r\n")
 
 
 TTS_SAMPLE = [
@@ -528,36 +684,49 @@ def tts_log(ui):
     return json.loads(raw) if raw else []
 
 
-def tts_spoken_since(ui, mark, settle=0.0, timeout=8.0):
-    """Utterances logged after index `mark`, once reading has finished."""
-    time.sleep(settle)
-    deadline = time.time() + timeout
-    while time.time() < deadline:
-        if ui.locator("#tts-stop").is_hidden():
-            break
-        time.sleep(0.1)
+def tts_spoken_since(ui, mark, timeout=20):
+    """Utterances logged after index `mark`, once reading has finished.
+    Reading starts inside the third tap's own handler, so once Touch.taps()
+    returns it has started, or never will."""
+    wait_until(lambda: ui.locator("#tts-stop").is_hidden(), "reading to finish", timeout=timeout)
     return tts_log(ui)[mark:]
 
 
-def triple_tap(ui, text):
-    # The latest copy: earlier scenarios' output can still be in scrollback.
-    # Reading scrolls #output to follow the highlight, so a later sample can
-    # sit below the fold; bring it into view like a user would.
+def tts_spoken(ui, mark):
+    return [g for g in tts_log(ui)[mark:] if g != "CANCEL"]
+
+
+def pane_settled(ui):
+    """Wait for #output to stop changing: a write to the pane can arrive
+    as several updates, and each re-render moves lines around."""
+    wait_stable(lambda: js(ui, f"[{OUT}.scrollHeight, {OUT}.scrollTop, {OUT}.children.length,"
+                               f" {OUT}.lastElementChild && {OUT}.lastElementChild.textContent]"),
+                "#output to settle")
+
+
+def line_point(ui, text):
+    """Where to touch the latest copy of `text` in #output (earlier
+    scenarios' output can still be in scrollback).  Reading scrolls #output
+    to follow the highlight, and earlier scenarios can leave it scrolled
+    either way, so bring the line into view like a user would."""
+    pane_settled(ui)
     line = ui.locator("#output > span", has_text=text).last
-    line.scroll_into_view_if_needed()
-    time.sleep(0.2)
-    box = line.bounding_box()
-    touch = Touch(ui)
+    out = ui.locator("#output")
+
+    def in_view():
+        line.scroll_into_view_if_needed()
+        box = wait_stable(line.bounding_box, f"{text!r} to scroll into view")
+        o = out.bounding_box()
+        y = box["y"] + box["height"] / 2
+        return (box, o) if o["y"] < y < o["y"] + o["height"] else None
+    box, o = wait_until(in_view, f"{text!r} to be on screen to touch")
     # #output may be scrolled sideways (an earlier Terminal-mode scenario
-    # leaves it at the right edge), so tap inside the visible part of it.
-    out = ui.locator("#output").bounding_box()
-    x = max(box["x"], out["x"]) + 20
-    y = box["y"] + box["height"] / 2
-    for _ in range(3):
-        touch.cdp.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": x, "y": y}]})
-        time.sleep(0.04)
-        touch.cdp.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
-        time.sleep(0.12)
+    # leaves it at the right edge), so touch inside the visible part of it.
+    return max(box["x"], o["x"]) + 20, box["y"] + box["height"] / 2
+
+
+def triple_tap(ui, text):
+    Touch(ui).taps(*line_point(ui, text), 3)
 
 
 def set_tts(ui, on, rate_steps=0):
@@ -592,10 +761,11 @@ def restore_pane0(tty, p0):
 def read_aloud_is_off_until_enabled(ui, p0, p1):
     tty = write_sample(p0)
     try:
-        ui.locator("#output", has_text="continues here.").wait_for(timeout=5000)
+        wait_output(ui, TTS_SAMPLE[-1])
         mark = len(tts_log(ui))
         triple_tap(ui, "Second line")
-        if tts_spoken_since(ui, mark, settle=0.8):
+        time.sleep(0.5)                      # a window for a wrong start
+        if tts_spoken_since(ui, mark):
             raise AssertionError("read aloud spoke while disabled")
     finally:
         restore_pane0(tty, p0)
@@ -606,7 +776,7 @@ def read_aloud_reads_the_tapped_block(ui, p0, p1):
     tty = write_sample(p0)
     set_tts(ui, True)
     try:
-        ui.locator("#output", has_text="continues here.").wait_for(timeout=5000)
+        wait_output(ui, TTS_SAMPLE[-1])
         cases = [
             ("Second line", ["I updated the parser.", "It now handles tabs.",
                              "Second line of the same sentence continues here."]),
@@ -616,7 +786,7 @@ def read_aloud_reads_the_tapped_block(ui, p0, p1):
         for tap_on, want in cases:
             mark = len(tts_log(ui))
             triple_tap(ui, tap_on)
-            got = tts_spoken_since(ui, mark, settle=0.3)
+            got = tts_spoken_since(ui, mark)
             texts = [g["t"] for g in got if g != "CANCEL"]
             if texts != want:
                 raise AssertionError(f"tapping {tap_on!r} spoke {texts!r}, expected {want!r}")
@@ -635,30 +805,36 @@ def read_aloud_highlights_and_triple_tap_stops(ui, p0, p1):
     tty = write_sample(p0)
     set_tts(ui, True)
     try:
-        ui.locator("#output", has_text="Four. Five.").wait_for(timeout=5000)
+        wait_output(ui, TTS_SAMPLE[-1])
         mark = len(tts_log(ui))
         triple_tap(ui, "Four. Five.")
         ui.wait_for_selector("#tts-stop", state="visible", timeout=2000)
         if ui.locator("#output .tts-reading", has_text="Four. Five.").count() < 1:
             raise AssertionError("the line being read isn't highlighted")
-        time.sleep(0.6)                      # into the second sentence
+        # Into the second sentence, then hold it there: under load the
+        # stopping taps could otherwise land after the last sentence.
+        wait_until(lambda: len(tts_spoken(ui, mark)) >= 2, "the second sentence")
+        js(ui, "window.__ttsHold = true")
         triple_tap(ui, "Four. Five.")        # stop
         ui.wait_for_selector("#tts-stop", state="hidden", timeout=2000)
         got = tts_log(ui)[mark:]
         spoken = [g for g in got if g != "CANCEL"]
         if not (1 <= len(spoken) < 6) or got[-1] != "CANCEL":
             raise AssertionError(f"triple tap didn't stop reading: {got!r}")
-        time.sleep(1.2)
+        js(ui, "window.__ttsHold = false")
+        time.sleep(1.2)                      # a window for speaking on (a failure)
         if len(tts_log(ui)) != mark + len(got):
             raise AssertionError("kept speaking after stop")
         if ui.locator(".tts-block, .tts-reading").count():
             raise AssertionError("highlight left behind after stop")
         # The Stop pill stops it too.
+        js(ui, "window.__ttsHold = true")
         triple_tap(ui, "Four. Five.")
         ui.wait_for_selector("#tts-stop", state="visible", timeout=2000)
         ui.tap("#tts-stop")
         ui.wait_for_selector("#tts-stop", state="hidden", timeout=2000)
     finally:
+        js(ui, "window.__ttsHold = false")
         set_tts(ui, False)
         restore_pane0(tty, p0)
 
@@ -679,10 +855,10 @@ def read_aloud_settings_persist(ui, p0, p1):
         ui.tap("#settings-close")
         tty = write_sample(p0)
         try:
-            ui.locator("#output", has_text="hi there").wait_for(timeout=5000)
+            wait_output(ui, TTS_SAMPLE[-1])
             mark = len(tts_log(ui))
             triple_tap(ui, "hi there")
-            got = [g for g in tts_spoken_since(ui, mark, settle=0.3) if g != "CANCEL"]
+            got = [g for g in tts_spoken_since(ui, mark) if g != "CANCEL"]
             if not got or any(g["r"] != 1.4 for g in got):
                 raise AssertionError(f"expected rate 1.4, got {got!r}")
         finally:
@@ -711,9 +887,8 @@ def js(ui, expr):
 SELECTED = "String(window.getSelection())"
 
 
-def select_text(ui, text):
-    """Select `text` inside #output, as a double tap and drag would."""
-    return js(ui, """(() => {
+# Selects the latest copy of a JSON string (%s) inside #output.
+SELECT_JS = """(() => {
       const want = %s;
       const w = document.createTreeWalker(document.getElementById('output'),
                                           NodeFilter.SHOW_TEXT);
@@ -725,7 +900,12 @@ def select_text(ui, text):
       r.setStart(last, i); r.setEnd(last, i + want.length);
       const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
       return true;
-    })()""" % json.dumps(text))
+    })()"""
+
+
+def select_text(ui, text):
+    """Select `text` inside #output, as a double tap and drag would."""
+    return js(ui, SELECT_JS % json.dumps(text))
 
 
 def clear_selection(ui):
@@ -739,23 +919,38 @@ def write_pane0(text):
     return tty
 
 
-def output_point(ui, text):
-    # Same care as triple_tap: earlier scenarios can leave #output scrolled
-    # either way, which would put the line, and the touch, off screen.
-    line = ui.locator("#output > span", has_text=text).last
-    line.scroll_into_view_if_needed()
-    time.sleep(0.2)
-    box = line.bounding_box()
-    out = ui.locator("#output").bounding_box()
-    y = box["y"] + box["height"] / 2
-    if not out["y"] < y < out["y"] + out["height"]:
-        raise RuntimeError(f"line {text!r} isn't on screen to touch")
-    return max(box["x"], out["x"]) + 20, y
-
-
 def touch(ui, kind, x=0, y=0):
     pts = [{"x": x, "y": y}] if kind != "touchEnd" else []
     cdp(ui).send("Input.dispatchTouchEvent", {"type": kind, "touchPoints": pts})
+
+
+def tap(ui, x, y):
+    """One tap; returns once the page has seen it end."""
+    n = len(gestures(ui)["te"])
+    touch(ui, "touchStart", x, y)
+    time.sleep(0.04)                         # a tap's length
+    touch(ui, "touchEnd")
+    wait_until(lambda: len(gestures(ui)["te"]) > n, "the page to see the tap")
+
+
+def to_bottom(ui):
+    """scrollOutputToBottom() scrolls in a requestAnimationFrame callback:
+    wait for that frame (and the next) as well as for the position, or a
+    scroll made next is undone when it runs."""
+    js(ui, """(() => { window.__frames = 0; scrollOutputToBottom();
+      requestAnimationFrame(() => requestAnimationFrame(() => { window.__frames = 1; }));
+      return 0; })()""")
+    wait_until(lambda: js(ui, "window.__frames"), "scrollOutputToBottom's frame")
+    return wait_stable(lambda: js(ui, f"{OUT}.scrollTop"), "#output to settle at the bottom")
+
+
+def scroll_output_to(ui, top):
+    """Set #output's scrollTop as a scroll would; return where it settles
+    once the page (and the app's scroll handler) has seen the scroll."""
+    n = gestures(ui)["scrolls"]
+    js(ui, f"{OUT}.scrollTop = {top}")
+    wait_until(lambda: gestures(ui)["scrolls"] > n, "#output's scroll event")
+    return wait_stable(lambda: js(ui, f"{OUT}.scrollTop"), "#output to stop scrolling")
 
 
 @scenario
@@ -763,18 +958,23 @@ def pane_does_not_redraw_under_a_held_finger(ui, p0, p1):
     tty = write_pane0("HOLD-ONE first line\r\n")
     try:
         wait_output(ui, "HOLD-ONE")
-        x, y = output_point(ui, "HOLD-ONE")
+        x, y = line_point(ui, "HOLD-ONE")
+        # Nothing held back from before, so a deferral below is HOLD-TWO's.
+        wait_until(lambda: not js(ui, "_deferredForSelection"), "a quiet pane")
+        n = len(gestures(ui)["ts"])
         touch(ui, "touchStart", x, y)
         try:
+            wait_until(lambda: len(gestures(ui)["ts"]) > n, "the page to see the finger")
             with open(tty, "w") as f:
                 f.write("HOLD-TWO arrives mid gesture\r\n")
-            time.sleep(1.5)
+            # The update arrives and the app holds it back for the finger.
+            wait_until(lambda: js(ui, "_deferredForSelection"), "the update to arrive")
             if ui.locator("#output", has_text="HOLD-TWO").count():
                 raise AssertionError("pane re-rendered while a finger was down on it")
         finally:
             touch(ui, "touchEnd")
         clear_selection(ui)   # a long press may have selected a word
-        wait_output(ui, "HOLD-TWO", timeout=4000)
+        wait_output(ui, "HOLD-TWO", timeout=10000)
     finally:
         clear_selection(ui)
         restore_pane0(tty, p0)
@@ -800,22 +1000,20 @@ def scrolled_up_view_stays_put_while_the_pane_prints(ui, p0, p1):
                 return
             with open(tty, "w") as f:
                 f.write(f"NEW-{i:03d} streamed\r\n")
-            time.sleep(0.1)
+            time.sleep(0.1)                  # the pane's printing pace
     try:
         wait_output(ui, "KEEP-399")
-        js(ui, "scrollOutputToBottom()")
-        time.sleep(0.6)
-        js(ui, "document.getElementById('output').scrollTop -= 600")
-        time.sleep(0.4)
+        bottom = to_bottom(ui)
+        scroll_output_to(ui, bottom - 600)
         before = js(ui, line_at)
         t = threading.Thread(target=printer)
         t.start()
         seen = []
         while t.is_alive():
             seen.append(js(ui, line_at))
-            time.sleep(0.2)
-        time.sleep(0.6)
-        seen.append(js(ui, line_at))
+            time.sleep(0.2)                  # sampling pace
+        wait_output(ui, "NEW-039", timeout=10000)
+        seen.append(wait_stable(lambda: js(ui, line_at), "the view to settle"))
         moved = [x for x in seen if x != before]
         if not before or moved:
             raise AssertionError(f"the line in view went from {before!r} to {moved[:1]!r}")
@@ -831,29 +1029,53 @@ def selection_survives_cursor_moves(ui, p0, p1):
     # re-joins the cursor line's text, which used to collapse a selection.
     popup(ui, "#btn-escape", "#escape-popup-keys")
     ui.wait_for_selector("#keybar", state="visible", timeout=3000)
-    tty = write_pane0("SEL-ALPHA bravo charlie delta echo")
+    text = "SEL-ALPHA bravo charlie delta echo"
+    tty = write_pane0(text)
+    cursor_at = lambda x: wait_until(lambda: js(ui, "_cursorX") == x,
+                                     f"the app to see the cursor at column {x}")
     try:
         wait_output(ui, "delta echo")
-        time.sleep(0.5)
+        cursor_at(len(text))
         if not select_text(ui, "bravo charlie"):
             raise AssertionError("couldn't find the text to select")
-        for move in ("\x1b[20D", "\x1b[3C", "\x1b[4D", "\x1b[10C"):
+        x = len(text)
+        for move, dx in (("\x1b[20D", -20), ("\x1b[3C", 3), ("\x1b[4D", -4), ("\x1b[10C", 10)):
             with open(tty, "w") as f:
                 f.write(move)
-            time.sleep(0.6)
+            x += dx
+            cursor_at(x)                     # the app has handled the move
             got = js(ui, SELECTED)
             if got != "bravo charlie":
                 raise AssertionError(f"selection became {got!r} after a cursor move")
         clear_selection(ui)
-        time.sleep(0.5)
         # Once the selection is gone the ghost catches up with the cursor.
-        if ui.locator("#compose-ghost").count() != 1:
-            raise AssertionError("ghost caret didn't come back after the selection cleared")
+        wait_until(lambda: ui.locator("#compose-ghost").count() == 1,
+                   "the ghost caret to come back after the selection cleared")
     finally:
         clear_selection(ui)
         ui.tap("#keybar-close")
         ui.wait_for_selector("#keybar", state="hidden", timeout=3000)
         restore_pane0(tty, p0)
+
+
+# Counts runs of the app's delayed pane-tap focus, and when the last one ran
+# relative to the last touchend, in the page's clock.
+FOCUS_HOOK = """(() => {
+  const f = window.__focus = {runs: 0, end: null, after: null};
+  if (!window.__focusHooked) {
+    window.__focusHooked = true;
+    const orig = _paneTapFocus;
+    _paneTapFocus = function () {
+      const r = orig.apply(this, arguments);
+      window.__focus.after = performance.now() - window.__focus.end;
+      window.__focus.runs++;
+      return r;
+    };
+    addEventListener('touchend', () => { window.__focus.end = performance.now(); },
+                     {capture: true, passive: true});
+  }
+  return 0;
+})()"""
 
 
 @scenario
@@ -862,24 +1084,31 @@ def pane_tap_waits_out_a_double_tap_before_the_keyboard(ui, p0, p1):
     ui.wait_for_selector("#keybar", state="visible", timeout=3000)
     tty = write_pane0("TAP-LINE some words to select\r\n")
     focused = "document.activeElement && document.activeElement.id"
+    focus_ran = lambda: wait_until(lambda: js(ui, "window.__focus.runs"),
+                                   "the app's pane-tap focus to run")
     try:
         wait_output(ui, "TAP-LINE")
-        x, y = output_point(ui, "TAP-LINE")
+        x, y = line_point(ui, "TAP-LINE")
         # A lone tap still brings the keyboard up, just not instantly.
         js(ui, "document.activeElement.blur()")
-        touch(ui, "touchStart", x, y); time.sleep(0.04); touch(ui, "touchEnd")
-        time.sleep(0.1)
-        if js(ui, focused) == "cmd":
-            raise AssertionError("keyboard opened on the first tap of a possible double tap")
-        time.sleep(0.6)
+        js(ui, FOCUS_HOOK)
+        tap(ui, x, y)
+        focus_ran()
         if js(ui, focused) != "cmd":
             raise AssertionError("a single tap on the pane no longer focuses the input")
-        # A double tap that selects a word keeps the keyboard down.
+        after = js(ui, "window.__focus.after")
+        if after < 340:
+            raise AssertionError(f"keyboard opened {after:.0f}ms after a tap, inside the double-tap window")
+        # A double tap that selects a word keeps the keyboard down.  What the
+        # second tap does on a phone, done 120ms after this one in the
+        # page's own clock: always before the app's 350ms focus timer.
         js(ui, "document.activeElement.blur()")
-        touch(ui, "touchStart", x, y); time.sleep(0.04); touch(ui, "touchEnd")
-        time.sleep(0.12)
-        select_text(ui, "words")   # what the second tap does on a phone
-        time.sleep(0.6)
+        js(ui, FOCUS_HOOK)
+        select_words = SELECT_JS % json.dumps("words")
+        js(ui, f"addEventListener('touchend', () => setTimeout(() => {select_words}, 120),"
+               " {capture: true, once: true})")
+        tap(ui, x, y)
+        focus_ran()
         if js(ui, focused) == "cmd":
             raise AssertionError("keyboard opened over a fresh word selection")
         if js(ui, SELECTED) != "words":
@@ -904,34 +1133,26 @@ def selection_drag_cannot_scroll_into_blank_rows(ui, p0, p1):
     # top of the screen, with the rest of the 30 rows blank below them.
     filler = "".join(f"filler {i}\r\n" for i in range(60))
     tty = write_pane0(filler + "\x1b[H\x1b[J" + "\r\n".join(lines))
-    top = "document.getElementById('output').scrollTop"
     try:
         wait_output(ui, "DRAG-5")
         # Start from the live view: earlier scenarios can leave #output
         # scrolled up, and then it doesn't follow the bottom.
-        js(ui, "scrollOutputToBottom()")
-        time.sleep(0.6)
-        parked = js(ui, top)
-        room = js(ui, "(() => { const o = document.getElementById('output');"
-                      " return o.scrollHeight - o.clientHeight; })()")
+        parked = to_bottom(ui)
+        room = js(ui, f"{OUT}.scrollHeight - {OUT}.clientHeight")
         if room - parked < 100:
             raise AssertionError(f"no hidden blank rows to test with ({parked} of {room})")
         if not select_text(ui, "DRAG-3 line"):
             raise AssertionError("couldn't find the text to select")
-        time.sleep(0.2)
-        js(ui, f"document.getElementById('output').scrollTop = {parked + 300}")
-        time.sleep(0.3)
-        got = js(ui, top)
+        wait_until(lambda: js(ui, "_selScrollPos !== null"), "the app to see the selection")
+        got = scroll_output_to(ui, parked + 300)
         if got > parked + 2:
             raise AssertionError(f"selecting, #output scrolled to {got}, past the content at {parked}")
         if js(ui, SELECTED) != "DRAG-3 line":
             raise AssertionError(f"selection changed to {js(ui, SELECTED)!r}")
         # Without a selection, scrolling is the user's to do as they like.
         clear_selection(ui)
-        time.sleep(0.2)
-        js(ui, f"document.getElementById('output').scrollTop = {parked + 300}")
-        time.sleep(0.3)
-        if js(ui, top) <= parked + 2:
+        wait_until(lambda: js(ui, "_selScrollPos === null"), "the app to see the selection go")
+        if scroll_output_to(ui, parked + 300) <= parked + 2:
             raise AssertionError("scrolling was clamped with no selection")
     finally:
         clear_selection(ui)
@@ -1020,16 +1241,34 @@ def main(filters):
     if not chosen:
         print(f"no scenario matches {filters}; have: {', '.join(s.__name__ for s in SCENARIOS)}")
         return 2
+    # REPEAT=N runs the chosen scenarios N times over, for flaky behavior.
+    chosen = chosen * int(os.environ.get("REPEAT", "1"))
     panes, url, pair = start_backend()
     results = []
+    retries = 0
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path="/usr/bin/chromium", args=["--no-sandbox"])
         ui = open_ui(browser, url, panes[0].banner)
         for s in chosen:
-            for pane in panes:
-                pane.mark()
             try:
-                s(ui, *panes)
+                for attempt in range(1, 4):
+                    for pane in panes:
+                        pane.mark()
+                    try:
+                        s(ui, *panes)
+                        break
+                    except GestureMissed as e:
+                        if attempt == 3:
+                            raise
+                        retries += 1
+                        print(f"RETRY {s.__name__}: load stretched a gesture ({e})", flush=True)
+                        # Outlast the app's gesture windows (a wall-clock
+                        # second is at least one in the page) and start over
+                        # from pane 0.
+                        time.sleep(1)
+                        if not showing(ui, panes[0]):
+                            ui.tap("#btn-prev")
+                            wait_output(ui, panes[0].banner)
                 results.append((s.__name__, None))
                 print(f"PASS  {s.__name__}", flush=True)
             except Exception as e:
@@ -1044,7 +1283,8 @@ def main(filters):
     sh("trustmux", "stop", check=False)
     failed = [n for n, e in results if e]
     print(f"\n{len(results) - len(failed)} passed, {len(failed)} failed"
-          + (f": {', '.join(failed)}" if failed else ""))
+          + (f": {', '.join(failed)}" if failed else "")
+          + (f" ({retries} retried for gesture timing)" if retries else ""))
     return 1 if failed else 0
 
 
