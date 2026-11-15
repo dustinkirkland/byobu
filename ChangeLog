@@ -99,6 +99,15 @@ byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     and the one exception to "an instance only ever looks in its own
     directory". The one-time move of tokens, certificate and key out of
     the old layout stays. (Closes: GH #127)
+  * trustmux: selecting text in Terminal mode no longer takes in the
+    whole screen. There, lines run past the edge of the phone, and a
+    selection handle dragged off the left or right side has Chrome put
+    that end on the header or the input bar; the clamp that catches a
+    handle dragged off the top or bottom read that as off the top and
+    pulled the selection up to the first line on screen. Off the side,
+    the end now stays on its own line: dragging the end handle right
+    selects to the end of the line, dragging the start handle left from
+    the line's start.
 
 byobu (7.23) 2026-10-29  Dustin Kirkland <kirkland@ubuntu.com>
 

@@ -40,5 +40,5 @@ if [ -n "$ANDROID_SHOTS" ]; then
 	shots="-v $(cd "$ANDROID_SHOTS" && pwd):/shots"
 fi
 # shellcheck disable=SC2086
-exec docker run --rm ${ANDROID_CPUS:+--cpus "$ANDROID_CPUS"} --device /dev/kvm -v "$repo:/src:ro" -e REPEAT="${REPEAT:-1}" $shots "$tag" \
+exec docker run --rm ${ANDROID_CPUS:+--cpus "$ANDROID_CPUS"} --device /dev/kvm -v "$repo:/src:ro" -e REPEAT="${REPEAT:-1}" -e SELLOG="${SELLOG:-}" $shots "$tag" \
 	sh /src/mobile/tests/android/in_container.sh "$@"

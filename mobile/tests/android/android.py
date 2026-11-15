@@ -127,25 +127,35 @@ AT_BOTTOM = """(() => { const o = document.getElementById('output');
 
 # ── Chrome DevTools ───────────────────────────────────────────────────────
 class Cdp:
-    def __init__(self):
+    def __init__(self, launch):
         self.ws = None
         self.n = 0
-        self.connect()
+        self.connect(launch)
 
-    def connect(self):
-        # Chrome's devtools socket can take a while, and drop the first
-        # requests, on a loaded emulator
+    def connect(self, launch):
+        """Find trustmux's tab and attach to it. Chrome's devtools socket
+        can take a while, and drop the first requests, on a loaded
+        emulator; and right after a fast boot Chrome can drop the intent
+        that opens the tab, so `launch` sends it again every 15s."""
         deadline = time.time() + 90
+        relaunch = time.time() + 15
+        targets = None
         while True:
             try:
                 targets = json.load(urllib.request.urlopen(f"http://localhost:{DEVTOOLS}/json"))
-                page = next(t for t in targets if t["type"] == "page"
-                            and f":{PORT}" in t["url"])
-                break
+                page = next((t for t in targets if t["type"] == "page"
+                             and f":{PORT}" in t["url"]), None)
+                if page:
+                    break
             except Exception:
-                if time.time() > deadline:
-                    raise
-                time.sleep(0.5)
+                pass
+            if time.time() > deadline:
+                raise RuntimeError(f"no trustmux tab in Chrome after 90s; tabs: "
+                                   f"{[t.get('url') for t in targets or []]}")
+            if time.time() > relaunch:
+                launch()
+                relaunch = time.time() + 15
+            time.sleep(0.5)
         self.ws = websocket.create_connection(page["webSocketDebuggerUrl"],
                                               suppress_origin=True)
 
@@ -379,18 +389,52 @@ def start_backend():
 
 def open_chrome(url):
     adb("reverse", f"tcp:{PORT}", f"tcp:{PORT}")
-    adb("shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", url,
-        "com.android.chrome")
+    launch = lambda: adb("shell", "am", "start", "-a", "android.intent.action.VIEW",
+                         "-d", url, "com.android.chrome")
+    launch()
     adb("forward", f"tcp:{DEVTOOLS}", "localabstract:chrome_devtools_remote")
-    cdp = Cdp()
+    cdp = Cdp(launch)
     wait_until(lambda: cdp.js("!!document.getElementById('output') && "
                               "document.getElementById('output').className !== 'placeholder'"),
                "trustmux to come up in Chrome", timeout=90, every=0.5)
     cdp.js(TOUCH_TRACKER)
     cdp.js(FOCUS_HOOK)
+    if SELLOG:
+        cdp.js(SEL_LOG)
     cdp.js("document.getElementById('bio-never-btn') && document.getElementById('bio-never-btn').click()")
     return cdp
 
+
+# SELLOG=1: record every selection change and every _clampSelectionEnd()
+# call in the page, and print the tail of it when a scenario fails.
+SEL_LOG = """(() => { if (window.__selHooked) return 0; window.__selHooked = 1;
+  window.__selLog = [];
+  const push = s => { window.__selLog.push(s); if (window.__selLog.length > 200) window.__selLog.shift(); };
+  const desc = (n, o) => {
+    if (!n) return 'null';
+    const el = n.nodeType === 3 ? n.parentElement : n;
+    const line = el && el.closest && el.closest('#output > span');
+    let x = '';
+    try { const r = document.createRange(); r.setStart(n, o); const b = r.getBoundingClientRect();
+          x = ` x=${b.left | 0}`; } catch (_) {}
+    return `${n.nodeName}${n.id ? '#' + n.id : ''}@${o}${x} ` +
+           (line ? JSON.stringify(line.textContent.slice(0, 4)) : 'out');
+  };
+  const orig = _clampSelectionEnd;
+  _clampSelectionEnd = function (sel, which) {
+    const vis = _visibleLineSpans();
+    const r = orig.apply(this, arguments);
+    push(`  clamp ${which} vis=${vis && vis[0].textContent.slice(0, 3)}..${vis && vis[1].textContent.slice(0, 3)}`
+         + ` -> ${r} now a=${desc(sel.anchorNode, sel.anchorOffset)} f=${desc(sel.focusNode, sel.focusOffset)}`);
+    return r;
+  };
+  document.addEventListener('selectionchange', () => {
+    const s = getSelection();
+    push(`chg a=${desc(s.anchorNode, s.anchorOffset)} f=${desc(s.focusNode, s.focusOffset)}`
+         + ` top=${output.scrollTop | 0} dragged=${_selDragged}`);
+  }, true);
+  return 1; })()"""
+SELLOG = os.environ.get("SELLOG") == "1"
 
 SCENARIOS = []
 CDP = [None]   # the one page connection, for helpers called without a ctx
@@ -702,6 +746,109 @@ def wrap_mode_drag_start_up_past_the_top_edge(ctx):
         set_wrap(ctx.cdp, False)
 
 
+def wide_lines(n=90, color=True):
+    """Full-width lines, as a real terminal shows them: wider than the
+    phone, some words coloured (so a line is several spans)."""
+    out = []
+    for i in range(1, n + 1):
+        words, j = [], i
+        plain = f"L{i:02d}"
+        while len(plain) + 1 + len(WORDS[j % len(WORDS)]) <= 98:
+            w = WORDS[j % len(WORDS)]
+            plain += " " + w
+            words.append(f"\x1b[3{1 + j % 6}m{w}\x1b[0m" if color and j % 3 == 0 and i < n else w)
+            j += 1
+        out.append(f"L{i:02d} " + " ".join(words))
+    return out
+
+
+SCROLL_LEFT = "document.getElementById('output').scrollLeft"
+
+
+def drag_handle_xy(cdp, dev, which, dx, dy, ms=700):
+    """drag_handle(), by dx/dy CSS px in any direction (off the screen's
+    edge too: the device stops the finger there)."""
+    s = cdp.js(SEL_INFO)
+    if which == "end":
+        px, py = dev.screen(s["end"][0], s["end"][2])
+        hx = px + 28
+    else:
+        px, py = dev.screen(s["start"][0], s["start"][2])
+        hx = px - 28
+    hy = py + 30
+    DX, DY = round(dx * dev.dpr), round(dy * dev.dpr)
+    n = max(1, max(abs(DX), abs(DY)) // 4)
+    steps = [("down", hx, hy), ("sleep", 0.15)]
+    for i in range(1, n + 1):
+        steps += [("move", hx + DX * i // n, hy + DY * i // n), ("sleep", round(ms / 1000 / n, 3))]
+    steps += [("sleep", 0.1), ("up", hx + DX, hy + DY)]
+    dev.touch_script(steps)
+    return wait_stable(lambda: [cdp.js(SEL_INFO), cdp.js(SCROLL_TOP), cdp.js(SCROLL_LEFT)],
+                       "the selection to settle after the drag", quiet=0.5)[0]
+
+
+def sideways_drag(ctx, line, which, dx, dy=0):
+    """Long press the word after `line`'s label (the third word, for the
+    start handle, so there is room to its left), then drag a handle."""
+    fill_pane(wide_lines())
+    ctx.reset()
+    ctx.cdp.js(f"{SCROLL_LEFT} = 0")
+    wait_stable(lambda: ctx.cdp.js(SCROLL_LEFT), "#output to scroll back left")
+    s = long_press_word(ctx.cdp, ctx.dev, line, dx=None if which == "end" else 160)
+    if not s:
+        raise AssertionError(f"long press on {line.strip()} selected nothing")
+    word = s["text"]
+    width = ctx.cdp.js("document.getElementById('output').clientWidth")
+    s2 = drag_handle_xy(ctx.cdp, ctx.dev, which, dx * width, dy)
+    if not s2:
+        raise AssertionError("the selection disappeared during the drag")
+    return word, s2["text"]
+
+
+def plain_line(label):
+    return next(l for l in wide_lines(color=False) if l.startswith(label))
+
+
+@scenario
+def terminal_mode_drag_end_off_the_right_edge(ctx):
+    # Terminal mode: lines run past the right edge. Off the side, Chrome
+    # puts the end on the header, which used to read as off the top and
+    # select the whole screen above.
+    try:
+        word, got = sideways_drag(ctx, "L80 ", "end", 1)
+        want = plain_line("L80 ")
+        want = want[want.index(" " + word) + 1:]
+        if got.rstrip("\n") != want:
+            raise AssertionError(f"selected {got[:30]!r}..{got[-30:]!r} ({got.count(chr(10))} line breaks),"
+                                 f" expected {word!r} to the end of L80")
+    finally:
+        restore_pane()
+
+
+@scenario
+def terminal_mode_drag_start_off_the_left_edge(ctx):
+    try:
+        word, got = sideways_drag(ctx, "L75 ", "start", -1)
+        want = plain_line("L75 ")
+        want = want[:want.index(" " + word) + 1 + len(word)]
+        if got != want:
+            raise AssertionError(f"selected {got[:30]!r}..{got[-30:]!r} ({got.count(chr(10))} line breaks),"
+                                 f" expected the start of L75 to {word!r}")
+    finally:
+        restore_pane()
+
+
+@scenario
+def terminal_mode_drag_end_down_and_off_the_right_edge(ctx):
+    try:
+        word, got = sideways_drag(ctx, "L60 ", "end", 1, dy=40)
+        if not got.startswith(word):
+            raise AssertionError(f"selection starts {got[:30]!r}, not at the pressed word {word!r}")
+        expect_lines(sel_lines(got), 1, 3, "L61", "L63")
+    finally:
+        restore_pane()
+
+
 def main(filters):
     chosen = [s for s in SCENARIOS if not filters or any(f in s.__name__ for f in filters)]
     # REPEAT=N runs the chosen scenarios N times over, for flaky behavior.
@@ -718,12 +865,16 @@ def main(filters):
     results = []
     for s in chosen:
         try:
+            if SELLOG:
+                cdp.js("window.__selLog = []")
             s(ctx)
             results.append((s.__name__, None))
             print(f"PASS  {s.__name__}", flush=True)
         except Exception as e:
             results.append((s.__name__, e))
             print(f"FAIL  {s.__name__}: {e}", flush=True)
+            if SELLOG:
+                print("  selection log:", *cdp.js("window.__selLog.slice(-45)"), sep="\n    ", flush=True)
             if not isinstance(e, AssertionError):
                 traceback.print_exc()
         dev.shot(s.__name__)

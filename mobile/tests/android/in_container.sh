@@ -31,7 +31,19 @@ echo "Android booted in ${t}s; Chrome $(adb shell dumpsys package com.android.ch
 # Chrome: no first-run screens, accept the daemon's self-signed cert, no
 # notification prompt. The command-line file is read because Chrome is the
 # debug app (the google_apis image allows adb root, unlike Play images).
-adb root >/dev/null; sleep 2; adb wait-for-device
+# Right after boot adbd can refuse `adb root` ("unable to connect for
+# root: closed"), and it restarts once it takes it: retry until the device
+# shell actually runs as root.
+t=0
+until [ "$(adb shell id -u 2>/dev/null | tr -d '\r')" = 0 ]; do
+	adb root >/dev/null 2>&1 || true
+	adb wait-for-device
+	t=$((t + 1))
+	if [ $t -gt 30 ]; then
+		echo "adb root didn't take:" >&2; adb root >&2; exit 1
+	fi
+	sleep 2
+done
 echo "_ --disable-fre --no-default-browser-check --no-first-run --ignore-certificate-errors" \
 	>/tmp/chrome-command-line
 adb push /tmp/chrome-command-line /data/local/tmp/chrome-command-line >/dev/null
@@ -44,5 +56,5 @@ adb shell pm grant com.android.chrome android.permission.POST_NOTIFICATIONS
 useradd -m -s /bin/bash tester
 mkdir -p /shots && chmod 777 /shots
 cd /home/tester
-exec env HOME=/home/tester USER=tester LOGNAME=tester SHOTS=/shots REPEAT="${REPEAT:-1}" \
+exec env HOME=/home/tester USER=tester LOGNAME=tester SHOTS=/shots REPEAT="${REPEAT:-1}" SELLOG="${SELLOG:-}" \
 	runuser -u tester -- python3 /src/mobile/tests/android/android.py "$@"

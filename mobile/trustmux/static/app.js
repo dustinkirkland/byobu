@@ -956,6 +956,8 @@ const SEL_EDGE_STEP_MS = 120;
 const OUTPUT_FLING_MS = 1500;
 const OUTPUT_FLING_SETTLE_MS = 250;
 let _selEnds = null;        // [anchorNode, anchorOffset, focusNode, focusOffset]
+let _selPrevEnds = null;    // and the ones before those
+let _selDragged = null;     // the end that moved between those two, if one did
 let _selLastMoved = null;   // 'anchor' | 'focus': the end being dragged
 let _selEdgeStepAt = 0;
 let _selScrollPos = null;   // the scrollTop #output may have while selecting
@@ -1021,11 +1023,68 @@ function _cmpToSpan(span, node, offset) {
   try { return r.comparePoint(node, offset); } catch (_) { return 0; }
 }
 
+function _selLine(node) {
+  const el = node && (node.nodeType === Node.TEXT_NODE ? node.parentElement : node);
+  return el && el.closest ? el.closest('#output > span') : null;
+}
+
+// Whether two selection points are the same place in the text: the same
+// line and character. Chrome can report one place as the end of one text
+// node or the start of the next, and that is no move.
+function _selSamePlace(n1, o1, n2, o2) {
+  if (n1 === n2 && o1 === o2) return true;
+  const line = _selLine(n1);
+  if (!line || line !== _selLine(n2)) return false;
+  const at = (n, o) => {
+    const r = document.createRange();
+    r.setStart(line, 0);
+    try { r.setEnd(n, o); } catch (_) { return -1; }
+    return r.toString().length;
+  };
+  const a = at(n1, o1);
+  return a >= 0 && a === at(n2, o2);
+}
+
+// Past the left or right edge (Terminal mode, where lines are wider than
+// the screen), Chrome also puts the end outside #output, before it (on
+// the header), though the finger is still on the line it was on.
+// Document order would read that as off the top and take in the whole
+// screen above. So when the end was last on a line inside the screen,
+// rather than on the first or last visible line, keep it on that line:
+// at the line's end if it is the selection's later end, at its start if
+// the earlier. Only when an end has been running along that line: it
+// moved on its own last, and was on that line for its last two moves.
+// Go by that end, not by which name Chrome now gives it (it can swap
+// anchor and focus as the end leaves). A handle dragged up or down can
+// have Chrome report one stray position (the last line, mid-drag) just
+// before the end leaves the screen; and past the bottom the end lands
+// after #output, on the input bar, which is never sideways.
+function _sidewaysEnd(vis, node) {
+  if (!_selEnds || !_selPrevEnds || !_selDragged) return null;
+  if (output.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING) return null;
+  const [mine, mineOff, other, otherOff] = _selDragged === 'focus'
+    ? [_selEnds[2], _selEnds[3], _selEnds[0], _selEnds[1]]
+    : [_selEnds[0], _selEnds[1], _selEnds[2], _selEnds[3]];
+  const line = _selLine(mine);
+  if (!line || line === vis[0] || line === vis[1]) return null;
+  if (_selLine(_selPrevEnds[_selDragged === 'focus' ? 2 : 0]) !== line) return null;
+  const r = document.createRange();
+  try { r.setStart(other, otherOff); } catch (_) { return null; }
+  const later = r.comparePoint(mine, mineOff) > 0;
+  return later ? [line, line.childNodes.length] : [line, 0];
+}
+
 function _clampSelectionEnd(sel, which) {
   const node = which === 'focus' ? sel.focusNode : sel.anchorNode;
   const off = which === 'focus' ? sel.focusOffset : sel.anchorOffset;
   let vis = _visibleLineSpans();
   if (!vis || !node) return false;
+  const side = !output.contains(node) && _sidewaysEnd(vis, node);
+  if (side) {
+    if (which === 'focus') sel.setBaseAndExtent(sel.anchorNode, sel.anchorOffset, side[0], side[1]);
+    else sel.setBaseAndExtent(side[0], side[1], sel.focusNode, sel.focusOffset);
+    return true;
+  }
   const step = performance.now() - _selEdgeStepAt > SEL_EDGE_STEP_MS;
   let to = null;
   if (_cmpToSpan(vis[0], node, off) < 0) {
@@ -1085,7 +1144,7 @@ document.addEventListener('selectionchange', () => {
   const sel = window.getSelection();
   if (!sel || sel.rangeCount === 0 || sel.isCollapsed
       || !(output.contains(sel.anchorNode) || output.contains(sel.focusNode))) {
-    _selEnds = _selLastMoved = _selScrollPos = _selScrollCap = null;
+    _selEnds = _selPrevEnds = _selDragged = _selLastMoved = _selScrollPos = _selScrollCap = null;
     return;
   }
   // The selection change that comes with one of Chrome's jumps can arrive
@@ -1107,18 +1166,26 @@ document.addEventListener('selectionchange', () => {
   }
   const now = [sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset];
   const prev = _selEnds;
-  _selEnds = now;
   // A brand-new selection (long press, double tap) is where the finger is;
   // only an end that moved on its own is a drag.
   if (!prev) {
+    _selEnds = now;
+    _selPrevEnds = _selDragged = null;
     _selScrollPos = output.scrollTop;
     _selScrollCap = Math.max(_bottomScrollTop(), output.scrollTop);
     return;
   }
-  const anchorMoved = prev[0] !== now[0] || prev[1] !== now[1];
-  const focusMoved = prev[2] !== now[2] || prev[3] !== now[3];
-  if (anchorMoved === focusMoved) return;
-  _selLastMoved = focusMoved ? 'focus' : 'anchor';
+  const anchorMoved = !_selSamePlace(prev[0], prev[1], now[0], now[1]);
+  const focusMoved = !_selSamePlace(prev[2], prev[3], now[2], now[3]);
+  // Nothing moved: Chrome reporting again where we just put an end back
+  // (it does, over and over, while a handle is held past the edge). That
+  // is no move, so it mustn't wipe out the drag it belongs to.
+  if (!anchorMoved && !focusMoved) return;
+  _selPrevEnds = prev;
+  _selEnds = now;
+  _selDragged = null;
+  if (anchorMoved && focusMoved) return;
+  _selLastMoved = _selDragged = focusMoved ? 'focus' : 'anchor';
   _clampSelectionEnd(sel, _selLastMoved);
 });
 
