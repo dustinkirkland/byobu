@@ -108,6 +108,14 @@ byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     the end now stays on its own line: dragging the end handle right
     selects to the end of the line, dragging the start handle left from
     the line's start.
+  * trustmux: dragging a selection handle down from a scrolled-up pane no
+    longer stops after a line when the phone is busy. Chrome sometimes
+    jumps the pane and the selection far down the scrollback; trustmux
+    put both back at once, but any selection change made by the page
+    hides Chrome's handles, and if that reached the screen before the
+    finger's next move the drag ended there. Now only the scroll is put
+    back at once: Chrome's next move puts the selection back under the
+    finger, and if none comes the end is pulled onto the screen.
 
 byobu (7.23) 2026-10-29  Dustin Kirkland <kirkland@ubuntu.com>
 

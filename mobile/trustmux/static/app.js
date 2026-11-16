@@ -1116,13 +1116,45 @@ function _outputFingerScroll() {
 // Chrome scrolled #output on its own: following a dragged handle. Its jump
 // can come from mid-screen and lands the dragged end somewhere arbitrary
 // (seen: dragging up from mid-screen jumped to the last line), so undo the
-// scroll and put the selection back as it was. If the dragged end was
-// already on the first/last visible line, the drag is heading off that
-// edge: step one line that way, so a longer selection still extends.
+// scroll. Leave Chrome's selection be for now, though: setting it from
+// here hides Chrome's handles, which ends the drag unless the finger's
+// next move reaches the page first -- and a busy page loses that race,
+// leaving the selection stuck where it was. While the finger moves on,
+// Chrome soon puts the end back under it (on the screen we put back);
+// only if nothing more comes does the end get pulled in from wherever
+// Chrome left it, as for any end dragged past the edge. If the dragged end
+// was already on the first/last visible line, the drag is heading off
+// that edge: step one line that way, so a longer selection still extends.
+const SEL_JUMP_SETTLE_MS = 150;
+let _selJumped = null;      // the selection Chrome jumped to, while we wait
+let _selJumpTimer = 0;
+
+function _selIsJumped(sel) {
+  return !!_selJumped && sel.anchorNode === _selJumped[0] && sel.anchorOffset === _selJumped[1]
+    && sel.focusNode === _selJumped[2] && sel.focusOffset === _selJumped[3];
+}
+
+function _selJumpSettled() {
+  _selJumpTimer = 0;
+  const sel = window.getSelection();
+  if (!_selIsJumped(sel) || !_selEnds) { _selJumped = null; return; }
+  _selJumped = null;
+  const which = _selSamePlace(sel.focusNode, sel.focusOffset, _selEnds[2], _selEnds[3])
+    ? 'anchor' : 'focus';
+  _selLastMoved = which;
+  if (_clampSelectionEnd(sel, which)) return;
+  // Chrome's end is on the screen as it is: keep it, as a move.
+  _selPrevEnds = _selEnds;
+  _selEnds = [sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset];
+  _selDragged = which;
+}
+
 function _selUndoForeignScroll(sel) {
   _selScrollTo(_selScrollPos);
   if (!_selEnds) return;
-  sel.setBaseAndExtent(..._selEnds);
+  _selJumped = [sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset];
+  clearTimeout(_selJumpTimer);
+  _selJumpTimer = setTimeout(_selJumpSettled, SEL_JUMP_SETTLE_MS);
   const node = _selLastMoved === 'anchor' ? _selEnds[0] : _selEnds[2];
   const el = node && (node.nodeType === Node.TEXT_NODE ? node.parentElement : node);
   const line = el && el.closest('#output > span');
@@ -1145,6 +1177,7 @@ document.addEventListener('selectionchange', () => {
   if (!sel || sel.rangeCount === 0 || sel.isCollapsed
       || !(output.contains(sel.anchorNode) || output.contains(sel.focusNode))) {
     _selEnds = _selPrevEnds = _selDragged = _selLastMoved = _selScrollPos = _selScrollCap = null;
+    _selJumped = null;
     return;
   }
   // The selection change that comes with one of Chrome's jumps can arrive
@@ -1154,6 +1187,10 @@ document.addEventListener('selectionchange', () => {
     _selUndoForeignScroll(sel);
     return;
   }
+  // Chrome's jump, reported after we undid its scroll: still waiting to see
+  // whether the drag goes on.
+  if (_selIsJumped(sel)) return;
+  _selJumped = null;
   // An end outside #output (on the header or the input bar) is never one a
   // person meant; pull it back whichever end Chrome says moved (crossing
   // the edge, it can report both, swapping base and extent).

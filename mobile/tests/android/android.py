@@ -405,11 +405,13 @@ def open_chrome(url):
     return cdp
 
 
-# SELLOG=1: record every selection change and every _clampSelectionEnd()
-# call in the page, and print the tail of it when a scenario fails.
+# SELLOG=1: record every selection change, #output scroll, and every
+# _clampSelectionEnd() and _selUndoForeignScroll() call in the page, with
+# times, and print the tail of it when a scenario fails (SELLOG=all: when
+# it passes too).
 SEL_LOG = """(() => { if (window.__selHooked) return 0; window.__selHooked = 1;
   window.__selLog = [];
-  const push = s => { window.__selLog.push(s); if (window.__selLog.length > 200) window.__selLog.shift(); };
+  const push = s => { window.__selLog.push(`${performance.now() | 0} ${s}`); if (window.__selLog.length > 200) window.__selLog.shift(); };
   const desc = (n, o) => {
     if (!n) return 'null';
     const el = n.nodeType === 3 ? n.parentElement : n;
@@ -428,13 +430,37 @@ SEL_LOG = """(() => { if (window.__selHooked) return 0; window.__selHooked = 1;
          + ` -> ${r} now a=${desc(sel.anchorNode, sel.anchorOffset)} f=${desc(sel.focusNode, sel.focusOffset)}`);
     return r;
   };
+  const undo = _selUndoForeignScroll;
+  _selUndoForeignScroll = function (sel) {
+    push(`  undo from top=${output.scrollTop | 0} to ${_selScrollPos} a=${desc(sel.anchorNode, sel.anchorOffset)} f=${desc(sel.focusNode, sel.focusOffset)} vis=${(_visibleLineSpans()||[]).map(x => x.textContent.slice(0, 3))}`);
+    return undo.apply(this, arguments);
+  };
+  output.addEventListener('scroll', () => push(`scroll top=${output.scrollTop | 0}`), true);
   document.addEventListener('selectionchange', () => {
     const s = getSelection();
     push(`chg a=${desc(s.anchorNode, s.anchorOffset)} f=${desc(s.focusNode, s.focusOffset)}`
          + ` top=${output.scrollTop | 0} dragged=${_selDragged}`);
   }, true);
   return 1; })()"""
-SELLOG = os.environ.get("SELLOG") == "1"
+SELLOG = os.environ.get("SELLOG") in ("1", "all")
+
+# A busy phone: once the dragged end first leaves the pressed line, block
+# the page long enough for the finger to finish the drag, so Chrome sends
+# the page the rest of the drag all at once afterwards.
+STALL_JS = """line => {
+  const onLine = n => {
+    const el = n && (n.nodeType === 3 ? n.parentElement : n);
+    const span = el && el.closest && el.closest('#output > span');
+    return !span || span.textContent.startsWith(line);
+  };
+  const h = () => {
+    const s = getSelection();
+    if (onLine(s.anchorNode) && onLine(s.focusNode)) return;
+    document.removeEventListener('selectionchange', h);
+    setTimeout(() => { const t = performance.now(); while (performance.now() - t < 4000); }, 0);
+  };
+  document.addEventListener('selectionchange', h);
+}"""
 
 SCENARIOS = []
 CDP = [None]   # the one page connection, for helpers called without a ctx
@@ -457,10 +483,12 @@ class Ctx:
             self.cdp.js(f"{SCROLL_TOP} -= {scroll_up}")
             wait_stable(lambda: self.cdp.js(SCROLL_TOP), "#output to settle after scrolling up")
 
-    def drag(self, line, which, lines, ms=700):
+    def drag(self, line, which, lines, ms=700, stall=False):
         s = long_press_word(self.cdp, self.dev, line)
         if not s:
             raise AssertionError(f"long press on {line.strip()} selected nothing")
+        if stall:
+            self.cdp.js(f"({STALL_JS})({json.dumps(line)})")
         s0 = s["scrollTop"]
         s2 = drag_handle(self.cdp, self.dev, which, lines, ms=ms)
         if not s2:
@@ -530,6 +558,27 @@ def scrolled_up_drag_start_up(ctx):
     got, moved = ctx.drag("L30 ", "start", -8, ms=1200)
     expect_lines(got, 2, 10, "L20", "L30")
     expect_scroll(moved, 4)
+
+
+@scenario
+def busy_phone_scrolled_up_drag_end_down_past_the_bottom(ctx):
+    # The page is too busy to follow the drag, and the finger is past the
+    # bottom by the time it catches up: Chrome jumps #output and the end
+    # down the scrollback. Putting the selection back at once (any JS
+    # selection change hides Chrome's handles) used to end the drag right
+    # there, the end stuck on the line it was on before.
+    ctx.reset(scroll_up=600)
+    got, moved = ctx.drag("L50 ", "end", 8, ms=1200, stall=True)
+    expect_lines(got, 2, 12, "L51", "L62")
+    expect_scroll(moved, 4)
+
+
+@scenario
+def busy_phone_drag_start_up_past_the_top_edge(ctx):
+    ctx.reset()
+    got, moved = ctx.drag("L60 ", "start", -5, stall=True)
+    expect_lines(got, 2, 8, "L52", "L60")
+    expect_scroll(moved, 3)
 
 
 @scenario
@@ -870,6 +919,8 @@ def main(filters):
             s(ctx)
             results.append((s.__name__, None))
             print(f"PASS  {s.__name__}", flush=True)
+            if os.environ.get("SELLOG") == "all":
+                print("  selection log:", *cdp.js("window.__selLog.slice(-45)"), sep="\n    ", flush=True)
         except Exception as e:
             results.append((s.__name__, e))
             print(f"FAIL  {s.__name__}: {e}", flush=True)
