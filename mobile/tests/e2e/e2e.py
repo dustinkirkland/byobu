@@ -981,6 +981,38 @@ def pane_does_not_redraw_under_a_held_finger(ui, p0, p1):
 
 
 @scenario
+def bottom_snap_waiting_on_a_frame_skips_a_held_finger(ui, p0, p1):
+    # A render near the bottom snaps #output down in its next animation
+    # frame. Chrome runs a touchstart ahead of that frame's callbacks, so a
+    # finger landing in between (a slow phone widens the gap) got the pane
+    # moved a line under it. Queue the snap from the touchstart itself: the
+    # same order, every time.
+    tty = write_pane0("".join(f"SNAP-{i:02d} line\r\n" for i in range(60)))
+    try:
+        wait_output(ui, "SNAP-59")
+        x, y = line_point(ui, "SNAP-50")
+        bottom = to_bottom(ui)
+        before = scroll_output_to(ui, bottom - 30)
+        js(ui, """(() => { window.__snapRan = 0;
+          document.addEventListener('touchstart', () => {
+            scrollOutputToBottom();
+            requestAnimationFrame(() => requestAnimationFrame(() => { window.__snapRan = 1; }));
+          }, {capture: true, once: true});
+          return 0; })()""")
+        touch(ui, "touchStart", x, y)
+        try:
+            wait_until(lambda: js(ui, "window.__snapRan"), "the queued snap's frame")
+            after = js(ui, f"{OUT}.scrollTop")
+        finally:
+            touch(ui, "touchEnd")
+        if after != before:
+            raise AssertionError(f"#output moved from {before} to {after} under a held finger")
+    finally:
+        clear_selection(ui)
+        restore_pane0(tty, p0)
+
+
+@scenario
 def scrolled_up_view_stays_put_while_the_pane_prints(ui, p0, p1):
     # The capture is the pane's last 300 lines; past that, each new line
     # drops one off the top, which used to slide a scrolled-up view up a
@@ -1234,6 +1266,38 @@ def background_lock_follows_the_gear_menu_choice(ui, p0, p1):
         js(ui, "localStorage.removeItem('lock-hidden-ms'); unlockApp()")
         ui.reload()
         wait_output(ui, p0.banner, timeout=20000)
+
+
+@scenario
+def pane_keeps_streaming_after_tmux_stalls(ui, p0, p1):
+    # A loaded machine can leave tmux too slow to answer a capture: the
+    # control client's 5s timeout, then the subprocess fallback's. That
+    # used to end the pane's stream, so nothing new showed until the app
+    # subscribed again. Stopping the tmux server stalls it the same way.
+    import signal
+    tty = write_pane0("STALL-BEFORE\r\n")
+    server = int(tmux_fmt("e2e", "#{pid}"))
+
+    def fallback_captures():
+        return subprocess.run(["pgrep", "-f", "^tmux capture-pane"],
+                              capture_output=True, text=True).stdout.split()
+    try:
+        wait_output(ui, "STALL-BEFORE")
+        os.kill(server, signal.SIGSTOP)
+        try:
+            # The control client times out and the daemon falls back to a
+            # tmux subprocess, which then times out in turn.
+            stuck = wait_until(fallback_captures, "a fallback capture", timeout=20)
+            wait_until(lambda: not set(stuck) & set(fallback_captures()),
+                       "the fallback capture to time out", timeout=10)
+        finally:
+            os.kill(server, signal.SIGCONT)
+        with open(tty, "w") as f:
+            f.write("STALL-AFTER\r\n")
+        wait_output(ui, "STALL-AFTER", timeout=10000)
+    finally:
+        os.kill(server, signal.SIGCONT)
+        restore_pane0(tty, p0)
 
 
 def main(filters):

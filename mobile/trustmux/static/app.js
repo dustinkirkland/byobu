@@ -918,6 +918,10 @@ function scrollOutputToBottom() {
   // bottom-snap zone, so re-anchoring here would yank a live pane back down.
   if (_scrollMode) return;
   requestAnimationFrame(() => {
+    // A finger that landed since the render holds the pane still
+    // (_outputFrozen). Chrome runs its touchstart ahead of this frame's
+    // callbacks, and a slow phone widens the gap.
+    if (_outputTouching || _outputPointers.size) return;
     output.scrollTop = _bottomScrollTop();
   });
 }

@@ -3,6 +3,7 @@
 import asyncio
 import json
 import os
+import subprocess
 import sys
 import tempfile
 import time
@@ -918,6 +919,48 @@ class TestStreamPaneWake(_StreamPaneHarness):
         # delta optimization applies rather than a full update.
         self.assertEqual(conn.sent[1]['type'], 'delta')
         self.assertEqual(conn.sent[1]['append'], ['content-2'])
+
+    def test_a_failed_capture_does_not_end_the_stream(self):
+        # A loaded machine can take longer than _tmux's 5s timeout. That
+        # used to end the stream for good: the pane stopped updating until
+        # the client subscribed again (an RC's Android tests stuck on it).
+        conn = self._make_conn()
+        conn._send = conn.sent.append
+        captures = []
+        def fake_capture(pane_id, lines, ansi, join):
+            captures.append(time.monotonic())
+            if len(captures) == 2:
+                raise subprocess.TimeoutExpired(['tmux', 'capture-pane'], 5)
+            return f'content-{len(captures)}'
+
+        async def driver():
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+            conn._stream_wake.set()
+            await asyncio.sleep(0.1)
+
+        with patch.object(bm, '_STREAM_RETRY', 0.01):
+            self._run_stream(conn, fake_capture, driver, settle=0.01)
+        self.assertEqual([m['type'] for m in conn.sent], ['snapshot', 'delta'])
+        self.assertEqual(conn.sent[1]['append'], ['content-3'])
+
+    def test_a_failed_first_capture_is_retried(self):
+        # The snapshot too: without it the client waits on its subscribe.
+        conn = self._make_conn()
+        conn._send = conn.sent.append
+        captures = []
+        def fake_capture(pane_id, lines, ansi, join):
+            captures.append(1)
+            if len(captures) == 1:
+                raise subprocess.TimeoutExpired(['tmux', 'capture-pane'], 5)
+            return 'content'
+
+        async def driver():
+            await asyncio.sleep(0.05)
+
+        with patch.object(bm, '_STREAM_RETRY', 0.01):
+            self._run_stream(conn, fake_capture, driver, settle=0.01)
+        self.assertEqual(conn.sent, [{'type': 'snapshot', 'pane_id': '%0', 'data': 'content'}])
 
     def test_keystroke_burst_coalesces_into_one_capture(self):
         conn = self._make_conn()

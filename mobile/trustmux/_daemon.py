@@ -1337,6 +1337,7 @@ _KEYSTROKE_SETTLE = 0.03    # seconds between key injection and capture
 # for anything a wake cannot carry (a lost notification, a dead client), so
 # it can be slow.
 _POLL_IDLE_MONITORED = 2.0
+_STREAM_RETRY = 1.0         # seconds before retrying a failed capture
 
 def _valid_tmux_id(s: str) -> bool:
     return bool(s and _TMUX_ID_RE.match(s))
@@ -1544,14 +1545,38 @@ class WsHandler(tornado.websocket.WebSocketHandler):
             # for this same pane arriving after the handler resolved
             # self._stream_pane_id but before this task got its first turn,
             # silently dropping that keystroke's fast-cadence wake.
-            session_id = await _MONITOR.ensure(pane_id)
-            content = await cm_capture_pane(session_id, pane_id, history_lines, ansi, join)
-            # Join (-J) merges soft-wrapped lines, so screen rows no longer
-            # map 1:1 to capture lines; cm_join_cursor re-maps the cursor
-            # into joined coordinates instead.
-            cursor = _clamp_cursor(
-                await (cm_join_cursor(session_id, pane_id, content) if join
-                       else cm_cursor(session_id, pane_id)), content)
+            async def capture(session_id):
+                content = await cm_capture_pane(session_id, pane_id, history_lines, ansi, join)
+                # Join (-J) merges soft-wrapped lines, so screen rows no
+                # longer map 1:1 to capture lines; cm_join_cursor re-maps
+                # the cursor into joined coordinates instead.
+                cursor = _clamp_cursor(
+                    await (cm_join_cursor(session_id, pane_id, content) if join
+                           else cm_cursor(session_id, pane_id)), content)
+                return content, cursor
+
+            # A tmux call can fail, or time out (_tmux's 5s) on a loaded
+            # machine. That costs one capture, not the stream: an ended
+            # stream left the pane frozen on the client until it subscribed
+            # again. Log the first failure of a run, and try again shortly.
+            failing = False
+
+            def failed(e):
+                nonlocal failing
+                if not failing:
+                    print(f"trustmux: capturing pane {pane_id} failed ({e!r}); "
+                          "retrying", file=sys.stderr)
+                failing = True
+
+            while True:
+                try:
+                    session_id = await _MONITOR.ensure(pane_id)
+                    content, cursor = await capture(session_id)
+                    break
+                except (subprocess.SubprocessError, OSError) as e:
+                    failed(e)
+                    await asyncio.sleep(_STREAM_RETRY)
+            failing = False
             msg = {"type": "snapshot", "pane_id": pane_id, "data": content}
             if cursor:
                 msg.update(cursor)
@@ -1565,7 +1590,11 @@ class WsHandler(tornado.websocket.WebSocketHandler):
             last_lines = content.split("\n")
             last_capture_mono = time.monotonic()
             while True:
-                session_id = await _MONITOR.ensure(pane_id)
+                try:
+                    session_id = await _MONITOR.ensure(pane_id)
+                except (subprocess.SubprocessError, OSError) as e:
+                    failed(e)
+                    session_id = None   # capture through the fallback
                 if session_id:
                     interval = _POLL_IDLE_MONITORED
                 elif time.monotonic() - self._last_input_mono < _POLL_ACTIVE_WINDOW:
@@ -1595,10 +1624,13 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                     if floor > 0:
                         await asyncio.sleep(floor)
                         self._stream_wake.clear()
-                content = await cm_capture_pane(session_id, pane_id, history_lines, ansi, join)
-                cursor = _clamp_cursor(
-                    await (cm_join_cursor(session_id, pane_id, content) if join
-                           else cm_cursor(session_id, pane_id)), content)
+                try:
+                    content, cursor = await capture(session_id)
+                except (subprocess.SubprocessError, OSError) as e:
+                    failed(e)
+                    await asyncio.sleep(_STREAM_RETRY)
+                    continue
+                failing = False
                 last_capture_mono = time.monotonic()
                 if content != last_content:
                     new_lines = content.split("\n")

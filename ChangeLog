@@ -116,6 +116,15 @@ byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     finger's next move the drag ended there. Now only the scroll is put
     back at once: Chrome's next move puts the selection back under the
     finger, and if none comes the end is pulled onto the screen.
+  * trustmux: a pane no longer stops updating after tmux is slow to
+    answer. When a capture timed out (5 seconds, on a heavily loaded
+    machine) the daemon ended the pane's stream, and the app showed the
+    pane frozen until you switched away and back. It now logs the
+    failure and tries again a second later.
+  * trustmux: a finger landing on a printing pane no longer moves it a
+    line. The pane holds still under a finger, but a scroll to the bottom
+    already waiting for the next frame still ran; it now checks for a
+    finger first.
 
 byobu (7.23) 2026-10-29  Dustin Kirkland <kirkland@ubuntu.com>
 
