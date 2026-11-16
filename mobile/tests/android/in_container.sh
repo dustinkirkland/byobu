@@ -29,7 +29,11 @@ echo "Android booted in ${t}s; Chrome $(adb shell dumpsys package com.android.ch
 	| sed -n 's/.*versionName=//p' | head -1 | tr -d '\r')"
 
 # Chrome: no first-run screens, accept the daemon's self-signed cert, no
-# notification prompt. The command-line file is read because Chrome is the
+# notification prompt, and no "No internet connection" bar: the emulator's
+# network comes and goes after boot, and the bar showing up pushes the page
+# down a line under the touch coordinates the tests calibrated. (The app
+# needs no network: it reaches the daemon through `adb reverse`.)
+# The command-line file is read because Chrome is the
 # debug app (the google_apis image allows adb root, unlike Play images).
 # Right after boot adbd can refuse `adb root` ("unable to connect for
 # root: closed"), and it restarts once it takes it: retry until the device
@@ -44,7 +48,7 @@ until [ "$(adb shell id -u 2>/dev/null | tr -d '\r')" = 0 ]; do
 	fi
 	sleep 2
 done
-echo "_ --disable-fre --no-default-browser-check --no-first-run --ignore-certificate-errors" \
+echo "_ --disable-fre --no-default-browser-check --no-first-run --ignore-certificate-errors --force-online-connection-state-for-indicator" \
 	>/tmp/chrome-command-line
 adb push /tmp/chrome-command-line /data/local/tmp/chrome-command-line >/dev/null
 adb shell chmod 644 /data/local/tmp/chrome-command-line

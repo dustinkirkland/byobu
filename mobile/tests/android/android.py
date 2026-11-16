@@ -114,8 +114,21 @@ def to_bottom(cdp):
     cdp.js("""(() => { window.__frames = 0; scrollOutputToBottom();
       requestAnimationFrame(() => requestAnimationFrame(() => { window.__frames = 1; }));
       return 0; })()""")
-    wait_until(lambda: cdp.js("window.__frames"), "scrollOutputToBottom's frame")
+    try:
+        wait_until(lambda: cdp.js("window.__frames"), "scrollOutputToBottom's frame")
+    except AssertionError as e:
+        # No frames: Chrome isn't drawing the page. Say what's in front.
+        front = [l.strip() for l in adb("shell", "dumpsys", "activity", "activities").splitlines()
+                 if "ResumedActivity" in l][:2]
+        os.makedirs(SHOTS, exist_ok=True)
+        with open(os.path.join(SHOTS, "no_frames.png"), "wb") as f:
+            f.write(subprocess.run(["adb", "exec-out", "screencap", "-p"],
+                                   capture_output=True).stdout)
+        raise AssertionError(f"{e}; page: {cdp.js(PAGE_SHOWN)}; front: {front}") from None
     wait_until(lambda: cdp.js(AT_BOTTOM), "#output to scroll to the bottom")
+
+
+PAGE_SHOWN = "({visibility: document.visibilityState, focus: document.hasFocus()})"
 # The last non-blank line in #output (the cursor's row below it is blank)
 LAST_TEXT_LINE = """[...document.getElementById('output').children]
   .map(e => e.textContent).filter(t => t.trim()).pop() || ''"""
@@ -136,19 +149,22 @@ class Cdp:
         """Find trustmux's tab and attach to it. Chrome's devtools socket
         can take a while, and drop the first requests, on a loaded
         emulator; and right after a fast boot Chrome can drop the intent
-        that opens the tab, so `launch` sends it again every 15s."""
+        that opens the tab, so `launch` sends it again after 15s of Chrome
+        answering with no such tab. Only then: a second intent opens a
+        second tab in front, and the one attached to stops drawing."""
         deadline = time.time() + 90
         relaunch = time.time() + 15
         targets = None
         while True:
             try:
                 targets = json.load(urllib.request.urlopen(f"http://localhost:{DEVTOOLS}/json"))
+            except Exception:
+                relaunch = time.time() + 15   # not answering: no verdict on the tab
+            else:
                 page = next((t for t in targets if t["type"] == "page"
                              and f":{PORT}" in t["url"]), None)
                 if page:
                     break
-            except Exception:
-                pass
             if time.time() > deadline:
                 raise RuntimeError(f"no trustmux tab in Chrome after 90s; tabs: "
                                    f"{[t.get('url') for t in targets or []]}")
@@ -156,8 +172,18 @@ class Cdp:
                 launch()
                 relaunch = time.time() + 15
             time.sleep(0.5)
+        self.id = page["id"]
         self.ws = websocket.create_connection(page["webSocketDebuggerUrl"],
                                               suppress_origin=True)
+
+    def only_tab(self):
+        """Close any other trustmux tab (an intent sent twice opens two),
+        and wait for this one to be the tab Chrome shows."""
+        for t in json.load(urllib.request.urlopen(f"http://localhost:{DEVTOOLS}/json")):
+            if t["type"] == "page" and f":{PORT}" in t["url"] and t["id"] != self.id:
+                urllib.request.urlopen(f"http://localhost:{DEVTOOLS}/json/close/{t['id']}").read()
+        wait_until(lambda: self.js("document.visibilityState") == "visible",
+                   "the trustmux tab to be the one in front", timeout=20)
 
     def send(self, method, params=None):
         self.n += 1
@@ -265,8 +291,20 @@ def fill_pane(lines):
         f.write("\x1b[2J\x1b[H" + "\r\n".join(lines) + "\r\n")
     if CDP[0]:
         last = json.dumps(lines[-1])
-        wait_until(lambda: CDP[0].js(f"({LAST_TEXT_LINE})" + f".startsWith({last})"),
-                   f"the pane to show {lines[-1][:12]!r} at the bottom")
+        try:
+            wait_until(lambda: CDP[0].js(f"({LAST_TEXT_LINE})" + f".startsWith({last})"),
+                       f"the pane to show {lines[-1][:12]!r} at the bottom")
+        except AssertionError as e:
+            raise AssertionError(f"{e}; page: {CDP[0].js(PANE_STATE)}") from None
+
+
+# Why the page isn't showing pane updates, if it isn't (app.js _outputFrozen)
+PANE_STATE = """(() => ({
+  ws: ws && ws.readyState, pointers: _outputPointers.size, touching: _outputTouching,
+  hold_ms: Math.round(_outputGestureUntil - performance.now()), selection: _hasOutputSelection(),
+  deferred: _deferredForSelection, inflight: _subscribeInFlight, pane: currentPane,
+  status: connIndicator.title,
+  last: (%s).slice(0, 16) }))()""" % LAST_TEXT_LINE
 
 
 # ── selection probes (page side) ──────────────────────────────────────────
@@ -397,6 +435,7 @@ def open_chrome(url):
     wait_until(lambda: cdp.js("!!document.getElementById('output') && "
                               "document.getElementById('output').className !== 'placeholder'"),
                "trustmux to come up in Chrome", timeout=90, every=0.5)
+    cdp.only_tab()
     cdp.js(TOUCH_TRACKER)
     cdp.js(FOCUS_HOOK)
     if SELLOG:
@@ -405,10 +444,11 @@ def open_chrome(url):
     return cdp
 
 
-# SELLOG=1: record every selection change, #output scroll, and every
-# _clampSelectionEnd() and _selUndoForeignScroll() call in the page, with
-# times, and print the tail of it when a scenario fails (SELLOG=all: when
-# it passes too).
+# Record every selection change, #output scroll, touch, bottom snap, and
+# every _clampSelectionEnd() and _selUndoForeignScroll() call in the page,
+# with times, and print the tail of it when a scenario fails, so a failure
+# in an RC's run explains itself (SELLOG=all: when it passes too;
+# SELLOG=0: don't record).
 SEL_LOG = """(() => { if (window.__selHooked) return 0; window.__selHooked = 1;
   window.__selLog = [];
   const push = s => { window.__selLog.push(`${performance.now() | 0} ${s}`); if (window.__selLog.length > 200) window.__selLog.shift(); };
@@ -435,6 +475,13 @@ SEL_LOG = """(() => { if (window.__selHooked) return 0; window.__selHooked = 1;
     push(`  undo from top=${output.scrollTop | 0} to ${_selScrollPos} a=${desc(sel.anchorNode, sel.anchorOffset)} f=${desc(sel.focusNode, sel.focusOffset)} vis=${(_visibleLineSpans()||[]).map(x => x.textContent.slice(0, 3))}`);
     return undo.apply(this, arguments);
   };
+  const snap = scrollOutputToBottom;
+  scrollOutputToBottom = function () {
+    push(`  snap queued top=${output.scrollTop | 0}`);
+    return snap.apply(this, arguments);
+  };
+  for (const k of ['touchstart', 'touchend', 'touchcancel'])
+    document.addEventListener(k, () => push(`${k} top=${output.scrollTop | 0}`), {capture: true, passive: true});
   output.addEventListener('scroll', () => push(`scroll top=${output.scrollTop | 0}`), true);
   document.addEventListener('selectionchange', () => {
     const s = getSelection();
@@ -442,7 +489,7 @@ SEL_LOG = """(() => { if (window.__selHooked) return 0; window.__selHooked = 1;
          + ` top=${output.scrollTop | 0} dragged=${_selDragged}`);
   }, true);
   return 1; })()"""
-SELLOG = os.environ.get("SELLOG") in ("1", "all")
+SELLOG = os.environ.get("SELLOG") != "0"
 
 # A busy phone: once the dragged end first leaves the pressed line, block
 # the page long enough for the finger to finish the drag, so Chrome sends
