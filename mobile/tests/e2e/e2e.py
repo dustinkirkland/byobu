@@ -28,6 +28,9 @@ import traceback
 
 from playwright.sync_api import sync_playwright
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import stall as stalls  # noqa: E402
+
 WORK = os.path.expanduser("~/e2e")
 LOGGER = os.path.join(WORK, "logger.py")
 PORT = "8443"
@@ -234,6 +237,15 @@ SCENARIOS = []
 def scenario(fn):
     SCENARIOS.append(fn)
     return fn
+
+
+def stops_tmux(fn):
+    """For a scenario that stops tmux itself: no TMUX_STALL stalls in it."""
+    def run(*args):
+        with stalls.paused():
+            return fn(*args)
+    run.__name__ = fn.__name__
+    return run
 
 
 @scenario
@@ -1269,6 +1281,7 @@ def background_lock_follows_the_gear_menu_choice(ui, p0, p1):
 
 
 @scenario
+@stops_tmux
 def pane_keeps_streaming_after_tmux_stalls(ui, p0, p1):
     # A loaded machine can leave tmux too slow to answer a capture: the
     # control client's 5s timeout, then the subprocess fallback's. That
@@ -1301,6 +1314,7 @@ def pane_keeps_streaming_after_tmux_stalls(ui, p0, p1):
 
 
 @scenario
+@stops_tmux
 def a_late_subscribe_reply_waits_for_the_finger_and_selection(ui, p0, p1):
     # A loaded machine can leave tmux seconds late answering a subscribe,
     # and a finger or selection made meanwhile used to have its nodes
@@ -1362,6 +1376,7 @@ def main(filters):
     # REPEAT=N runs the chosen scenarios N times over, for flaky behavior.
     chosen = chosen * int(os.environ.get("REPEAT", "1"))
     panes, url, pair = start_backend()
+    stalls.start(int(tmux_fmt("e2e", "#{pid}")))
     results = []
     retries = 0
     with sync_playwright() as p:
@@ -1397,6 +1412,7 @@ def main(filters):
                 shot = os.path.join(WORK, f"{s.__name__}.png")
                 ui.screenshot(path=shot)
         browser.close()
+    stalls.stop()
     pair.kill()
     sh("trustmux", "stop", check=False)
     failed = [n for n, e in results if e]

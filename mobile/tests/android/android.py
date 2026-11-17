@@ -30,6 +30,9 @@ import urllib.request
 
 import websocket
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import stall as stalls  # noqa: E402
+
 PORT = "8443"
 DEVTOOLS = 9222
 SHOTS = os.environ.get("SHOTS", "/tmp/shots")
@@ -496,6 +499,7 @@ SEL_LOG = """(() => { if (window.__selHooked) return 0; window.__selHooked = 1;
   }, true);
   return 1; })()"""
 SELLOG = os.environ.get("SELLOG") != "0"
+PHONE_STALL = os.environ.get("PHONE_STALL_GO")   # see in_container.sh, tests/stall.py
 
 # A busy phone: once the dragged end first leaves the pressed line, block
 # the page long enough for the finger to finish the drag, so Chrome sends
@@ -974,6 +978,9 @@ def main(filters):
     dev.calibrate()
     DEV[0] = dev
     ctx = Ctx(cdp, dev)
+    stalls.start(int(tmux_fmt("e2e", "#{pid}")))
+    if PHONE_STALL:
+        open(PHONE_STALL, "w").close()     # in_container.sh's staller starts
     results = []
     for s in chosen:
         try:
@@ -992,6 +999,11 @@ def main(filters):
             if not isinstance(e, AssertionError):
                 traceback.print_exc()
         dev.shot(s.__name__)
+    stalls.stop()
+    if PHONE_STALL:
+        os.remove(PHONE_STALL)
+        print(wait_until(lambda: os.path.exists(PHONE_STALL + ".done")
+                         and open(PHONE_STALL + ".done").read().strip(), "the phone staller"))
     pair.kill()
     sh("trustmux", "stop", check=False)
     failed = [n for n, e in results if e]

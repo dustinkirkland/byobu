@@ -16,6 +16,9 @@
 #    break different timing assumptions):
 #        E2E_CPUS=0.5 REPEAT=10 mobile/tests/e2e/run.sh
 #        REPEAT=10 mobile/tests/e2e/run.sh
+#    and TMUX_STALL=1 stops tmux for a second or two now and then, as a
+#    release build's load does (see tests/stall.py):
+#        TMUX_STALL=1 REPEAT=10 mobile/tests/e2e/run.sh
 
 set -e
 here=$(cd "$(dirname "$0")" && pwd)
@@ -29,4 +32,4 @@ if ! docker image inspect "$tag" >/dev/null 2>&1; then
 	docker build -q -t "$tag" "$here" >/dev/null
 fi
 
-exec docker run --rm ${E2E_CPUS:+--cpus "$E2E_CPUS"} -e REPEAT="${REPEAT:-1}" -v "$repo:/src:ro" "$tag" sh /src/mobile/tests/e2e/in_container.sh "$@"
+exec docker run --rm ${E2E_CPUS:+--cpus "$E2E_CPUS"} -e REPEAT="${REPEAT:-1}" -e TMUX_STALL -e TMUX_STALL_SEED -v "$repo:/src:ro" "$tag" sh /src/mobile/tests/e2e/in_container.sh "$@"

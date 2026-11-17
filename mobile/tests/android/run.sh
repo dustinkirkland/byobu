@@ -14,8 +14,13 @@
 #    each N times (flaky behavior), ANDROID_CPUS=N to give the emulator only
 #    N CPUs (a busy host). Exits non-zero if any scenario fails.
 #
+#    TMUX_STALL=1 stops tmux for a second or two now and then, and
+#    PHONE_STALL=1 the whole emulator, as a release build's load does (see
+#    tests/stall.py).
+#
 #    Any change to these tests must pass under load first:
 #        ANDROID_CPUS=2 REPEAT=10 mobile/tests/android/run.sh
+#        TMUX_STALL=1 PHONE_STALL=1 REPEAT=10 mobile/tests/android/run.sh
 
 set -e
 here=$(cd "$(dirname "$0")" && pwd)
@@ -40,5 +45,5 @@ if [ -n "$ANDROID_SHOTS" ]; then
 	shots="-v $(cd "$ANDROID_SHOTS" && pwd):/shots"
 fi
 # shellcheck disable=SC2086
-exec docker run --rm ${ANDROID_CPUS:+--cpus "$ANDROID_CPUS"} --device /dev/kvm -v "$repo:/src:ro" -e REPEAT="${REPEAT:-1}" -e SELLOG="${SELLOG:-}" $shots "$tag" \
+exec docker run --rm ${ANDROID_CPUS:+--cpus "$ANDROID_CPUS"} --device /dev/kvm -v "$repo:/src:ro" -e REPEAT="${REPEAT:-1}" -e SELLOG="${SELLOG:-}" -e TMUX_STALL -e TMUX_STALL_SEED -e PHONE_STALL -e PHONE_STALL_SEED $shots "$tag" \
 	sh /src/mobile/tests/android/in_container.sh "$@"

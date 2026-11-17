@@ -55,10 +55,20 @@ adb shell chmod 644 /data/local/tmp/chrome-command-line
 adb shell am set-debug-app --persistent com.android.chrome
 adb shell pm grant com.android.chrome android.permission.POST_NOTIFICATIONS
 
+# PHONE_STALL (tests/stall.py): stop the emulator now and then, as a busy
+# host does. It runs as root, as the emulator does, from when the tests
+# create the go file (once calibrated) until they remove it.
+go=
+if [ -n "$PHONE_STALL" ] && [ "$PHONE_STALL" != 0 ]; then
+	mkdir -m 777 /tmp/phone-stall
+	go=/tmp/phone-stall/go
+	python3 /src/mobile/tests/stall.py PHONE "$(pgrep -f qemu-system | head -1)" "$PHONE_STALL" $go &
+fi
+
 # Everything else runs as an ordinary user, like on a real machine; adb
 # reaches the server root started over its TCP port.
 useradd -m -s /bin/bash tester
 mkdir -p /shots && chmod 777 /shots
 cd /home/tester
-exec env HOME=/home/tester USER=tester LOGNAME=tester SHOTS=/shots REPEAT="${REPEAT:-1}" SELLOG="${SELLOG:-}" \
+exec env HOME=/home/tester USER=tester LOGNAME=tester SHOTS=/shots REPEAT="${REPEAT:-1}" SELLOG="${SELLOG:-}" PHONE_STALL_GO="$go" \
 	runuser -u tester -- python3 /src/mobile/tests/android/android.py "$@"
