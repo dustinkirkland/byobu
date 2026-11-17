@@ -125,6 +125,12 @@ byobu (7.24) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     line. The pane holds still under a finger, but a scroll to the bottom
     already waiting for the next frame still ran; it now checks for a
     finger first.
+  * trustmux: a slow tmux no longer clears a text selection or loses a
+    finger on the pane. When the app asked again for the whole pane and
+    tmux took seconds to answer, the answer redrew the pane even though a
+    long press or a held finger had come since, so the selection vanished
+    and the pane could stay stuck holding still for a finger already
+    lifted. The answer now waits, like every other update.
 
 byobu (7.23) 2026-10-29  Dustin Kirkland <kirkland@ubuntu.com>
 

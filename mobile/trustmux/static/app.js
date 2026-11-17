@@ -166,6 +166,15 @@ function _resyncIfThawed() {
   }
 }
 
+// Whether to hold off a pane message now: while frozen, and once thawed
+// until the resubscribe lands, as a delta or patch is relative to content
+// this page never rendered.
+function _holdOutput() {
+  if (_outputFrozen()) { _deferredForSelection = true; return true; }
+  if (_deferredForSelection) { _resyncIfThawed(); return true; }
+  return false;
+}
+
 function _outputPointerUp(e) {
   if (!_outputPointers.delete(e.pointerId)) return;
   _outputGestureUntil = performance.now() + OUTPUT_GESTURE_GRACE_MS;
@@ -575,6 +584,10 @@ function connect() {
       // whatever navigation target queued up behind it, if any.
       _subscribeSettled();
       if (msg.pane_id === currentPane) {
+        // A slow tmux can take seconds to answer the subscribe, and the
+        // finger or selection that came since must keep its nodes.
+        if (_outputFrozen()) { _deferredForSelection = true; return; }
+        _deferredForSelection = false;
         _currentPaneRawLines = msg.data.split('\n');
         _currentPaneRawLinesFor = msg.pane_id;
         const forceTop = _scrollTopOnNextSnapshot;
@@ -615,7 +628,7 @@ function connect() {
       // let the forced resubscribe once the selection clears fetch a fresh
       // snapshot -- an incremental delta computed against content the client
       // never rendered is not safe to trust on its own.
-      if (_outputFrozen()) { _deferredForSelection = true; return; }
+      if (_holdOutput()) return;
       _currentPaneRawLines = _currentPaneRawLines.slice(msg.drop).concat(msg.append);
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
       const place = _outputPlace(atBottom);
@@ -636,7 +649,7 @@ function connect() {
       // reach it; the next patch after the selection clears will fail its
       // own bounds check against the now-stale _lines and self-heal via the
       // same resubscribe path below, so nothing further is needed here.
-      if (_outputFrozen()) { _deferredForSelection = true; return; }
+      if (_holdOutput()) return;
       const atBottom = output.scrollHeight - output.scrollTop <= output.clientHeight + 60;
       const place = _outputPlace(atBottom);
       _applyCursorFields(msg);

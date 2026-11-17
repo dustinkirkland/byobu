@@ -1300,6 +1300,60 @@ def pane_keeps_streaming_after_tmux_stalls(ui, p0, p1):
         restore_pane0(tty, p0)
 
 
+@scenario
+def a_late_subscribe_reply_waits_for_the_finger_and_selection(ui, p0, p1):
+    # A loaded machine can leave tmux seconds late answering a subscribe,
+    # and a finger or selection made meanwhile used to have its nodes
+    # re-rendered away when the reply landed: the selection gone, and the
+    # finger's lift never seen (touchend goes to the removed node).
+    import signal
+    tty = write_pane0("LATE-ONE alpha bravo\r\n")
+    server = int(tmux_fmt("e2e", "#{pid}"))
+
+    def late_reply(hold):
+        wait_until(lambda: not js(ui, "_subscribeInFlight"), "no subscribe in flight")
+        os.kill(server, signal.SIGSTOP)
+        try:
+            js(ui, "_requestSubscribe(currentPane)")
+            hold()
+        finally:
+            os.kill(server, signal.SIGCONT)
+        wait_until(lambda: not js(ui, "_subscribeInFlight"), "the subscribe's reply")
+    try:
+        wait_output(ui, "LATE-ONE")
+        late_reply(lambda: select_text(ui, "LATE-ONE alpha"))
+        held = js(ui, "String(getSelection())")
+        clear_selection(ui)
+        if held != "LATE-ONE alpha":
+            raise AssertionError(f"the late reply took the selection: {held!r}")
+        # and the resubscribe that clearing it sends
+        wait_until(lambda: not js(ui, "_deferredForSelection || _subscribeInFlight"),
+                   "the pane to catch up")
+        with open(tty, "w") as f:
+            f.write("LATE-TWO\r\n")
+        wait_output(ui, "LATE-TWO")
+
+        x, y = line_point(ui, "LATE-TWO")
+        n = len(gestures(ui)["te"])
+        touch(ui, "touchStart", x, y)
+        try:
+            js(ui, f"window.__held = document.elementFromPoint({x}, {y})")
+            late_reply(lambda: None)
+            kept = js(ui, "window.__held.isConnected")
+        finally:
+            touch(ui, "touchEnd")
+        if not kept:
+            raise AssertionError("the late reply re-rendered the line under the finger")
+        wait_until(lambda: len(gestures(ui)["te"]) > n, "the page to see the finger lift")
+        with open(tty, "w") as f:
+            f.write("LATE-THREE\r\n")
+        wait_output(ui, "LATE-THREE")
+    finally:
+        os.kill(server, signal.SIGCONT)
+        clear_selection(ui)
+        restore_pane0(tty, p0)
+
+
 def main(filters):
     chosen = [s for s in SCENARIOS if not filters or any(f in s.__name__ for f in filters)]
     if not chosen:
