@@ -313,7 +313,13 @@ SEL_INFO = """(() => {
   if (!s.rangeCount || s.isCollapsed) return null;
   const r = s.getRangeAt(0), rects = [...r.getClientRects()].filter(q => q.width > 0);
   const first = rects[0], last = rects[rects.length - 1];
+  const line = n => {
+    const el = n.nodeType === 3 ? n.parentElement : n;
+    const span = el && el.closest && el.closest('#output > span');
+    return span ? [...span.parentElement.children].indexOf(span) : -1;
+  };
   return { text: String(s),
+           lines: [line(r.startContainer), line(r.endContainer)],
            start: first && [first.left, first.top, first.bottom],
            end: last && [last.right, last.top, last.bottom],
            scrollTop: document.getElementById('output').scrollTop };
@@ -664,8 +670,18 @@ def drag_while_the_pane_is_printing(ctx):
     t.start()
     try:
         time.sleep(1)
-        got, _ = ctx.drag("L80 ", "end", 3)
-        expect_lines(got, 1, 4, "L81", "L84")
+        # The pane can scroll between aiming and the finger landing (a slow
+        # tmux delivers several lines at once), as it would under a person's
+        # finger: count the lines from the one the press selected.
+        s = long_press_word(ctx.cdp, ctx.dev, "L80 ")
+        if not s:
+            raise AssertionError("long press on L80 selected nothing")
+        s2 = drag_handle(ctx.cdp, ctx.dev, "end", 3)
+        if not s2:
+            raise AssertionError("the selection disappeared during the drag")
+        if s2["lines"][0] != s["lines"][0] or not 1 <= s2["lines"][1] - s2["lines"][0] <= 4:
+            raise AssertionError(f"pressed line {s['lines'][0]}, the drag selected lines "
+                                 f"{s2['lines'][0]}..{s2['lines'][1]}; expected the next 1-4")
     finally:
         stop.append(1)
         t.join()
