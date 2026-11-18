@@ -1,0 +1,30 @@
+.TH byobu-enable-agent-hooks 1 "18 November 2026" byobu "byobu"
+.SH NAME
+byobu-enable-agent-hooks, byobu-disable-agent-hooks \- have Claude Code report what it is doing to byobu
+
+.SH SYNOPSIS
+\fBbyobu-enable-agent-hooks\fP
+.TP
+\fBbyobu-disable-agent-hooks\fP
+
+.SH DESCRIPTION
+\fBbyobu-enable-agent-hooks\fP adds a hook for each Claude Code event that changes what it is doing (a prompt submitted, a tool run, a permission asked for, a turn finished or failed, the session started or ended) to Claude Code's user settings, \fI~/.claude/settings.json\fP (or \fI$CLAUDE_CONFIG_DIR/settings.json\fP). Each runs \fBbyobu-agent-state \-\-claude-hook\fP, which records the state on the tmux pane Claude Code runs in: byobu's window list then marks each window by what its agent is doing: \fB?\fP blocked waiting for you, \fB\[u2717]\fP failed, \fB\[u25C9]\fP done, \fB\[u25D4]\fP working. See \fBbyobu-agent-state\fP(1).
+
+Everything else in the settings file is kept; the previous file is saved as \fIsettings.json.byobu-backup\fP. Running it again leaves one set of hooks. The hooks take effect in Claude Code sessions started afterwards, and do nothing outside tmux (3.2 or later).
+
+\fBbyobu-disable-agent-hooks\fP removes those hooks, and nothing else.
+
+.SH SEE ALSO
+.PD 0
+.TP
+\fBbyobu-agent-state\fP(1), \fBbyobu\fP(1)
+.TP
+\fIhttps://code.claude.com/docs/en/hooks\fP
+.TP
+\fIhttps://byobu.org\fP
+.PD
+
+.SH AUTHOR
+This manpage and the utility were written by Dustin Kirkland <kirkland@byobu.org> for Ubuntu systems (but may be used by others).  Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 3 published by the Free Software Foundation.
+
+The complete text of the GNU General Public License can be found in \fI/usr/share/common-licenses/GPL\fP on Debian/Ubuntu systems, or in \fI/usr/share/doc/fedora-release-*/GPL\fP on Fedora systems, or on the web at \fIhttp://www.gnu.org/licenses/gpl.txt\fP.

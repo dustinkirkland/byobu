@@ -40,12 +40,15 @@ AC_OUTPUT(Makefile \
 	etc/profile.d/Makefile \
 	etc/profile.d/Z97-byobu.sh \
 	usr/bin/byobu \
+	usr/bin/byobu-agent-state \
 	usr/bin/byobu-config \
 	usr/bin/byobu-ctrl-a \
 	usr/bin/byobu-disable \
+	usr/bin/byobu-disable-agent-hooks \
 	usr/bin/byobu-disable-prompt \
 	usr/bin/byobu-disable-shell-integration \
 	usr/bin/byobu-enable \
+	usr/bin/byobu-enable-agent-hooks \
 	usr/bin/byobu-enable-prompt \
 	usr/bin/byobu-enable-shell-integration \
 	usr/bin/byobu-export \

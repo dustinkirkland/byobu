@@ -1056,7 +1056,8 @@ byobu --version
 echo "--- Smoke: byobu test suite ---"
 _suite=/usr/share/byobu/tests/test_byobu.sh
 command -v brew >/dev/null 2>&1 && _suite="$(brew --prefix)/share/byobu/tests/test_byobu.sh"
-bash "$_suite"
+# in a container: the suite may start its own tmux server
+BYOBU_TEST_TMUX=1 bash "$_suite"
 """
 
 _SMOKE_TRUSTMUX = r"""
@@ -1099,7 +1100,7 @@ echo "--- Build step ---"
 dh build --with python3
 
 echo "--- Test step ---"
-bash usr/share/byobu/tests/test_byobu.sh
+BYOBU_TEST_TMUX=1 bash usr/share/byobu/tests/test_byobu.sh
 python3 -m unittest discover -s mobile/tests -v
 
 echo "--- Install step ---"
@@ -1505,7 +1506,7 @@ nix-build /tmp/local-byobu.nix -o /tmp/result
 echo "--- Build PASSED ($(ls /tmp/result/bin | wc -l) binaries) ---"
 
 echo "--- Smoke: byobu test suite (Nix-built, local source) ---"
-bash /tmp/result/share/byobu/tests/test_byobu.sh
+BYOBU_TEST_TMUX=1 bash /tmp/result/share/byobu/tests/test_byobu.sh
 
 echo "=== Nix build + smoke test PASSED ==="
 """

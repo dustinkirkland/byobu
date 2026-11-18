@@ -50,6 +50,12 @@ if ! tmux_version_at_least 2 9 "$(tmux -V 2>/dev/null)"; then
 	exit 0
 fi
 
+# Once per server, too: byobu's window list, with its marks for agents and
+# alerts (see byobu-agent-state(1)), which needs tmux 3.2
+if tmux_version_at_least 3 2 "$(tmux -V 2>/dev/null)"; then
+	"$BYOBU_PREFIX/bin/byobu-agent-state" --setup >/dev/null 2>&1
+fi
+
 JOB_LEFT="#(byobu-status tmux_left)"
 JOB_RIGHT="#(byobu-status tmux_right)"
 OPT_LEFT="#{E:@byobu_status_left}"

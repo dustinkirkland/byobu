@@ -180,6 +180,8 @@ To make \fBbyobu\fP reattach to the exact same session instead of creating a new
 
 Each open window in the screen session is displayed in the upper bar toward the far left.  These are numbered, and include indicators as to activity in the window (see "activity" in \fBscreen\fP(1) and \fBtmux\fP(1) for symbol definitions).  The current active window is highlighted by inverting the background/text from the rest of the window bar.
 
+With tmux 3.2 or later, each window's name is followed by one mark, for the most urgent thing in it: \fB?\fP a coding agent is waiting for you, \fB!\fP a bell, \fB\[u2717]\fP an agent failed, \fB\[u25C9]\fP an agent finished, \fB@\fP new output, \fB~\fP silence, \fB\[u25D4]\fP an agent is working, \fB\-\fP nothing to report.  A zoomed window's name is in italics.  See \fBbyobu-agent-state\fP(1) for what each means, and how to change them.
+
 Users can create a list of windows to launch at startup in \fI$BYOBU_CONFIG_DIR/windows\fP and \fI$BYOBU_CONFIG_DIR/windows.tmux\fP.  This file is the same syntax as \fI~/.screenrc\fP and \fI~/.tmuxrc\fP, each line specifying a window, as described in \fBscreen\fP(1) or \fBtmux\fP(1).
 
 User can also launch Byobu with unique window sets.  Users can store these as \fI$BYOBU_CONFIG_DIR/windows.[NAME]\fP and \fI$BYOBU_CONFIG_DIR/windows.tmux.[NAME]\fP, and launch Byobu with the environment variable \fBBYOBU_WINDOWS\fP=NAME.

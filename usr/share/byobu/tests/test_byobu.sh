@@ -1408,6 +1408,185 @@ assert_true  "byobu-config: gettext reads share/locale, where make install puts 
 unset _cfgpy
 
 # ---------------------------------------------------------------------------
+# byobu-agent-state
+# ---------------------------------------------------------------------------
+
+_as_py="${BYOBU_PREFIX}/lib/${PKG}/include/agent-state.py"
+# A prefix whose bin/byobu-agent-state runs the one under test, for the
+# hooks setup() installs
+_as_prefix="$_TMPDIR/agent-prefix"
+mkdir -p "$_as_prefix/bin"
+printf '#!/bin/sh\nexec python3 "%s" "$@"\n' "$_as_py" > "$_as_prefix/bin/byobu-agent-state"
+chmod +x "$_as_prefix/bin/byobu-agent-state"
+
+# Claude Code's settings: no tmux needed
+_cc="$_TMPDIR/claude"
+mkdir -p "$_cc"
+printf '{\n  "model": "opus",\n  "hooks": {\n    "Stop": [\n      {\n        "hooks": [\n          {\n            "type": "command",\n            "command": "my-own-hook"\n          }\n        ]\n      }\n    ]\n  }\n}\n' > "$_cc/settings.json"
+_cc_before=$(cat "$_cc/settings.json")
+_ccrun() { CLAUDE_CONFIG_DIR="$_cc" BYOBU_PREFIX="$_as_prefix" python3 "$_as_py" "$@" >/dev/null; }
+_ccpy() { python3 -c "import json,sys; s=json.load(open('$_cc/settings.json')); print($1)"; }
+_ccrun --enable-claude-hooks
+_ccrun --enable-claude-hooks
+assert_eq "claude hooks: enabling twice adds one hook per event" \
+	"$(_ccpy "sum('byobu-agent-state' in h['command'] for e in s['hooks'].values() for g in e for h in g['hooks'])")" "10"
+assert_eq "claude hooks: other settings kept" "$(_ccpy "s['model']")" "opus"
+assert_eq "claude hooks: someone else's hook kept" \
+	"$(_ccpy "[h['command'] for g in s['hooks']['Stop'] for h in g['hooks']][0]")" "my-own-hook"
+assert_true "claude hooks: the command is the prefix's byobu-agent-state" \
+	"grep -q '\"$_as_prefix/bin/byobu-agent-state --claude-hook\"' '$_cc/settings.json'"
+assert_true "claude hooks: the old file is backed up" "[ -s '$_cc/settings.json.byobu-backup' ]"
+_ccrun --disable-claude-hooks
+assert_eq "claude hooks: disabling restores the original" "$(cat "$_cc/settings.json")" "$_cc_before"
+printf 'not json' > "$_cc/settings.json"
+assert_false "claude hooks: invalid JSON is left alone" "_ccrun --enable-claude-hooks 2>/dev/null"
+assert_eq "claude hooks: ... untouched" "$(cat "$_cc/settings.json")" "not json"
+rm -rf "$_cc"; mkdir -p "$_cc"
+_ccrun --enable-claude-hooks
+assert_eq "claude hooks: no settings file yet" "$(_ccpy "len(s['hooks'])")" "10"
+
+# A hook outside tmux: no output, exit 0, whatever comes in
+_out=$(printf '{"hook_event_name":"Stop"}' | env -u TMUX -u TMUX_PANE python3 "$_as_py" --claude-hook; echo "rc=$?")
+assert_eq "agent-state: a hook outside tmux says nothing and succeeds" "$_out" "rc=0"
+_out=$(printf 'garbage' | env -u TMUX -u TMUX_PANE python3 "$_as_py" --claude-hook; echo "rc=$?")
+assert_eq "agent-state: a hook given garbage says nothing and succeeds" "$_out" "rc=0"
+
+# Against a real, private tmux server (tmux 3.2+): only when asked, as on
+# the release's Docker smoke test, so a test run never starts tmux on
+# someone's own machine
+if [ "${BYOBU_TEST_TMUX:-}" = 1 ] && command -v tmux >/dev/null 2>&1 \
+	&& tmux_version_at_least 3 2 "$(tmux -V)"; then
+	_sock="$_TMPDIR/tmux.sock"
+	_t() { tmux -S "$_sock" "$@"; }
+	_t -f /dev/null new-session -d -s t -x 80 -y 20 -n zero
+	_t set -g monitor-activity on
+	_t new-window -d -t t:1 -n one
+	_t split-window -d -t t:1
+	_t new-window -d -t t:2 -n custom
+	# (a new window starts out flagged for activity unless it isn't watched)
+	_t new-window -d -t t:3 -n quiet 'sleep 600' \; set -w -t t:3 monitor-activity off
+	_p0=$(_t display -p -t t:0 '#{pane_id}')
+	_p1=$(_t display -p -t t:1.0 '#{pane_id}')
+	_p2=$(_t display -p -t t:1.1 '#{pane_id}')
+	export TMUX="$_sock,$(_t display -p '#{pid}'),0"
+	_as() { local pane="$1"; shift; TMUX_PANE="$pane" BYOBU_PREFIX="$_as_prefix" python3 "$_as_py" "$@"; }
+	_hook() { local pane="$1"; shift; printf '%s' "$1" | _as "$pane" --claude-hook; }
+	_opt() { _t display -p -t "$1" "$2"; }
+
+	_t set -gw window-status-format 'mine #W'
+	_t set -g @byobu_mark_silence S
+	_t set -gw window-status-current-format '#I:#W#{?window_flags,#{window_flags}, }'
+	_hook "$_p1" '{"hook_event_name":"SessionStart","source":"startup"}'
+	assert_eq "agent-state: SessionStart marks a claude pane, idle" \
+		"$(_opt "$_p1" '#{@agent} #{@agent_state}')" "claude idle"
+	assert_eq "agent-state: its window stops monitoring activity" \
+		"$(_opt t:1 '#{monitor-activity}')" "0"
+	assert_eq "agent-state: ... but no other window" "$(_opt t:0 '#{monitor-activity}')" "1"
+	assert_eq "agent-state: a customized window-status-format is left alone" \
+		"$(_t show -gwv window-status-format)" "mine #W"
+	assert_true "agent-state: tmux's default current-format becomes byobu's" \
+		"_t show -gwv window-status-current-format | grep -q 'E:@byobu_window_mark'"
+	assert_eq "agent-state: the marks are options" "$(_t show -gv @byobu_mark_blocked)" "?"
+	assert_eq "agent-state: ... and one already set is kept" "$(_t show -gv @byobu_mark_silence)" "S"
+	assert_eq "agent-state: a quiet window's mark" "$(_opt t:3 '#{E:@byobu_window_mark}')" "-"
+	assert_eq "agent-state: an idle agent's mark, its shell's activity aside" \
+		"$(_opt t:1 '#{E:@byobu_window_mark}')" "-"
+	assert_true "agent-state: a hook marks shown windows' done panes seen" \
+		"_t show-hooks -g session-window-changed | grep -q 'byobu-agent-state --seen-window'"
+
+	_hook "$_p1" '{"hook_event_name":"UserPromptSubmit","prompt":"hi"}'
+	assert_eq "agent-state: a prompt makes it working" "$(_opt "$_p1" '#{@agent_state}')" "working"
+	assert_true "agent-state: since is a time" "[ \"\$(_opt '$_p1' '#{@agent_since}')\" -gt 1700000000 ]"
+	_hook "$_p1" '{"hook_event_name":"PermissionRequest","tool_name":"Bash","tool_input":{"command":"make test"}}'
+	assert_eq "agent-state: a permission request blocks it, saying what" \
+		"$(_opt "$_p1" '#{@agent_state}|#{@agent_detail}')" "blocked|approve Bash: make test"
+	assert_eq "agent-state: a blocked window: ? in the bell's style" \
+		"$(_opt t:1 '#{E:window-status-current-format}')" "#[$(_t show -gwv window-status-bell-style)]1:one?"
+	_hook "$_p1" '{"hook_event_name":"Notification","notification_type":"idle_prompt","message":"waiting"}'
+	assert_eq "agent-state: an idle_prompt notification changes nothing" \
+		"$(_opt "$_p1" '#{@agent_state}')" "blocked"
+	_hook "$_p1" '{"hook_event_name":"PostToolUse","tool_name":"Bash"}'
+	assert_eq "agent-state: the tool running after approval: working again" \
+		"$(_opt "$_p1" '#{@agent_state}|#{@agent_detail}')" "working|approve Bash: make test"
+	_hook "$_p1" '{"hook_event_name":"Stop"}'
+	assert_eq "agent-state: Stop: done, no detail" "$(_opt "$_p1" '#{@agent_state}|#{@agent_detail}')" "done|"
+	assert_eq "agent-state: a done window: ◉ in the activity style" \
+		"$(_opt t:1 '#{E:window-status-current-format}')" "#[$(_t show -gwv window-status-activity-style)]1:one◉"
+	_t resize-pane -Z -t "$_p1"
+	assert_eq "agent-state: a zoomed window's name is in italics" \
+		"$(_opt t:1 '#{E:window-status-current-format}')" \
+		"#[$(_t show -gwv window-status-activity-style)]1:#[italics]one#[noitalics]◉"
+	_t resize-pane -Z -t "$_p1"
+
+	_hook "$_p2" '{"hook_event_name":"StopFailure","error":"rate_limit"}'
+	assert_eq "agent-state: StopFailure: failed, saying why" \
+		"$(_opt "$_p2" '#{@agent_state}|#{@agent_detail}')" "failed|rate_limit"
+	assert_eq "agent-state: failed outranks done: ✗" "$(_opt t:1 '#{E:@byobu_window_mark}')" "✗"
+	_as "$_p2" blocked 'deploy to prod? ends in;'
+	assert_eq "agent-state: a script's own report, detail ending in ;" \
+		"$(_opt "$_p2" '#{@agent}|#{@agent_state}|#{@agent_detail}')" "claude|blocked|deploy to prod? ends in;"
+	assert_eq "agent-state: --list shows both agent panes" "$(_as "$_p0" --list | cut -f1,4 | tr '\t\n' ' ')" \
+		"$_p1 done $_p2 blocked "
+
+	# Showing window 1 marks its done pane seen (the hook runs in the background)
+	_t select-window -t t:1
+	_i=0
+	while [ "$(_opt "$_p1" '#{@agent_state}')" != idle ] && [ $_i -lt 50 ]; do sleep 0.1; _i=$((_i + 1)); done
+	assert_eq "agent-state: showing the window marks a done pane seen" "$(_opt "$_p1" '#{@agent_state}')" "idle"
+	assert_eq "agent-state: ... but leaves a blocked one" "$(_opt "$_p2" '#{@agent_state}')" "blocked"
+
+	# tmux's own alerts, in a window with no agent (yet): activity, then a
+	# bell, then an agent there makes the bell a question
+	_t send-keys -t t:2 'echo hello' Enter
+	_i=0
+	while [ "$(_opt t:2 '#{E:@byobu_window_mark}')" != @ ] && [ $_i -lt 50 ]; do sleep 0.1; _i=$((_i + 1)); done
+	assert_eq "agent-state: activity: @" "$(_opt t:2 '#{E:@byobu_window_mark}')" "@"
+	_t send-keys -t t:2 "printf '\\a'" Enter
+	_i=0
+	while [ "$(_opt t:2 '#{E:@byobu_window_mark}')" != ! ] && [ $_i -lt 50 ]; do sleep 0.1; _i=$((_i + 1)); done
+	assert_eq "agent-state: a bell: !" "$(_opt t:2 '#{E:@byobu_window_mark}')" "!"
+	_p3=$(_t display -p -t t:2 '#{pane_id}')
+	_as "$_p3" working
+	assert_eq "agent-state: a bell in an agent's window: ?" "$(_opt t:2 '#{E:@byobu_window_mark}')" "?"
+	_as "$_p3" clear
+
+	# Finished in front of someone (a terminal shows the window): seen
+	# already; a control-mode client (Trustmux's daemon) isn't someone
+	_t select-window -t t:0
+	sleep 30 | _t -C attach -t t >/dev/null 2>&1 &
+	_i=0
+	while ! _t list-clients -F '#{client_control_mode}' | grep -q 1 && [ $_i -lt 50 ]; do sleep 0.1; _i=$((_i + 1)); done
+	_as "$_p0" working
+	_as "$_p0" done
+	assert_eq "agent-state: done with only a control client: still done" "$(_opt "$_p0" '#{@agent_state}')" "done"
+	if command -v script >/dev/null 2>&1; then
+		sleep 30 | TERM=xterm script -qfc "tmux -S '$_sock' attach -t t" /dev/null >/dev/null 2>&1 &
+		_i=0
+		while ! _t list-clients -F '#{client_control_mode}' | grep -q 0 && [ $_i -lt 50 ]; do sleep 0.1; _i=$((_i + 1)); done
+		_as "$_p0" working
+		_as "$_p0" done
+		assert_eq "agent-state: done in the window a terminal shows: idle" "$(_opt "$_p0" '#{@agent_state}')" "idle"
+	fi
+	_as "$_p0" clear
+
+	_hook "$_p1" '{"hook_event_name":"SessionEnd","reason":"other"}'
+	assert_eq "agent-state: SessionEnd clears the pane" "$(_opt "$_p1" '#{@agent}#{@agent_state}#{@agent_since}')" ""
+	assert_eq "agent-state: ... activity stays off while another agent is there" \
+		"$(_opt t:1 '#{monitor-activity}')" "0"
+	_as "$_p2" clear
+	assert_eq "agent-state: the last agent gone, activity is back" "$(_opt t:1 '#{monitor-activity}')" "1"
+	assert_eq "agent-state: ... from the global option, not a window one" \
+		"$(_t show -wv -t t:1 monitor-activity)" ""
+
+	_t kill-server
+	unset TMUX
+	unset -f _t _as _hook _opt
+	unset _sock _p0 _p1 _p2 _p3 _i
+fi
+unset -f _ccrun _ccpy
+unset _as_py _as_prefix _cc _cc_before _out
+
+# ---------------------------------------------------------------------------
 # Results
 # ---------------------------------------------------------------------------
 

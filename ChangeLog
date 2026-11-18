@@ -18,6 +18,31 @@ lost, just relocated to where all distributions can use it.
 
 byobu (7.25) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
 
+  * tmux: the window list now says, in one character after each window's
+    name, the most urgent thing happening in it: ? a coding agent is
+    waiting for you (or a bell rang in an agent's window), ! a bell,
+    ✗ an agent failed, ◉ an agent finished, @ new output, ~ silence,
+    ◔ an agent is working, - nothing to report. A zoomed window's name
+    is in italics. This replaces tmux's flags: * (the current window is
+    already in reverse video), - (last window), # (now @), Z (now
+    italics) and M. Each mark is a tmux option you can change
+    (@byobu_mark_blocked and so on); a window-status-format you've set
+    yourself is left alone. Needs tmux 3.2; see byobu-agent-state(1)
+  * byobu-agent-state: byobu now knows what the coding agents in your
+    panes are doing -- working, blocked waiting for you, failed, done or
+    idle -- for the window list above. Looking at a window marks its done
+    and failed agents seen. A window holding an agent no longer counts
+    activity, which an agent printing output set off all the time. The
+    state lives in the pane's tmux user options (@agent, @agent_state,
+    @agent_since, @agent_detail), so any format, script or tool can read
+    it; byobu-agent-state --next goes to the pane that has needed you
+    longest. byobu-enable-agent-hooks has Claude Code report its state
+    through its hooks; any other agent or script can run
+    byobu-agent-state itself
+  * tmux: a window that rang the bell now stands out in the accent colour,
+    instead of tmux's reverse video, which looked just like the current
+    window
+
 byobu (7.24) 2026-11-18  Dustin Kirkland <kirkland@ubuntu.com>
 
   * tmux: keystrokes no longer lag behind a large tmux server. tmux runs

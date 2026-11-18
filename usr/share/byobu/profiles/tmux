@@ -60,6 +60,11 @@ set-window-option -g window-status-activity-style bg=$BYOBU_DARK,fg=$BYOBU_LIGHT
 set-window-option -g automatic-rename on
 set-window-option -g aggressive-resize on
 set-window-option -g monitor-activity on
+# A bell (an agent or a long job wanting you) stands out from activity and
+# from the current window's reverse; agent panes that are blocked take the
+# same style (see byobu-agent-state). -q keeps older tmux quiet
+set-window-option -gq monitor-bell on
+set-window-option -gq window-status-bell-style bg=$BYOBU_ACCENT,fg=$BYOBU_LIGHT,bold
 
 set -g default-terminal "$BYOBU_TERM"
 

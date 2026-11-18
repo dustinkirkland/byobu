@@ -1,0 +1,163 @@
+.TH byobu-agent-state 1 "18 November 2026" byobu "byobu"
+.SH NAME
+byobu-agent-state \- record and show what the coding agent in each tmux pane is doing
+
+.SH SYNOPSIS
+\fBbyobu-agent-state\fP [\fB\-\-pane\fP \fI%N\fP] [\fB\-\-agent\fP \fINAME\fP] \fISTATE\fP [\fIDETAIL\fP...]
+.br
+\fBbyobu-agent-state\fP \fBclear\fP
+.br
+\fBbyobu-agent-state\fP \fB\-\-claude-hook\fP
+.br
+\fBbyobu-agent-state\fP \fB\-\-list\fP | \fB\-\-next\fP | \fB\-\-setup\fP
+.br
+\fBbyobu-agent-state\fP \fB\-\-enable-claude-hooks\fP | \fB\-\-disable-claude-hooks\fP
+
+.SH DESCRIPTION
+Coding agents (Claude Code, Codex and the like) spend much of their time waiting on you. \fBbyobu-agent-state\fP records what the agent in a tmux pane is doing, on the pane itself, so that byobu's window list can show it and tools such as Trustmux can act on it.
+
+It also gives byobu's window list a single mark per window, after the window's name, for the most urgent thing happening in it: an agent waiting for you, a bell, new output, and so on (see \fBTHE WINDOW LIST\fP below). All of this needs tmux 3.2 or later; with older tmux, or GNU Screen, byobu's window list is unchanged, and \fBbyobu-agent-state\fP does nothing.
+
+\fISTATE\fP is one of:
+.TP
+\fBworking\fP
+the agent is busy: thinking, or running tools.
+.TP
+\fBblocked\fP
+it needs you: a permission to grant, a question to answer or a choice to make.
+.TP
+\fBfailed\fP
+it stopped on an error (an API error, a rate limit), and you haven't looked yet.
+.TP
+\fBdone\fP
+it finished, and you haven't looked yet.
+.TP
+\fBidle\fP
+it is waiting at its prompt, and you have seen everything it did.
+.PP
+\fIDETAIL\fP is a short reason, such as "approve Bash: make test"; it is shown by \fB\-\-list\fP and kept to one line of at most 80 characters. \fBclear\fP forgets the pane's agent. The pane is \fB$TMUX_PANE\fP (the one the command runs in) unless \fB\-\-pane\fP names another; \fB\-\-agent\fP names what runs there (otherwise "agent").
+
+A done or failed agent becomes idle as soon as you look at its window: when you switch to it, or straight away if it finished in the window a terminal is showing. A control-mode client, such as Trustmux's daemon or iTerm2's tmux integration, does not count as looking.
+
+Any agent, script or long-running job can report this way. For example, a build script might run \fBbyobu-agent-state working\fP as it starts, and \fBbyobu-agent-state done\fP or \fBbyobu-agent-state failed "3 tests failed"\fP at the end. For Claude Code, \fBbyobu-enable-agent-hooks\fP(1) installs hooks that do it for you (see \fBCLAUDE CODE\fP below).
+
+.SH THE WINDOW LIST
+Each window in byobu's window list is shown as its number, its name and one mark, with no space between them, as in:
+.PP
+.nf
+  0:shell- 1:claude? 2:codex\[u25C9] 3:review\[u25D4] 4:build@ 5:logs!
+.fi
+.PP
+The mark is for the most urgent thing in the window; the first of these that applies:
+.TP
+\fB?\fP
+an agent in the window is \fBblocked\fP, waiting for you; or a bell rang in a window that holds an agent (an agent that rings the bell wants you). The window is drawn in the bell's style: bold, in byobu's accent colour.
+.TP
+\fB!\fP
+a bell rang in the window (tmux's \fBmonitor-bell\fP). Also drawn in the accent colour.
+.TP
+\fB\[u2717]\fP
+an agent \fBfailed\fP. Bold.
+.TP
+\fB\[u25C9]\fP
+an agent is \fBdone\fP. Bold. (Later, a long command finishing while you were away will show this too.)
+.TP
+\fB@\fP
+new output since you last looked (tmux's \fBmonitor-activity\fP). Bold. A window that holds an agent does not count activity: an agent prints output all the time, so byobu turns \fBmonitor-activity\fP off there until the last agent in the window clears.
+.TP
+\fB~\fP
+no output for \fBmonitor-silence\fP seconds (off unless you turn it on).
+.TP
+\fB\[u25D4]\fP
+an agent is \fBworking\fP.
+.TP
+\fB\-\fP
+nothing to report: an \fBidle\fP agent, or a quiet window.
+.PP
+A window with a zoomed pane has its name in \fIitalics\fP. The current window is drawn in reverse video, as always.
+.PP
+This replaces tmux's own window flags, which it covers: \fB*\fP (the current window, already shown in reverse video), \fB\-\fP (the last window), \fB#\fP (activity, now \fB@\fP), \fB!\fP (bell, unchanged), \fB~\fP (silence, unchanged), \fBZ\fP (zoomed, now italics) and \fBM\fP (the marked pane, whose border tmux already highlights).
+
+.SH CUSTOMIZING
+Each mark is a tmux option, which you can set to any other character in \fI$BYOBU_CONFIG_DIR/.tmux.conf\fP (usually \fI~/.byobu/.tmux.conf\fP):
+.PP
+.nf
+  set -g @byobu_mark_blocked '?'
+  set -g @byobu_mark_bell '!'
+  set -g @byobu_mark_failed '\[u2717]'
+  set -g @byobu_mark_done '\[u25C9]'
+  set -g @byobu_mark_activity '@'
+  set -g @byobu_mark_silence '~'
+  set -g @byobu_mark_working '\[u25D4]'
+  set -g @byobu_mark_idle '\-'
+.fi
+.PP
+Characters that some terminals draw two cells wide, such as emoji, will shift the rest of the status line in those terminals; a character missing from your terminal's font shows as a box or a question mark.
+.PP
+byobu replaces \fBwindow-status-format\fP and \fBwindow-status-current-format\fP only while they are tmux's defaults; if you have set your own, it is left alone. The pieces are there for your own format: \fB#{E:@byobu_window_mark}\fP is the mark and \fB#{E:@byobu_window_style}\fP the style, as in byobu's:
+.PP
+.nf
+  #{E:@byobu_window_style}#I:#W#{E:@byobu_window_mark}
+.fi
+.PP
+To keep tmux's classic window flags instead, set:
+.PP
+.nf
+  set -g window-status-format '#I:#W#F '
+  set -g window-status-current-format '#I:#W#F '
+.fi
+
+.SH JUMPING TO AN AGENT
+\fBbyobu-agent-state \-\-next\fP switches to the pane that has needed you longest: blocked panes first, then failed, then done. Bind it to a key in \fI$BYOBU_CONFIG_DIR/keybindings.tmux\fP; for example, for the prefix (\fBCtrl-a\fP) then \fBN\fP:
+.PP
+.nf
+  bind-key N run-shell 'byobu-agent-state \-\-next'
+.fi
+.PP
+\fB\-\-list\fP prints every agent pane, one per line, separated by tabs: its pane ID, session:window.pane, agent, state, since (seconds since the epoch) and detail.
+
+.SH CLAUDE CODE
+\fBbyobu-enable-agent-hooks\fP(1) adds hooks to Claude Code's user settings that run \fBbyobu-agent-state \-\-claude-hook\fP, which reads each hook's event on standard input, prints nothing, and always exits successfully, so that it never gets in Claude Code's way. The events map to states as follows:
+.TP
+\fBSessionStart\fP
+idle (and the pane's agent is "claude").
+.TP
+\fBUserPromptSubmit\fP, \fBPreToolUse\fP, \fBPostToolUse\fP, \fBPostToolUseFailure\fP
+working.
+.TP
+\fBPermissionRequest\fP
+blocked, with the tool and what it would run, edit or fetch as the detail.
+.TP
+\fBNotification\fP
+blocked, for a permission prompt, a question or a form; other notifications change nothing.
+.TP
+\fBStop\fP
+done.
+.TP
+\fBStopFailure\fP
+failed, with the error as the detail.
+.TP
+\fBSessionEnd\fP
+clear.
+
+.SH TMUX OPTIONS
+The state is kept in each pane's user options, which any tmux format, script or tool can read: \fB@agent\fP (claude, codex, ...), \fB@agent_state\fP, \fB@agent_since\fP (seconds since the epoch) and \fB@agent_detail\fP. For example:
+.PP
+.nf
+  tmux list-panes \-a \-F '#{pane_id} #{@agent_state} #{@agent_detail}'
+.fi
+.PP
+\fB\-\-setup\fP installs the window list, the marks' options (only those you haven't set) and hooks that mark a window's done and failed agents seen when it is shown; byobu runs it once per tmux server, as it starts.
+
+.SH SEE ALSO
+.PD 0
+.TP
+\fBbyobu-enable-agent-hooks\fP(1), \fBbyobu\fP(1), \fBtmux\fP(1)
+.TP
+\fIhttps://byobu.org\fP
+.PD
+
+.SH AUTHOR
+This manpage and the utility were written by Dustin Kirkland <kirkland@byobu.org> for Ubuntu systems (but may be used by others).  Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 3 published by the Free Software Foundation.
+
+The complete text of the GNU General Public License can be found in \fI/usr/share/common-licenses/GPL\fP on Debian/Ubuntu systems, or in \fI/usr/share/doc/fedora-release-*/GPL\fP on Fedora systems, or on the web at \fIhttp://www.gnu.org/licenses/gpl.txt\fP.
