@@ -16,6 +16,8 @@ Entries below 7.15 are the original, unedited history as it existed in
 debian/changelog before this split -- full history preserved, nothing
 lost, just relocated to where all distributions can use it.
 
+byobu (7.25) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
+
 byobu (7.24) 2026-11-18  Dustin Kirkland <kirkland@ubuntu.com>
 
   * tmux: keystrokes no longer lag behind a large tmux server. tmux runs
