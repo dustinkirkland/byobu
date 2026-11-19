@@ -1412,27 +1412,39 @@ unset _cfgpy
 # ---------------------------------------------------------------------------
 
 _as_py="${BYOBU_PREFIX}/lib/${PKG}/include/agent-state.py"
-# A prefix whose bin/byobu-agent-state runs the one under test, for the
-# hooks setup() installs
-_as_prefix="$_TMPDIR/agent-prefix"
-mkdir -p "$_as_prefix/bin"
-printf '#!/bin/sh\nexec python3 "%s" "$@"\n' "$_as_py" > "$_as_prefix/bin/byobu-agent-state"
-chmod +x "$_as_prefix/bin/byobu-agent-state"
+# Installed, run byobu-agent-state itself, with the Python its wrapper
+# finds (Nix sets BYOBU_PYTHON there; python3 isn't on PATH). In the
+# source tree, run agent-state.py with python3, from a prefix whose
+# bin/byobu-agent-state runs it, for the hooks it installs. Without a
+# Python (Homebrew's Linux container), skip: nothing can run it there.
+if [ -x "${BYOBU_PREFIX}/bin/byobu-agent-state" ]; then
+	_as_prefix="$BYOBU_PREFIX"
+	_asrun() { "$_as_prefix/bin/byobu-agent-state" "$@"; }
+else
+	_as_prefix="$_TMPDIR/agent-prefix"
+	mkdir -p "$_as_prefix/bin"
+	printf '#!/bin/sh\nexec python3 "%s" "$@"\n' "$_as_py" > "$_as_prefix/bin/byobu-agent-state"
+	chmod +x "$_as_prefix/bin/byobu-agent-state"
+	_asrun() { python3 "$_as_py" "$@"; }
+fi
+if ! (unset TMUX; _asrun --list) >/dev/null 2>&1; then
+	echo "  SKIP: byobu-agent-state: no Python to run it"
+else
 
 # Claude Code's settings: no tmux needed
 _cc="$_TMPDIR/claude"
 mkdir -p "$_cc"
 printf '{\n  "model": "opus",\n  "hooks": {\n    "Stop": [\n      {\n        "hooks": [\n          {\n            "type": "command",\n            "command": "my-own-hook"\n          }\n        ]\n      }\n    ]\n  }\n}\n' > "$_cc/settings.json"
 _cc_before=$(cat "$_cc/settings.json")
-_ccrun() { CLAUDE_CONFIG_DIR="$_cc" BYOBU_PREFIX="$_as_prefix" python3 "$_as_py" "$@" >/dev/null; }
-_ccpy() { python3 -c "import json,sys; s=json.load(open('$_cc/settings.json')); print($1)"; }
+_ccrun() { CLAUDE_CONFIG_DIR="$_cc" BYOBU_PREFIX="$_as_prefix" _asrun "$@" >/dev/null; }
+# (written with indent=2: one key per line, so grep can read it back)
+_cchooks() { grep -c 'byobu-agent-state --claude-hook"' "$_cc/settings.json"; }
 _ccrun --enable-claude-hooks
 _ccrun --enable-claude-hooks
 assert_eq "claude hooks: enabling twice adds one hook per event" \
-	"$(_ccpy "sum('byobu-agent-state' in h['command'] for e in s['hooks'].values() for g in e for h in g['hooks'])")" "10"
-assert_eq "claude hooks: other settings kept" "$(_ccpy "s['model']")" "opus"
-assert_eq "claude hooks: someone else's hook kept" \
-	"$(_ccpy "[h['command'] for g in s['hooks']['Stop'] for h in g['hooks']][0]")" "my-own-hook"
+	"$(_cchooks)" "10"
+assert_true "claude hooks: other settings kept" "grep -q '^  \"model\": \"opus\",\$' '$_cc/settings.json'"
+assert_true "claude hooks: someone else's hook kept" "grep -q '\"command\": \"my-own-hook\"' '$_cc/settings.json'"
 assert_true "claude hooks: the command is the prefix's byobu-agent-state" \
 	"grep -q '\"$_as_prefix/bin/byobu-agent-state --claude-hook\"' '$_cc/settings.json'"
 assert_true "claude hooks: the old file is backed up" "[ -s '$_cc/settings.json.byobu-backup' ]"
@@ -1443,12 +1455,12 @@ assert_false "claude hooks: invalid JSON is left alone" "_ccrun --enable-claude-
 assert_eq "claude hooks: ... untouched" "$(cat "$_cc/settings.json")" "not json"
 rm -rf "$_cc"; mkdir -p "$_cc"
 _ccrun --enable-claude-hooks
-assert_eq "claude hooks: no settings file yet" "$(_ccpy "len(s['hooks'])")" "10"
+assert_eq "claude hooks: no settings file yet" "$(_cchooks)" "10"
 
 # A hook outside tmux: no output, exit 0, whatever comes in
-_out=$(printf '{"hook_event_name":"Stop"}' | env -u TMUX -u TMUX_PANE python3 "$_as_py" --claude-hook; echo "rc=$?")
+_out=$(unset TMUX TMUX_PANE; printf '{"hook_event_name":"Stop"}' | _asrun --claude-hook; echo "rc=$?")
 assert_eq "agent-state: a hook outside tmux says nothing and succeeds" "$_out" "rc=0"
-_out=$(printf 'garbage' | env -u TMUX -u TMUX_PANE python3 "$_as_py" --claude-hook; echo "rc=$?")
+_out=$(unset TMUX TMUX_PANE; printf 'garbage' | _asrun --claude-hook; echo "rc=$?")
 assert_eq "agent-state: a hook given garbage says nothing and succeeds" "$_out" "rc=0"
 
 # Against a real, private tmux server (tmux 3.2+): only when asked, as on
@@ -1469,7 +1481,7 @@ if [ "${BYOBU_TEST_TMUX:-}" = 1 ] && command -v tmux >/dev/null 2>&1 \
 	_p1=$(_t display -p -t t:1.0 '#{pane_id}')
 	_p2=$(_t display -p -t t:1.1 '#{pane_id}')
 	export TMUX="$_sock,$(_t display -p '#{pid}'),0"
-	_as() { local pane="$1"; shift; TMUX_PANE="$pane" BYOBU_PREFIX="$_as_prefix" python3 "$_as_py" "$@"; }
+	_as() { local pane="$1"; shift; TMUX_PANE="$pane" BYOBU_PREFIX="$_as_prefix" _asrun "$@"; }
 	_hook() { local pane="$1"; shift; printf '%s' "$1" | _as "$pane" --claude-hook; }
 	_opt() { _t display -p -t "$1" "$2"; }
 
@@ -1583,7 +1595,9 @@ if [ "${BYOBU_TEST_TMUX:-}" = 1 ] && command -v tmux >/dev/null 2>&1 \
 	unset -f _t _as _hook _opt
 	unset _sock _p0 _p1 _p2 _p3 _i
 fi
-unset -f _ccrun _ccpy
+unset -f _ccrun _cchooks
+fi
+unset -f _asrun
 unset _as_py _as_prefix _cc _cc_before _out
 
 # ---------------------------------------------------------------------------
