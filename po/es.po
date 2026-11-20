@@ -2,18 +2,21 @@
 # Copyright (C) 2008-2014 Dustin Kirkland
 # This file is distributed under the same license as the Byobu package.
 # Nicolas Valcarcel <nvalcarcel@ubuntu.com>, 2008.
+# Pedro Flores, 2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-10-11 14:34-0500\n"
-"PO-Revision-Date: 2009-10-11 20:45+0000\n"
-"Last-Translator: oscrp <mazonovo@gmail.com>\n"
+"PO-Revision-Date: 2026-11-19 10:00+0100\n"
+"Last-Translator: Pedro Flores\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Launchpad-Export-Date: 2009-10-12 07:06+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
@@ -168,7 +171,7 @@ msgstr "Crear ventana(s) nueva(s):"
 
 #: byobu-config:335
 msgid "Toggle status notifications:"
-msgstr "Activar/Desactivar notificaciónes:"
+msgstr "Activar/Desactivar notificaciones:"
 
 #: byobu-config:367
 msgid "Windows:"
@@ -203,6 +206,44 @@ msgstr "Cambiar la secuencia de escape:"
 msgid "<Tab>/<Alt-Tab> between elements | <Enter> selects | <Esc> exits"
 msgstr ""
 "<Tab>/<Alt-Tab> entre los elementos | <Intro> seleccione | <Esc> salir"
+
+#: usr/bin/byobu-export.in:32
+msgid ""
+"\n"
+"The byobu-export utility is now deprecated.\n"
+"\n"
+"To install byobu on a system for which byobu is not packaged, or\n"
+"where you are not the root user, simply:\n"
+" * Download the latest release (>= 3.0) from:\n"
+"    https://github.com/dustinkirkland/byobu\n"
+" * And follow the instructions in the README\n"
+"\n"
+msgstr ""
+"\n"
+"La utilidad byobu-export está obsoleta.\n"
+"\n"
+"Para instalar byobu en un sistema en el que byobu no está empaquetado, o\n"
+"en el que no es el usuario root, simplemente:\n"
+" * Descargue la última versión (>= 3.0) desde:\n"
+"    https://github.com/dustinkirkland/byobu\n"
+" * Y siga las instrucciones del README\n"
+"\n"
+
+#: usr/lib/byobu/include/config.py.in:133
+msgid "Help -- Quick Start Guide"
+msgstr "Ayuda -- Guía de inicio rápido"
+
+#: usr/lib/byobu/include/config.py.in:268
+msgid "Byobu will not be launched next time you login."
+msgstr "Byobu no se lanzará la próxima vez que inicie su sesión."
+
+#: usr/lib/byobu/include/config.py.in:381
+msgid "Byobu Configuration Menu"
+msgstr "Menú de configuración de Byobu"
+
+#: usr/lib/byobu/include/config.py.in:382
+msgid "<Tab> between elements | <Enter> selects | <Esc> exits"
+msgstr "<Tab> entre los elementos | <Intro> seleccionar | <Esc> salir"
 
 #~ msgid "recommended"
 #~ msgstr "recomendado"
