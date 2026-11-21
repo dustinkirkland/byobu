@@ -39,6 +39,15 @@ byobu (7.25) UNRELEASED  Dustin Kirkland <kirkland@ubuntu.com>
     longest. byobu-enable-agent-hooks has Claude Code report its state
     through its hooks; any other agent or script can run
     byobu-agent-state itself
+  * trustmux: the phone shows what your coding agents are doing, with the
+    same marks as byobu's window list (? needs you, ✗ failed, ◉ done,
+    ◔ working, and tmux's ! bell, @ activity, ~ silence) on each session,
+    window and pane in the picker; an agent's pane also says how long and
+    why ("blocked 8m: approve Bash: make test"). A chip, "? 2 need you",
+    counts the agents that are blocked or failed and goes to the one that
+    has waited longest, and the app's icon carries the same count. Opening
+    a done or failed agent's pane on the phone marks it seen, as looking at
+    its window in a terminal does
   * tmux: a window that rang the bell now stands out in the accent colour,
     instead of tmux's reverse video, which looked just like the current
     window

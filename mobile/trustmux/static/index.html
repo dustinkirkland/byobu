@@ -385,6 +385,28 @@
       font-size: 10px; letter-spacing: 0.05em; flex-shrink: 0;
     }
 
+    /* ── coding agents: what needs you (see windowAlert() in app.js) ── */
+    #agent-chip {
+      padding: 1px 8px; border-radius: 8px; border: none;
+      background: var(--accent); color: var(--bg); font: inherit;
+      font-size: 11px; font-weight: bold; flex-shrink: 0; cursor: pointer;
+    }
+    #agent-chip:active { opacity: 0.7; }
+    /* the mark, glued to the name as in byobu's window list */
+    .ctx-mark { margin-left: 1px; }
+    .ctx-note {
+      display: block; font-size: 11px; opacity: 0.8; margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    /* needs you: the bell's look in byobu, bold on the accent */
+    .ctx-btn.ctx-alert-blocked, .ctx-btn.ctx-alert-bell {
+      font-weight: bold;
+      background: color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+    .ctx-btn.ctx-alert-failed, .ctx-btn.ctx-alert-done,
+    .ctx-btn.ctx-alert-activity { font-weight: bold; }
+    .ctx-btn.ctx-zoomed { font-style: italic; }
+
     /* ── output area ── */
     #output {
       flex: 1; overflow-y: auto; overflow-x: auto;
@@ -911,6 +933,7 @@
   <div id="statusbar">
     <span id="ctx-name"></span>
     <span id="kbd-mode-chip" style="display:none"></span>
+    <button id="agent-chip" title="Go to the agent that has needed you longest" style="display:none"></button>
     <button class="icon-btn" id="btn-create" title="New pane / window / session">+</button>
     <button class="icon-btn" id="btn-prev" title="Previous pane">‹</button>
     <span id="xyz-label" title="Tap to refresh">-/-</span>

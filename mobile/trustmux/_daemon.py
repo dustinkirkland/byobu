@@ -307,9 +307,64 @@ def _tmux(*args) -> str:
     )
     return result.stdout
 
+# What the coding agent in each pane is doing, as byobu-agent-state(1)
+# keeps it in the pane's user options; the page marks windows with it the
+# way byobu's window list does. A pane with no agent has none of these.
+_AGENT_STATES = frozenset(("working", "blocked", "failed", "done", "idle"))
+_AGENT_DETAIL_MAX = 200
+_AGENT_FMT = "#{pane_id}\t#{@agent}\t#{@agent_state}\t#{@agent_since}\t#{@agent_detail}"
+
+
+def _agent_text(s: str, limit: int) -> str:
+    s = " ".join("".join(c if c.isprintable() else " " for c in s).split())
+    return s[:limit]
+
+
+def tmux_agent_states() -> dict[str, dict]:
+    """{pane_id: {agent, state, since, detail}} for every agent pane: one
+    list-panes for the whole server. The detail is free text that anything
+    can set, so it goes last (the split is bounded) and is cleaned."""
+    raw = _tmux("list-panes", "-a", "-F", _AGENT_FMT)
+    agents = {}
+    for line in raw.splitlines():
+        parts = line.split("\t", 4)
+        if len(parts) < 3:
+            continue
+        pane_id, agent, state = parts[0], parts[1], parts[2]
+        if not (_valid_tmux_id(pane_id) and pane_id.startswith("%")
+                and agent and state in _AGENT_STATES):
+            continue
+        try:
+            since = int(parts[3]) if len(parts) > 3 else 0
+        except ValueError:
+            since = 0
+        agents[pane_id] = {
+            "agent": _agent_text(agent, 32),
+            "state": state,
+            "since": since,
+            "detail": _agent_text(parts[4], _AGENT_DETAIL_MAX) if len(parts) > 4 else "",
+        }
+    return agents
+
+
+def tmux_mark_seen(pane_id: str) -> None:
+    """Someone looked at the pane on the phone: a done or failed agent there
+    has been seen (idle), as it is when a terminal shows its window. The
+    check and the set happen in one tmux command, so an agent that has since
+    started working again is left alone. pane_id must be _valid_tmux_id."""
+    cond = "#{||:#{==:#{@agent_state},done},#{==:#{@agent_state},failed}}"
+    seen = (f"set -p -t {pane_id} @agent_state idle ; "
+            f"set -p -t {pane_id} @agent_since {int(time.time())}")
+    _tmux("if-shell", "-F", "-t", pane_id, cond, seen)
+
+
 def tmux_list_sessions() -> list[dict]:
     raw = _tmux("list-sessions", "-F",
                 "#{session_id}\t#{session_name}\t#{session_attached}")
+    try:
+        agents = tmux_agent_states()
+    except Exception:
+        agents = {}
     sessions = []
     for line in raw.splitlines():
         parts = line.split("\t")
@@ -321,13 +376,17 @@ def tmux_list_sessions() -> list[dict]:
             "id": sid,
             "name": name,
             "attached": attached,
-            "windows": tmux_list_windows(sid),
+            "windows": tmux_list_windows(sid, agents),
         })
     return sessions
 
-def tmux_list_windows(session_id: str) -> list[dict]:
+def tmux_list_windows(session_id: str, agents: dict | None = None) -> list[dict]:
+    # tmux's own alerts ride along for the page's window marks: bell,
+    # activity, silence, and zoomed
     raw = _tmux("list-windows", "-t", session_id, "-F",
-                "#{window_id}\t#{window_index}\t#{window_name}\t#{window_active}")
+                "#{window_id}\t#{window_index}\t#{window_name}\t#{window_active}"
+                "\t#{window_bell_flag}\t#{window_activity_flag}"
+                "\t#{window_silence_flag}\t#{window_zoomed_flag}")
     windows = []
     for line in raw.splitlines():
         parts = line.split("\t")
@@ -338,16 +397,21 @@ def tmux_list_windows(session_id: str) -> list[dict]:
             index = int(idx)
         except ValueError:
             continue
+        flags = parts[4:8] if len(parts) >= 8 else ["0"] * 4
         windows.append({
             "id": wid,
             "index": index,
             "name": name,
             "active": active == "1",
-            "panes": tmux_list_panes(wid),
+            "bell": flags[0] == "1",
+            "activity": flags[1] == "1",
+            "silence": flags[2] == "1",
+            "zoomed": flags[3] == "1",
+            "panes": tmux_list_panes(wid, agents),
         })
     return windows
 
-def tmux_list_panes(window_id: str) -> list[dict]:
+def tmux_list_panes(window_id: str, agents: dict | None = None) -> list[dict]:
     # pane_title is program-controlled (OSC 2) and may contain tabs, so it
     # goes last and the split is bounded to keep it from shifting pid/dead.
     # allow-set-title is off exactly when the pane was given a name (see
@@ -381,6 +445,7 @@ def tmux_list_panes(window_id: str) -> list[dict]:
             "title": title,
             "named": named,
             "dead": dead,
+            "agent": (agents or {}).get(pane_id_str),
         })
     return panes
 
@@ -1919,6 +1984,15 @@ class WsHandler(tornado.websocket.WebSocketHandler):
                         await asyncio.to_thread(tmux_rename_pane, pid, name)
                         sessions_list = await asyncio.to_thread(tmux_list_sessions)
                         self._send({"type": "sessions", "data": sessions_list})
+
+            elif mtype == "seen":
+                pid = msg.get("pane_id", "")
+                if not (_valid_tmux_id(pid) and pid.startswith("%")):
+                    self._send({"type": "error", "message": "invalid pane_id"})
+                else:
+                    await asyncio.to_thread(tmux_mark_seen, pid)
+                    sessions_list = await asyncio.to_thread(tmux_list_sessions)
+                    self._send({"type": "sessions", "data": sessions_list})
 
             elif mtype == "rename_session":
                 sid = msg.get("session_id", "")

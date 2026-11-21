@@ -1,5 +1,9 @@
 """Tests for trustmux._ctl, _enable, _disable."""
 
+try:    # isolation from the real trustmux state and tmux: before anything else
+    from . import _isolation  # noqa: F401
+except ImportError:    # discover -s tests: imported top-level
+    import _isolation  # noqa: F401
 import io
 import json
 import os

@@ -488,6 +488,143 @@ def unsplit_window_has_no_pane_segment(ui, p0, p1):
         sh("tmux", "kill-window", "-t", "e2e:5", check=False)
 
 
+# ── coding agents: byobu-agent-state's pane options, as the page shows them ──
+
+def set_agent(pane_id, state, detail="", ago=0):
+    """What byobu-agent-state records, set straight into tmux."""
+    since = str(int(time.time()) - ago)
+    sh("tmux", "set", "-p", "-t", pane_id, "@agent", "claude", ";",
+       "set", "-p", "-t", pane_id, "@agent_state", state, ";",
+       "set", "-p", "-t", pane_id, "@agent_since", since, ";",
+       "set", "-p", "-t", pane_id, "@agent_detail", detail)
+
+
+def clear_agent(pane_id):
+    for opt in ("@agent", "@agent_state", "@agent_since", "@agent_detail"):
+        sh("tmux", "set", "-pu", "-t", pane_id, opt, check=False)
+
+
+def wait_text(ui, selector, want, timeout=10.0):
+    """Wait for `selector` to read `want` (None: hidden or absent)."""
+    loc = ui.locator(selector)
+    deadline = time.time() + timeout
+    got = None
+    while time.time() < deadline:
+        got = loc.first.inner_text() if loc.count() and loc.first.is_visible() else None
+        if got == want:
+            return
+        time.sleep(0.1)
+    raise AssertionError(f"{selector} reads {got!r}, expected {want!r}")
+
+
+def picker_row(ui, level_seg, label):
+    """The picker row starting with `label`, at the level a header segment
+    opens. A row tmux just got waits for the next topology poll (2s), and
+    under TMUX_STALL for tmux to answer it too."""
+    ui.tap(f"#ctx-name .ctx-seg-{level_seg}")
+    row = ui.locator("#ctx-list .ctx-btn", has_text=label).first
+    row.wait_for(timeout=15000)
+    return row
+
+
+def back_to_p0(ui, p0):
+    """Where every scenario starts, whatever this one left behind."""
+    if not showing(ui, p0):
+        ui.tap("#btn-prev")
+        wait_output(ui, p0.banner)
+
+
+def close_picker(ui):
+    """Close the picker; a scenario failing with it open would leave it over
+    the header, and every scenario after it would fail to tap there."""
+    if ui.locator("#ctx-overlay").is_visible():
+        ui.tap("#ctx-cancel")
+        ui.wait_for_selector("#ctx-overlay", state="hidden", timeout=3000)
+
+
+@scenario
+def agents_needing_you_are_marked_counted_and_one_tap_away(ui, p0, p1):
+    a0 = tmux_fmt("e2e.0", "#{pane_id}")
+    a1 = tmux_fmt("e2e.1", "#{pane_id}")
+    try:
+        set_agent(a1, "failed", "rate_limit", ago=120)
+        wait_text(ui, "#agent-chip", "\u2717 1 needs you")
+        set_agent(a0, "blocked", "approve Bash: make test", ago=480)
+        # blocked comes first, and its mark leads the chip
+        wait_text(ui, "#agent-chip", "? 2 need you")
+        row = picker_row(ui, "window", "0:")
+        if row.locator(".ctx-mark").inner_text() != "?":
+            raise AssertionError(f"window row reads {row.inner_text()!r}, expected a ? mark")
+        if "ctx-alert-blocked" not in (row.get_attribute("class") or ""):
+            raise AssertionError("a blocked window's row should take the blocked style")
+        row.tap()
+        notes = ui.locator("#ctx-list .ctx-btn[data-ctx-id] .ctx-note")
+        notes.first.wait_for(timeout=3000)
+        got = [notes.nth(i).inner_text() for i in range(notes.count())]
+        if got != ["blocked 8m: approve Bash: make test", "failed 2m: rate_limit"]:
+            raise AssertionError(f"pane notes read {got!r}")
+        close_picker(ui)
+        # The chip goes to the one waiting longest, then on to the next
+        ui.tap("#agent-chip")           # p0, blocked, is where we are: on to p1
+        wait_output(ui, p1.banner)
+        ui.tap("#agent-chip")
+        wait_output(ui, p0.banner)
+        clear_agent(a0)
+        clear_agent(a1)
+        wait_text(ui, "#agent-chip", None)
+    finally:
+        close_picker(ui)
+        clear_agent(a0)
+        clear_agent(a1)
+        back_to_p0(ui, p0)
+
+
+@scenario
+def looking_at_a_done_pane_on_the_phone_marks_it_seen(ui, p0, p1):
+    a1 = tmux_fmt("e2e.1", "#{pane_id}")
+    try:
+        set_agent(a1, "done")
+        row = picker_row(ui, "window", "0:")
+        wait_until(lambda: row.locator(".ctx-mark").inner_text() == "\u25c9",
+                   "the window row to show \u25c9")
+        close_picker(ui)
+        time.sleep(2.5)                 # a topology poll or more, elsewhere
+        if tmux_fmt(a1, "#{@agent_state}") != "done":
+            raise AssertionError("a pane nobody looked at should stay done")
+        ui.tap("#btn-next")
+        wait_output(ui, p1.banner)
+        wait_tmux(a1, "#{@agent_state}", "idle")
+        ui.tap("#btn-prev")
+        wait_output(ui, p0.banner)
+    finally:
+        close_picker(ui)
+        clear_agent(a1)
+        back_to_p0(ui, p0)
+
+
+@scenario
+def tmux_alerts_mark_windows_as_byobu_does(ui, p0, p1):
+    ring = Pane(3)
+    sh("tmux", "new-window", "-d", "-t", "e2e:6", "-n", "ring",
+       f"printf '\\a'; exec {ring.command()}")
+    try:
+        row = picker_row(ui, "window", "6:ring")
+        wait_until(lambda: row.locator(".ctx-mark").inner_text() == "!", "the bell window to show !")
+        if "ctx-alert-bell" not in (row.get_attribute("class") or ""):
+            raise AssertionError("a bell window's row should take the bell style")
+        close_picker(ui)
+        # A bell in an agent's window is a question for you, as on the desktop
+        set_agent(tmux_fmt("e2e:6", "#{pane_id}"), "working")
+        row = picker_row(ui, "window", "6:ring")
+        wait_until(lambda: row.locator(".ctx-mark").inner_text() == "?", "the agent's bell window to show ?")
+        close_picker(ui)
+        # ... but the chip counts only blocked and failed agents
+        wait_text(ui, "#agent-chip", None)
+    finally:
+        close_picker(ui)
+        sh("tmux", "kill-window", "-t", "e2e:6", check=False)
+
+
 # app.js's own limits on the gestures it times.
 SWIPE_MAX_MS, SWIPE_DOUBLE_MS = 500, 700
 TAP_HOLD_MS, TAP_GAP_MS = 350, 400

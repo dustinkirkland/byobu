@@ -1,5 +1,9 @@
 """Tests for Trustmux daemon — runs locally with stdlib unittest + tornado."""
 
+try:    # isolation from the real trustmux state and tmux: before anything else
+    from . import _isolation  # noqa: F401
+except ImportError:    # discover -s tests: imported top-level
+    import _isolation  # noqa: F401
 import asyncio
 import json
 import os
@@ -92,6 +96,43 @@ class TestValidTmuxId(unittest.TestCase):
 # tmux output parsing
 # ---------------------------------------------------------------------------
 
+class TestTmuxAgentStates(unittest.TestCase):
+    def _run(self, output):
+        with patch.object(bm, '_tmux', return_value=output):
+            return bm.tmux_agent_states()
+
+    def test_parses_agent_panes_only(self):
+        out = ('%0\tclaude\tblocked\t1700000000\tapprove Bash: make test\n'
+               '%1\t\t\t\t\n'
+               '%2\tcodex\tdone\t1700000100\t\n')
+        self.assertEqual(self._run(out), {
+            '%0': {'agent': 'claude', 'state': 'blocked', 'since': 1700000000,
+                   'detail': 'approve Bash: make test'},
+            '%2': {'agent': 'codex', 'state': 'done', 'since': 1700000100, 'detail': ''},
+        })
+
+    def test_unknown_state_or_bad_pane_is_ignored(self):
+        out = '%0\tclaude\tasleep\t1\t\n$0\tclaude\tdone\t1\t\nbad\tx\tdone\t1\t\n'
+        self.assertEqual(self._run(out), {})
+
+    def test_detail_is_one_clean_bounded_line(self):
+        out = '%0\tclaude\tblocked\tnope\tone\ttwo\x1b[31m\x07  three' + 'x' * 500 + '\n'
+        a = self._run(out)['%0']
+        self.assertEqual(a['since'], 0)
+        self.assertTrue(a['detail'].startswith('one two [31m three'))
+        self.assertNotIn('\x1b', a['detail'])
+        self.assertEqual(len(a['detail']), bm._AGENT_DETAIL_MAX)
+
+    def test_mark_seen_is_one_conditional_tmux_command(self):
+        with patch.object(bm, '_tmux', return_value='') as t:
+            bm.tmux_mark_seen('%3')
+        args = t.call_args[0]
+        self.assertEqual(args[:4], ('if-shell', '-F', '-t', '%3'))
+        self.assertIn('#{==:#{@agent_state},done}', args[4])
+        self.assertIn('#{==:#{@agent_state},failed}', args[4])
+        self.assertTrue(args[5].startswith('set -p -t %3 @agent_state idle ; set -p -t %3 @agent_since '))
+
+
 class TestTmuxListPanes(unittest.TestCase):
     def _run(self, output):
         with patch.object(bm, '_tmux', return_value=output):
@@ -104,11 +145,21 @@ class TestTmuxListPanes(unittest.TestCase):
         self.assertEqual(panes[0], {
             'id': '%0', 'index': 0, 'active': True,
             'command': 'bash', 'title': 'main task', 'named': True, 'dead': False,
+            'agent': None,
         })
         self.assertEqual(panes[1], {
             'id': '%1', 'index': 1, 'active': False,
             'command': 'vim', 'title': '', 'named': False, 'dead': True,
+            'agent': None,
         })
+
+    def test_agent_state_joins_its_pane(self):
+        out = '%0\t0\t1\tclaude\t1234\t0\t1\t\n%1\t1\t0\tbash\t5678\t0\t1\t\n'
+        agent = {'agent': 'claude', 'state': 'blocked', 'since': 1700000000, 'detail': 'x'}
+        with patch.object(bm, '_tmux', return_value=out):
+            panes = bm.tmux_list_panes('@0', {'%0': agent})
+        self.assertEqual(panes[0]['agent'], agent)
+        self.assertIsNone(panes[1]['agent'])
 
     def test_tab_in_title_does_not_shift_fields(self):
         out = '%0\t0\t1\tbash\t1234\t0\t1\tfoo\tbar\n'
@@ -196,6 +247,19 @@ class TestTmuxListWindows(unittest.TestCase):
         self.assertEqual(windows[0]['index'], 0)
         self.assertTrue(windows[0]['active'])
         self.assertFalse(windows[1]['active'])
+        self.assertFalse(windows[0]['bell'])    # no flags in the output
+
+    def test_alert_flags(self):
+        def fake_tmux(*args):
+            if 'list-windows' in args:
+                return '@0\t0\tmain\t1\t1\t0\t1\t0\n@1\t1\twork\t0\t0\t1\t0\t1\n'
+            return ''
+        with patch.object(bm, '_tmux', side_effect=fake_tmux):
+            w0, w1 = bm.tmux_list_windows('$0')
+        self.assertEqual((w0['bell'], w0['activity'], w0['silence'], w0['zoomed']),
+                         (True, False, True, False))
+        self.assertEqual((w1['bell'], w1['activity'], w1['silence'], w1['zoomed']),
+                         (False, True, False, True))
 
     def test_empty_output(self):
         with patch.object(bm, '_tmux', return_value=''):

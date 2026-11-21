@@ -568,6 +568,8 @@ function connect() {
       if (msg.new_session) forcedSessionId = msg.new_session;
       if (msg.new_pane) forcedPaneId = msg.new_pane;
       rebuildPaneTree();
+      updateAgentAttention();
+      markCurrentPaneSeen();
       // An open picker must track topology: without this, rows for a window
       // that just died stay tappable and navigate to a dead pane, and
       // _ctxResolveLevel's fallback never runs until the next interaction.
@@ -583,6 +585,7 @@ function connect() {
       // so its arrival is exactly the signal that it's now safe to send
       // whatever navigation target queued up behind it, if any.
       _subscribeSettled();
+      if (msg.pane_id === currentPane) markCurrentPaneSeen();
       if (msg.pane_id === currentPane) {
         // A slow tmux can take seconds to answer the subscribe, and the
         // finger or selection that came since must keep its nodes.
@@ -719,6 +722,101 @@ function livePanesInWindow(w) {
 function firstLivePaneInWindow(w) {
   return livePanesInWindow(w)[0] || null;
 }
+
+// ── coding agents and alerts ──────────────────────────────────────────────
+// Each pane's agent state comes from byobu-agent-state(1) (p.agent: state,
+// since, detail), and each window's alerts from tmux (w.bell, w.activity,
+// w.silence). A window is marked the way byobu's window list marks it: by
+// the first of these that applies, most urgent first.
+const ALERTS = ['blocked', 'bell', 'failed', 'done', 'activity', 'silence', 'working', 'idle'];
+const ALERT_MARKS = {
+  blocked: '?', bell: '!', failed: '\u2717', done: '\u25c9',
+  activity: '@', silence: '~', working: '\u25d4', idle: '-',
+};
+// What needs you: these are counted on the chip and the app's badge
+const NEEDS_YOU = new Set(['blocked', 'failed']);
+
+function paneAlert(p) {
+  return p?.agent?.state || null;
+}
+
+function windowAlert(w) {
+  const states = new Set(livePanesInWindow(w).map(paneAlert).filter(Boolean));
+  const agent = states.size > 0;
+  if (states.has('blocked') || (w.bell && agent)) return 'blocked';
+  if (w.bell) return 'bell';
+  if (states.has('failed')) return 'failed';
+  if (states.has('done')) return 'done';
+  // An agent's window doesn't count activity: an agent prints all the time
+  if (w.activity && !agent) return 'activity';
+  if (w.silence) return 'silence';
+  if (states.has('working')) return 'working';
+  return 'idle';
+}
+
+function sessionAlert(s) {
+  let best = 'idle';
+  for (const w of liveWindowsInSession(s)) {
+    const a = windowAlert(w);
+    if (ALERTS.indexOf(a) < ALERTS.indexOf(best)) best = a;
+  }
+  return best;
+}
+
+// The panes that need you, the one waiting longest first: blocked, then
+// failed (as byobu-agent-state --next orders them)
+function panesNeedingYou() {
+  const out = [];
+  for (const s of sessions) {
+    for (const w of liveWindowsInSession(s)) {
+      for (const p of livePanesInWindow(w)) {
+        if (NEEDS_YOU.has(paneAlert(p))) out.push({ s, w, p });
+      }
+    }
+  }
+  const rank = e => (paneAlert(e.p) === 'blocked' ? 0 : 1);
+  return out.sort((a, b) => rank(a) - rank(b) || (a.p.agent.since || 0) - (b.p.agent.since || 0));
+}
+
+// How long ago, in the server's clock: "40s", "8m", "3h", "2d"
+function agentAgo(since) {
+  if (!since) return '';
+  const d = Math.max(0, Math.round((Date.now() + _serverOffset) / 1000 - since));
+  if (d < 60) return `${d}s`;
+  if (d < 3600) return `${Math.floor(d / 60)}m`;
+  if (d < 86400) return `${Math.floor(d / 3600)}h`;
+  return `${Math.floor(d / 86400)}d`;
+}
+
+const agentChip = document.getElementById('agent-chip');
+
+function updateAgentAttention() {
+  const waiting = panesNeedingYou();
+  const n = waiting.length;
+  if (agentChip) {
+    agentChip.style.display = n ? '' : 'none';
+    agentChip.textContent = n ? `${ALERT_MARKS[paneAlert(waiting[0].p)]} ${n} need${n === 1 ? 's' : ''} you` : '';
+  }
+  try {
+    if (n && navigator.setAppBadge) navigator.setAppBadge(n).catch(() => {});
+    else if (!n && navigator.clearAppBadge) navigator.clearAppBadge().catch(() => {});
+  } catch (_) {}
+}
+
+// Looking at a done or failed agent's pane on the phone has seen it, as a
+// terminal showing its window does: tell the daemon, once per state
+let _seenSent = '';
+function markCurrentPaneSeen() {
+  if (document.hidden) return;
+  const p = currentPaneObj();
+  const a = paneAlert(p);
+  if (a !== 'done' && a !== 'failed') return;
+  const key = `${p.id}:${p.agent.since}`;
+  if (key === _seenSent) return;
+  _seenSent = key;
+  send({ type: 'seen', pane_id: p.id });
+}
+document.addEventListener('visibilitychange', markCurrentPaneSeen);
 
 // tmux defaults pane_title to the hostname when no program set one; that is
 // noise, so such a title falls through to the running command instead.
@@ -2910,13 +3008,35 @@ function _ctxResolveLevel() {
   if (_ctxLevel === 'windows' && !liveWindowsInSession(_ctxSessionObj()).length) _ctxLevel = 'sessions';
 }
 
-function _ctxAddRow(label, isCurrent, onClick) {
+function _ctxAddRow(label, isCurrent, onClick, alert, note) {
   const btn = document.createElement('button');
   btn.className = 'ctx-btn' + (isCurrent ? ' ctx-current' : '');
   btn.textContent = (isCurrent ? '✓ ' : '') + label;
+  // The mark goes right after the name, as in byobu's window list
+  if (alert) {
+    const mark = document.createElement('span');
+    mark.className = 'ctx-mark';
+    mark.textContent = ALERT_MARKS[alert];
+    btn.appendChild(mark);
+    btn.classList.add('ctx-alert-' + alert);
+  }
+  if (note) {
+    const el = document.createElement('span');
+    el.className = 'ctx-note';
+    el.textContent = note;
+    btn.appendChild(el);
+  }
   btn.addEventListener('click', onClick);
   ctxList.appendChild(btn);
   return btn;
+}
+
+// "blocked 8m: approve Bash: make test" for an agent's pane
+function _agentNote(p) {
+  const a = p?.agent;
+  if (!a) return '';
+  const ago = a.state === 'idle' ? '' : agentAgo(a.since);
+  return [a.state + (ago ? ' ' + ago : ''), a.detail].filter(Boolean).join(': ');
 }
 
 function _ctxAddTitle(text) {
@@ -2961,7 +3081,7 @@ function renderCtxList() {
         _ctxSessionId = s.id;
         _ctxLevel = 'windows';
         _ctxRerender(null);
-      });
+      }, sessionAlert(s));
       btn.dataset.ctxId = s.id;
       btn.dataset.descend = '1';
     }
@@ -2978,7 +3098,8 @@ function renderCtxList() {
         _ctxWindowId = w.id;
         _ctxLevel = 'panes';
         _ctxRerender(null);
-      });
+      }, windowAlert(w));
+      if (w.zoomed) btn.classList.add('ctx-zoomed');
       btn.dataset.ctxId = w.id;
       btn.dataset.descend = '1';
     }
@@ -2995,7 +3116,7 @@ function renderCtxList() {
       const btn = _ctxAddRow(paneDisplayName(p), isCurrent, () => {
         hideCtxOverlay();
         if (!isCurrent) navigateTo(s.id, w.id, p.id);
-      });
+      }, paneAlert(p), _agentNote(p));
       btn.dataset.ctxId = p.id;
     }
   }
@@ -3049,6 +3170,15 @@ ctxName.addEventListener('click', e => {
   showCtxOverlay();
 });
 ctxCancel.addEventListener('click', hideCtxOverlay);
+// The chip goes to the pane that has needed you longest; tapped again from
+// there, to the next one
+if (agentChip) agentChip.addEventListener('click', () => {
+  const waiting = panesNeedingYou();
+  if (!waiting.length) return;
+  const i = waiting.findIndex(e => e.p.id === currentPane);
+  const e = waiting[(i + 1) % waiting.length];
+  if (e.p.id !== currentPane) navigateTo(e.s.id, e.w.id, e.p.id);
+});
 ctxOverlay.addEventListener('click', e => { if (e.target === ctxOverlay) hideCtxOverlay(); });
 
 // ── rename sub-form (reached via "Rename current" inside the jump list) ────

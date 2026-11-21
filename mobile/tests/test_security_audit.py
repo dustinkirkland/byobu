@@ -3,6 +3,10 @@
 Each class names the finding it pins down.  Everything here runs against the
 temp tree the other suites set up; nothing touches a real daemon or tmux.
 """
+try:    # isolation from the real trustmux state and tmux: before anything else
+    from . import _isolation  # noqa: F401
+except ImportError:    # discover -s tests: imported top-level
+    import _isolation  # noqa: F401
 import hashlib
 import base64
 import json
